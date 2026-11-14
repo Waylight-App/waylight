@@ -304,7 +304,7 @@ func TestTodoistWrites(t *testing.T) {
 }
 
 func TestProvidersRouteByKind(t *testing.T) {
-	p := NewProviders(http.DefaultClient)
+	p := NewProviders(http.DefaultClient, nil)
 	if _, ok := p.Open(todoistSource()).(*todoistList); !ok {
 		t.Fatal("todoist")
 	}
