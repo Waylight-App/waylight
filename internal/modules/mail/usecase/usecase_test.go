@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -31,7 +32,7 @@ func (r *repo) Save(_ context.Context, a domain.Account) error { r.m[a.ID] = a; 
 func (r *repo) Delete(_ context.Context, id string) error      { delete(r.m, id); return nil }
 
 type reader struct {
-	calls int
+	calls atomic.Int32
 	fail  map[string]bool
 }
 
@@ -42,7 +43,7 @@ func (f *reader) Test(_ context.Context, a domain.Account) error {
 	return nil
 }
 func (f *reader) Unread(_ context.Context, a domain.Account, _ int) (domain.Inbox, error) {
-	f.calls++
+	f.calls.Add(1)
 	if f.fail[a.Name] {
 		return domain.Inbox{}, errors.New("timeout")
 	}
@@ -85,8 +86,8 @@ func TestMail(t *testing.T) {
 	if one.Unread != 2 || one.WebmailURL != "https://mail.x.de/" && one.WebmailURL != "https://mail.x.de" {
 		t.Fatalf("%+v", one)
 	}
-	if rd.calls != 2 {
-		t.Fatal("cached per account:", rd.calls)
+	if rd.calls.Load() != 2 {
+		t.Fatal("cached per account:", rd.calls.Load())
 	}
 	// One failing account is named; all failing is an error.
 	c.t = c.t.Add(time.Hour)
