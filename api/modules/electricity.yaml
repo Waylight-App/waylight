@@ -1,0 +1,30 @@
+tags:
+  - name: electricity
+
+paths:
+  /api/electricity/prices:
+    get:
+      tags: [electricity]
+      summary: "Day-ahead electricity prices per hour for today and, once published (around 13:00), tomorrow, with the three cheapest hours of each day marked (#288). Source: aWATTar (EPEX), cached for 15 minutes"
+      parameters:
+        - { name: zone, in: query, schema: { type: string, enum: [DE-LU, AT], default: DE-LU } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ElectricityPrices" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "502": { description: The provider did not answer and no prices are known yet }
+
+schemas:
+  ElectricityPrices:
+    type: object
+    properties:
+      zone: { type: string }
+      hours:
+        type: array
+        items:
+          type: object
+          properties:
+            start: { type: string, format: date-time }
+            centPerKWh: { type: number, description: Market price without taxes, fees or the supplier's margin }
+            cheapest: { type: boolean }
+      fetchedAt: { type: string, format: date-time }
+      stale: { type: boolean, description: The provider failed; these are the last known prices }

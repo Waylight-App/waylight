@@ -64,6 +64,7 @@ nav:
           - AI summaries: modules/summary.md
           - Device display mode: modules/device.md
           - Drop zone: modules/drop.md
+          - Electricity prices: modules/electricity.md
           - Fuel prices: modules/fuel.md
           - Game deals: modules/gamedeals.md
           - Habits: modules/habits.md
