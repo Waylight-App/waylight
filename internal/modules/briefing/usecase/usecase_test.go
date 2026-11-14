@@ -61,6 +61,10 @@ type collections []CollectionFact
 
 func (f collections) Collections(context.Context, time.Time) ([]CollectionFact, error) { return f, nil }
 
+type birthdays []BirthdayFact
+
+func (f birthdays) Birthdays(context.Context) ([]BirthdayFact, error) { return f, nil }
+
 type services []ServiceFact
 
 func (f services) DownServices(context.Context) ([]ServiceFact, error) { return f, nil }
@@ -141,6 +145,25 @@ func TestBuildBriefing(t *testing.T) {
 	s, _ := NewManageSettings(d).Get(ctx)
 	if len(s.Available) != 5 || s.PushOn || s.PushAt != "07:00" {
 		t.Fatalf("settings %+v", s)
+	}
+}
+
+func TestBirthdaySection(t *testing.T) {
+	c := &clk{t: time.Date(2026, 11, 12, 6, 30, 0, 0, time.UTC)}
+	day := func(d int) time.Time { return time.Date(2026, 11, d, 0, 0, 0, 0, time.UTC) }
+	d := Deps{Repo: &memRepo{}, Clock: c, Location: cet, Sources: Sources{
+		Birthdays: birthdays{{Name: "Anna", Day: day(12), Age: 30}, {Name: "Ben", Day: day(13)}},
+	}}
+	v, err := NewBuildBriefing(d).Execute(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(v.Briefing.Sections) != 1 || v.Briefing.Sections[0].Kind != domain.SectionBirthdays {
+		t.Fatalf("sections %v", sectionKinds(v))
+	}
+	items := v.Briefing.Sections[0].Items
+	if items[0].Text != "Anna (30)" || items[0].Detail != "today" || items[1].Text != "Ben" || items[1].Detail != "tomorrow" {
+		t.Fatalf("items %+v", items)
 	}
 }
 

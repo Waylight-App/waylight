@@ -33,6 +33,8 @@ type (
 	ServiceFact = usecase.ServiceFact
 	// IncidentFact is a recorded failure or warning.
 	IncidentFact = usecase.IncidentFact
+	// BirthdayFact is a birthday today or tomorrow.
+	BirthdayFact = usecase.BirthdayFact
 )
 
 // Config holds the wiring of the module.

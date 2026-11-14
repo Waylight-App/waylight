@@ -78,6 +78,7 @@ var labels = map[SectionKind]string{
 	SectionTodos:     "To-dos",
 	SectionEvents:    "Appointments",
 	SectionWaste:     "Waste collection",
+	SectionBirthdays: "Birthdays",
 }
 
 // Text renders the briefing as plain text for a push notification, in

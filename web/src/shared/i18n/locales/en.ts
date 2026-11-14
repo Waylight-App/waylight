@@ -1343,6 +1343,7 @@ export const en = {
   'briefing.section.todos': 'To-dos',
   'briefing.section.events': 'Appointments',
   'briefing.section.waste': 'Waste collection',
+  'briefing.section.birthdays': 'Birthdays',
   'briefing.open_source': 'Show the widget with the details',
   'briefing.more': '… and {n} more',
   'briefing.detail.overdue': 'overdue',
