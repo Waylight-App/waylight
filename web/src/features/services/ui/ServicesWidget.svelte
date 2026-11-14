@@ -157,7 +157,7 @@
     font-size: 0.8em;
   }
   .cert {
-    font-size: 0.75em;
+    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
     color: var(--color-warning);
     white-space: nowrap;
   }

@@ -42,6 +42,7 @@
               class="btn btn-icon"
               type="button"
               aria-label={t('dashboard.widget_settings')}
+              title={t('dashboard.widget_settings')}
               onpointerdown={(e) => e.stopPropagation()}
               onclick={onsettings}>⚙</button
             >
@@ -51,7 +52,7 @@
               class="btn btn-icon"
               type="button"
               aria-label={t('dashboard.duplicate_widget')}
-              title={t('dashboard.duplicate')}
+              title={t('dashboard.duplicate_widget')}
               onpointerdown={(e) => e.stopPropagation()}
               onclick={onduplicate}>⧉</button
             >
@@ -60,6 +61,7 @@
             class="btn btn-icon"
             type="button"
             aria-label={t('dashboard.remove_widget')}
+            title={t('dashboard.remove_widget')}
             onpointerdown={(e) => e.stopPropagation()}
             onclick={ondelete}>✕</button
           >

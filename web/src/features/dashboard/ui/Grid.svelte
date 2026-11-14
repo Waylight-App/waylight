@@ -131,6 +131,7 @@
           class="resize"
           type="button"
           aria-label={t('dashboard.resize_widget')}
+          title={t('dashboard.resize_widget')}
           onpointerdown={(e) => start('resize', it, e)}
         ></button>
       {/if}
@@ -166,15 +167,34 @@
     z-index: 2;
     opacity: 0.85;
   }
+  /* Hit area of at least 24 × 24 px (WCAG 2.5.8), 40 × 40 px on touch
+     screens; the visible triangle stays small in the corner (#275). */
   .resize {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: nwse-resize;
+    touch-action: none;
+  }
+  .resize::after {
+    content: '';
     position: absolute;
     right: 2px;
     bottom: 2px;
-    width: 18px;
-    height: 18px;
-    border: none;
+    width: 16px;
+    height: 16px;
     background: linear-gradient(135deg, transparent 50%, var(--color-accent) 50%);
     border-radius: 0 0 var(--radius) 0;
-    cursor: nwse-resize;
+  }
+  @media (pointer: coarse) {
+    .resize {
+      width: 40px;
+      height: 40px;
+    }
   }
 </style>

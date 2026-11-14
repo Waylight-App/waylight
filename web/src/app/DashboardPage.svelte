@@ -16,8 +16,10 @@
     onstate?: (tabs: Tab[], activeId: string) => void;
     /** Starts edit mode; omitted for guests (#276). */
     onedit?: () => void;
+    /** Finishes edit mode (#271). */
+    ondone?: () => void;
   }
-  let { container, editing, widgetKinds, tabBarTarget, onstate, onedit }: Props = $props();
+  let { container, editing, widgetKinds, tabBarTarget, onstate, onedit, ondone }: Props = $props();
 
   let view = $state<{ selectTabAt: (index: number) => void; undo: () => void; redo: () => void }>();
 
@@ -48,6 +50,7 @@
   {tabBarTarget}
   {onstate}
   {onedit}
+  {ondone}
 >
   {#snippet content(widget: Widget)}
     {@const def = definitionFor(widget.kind)}

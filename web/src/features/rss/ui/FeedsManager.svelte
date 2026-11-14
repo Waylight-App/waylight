@@ -150,7 +150,7 @@
     color: var(--color-accent-contrast);
     border-radius: 999px;
     padding: 0 6px;
-    font-size: 0.75rem;
+    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
   }
   .add {
     display: flex;
