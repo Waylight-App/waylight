@@ -2,11 +2,21 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_44877fa04a91ddb0: "Config version {version} is not supported by this version of trisse-home.",
   srv_43fe335aacf98b3c: "Export version {version} is not supported by this version of trisse-home.",
+  srv_a8a0f7eee6c42ca3: "Section {name}: {reason}",
   srv_5715790273b7248a: "The data could not be imported: {detail}",
+  srv_79e20ea037a8c0dd: "The environment variable {name} is not set.",
   srv_e7cb725c138134cc: "The file is larger than 16 MB.",
+  srv_3949050e0fe11ded: "The file is larger than 2 MB.",
   srv_b8c878135ee917b1: "The file is not valid JSON.",
+  srv_14afd68d009021d7: "The file is not valid: {reason}",
+  srv_09e549de4d9f81f3: "The file must be a YAML mapping with version and sections.",
+  srv_5df61e32f2bec534: "The section {name} appears twice.",
+  srv_1a0dd18b884c11a8: "The version must be a number.",
   srv_d9a79f89c625afc7: "This is not a trisse-home export file.",
+  srv_40b2f70963afe6eb: "Unknown section {name} (or its module is disabled).",
+  srv_131e8662bd896c29: "YAML aliases (*name) are not supported; write the value out.",
 } as const;
 
 /** Key of a backend message. */

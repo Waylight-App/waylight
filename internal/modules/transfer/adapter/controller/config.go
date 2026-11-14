@@ -11,12 +11,6 @@ import (
 	"trisse-home/internal/shared/kernel"
 )
 
-// ConfigResultDTO is returned by POST /api/transfer/config.
-type ConfigResultDTO struct {
-	Applied []string          `json:"applied"`
-	Failed  map[string]string `json:"failed"`
-}
-
 // ConfigHandlers serves trisse-home.yaml (#88).
 type ConfigHandlers struct{ uc usecase.Config }
 
