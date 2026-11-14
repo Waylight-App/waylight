@@ -31,6 +31,7 @@ stored encrypted.
 | Ollama | Only when you ask for a summary. |
 | WebDAV off-site backups | After each backup, and when you restore from it. |
 | ntfy, Gotify, webhooks, SMTP | When a notification is sent. |
+| Football results (`api.openligadb.de`) | Only while a sports widget is shown, at most every 15 minutes per league ([details](modules/sports.md)). |
 | IMAP mailbox (parcels) | One folder, read-only over TLS, at the interval you choose. Off by default ([details](parcels-mail.md)). |
 
 ## Public services

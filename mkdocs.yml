@@ -76,6 +76,7 @@ nav:
           - Read later: modules/readlater.md
           - Sonarr, Radarr, Prowlarr: modules/arr.md
           - Space: modules/space.md
+          - Sports: modules/sports.md
           - Study progress: modules/study.md
   - Run it:
       - Configuration: configuration.md
