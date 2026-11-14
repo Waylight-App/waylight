@@ -33,6 +33,10 @@ func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return respond(req, http.StatusOK, "application/json", forecast(now))
 	case host == "geocoding-api.open-meteo.com":
 		return respond(req, http.StatusOK, "application/json", geocoding)
+	case host == "www.ecb.europa.eu":
+		return respond(req, http.StatusOK, "application/xml", ecbRates(now))
+	case host == "stooq.com":
+		return respond(req, http.StatusOK, "text/csv", stooqCloses(req.URL.Query().Get("s"), now))
 	case host == "api.openligadb.de":
 		return respond(req, http.StatusOK, "application/json", football(path, now))
 	case strings.HasPrefix(host, "api.awattar."):
@@ -147,6 +151,31 @@ func (HealthyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		_ = req.Body.Close()
 	}
 	return respond(req, http.StatusOK, "text/plain", "ok")
+}
+
+// ecbRates is a short ECB reference rate file (#284), newest day first.
+func ecbRates(now time.Time) string {
+	var b strings.Builder
+	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?><gesmes:Envelope xmlns:gesmes="http://www.gesmes.org/xml/2002-08-01" xmlns="http://www.ecb.int/vocabulary/2002-08-01/eurofxref"><Cube>`)
+	for d := range 30 {
+		day := now.AddDate(0, 0, -1-d).Format(time.DateOnly)
+		fmt.Fprintf(&b, `<Cube time=%q><Cube currency="USD" rate="%.4f"/><Cube currency="CHF" rate="%.4f"/><Cube currency="GBP" rate="%.4f"/></Cube>`,
+			day, 1.08+0.004*float64(d%7), 0.93-0.002*float64(d%5), 0.84+0.001*float64(d%4))
+	}
+	b.WriteString(`</Cube></gesmes:Envelope>`)
+	return b.String()
+}
+
+// stooqCloses are 30 daily closes of any symbol (#284), a gentle wave.
+func stooqCloses(symbol string, now time.Time) string {
+	base := 100.0 + float64(len(symbol))*37
+	var b strings.Builder
+	b.WriteString("Date,Open,High,Low,Close,Volume\n")
+	for d := 30; d >= 1; d-- {
+		v := base * (1 + 0.02*float64((d*7)%11-5)/5)
+		fmt.Fprintf(&b, "%s,%.2f,%.2f,%.2f,%.2f,0\n", now.AddDate(0, 0, -d).Format(time.DateOnly), v, v, v, v)
+	}
+	return b.String()
 }
 
 // football answers OpenLigaDB (#285) with three clubs, a finished and an
