@@ -206,6 +206,45 @@ test('settings sections of self-registering features load on demand (#193)', asy
   await expect(page.getByLabel('Proxmox VE URL')).toBeVisible();
 });
 
+test('settings: grouped navigation with keyboard and a list view on phones (#261)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByTestId('dashboard')).toBeVisible();
+  await account(page, 'Settings');
+  const nav = page.getByRole('navigation', { name: 'Settings sections' });
+  await expect(nav.getByRole('group', { name: 'Integrations' })).toBeVisible();
+  // A section in a group; the selected entry is marked.
+  await nav
+    .getByRole('group', { name: 'Integrations' })
+    .getByRole('button', { name: 'Proxmox', exact: true })
+    .click();
+  await expect(page.getByLabel('Proxmox VE URL')).toBeVisible();
+  await expect(nav.getByRole('button', { name: 'Proxmox', exact: true })).toHaveAttribute(
+    'aria-current',
+    'true',
+  );
+  // Arrow keys move between entries, Enter selects.
+  await nav.getByRole('button', { name: 'Appearance', exact: true }).click();
+  await page.keyboard.press('ArrowDown');
+  await expect(nav.getByRole('button', { name: 'Search', exact: true })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(nav.getByRole('button', { name: 'Search', exact: true })).toHaveAttribute(
+    'aria-current',
+    'true',
+  );
+  await page.getByRole('button', { name: 'Close' }).click();
+
+  // Phones: first the list, then one section with a way back.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await account(page, 'Settings');
+  await nav.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(nav).toBeHidden();
+  await page.getByRole('button', { name: 'All settings' }).click();
+  await expect(nav).toBeVisible();
+  await expect(nav.getByRole('button', { name: 'Search', exact: true })).toBeFocused();
+});
+
 test('a guest sees only the shared tab and cannot edit', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Password').fill(password);
