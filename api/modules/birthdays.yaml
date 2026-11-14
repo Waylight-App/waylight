@@ -1,0 +1,95 @@
+tags:
+  - name: birthdays
+
+paths:
+  /api/birthdays:
+    get:
+      tags: [birthdays]
+      summary: "Birthdays ordered by their next occurrence (#287), today first; ?limit=n returns the first n"
+      parameters: [{ name: limit, in: query, schema: { type: integer, minimum: 0 } }]
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Birthday" } } } } }
+    post:
+      tags: [birthdays]
+      summary: Add a birthday by hand; year 0 means unknown, 29 February is allowed
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/BirthdayInput" } } } }
+      responses:
+        "201": { description: Created }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/birthdays/{id}:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    delete:
+      tags: [birthdays]
+      summary: Delete a birthday; entries from the address book are refused (422), they are removed at their source
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Deleted }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/birthdays/import:
+    post:
+      tags: [birthdays]
+      summary: Import the birthdays of a vCard file (.vcf, at most 5 MB); entries with the same name and day are skipped
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { text/vcard: { schema: { type: string } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/BirthdayImportReport" } } } }
+        "413": { description: The file is larger than 5 MB }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/birthdays/settings:
+    get:
+      tags: [birthdays]
+      summary: Reminder and CardDAV address book; the password is never returned
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/BirthdaySettings" } } } }
+    put:
+      tags: [birthdays]
+      summary: "Save the settings. A CardDAV URL is read right away and replaces the synced entries; an empty password keeps the stored one, an empty URL disconnects the address book and removes its entries"
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/BirthdaySettingsInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/BirthdaySettings" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "502": { description: The address book did not answer or refused the login }
+
+schemas:
+  Birthday:
+    type: object
+    properties:
+      id: { type: string }
+      name: { type: string }
+      month: { type: integer, minimum: 1, maximum: 12 }
+      day: { type: integer, minimum: 1, maximum: 31 }
+      year: { type: integer, description: Omitted when unknown }
+      source: { type: string, enum: [manual, vcard, carddav] }
+      next: { type: string, format: date }
+      inDays: { type: integer }
+      age: { type: integer, description: Age reached on next; omitted when the year is unknown }
+  BirthdayInput:
+    type: object
+    required: [name, month, day]
+    properties:
+      name: { type: string, maxLength: 100 }
+      month: { type: integer }
+      day: { type: integer }
+      year: { type: integer, description: 0 = unknown }
+  BirthdayImportReport:
+    type: object
+    properties: { added: { type: integer }, duplicates: { type: integer } }
+  BirthdaySettings:
+    type: object
+    properties:
+      remindEnabled: { type: boolean }
+      remindAt: { type: string, example: "08:00" }
+      cardDavUrl: { type: string }
+      username: { type: string }
+      hasPassword: { type: boolean }
+  BirthdaySettingsInput:
+    type: object
+    properties:
+      remindEnabled: { type: boolean }
+      remindAt: { type: string, example: "08:00" }
+      cardDavUrl: { type: string }
+      username: { type: string }
+      password: { type: string }

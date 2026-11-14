@@ -80,6 +80,7 @@ nav:
           - Sonarr, Radarr, Prowlarr: modules/arr.md
           - Space: modules/space.md
           - Sports: modules/sports.md
+          - Birthdays: modules/birthdays.md
           - Study progress: modules/study.md
           - To-do lists (CalDAV, Todoist, Microsoft, Google, TickTick): modules/todos.md
   - Run it:

@@ -41,6 +41,7 @@ modules in detail.
 | Fuel prices (`fuel`) | Cheapest open stations around a place, or your favourites, in Germany via Tankerkönig. [Details](modules/fuel.md) |
 | Markets (`markets`) | Watchlist of currencies (ECB), shares, indices and crypto (Stooq) with daily change and sparkline; no API key. [Details](modules/markets.md) |
 | Sports (`sports`) | Last result, next fixture and table position of a followed team, or the top of the table (German football leagues via OpenLigaDB, no API key). [Details](modules/sports.md) |
+| Birthdays (`birthdays`) | Next birthdays with age, entered by hand, imported from a vCard file or read from a CardDAV address book; optional reminder and briefing line. [Details](modules/birthdays.md) |
 | Electricity prices (`electricity`) | Day-ahead market price per hour for today and tomorrow, cheapest hours highlighted (Germany/Luxembourg, Austria; no API key). [Details](modules/electricity.md) |
 | Space (`space`) | Next rocket launches with countdown and NASA's Astronomy Picture of the Day. Opt-in. [Details](modules/space.md) |
 | AI summaries (`summary`) | Summarises notes and feed articles with a local Ollama; nothing leaves your network. Opt-in. [Details](modules/summary.md) |

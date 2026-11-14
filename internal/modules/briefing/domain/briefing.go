@@ -17,10 +17,11 @@ const (
 	SectionTodos     SectionKind = "todos"     // due and overdue to-dos
 	SectionEvents    SectionKind = "events"    // next appointments
 	SectionWaste     SectionKind = "waste"     // collections today and tomorrow
+	SectionBirthdays SectionKind = "birthdays" // birthdays today and tomorrow
 )
 
 // DefaultOrder is the order of a new briefing.
-var DefaultOrder = []SectionKind{SectionWarnings, SectionIncidents, SectionServices, SectionTodos, SectionEvents, SectionWaste}
+var DefaultOrder = []SectionKind{SectionWarnings, SectionIncidents, SectionServices, SectionTodos, SectionEvents, SectionWaste, SectionBirthdays}
 
 // MaxItemsPerSection keeps the briefing compact; the rest is counted.
 const MaxItemsPerSection = 5

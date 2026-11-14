@@ -32,6 +32,7 @@ stored encrypted.
 | WebDAV off-site backups | After each backup, and when you restore from it. |
 | ntfy, Gotify, webhooks, SMTP | When a notification is sent. |
 | Football results (`api.openligadb.de`) | Only while a sports widget is shown, at most every 15 minutes per league ([details](modules/sports.md)). |
+| CardDAV address book (birthdays) | When you save the address book in the settings, then every six hours. None until you connect one ([details](modules/birthdays.md)). |
 | Electricity prices (`api.awattar.de` / `api.awattar.at`) | Only while an electricity price widget is shown, at most every 15 minutes per bidding zone ([details](modules/electricity.md)). |
 | Connected to-do lists (CalDAV) | While a to-do widget shows the list, at most once a minute: the list's CTag first, then only the to-dos whose ETag changed. None until you connect a list ([details](modules/todos.md)). |
 | Markets (`www.ecb.europa.eu`, `stooq.com`) | Only while a markets widget is shown, at most once an hour per symbol ([details](modules/markets.md)). |

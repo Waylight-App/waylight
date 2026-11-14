@@ -66,7 +66,7 @@ func TestBriefingReadsOtherModules(t *testing.T) {
 		PushOn    bool     `json:"pushOn"`
 	}
 	c.json(http.MethodGet, "/api/briefing/settings", nil, http.StatusOK, &settings)
-	if settings.PushOn || len(settings.Layout) != 6 {
+	if settings.PushOn || len(settings.Layout) != 7 {
 		t.Fatalf("defaults %+v", settings)
 	}
 	for _, k := range settings.Available {
