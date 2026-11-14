@@ -6,6 +6,7 @@ import (
 	"io/fs"
 
 	"trisse-home/internal/modules"
+	"trisse-home/internal/modules/search/adapter/configfile"
 	"trisse-home/internal/modules/search/adapter/controller"
 	"trisse-home/internal/modules/search/adapter/gateway"
 	"trisse-home/internal/modules/search/usecase"
@@ -17,12 +18,42 @@ type Module struct {
 	modules.Transferable
 	handlers *controller.Handlers
 	seed     usecase.SeedSampleData
+	config   usecase.Config
 }
 
 // New builds the search module.
 func New(db *sql.DB) *Module {
 	repo := gateway.NewRepository(db)
-	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, handlers: controller.NewHandlers(usecase.NewSearcher(repo)), seed: usecase.NewSeedSampleData(repo)}
+	return &Module{
+		Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
+		handlers:     controller.NewHandlers(usecase.NewSearcher(repo)),
+		seed:         usecase.NewSeedSampleData(repo),
+		config:       usecase.NewConfig(repo),
+	}
+}
+
+// ConfigSection implements modules.Configurable.
+func (m *Module) ConfigSection() string { return "search" }
+
+// ExportConfig implements modules.Configurable.
+func (m *Module) ExportConfig(ctx context.Context) (any, error) {
+	s, err := m.config.Export(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return configfile.FromSection(s), nil
+}
+
+// NewConfig implements modules.Configurable.
+func (m *Module) NewConfig() any { return &configfile.Section{} }
+
+// ApplyConfig implements modules.Configurable.
+func (m *Module) ApplyConfig(ctx context.Context, section any) error {
+	s, ok := section.(*configfile.Section)
+	if !ok {
+		return modules.ErrConfigType
+	}
+	return m.config.Apply(ctx, s.Section())
 }
 
 // SeedSampleData implements modules.Seeder.

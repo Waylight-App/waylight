@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log/slog"
 	"net/http"
+	"os"
 	"slices"
 	"time"
 
@@ -154,7 +155,9 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		{"parcels", func() modules.Module {
 			return parcels.New(db, secrets, client, httpclient.IntegrationDialContext, clk, ids)
 		}},
-		{"transfer", func() modules.Module { return transfer.New(registry.Portables, clk, authModule) }},
+		{"transfer", func() modules.Module {
+			return transfer.New(transfer.Deps{Portables: registry.Portables, Configurables: registry.Configurables, Env: os.LookupEnv, Clock: clk, Audit: authModule})
+		}},
 		{"transit", func() modules.Module { return transit.New(client, cfg.TransitAPIURL, clk) }},
 		{"shopping", func() modules.Module { return shopping.New(db, secrets, out.integration, ids) }},
 		{"waste", func() modules.Module { return waste.New(db, client, clk, time.Local) }},

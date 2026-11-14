@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"trisse-home/internal/modules"
+	"trisse-home/internal/modules/services/adapter/configfile"
 	"trisse-home/internal/modules/services/adapter/controller"
 	"trisse-home/internal/modules/services/adapter/gateway"
 	"trisse-home/internal/modules/services/usecase"
@@ -41,12 +42,14 @@ type Module struct {
 	discovery usecase.Discovery
 	handlers  *controller.Handlers
 	disc      *controller.DiscoveryHandlers
+	config    usecase.Config
 }
 
 // New builds the services module.
 func New(d Deps) *Module {
+	repo := gateway.NewRepository(d.DB)
 	deps := usecase.Deps{
-		Repo: gateway.NewRepository(d.DB), Status: gateway.NewStatusStore(),
+		Repo: repo, Status: gateway.NewStatusStore(),
 		Checker: gateway.NewHTTPChecker(d.Client, d.InsecureClient), History: gateway.NewHistoryStore(d.DB), Waker: d.Waker, Observations: d.Observations, Clock: d.Clock, IDs: d.IDs,
 		Uptime: gateway.NewUptimeStore(d.DB), Maintenance: d.Maintenance, Location: time.Local,
 	}
@@ -55,7 +58,32 @@ func New(d Deps) *Module {
 	return &Module{
 		Transferable: modules.Transferable{DB: d.DB, Tables: gateway.TransferTables}, uc: uc, seed: usecase.NewSeedSampleData(deps),
 		discovery: disc, handlers: controller.NewHandlers(uc), disc: controller.NewDiscoveryHandlers(disc),
+		config: usecase.NewConfig(repo, d.IDs),
 	}
+}
+
+// ConfigSection implements modules.Configurable.
+func (m *Module) ConfigSection() string { return "services" }
+
+// ExportConfig implements modules.Configurable.
+func (m *Module) ExportConfig(ctx context.Context) (any, error) {
+	list, err := m.config.Export(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return configfile.FromList(list), nil
+}
+
+// NewConfig implements modules.Configurable.
+func (m *Module) NewConfig() any { return &configfile.Section{} }
+
+// ApplyConfig implements modules.Configurable.
+func (m *Module) ApplyConfig(ctx context.Context, section any) error {
+	s, ok := section.(*configfile.Section)
+	if !ok {
+		return modules.ErrConfigType
+	}
+	return m.config.Apply(ctx, s.List())
 }
 
 // SeedSampleData implements modules.Seeder. The example tiles are checked in

@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/itadori26/trisse-home/main/docs/schema/trisse-home.v1.schema.json",
+  "title": "trisse-home.yaml",
+  "description": "Settings of a trisse-home instance as code (version 1). Sections are optional: a missing section is left alone, a present one replaces the settings of its module. Any string may contain ${NAME} to read the environment variable NAME; $${NAME} writes a literal ${NAME}.",
+  "type": "object",
+  "required": ["version"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": 1 },
+    "appearance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "theme": { "enum": ["system", "light", "dark"] },
+        "accentColor": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "backgroundImage": { "type": "string", "description": "http(s) URL; empty uses the built-in background" },
+        "language": { "enum": ["", "en", "de"], "description": "Empty follows the browser" },
+        "greetingName": { "type": "string" },
+        "launcher": { "enum": ["both", "services", "bookmarks"] },
+        "profile": { "enum": ["everyday", "homelab"] },
+        "customCss": { "type": "string" }
+      }
+    },
+    "search": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": { "type": "string", "description": "Web search provider, e.g. duckduckgo" },
+        "openInNewTab": { "type": "boolean" },
+        "capturePrefixes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["todo", "note", "bookmark"],
+          "properties": {
+            "todo": { "$ref": "#/$defs/prefix" },
+            "note": { "$ref": "#/$defs/prefix" },
+            "bookmark": { "$ref": "#/$defs/prefix" }
+          }
+        },
+        "shortcuts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["keyword", "name", "url"],
+            "properties": {
+              "keyword": { "type": "string", "pattern": "^!?[a-zA-Z0-9]{1,16}$" },
+              "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+              "url": { "type": "string", "description": "{query} is replaced by the search terms" }
+            }
+          }
+        }
+      }
+    },
+    "services": {
+      "type": "array",
+      "description": "Manual service tiles in display order. Tiles discovered from Docker labels are not part of the file.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "url"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+          "url": { "$ref": "#/$defs/httpUrl" },
+          "checkUrl": { "$ref": "#/$defs/httpUrl" },
+          "icon": { "type": "string", "description": "Emoji, short text or http(s) image URL" },
+          "description": { "type": "string", "maxLength": 200 },
+          "skipTlsVerify": { "type": "boolean" },
+          "mac": { "type": "string", "description": "MAC address for Wake-on-LAN" }
+        }
+      }
+    },
+    "bookmarks": {
+      "type": "array",
+      "description": "Bookmarks without a folder, and folders with their bookmarks.",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/bookmark" },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["folder"],
+            "properties": {
+              "folder": { "type": "string", "minLength": 1 },
+              "bookmarks": { "type": "array", "items": { "$ref": "#/$defs/bookmark" } }
+            }
+          }
+        ]
+      }
+    },
+    "dashboard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tabs"],
+      "properties": {
+        "tabs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1, "maxLength": 40 },
+              "background": { "type": "string" },
+              "rules": {
+                "type": "array",
+                "description": "Open this tab by default on these weekdays (0 = Sunday), in this time range and/or from these networks; empty parts always match.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "days": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 6 } },
+                    "from": { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+                    "to": { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+                    "networks": { "type": "array", "items": { "type": "string", "description": "CIDR, e.g. 192.168.178.0/24" } }
+                  }
+                }
+              },
+              "widgets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["kind", "at"],
+                  "properties": {
+                    "kind": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,31}$", "description": "Widget type of an enabled module" },
+                    "at": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["x", "y", "w", "h"],
+                      "description": "Position in the 12-column grid",
+                      "properties": {
+                        "x": { "type": "integer", "minimum": 0, "maximum": 11 },
+                        "y": { "type": "integer", "minimum": 0, "maximum": 500 },
+                        "w": { "type": "integer", "minimum": 1, "maximum": 12 },
+                        "h": { "type": "integer", "minimum": 1, "maximum": 24 }
+                      }
+                    },
+                    "phone": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["order", "rows"],
+                      "description": "Place in the phone layout; without any phone entry the tab uses the order of the grid",
+                      "properties": {
+                        "order": { "type": "integer", "minimum": 1 },
+                        "rows": { "type": "integer", "minimum": 1, "maximum": 24 },
+                        "hidden": { "type": "boolean" }
+                      }
+                    },
+                    "config": { "type": "object", "description": "The widget's settings, as stored by its settings dialog" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "prefix": { "type": "string", "pattern": "^[a-zA-Z0-9]{1,4}$" },
+    "httpUrl": { "type": "string", "pattern": "^(https?://|\\$\\{)" },
+    "bookmark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url"],
+      "properties": {
+        "title": { "type": "string" },
+        "url": { "type": "string" },
+        "description": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

@@ -105,6 +105,59 @@ func (r *Repository) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
+// ReplaceManual implements usecase.ConfigRepository in one transaction.
+func (r *Repository) ReplaceManual(ctx context.Context, list []domain.Service) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback() }()
+	keep := map[string]bool{}
+	for _, s := range list {
+		keep[s.ID] = true
+	}
+	manual, err := queryIDs(ctx, tx, `SELECT id FROM services WHERE container = ''`)
+	if err != nil {
+		return fmt.Errorf("list services: %w", err)
+	}
+	for _, id := range manual {
+		if keep[id] {
+			continue
+		}
+		if _, err := tx.ExecContext(ctx, `DELETE FROM services WHERE id = ?`, id); err != nil {
+			return fmt.Errorf("delete service: %w", err)
+		}
+	}
+	for _, s := range list {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO services (`+columns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '', 0, 0)
+			ON CONFLICT (id) DO UPDATE SET name = excluded.name, url = excluded.url, check_url = excluded.check_url,
+			icon = excluded.icon, description = excluded.description, skip_tls_verify = excluded.skip_tls_verify,
+			position = excluded.position, mac = excluded.mac`,
+			s.ID, s.Name, s.URL, s.CheckURL, s.Icon, s.Description, boolInt(s.SkipTLSVerify), s.Position, string(s.MAC)); err != nil {
+			return fmt.Errorf("upsert service: %w", err)
+		}
+	}
+	return tx.Commit()
+}
+
+// queryIDs runs a constant query that selects one id column.
+func queryIDs(ctx context.Context, tx *sql.Tx, query string) ([]string, error) {
+	rows, err := tx.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, rows.Err()
+}
+
 func boolInt(b bool) int {
 	if b {
 		return 1
