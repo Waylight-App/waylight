@@ -112,9 +112,20 @@ export interface Capabilities {
 /** Everything the built-in list supports. */
 export const LOCAL_CAPABILITIES: Capabilities = { ordering: true, repeat: true, reminders: true };
 
-/** Kinds of connected lists: CalDAV (#169) and Todoist (#170). */
-export type SourceKind = 'caldav' | 'todoist';
-export const SOURCE_KINDS: readonly SourceKind[] = ['caldav', 'todoist'];
+/** Kinds of connected lists: CalDAV (#169), Todoist (#170) and the services you sign in to (#171). */
+export type SourceKind = 'caldav' | 'todoist' | 'microsoft' | 'google' | 'ticktick';
+export const SOURCE_KINDS: readonly SourceKind[] = ['caldav', 'todoist', 'microsoft', 'google', 'ticktick'];
+
+/** Kinds connected by signing in with your own app registration (OAuth). */
+export const isOAuthKind = (k: SourceKind): boolean =>
+  k === 'microsoft' || k === 'google' || k === 'ticktick';
+
+/** Where to register an app for each OAuth kind (shown in the settings). */
+export const OAUTH_CONSOLES: Partial<Record<SourceKind, string>> = {
+  microsoft: 'https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade',
+  google: 'https://console.cloud.google.com/apis/credentials',
+  ticktick: 'https://developer.ticktick.com/manage',
+};
 
 /** A connected external to-do list; the password or token is never sent back. */
 export interface TodoSource {

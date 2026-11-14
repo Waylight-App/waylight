@@ -38,6 +38,14 @@
     <span>{t('appearance.greeting_name')}</span>
     <input class="input" bind:value={form.greetingName} maxlength="40" autocomplete="given-name" />
   </label>
+  <label class="field">
+    <span>{t('appearance.profile')}</span>
+    <select class="input" bind:value={form.profile}>
+      <option value="everyday">{t('auth.profile_everyday')} – {t('auth.profile_everyday_hint')}</option>
+      <option value="homelab">{t('auth.profile_homelab')}</option>
+    </select>
+    <span class="muted small">{t('appearance.profile_hint')}</span>
+  </label>
   <label class="field" id="settings-launcher">
     <span>{t('appearance.launcher')}</span>
     <select class="input" bind:value={form.launcher}>

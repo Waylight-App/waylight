@@ -17,12 +17,14 @@ type AppearanceDTO struct {
 	GreetingName string `json:"greetingName"`
 	// Launcher is what the launcher lists (#189).
 	Launcher string `json:"launcher" tstype:"'both' | 'services' | 'bookmarks'"`
+	// Profile is what the start page shows (#281); empty on PUT keeps it.
+	Profile string `json:"profile" tstype:"'everyday' | 'homelab'"`
 }
 
 // Appearance maps an AppearanceResponse.
 func Appearance(r usecase.AppearanceResponse) AppearanceDTO {
 	return AppearanceDTO{Theme: r.Theme, AccentColor: r.AccentColor, BackgroundImage: r.BackgroundImage, CustomCSS: r.CustomCSS, Language: r.Language,
-		GreetingName: r.GreetingName, Launcher: r.Launcher}
+		GreetingName: r.GreetingName, Launcher: r.Launcher, Profile: r.Profile}
 }
 
 // ThemeDTO is a gallery theme.

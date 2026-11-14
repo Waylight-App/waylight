@@ -20,6 +20,7 @@ type Module struct {
 	modules.Transferable
 	handlers *controller.Handlers
 	seed     usecase.SeedSampleData
+	everyday usecase.SeedSampleData
 	scope    usecase.TabScope
 }
 
@@ -39,13 +40,23 @@ func New(db *sql.DB, ids kernel.IDGenerator, clock kernel.Clock, widgetKinds []s
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
 		handlers: controller.NewHandlers(usecase.NewGetDashboard(deps), usecase.NewManageTabs(deps), usecase.NewManageWidgets(deps),
 			usecase.NewManageTemplates(deps)),
-		seed:  usecase.NewSeedSampleData(deps, usecase.SampleLayout(string(weatherConfig))),
-		scope: usecase.NewTabScope(deps),
+		seed:     usecase.NewSeedSampleData(deps, usecase.SampleLayout(string(weatherConfig))),
+		everyday: usecase.NewSeedSampleData(deps, usecase.EverydayLayout(string(weatherConfig))),
+		scope:    usecase.NewTabScope(deps),
 	}
 }
 
 // SeedSampleData implements modules.Seeder.
 func (m *Module) SeedSampleData(ctx context.Context) error { return m.seed.Execute(ctx) }
+
+// SeedForProfile seeds the layout of a start-page profile (#281):
+// "everyday" leaves out the Server tab.
+func (m *Module) SeedForProfile(ctx context.Context, profile string) error {
+	if profile == "everyday" {
+		return m.everyday.Execute(ctx)
+	}
+	return m.seed.Execute(ctx)
+}
 
 // Name implements modules.Module.
 func (m *Module) Name() string { return "dashboard" }

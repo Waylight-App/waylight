@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -34,6 +35,8 @@ func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return respond(req, http.StatusOK, "application/json", geocoding)
 	case host == "api.openligadb.de":
 		return respond(req, http.StatusOK, "application/json", football(path, now))
+	case strings.HasPrefix(host, "api.awattar."):
+		return respond(req, http.StatusOK, "application/json", marketPrices(req))
 	case strings.HasSuffix(path, "/containers/json"):
 		return respond(req, http.StatusOK, "application/json", containers(now))
 	case strings.HasSuffix(host, "go.dev") || strings.HasSuffix(host, "hnrss.org") || strings.Contains(path, "feed") || strings.HasSuffix(path, ".xml"):
@@ -171,4 +174,18 @@ func football(path string, now time.Time) string {
 		{"matchDateTimeUTC": now.AddDate(0, 0, 3).UTC().Format(time.RFC3339), "team1": teams[0], "team2": teams[2], "matchIsFinished": false,
 			"group": map[string]any{"groupName": "12. Spieltag"}, "matchResults": []any{}},
 	})
+}
+
+// marketPrices is an aWATTar answer (#288): 48 hourly day-ahead prices from
+// the requested start with a typical daily curve (cheap at night and around
+// noon, expensive in the evening).
+func marketPrices(req *http.Request) string {
+	start, _ := strconv.ParseInt(req.URL.Query().Get("start"), 10, 64)
+	curve := []float64{78, 72, 68, 66, 67, 74, 92, 118, 124, 105, 84, 61, 48, 45, 52, 70, 96, 138, 152, 141, 118, 102, 94, 86}
+	data := make([]map[string]any, 0, 48)
+	for h := range 48 {
+		s := start + int64(h)*3_600_000
+		data = append(data, map[string]any{"start_timestamp": s, "end_timestamp": s + 3_600_000, "marketprice": curve[h%24] + float64(h/24)*6, "unit": "Eur/MWh"})
+	}
+	return mustJSON(map[string]any{"object": "list", "data": data})
 }

@@ -33,7 +33,7 @@ export default defineConfig({
       ALLOWED_CIDRS: '127.0.0.0/8',
       LOG_LEVEL: 'warn',
       // calendar stays on: unconfigured it makes no outbound requests, and #163 tests its split view.
-      MODULES_DISABLED: 'docker,adguard,rss,weather,sports',
+      MODULES_DISABLED: 'docker,adguard,rss,weather,sports,electricity',
     },
   },
 });

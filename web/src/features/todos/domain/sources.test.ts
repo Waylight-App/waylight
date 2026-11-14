@@ -52,6 +52,9 @@ describe('connected to-do lists (#169)', () => {
       save: vi.fn().mockResolvedValue(nc),
       delete: vi.fn().mockResolvedValue(undefined),
       discover: vi.fn().mockResolvedValue([]),
+      oauthRedirect: vi.fn().mockResolvedValue('https://home.example/api/todos/settings/oauth/callback'),
+      startOAuth: vi.fn().mockResolvedValue({ url: 'https://login.example', state: 's1' }),
+      oauthStatus: vi.fn().mockResolvedValueOnce('pending').mockResolvedValueOnce('ready'),
     } satisfies TodoSourcesGateway;
     const uc = new TodoSourcesUseCases(g);
     const input = {
@@ -86,6 +89,28 @@ describe('connected to-do lists (#169)', () => {
     await uc.discover(td);
     await uc.save('', { ...td, listId: 'p1' });
     expect(g.save).toHaveBeenLastCalledWith('', { ...td, listId: 'p1' });
+    // OAuth (#171): a client ID is needed, then the sign-in is awaited.
+    const ms = { kind: 'microsoft' as const, name: 'To Do', url: '', username: '', password: '' };
+    await expect(uc.startOAuth(ms)).rejects.toThrow();
+    expect(await uc.startOAuth({ ...ms, username: ' app ' })).toEqual({
+      url: 'https://login.example',
+      state: 's1',
+    });
+    expect(g.startOAuth).toHaveBeenCalledWith({ ...ms, username: 'app' });
+    const slept: number[] = [];
+    expect(
+      await uc.waitForSignIn(
+        's1',
+        () => false,
+        async (ms) => void slept.push(ms),
+      ),
+    ).toBe('ready');
+    expect(slept).toEqual([2000]);
+    expect(await uc.waitForSignIn('s1', () => true)).toBe('pending'); // stopped: no request
+    await expect(uc.save('', { ...ms, username: 'app', oauthState: 's1' })).rejects.toThrow(); // no list chosen
+    await uc.save('', { ...ms, username: 'app', oauthState: 's1', listId: 'L1' });
+    g.oauthRedirect.mockRejectedValue(new Error('403'));
+    expect(await uc.oauthRedirect()).toBe('');
     g.list.mockRejectedValue(new Error('403'));
     expect(await uc.list(true)).toEqual([]);
   });

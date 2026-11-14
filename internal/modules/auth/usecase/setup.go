@@ -80,7 +80,7 @@ func (uc *setupAccount) Execute(ctx context.Context, req SetupRequest) (SessionR
 		return SessionResponse{}, err
 	}
 	uc.deps.Limiter.Reset(req.ClientKey)
-	uc.observer.AccountCreated(ctx)
+	uc.observer.AccountCreated(ctx, req.Profile)
 	client := domain.NewClient(req.UserAgent, req.ClientKey)
 	uc.deps.Events.loginSucceeded(ctx, domain.OwnerID, client, "setup")
 	return uc.deps.issuer().issue(ctx, domain.OwnerID, client)

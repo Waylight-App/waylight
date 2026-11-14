@@ -79,7 +79,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	authModule, err := auth.New(
 		auth.Config{
 			CookieSecure: cfg.CookieSecure, SessionTTL: cfg.SessionTTL, SetupToken: cfg.SetupToken,
-			OnAccountCreated: func(ctx context.Context) { onAccountCreated(ctx, cfg, log, registry) },
+			OnAccountCreated: func(ctx context.Context, profile string) { onAccountCreated(ctx, cfg, log, registry, profile) },
 			Demo:             cfg.DemoMode,
 			SSO:              ssoConfig(cfg, out.client, clk),
 			WebAuthn:         relyingParty(cfg),
@@ -141,7 +141,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		}},
 		{"bookmarks", func() modules.Module { return bookmarks.New(db, clk, ids, out.guarded) }},
 		{"notes", func() modules.Module { return notes.New(db, clk, ids) }},
-		{"todos", func() modules.Module { return todos.New(db, clk, ids, alerts, secrets, out.integration) }},
+		{"todos", func() modules.Module { return todos.New(db, clk, ids, alerts, secrets, out.integration, cfg.PublicURL) }},
 		{"rss", func() modules.Module { return rss.New(db, client, clk, ids, cfg.SampleFeeds) }},
 		{"system", func() modules.Module {
 			return system.New(system.Config{ProcPath: cfg.HostProcPath, SysPath: cfg.HostSysPath, DiskPaths: cfg.DiskPaths, Version: version, Client: client, InstallMethod: cfg.InstallMethod}, db, sink, clk)
@@ -221,7 +221,27 @@ type tourRestarter interface {
 
 // onAccountCreated prepares a fresh account: the guided tour is shown again
 // and the installation is filled with sample data.
-func onAccountCreated(ctx context.Context, cfg config.Config, log *slog.Logger, registry *modules.Registry) {
+// profileStore and profileSeeder let the composition root apply the
+// start-page profile chosen at setup (#281) without the auth module
+// knowing about appearance or the dashboard.
+type profileStore interface {
+	SetProfile(ctx context.Context, profile string) error
+}
+
+type profileSeeder interface {
+	SeedForProfile(ctx context.Context, profile string) error
+}
+
+func onAccountCreated(ctx context.Context, cfg config.Config, log *slog.Logger, registry *modules.Registry, profile string) {
+	if profile != "" {
+		for _, m := range registry.All() {
+			if p, ok := m.(profileStore); ok {
+				if err := p.SetProfile(ctx, profile); err != nil {
+					log.WarnContext(ctx, "could not store the start-page profile", "err", err)
+				}
+			}
+		}
+	}
 	for _, m := range registry.All() {
 		if t, ok := m.(tourRestarter); ok {
 			if err := t.RestartTour(ctx); err != nil {
@@ -229,18 +249,22 @@ func onAccountCreated(ctx context.Context, cfg config.Config, log *slog.Logger, 
 			}
 		}
 	}
-	seedSampleData(ctx, cfg, log, registry)
+	seedSampleData(ctx, cfg, log, registry, profile)
 }
 
 // seedSampleData fills a fresh installation with example data so new users
 // immediately see what every module can do. Failures are logged and never
 // block the setup.
-func seedSampleData(ctx context.Context, cfg config.Config, log *slog.Logger, registry *modules.Registry) {
+func seedSampleData(ctx context.Context, cfg config.Config, log *slog.Logger, registry *modules.Registry, profile string) {
 	if !cfg.SampleData {
 		return
 	}
 	for name, s := range registry.Seeders() {
-		if err := s.SeedSampleData(ctx); err != nil {
+		seed := s.SeedSampleData
+		if ps, ok := s.(profileSeeder); ok {
+			seed = func(ctx context.Context) error { return ps.SeedForProfile(ctx, profile) }
+		}
+		if err := seed(ctx); err != nil {
 			log.WarnContext(ctx, "could not create sample data", "module", name, "err", err)
 		}
 	}

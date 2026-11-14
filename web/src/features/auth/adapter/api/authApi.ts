@@ -87,8 +87,8 @@ export class AuthApi implements AuthGateway {
     return toSession(await this.http.post<SessionDTO>('/api/auth/demo'));
   }
 
-  async setup(setupToken: string, password: string): Promise<Session> {
-    const body: SetupRequestDTO = { setupToken, password };
+  async setup(setupToken: string, password: string, profile?: 'everyday' | 'homelab'): Promise<Session> {
+    const body: SetupRequestDTO = { setupToken, password, ...(profile ? { profile } : {}) };
     return toSession(await this.http.post<SessionDTO>('/api/auth/setup', body));
   }
 

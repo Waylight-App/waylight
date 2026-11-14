@@ -67,7 +67,7 @@ func (p *fakeProviders) Open(s domain.Source) Repository {
 }
 
 func (p *fakeProviders) Discover(_ context.Context, _ domain.SourceKind, url, user, pw string) ([]DiscoveredList, error) {
-	if pw != "pw" {
+	if pw != "pw" && pw != "a1" { // app password or OAuth access token
 		return nil, errors.New("401")
 	}
 	return []DiscoveredList{{URL: url + "tasks/", Name: "Tasks"}}, nil
