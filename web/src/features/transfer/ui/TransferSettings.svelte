@@ -3,6 +3,7 @@
   import { errorMessage } from '../../../shared/api-client/http';
   import { describeConfigResult, describeResult } from '../domain/transfer';
   import type { TransferUseCases } from '../usecase/transferUseCases';
+  import ForeignImport from './ForeignImport.svelte';
 
   /** Props of the export/import section. */
   interface Props {
@@ -98,6 +99,8 @@
 </p>
 {#if configError}<p class="error" role="alert">{configError}</p>{/if}
 {#if configMessage}<p class="muted" role="status">{configMessage}</p>{/if}
+
+<ForeignImport {transfer} />
 
 <style>
   h4 {

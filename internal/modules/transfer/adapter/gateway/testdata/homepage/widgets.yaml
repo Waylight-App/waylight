@@ -1,0 +1,17 @@
+---
+- resources:
+    cpu: true
+    memory: true
+    disk: /
+- search:
+    provider: duckduckgo
+    target: _blank
+- openmeteo:
+    label: Berlin
+    latitude: 52.52
+    longitude: 13.41
+    units: metric
+- datetime:
+    text_size: xl
+- greeting:
+    text: Hello

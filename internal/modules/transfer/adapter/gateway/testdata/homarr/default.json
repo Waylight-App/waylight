@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 2,
+  "configProperties": { "name": "default" },
+  "categories": [{ "id": "c1", "position": 1, "name": "Media" }],
+  "wrappers": [{ "id": "default", "position": 0 }],
+  "apps": [
+    {
+      "id": "a1",
+      "name": "Plex",
+      "url": "http://plex:32400",
+      "behaviour": { "isOpeningNewTab": true, "externalUrl": "https://plex.example.org" },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": { "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/plex.png" },
+      "area": { "type": "category", "properties": { "id": "c1" } }
+    },
+    {
+      "id": "a2",
+      "name": "Internal only",
+      "url": "http://192.168.1.20:8080",
+      "behaviour": { "externalUrl": "" },
+      "appearance": { "iconUrl": "/icons/app.png" },
+      "area": { "type": "wrapper", "properties": { "id": "default" } }
+    },
+    { "id": "a3", "name": "No link", "url": "", "behaviour": {}, "appearance": {} }
+  ],
+  "widgets": [
+    { "id": "w1", "type": "date", "properties": { "display24HourFormat": true } },
+    { "id": "w2", "type": "weather", "properties": { "location": { "name": "Paris", "latitude": 48.85, "longitude": 2.35 } } },
+    { "id": "w3", "type": "torrents-status", "properties": {} }
+  ],
+  "settings": { "common": {}, "customization": {} }
+}

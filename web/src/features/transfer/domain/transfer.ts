@@ -56,3 +56,29 @@ export interface ConfigResult {
 export function describeConfigResult(r: ConfigResult): string {
   return describeResult({ imported: r.applied, skipped: [], failed: r.failed });
 }
+
+/** Dashboards whose configuration can be imported (#77). */
+export const FOREIGN_FORMATS = ['homepage', 'homarr'] as const;
+export type ForeignFormat = (typeof FOREIGN_FORMATS)[number];
+
+/** What importing another dashboard adds. */
+export interface ForeignSummary {
+  tiles: number;
+  bookmarks: number;
+  widgets: number;
+  skipped: number;
+  /** Name of the new tab; empty when none is added. */
+  tab: string;
+  warnings: string[];
+}
+
+/** Preview or result of importing another dashboard. */
+export interface ForeignImport {
+  /** The parts of trisse-home.yaml the import changes. */
+  yaml: string;
+  summary: ForeignSummary;
+  result: ConfigResult | null;
+}
+
+/** True when the import would add anything. */
+export const addsAnything = (s: ForeignSummary): boolean => s.tiles + s.bookmarks + s.widgets > 0;

@@ -2,6 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_d4e32079da1f8a6c: "Choose at least one file.",
   srv_44877fa04a91ddb0: "Config version {version} is not supported by this version of trisse-home.",
   srv_43fe335aacf98b3c: "Export version {version} is not supported by this version of trisse-home.",
   srv_a8a0f7eee6c42ca3: "Section {name}: {reason}",
@@ -12,11 +13,17 @@ export const serverMessages = {
   srv_b8c878135ee917b1: "The file is not valid JSON.",
   srv_14afd68d009021d7: "The file is not valid: {reason}",
   srv_09e549de4d9f81f3: "The file must be a YAML mapping with version and sections.",
+  srv_b080b45242740908: "The files are larger than 2 MB together.",
   srv_5df61e32f2bec534: "The section {name} appears twice.",
   srv_1a0dd18b884c11a8: "The version must be a number.",
+  srv_d39ee18784bab42a: "This is not a Homarr board file. Homarr 1.x exports cannot be read; use the board JSON of Homarr 0.x.",
   srv_d9a79f89c625afc7: "This is not a trisse-home export file.",
+  srv_91da20f0a1aee001: "Unknown import format.",
   srv_40b2f70963afe6eb: "Unknown section {name} (or its module is disabled).",
+  srv_bf8a861f5dbe0e42: "Upload one Homarr board file (JSON).",
+  srv_b395afa091b77fe4: "Upload services.yaml, bookmarks.yaml or widgets.yaml from Homepage.",
   srv_131e8662bd896c29: "YAML aliases (*name) are not supported; write the value out.",
+  srv_9f0de21ec1d3ede8: "{name} is not valid YAML: {reason}",
 } as const;
 
 /** Key of a backend message. */

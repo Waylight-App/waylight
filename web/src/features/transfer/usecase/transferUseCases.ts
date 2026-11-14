@@ -1,4 +1,10 @@
-import { type ConfigResult, type ImportResult, parseExportFile } from '../domain/transfer';
+import {
+  type ConfigResult,
+  type ForeignFormat,
+  type ForeignImport,
+  type ImportResult,
+  parseExportFile,
+} from '../domain/transfer';
 
 /** Output port: transfer backend. */
 export interface TransferGateway {
@@ -7,6 +13,7 @@ export interface TransferGateway {
   configUrl(): string;
   applyConfig(yaml: string): Promise<ConfigResult>;
   managedSections(): Promise<string[]>;
+  importForeign(format: ForeignFormat, files: readonly File[], apply: boolean): Promise<ForeignImport>;
 }
 
 /** Application logic of the transfer feature. */
@@ -28,6 +35,16 @@ export class TransferUseCases {
   /** URL that downloads trisse-home.yaml (#88). */
   configUrl(): string {
     return this.gateway.configUrl();
+  }
+
+  /** Shows what importing another dashboard would add, without changing anything (#77). */
+  previewForeign(format: ForeignFormat, files: readonly File[]): Promise<ForeignImport> {
+    return this.gateway.importForeign(format, files, false);
+  }
+
+  /** Adds the other dashboard's tiles, bookmarks and widgets. */
+  applyForeign(format: ForeignFormat, files: readonly File[]): Promise<ForeignImport> {
+    return this.gateway.importForeign(format, files, true);
   }
 
   /** Sections owned by CONFIG_FILE; they are read-only in the UI (#88). */

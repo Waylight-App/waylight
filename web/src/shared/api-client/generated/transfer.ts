@@ -36,3 +36,23 @@ export interface ConfigStatusDTO {
    */
   managed: string[];
 }
+/**
+ * ImportSummaryDTO says what an import from another dashboard adds (#77).
+ */
+export interface ImportSummaryDTO {
+  tiles: number /* int */;
+  bookmarks: number /* int */;
+  widgets: number /* int */;
+  skipped: number /* int */;
+  tab: string;
+  warnings: string[];
+}
+/**
+ * ForeignImportDTO is returned by POST /api/transfer/import/{format}: the
+ * merged trisse-home.yaml, the summary and, when applied, the result.
+ */
+export interface ForeignImportDTO {
+  yaml: string;
+  summary: ImportSummaryDTO;
+  result?: ConfigResultDTO;
+}
