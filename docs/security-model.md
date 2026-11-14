@@ -9,6 +9,33 @@ optional, minimal component that you enable on purpose.
 This page explains why the optional setups are an extra step and what each
 component can and cannot do.
 
+## The application itself
+
+- **Network allow-list first.** Requests from outside `ALLOWED_CIDRS` are
+  refused before anything else runs. Rejected and first-seen addresses are
+  logged so the list can be tuned. Do not forward the port on your router;
+  use a VPN such as WireGuard for remote access.
+- **Sign-in.** Passwords are hashed with Argon2id. Sign-ins are limited to
+  five attempts per 15 minutes per address, with a growing lockout after
+  that. Two-factor authentication uses TOTP (RFC 6238) with ten one-time
+  recovery codes; the TOTP secret is encrypted at rest, recovery codes are
+  stored hashed and cannot be reused. Passkeys work as a second factor
+  behind HTTPS.
+- **Sessions.** The session cookie is `HttpOnly` and `SameSite=Strict`.
+  Every changing request needs a per-session CSRF token and passes
+  `Sec-Fetch-Site` and `Origin` checks. Settings → Account lists all
+  sessions and signs out any of them.
+- **Content.** A strict Content Security Policy (`script-src 'self'`),
+  Markdown sanitised with DOMPurify, feed links restricted to `http` and
+  `https`.
+- **Secrets.** Integration passwords and tokens are encrypted with
+  AES-256-GCM under `SECRET_KEY` and never returned by the API.
+- **Container.** Runs as non-root on a read-only root file system without
+  capabilities and with `no-new-privileges`. Docker is only reachable through
+  a read-only socket proxy on an internal network without a published port.
+- **Outside connections.** Only to services you configure; the full list is
+  on the [outbound requests](outbound-requests.md) page.
+
 ## Trust boundaries
 
 ```mermaid
@@ -243,7 +270,7 @@ in your router directly. See [reverse-proxy.md](reverse-proxy.md).
 
 **What leaves my network?**
 Only requests to services you configured (weather location, feeds, CalDAV,
-DHL, …), each listed in the README section *Outbound requests*. There is no
+DHL, …), each listed on the [outbound requests](outbound-requests.md) page. There is no
 telemetry; the update check is off by default.
 
 ## Reporting vulnerabilities

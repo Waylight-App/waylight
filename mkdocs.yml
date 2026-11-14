@@ -1,0 +1,104 @@
+# Navigation of the documentation site (#268). The pages in docs/ are plain
+# Markdown and read fine on GitHub; this file only adds the structure a site
+# generator needs. Preview locally with:
+#   pip install mkdocs-material && mkdocs serve
+site_name: trisse-home
+site_description: A self-hosted start page for your everyday life and your home server.
+repo_url: https://github.com/itadori26/trisse-home
+edit_uri: edit/main/docs/
+docs_dir: docs
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+# Raw files and screenshots are served as they are; the Grafana dashboard is
+# a download, not a page.
+exclude_docs: |
+  grafana-dashboard.json
+
+nav:
+  - Home: index.md
+  - Is it for me?:
+      - What trisse-home is and is not: about.md
+      - Feature overview: features.md
+      - Comparison: comparison.md
+      - FAQ: faq.md
+  - Get started:
+      - Getting started: getting-started.md
+      - Raspberry Pi: raspberry-pi.md
+      - Native install: native-install.md
+      - First steps: first-steps.md
+  - Use it:
+      - Tabs and widgets: dashboard.md
+      - Search and quick capture: search.md
+      - Accounts, guests and kiosk displays: accounts.md
+      - Appearance: appearance.md
+      - Phones, offline and the extension: apps-and-offline.md
+      - Accessibility: accessibility.md
+      - Modules:
+          - modules/README.md
+          - AI summaries: modules/summary.md
+          - Drop zone: modules/drop.md
+          - Fuel prices: modules/fuel.md
+          - Game deals: modules/gamedeals.md
+          - Habits: modules/habits.md
+          - Holidays: modules/holidays.md
+          - Immich: modules/immich.md
+          - JSON widget: modules/apiwidget.md
+          - Jellyfin and Plex: modules/media.md
+          - Music releases: modules/releases.md
+          - Parcels from e-mails: parcels-mail.md
+          - Read later: modules/readlater.md
+          - Sonarr, Radarr, Prowlarr: modules/arr.md
+          - Space: modules/space.md
+          - Study progress: modules/study.md
+  - Run it:
+      - Configuration: configuration.md
+      - Host integrations: host-integrations.md
+      - Notifications and job monitoring: notifications.md
+      - Backups and restore: backups.md
+      - Updates and rollback: updates.md
+      - Reverse proxy and SSO: reverse-proxy.md
+      - API tokens: api-tokens.md
+      - Prometheus metrics: metrics.md
+      - Demo mode: demo.md
+      - Deploy from source: deploy.md
+  - Security:
+      - Security model: security-model.md
+      - Outbound requests: outbound-requests.md
+      - Security policy: https://github.com/itadori26/trisse-home/blob/main/SECURITY.md
+  - Develop:
+      - Development setup: development.md
+      - Developer guide: developer-guide.md
+      - Adding a module: adding-a-module.md
+      - Architecture: architecture.md
+      - Decision records: adr/README.md
+      - Contributing: https://github.com/itadori26/trisse-home/blob/main/CONTRIBUTING.md
+      - Roadmap: https://github.com/itadori26/trisse-home/blob/main/ROADMAP.md

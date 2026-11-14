@@ -155,8 +155,8 @@ sudo trisse-home-setup-token
 
 ## Moving from Docker
 
-1. Stop the container and copy the database out of the volume (see *Backup*
-   in the README) to `/var/lib/trisse-home/trisse-home.db`.
+1. Stop the container and copy the database out of the volume (see
+   [backups](backups.md#copies-away-from-the-server)) to `/var/lib/trisse-home/trisse-home.db`.
 2. Put your existing `SECRET_KEY` into `/etc/trisse-home/trisse-home.env` — a
    key there always wins over the generated one.
 3. `sudo chown -R trisse-home:trisse-home /var/lib/trisse-home` and

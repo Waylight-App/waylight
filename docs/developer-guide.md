@@ -253,7 +253,7 @@ When the widget talks to another system (see the
 
 - [ ] Domain types describe what the widget shows, not the vendor's JSON
 - [ ] The use case depends on a provider **port**; the vendor client is a gateway adapter
-- [ ] **Opt-in outbound requests:** nothing is contacted until the user saves a URL; timeouts set; results cached in the use case; host listed in the README section *Outbound requests*
+- [ ] **Opt-in outbound requests:** nothing is contacted until the user saves a URL; timeouts set; results cached in the use case; host listed in [outbound requests](outbound-requests.md)
 - [ ] **Secrets encrypted** through the `Cipher` and only returned as "set / not set"
 - [ ] Gateway tested against an `httptest.Server` with recorded responses
 - [ ] Category and icon for the widget picker (#104); texts in both catalogues
