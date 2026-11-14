@@ -6,7 +6,7 @@ export const de: Record<keyof typeof en, string> = {
   'todos.changed_elsewhere':
     'Dieses To-do wurde inzwischen in der anderen App geändert. Jetzt wird dessen Stand angezeigt.',
   'todos.sources.intro':
-    'Zeige eine Aufgabenliste aus Nextcloud Tasks, Synology, Radicale, Baïkal, Fastmail oder einem anderen CalDAV-Server in einem To-do-Widget. Änderungen gehen in beide Richtungen; das Widget prüft jede Minute auf Änderungen.',
+    'Zeige eine Aufgabenliste aus Todoist, Nextcloud Tasks, Synology, Radicale, Baïkal, Fastmail oder einem anderen CalDAV-Server in einem To-do-Widget. Änderungen gehen in beide Richtungen; das Widget prüft jede Minute auf Änderungen.',
   'todos.sources.connected': 'Verbundene Listen',
   'todos.sources.none': 'Noch keine Liste verbunden.',
   'todos.sources.add': 'Liste verbinden',
@@ -29,6 +29,17 @@ export const de: Record<keyof typeof en, string> = {
   'todos.sources.login_needed': 'Benutzername und App-Passwort sind erforderlich.',
   'todos.sources.name_needed': 'Gib der Liste einen Namen.',
   'todos.sources.list': 'Liste',
+  'todos.sources.kind': 'Dienst',
+  'todos.sources.kind_caldav': 'CalDAV (Nextcloud, Synology, Radicale, …)',
+  'todos.sources.kind_todoist': 'Todoist',
+  'todos.sources.token': 'API-Token',
+  'todos.sources.token_hint':
+    'In Todoist: Einstellungen → Integrationen → Entwickler → API-Token kopieren. Dann unten die Projekte suchen.',
+  'todos.sources.token_needed': 'Gib das Todoist-API-Token ein.',
+  'todos.sources.project': 'Projekt',
+  'todos.sources.project_needed': 'Suche deine Projekte und wähle eines.',
+  'todos.sources.limits_todoist':
+    'Todoist wird höchstens alle 15 Sekunden nach Änderungen gefragt. Wird eine wiederkehrende Todoist-Aufgabe erledigt, springt sie wie in den Todoist-Apps auf ihren nächsten Termin.',
   'todos.sources.local': 'Eingebaute Liste',
   'todos.sources.missing': 'Getrennte Liste',
   'todos.sources.widget_hint': 'Listen verbindest du unter Einstellungen → To-do-Listen.',

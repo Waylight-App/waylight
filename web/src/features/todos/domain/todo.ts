@@ -112,19 +112,26 @@ export interface Capabilities {
 /** Everything the built-in list supports. */
 export const LOCAL_CAPABILITIES: Capabilities = { ordering: true, repeat: true, reminders: true };
 
-/** A connected external to-do list (#169); the password is never sent back. */
+/** Kinds of connected lists: CalDAV (#169) and Todoist (#170). */
+export type SourceKind = 'caldav' | 'todoist';
+export const SOURCE_KINDS: readonly SourceKind[] = ['caldav', 'todoist'];
+
+/** A connected external to-do list; the password or token is never sent back. */
 export interface TodoSource {
   id: string;
   name: string;
-  kind: 'caldav';
+  kind: SourceKind;
   url: string;
   username: string;
+  /** Todoist: the project ID. */
+  listId: string;
   capabilities: Capabilities;
 }
 
-/** A task list found on a server. */
+/** A task list found on a server: a CalDAV collection (url) or a Todoist project (listId). */
 export interface DiscoveredList {
   url: string;
+  listId: string;
   name: string;
 }
 

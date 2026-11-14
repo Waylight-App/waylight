@@ -18,10 +18,12 @@ type SourceRepository interface {
 	Delete(ctx context.Context, id string) error
 }
 
-// DiscoveredList is a task list found on a server.
+// DiscoveredList is a task list found on a server: a CalDAV collection
+// (URL) or a Todoist project (ListID).
 type DiscoveredList struct {
-	URL  string
-	Name string
+	URL    string
+	ListID string
+	Name   string
 }
 
 // Providers opens external lists (output port).
@@ -41,6 +43,7 @@ type SourceInput struct {
 	URL      string
 	Username string
 	Password string
+	ListID   string
 }
 
 // SourceView is a list at the use case boundary; it never has the password.
@@ -50,6 +53,7 @@ type SourceView struct {
 	Kind         string
 	URL          string
 	Username     string
+	ListID       string
 	Capabilities domain.Capabilities
 }
 
@@ -70,7 +74,7 @@ type sources struct{ d Deps }
 func NewSources(d Deps) Sources { return &sources{d: d} }
 
 func sourceView(s domain.Source) SourceView {
-	return SourceView{ID: s.ID, Name: s.Name, Kind: string(s.Kind), URL: s.URL, Username: s.Username, Capabilities: domain.CapabilitiesOf(s.Kind)}
+	return SourceView{ID: s.ID, Name: s.Name, Kind: string(s.Kind), URL: s.URL, Username: s.Username, ListID: s.ListID, Capabilities: domain.CapabilitiesOf(s.Kind)}
 }
 
 func (uc *sources) List(ctx context.Context) ([]SourceView, error) {
@@ -117,7 +121,7 @@ func (uc *sources) Save(ctx context.Context, in SourceInput) (SourceView, error)
 	if err != nil {
 		return SourceView{}, err
 	}
-	s, err := domain.NewSource(id, in.Name, domain.SourceKind(in.Kind), in.URL, in.Username, pw)
+	s, err := domain.NewSource(id, in.Name, domain.SourceKind(in.Kind), in.URL, in.Username, pw, in.ListID)
 	if err != nil {
 		return SourceView{}, err
 	}
@@ -146,7 +150,7 @@ func (uc *sources) Discover(ctx context.Context, in SourceInput) ([]DiscoveredLi
 		return nil, err
 	}
 	// Validate address and credentials like a list, with a placeholder name.
-	s, err := domain.NewSource("discover", "discover", domain.SourceKind(in.Kind), in.URL, in.Username, pw)
+	s, err := domain.NewSource("discover", "discover", domain.SourceKind(in.Kind), in.URL, in.Username, pw, "discover")
 	if err != nil {
 		return nil, err
 	}
