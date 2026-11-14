@@ -29,6 +29,24 @@ export const en = {
   'todos.sources.kind': 'Service',
   'todos.sources.kind_caldav': 'CalDAV (Nextcloud, Synology, Radicale, …)',
   'todos.sources.kind_todoist': 'Todoist',
+  'todos.sources.kind_microsoft': 'Microsoft To Do',
+  'todos.sources.kind_google': 'Google Tasks',
+  'todos.sources.kind_ticktick': 'TickTick',
+  'todos.sources.oauth_intro':
+    'Sign in with an app you register yourself, so trisse-home talks to {service} without any company in between. Register this redirect address:',
+  'todos.sources.oauth_console': 'Open the app registration of {service}',
+  'todos.sources.oauth_unavailable':
+    'Signing in needs PUBLIC_URL, the https:// address of trisse-home (see the configuration guide).',
+  'todos.sources.client_id': 'Client ID',
+  'todos.sources.client_secret': 'Client secret',
+  'todos.sources.client_id_needed': 'Enter the client ID of your app registration.',
+  'todos.sources.sign_in': 'Sign in',
+  'todos.sources.signing_in': 'Waiting for the sign-in in the other window…',
+  'todos.sources.signed_in': 'Signed in. Choose the list below.',
+  'todos.sources.sign_in_failed':
+    'The sign-in did not succeed. Check client ID, client secret and the redirect address.',
+  'todos.sources.popup_blocked':
+    'The browser blocked the sign-in window. Allow pop-ups for trisse-home and try again.',
   'todos.sources.token': 'API token',
   'todos.sources.token_hint':
     'In Todoist: Settings → Integrations → Developer → copy the API token. Then find your projects below.',
