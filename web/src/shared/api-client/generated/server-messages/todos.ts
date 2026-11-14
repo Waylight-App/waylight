@@ -3,12 +3,20 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_fc8a2589829c3428: "A reminder needs a due date.",
+  srv_a284ac8e205f55f5: "At most 20 to-do lists can be connected.",
+  srv_e21c32bf57ab4be8: "Choose a Todoist project.",
+  srv_844dc15540ba01b8: "Enter the API token from Todoist's settings (Integrations → Developer).",
   srv_33507329e3cf1562: "Reminders need a time like 08:00 and at most 30 days before the due date.",
   srv_5f173b47eee5e70d: "Repeat every 1–365 days, weeks or months; weekly repeats need at least one weekday.",
   srv_8fd5a1f81a5668ce: "The due date must look like 2026-12-24.",
+  srv_59575ee33ddb1b96: "The name must have between 1 and 80 characters.",
+  srv_31173fc19f6e7f41: "The service asks to slow down. The list is loaded again in a minute.",
   srv_39e64da309876466: "The to-do does not exist.",
+  srv_984c25c4aa086942: "The to-do list does not exist (any more).",
   srv_deed27849449d0b5: "The to-do must have between 1 and 300 characters.",
   srv_b4f6dd576f1534c2: "The to-do was changed elsewhere in the meantime.",
+  srv_b8a4d7c2f106adb7: "This list does not support repeating to-dos or reminders.",
+  srv_e28b70dde38477c1: "Unknown kind of to-do list.",
 } as const;
 
 /** Key of a backend message. */

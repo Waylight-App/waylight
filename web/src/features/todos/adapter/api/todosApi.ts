@@ -1,8 +1,10 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { TodoDTO } from '../../../../shared/api-client/generated/todos';
 import type { ClearedDTO, TodoInputDTO } from '../../../../shared/api-client/generated/todos-requests';
-import type { Reminder, Repeat, RepeatKind, Todo } from '../../domain/todo';
-import type { TodosGateway } from '../../usecase/todosUseCases';
+import type { DiscoveredListDTO, SourceDTO } from '../../../../shared/api-client/generated/todos';
+import type { SourceInputDTO } from '../../../../shared/api-client/generated/todos-requests';
+import type { DiscoveredList, Reminder, Repeat, RepeatKind, Todo, TodoSource } from '../../domain/todo';
+import type { SourceInput, TodoSourcesGateway, TodosGateway } from '../../usecase/todosUseCases';
 
 const toTodo = (d: TodoDTO): Todo => ({
   id: d.id,
@@ -19,17 +21,30 @@ const toTodo = (d: TodoDTO): Todo => ({
   version: d.version ?? 0,
 });
 
-/** TodosGateway backed by the REST API. */
+/** TodosGateway backed by the REST API; source '' is the built-in list (#169). */
 export class TodosApi implements TodosGateway {
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly source = '',
+  ) {}
+
+  /** Adds ?source= (or &source=) for external lists. */
+  private url(path: string, query = ''): string {
+    const params = new URLSearchParams(query);
+    if (this.source) params.set('source', this.source);
+    const q = params.toString();
+    return q ? `${path}?${q}` : path;
+  }
 
   async list(includeDone: boolean): Promise<Todo[]> {
-    return (await this.http.get<TodoDTO[]>(`/api/todos${includeDone ? '?done=true' : ''}`)).map(toTodo);
+    return (await this.http.get<TodoDTO[]>(this.url('/api/todos', includeDone ? 'done=true' : ''))).map(
+      toTodo,
+    );
   }
   async create(title: string, due: string, id?: string): Promise<Todo> {
     // A client-generated id makes a replayed create idempotent (#80).
     const body: TodoInputDTO = { title, due, done: false, ...(id ? { id } : {}) };
-    return toTodo(await this.http.post<TodoDTO>('/api/todos', body));
+    return toTodo(await this.http.post<TodoDTO>(this.url('/api/todos'), body));
   }
   async update(
     id: string,
@@ -42,12 +57,52 @@ export class TodosApi implements TodosGateway {
     // Without a schedule the server keeps the stored recurrence and reminder;
     // with a version it refuses changes made from an older one (409, #80).
     const body: TodoInputDTO = { title, due, done, ...schedule, ...(version ? { version } : {}) };
-    return toTodo(await this.http.put<TodoDTO>(`/api/todos/${encodeURIComponent(id)}`, body));
+    return toTodo(await this.http.put<TodoDTO>(this.url(`/api/todos/${encodeURIComponent(id)}`), body));
   }
   delete(id: string): Promise<void> {
-    return this.http.delete(`/api/todos/${encodeURIComponent(id)}`);
+    return this.http.delete(this.url(`/api/todos/${encodeURIComponent(id)}`));
   }
   async clearCompleted(): Promise<number> {
-    return (await this.http.post<ClearedDTO>('/api/todos/clear-completed')).removed;
+    return (await this.http.post<ClearedDTO>(this.url('/api/todos/clear-completed'))).removed;
+  }
+}
+
+const SOURCES = '/api/todos/settings/sources';
+
+const toSource = (d: SourceDTO): TodoSource => ({
+  id: d.id,
+  name: d.name,
+  kind: d.kind === 'todoist' ? 'todoist' : 'caldav',
+  url: d.url,
+  username: d.username,
+  listId: d.listId ?? '',
+  capabilities: { ...d.capabilities },
+});
+
+/** TodoSourcesGateway backed by the REST API. */
+export class TodoSourcesApi implements TodoSourcesGateway {
+  constructor(private readonly http: HttpClient) {}
+
+  async list(): Promise<TodoSource[]> {
+    return (await this.http.get<SourceDTO[]>(SOURCES)).map(toSource);
+  }
+  async save(id: string, input: SourceInput): Promise<TodoSource> {
+    const body: SourceInputDTO = { ...input };
+    return toSource(
+      id
+        ? await this.http.put<SourceDTO>(`${SOURCES}/${encodeURIComponent(id)}`, body)
+        : await this.http.post<SourceDTO>(SOURCES, body),
+    );
+  }
+  delete(id: string): Promise<void> {
+    return this.http.delete(`${SOURCES}/${encodeURIComponent(id)}`);
+  }
+  async discover(input: SourceInput & { id?: string }): Promise<DiscoveredList[]> {
+    const body: SourceInputDTO = { ...input };
+    return (await this.http.post<DiscoveredListDTO[]>(`${SOURCES}/discover`, body)).map((l) => ({
+      url: l.url,
+      listId: l.listId ?? '',
+      name: l.name,
+    }));
   }
 }

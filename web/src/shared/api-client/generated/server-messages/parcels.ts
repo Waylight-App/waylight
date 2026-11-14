@@ -15,7 +15,6 @@ export const serverMessages = {
   srv_92285ba58a255b47: "The port must be between 1 and 65535 (IMAP over TLS: 993).",
   srv_06ef324c0db01986: "This carrier is not supported.",
   srv_e4cd1895823b2401: "Tracking numbers consist of 8 to 35 letters and digits.",
-  srv_970344b28687ee67: "User name and app password are required.",
   srv_b08dda17b8ef851b: "User name, password and folder must not contain line breaks.",
 } as const;
 

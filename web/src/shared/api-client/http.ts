@@ -49,6 +49,7 @@ export interface HttpClient {
 /** fetch-based HttpClient that adds the CSRF header and parses error envelopes. */
 export class FetchHttpClient implements HttpClient {
   private csrfToken = '';
+  private readonly inFlight = new Map<string, Promise<unknown>>();
 
   /** @param onUnauthorized - called when a request fails because the session expired */
   constructor(private readonly onUnauthorized: () => void = () => {}) {}
@@ -58,8 +59,18 @@ export class FetchHttpClient implements HttpClient {
     this.csrfToken = token;
   }
 
+  /**
+   * Identical GETs that are in flight at the same time share one request
+   * (several widgets of the same kind load together, #318); every caller
+   * gets its own copy of the answer, so one cannot change another's data.
+   */
   get<T>(path: string): Promise<T> {
-    return this.request<T>('GET', path);
+    let shared = this.inFlight.get(path);
+    if (!shared) {
+      shared = this.request<unknown>('GET', path).finally(() => this.inFlight.delete(path));
+      this.inFlight.set(path, shared);
+    }
+    return shared.then((v) => (v === undefined ? v : structuredClone(v)) as T);
   }
   post<T>(path: string, body?: unknown): Promise<T> {
     return this.request<T>('POST', path, body);

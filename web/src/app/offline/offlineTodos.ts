@@ -1,7 +1,7 @@
 import { newId } from '../../shared/id/uuid';
 import type { Reminder, Repeat, Todo } from '../../features/todos/domain/todo';
 import type { TodosGateway } from '../../features/todos/usecase/todosUseCases';
-import { overlay, type PendingChange } from '../../shared/offline/domain/outbox';
+import { type Entity, overlay, type PendingChange } from '../../shared/offline/domain/outbox';
 import { isNetworkError, type OfflineSync } from './sync.svelte';
 
 type Schedule = { repeat: Repeat; reminder: Reminder };
@@ -33,12 +33,17 @@ export class OfflineTodosGateway implements TodosGateway {
   private readonly versions = new Map<string, number>();
   private last: Todo[] = [];
 
+  /**
+   * entity keeps the waiting changes of each list apart: 'todo' for the
+   * built-in list, 'todo@<source>' for a connected one (#169).
+   */
   constructor(
     private readonly inner: TodosGateway,
     private readonly sync: OfflineSync,
+    private readonly entity: Entity = 'todo',
   ) {
     sync.register(
-      'todo',
+      entity,
       (c) => this.send(c),
       (c) => this.currentVersion(c.itemId),
     );
@@ -55,7 +60,7 @@ export class OfflineTodosGateway implements TodosGateway {
       if (!isNetworkError(err)) throw err;
       items = this.last;
     }
-    const merged = overlay(items, this.sync.state, 'todo', fromChange);
+    const merged = overlay(items, this.sync.state, this.entity, fromChange);
     return includeDone ? merged : merged.filter((t) => !t.done);
   }
 
@@ -66,7 +71,7 @@ export class OfflineTodosGateway implements TodosGateway {
     } catch (err) {
       if (!isNetworkError(err)) throw err;
       await this.sync.record({
-        entity: 'todo',
+        entity: this.entity,
         op: 'create',
         itemId: id,
         payload: { title, due, done: false },
@@ -74,7 +79,7 @@ export class OfflineTodosGateway implements TodosGateway {
       });
       return fromChange({
         key: '',
-        entity: 'todo',
+        entity: this.entity,
         op: 'create',
         itemId: id,
         payload: { title, due },
@@ -93,11 +98,17 @@ export class OfflineTodosGateway implements TodosGateway {
     } catch (err) {
       if (!isNetworkError(err)) throw err;
       const payload = { title, due, done, ...(schedule ? { schedule } : {}) };
-      await this.sync.record({ entity: 'todo', op: 'update', itemId: id, payload, baseVersion: version });
+      await this.sync.record({
+        entity: this.entity,
+        op: 'update',
+        itemId: id,
+        payload,
+        baseVersion: version,
+      });
       return {
         ...fromChange({
           key: '',
-          entity: 'todo',
+          entity: this.entity,
           op: 'update',
           itemId: id,
           payload,
@@ -115,7 +126,7 @@ export class OfflineTodosGateway implements TodosGateway {
     } catch (err) {
       if (!isNetworkError(err)) throw err;
       await this.sync.record({
-        entity: 'todo',
+        entity: this.entity,
         op: 'delete',
         itemId: id,
         payload: {},

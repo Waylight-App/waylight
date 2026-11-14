@@ -72,6 +72,22 @@ class FakeServer implements TodosGateway {
 }
 
 describe('offline to-dos (#80)', () => {
+  it('keeps the changes of each list apart (#169)', async () => {
+    const local = new FakeServer();
+    const nc = new FakeServer();
+    const sync = new OfflineSync(new MemoryStore());
+    const gwLocal = new OfflineTodosGateway(local, sync);
+    const gwNc = new OfflineTodosGateway(nc, sync, 'todo@nc');
+    local.offline = nc.offline = true;
+    await gwNc.create('Steuer', '');
+    expect((await gwLocal.list(true)).map((t) => t.title)).toEqual([]);
+    expect((await gwNc.list(true)).map((t) => t.title)).toEqual(['Steuer']);
+    local.offline = nc.offline = false;
+    await sync.replay();
+    expect(sync.pending).toBe(0);
+    expect(local.calls).toEqual([]);
+    expect(nc.calls).toHaveLength(1);
+  });
   it('records changes offline, shows them and replays them in order', async () => {
     const server = new FakeServer();
     server.items.set('a', todo('a', 'Milch', 1));

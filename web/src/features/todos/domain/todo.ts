@@ -91,11 +91,56 @@ export function describeReminder(r: Reminder): string {
 /** Configuration of the to-do widget. */
 export interface TodosConfig {
   showDone: boolean;
+  /** List shown: '' = the built-in list, else a connected list's ID (#169). */
+  source: string;
 }
 
 /** Reads a stored widget configuration. */
 export function parseTodosConfig(raw: Record<string, unknown>): TodosConfig {
-  return { showDone: raw['showDone'] === true };
+  const source =
+    typeof raw['source'] === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(raw['source']) ? raw['source'] : '';
+  return { showDone: raw['showDone'] === true, source: source === 'local' ? '' : source };
+}
+
+/** What a list can store; the UI hides the rest (#169). */
+export interface Capabilities {
+  ordering: boolean;
+  repeat: boolean;
+  reminders: boolean;
+}
+
+/** Everything the built-in list supports. */
+export const LOCAL_CAPABILITIES: Capabilities = { ordering: true, repeat: true, reminders: true };
+
+/** Kinds of connected lists: CalDAV (#169) and Todoist (#170). */
+export type SourceKind = 'caldav' | 'todoist';
+export const SOURCE_KINDS: readonly SourceKind[] = ['caldav', 'todoist'];
+
+/** A connected external to-do list; the password or token is never sent back. */
+export interface TodoSource {
+  id: string;
+  name: string;
+  kind: SourceKind;
+  url: string;
+  username: string;
+  /** Todoist: the project ID. */
+  listId: string;
+  capabilities: Capabilities;
+}
+
+/** A task list found on a server: a CalDAV collection (url) or a Todoist project (listId). */
+export interface DiscoveredList {
+  url: string;
+  listId: string;
+  name: string;
+}
+
+/** Capabilities of the list a widget shows; unknown lists support nothing extra. */
+export function capabilitiesOf(source: string, sources: readonly TodoSource[]): Capabilities {
+  if (source === '') return LOCAL_CAPABILITIES;
+  return (
+    sources.find((s) => s.id === source)?.capabilities ?? { ordering: false, repeat: false, reminders: false }
+  );
 }
 
 /**

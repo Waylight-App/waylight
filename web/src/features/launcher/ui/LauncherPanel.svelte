@@ -331,7 +331,7 @@
     border-radius: 50%;
     display: grid;
     place-items: center;
-    font-size: 0.75rem;
+    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
     font-weight: 600;
     color: var(--color-accent);
     background: color-mix(in srgb, var(--color-accent) 12%, transparent);

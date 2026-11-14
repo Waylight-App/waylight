@@ -59,15 +59,15 @@ func TestTodos(t *testing.T) {
 	if _, err := NewUpdateTodo(d).Execute(ctx, a.ID, TodoInput{Title: "first"}, true); err != nil {
 		t.Fatal(err)
 	}
-	open, _ := NewListTodos(d).Execute(ctx, false)
-	all, _ := NewListTodos(d).Execute(ctx, true)
+	open, _ := NewListTodos(d).Execute(ctx, "", false)
+	all, _ := NewListTodos(d).Execute(ctx, "", true)
 	if len(open) != 1 || len(all) != 2 || all[1].ID != a.ID {
 		t.Fatalf("listing wrong: open=%v all=%v", open, all)
 	}
-	if n, err := NewClearCompleted(d).Execute(ctx); err != nil || n != 1 {
+	if n, err := NewClearCompleted(d).Execute(ctx, ""); err != nil || n != 1 {
 		t.Fatalf("clear completed: %d %v", n, err)
 	}
-	if err := NewDeleteTodo(d).Execute(ctx, a.ID); !errors.Is(err, domain.ErrTodoNotFound) {
+	if err := NewDeleteTodo(d).Execute(ctx, "", a.ID); !errors.Is(err, domain.ErrTodoNotFound) {
 		t.Fatalf("expected not found, got %v", err)
 	}
 }
@@ -115,7 +115,7 @@ func TestRecurringTodosAndReminders(t *testing.T) {
 	if _, err := NewUpdateTodo(d).Execute(ctx, v.ID, TodoInput{Title: "Bins out!", Due: due}, true); err != nil {
 		t.Fatal(err)
 	}
-	open, _ := NewListTodos(d).Execute(ctx, false)
+	open, _ := NewListTodos(d).Execute(ctx, "", false)
 	if len(open) != 1 || open[0].ID == v.ID || !open[0].Due.Equal(due.AddDate(0, 0, 7)) || open[0].Reminder.At != "19:00" {
 		t.Fatalf("next occurrence %+v", open)
 	}
@@ -123,7 +123,7 @@ func TestRecurringTodosAndReminders(t *testing.T) {
 	if _, err := NewUpdateTodo(d).Execute(ctx, v.ID, TodoInput{Title: "Bins out!", Due: due}, true); err != nil {
 		t.Fatal(err)
 	}
-	if all, _ := NewListTodos(d).Execute(ctx, true); len(all) != 2 {
+	if all, _ := NewListTodos(d).Execute(ctx, "", true); len(all) != 2 {
 		t.Fatalf("expected 2 to-dos, got %d", len(all))
 	}
 
@@ -156,7 +156,7 @@ func TestOfflineReplay(t *testing.T) {
 	if err != nil || again.ID != first.ID {
 		t.Fatalf("replay: %+v %v", again, err)
 	}
-	if list, _ := NewListTodos(d).Execute(ctx, true); len(list) != 1 {
+	if list, _ := NewListTodos(d).Execute(ctx, "", true); len(list) != 1 {
 		t.Fatalf("duplicate: %d", len(list))
 	}
 	if _, err := create.Execute(ctx, TodoInput{Title: "x", ID: "../x"}); !errors.Is(err, kernel.ErrInvalid) {

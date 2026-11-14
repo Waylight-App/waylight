@@ -57,3 +57,54 @@ func Todos(vs []usecase.TodoView) []TodoDTO {
 	}
 	return out
 }
+
+// CapabilitiesDTO says what a list supports; the UI hides the rest (#169).
+type CapabilitiesDTO struct {
+	Ordering  bool `json:"ordering"`
+	Repeat    bool `json:"repeat"`
+	Reminders bool `json:"reminders"`
+}
+
+// SourceDTO is a connected external list; the password is never returned.
+type SourceDTO struct {
+	ID           string          `json:"id"`
+	Name         string          `json:"name"`
+	Kind         string          `json:"kind"`
+	URL          string          `json:"url"`
+	Username     string          `json:"username"`
+	ListID       string          `json:"listId"`
+	Capabilities CapabilitiesDTO `json:"capabilities"`
+}
+
+// Source maps a SourceView.
+func Source(v usecase.SourceView) SourceDTO {
+	c := v.Capabilities
+	return SourceDTO{ID: v.ID, Name: v.Name, Kind: v.Kind, URL: v.URL, Username: v.Username, ListID: v.ListID,
+		Capabilities: CapabilitiesDTO{Ordering: c.Ordering, Repeat: c.Repeat, Reminders: c.Reminders}}
+}
+
+// Sources maps a list of SourceViews.
+func Sources(vs []usecase.SourceView) []SourceDTO {
+	out := make([]SourceDTO, 0, len(vs))
+	for _, v := range vs {
+		out = append(out, Source(v))
+	}
+	return out
+}
+
+// DiscoveredListDTO is a task list found on a server: a CalDAV collection
+// (url) or a Todoist project (listId).
+type DiscoveredListDTO struct {
+	URL    string `json:"url"`
+	ListID string `json:"listId"`
+	Name   string `json:"name"`
+}
+
+// Discovered maps found lists.
+func Discovered(ls []usecase.DiscoveredList) []DiscoveredListDTO {
+	out := make([]DiscoveredListDTO, 0, len(ls))
+	for _, l := range ls {
+		out = append(out, DiscoveredListDTO(l))
+	}
+	return out
+}

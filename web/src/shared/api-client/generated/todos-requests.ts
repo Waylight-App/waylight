@@ -52,3 +52,18 @@ export interface ReminderDTO {
 export interface ClearedDTO {
   removed: number /* int */;
 }
+/**
+ * SourceInputDTO is the body of POST/PUT /api/todos/settings/sources and of
+ * .../discover. Kind is "caldav" (url, username, app password) or "todoist"
+ * (API token as password, project as listId); an empty password keeps the
+ * stored one.
+ */
+export interface SourceInputDTO {
+  id?: string;
+  name: string;
+  kind: string;
+  url: string;
+  username: string;
+  password: string;
+  listId?: string;
+}

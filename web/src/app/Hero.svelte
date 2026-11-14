@@ -201,7 +201,7 @@
     outline: none;
   }
   kbd {
-    font-size: 0.75rem;
+    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
     border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: 0 6px;

@@ -117,6 +117,6 @@
   }
   .source {
     margin: var(--space-1) 0 0;
-    font-size: 0.65em;
+    font-size: max(0.8rem, 0.65em); /* at least 12 px (#317) */
   }
 </style>
