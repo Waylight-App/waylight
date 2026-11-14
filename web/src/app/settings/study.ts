@@ -4,6 +4,7 @@ export const section = defineSettingsSection({
   id: 'study',
   label: 'settings.section.study',
   module: 'study',
+  group: 'content',
   load: () => import('../../features/study').then((m) => m.StudySettings),
   props: (c) => ({ study: c.study }),
 });
