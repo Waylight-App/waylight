@@ -74,6 +74,16 @@ func (m *Module) ExportConfig(ctx context.Context) (any, error) {
 	return configfile.FromList(list), nil
 }
 
+// ConfigRoutes implements modules.Configurable. Health checks, Wake-on-LAN and Docker discovery stay available.
+func (m *Module) ConfigRoutes() []string {
+	return []string{
+		"POST /api/services",
+		"PUT /api/services/order",
+		"PUT /api/services/{id}",
+		"DELETE /api/services/{id}",
+	}
+}
+
 // NewConfig implements modules.Configurable.
 func (m *Module) NewConfig() any { return &configfile.Section{} }
 

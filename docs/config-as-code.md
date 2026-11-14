@@ -81,9 +81,34 @@ Variables only work inside text values. A number such as a widget's coordinates 
 
 The first line of an exported file points to a [JSON Schema](https://raw.githubusercontent.com/itadori26/trisse-home/main/docs/schema/trisse-home.v1.schema.json). Editors with the YAML language server, such as VS Code with the Red Hat YAML extension, use it to complete keys and mark mistakes while you type. Widget settings (`config`) are free-form there, because each widget defines its own; the server checks them when the file is applied.
 
+## Managed mode
+
+If the file should be the only source of truth, let trisse-home apply it at every start. Mount it into the container and set `CONFIG_FILE`:
+
+```yaml
+services:
+  trisse-home:
+    environment:
+      CONFIG_FILE: /config/trisse-home.yaml
+    volumes:
+      - ./trisse-home.yaml:/config/trisse-home.yaml:ro
+```
+
+At start, trisse-home applies the file before it accepts requests. Every section must pass; if one does not, the server does not start and the log says which section failed and why. That is deliberate: a dashboard that quietly differs from the file in Git would be worse than a clear error.
+
+The sections in the file then become read-only until the next start:
+
+- Changes to them through the app or the API are refused with `409`. The *Edit* entry in the account menu and the `E` shortcut are disabled when the dashboard is managed, and **Settings → Import & export** lists the managed sections.
+- Uploading a `trisse-home.yaml` or a JSON export leaves managed sections alone and reports them as "managed by CONFIG_FILE".
+- Sample data is not added to managed sections after the first setup.
+
+Actions that do not change the settings keep working: health checks and Wake-on-LAN of services, fetching titles and icons and link checks of bookmarks, Docker discovery, and saving tab templates. Sections that are not in the file stay editable as usual, so a file with only `dashboard:` locks the layout and nothing else.
+
+To change a managed setting, edit the file and restart trisse-home (`sudo docker compose restart trisse-home`).
+
 ## Limits
 
 - Widget settings are copied as they are stored. A widget that points to something by ID, such as a single service, still points to that ID on another instance.
 - The file has no secrets, so integration passwords and tokens have to be entered again on a new instance.
 - Every widget gets a new internal ID when its tab is applied.
-- A mode in which the file is applied at every start and the UI cannot change those settings is planned as a follow-up to [#88](https://github.com/itadori26/trisse-home/issues/88).
+- In managed mode the settings dialog still shows the forms of managed sections; saving them answers with the read-only message.

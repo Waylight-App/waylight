@@ -29,6 +29,7 @@ export const serverMessages = {
   srv_5cd46d3ed824e037: "The server did not answer in time.",
   srv_d6ecea29338eeff4: "The server rejected the login. Check user name, password or token.",
   srv_cc10ad5b6bd86945: "The server sent an unexpected answer.",
+  srv_07a824b208b96b62: "These settings are managed by the configuration file (CONFIG_FILE) and are read-only here.",
   srv_61031ab185b65e33: "Use a single emoji.",
   srv_970344b28687ee67: "User name and app password are required.",
   srv_b08dda17b8ef851b: "User name, password and folder must not contain line breaks.",

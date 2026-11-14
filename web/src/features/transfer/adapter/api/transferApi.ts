@@ -1,5 +1,9 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
-import type { ConfigResultDTO, ImportResultDTO } from '../../../../shared/api-client/generated/transfer';
+import type {
+  ConfigResultDTO,
+  ConfigStatusDTO,
+  ImportResultDTO,
+} from '../../../../shared/api-client/generated/transfer';
 import type { ConfigResult, ImportResult } from '../../domain/transfer';
 import type { TransferGateway } from '../../usecase/transferUseCases';
 
@@ -18,6 +22,10 @@ export class TransferApi implements TransferGateway {
 
   configUrl(): string {
     return '/api/transfer/config';
+  }
+
+  async managedSections(): Promise<string[]> {
+    return (await this.http.get<ConfigStatusDTO>('/api/transfer/config/status')).managed ?? [];
   }
 
   async applyConfig(yaml: string): Promise<ConfigResult> {

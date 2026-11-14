@@ -85,6 +85,15 @@
 
   const accountInitial = $derived(appearance.greetingName.trim().charAt(0).toUpperCase());
   let dashboardState = $state<{ tabs: Tab[]; activeId: string }>({ tabs: [], activeId: '' });
+  // CONFIG_FILE can own the dashboard; then the layout is read-only (#88).
+  let dashboardManaged = $state(false);
+  $effect(() => {
+    if (!modules?.has('transfer') || container.auth.guest) return;
+    container.transfer
+      .managedSections()
+      .then((m) => (dashboardManaged = m.includes('dashboard')))
+      .catch(() => undefined);
+  });
   // Appliances ask once how the device is used (#140).
   let deviceSetup = $state(false);
   $effect(() => {
@@ -166,7 +175,9 @@
               combos: ['e'],
               display: ['E'],
               label: 'shortcuts.edit',
-              run: () => (editing = !editing),
+              run: () => {
+                if (!dashboardManaged) editing = !editing;
+              },
             }),
           ]),
       r.register({
@@ -318,6 +329,7 @@
       initial={accountInitial}
       {editing}
       canEdit={!container.auth.guest}
+      editLocked={dashboardManaged ? t('app.edit_managed') : ''}
       onedit={() => (editing = !editing)}
       onsettings={() => ((settingsSection = undefined), (settingsOpen = true))}
       onlogout={logout}
@@ -383,7 +395,7 @@
       profile={appearance.profile}
       tabBarTarget="header-tabs"
       onstate={(tabs, activeId) => (dashboardState = { tabs, activeId })}
-      onedit={container.auth.guest ? undefined : () => (editing = true)}
+      onedit={container.auth.guest || dashboardManaged ? undefined : () => (editing = true)}
       ondone={() => (editing = false)}
     />
   {/if}

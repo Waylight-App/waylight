@@ -49,3 +49,9 @@ func (h *ConfigHandlers) Apply(w http.ResponseWriter, r *http.Request) {
 	}
 	httpapi.WriteJSON(w, http.StatusOK, ConfigResultDTO(res))
 }
+
+// Status handles GET /api/transfer/config/status: which sections
+// CONFIG_FILE manages, so the UI can lock them.
+func (h *ConfigHandlers) Status(w http.ResponseWriter, _ *http.Request) {
+	httpapi.WriteJSON(w, http.StatusOK, ConfigStatusDTO{Managed: h.uc.Managed()})
+}

@@ -76,6 +76,9 @@ type Config struct {
 	SpacePictureAPIURL string
 	// WireGuardDir contains the export of scripts/wireguard-export.sh.
 	WireGuardDir string
+	// ConfigFile is a trisse-home.yaml applied at every start; the sections
+	// it contains are read-only in the UI (#88). Empty disables managed mode.
+	ConfigFile string
 	// DiskHealthDir contains the export of scripts/smart-export.sh; exports
 	// older than DiskHealthStaleAfter are shown as unknown.
 	DiskHealthDir        string
@@ -161,6 +164,7 @@ func Load(getenv func(string) string) (Config, error) {
 		DNSPauseProviders:        l.list("DNS_PAUSE_PROVIDERS", ""),
 		WolRelay:                 l.str("WOL_RELAY", ""),
 		WireGuardDir:             l.str("WIREGUARD_DIR", ""),
+		ConfigFile:               l.str("CONFIG_FILE", ""),
 		DiskHealthDir:            l.str("DISKHEALTH_DIR", ""),
 		DiskHealthStaleAfter:     l.duration("DISKHEALTH_STALE_AFTER", 2*time.Hour),
 		TransitAPIURL:            l.str("TRANSIT_API_URL", "https://api.transitous.org"),

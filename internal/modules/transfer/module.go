@@ -1,6 +1,8 @@
 package transfer
 
 import (
+	"context"
+
 	"trisse-home/internal/modules"
 	"trisse-home/internal/modules/transfer/adapter/controller"
 	"trisse-home/internal/modules/transfer/adapter/gateway"
@@ -13,6 +15,7 @@ type Module struct {
 	modules.Base
 	handlers *controller.Handlers
 	config   *controller.ConfigHandlers
+	uc       usecase.Config
 }
 
 // Deps are the ports of the transfer module. Portables and Configurables
@@ -35,11 +38,24 @@ func New(d Deps) *Module {
 		}
 		return out
 	}
+	managed := &usecase.Managed{}
+	cfg := usecase.NewConfig(sources, gateway.YAMLCodec{}, d.Env, d.Audit, managed)
 	return &Module{
-		handlers: controller.NewHandlers(usecase.NewTransfer(gateway.Sections(d.Portables), d.Clock, d.Audit)),
-		config:   controller.NewConfigHandlers(usecase.NewConfig(sources, gateway.YAMLCodec{}, d.Env, d.Audit)),
+		handlers: controller.NewHandlers(usecase.NewTransfer(gateway.Sections(d.Portables), d.Clock, d.Audit, managed)),
+		config:   controller.NewConfigHandlers(cfg),
+		uc:       cfg,
 	}
 }
+
+// ApplyManagedFile applies CONFIG_FILE at start-up (called from the
+// composition root). On success the sections in the file are managed:
+// imports skip them and Managed reports them.
+func (m *Module) ApplyManagedFile(ctx context.Context, data []byte) ([]string, error) {
+	return m.uc.ApplyManaged(ctx, data)
+}
+
+// Managed lists the sections CONFIG_FILE owns.
+func (m *Module) Managed() []string { return m.uc.Managed() }
 
 // Name implements modules.Module.
 func (m *Module) Name() string { return "transfer" }
@@ -50,4 +66,5 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/transfer/import", m.handlers.Import)
 	r.Protected("GET /api/transfer/config", m.config.Export)
 	r.Protected("POST /api/transfer/config", m.config.Apply)
+	r.Protected("GET /api/transfer/config/status", m.config.Status)
 }

@@ -63,6 +63,17 @@ func (m *Module) ExportConfig(ctx context.Context) (any, error) {
 	return configfile.FromResponse(r), nil
 }
 
+// ConfigRoutes implements modules.Configurable.
+func (m *Module) ConfigRoutes() []string {
+	return []string{
+		"PUT /api/appearance",
+		"POST /api/appearance/themes",
+		"POST /api/appearance/themes/restore",
+		"DELETE /api/appearance/themes/{id}",
+		"POST /api/appearance/themes/{id}/apply",
+	}
+}
+
 // NewConfig implements modules.Configurable.
 func (m *Module) NewConfig() any { return &configfile.Section{} }
 

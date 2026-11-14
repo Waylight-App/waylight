@@ -250,7 +250,8 @@ func (c *client) json(method, path string, body any, wantStatus int, dst any) {
 
 type obj = map[string]any
 
-func newTestServer(t *testing.T, upstream string, opts ...func(*config.Config)) *httptest.Server {
+// newTestConfig is the configuration of an end-to-end test server.
+func newTestConfig(t *testing.T, upstream string, opts ...func(*config.Config)) config.Config {
 	t.Helper()
 	var err error
 	wolTarget, err = net.ListenPacket("udp4", "127.0.0.1:0")
@@ -274,6 +275,12 @@ func newTestServer(t *testing.T, upstream string, opts ...func(*config.Config)) 
 	for _, o := range opts {
 		o(&cfg)
 	}
+	return cfg
+}
+
+func newTestServer(t *testing.T, upstream string, opts ...func(*config.Config)) *httptest.Server {
+	t.Helper()
+	cfg := newTestConfig(t, upstream, opts...)
 	log := slog.New(slog.NewTextHandler(io.Discard, nil))
 	a, err := build(context.Background(), cfg, log)
 	if err != nil {

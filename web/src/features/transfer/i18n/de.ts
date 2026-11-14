@@ -9,4 +9,6 @@ export const de: Record<keyof typeof en, string> = {
   'transfer.config_apply': 'trisse-home.yaml anwenden…',
   'transfer.config_confirm':
     'Jeder Abschnitt der Datei ersetzt diese Einstellungen vollständig; fehlende Abschnitte bleiben, wie sie sind. Fortfahren?',
+  'transfer.config_managed':
+    'Von CONFIG_FILE verwaltet und hier schreibgeschützt: {sections}. Ändere sie in der Datei und starte trisse-home neu.',
 };
