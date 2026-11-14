@@ -71,6 +71,17 @@ After that check, each section in the file replaces the settings of its module c
 
 Some things are kept on purpose. A service tile or a tab with the same name as before keeps its internal ID, so uptime history and guest access to a tab survive. A bookmark with the same URL keeps its fetched icon and link check. Service tiles that came from Docker labels are not part of the file and are left alone.
 
+## Coming from Homepage or Homarr
+
+**Settings → Import & export → Import from another dashboard** reads the configuration of [Homepage](https://gethomepage.dev) or Homarr and adds it to trisse-home:
+
+- **Homepage:** choose `services.yaml`, `bookmarks.yaml` and `widgets.yaml` from its config folder, any of them. Services become tiles in their order (nested groups are flattened, since tiles have no groups), bookmark groups become folders. Of the information widgets, `datetime`, `resources` and the weather widgets with coordinates have a counterpart.
+- **Homarr 0.x:** choose the board file from `data/configs`, usually `default.json`. Apps become tiles (with the external URL when there is one), `date` and `weather` widgets are carried over. Homarr 1.x only exports an encrypted migration archive, which trisse-home cannot read.
+
+You first get a preview: how many tiles, bookmarks and widgets would be added, a list of everything that cannot be imported (service widgets such as Sonarr, icons given only by name, unsupported widgets), and the result as YAML. **Import** then applies it.
+
+An import only adds. A tile whose name exists, or a bookmark whose URL exists, is skipped, and the new tab (named "Homepage" or "Homarr") is only created once, so importing the same files again changes nothing. Icons are only taken when they are a full URL: icon names would make the browser load pictures from a public CDN, which trisse-home avoids. Managed sections (see below) are left alone.
+
 ## Secrets and private host names
 
 Any text value may contain `${NAME}`. When the file is applied, trisse-home replaces it with the environment variable `NAME` of the server process, for example from your `.env` file. That keeps private domains and similar values out of the repository. An unset variable is an error rather than an empty string. Write `$${NAME}` if you need the literal text `${NAME}`.

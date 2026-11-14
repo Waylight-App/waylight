@@ -37,4 +37,19 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_40b2f70963afe6eb: 'Unbekannter Abschnitt {name} (oder sein Modul ist deaktiviert).',
   // YAML aliases (*name) are not supported; write the value out.
   srv_131e8662bd896c29: 'YAML-Aliase (*name) werden nicht unterstützt; schreibe den Wert aus.',
+  // Choose at least one file.
+  srv_d4e32079da1f8a6c: 'Wähle mindestens eine Datei.',
+  // The files are larger than 2 MB together.
+  srv_b080b45242740908: 'Die Dateien sind zusammen größer als 2 MB.',
+  // This is not a Homarr board file. Homarr 1.x exports cannot be read; use the board JSON of Homarr 0.x.
+  srv_d39ee18784bab42a:
+    'Das ist keine Homarr-Board-Datei. Exporte von Homarr 1.x lassen sich nicht lesen; nimm die Board-JSON von Homarr 0.x.',
+  // Unknown import format.
+  srv_91da20f0a1aee001: 'Unbekanntes Importformat.',
+  // Upload one Homarr board file (JSON).
+  srv_bf8a861f5dbe0e42: 'Lade eine Homarr-Board-Datei (JSON) hoch.',
+  // Upload services.yaml, bookmarks.yaml or widgets.yaml from Homepage.
+  srv_b395afa091b77fe4: 'Lade services.yaml, bookmarks.yaml oder widgets.yaml aus Homepage hoch.',
+  // {name} is not valid YAML: {reason}
+  srv_9f0de21ec1d3ede8: '{name} ist kein gültiges YAML: {reason}',
 };

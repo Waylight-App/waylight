@@ -156,7 +156,10 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 			return parcels.New(db, secrets, client, httpclient.IntegrationDialContext, clk, ids)
 		}},
 		{"transfer", func() modules.Module {
-			return transfer.New(transfer.Deps{Portables: registry.Portables, Configurables: registry.Configurables, Env: os.LookupEnv, Clock: clk, Audit: authModule})
+			return transfer.New(transfer.Deps{Portables: registry.Portables, Configurables: registry.Configurables, Env: os.LookupEnv, Clock: clk, Audit: authModule,
+				WidgetKinds: func(kind string) bool {
+					return slices.Contains(frontendOnlyWidgetKinds, kind) || slices.Contains(registry.WidgetKinds(), kind)
+				}})
 		}},
 		{"transit", func() modules.Module { return transit.New(client, cfg.TransitAPIURL, clk) }},
 		{"shopping", func() modules.Module { return shopping.New(db, secrets, out.integration, ids) }},

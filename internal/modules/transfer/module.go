@@ -15,6 +15,7 @@ type Module struct {
 	modules.Base
 	handlers *controller.Handlers
 	config   *controller.ConfigHandlers
+	foreign  *controller.ForeignHandlers
 	uc       usecase.Config
 }
 
@@ -25,8 +26,10 @@ type Deps struct {
 	Portables     func() map[string]modules.Portable
 	Configurables func() map[string]modules.Configurable
 	Env           func(string) (string, bool)
-	Clock         kernel.Clock
-	Audit         kernel.AuditSink
+	// WidgetKinds reports whether a widget kind is available (#77).
+	WidgetKinds func(string) bool
+	Clock       kernel.Clock
+	Audit       kernel.AuditSink
 }
 
 // New builds the transfer module.
@@ -43,7 +46,10 @@ func New(d Deps) *Module {
 	return &Module{
 		handlers: controller.NewHandlers(usecase.NewTransfer(gateway.Sections(d.Portables), d.Clock, d.Audit, managed)),
 		config:   controller.NewConfigHandlers(cfg),
-		uc:       cfg,
+		foreign: controller.NewForeignHandlers(usecase.NewImporter(map[string]usecase.ImportSource{
+			"homepage": gateway.Homepage{}, "homarr": gateway.Homarr{},
+		}, cfg, gateway.YAMLCodec{}, d.WidgetKinds)),
+		uc: cfg,
 	}
 }
 
@@ -67,4 +73,5 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/transfer/config", m.config.Export)
 	r.Protected("POST /api/transfer/config", m.config.Apply)
 	r.Protected("GET /api/transfer/config/status", m.config.Status)
+	r.Protected("POST /api/transfer/import/{format}", m.foreign.Import)
 }

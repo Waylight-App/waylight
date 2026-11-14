@@ -1,0 +1,12 @@
+---
+- Developer:
+    - Github:
+        - abbr: GH
+          href: https://github.com/
+- Social:
+    - Reddit:
+        - icon: reddit.png
+          href: https://reddit.com/
+          description: The front page of the internet
+    - Nothing:
+        - abbr: NO
