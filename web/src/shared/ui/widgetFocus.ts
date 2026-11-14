@@ -37,3 +37,21 @@ export function pickWidget<W extends { id: string; kind: string }, T extends { i
   }
   return null;
 }
+
+/**
+ * Scrolls a widget into view, outlines it for 1.5 s and, if asked, moves the
+ * keyboard focus to it (after adding or duplicating it, #273; the briefing's
+ * links, #52). Reduced motion scrolls at once.
+ */
+export function highlightWidget(id: string, focus = false): void {
+  const el = document.querySelector<HTMLElement>(`[data-widget-id="${CSS.escape(id)}"]`);
+  if (!el) return;
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 1500);
+  if (focus) {
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
+    el.focus({ preventScroll: true });
+  }
+}
