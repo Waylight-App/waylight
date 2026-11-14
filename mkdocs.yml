@@ -116,5 +116,6 @@ nav:
           - "ADR 0014: Passkeys as second factor with a minimal WebAuthn implementation": adr/0014-passkeys.md
           - "ADR 0015: Raspberry Pi appliance image": adr/0015-raspberry-pi-image.md
           - "ADR 0016: Cross-module read models": adr/0016-cross-module-read-models.md
+          - "ADR 0017: Open core": adr/0017-open-core.md
       - Contributing: https://github.com/itadori26/trisse-home/blob/main/CONTRIBUTING.md
       - Roadmap: https://github.com/itadori26/trisse-home/blob/main/ROADMAP.md

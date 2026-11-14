@@ -15,6 +15,21 @@ func TestCheckDigits(t *testing.T) {
 	if !upsCheck("1Z999AA10123456784") || upsCheck("1Z999AA10123456785") {
 		t.Fatal("UPS check digit")
 	}
+	for n, want := range map[string]bool{
+		"RR123456785DE": true,  // sum 204, 11 - 204 mod 11 = 5
+		"RR123456789DE": false, // wrong check digit
+		"RR000000080DE": true,  // 11 - 1 = 10 becomes 0
+		"RR000000005DE": true,  // 11 - 0 = 11 becomes 5
+		"RR000000000DE": false,
+		"RR12345678DE":  false, // too short
+	} {
+		if s10Check(n) != want {
+			t.Errorf("s10Check(%s) = %v, want %v", n, !want, want)
+		}
+	}
+	if !ValidNumber(CarrierDHL, "RR123456785DE") || ValidNumber(CarrierDHL, "RR123456789DE") {
+		t.Error("ValidNumber: DHL accepts S10 numbers only with a valid check digit")
+	}
 }
 
 // Anonymised fixtures of real shipping mails (German and English).
@@ -60,6 +75,20 @@ func TestExtractCandidates(t *testing.T) {
 		},
 		"unknown carrier is skipped": {
 			Mail{From: "Shop <a@shop.example>", Subject: "Versand", Text: "Sendungsnummer: 987654321098"},
+			nil,
+		},
+		"registered letter of Deutsche Post": {
+			Mail{From: "Deutsche Post <noreply@deutschepost.de>", Subject: "Ihr Einschreiben ist unterwegs",
+				Text: "Guten Tag,\nwir haben Ihr Einschreiben angenommen.\nSendungsnummer: RR 1234 5678 5DE wurde heute eingeliefert.\nKundenservice: 0228 4333112"},
+			[]Candidate{{Number: "RR123456785DE", Carrier: CarrierDHL, Label: "Deutsche Post"}},
+		},
+		"registered letter with a wrong check digit is skipped": {
+			Mail{From: "Deutsche Post <noreply@deutschepost.de>", Subject: "Ihr Einschreiben",
+				Text: "Sendungsnummer: RR123456789DE"},
+			nil,
+		},
+		"s10-like reference without a keyword does not match": {
+			Mail{From: "Shop <a@shop.example>", Subject: "Rechnung", Text: "Referenz RR123456785DE, Kundennummer 4711"},
 			nil,
 		},
 		"wrong check digit is skipped": {

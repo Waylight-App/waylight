@@ -1,5 +1,5 @@
 import type { Widget, WidgetConfig } from './dashboard';
-import type { LayoutItem } from './layout';
+import { type LayoutItem, sameLayout } from './layout';
 
 /** Maximum number of undoable steps (#93). */
 export const HISTORY_LIMIT = 50;
@@ -12,6 +12,26 @@ export type EditCommand =
   /** Deleted widget with its configuration: undo re-creates it. */
   | { type: 'delete'; widget: Widget }
   | { type: 'configure'; widgetId: string; before: WidgetConfig; after: WidgetConfig };
+
+/** Plain grid cells of the items (no widget data). */
+const cells = (items: readonly LayoutItem[]): LayoutItem[] =>
+  items.map(({ id, x, y, w, h }) => ({ id, x, y, w, h }));
+
+/**
+ * The undo step of a layout change, or null when nothing moved: a click on a
+ * title bar or a drag back to the same cell records no step (#272).
+ */
+export function layoutCommand(
+  tabId: string,
+  before: readonly LayoutItem[],
+  after: readonly LayoutItem[],
+): EditCommand | null {
+  const b = cells(before);
+  const byId = new Map(after.map((i) => [i.id, i]));
+  // Items the change did not mention keep their place.
+  const a = b.map((i) => ({ ...i, ...(byId.get(i.id) ? cells([byId.get(i.id) as LayoutItem])[0] : {}) }));
+  return sameLayout(b, a) ? null : { type: 'layout', tabId, before: b, after: cells(after) };
+}
 
 /**
  * Undo/redo stack (command pattern). Re-creating a deleted widget gives it a

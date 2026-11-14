@@ -55,6 +55,8 @@ type Repository interface {
 type ExportCodec interface {
 	// Pocket reads the CSV export of Pocket (title,url,time_added,tags,status).
 	Pocket(data []byte) ([]domain.ImportEntry, error)
+	// Instapaper reads the CSV export of Instapaper (URL,Title,Selection,Folder,Timestamp).
+	Instapaper(data []byte) ([]domain.ImportEntry, error)
 }
 
 // ImportReport says what an import did.
@@ -75,6 +77,8 @@ type ReadLater interface {
 	Image(ctx context.Context, id string, n int) (Image, error)
 	// ImportPocket adds the links of a Pocket CSV export as pending articles.
 	ImportPocket(ctx context.Context, data []byte) (ImportReport, error)
+	// ImportInstapaper adds the links of an Instapaper CSV export as pending articles.
+	ImportInstapaper(ctx context.Context, data []byte) (ImportReport, error)
 	// FetchPending makes the reader copies of a few imported articles (job).
 	FetchPending(ctx context.Context) error
 	// Cleanup deletes archived articles older than the setting (job).
@@ -232,6 +236,23 @@ func (uc *readLater) ImportPocket(ctx context.Context, data []byte) (ImportRepor
 	if err != nil {
 		return ImportReport{}, kernel.NewValidationError("file", "The file is not a Pocket export (CSV with title, url, time_added, status).")
 	}
+	return uc.importEntries(ctx, entries)
+}
+
+func (uc *readLater) ImportInstapaper(ctx context.Context, data []byte) (ImportReport, error) {
+	if len(data) > MaxImportBytes {
+		return ImportReport{}, kernel.NewValidationError("file", "The export file must be at most 5 MB.")
+	}
+	entries, err := uc.codec.Instapaper(data)
+	if err != nil {
+		return ImportReport{}, kernel.NewValidationError("file", "The file is not an Instapaper export (CSV with URL, Title, Folder, Timestamp).")
+	}
+	return uc.importEntries(ctx, entries)
+}
+
+// importEntries adds the links of an export as pending articles; known
+// addresses are counted as duplicates.
+func (uc *readLater) importEntries(ctx context.Context, entries []domain.ImportEntry) (ImportReport, error) {
 	if len(entries) > domain.MaxImportEntries {
 		return ImportReport{}, kernel.NewValidationError("file", "At most 2000 links can be imported at once.")
 	}

@@ -1,6 +1,6 @@
 # Drop zone
 
-**What it does:** Share text, links and small files between your devices (#101). Paste or drop something on one device and pick it up on another. Items are listed newest first with copy and download buttons and expire automatically after 1 hour, 24 hours (default) or 7 days.
+**What it does:** Share text, links and small files between your devices (#101). Paste or drop something on one device and pick it up on another. Items are listed newest first with copy and download buttons and expire automatically after 1 hour, 24 hours (default) or 7 days. PNG, JPEG, GIF and WebP images show a small thumbnail.
 
 ## Limits
 

@@ -1,7 +1,9 @@
 package domain
 
 import (
+	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -44,9 +46,34 @@ func (c Container) Health() Health {
 	}
 }
 
-// NeedsAttention reports whether the container is not running normally.
+var exitCode = regexp.MustCompile(`^Exited \((-?\d+)\)`)
+
+// ExitCode returns the exit code of an exited container from its status
+// ("Exited (137) 2 hours ago"); ok is false when it has none.
+func (c Container) ExitCode() (code int, ok bool) {
+	m := exitCode.FindStringSubmatch(c.Status)
+	if m == nil {
+		return 0, false
+	}
+	code, err := strconv.Atoi(m[1])
+	return code, err == nil
+}
+
+// NeedsAttention reports whether the container failed: unhealthy,
+// restarting, dead, or exited with a non-zero code. A one-off container
+// that finished cleanly (Exited (0)) or one that was only created is no
+// incident (#313); the dashboard still lists it as stopped.
 func (c Container) NeedsAttention() bool {
-	return c.State != "running" || c.Health() == HealthUnhealthy
+	switch c.State {
+	case "running":
+		return c.Health() == HealthUnhealthy
+	case "restarting", "dead":
+		return true
+	case "exited":
+		code, ok := c.ExitCode()
+		return !ok || code != 0
+	}
+	return false // created, paused, removing
 }
 
 // Summary counts containers by condition.

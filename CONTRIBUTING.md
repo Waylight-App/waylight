@@ -47,6 +47,15 @@ once and then `make smoke`.
    justify every new runtime dependency in the PR. CI fails when a budget in
    `budgets.json` is exceeded.
 
+## Licence of contributions
+
+- Contributions to everything outside `ee/` are made under the MIT licence,
+  the same licence the code is published under. There is nothing to sign.
+- The directory `ee/` is under the [Fair Core License](ee/LICENSE.md) and is
+  also sold under commercial terms, which only works while one party holds
+  the rights to it. Please open an issue before working on `ee/`; such a pull
+  request needs a written agreement with the maintainer first.
+
 ## Adding a module
 
 New to the code base? Follow the [developer guide](docs/developer-guide.md):

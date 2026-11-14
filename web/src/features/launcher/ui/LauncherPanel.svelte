@@ -1,7 +1,14 @@
 <script lang="ts">
   import { t } from '../../../shared/i18n';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
-  import { buildView, initial, type LauncherContent, safeUrl, type Segment } from '../domain/launcher';
+  import {
+    buildView,
+    emptyKey,
+    initial,
+    type LauncherContent,
+    safeUrl,
+    type Segment,
+  } from '../domain/launcher';
   import type { LauncherData, LauncherUseCases } from '../usecase/launcherUseCases';
 
   /** Props of the launcher panel of the top bar (#189). */
@@ -101,7 +108,9 @@
         {/if}
       </header>
       {#if view.services.items.length === 0}
-        <p class="muted">{loaded ? t('launcher.no_services') : t('common.loading')}</p>
+        <p class="muted">
+          {loaded ? t(emptyKey('services', data.services.length, filter)) : t('common.loading')}
+        </p>
       {:else}
         <ul class="tiles">
           {#each view.services.items as s (s.id)}
@@ -136,7 +145,9 @@
         {/if}
       </header>
       {#if view.bookmarks.items.length === 0}
-        <p class="muted">{loaded ? t('launcher.no_bookmarks') : t('common.loading')}</p>
+        <p class="muted">
+          {loaded ? t(emptyKey('bookmarks', data.bookmarks.length, filter)) : t('common.loading')}
+        </p>
       {:else}
         <ul class="links">
           {#each view.bookmarks.items as b (b.id)}
