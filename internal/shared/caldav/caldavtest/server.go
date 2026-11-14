@@ -221,6 +221,7 @@ func response(href, prop string) string {
 func multi(w http.ResponseWriter, responses string) {
 	w.Header().Set("Content-Type", "application/xml; charset=utf-8")
 	w.WriteHeader(http.StatusMultiStatus)
+	//nolint:gosec // test server: the XML is built from escaped test data and never reaches a browser
 	_, _ = io.WriteString(w, `<?xml version="1.0"?>
 <d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns">`+responses+`</d:multistatus>`)
 }

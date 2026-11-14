@@ -27,7 +27,7 @@ func (r *memSources) Get(_ context.Context, id string) (domain.Source, error) {
 	return s, nil
 }
 func (r *memSources) Save(_ context.Context, s domain.Source) error { r.m[s.ID] = s; return nil }
-func (r *memSources) Delete(_ context.Context, id string) error   { delete(r.m, id); return nil }
+func (r *memSources) Delete(_ context.Context, id string) error     { delete(r.m, id); return nil }
 
 // fakeProviders serves one external list per source ID; a to-do read back
 // after a write gets a new version, like an ETag.
@@ -92,6 +92,9 @@ func TestSources(t *testing.T) {
 	// Editing without a password keeps the stored one.
 	if _, err := uc.Save(ctx, SourceInput{ID: v.ID, Name: "Cloud", Kind: "caldav", URL: in.URL, Username: "anna"}); err != nil || src.m[v.ID].Password != "pw" || src.m[v.ID].Name != "Cloud" {
 		t.Fatalf("%+v %v", src.m[v.ID], err)
+	}
+	if _, err := uc.Save(ctx, SourceInput{ID: "unknown", Name: "x", Kind: "caldav", URL: in.URL, Username: "a", Password: "b"}); !errors.Is(err, domain.ErrSourceNotFound) {
+		t.Fatal("PUT created a list", err)
 	}
 	// The connection is tested before saving.
 	p.fail = errors.New("connection refused")

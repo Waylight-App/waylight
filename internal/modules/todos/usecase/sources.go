@@ -110,6 +110,8 @@ func (uc *sources) Save(ctx context.Context, in SourceInput) (SourceView, error)
 		id = uc.d.IDs.NewID()
 	} else if !domain.ValidSourceID(id) {
 		return SourceView{}, domain.ErrSourceNotFound
+	} else if _, err := uc.d.Sources.Get(ctx, id); err != nil {
+		return SourceView{}, err // PUT never creates a list
 	}
 	pw, err := uc.password(ctx, in)
 	if err != nil {
