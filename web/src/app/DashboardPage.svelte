@@ -20,7 +20,15 @@
     /** Starts edit mode; omitted for guests (#276). */
     onedit?: () => void;
   }
-  let { container, editing, profile = 'homelab', widgetKinds, tabBarTarget, onstate, onedit }: Props = $props();
+  let {
+    container,
+    editing,
+    profile = 'homelab',
+    widgetKinds,
+    tabBarTarget,
+    onstate,
+    onedit,
+  }: Props = $props();
 
   let view = $state<{ selectTabAt: (index: number) => void; undo: () => void; redo: () => void }>();
 
