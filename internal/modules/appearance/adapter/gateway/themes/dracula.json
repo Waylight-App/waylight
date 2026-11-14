@@ -1,0 +1,19 @@
+{
+  "id": "dracula",
+  "name": "Dracula",
+  "author": "Zeno Rocha, draculatheme.com (MIT)",
+  "scheme": "dark",
+  "tokens": {
+    "--color-bg": "#282a36",
+    "--color-surface": "#343746",
+    "--color-surface-2": "#44475a",
+    "--color-border": "#6272a4",
+    "--color-text": "#f8f8f2",
+    "--color-text-muted": "#c8c9d6",
+    "--color-accent": "#bd93f9",
+    "--color-accent-contrast": "#282a36",
+    "--color-danger": "#ff7a7a",
+    "--color-success": "#50fa7b",
+    "--color-warning": "#f1fa8c"
+  }
+}

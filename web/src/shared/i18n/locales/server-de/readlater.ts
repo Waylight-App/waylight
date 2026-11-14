@@ -25,4 +25,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_22fa6fd55903ce2e: 'Die Exportdatei darf höchstens 5 MB groß sein.',
   // The file is not a Pocket export (CSV with title, url, time_added, status).
   srv_8680771d11b72ed2: 'Die Datei ist kein Pocket-Export (CSV mit title, url, time_added, status).',
+  // The file is not an Instapaper export (CSV with URL, Title, Folder, Timestamp).
+  srv_6ef3ce3f6d300835: 'Die Datei ist kein Instapaper-Export (CSV mit URL, Title, Folder, Timestamp).',
 };

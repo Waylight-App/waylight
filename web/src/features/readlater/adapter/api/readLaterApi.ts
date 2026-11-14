@@ -5,7 +5,7 @@ import type {
   SettingsDTO,
 } from '../../../../shared/api-client/generated/readlater';
 import type { SettingsInputDTO } from '../../../../shared/api-client/generated/readlater-requests';
-import type { Article, ArticleStatus, ImportReport } from '../../domain/readlater';
+import type { Article, ArticleStatus, ExportKind, ImportReport } from '../../domain/readlater';
 import type { ReadLaterGateway } from '../../usecase/readLaterUseCases';
 
 const toArticle = (d: ArticleDTO): Article => ({
@@ -42,9 +42,9 @@ export class ReadLaterApi implements ReadLaterGateway {
     const body: SettingsInputDTO = { archiveDays: days };
     return (await this.http.put<SettingsDTO>('/api/readlater/settings', body)).archiveDays;
   }
-  async importPocket(csv: string): Promise<ImportReport> {
+  async importExport(kind: ExportKind, csv: string): Promise<ImportReport> {
     return {
-      ...(await this.http.postText<ImportReportDTO>('/api/readlater/import/pocket', csv, 'text/csv')),
+      ...(await this.http.postText<ImportReportDTO>(`/api/readlater/import/${kind}`, csv, 'text/csv')),
     };
   }
 }

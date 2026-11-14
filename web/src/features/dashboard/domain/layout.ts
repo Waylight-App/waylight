@@ -127,3 +127,19 @@ export function keyboardStep(
 export function describeRect(r: Rect): string {
   return t('dashboard.describe_rect', { column: r.x + 1, row: r.y + 1, w: r.w, h: r.h });
 }
+
+/**
+ * What a screen reader says after a keyboard move or resize (#257), e.g.
+ * "Weather moved: column 5, row 2, 4 × 3 cells". changed is false when the
+ * widget could not move or grow any further.
+ */
+export function describeKeyboardStep(name: string, r: Rect, resize: boolean, changed: boolean): string {
+  const key = changed
+    ? resize
+      ? 'dashboard.announce_resized'
+      : 'dashboard.announce_moved'
+    : resize
+      ? 'dashboard.announce_cannot_resize'
+      : 'dashboard.announce_cannot_move';
+  return t(key, { name, position: describeRect(r) });
+}

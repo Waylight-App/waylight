@@ -3,6 +3,7 @@ import {
   clampRect,
   collides,
   compact,
+  describeKeyboardStep,
   describeRect,
   findFreeSpot,
   keyboardStep,
@@ -108,6 +109,21 @@ describe('sameLayout', () => {
     });
     it('describes positions', () => {
       expect(describeRect({ x: 0, y: 2, w: 4, h: 3 })).toBe('column 1, row 3, 4 × 3 cells');
+    });
+    it('describes the result of a keyboard step (#257)', () => {
+      const r = { x: 4, y: 1, w: 4, h: 3 };
+      expect(describeKeyboardStep('Weather', r, false, true)).toBe(
+        'Weather moved: column 5, row 2, 4 × 3 cells',
+      );
+      expect(describeKeyboardStep('Weather', r, true, true)).toBe(
+        'Weather resized: column 5, row 2, 4 × 3 cells',
+      );
+      expect(describeKeyboardStep('Weather', r, false, false)).toBe(
+        'Weather cannot move further: column 5, row 2, 4 × 3 cells',
+      );
+      expect(describeKeyboardStep('Weather', r, true, false)).toBe(
+        'Weather cannot grow or shrink further: column 5, row 2, 4 × 3 cells',
+      );
     });
   });
 });
