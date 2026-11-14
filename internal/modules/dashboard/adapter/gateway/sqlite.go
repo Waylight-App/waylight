@@ -189,6 +189,66 @@ func (r *Repository) DeleteWidget(ctx context.Context, id string) error {
 	return nil
 }
 
+// ReplaceAll implements usecase.ConfigRepository in one transaction. Kept
+// tabs lose their old widgets; removed tabs take theirs along (cascade).
+func (r *Repository) ReplaceAll(ctx context.Context, tabs []domain.Tab, widgets []domain.Widget) error {
+	return r.inTx(ctx, func(tx *sql.Tx) error {
+		keep := map[string]bool{}
+		for _, t := range tabs {
+			keep[t.ID()] = true
+		}
+		existing, err := queryIDs(ctx, tx, `SELECT id FROM dashboard_tabs`)
+		if err != nil {
+			return fmt.Errorf("list tabs: %w", err)
+		}
+		for _, id := range existing {
+			if keep[id] {
+				continue
+			}
+			if _, err := tx.ExecContext(ctx, `DELETE FROM dashboard_tabs WHERE id = ?`, id); err != nil {
+				return fmt.Errorf("delete tab: %w", err)
+			}
+		}
+		if _, err := tx.ExecContext(ctx, `DELETE FROM dashboard_widgets`); err != nil {
+			return fmt.Errorf("clear widgets: %w", err)
+		}
+		for _, t := range tabs {
+			if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background, rules, mobile_layout) VALUES (?, ?, ?, ?, ?, ?)
+				ON CONFLICT (id) DO UPDATE SET name = excluded.name, position = excluded.position, background = excluded.background,
+				rules = excluded.rules, mobile_layout = excluded.mobile_layout`,
+				t.ID(), t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile())); err != nil {
+				return fmt.Errorf("upsert tab: %w", err)
+			}
+		}
+		for _, w := range widgets {
+			rc := w.Rect()
+			if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+				w.ID(), w.TabID(), w.Kind(), rc.X, rc.Y, rc.W, rc.H, w.Config()); err != nil {
+				return fmt.Errorf("insert widget: %w", err)
+			}
+		}
+		return nil
+	})
+}
+
+// queryIDs runs a constant query that selects one id column.
+func queryIDs(ctx context.Context, tx *sql.Tx, query string) ([]string, error) {
+	rows, err := tx.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, rows.Err()
+}
+
 func (r *Repository) inTx(ctx context.Context, fn func(*sql.Tx) error) error {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {

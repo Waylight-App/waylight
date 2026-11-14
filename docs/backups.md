@@ -69,3 +69,7 @@ Importing it into a fresh installation recreates your dashboard; you then
 enter the integration passwords again.
 
 The same page imports bookmarks exported from a browser as an HTML file.
+
+For settings you want to keep in Git or copy to another instance, the same
+page also writes and reads `trisse-home.yaml`: see
+[Settings as a YAML file](config-as-code.md).

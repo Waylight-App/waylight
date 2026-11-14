@@ -89,6 +89,7 @@ nav:
       - Host integrations: host-integrations.md
       - Notifications and job monitoring: notifications.md
       - Backups and restore: backups.md
+      - Settings as a YAML file: config-as-code.md
       - Updates and rollback: updates.md
       - Reverse proxy and SSO: reverse-proxy.md
       - API tokens: api-tokens.md

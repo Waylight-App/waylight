@@ -24,4 +24,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_74215ccd79a3ff66: 'Ein Präfix besteht aus 1 bis 4 Buchstaben oder Ziffern.',
   // Each prefix can be used only once.
   srv_fd6c518295d812e7: 'Jedes Präfix darf nur einmal vorkommen.',
+  // Each shortcut keyword can be used only once.
+  srv_ff5b12b63bbd2fcc: 'Jedes Kürzel darf nur einmal vorkommen.',
 };

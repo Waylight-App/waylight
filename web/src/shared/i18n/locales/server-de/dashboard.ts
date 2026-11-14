@@ -48,4 +48,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_9dfec97d8d360b86: 'Die Breite muss zwischen 1 und 12 Spalten liegen.',
   // This widget type is not available.
   srv_63543557e19be101: 'Dieser Widget-Typ ist nicht verfügbar.',
+  // A widget config must be a mapping of settings.
+  srv_db1f3b30c394907b: 'Die config eines Widgets muss eine Zuordnung von Einstellungen sein.',
+  // Each tab name can be used only once.
+  srv_1f452c9f72b6125d: 'Jeder Tab-Name darf nur einmal vorkommen.',
 };

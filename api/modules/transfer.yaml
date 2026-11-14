@@ -15,3 +15,17 @@ paths:
       responses:
         "200": { description: "Result (imported, skipped, failed with reasons)" }
         "422": { description: Not an export file, unsupported version or too large }
+  /api/transfer/config:
+    get:
+      tags: [transfer]
+      summary: "Download the settings as trisse-home.yaml (#88): appearance, search, manual services, bookmarks and dashboard, semantic (names instead of IDs) and without secrets"
+      responses:
+        "200": { description: The YAML file, content: { application/yaml: { schema: { type: string } } } }
+    post:
+      tags: [transfer]
+      summary: "Apply a trisse-home.yaml (max. 2 MB). ${NAME} in strings is read from the environment. The whole file is checked first (YAML, version, known sections and fields, variables); then each present section replaces its module's settings atomically, sections missing from the file stay unchanged"
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/yaml: { schema: { type: string } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { applied: { type: array, items: { type: string } }, failed: { type: object, additionalProperties: { type: string } } } } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
