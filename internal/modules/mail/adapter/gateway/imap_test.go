@@ -70,7 +70,7 @@ func fakeServer(t *testing.T, unseen []int) (string, int) {
 						set := strings.Fields(cmd)[2]
 						for i, u := range strings.Split(set, ",") {
 							var uid int
-							fmt.Sscan(u, &uid)
+							_, _ = fmt.Sscan(u, &uid)
 							h := header(uid)
 							fmt.Fprintf(c, "* %d FETCH (UID %d INTERNALDATE \"14-Nov-2026 0%d:00:00 +0000\" BODY[HEADER.FIELDS (FROM SUBJECT DATE)] {%d}\r\n%s)\r\n", i+1, uid, uid%10, len(h), h)
 						}
