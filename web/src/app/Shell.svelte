@@ -369,6 +369,7 @@
       {widgetKinds}
       tabBarTarget="header-tabs"
       onstate={(tabs, activeId) => (dashboardState = { tabs, activeId })}
+      onedit={container.auth.guest ? undefined : () => (editing = true)}
     />
   {/if}
 </main>

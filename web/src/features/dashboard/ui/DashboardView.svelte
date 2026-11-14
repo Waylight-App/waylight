@@ -49,6 +49,8 @@
     tabBarTarget?: string;
     /** Reports the loaded tabs and the active one, e.g. for the greeting line. */
     onstate?: (tabs: Tab[], activeId: string) => void;
+    /** Starts edit mode (the "Add widget" button of an empty tab, #276). */
+    onedit?: () => void;
   }
   let {
     uc,
@@ -61,6 +63,7 @@
     chromeless,
     tabBarTarget = '',
     onstate,
+    onedit,
   }: Props = $props();
 
   const ACTIVE_TAB_KEY = 'trisse-home.activeTab';
@@ -449,8 +452,17 @@
     {/if}
     {#if visible.length === 0 && loaded}
       <p class="empty muted">
-        This tab is empty. {#if editing}Use “Add widget” to place one.{:else}Switch to edit mode to add
-          widgets.{/if}
+        {t(editing ? 'dashboard.empty_tab_editing' : 'dashboard.empty_tab_view')}
+        {#if !editing && onedit}
+          <button
+            class="btn"
+            type="button"
+            onclick={() => {
+              onedit();
+              dialog = { kind: 'add-widget' };
+            }}>{t('dashboard.add_widget')}</button
+          >
+        {/if}
       </p>
     {/if}
     {#if editing}

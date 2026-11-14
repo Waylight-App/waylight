@@ -184,6 +184,8 @@ export const en = {
   'parcels.label_optional': 'Label (optional)',
   'parcels.label': 'Label',
   'parcels.remove': 'Remove {value}',
+  'dashboard.empty_tab_editing': 'This tab is empty. Use “Add widget” to place one.',
+  'dashboard.empty_tab_view': 'This tab is empty.',
   'dashboard.add_widget': '+ Add widget',
   'dashboard.add_widget_2': 'Add widget',
   'dashboard.background_of': 'Background of “{name}”',

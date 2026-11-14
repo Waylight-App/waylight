@@ -189,6 +189,8 @@ export const de: Record<BaseMessageKey, string> = {
   'parcels.label_optional': 'Bezeichnung (optional)',
   'parcels.label': 'Bezeichnung',
   'parcels.remove': '{value} entfernen',
+  'dashboard.empty_tab_editing': 'Dieser Tab ist leer. Mit „Widget hinzufügen“ platzierst du eins.',
+  'dashboard.empty_tab_view': 'Dieser Tab ist leer.',
   'dashboard.add_widget': '+ Widget hinzufügen',
   'dashboard.add_widget_2': 'Widget hinzufügen',
   'dashboard.background_of': 'Hintergrund von „{name}“',

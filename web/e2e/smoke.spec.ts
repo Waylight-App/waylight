@@ -1629,6 +1629,41 @@ test('parcels of other carriers link to their tracking page and the mailbox is t
   await page.getByRole('button', { name: 'Close' }).click();
 });
 
+test('an empty tab offers "Add widget"; a click on a title adds no undo step (#276, #272)', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByTestId('dashboard')).toBeVisible();
+  await account(page, 'Edit');
+  await page.getByRole('button', { name: '+ Tab' }).click();
+  await page.getByRole('textbox', { name: 'Name' }).fill('Leer');
+  await page.getByRole('button', { name: 'Create' }).click();
+  await account(page, 'Done');
+  await expect(page.getByText('This tab is empty.', { exact: true })).toBeVisible();
+  // The button starts edit mode and opens the picker.
+  await page.getByRole('main').getByRole('button', { name: '+ Add widget' }).click();
+  await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('clock');
+  await page.getByRole('button', { name: /^Clock/ }).click();
+  await expect(page.getByRole('button', { name: '↶ Undo' })).toBeEnabled();
+  await page.getByRole('button', { name: '↶ Undo' }).click(); // removes the clock again
+  await expect(page.getByRole('button', { name: '↶ Undo' })).toBeDisabled();
+  await page.getByRole('main').getByRole('button', { name: '+ Add widget' }).first().click();
+  await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('clock');
+  await page.getByRole('button', { name: /^Clock/ }).click();
+  await page.getByRole('button', { name: '↶ Undo' }).click();
+  await page.getByRole('button', { name: '↷ Redo' }).click(); // the clock is back, nothing to undo but its add
+  // A click on the title bar without dragging must not add a step.
+  const clock = page.getByRole('group', { name: /^Clock, column 1, row 1/ });
+  const box = await clock.boundingBox();
+  if (!box) throw new Error('no clock');
+  await page.mouse.click(box.x + box.width / 2, box.y + 12);
+  await page.getByRole('button', { name: '↶ Undo' }).click();
+  await expect(page.getByText('This tab is empty. Use “Add widget” to place one.')).toBeVisible();
+  await account(page, 'Done');
+});
+
 test('two-factor authentication can be enabled and is required at login', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Password').fill(password);
