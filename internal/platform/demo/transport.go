@@ -37,6 +37,8 @@ func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return respond(req, http.StatusOK, "application/xml", ecbRates(now))
 	case host == "stooq.com":
 		return respond(req, http.StatusOK, "text/csv", stooqCloses(req.URL.Query().Get("s"), now))
+	case host == "api.openligadb.de":
+		return respond(req, http.StatusOK, "application/json", football(path, now))
 	case strings.HasPrefix(host, "api.awattar."):
 		return respond(req, http.StatusOK, "application/json", marketPrices(req))
 	case strings.HasSuffix(path, "/containers/json"):
@@ -174,6 +176,33 @@ func stooqCloses(symbol string, now time.Time) string {
 		fmt.Fprintf(&b, "%s,%.2f,%.2f,%.2f,%.2f,0\n", now.AddDate(0, 0, -d).Format(time.DateOnly), v, v, v, v)
 	}
 	return b.String()
+}
+
+// football answers OpenLigaDB (#285) with three clubs, a finished and an
+// upcoming match and a table.
+func football(path string, now time.Time) string {
+	teams := []map[string]any{
+		{"teamId": 1, "teamName": "FC Musterstadt", "shortName": "Musterstadt"},
+		{"teamId": 2, "teamName": "SV Beispielhausen", "shortName": "Beispielhausen"},
+		{"teamId": 3, "teamName": "VfB Demodorf", "shortName": "Demodorf"},
+	}
+	switch {
+	case strings.Contains(path, "/getavailableteams/"):
+		return mustJSON(teams)
+	case strings.Contains(path, "/getbltable/"):
+		return mustJSON([]map[string]any{
+			{"teamInfoId": 1, "teamName": "FC Musterstadt", "shortName": "Musterstadt", "points": 25, "matches": 11, "goalDiff": 12},
+			{"teamInfoId": 3, "teamName": "VfB Demodorf", "shortName": "Demodorf", "points": 20, "matches": 11, "goalDiff": 5},
+			{"teamInfoId": 2, "teamName": "SV Beispielhausen", "shortName": "Beispielhausen", "points": 14, "matches": 11, "goalDiff": -4},
+		})
+	}
+	return mustJSON([]map[string]any{
+		{"matchDateTimeUTC": now.AddDate(0, 0, -6).UTC().Format(time.RFC3339), "team1": teams[1], "team2": teams[0], "matchIsFinished": true,
+			"group":        map[string]any{"groupName": "11. Spieltag"},
+			"matchResults": []map[string]any{{"resultTypeID": 2, "pointsTeam1": 1, "pointsTeam2": 2}}},
+		{"matchDateTimeUTC": now.AddDate(0, 0, 3).UTC().Format(time.RFC3339), "team1": teams[0], "team2": teams[2], "matchIsFinished": false,
+			"group": map[string]any{"groupName": "12. Spieltag"}, "matchResults": []any{}},
+	})
 }
 
 // marketPrices is an aWATTar answer (#288): 48 hourly day-ahead prices from
