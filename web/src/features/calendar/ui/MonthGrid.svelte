@@ -133,7 +133,7 @@
   }
   .wd {
     text-align: center;
-    font-size: 0.7em;
+    font-size: max(0.8rem, 0.7em); /* at least 12 px (#317) */
     color: var(--color-text-muted);
   }
   .day {
@@ -177,7 +177,7 @@
     background: var(--event-color, var(--color-accent));
   }
   .more {
-    font-size: 0.75em;
+    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
     line-height: 1;
     color: var(--color-text-muted);
   }

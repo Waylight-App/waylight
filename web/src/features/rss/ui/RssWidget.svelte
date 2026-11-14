@@ -169,7 +169,7 @@
     color: var(--color-text-muted);
   }
   .meta {
-    font-size: 0.75em;
+    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
   }
   .later {
     padding: 0 var(--space-1);

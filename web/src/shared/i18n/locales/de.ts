@@ -191,6 +191,14 @@ export const de: Record<BaseMessageKey, string> = {
   'parcels.remove': '{value} entfernen',
   'dashboard.empty_tab_editing': 'Dieser Tab ist leer. Mit „Widget hinzufügen“ platzierst du eins.',
   'dashboard.empty_tab_view': 'Dieser Tab ist leer.',
+  'dashboard.edit_mode_hint':
+    'Bearbeitungsmodus: Titelleiste ziehen zum Verschieben, Ecke zum Vergrößern, Esc zum Beenden.',
+  'dashboard.edit_actions': 'Bearbeitungsaktionen',
+  'dashboard.done': 'Fertig',
+  'dashboard.cancel': 'Abbrechen',
+  'dashboard.tab_actions': 'Aktionen für Tab {name}',
+  'dashboard.tab_actions_button': 'Tab-Aktionen',
+  'dashboard.rename_hint': 'Doppelklick oder F2 zum Umbenennen',
   'dashboard.add_widget': '+ Widget hinzufügen',
   'dashboard.add_widget_2': 'Widget hinzufügen',
   'dashboard.background_of': 'Hintergrund von „{name}“',
@@ -1264,6 +1272,7 @@ export const de: Record<BaseMessageKey, string> = {
   'shortcuts.search': 'Schnellsuche öffnen',
   'shortcuts.tabs': 'Zu Tab 1 bis 9 wechseln',
   'shortcuts.edit': 'Bearbeitungsmodus starten oder beenden',
+  'shortcuts.finish_edit': 'Bearbeitungsmodus beenden',
   'shortcuts.help': 'Diese Übersicht anzeigen',
   'shortcuts.hint':
     'Tastenkürzel wirken nicht, während du in einem Feld tippst oder ein Dialog offen ist. Im Bearbeitungsmodus lassen sich Widgets mit den Pfeiltasten verschieben.',

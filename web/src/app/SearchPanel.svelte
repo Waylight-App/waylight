@@ -447,7 +447,7 @@
   }
   .group {
     padding: var(--space-2) var(--space-2) 2px;
-    font-size: 0.75em;
+    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -483,7 +483,7 @@
   }
   kbd {
     flex-shrink: 0;
-    font-size: 0.75rem;
+    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
     border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: 0 6px;

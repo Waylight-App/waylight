@@ -72,7 +72,7 @@
     box-shadow: 0 0 0 2px #fff;
   }
   figcaption {
-    font-size: 0.7em;
+    font-size: max(0.8rem, 0.7em); /* at least 12 px (#317) */
     color: #e5e7eb;
     padding: 2px 6px;
   }
