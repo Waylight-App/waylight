@@ -1,0 +1,120 @@
+# Navigation of the documentation site (#268). The pages in docs/ are plain
+# Markdown and read fine on GitHub; this file only adds the structure a site
+# generator needs. It is built with Zensical, the successor of Material for
+# MkDocs (in maintenance mode since November 2025), which reads this file
+# as it is. Preview locally with:
+#   pip install zensical && zensical serve
+site_name: trisse-home
+site_description: A self-hosted start page for your everyday life and your home server.
+repo_url: https://github.com/itadori26/trisse-home
+edit_uri: edit/main/docs/
+docs_dir: docs
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Home: index.md
+  - Is it for me?:
+      - What trisse-home is and is not: about.md
+      - Feature overview: features.md
+      - Comparison: comparison.md
+      - FAQ: faq.md
+  - Get started:
+      - Getting started: getting-started.md
+      - Raspberry Pi: raspberry-pi.md
+      - Native install: native-install.md
+      - First steps: first-steps.md
+  - Use it:
+      - Tabs and widgets: dashboard.md
+      - Search and quick capture: search.md
+      - Accounts, guests and kiosk displays: accounts.md
+      - Appearance: appearance.md
+      - Phones, offline and the extension: apps-and-offline.md
+      - Accessibility: accessibility.md
+      - Modules:
+          - modules/README.md
+          - AI summaries: modules/summary.md
+          - Device display mode: modules/device.md
+          - Drop zone: modules/drop.md
+          - Fuel prices: modules/fuel.md
+          - Game deals: modules/gamedeals.md
+          - Habits: modules/habits.md
+          - Holidays: modules/holidays.md
+          - Immich: modules/immich.md
+          - JSON widget: modules/apiwidget.md
+          - Jellyfin and Plex: modules/media.md
+          - Music releases: modules/releases.md
+          - Parcels from e-mails: parcels-mail.md
+          - Read later: modules/readlater.md
+          - Sonarr, Radarr, Prowlarr: modules/arr.md
+          - Space: modules/space.md
+          - Study progress: modules/study.md
+          - To-do lists (CalDAV): modules/todos.md
+  - Run it:
+      - Configuration: configuration.md
+      - Host integrations: host-integrations.md
+      - Notifications and job monitoring: notifications.md
+      - Backups and restore: backups.md
+      - Updates and rollback: updates.md
+      - Reverse proxy and SSO: reverse-proxy.md
+      - API tokens: api-tokens.md
+      - Prometheus metrics: metrics.md
+      - Demo mode: demo.md
+      - Deploy from source: deploy.md
+  - Security:
+      - Security model: security-model.md
+      - Outbound requests: outbound-requests.md
+      - Security policy: https://github.com/itadori26/trisse-home/blob/main/SECURITY.md
+  - Develop:
+      - Development setup: development.md
+      - Developer guide: developer-guide.md
+      - Adding a module: adding-a-module.md
+      - Architecture: architecture.md
+      - Decision records:
+          - adr/README.md
+          - "0001 – Strict Clean Architecture for every module": adr/0001-clean-architecture.md
+          - "0002 – Go with the standard library for the backend": adr/0002-go-backend.md
+          - "0003 – SQLite via a pure-Go driver": adr/0003-sqlite.md
+          - "0004 – Svelte 5 SPA embedded into the binary": adr/0004-svelte-spa.md
+          - "0005 – Single-user auth with setup token and sessions": adr/0005-single-user-auth.md
+          - "0006 – Background jobs and cache-aside for integrations": adr/0006-background-jobs-cache-aside.md
+          - "0007 – Own grid implementation for the dashboard": adr/0007-own-dashboard-grid.md
+          - "0008 – Sample data after the first setup": adr/0008-sample-data-on-setup.md
+          - "0009 – Two-factor authentication with TOTP": adr/0009-two-factor-authentication.md
+          - "ADR 0010: Internationalisation without a framework": adr/0010-internationalisation.md
+          - "ADR 0011: Lean by default (dependency policy and resource budgets)": adr/0011-lean-by-default.md
+          - "ADR 0012: Owner and read-only guest accounts": adr/0012-owner-and-guest-roles.md
+          - "ADR 0013: Single sign-on with OpenID Connect and trusted proxy headers": adr/0013-single-sign-on.md
+          - "ADR 0014: Passkeys as second factor with a minimal WebAuthn implementation": adr/0014-passkeys.md
+          - "ADR 0015: Raspberry Pi appliance image": adr/0015-raspberry-pi-image.md
+          - "ADR 0016: Cross-module read models": adr/0016-cross-module-read-models.md
+      - Contributing: https://github.com/itadori26/trisse-home/blob/main/CONTRIBUTING.md
+      - Roadmap: https://github.com/itadori26/trisse-home/blob/main/ROADMAP.md

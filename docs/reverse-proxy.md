@@ -9,7 +9,7 @@ proxy that sets `X-Forwarded-For` works.
 
 ## 1. Join the proxy network
 
-Copy [`compose.proxy.example.yaml`](../compose.proxy.example.yaml) to
+Copy [`compose.proxy.example.yaml`](https://github.com/itadori26/trisse-home/blob/main/compose.proxy.example.yaml) to
 `compose.override.yaml`, set your domain and the name of the network the
 proxy container is attached to. Compose merges the override automatically.
 
