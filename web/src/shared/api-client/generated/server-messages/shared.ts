@@ -13,7 +13,7 @@ export const serverMessages = {
   srv_9cdf89c6055b9583: "The ID must have 8 to 64 letters, digits, '-' or '_'.",
   srv_022f9a869dd885c4: "The MAC address must look like aa:bb:cc:dd:ee:ff.",
   srv_33e6dad254bc6264: "The URL must start with http:// or https://.",
-  srv_7bd9cc89bdd1560a: "The Wake-on-LAN relay did not answer. Is COMPOSE_PROFILES=wol set (see README)?",
+  srv_39f1fbfcd5e03469: "The Wake-on-LAN relay did not answer. Is COMPOSE_PROFILES=wol set (see docs/host-integrations.md)?",
   srv_693550da2f4a6610: "The address must not contain a query (?…) or fragment (#…).",
   srv_4210fb1d03642aa8: "The address or account changed: enter the password or token again.",
   srv_28004c9379be9be3: "The background image must be an http(s) URL.",

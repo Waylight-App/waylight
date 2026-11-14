@@ -91,6 +91,6 @@
     border-radius: 999px;
     background: var(--color-accent);
     color: var(--color-accent-contrast);
-    font-size: 0.75rem;
+    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
   }
 </style>

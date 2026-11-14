@@ -9,7 +9,10 @@ const announcer = new Announcer((message) => {
   setTimeout(() => (live.message = message), 100);
 });
 
-/** Politely announces message to screen readers (deduplicated). */
-export function announce(message: string): void {
-  announcer.announce(message);
+/**
+ * Politely announces message to screen readers. Messages are deduplicated
+ * for a few minutes unless repeat is set (answers to the user's own keys).
+ */
+export function announce(message: string, options: { repeat?: boolean } = {}): void {
+  announcer.announce(message, options.repeat);
 }

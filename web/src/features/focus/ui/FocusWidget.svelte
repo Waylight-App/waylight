@@ -220,11 +220,11 @@
     border-radius: 2px 2px 0 0;
   }
   .label {
-    font-size: 0.7rem;
+    font-size: max(0.8rem, 0.7rem); /* at least 12 px (#317) */
     color: var(--color-text-muted);
   }
   figcaption {
     grid-column: 1 / -1;
-    font-size: 0.75rem;
+    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
   }
 </style>

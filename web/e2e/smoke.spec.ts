@@ -94,10 +94,12 @@ test('widgets can be moved and resized with the keyboard', async ({ page }) => {
 
   const clock = page.getByRole('group', { name: /^Clock, column 1, row 1/ });
   await clock.focus();
+  // The new place is announced through the app's shared live region (#257).
+  const live = page.locator('[aria-live="polite"][aria-atomic="true"]');
   await page.keyboard.press('ArrowRight');
-  await expect(page.getByText(/^Clock moved: column 2, row 1/)).toBeAttached();
+  await expect(live).toHaveText(/^Clock moved: column 2, row 1/);
   await page.keyboard.press('Shift+ArrowRight');
-  await expect(page.getByText(/^Clock resized: column 2, row 1, \d+ × \d+ cells/)).toBeAttached();
+  await expect(live).toHaveText(/^Clock resized: column 2, row 1, \d+ × \d+ cells/);
   await expect(page.getByRole('group', { name: /^Clock, column 2, row 1/ })).toBeFocused();
   await account(page, 'Done');
 
@@ -202,6 +204,45 @@ test('settings sections of self-registering features load on demand (#193)', asy
   await account(page, 'Settings');
   await page.getByRole('button', { name: 'Proxmox', exact: true }).click();
   await expect(page.getByLabel('Proxmox VE URL')).toBeVisible();
+});
+
+test('settings: grouped navigation with keyboard and a list view on phones (#261)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByTestId('dashboard')).toBeVisible();
+  await account(page, 'Settings');
+  const nav = page.getByRole('navigation', { name: 'Settings sections' });
+  await expect(nav.getByRole('group', { name: 'Integrations' })).toBeVisible();
+  // A section in a group; the selected entry is marked.
+  await nav
+    .getByRole('group', { name: 'Integrations' })
+    .getByRole('button', { name: 'Proxmox', exact: true })
+    .click();
+  await expect(page.getByLabel('Proxmox VE URL')).toBeVisible();
+  await expect(nav.getByRole('button', { name: 'Proxmox', exact: true })).toHaveAttribute(
+    'aria-current',
+    'true',
+  );
+  // Arrow keys move between entries, Enter selects.
+  await nav.getByRole('button', { name: 'Appearance', exact: true }).click();
+  await page.keyboard.press('ArrowDown');
+  await expect(nav.getByRole('button', { name: 'Search', exact: true })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(nav.getByRole('button', { name: 'Search', exact: true })).toHaveAttribute(
+    'aria-current',
+    'true',
+  );
+  await page.getByRole('button', { name: 'Close' }).click();
+
+  // Phones: first the list, then one section with a way back.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await account(page, 'Settings');
+  await nav.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(nav).toBeHidden();
+  await page.getByRole('button', { name: 'All settings' }).click();
+  await expect(nav).toBeVisible();
+  await expect(nav.getByRole('button', { name: 'Search', exact: true })).toBeFocused();
 });
 
 test('a guest sees only the shared tab and cannot edit', async ({ page }) => {
@@ -1435,7 +1476,21 @@ test('the drop zone shares text and files and serves files as downloads (#101)',
   expect(res.headers()['content-type']).toBe('application/octet-stream');
   expect(res.headers()['content-disposition']).toContain('attachment');
 
-  for (let i = 0; i < 2; i++) await page.getByRole('button', { name: 'Delete', exact: true }).first().click();
+  // Images get a thumbnail (#259), although the file is served as an attachment.
+  await page.getByLabel('File…').setInputFiles({
+    name: 'punkt.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64',
+    ),
+  });
+  const thumb = page.locator('li', { hasText: 'punkt.png' }).locator('img.thumb');
+  await expect(thumb).toBeVisible();
+  await expect.poll(() => thumb.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(1);
+  await expect(page.locator('li', { hasText: 'evil.html' }).locator('img')).toHaveCount(0);
+
+  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: 'Delete', exact: true }).first().click();
   await expect(page.getByText('Nothing here.', { exact: false })).toBeVisible();
 });
 
@@ -1627,6 +1682,86 @@ test('parcels of other carriers link to their tracking page and the mailbox is t
   await page.getByRole('button', { name: 'Save mailbox' }).click();
   await expect(page.getByRole('alert')).toContainText('could not be reached');
   await page.getByRole('button', { name: 'Close' }).click();
+});
+
+test('an empty tab offers "Add widget"; a click on a title adds no undo step (#276, #272)', async ({
+  page,
+}) => {
+  const loops: string[] = [];
+  page.on('console', (m) => m.text().includes('effect_update_depth_exceeded') && loops.push(m.text()));
+  await page.goto('/');
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByTestId('dashboard')).toBeVisible();
+  await account(page, 'Edit');
+  await page.getByRole('button', { name: '+ Tab' }).click();
+  await page.getByRole('textbox', { name: 'Name' }).fill('Leer');
+  await page.getByRole('button', { name: 'Create' }).click();
+  await account(page, 'Done');
+  await expect(page.locator('p.empty')).toContainText('This tab is empty.');
+  // The button starts edit mode and opens the picker.
+  await page.locator('p.empty').getByRole('button', { name: '+ Add widget' }).click();
+  await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('clock');
+  await page.getByRole('button', { name: /^Clock/ }).click();
+  // The clock has settings: its dialog opens after adding.
+  await page.getByRole('dialog', { name: 'Clock settings' }).getByRole('button', { name: 'Close' }).click();
+  const undo = page.getByRole('button', { name: '↶ Undo' });
+  await expect(undo).toBeEnabled();
+  // A click on the title bar without dragging must not add a step (#272):
+  // one undo removes the clock again.
+  const clock = page.getByRole('group', { name: /^Clock, column 1, row 1/ });
+  const box = await clock.boundingBox();
+  if (!box) throw new Error('no clock');
+  await page.mouse.click(box.x + box.width / 2, box.y + 12);
+  await undo.click();
+  await expect(clock).toBeHidden();
+  await expect(undo).toBeDisabled();
+  await account(page, 'Done');
+  expect(loops).toEqual([]);
+});
+
+test('edit mode: Done button, Esc, tab menu, rename by double-click, delete in a dialog (#271, #274)', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByTestId('dashboard')).toBeVisible();
+
+  await account(page, 'Edit');
+  await expect(page.getByText('Edit mode: drag a title bar to move')).toBeVisible();
+  const bar = page.getByRole('toolbar', { name: 'Edit actions' });
+  await bar.getByRole('button', { name: '✓ Done' }).click();
+  await expect(bar).toBeHidden();
+
+  await account(page, 'Edit');
+  await page.keyboard.press('Escape');
+  await expect(bar).toBeHidden();
+
+  // Tab actions live in one menu; double-click renames.
+  await account(page, 'Edit');
+  await page.getByRole('button', { name: '+ Tab' }).click();
+  await page.getByRole('textbox', { name: 'Name' }).fill('Menü');
+  await page.getByRole('button', { name: 'Create' }).click();
+  const tabs = page.getByRole('navigation', { name: 'Dashboard tabs' });
+  await tabs.getByRole('button', { name: 'Menü', exact: true }).dblclick();
+  await page.getByRole('textbox', { name: 'Name' }).fill('Umbenannt');
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(tabs.getByRole('button', { name: 'Umbenannt', exact: true })).toBeVisible();
+  await tabs.locator('.tab', { hasText: 'Umbenannt' }).getByRole('button', { name: 'Tab actions' }).click();
+  const menu = page.getByRole('menu', { name: 'Actions for tab Umbenannt' });
+  await expect(menu.getByRole('menuitem', { name: 'Rename tab' })).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Escape'); // closes only the menu, edit mode stays
+  await expect(menu).toBeHidden();
+  await expect(bar).toBeVisible();
+  await tabs.locator('.tab', { hasText: 'Umbenannt' }).getByRole('button', { name: 'Tab actions' }).click();
+  await menu.getByRole('menuitem', { name: 'Delete tab' }).click();
+  const confirm = page.getByRole('dialog', { name: 'Delete tab' });
+  await expect(confirm).toContainText('Delete the tab “Umbenannt” and all its widgets?');
+  await confirm.getByRole('button', { name: 'Delete tab' }).click();
+  await expect(tabs.getByRole('button', { name: 'Umbenannt', exact: true })).toBeHidden();
+  await bar.getByRole('button', { name: '✓ Done' }).click();
 });
 
 test('two-factor authentication can be enabled and is required at login', async ({ page }) => {

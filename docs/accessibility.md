@@ -38,6 +38,7 @@ The `?` overview in the app is the reference; this table can lag behind it. Dial
 
 - Widgets have headings, buttons have names that include their visible text (WCAG 2.5.3), and decorative icons are hidden.
 - One shared **polite live region** announces a widget whose updates start failing ("Weather: update failed").
+- In edit mode, moving or resizing a widget with the arrow keys announces its new place through the same region ("Weather moved: column 5, row 2, 4 × 3 cells"), or that it cannot move any further. Dragging with the mouse stays silent.
   - It says this once, when the status changes, not on every failed poll.
   - The same message is not repeated within five minutes, so polling widgets cannot flood it.
 - Form errors use `role="alert"`.
@@ -53,7 +54,6 @@ With _reduce motion_ switched on in the operating system:
 ## Known limitations
 
 - **Not yet audited manually with NVDA, JAWS or VoiceOver.** Automated checks find roughly a third of WCAG problems. Findings from a manual audit will be tracked as sub-issues of #113.
-- Drag & drop in edit mode has a keyboard alternative (arrow keys), but no announcement of the new position yet.
 - Charts (sparklines, heatmaps, radar) show their key values as text. The radar image itself has no text alternative beyond its title.
 - Custom CSS and imported themes can lower the contrast. Only the built-in themes are checked.
 

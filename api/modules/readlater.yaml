@@ -73,6 +73,16 @@ paths:
         "200": { description: OK, content: { application/json: { schema: { type: object, properties: { added: { type: integer }, duplicates: { type: integer }, invalid: { type: integer } } } } } }
         "413": { description: Larger than 5 MB }
         "422": { $ref: "#/components/responses/Invalid" }
+  /api/readlater/import/instapaper:
+    post:
+      tags: [readlater]
+      summary: Import an Instapaper CSV export (URL,Title,Selection,Folder,Timestamp; at most 5 MB, 2000 links); the folder "Archive" is imported as archived
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { text/csv: { schema: { type: string } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { added: { type: integer }, duplicates: { type: integer }, invalid: { type: integer } } } } } }
+        "413": { description: Larger than 5 MB }
+        "422": { $ref: "#/components/responses/Invalid" }
 
 schemas:
   ReadLaterArticle:

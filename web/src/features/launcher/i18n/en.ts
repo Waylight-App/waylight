@@ -10,6 +10,9 @@ export const en = {
   'launcher.show_all_bookmarks': 'Show all {n}',
   'launcher.no_services': 'No matching services.',
   'launcher.no_bookmarks': 'No matching bookmarks.',
+  'launcher.none_services': 'No services yet. Add them under Settings → Services.',
+  'launcher.none_bookmarks':
+    'No bookmarks yet. Add them in a bookmarks widget or import them under Settings → Import & export.',
   'launcher.online_ms': 'online · {ms} ms',
   'launcher.offline': 'offline',
   'launcher.unknown': 'not checked yet',

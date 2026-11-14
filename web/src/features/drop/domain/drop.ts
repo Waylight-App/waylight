@@ -33,6 +33,15 @@ export function validateFile(f: { size: number }): string | null {
   return null;
 }
 
+// Image types the server serves with their own content type (SafeInlineType);
+// SVG is sent as application/octet-stream and therefore never previewed.
+const PREVIEWABLE = new Set(['image/png', 'image/jpeg', 'image/gif', 'image/webp']);
+
+/** Whether a dropped file gets a thumbnail in the list (#259). */
+export function isPreviewable(contentType: string): boolean {
+  return PREVIEWABLE.has(contentType.split(';')[0]?.trim().toLowerCase() ?? '');
+}
+
 /** "1.2 MB" style sizes. */
 export function formatSize(n: number, locale: string): string {
   if (n < 1024) return `${n} B`;

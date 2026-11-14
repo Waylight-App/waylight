@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { EditHistory, type EditCommand } from '../domain/history';
+  import { EditHistory, type EditCommand, layoutCommand } from '../domain/history';
   import { t } from '../../../shared/i18n';
   import type { Snippet } from 'svelte';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -23,7 +23,8 @@
   import { portal } from '../../../shared/ui/portal';
   import { showTabBar } from '../domain/header';
   import { tick } from 'svelte';
-  import { onWidgetFocusRequest, pickWidget } from '../../../shared/ui/widgetFocus';
+  import { highlightWidget, onWidgetFocusRequest, pickWidget } from '../../../shared/ui/widgetFocus';
+  import { announce } from '../../../shared/a11y/live.svelte';
   import TabRulesDialog from './TabRulesDialog.svelte';
   import TextPrompt from './TextPrompt.svelte';
   import WidgetFrame from './WidgetFrame.svelte';
@@ -49,6 +50,10 @@
     tabBarTarget?: string;
     /** Reports the loaded tabs and the active one, e.g. for the greeting line. */
     onstate?: (tabs: Tab[], activeId: string) => void;
+    /** Starts edit mode (the "Add widget" button of an empty tab, #276). */
+    onedit?: () => void;
+    /** Finishes edit mode (the Done button of the action bar, #271). */
+    ondone?: () => void;
   }
   let {
     uc,
@@ -61,6 +66,8 @@
     chromeless,
     tabBarTarget = '',
     onstate,
+    onedit,
+    ondone,
   }: Props = $props();
 
   const ACTIVE_TAB_KEY = 'trisse-home.activeTab';
@@ -75,6 +82,7 @@
     | { kind: 'add-widget' }
     | { kind: 'new-tab' }
     | { kind: 'rename-tab'; tab: Tab }
+    | { kind: 'delete-tab'; tab: Tab }
     | { kind: 'background'; tab: Tab }
     | { kind: 'rules'; tab: Tab }
     | { kind: 'template'; tab: Tab }
@@ -103,12 +111,26 @@
       if (!target) return;
       if (target.tabId !== active?.id) select(target.tabId);
       await tick();
-      const el = document.querySelector<HTMLElement>(`[data-widget-id="${CSS.escape(target.widgetId)}"]`);
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el?.classList.add('flash');
-      setTimeout(() => el?.classList.remove('flash'), 1500);
+      highlightWidget(target.widgetId);
     }),
   );
+
+  // A new widget is shown, outlined and focused; with a settings form only
+  // after that dialog closed (#273).
+  let pendingHighlight = $state<string | null>(null);
+  $effect(() => {
+    const id = pendingHighlight;
+    if (!id || dialog) return;
+    pendingHighlight = null;
+    void tick().then(() => highlightWidget(id, true));
+  });
+
+  // Entering edit mode is announced once (#271).
+  let wasEditing = false;
+  $effect(() => {
+    if (editing && !wasEditing) announce(t('dashboard.edit_mode_hint'));
+    wasEditing = editing;
+  });
 
   function onmobile(tab: Tab, layout: MobileItem[]) {
     replaceTab({ ...tab, mobile: layout, mobileCustom: true });
@@ -215,9 +237,11 @@
     const tab = active;
     if (!tab) return;
     const before = tab.widgets;
+    const command = layoutCommand(tab.id, before, items);
+    if (!command) return; // nothing moved: no undo step, no save (#272)
     const byId = new Map(items.map((i) => [i.id, i]));
     replaceTab({ ...tab, widgets: tab.widgets.map((w) => ({ ...w, ...byId.get(w.id) })) });
-    record({ type: 'layout', tabId: tab.id, before: layoutOf(before), after: layoutOf(items) });
+    record(command);
     run(() => uc.saveLayout(tab.id, before, items));
   }
 
@@ -230,6 +254,7 @@
       replaceTab({ ...tab, widgets: [...tab.widgets, widget] });
       record({ type: 'add', widget });
       if (hasSettings(type.kind)) dialog = { kind: 'settings', widget };
+      pendingHighlight = widget.id;
     });
   }
 
@@ -240,6 +265,7 @@
       const copy = await uc.duplicateWidget(tab, widget);
       replaceTab({ ...tab, widgets: [...tab.widgets, copy] });
       record({ type: 'add', widget: copy });
+      pendingHighlight = copy.id;
     });
   }
 
@@ -367,8 +393,13 @@
     dialog = null;
   }
 
+  /** Asks in the app's own dialog instead of window.confirm() (#274). */
   function deleteTab(tab: Tab) {
-    if (!confirm(t('dashboard.confirm_delete_tab', { name: tab.name }))) return;
+    if (tabs.length > 1) dialog = { kind: 'delete-tab', tab };
+  }
+
+  function confirmDeleteTab(tab: Tab) {
+    dialog = null;
     run(async () => {
       await uc.deleteTab(tab.id);
       tabs = tabs.filter((t) => t.id !== tab.id);
@@ -407,6 +438,7 @@
   {/if}
 
   {#if error}<p class="error" role="alert">{error}</p>{/if}
+  {#if editing}<p class="edit-hint">{t('dashboard.edit_mode_hint')}</p>{/if}
 
   {#if active}
     {@const visible = active.widgets.filter((w) => available.has(w.kind))}
@@ -447,12 +479,21 @@
     {/if}
     {#if visible.length === 0 && loaded}
       <p class="empty muted">
-        This tab is empty. {#if editing}Use “Add widget” to place one.{:else}Switch to edit mode to add
-          widgets.{/if}
+        {t(editing ? 'dashboard.empty_tab_editing' : 'dashboard.empty_tab_view')}
+        {#if !editing && onedit}
+          <button
+            class="btn"
+            type="button"
+            onclick={() => {
+              onedit();
+              dialog = { kind: 'add-widget' };
+            }}>{t('dashboard.add_widget')}</button
+          >
+        {/if}
       </p>
     {/if}
     {#if editing}
-      <div class="edit-actions">
+      <div class="edit-actions" role="toolbar" aria-label={t('dashboard.edit_actions')}>
         <button class="btn btn-primary add" type="button" onclick={() => (dialog = { kind: 'add-widget' })}
           >{t('dashboard.add_widget')}</button
         >
@@ -466,13 +507,18 @@
           onclick={redo}
           aria-keyshortcuts="Control+Shift+Z">↷ {t('dashboard.redo')}</button
         >
+        {#if ondone}
+          <button class="btn btn-primary done" type="button" onclick={ondone} aria-keyshortcuts="Escape"
+            >✓ {t('dashboard.done')}</button
+          >
+        {/if}
       </div>
     {/if}
   {/if}
 </section>
 
 {#if toast}
-  <div class="toast" role="status">
+  <div class="toast" class:above-bar={editing} role="status">
     {toast.text}
     <button class="btn" type="button" onclick={undo}>{t('dashboard.undo')}</button>
   </div>
@@ -538,6 +584,17 @@
       replaceTab({ ...tab, name: renamed.name });
     }}
   />
+{:else if dialog?.kind === 'delete-tab'}
+  {@const tab = dialog.tab}
+  <Modal title={t('dashboard.delete_tab')} onclose={() => (dialog = null)}>
+    <p>{t('dashboard.confirm_delete_tab', { name: tab.name })}</p>
+    <div class="confirm-actions">
+      <button class="btn" type="button" onclick={() => (dialog = null)}>{t('dashboard.cancel')}</button>
+      <button class="btn btn-danger" type="button" onclick={() => confirmDeleteTab(tab)}
+        >{t('dashboard.delete_tab')}</button
+      >
+    </div>
+  </Modal>
 {:else if dialog?.kind === 'settings'}
   {@const widget = dialog.widget}
   <Modal
@@ -554,6 +611,11 @@
     flex-direction: column;
     gap: var(--space-4);
   }
+  .confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+  }
   .empty {
     text-align: center;
     padding: var(--space-6);
@@ -561,11 +623,35 @@
   .add {
     align-self: center;
   }
+  /* Stays at the bottom of the viewport while editing (#271). */
   .edit-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 15;
     display: flex;
     gap: var(--space-2);
     justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
+    margin-top: var(--space-3);
+    padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid var(--color-border);
+  }
+  .edit-actions .done {
+    margin-left: auto;
+  }
+  .edit-hint {
+    margin: 0 0 var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    border-left: 3px solid var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    border-radius: var(--radius-small);
+    font-size: 0.9rem;
+  }
+  .toast.above-bar {
+    bottom: calc(var(--space-4) + 64px);
   }
   .toast {
     position: fixed;

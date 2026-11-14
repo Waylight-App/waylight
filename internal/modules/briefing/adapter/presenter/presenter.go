@@ -13,9 +13,11 @@ import (
 // ItemDTO is one line of a section. severity is "info", "warning" or
 // "critical"; at is RFC 3339 or empty.
 type ItemDTO struct {
-	Text     string `json:"text"`
-	Detail   string `json:"detail"`
-	At       string `json:"at"`
+	Text   string `json:"text"`
+	Detail string `json:"detail"`
+	At     string `json:"at"`
+	// AllDay marks an all-day appointment: at is its day, not a time.
+	AllDay   bool   `json:"allDay,omitempty"`
 	Severity string `json:"severity"`
 }
 
@@ -63,7 +65,7 @@ func Briefing(v usecase.BriefingView) BriefingDTO {
 	for _, s := range v.Briefing.Sections {
 		dto := SectionDTO{Kind: string(s.Kind), More: s.More, Items: make([]ItemDTO, 0, len(s.Items))}
 		for _, it := range s.Items {
-			item := ItemDTO{Text: it.Text, Detail: it.Detail, Severity: severities[it.Severity]}
+			item := ItemDTO{Text: it.Text, Detail: it.Detail, AllDay: it.AllDay, Severity: severities[it.Severity]}
 			if !it.At.IsZero() {
 				item.At = it.At.Format(time.RFC3339)
 			}
