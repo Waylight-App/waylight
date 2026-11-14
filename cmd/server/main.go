@@ -234,6 +234,7 @@ func newHandler(a *app) http.Handler {
 		middleware.AllowList(a.cfg.AllowedCIDRs, a.log),
 		middleware.SecurityHeaders,
 		http.NewCrossOriginProtection().Handler,
+		middleware.Compress, // JSON of the API; static files are pre-compressed (#318)
 	)
 }
 
