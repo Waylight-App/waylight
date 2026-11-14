@@ -1632,6 +1632,8 @@ test('parcels of other carriers link to their tracking page and the mailbox is t
 test('an empty tab offers "Add widget"; a click on a title adds no undo step (#276, #272)', async ({
   page,
 }) => {
+  const loops: string[] = [];
+  page.on('console', (m) => m.text().includes('effect_update_depth_exceeded') && loops.push(m.text()));
   await page.goto('/');
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
@@ -1643,25 +1645,24 @@ test('an empty tab offers "Add widget"; a click on a title adds no undo step (#2
   await account(page, 'Done');
   await expect(page.locator('p.empty')).toContainText('This tab is empty.');
   // The button starts edit mode and opens the picker.
-  await page.getByRole('main').getByRole('button', { name: '+ Add widget' }).click();
+  await page.locator('p.empty').getByRole('button', { name: '+ Add widget' }).click();
   await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('clock');
   await page.getByRole('button', { name: /^Clock/ }).click();
-  await expect(page.getByRole('button', { name: '↶ Undo' })).toBeEnabled();
-  await page.getByRole('button', { name: '↶ Undo' }).click(); // removes the clock again
-  await expect(page.getByRole('button', { name: '↶ Undo' })).toBeDisabled();
-  await page.getByRole('main').getByRole('button', { name: '+ Add widget' }).first().click();
-  await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('clock');
-  await page.getByRole('button', { name: /^Clock/ }).click();
-  await page.getByRole('button', { name: '↶ Undo' }).click();
-  await page.getByRole('button', { name: '↷ Redo' }).click(); // the clock is back, nothing to undo but its add
-  // A click on the title bar without dragging must not add a step.
+  // The clock has settings: its dialog opens after adding.
+  await page.getByRole('dialog', { name: 'Clock settings' }).getByRole('button', { name: 'Close' }).click();
+  const undo = page.getByRole('button', { name: '↶ Undo' });
+  await expect(undo).toBeEnabled();
+  // A click on the title bar without dragging must not add a step (#272):
+  // one undo removes the clock again.
   const clock = page.getByRole('group', { name: /^Clock, column 1, row 1/ });
   const box = await clock.boundingBox();
   if (!box) throw new Error('no clock');
   await page.mouse.click(box.x + box.width / 2, box.y + 12);
-  await page.getByRole('button', { name: '↶ Undo' }).click();
-  await expect(page.getByText('This tab is empty. Use “Add widget” to place one.')).toBeVisible();
+  await undo.click();
+  await expect(clock).toBeHidden();
+  await expect(undo).toBeDisabled();
   await account(page, 'Done');
+  expect(loops).toEqual([]);
 });
 
 test('two-factor authentication can be enabled and is required at login', async ({ page }) => {
