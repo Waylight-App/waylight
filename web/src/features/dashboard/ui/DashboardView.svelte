@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { EditHistory, type EditCommand } from '../domain/history';
+  import { EditHistory, type EditCommand, layoutCommand } from '../domain/history';
   import { t } from '../../../shared/i18n';
   import type { Snippet } from 'svelte';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -215,9 +215,11 @@
     const tab = active;
     if (!tab) return;
     const before = tab.widgets;
+    const command = layoutCommand(tab.id, before, items);
+    if (!command) return; // nothing moved: no undo step, no save (#272)
     const byId = new Map(items.map((i) => [i.id, i]));
     replaceTab({ ...tab, widgets: tab.widgets.map((w) => ({ ...w, ...byId.get(w.id) })) });
-    record({ type: 'layout', tabId: tab.id, before: layoutOf(before), after: layoutOf(items) });
+    record(command);
     run(() => uc.saveLayout(tab.id, before, items));
   }
 
