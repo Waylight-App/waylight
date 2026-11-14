@@ -426,27 +426,32 @@ func (l *todoistList) Delete(ctx context.Context, ids ...string) error {
 
 // Providers routes each list to the provider of its kind.
 type Providers struct {
-	CalDAV  *CalDAVProviders
-	Todoist *TodoistProviders
+	byKind map[domain.SourceKind]usecase.Providers
 }
 
-// NewProviders returns the providers of all kinds on one HTTP client.
-func NewProviders(client *http.Client) Providers {
-	return Providers{CalDAV: NewCalDAVProviders(client), Todoist: NewTodoistProviders(client)}
+// NewProviders returns the providers of all kinds on one HTTP client;
+// tokens serves the lists that are connected by signing in (#171).
+func NewProviders(client *http.Client, tokens usecase.TokenSource) Providers {
+	return Providers{byKind: map[domain.SourceKind]usecase.Providers{
+		domain.KindCalDAV:    NewCalDAVProviders(client),
+		domain.KindTodoist:   NewTodoistProviders(client),
+		domain.KindMicrosoft: NewMicrosoftProvider(client, tokens),
+		domain.KindGoogle:    NewGoogleProvider(client, tokens),
+		domain.KindTickTick:  NewTickTickProvider(client, tokens),
+	}}
+}
+
+func (p Providers) of(kind domain.SourceKind) usecase.Providers {
+	if pr, ok := p.byKind[kind]; ok {
+		return pr
+	}
+	return p.byKind[domain.KindCalDAV]
 }
 
 // Open implements usecase.Providers.
-func (p Providers) Open(s domain.Source) usecase.Repository {
-	if s.Kind == domain.KindTodoist {
-		return p.Todoist.Open(s)
-	}
-	return p.CalDAV.Open(s)
-}
+func (p Providers) Open(s domain.Source) usecase.Repository { return p.of(s.Kind).Open(s) }
 
 // Discover implements usecase.Providers.
 func (p Providers) Discover(ctx context.Context, kind domain.SourceKind, u, user, pw string) ([]usecase.DiscoveredList, error) {
-	if kind == domain.KindTodoist {
-		return p.Todoist.Discover(ctx, kind, u, user, pw)
-	}
-	return p.CalDAV.Discover(ctx, kind, u, user, pw)
+	return p.of(kind).Discover(ctx, kind, u, user, pw)
 }

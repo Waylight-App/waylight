@@ -3,8 +3,10 @@ package gateway
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"trisse-home/internal/modules/todos/domain"
 )
@@ -39,8 +41,36 @@ func (r *SourceRepository) scan(row interface{ Scan(...any) error }) (domain.Sou
 	if err != nil {
 		return domain.Source{}, fmt.Errorf("decrypt password of list %s (was SECRET_KEY changed?): %w", s.ID, err)
 	}
-	s.Password = pw
+	if !s.Kind.OAuth() {
+		s.Password = pw
+		return s, nil
+	}
+	var g grantJSON
+	if err := json.Unmarshal([]byte(pw), &g); err != nil {
+		return domain.Source{}, fmt.Errorf("read sign-in of list %s: %w", s.ID, err)
+	}
+	s.Grant = domain.OAuthGrant{ClientSecret: g.ClientSecret, Access: g.Access, Refresh: g.Refresh, Expiry: g.Expiry}
 	return s, nil
+}
+
+// grantJSON is how the secret part of a signed-in list is stored
+// (encrypted as a whole, #171).
+type grantJSON struct {
+	ClientSecret string    `json:"clientSecret,omitempty"`
+	Access       string    `json:"access"`
+	Refresh      string    `json:"refresh,omitempty"`
+	Expiry       time.Time `json:"expiry,omitzero"`
+}
+
+// secret is what is encrypted into password_encrypted.
+func secret(s domain.Source) (string, error) {
+	if !s.Kind.OAuth() {
+		return s.Password, nil
+	}
+	g := s.Grant
+	//nolint:gosec // the JSON is encrypted with SECRET_KEY right after (Save) and never leaves the server
+	raw, err := json.Marshal(grantJSON{ClientSecret: g.ClientSecret, Access: g.Access, Refresh: g.Refresh, Expiry: g.Expiry})
+	return string(raw), err
 }
 
 // List implements usecase.SourceRepository (oldest first).
@@ -72,7 +102,11 @@ func (r *SourceRepository) Get(ctx context.Context, id string) (domain.Source, e
 
 // Save implements usecase.SourceRepository (insert or update).
 func (r *SourceRepository) Save(ctx context.Context, s domain.Source) error {
-	enc, err := r.cipher.Encrypt(s.Password)
+	plain, err := secret(s)
+	if err != nil {
+		return fmt.Errorf("encode secret: %w", err)
+	}
+	enc, err := r.cipher.Encrypt(plain)
 	if err != nil {
 		return fmt.Errorf("encrypt password: %w", err)
 	}
