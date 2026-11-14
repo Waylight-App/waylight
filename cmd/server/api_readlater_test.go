@@ -61,6 +61,24 @@ func init() {
 			if len(list) != 1 || list[0]["pending"] != true || list[0]["title"] != "Eins" {
 				t.Fatalf("imported: %v", list)
 			}
+			// Instapaper import (#256): the folder "Archive" becomes archived, a known link is a duplicate.
+			insta := "URL,Title,Selection,Folder,Timestamp\nhttps://a.example/1,Eins,,Unread,1700000000\nhttps://a.example/3,\"Drei, mit Komma\",,Archive,1700000200\n"
+			req, _ = http.NewRequest(http.MethodPost, c.base+"/api/readlater/import/instapaper", strings.NewReader(insta))
+			req.Header.Set("Content-Type", "text/csv")
+			req.Header.Set("X-CSRF-Token", c.csrf)
+			res, err = c.http.Do(req)
+			if err != nil {
+				t.Fatal(err)
+			}
+			body, _ = io.ReadAll(res.Body)
+			res.Body.Close()
+			if res.StatusCode != http.StatusOK || !strings.Contains(string(body), `"added":1`) || !strings.Contains(string(body), `"duplicates":1`) {
+				t.Fatalf("instapaper import: %d %s", res.StatusCode, body)
+			}
+			c.json(http.MethodGet, "/api/readlater?status=archived", nil, http.StatusOK, &list)
+			if len(list) != 2 {
+				t.Fatalf("archived after instapaper import: %v", list)
+			}
 			var s obj
 			c.json(http.MethodGet, "/api/readlater/settings", nil, http.StatusOK, &s)
 			if s["archiveDays"] != float64(0) {

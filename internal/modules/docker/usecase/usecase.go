@@ -69,7 +69,7 @@ func (uc *containers) Refresh(ctx context.Context) error {
 	}
 	for _, c := range list {
 		uc.sink.Observe(ctx, kernel.Observation{Kind: "container", Key: c.Name, Label: c.Name,
-			Healthy: c.State == "running" && c.Health() != domain.HealthUnhealthy, Detail: c.Status})
+			Healthy: !c.NeedsAttention(), Detail: c.Status})
 	}
 	domain.SortForDisplay(list)
 	s := domain.Summarise(list)

@@ -44,7 +44,10 @@ var (
 		{CarrierGLS, regexp.MustCompile(`(?i)gls-(?:pakete\.de|group\.(?:eu|com))/[^\s"'<>]*?(?:match=|parcel-?number=)([0-9A-Z]{8,14})`)},
 		{CarrierUPS, regexp.MustCompile(`(?i)ups\.com/[^\s"'<>]*?(?:tracknum|InquiryNumber1)=(1Z[0-9A-Z]{16})`)},
 	}
-	upsNumber   = regexp.MustCompile(`\b1Z[0-9A-Z]{16}\b`)
+	upsNumber = regexp.MustCompile(`\b1Z[0-9A-Z]{16}\b`)
+	// UPU S10 numbers of registered letters ("Einschreiben"), e.g. RR123456785DE.
+	s10Number   = regexp.MustCompile(`^[A-Z]{2}[0-9]{9}[A-Z]{2}$`)
+	s10Prefix   = regexp.MustCompile(`^[A-Z]{2}[0-9]{9}[A-Z]{2}`)
 	carrierName = map[Carrier]*regexp.Regexp{
 		CarrierDHL:    regexp.MustCompile(`(?i)\bdhl\b`),
 		CarrierHermes: regexp.MustCompile(`(?i)\bhermes\b`),
@@ -78,6 +81,11 @@ func ExtractCandidates(m Mail) []Candidate {
 	}
 	for _, g := range keywordNumber.FindAllStringSubmatch(text, -1) {
 		add(g[1], "")
+		// The number group may run into the next words ("RR123456785DE wurde
+		// eingeliefert"); an S10 number at its start still counts.
+		if n := s10Prefix.FindString(strings.ToUpper(strings.ReplaceAll(g[1], " ", ""))); n != "" {
+			add(n, "")
+		}
 	}
 	for _, n := range upsNumber.FindAllString(text, -1) {
 		add(n, CarrierUPS)
@@ -90,7 +98,7 @@ func guessCarrier(m Mail, number string) Carrier {
 	if strings.HasPrefix(number, "1Z") {
 		return CarrierUPS
 	}
-	if strings.HasPrefix(number, "JJD") || strings.HasPrefix(number, "00340") {
+	if strings.HasPrefix(number, "JJD") || strings.HasPrefix(number, "00340") || s10Number.MatchString(number) && s10Check(number) {
 		return CarrierDHL
 	}
 	// The sender says most, then subject, then text.
@@ -129,6 +137,8 @@ func ValidNumber(c Carrier, n string) bool {
 			return gs1Check(n[2:]) // SSCC behind the "00" application identifier
 		case digits:
 			return len(n) == 12 || len(n) == 14 || len(n) == 20
+		case s10Number.MatchString(n):
+			return s10Check(n) // registered mail of Deutsche Post, tracked by DHL
 		}
 		return len(n) >= 10 && len(n) <= 14 // international, e.g. CX123456789DE
 	case CarrierHermes:
@@ -152,6 +162,27 @@ func gs1Check(s string) bool {
 		sum += d
 	}
 	return (10-sum%10)%10 == int(s[len(s)-1]-'0')
+}
+
+// s10Check validates the check digit of a UPU S10 number such as
+// RR123456785DE: the eight serial digits weighted 8 6 4 2 3 5 9 7, mod 11.
+func s10Check(s string) bool {
+	if !s10Number.MatchString(s) {
+		return false
+	}
+	weights := [8]int{8, 6, 4, 2, 3, 5, 9, 7}
+	sum := 0
+	for i, w := range weights {
+		sum += int(s[2+i]-'0') * w
+	}
+	check := 11 - sum%11
+	switch check {
+	case 10:
+		check = 0
+	case 11:
+		check = 5
+	}
+	return int(s[10]-'0') == check
 }
 
 // upsCheck validates the check digit of a 1Z number.

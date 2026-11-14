@@ -15,7 +15,7 @@ var (
 	ErrPasskeyNotFound    = kernel.NewPublicError(kernel.ErrNotFound, "The passkey does not exist.")
 	ErrPasskeyCloned      = kernel.NewPublicError(kernel.ErrUnauthorized, "This passkey reported an old signature counter and may have been cloned. Remove it and register it again.")
 	ErrTooManyPasskeys    = kernel.NewPublicError(kernel.ErrInvalid, "There are already 10 passkeys.")
-	ErrPasskeysNeedHTTPS  = kernel.NewPublicError(kernel.ErrNotFound, "Passkeys need HTTPS and PUBLIC_URL (see the README).")
+	ErrPasskeysNeedHTTPS  = kernel.NewPublicError(kernel.ErrNotFound, "Passkeys need HTTPS and PUBLIC_URL (see docs/accounts.md).")
 	ErrPasskeyChallenge   = kernel.NewPublicError(kernel.ErrUnauthorized, "The passkey request expired. Please try again.")
 	ErrPasskeyUnsupported = kernel.NewPublicError(kernel.ErrInvalid, "This passkey could not be verified.")
 )

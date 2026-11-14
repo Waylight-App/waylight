@@ -148,3 +148,18 @@ func (h *Handlers) ImportPocket(w http.ResponseWriter, r *http.Request) {
 	}
 	httpapi.WriteJSON(w, http.StatusOK, presenter.ImportReportDTO(rep))
 }
+
+// ImportInstapaper handles POST /api/readlater/import/instapaper with the CSV file as body.
+func (h *Handlers) ImportInstapaper(w http.ResponseWriter, r *http.Request) {
+	data, err := io.ReadAll(http.MaxBytesReader(w, r.Body, usecase.MaxImportBytes))
+	if err != nil {
+		httpapi.WriteError(w, http.StatusRequestEntityTooLarge, "too_large", "The export file must be at most 5 MB.")
+		return
+	}
+	rep, err := h.uc.ImportInstapaper(r.Context(), data)
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.ImportReportDTO(rep))
+}

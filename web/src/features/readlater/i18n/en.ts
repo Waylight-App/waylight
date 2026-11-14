@@ -10,8 +10,9 @@ export const en = {
   'readlater.after_days': 'after {n} days',
   'readlater.keep': 'never',
   'readlater.import_pocket': 'Import Pocket export…',
+  'readlater.import_instapaper': 'Import Instapaper export…',
   'readlater.import_hint':
-    'The CSV file from the Pocket export. The links are added at once; reader copies follow in the background, a few every five minutes.',
+    'The CSV file from the Pocket or Instapaper export. The links are added at once; reader copies follow in the background, a few every five minutes.',
   'readlater.import_report': '{added} added, {duplicates} already saved, {invalid} not importable.',
   'readlater.import_too_large': 'The export file must be at most 5 MB.',
   'readlater.read_later': 'Read later',
