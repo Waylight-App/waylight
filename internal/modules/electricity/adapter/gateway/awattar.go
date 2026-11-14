@@ -16,7 +16,7 @@ import (
 	"trisse-home/internal/modules/electricity/domain"
 )
 
-// DefaultAWATTarURLs are the public market data APIs of aWATTar (no API key;
+// DefaultAWATTarURL is the public market data API of aWATTar (no API key;
 // EPEX day-ahead prices of the bidding zone). "{tld}" is de or at.
 const DefaultAWATTarURL = "https://api.awattar.{tld}/v1"
 
