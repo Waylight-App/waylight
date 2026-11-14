@@ -55,7 +55,7 @@
     display: flex;
     gap: 4px;
     align-items: center;
-    font-size: 0.7rem;
+    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
     color: var(--color-text-muted);
     /* visibility (not only opacity) keeps the hidden badge away from screen
        readers; it switches at the end of the fade-out. */
@@ -81,13 +81,19 @@
   .badge.error {
     color: var(--color-danger);
   }
+  /* 24 × 24 px hit area around the small glyph (WCAG 2.5.8, #317). */
   .refresh {
+    display: inline-grid;
+    place-items: center;
+    min-width: 24px;
+    min-height: 24px;
     border: 0;
     background: none;
     color: inherit;
     cursor: pointer;
-    padding: 0 2px;
+    padding: 0;
     font: inherit;
+    font-size: 0.9rem;
   }
   @media (prefers-reduced-motion: reduce) {
     .badge {

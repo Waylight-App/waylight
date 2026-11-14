@@ -2,6 +2,14 @@
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import { type Feed, groupByCategory, type ImportReport } from '../domain/feed';
+  import {
+    catalogueLanguages,
+    type CatalogueEntry,
+    sameFeedUrl,
+    searchCatalogue,
+    validEntry,
+  } from '../domain/catalogue';
+  import { intlLocale } from '../../../shared/i18n';
   import type { RssUseCases } from '../usecase/rssUseCases';
 
   /** Props of the feed management section. */
@@ -36,6 +44,23 @@
   let report = $state<ImportReport | null>(null);
   let picker = $state<HTMLInputElement>();
   const groups = $derived(groupByCategory(feeds));
+
+  // Built-in catalogue (#289): loaded on demand from the app itself, no
+  // outside request until a source is subscribed.
+  let catalogue = $state<CatalogueEntry[] | null>(null);
+  let query = $state('');
+  let language = $state('');
+  const found = $derived(catalogue ? searchCatalogue(catalogue, query, language) : []);
+  const subscribed = (url: string) => feeds.some((f) => sameFeedUrl(f.url, url));
+  async function openCatalogue() {
+    if (catalogue) return (catalogue = null);
+    const raw = (await import('../catalogue/feeds.json')).default as unknown[];
+    catalogue = raw.filter(validEntry);
+    const ui = intlLocale().slice(0, 2);
+    language = catalogueLanguages(catalogue).includes(ui) ? ui : '';
+  }
+  const languageName = (code: string) =>
+    new Intl.DisplayNames([intlLocale()], { type: 'language' }).of(code) ?? code;
 
   async function importFile() {
     const file = picker?.files?.[0];
@@ -91,6 +116,51 @@
   <button class="btn" type="submit" disabled={busy}>{t('rss.subscribe')}</button>
 </form>
 <p>
+  <button class="btn" type="button" aria-expanded={catalogue !== null} onclick={openCatalogue}
+    >{t('rss.catalogue_browse')}</button
+  >
+</p>
+{#if catalogue}
+  <section class="catalogue" aria-label={t('rss.catalogue')}>
+    <div class="filters">
+      <input
+        class="input"
+        type="search"
+        bind:value={query}
+        placeholder={t('rss.catalogue_search')}
+        aria-label={t('rss.catalogue_search')}
+      />
+      <select class="input" bind:value={language} aria-label={t('rss.catalogue_language')}>
+        <option value="">{t('rss.catalogue_all_languages')}</option>
+        {#each catalogueLanguages(catalogue) as l (l)}<option value={l}>{languageName(l)}</option>{/each}
+      </select>
+    </div>
+    {#each found as g (g.topic)}
+      <h4 class="category">{t(`rss.topic_${g.topic}`)}</h4>
+      <ul class="list">
+        {#each g.entries as e (e.url)}
+          <li>
+            <span class="name"><strong>{e.title}</strong><br /><span class="muted small">{e.url}</span></span>
+            {#if subscribed(e.url)}
+              <span class="muted small">{t('rss.catalogue_subscribed')}</span>
+            {:else}
+              <button
+                class="btn"
+                type="button"
+                disabled={busy}
+                aria-label={t('rss.catalogue_add', { title: e.title })}
+                onclick={() => run(() => rss.subscribe(e.url))}>{t('rss.subscribe')}</button
+              >
+            {/if}
+          </li>
+        {/each}
+      </ul>
+    {:else}
+      <p class="muted">{t('rss.catalogue_none')}</p>
+    {/each}
+  </section>
+{/if}
+<p>
   <button class="btn btn-icon" type="button" disabled={busy} onclick={() => run(() => rss.refresh())}
     >{t('rss.refresh_all_feeds_now')}</button
   >
@@ -127,6 +197,23 @@
 {#if error}<p class="error" role="alert">{error}</p>{/if}
 
 <style>
+  .catalogue {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .filters {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+  .filters input {
+    flex: 1 1 12rem;
+  }
+  .filters select {
+    flex: 0 1 10rem;
+  }
   .list {
     list-style: none;
     padding: 0;
@@ -150,7 +237,7 @@
     color: var(--color-accent-contrast);
     border-radius: 999px;
     padding: 0 6px;
-    font-size: 0.75rem;
+    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
   }
   .add {
     display: flex;
