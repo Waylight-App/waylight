@@ -75,11 +75,16 @@ export class AuthUseCases {
   }
 
   /** Creates the account with the setup token from the server log. */
-  async setup(setupToken: string, password: string, confirmation: string): Promise<void> {
+  async setup(
+    setupToken: string,
+    password: string,
+    confirmation: string,
+    profile: 'everyday' | 'homelab' = 'everyday',
+  ): Promise<void> {
     const problem = validateNewPassword(password, confirmation);
     if (problem) throw new ValidationError(problem);
     if (setupToken.trim() === '') throw new ValidationError(t('auth.enter_setup_token'));
-    const session = await this.gateway.setup(setupToken.trim(), password);
+    const session = await this.gateway.setup(setupToken.trim(), password, profile);
     this.csrf.setCsrfToken(session.csrfToken);
   }
 

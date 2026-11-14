@@ -3,11 +3,14 @@
   import type { Container } from './container';
   import LazyComponent from './LazyComponent.svelte';
   import { definitionFor, iconFor, widgetDefinitions } from './widgets';
+  import { categoryShown, type StartProfile } from '../features/appearance/domain/appearance';
 
   /** Props of the dashboard page. */
   interface Props {
     container: Container;
     editing: boolean;
+    /** What the start page shows (#281). */
+    profile?: StartProfile;
     /** Widget kinds enabled in the backend. */
     widgetKinds: Set<string>;
     /** Element id in the top bar that hosts the tab bar (#167). */
@@ -19,7 +22,16 @@
     /** Finishes edit mode (#271). */
     ondone?: () => void;
   }
-  let { container, editing, widgetKinds, tabBarTarget, onstate, onedit, ondone }: Props = $props();
+  let {
+    container,
+    editing,
+    profile = 'homelab',
+    widgetKinds,
+    tabBarTarget,
+    onstate,
+    onedit,
+    ondone,
+  }: Props = $props();
 
   let view = $state<{ selectTabAt: (index: number) => void; undo: () => void; redo: () => void }>();
 
@@ -36,7 +48,13 @@
     view?.redo();
   }
 
-  const types = $derived(widgetDefinitions.filter((d) => widgetKinds.has(d.type.kind)).map((d) => d.type));
+  // The "everyday" profile hides home-server and network widgets from the
+  // picker (#281); widgets already placed stay.
+  const types = $derived(
+    widgetDefinitions
+      .filter((d) => widgetKinds.has(d.type.kind) && categoryShown(profile, d.type.category))
+      .map((d) => d.type),
+  );
 </script>
 
 <DashboardView

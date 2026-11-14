@@ -21,6 +21,10 @@ export interface AppearanceDTO {
    * Launcher is what the launcher lists (#189).
    */
   launcher: 'both' | 'services' | 'bookmarks';
+  /**
+   * Profile is what the start page shows (#281); empty on PUT keeps it.
+   */
+  profile: 'everyday' | 'homelab';
 }
 /**
  * ThemeDTO is a gallery theme.

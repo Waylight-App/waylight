@@ -75,6 +75,8 @@ schemas:
       language: { type: string, enum: ["", en, de], description: '"" follows the browser' }
       greeting: { type: boolean, description: Greeting line below the top bar (#167), off by default }
       greetingName: { type: string, maxLength: 40, description: Name used in the greeting; may be empty }
+      launcher: { type: string, enum: [both, services, bookmarks] }
+      profile: { type: string, enum: [everyday, homelab], description: "What the start page shows (#281): everyday hides home-server and network widgets and settings. Empty on PUT keeps the stored value" }
   ThemeFile:
     type: object
     additionalProperties: false

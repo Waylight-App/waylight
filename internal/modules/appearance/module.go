@@ -1,6 +1,7 @@
 package appearance
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 
@@ -16,6 +17,20 @@ type Module struct {
 	modules.Transferable
 	handlers *controller.Handlers
 	themes   *controller.ThemeHandlers
+	repo     usecase.Repository
+}
+
+// SetProfile stores the start-page profile chosen at the first setup
+// (#281; called from the composition root).
+func (m *Module) SetProfile(ctx context.Context, profile string) error {
+	a, err := m.repo.Load(ctx)
+	if err != nil {
+		return err
+	}
+	if err := a.SetProfile(profile); err != nil {
+		return err
+	}
+	return m.repo.Save(ctx, a)
 }
 
 // New builds the appearance module.
@@ -26,6 +41,7 @@ func New(db *sql.DB) *Module {
 		Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
 		handlers:     controller.NewHandlers(usecase.NewGetAppearance(repo), usecase.NewUpdateAppearance(repo)),
 		themes:       controller.NewThemeHandlers(themes),
+		repo:         repo,
 	}
 }
 

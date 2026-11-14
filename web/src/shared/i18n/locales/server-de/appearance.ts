@@ -40,4 +40,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_a7d52a4191c5896d: 'Es gibt kein eigenes CSS zum Wiederherstellen.',
   // Unknown token {token}.
   srv_213674f4c3cbfcf5: 'Unbekanntes Token {token}.',
+  // The start page shows everyday topics or also the home network.
+  srv_0b5bd2bd6b39fd9a: 'Die Startseite zeigt Alltagsthemen oder zusätzlich das Heimnetz.',
 };
