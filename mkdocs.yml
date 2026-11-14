@@ -1,7 +1,9 @@
 # Navigation of the documentation site (#268). The pages in docs/ are plain
 # Markdown and read fine on GitHub; this file only adds the structure a site
-# generator needs. Preview locally with:
-#   pip install mkdocs-material && mkdocs serve
+# generator needs. It is built with Zensical, the successor of Material for
+# MkDocs (in maintenance mode since November 2025), which reads this file
+# as it is. Preview locally with:
+#   pip install zensical && zensical serve
 site_name: trisse-home
 site_description: A self-hosted start page for your everyday life and your home server.
 repo_url: https://github.com/itadori26/trisse-home

@@ -100,5 +100,7 @@ in the same pull request and explain why
 Every module documents itself in `docs/modules/<name>.md` and its endpoints
 in `api/modules/<name>.yaml`; a test fails when either is missing. Pages for
 users and operators live in `docs/` and are listed in `mkdocs.yml`, which is
-the navigation of the future documentation site. Write them in plain
+the navigation of the future documentation site. Preview it with
+`pip install zensical && zensical serve`; `zensical build --strict` fails on
+broken links. Write them in plain
 English, for a reader with a task in mind.
