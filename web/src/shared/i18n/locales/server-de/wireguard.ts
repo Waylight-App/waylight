@@ -6,9 +6,9 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
-  // No WireGuard export found. Run scripts/wireguard-export.sh on the host (see README).
-  srv_9d762d7de49b8d86:
-    'Kein WireGuard-Export gefunden. Führe scripts/wireguard-export.sh auf dem Host aus (siehe README).',
+  // No WireGuard export found. Run scripts/wireguard-export.sh on the host (see docs/host-integrations.md).
+  srv_e560c7558d4cf5c3:
+    'Kein WireGuard-Export gefunden. Führe scripts/wireguard-export.sh auf dem Host aus (siehe docs/host-integrations.md).',
   // This is not a WireGuard public key.
   srv_e5774de61b49a80f: 'Das ist kein öffentlicher WireGuard-Schlüssel.',
 };

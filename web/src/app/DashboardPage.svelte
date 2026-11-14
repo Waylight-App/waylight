@@ -17,8 +17,10 @@
     tabBarTarget?: string;
     /** Reports tabs and the active tab to the shell. */
     onstate?: (tabs: Tab[], activeId: string) => void;
+    /** Starts edit mode; omitted for guests (#276). */
+    onedit?: () => void;
   }
-  let { container, editing, profile = 'homelab', widgetKinds, tabBarTarget, onstate }: Props = $props();
+  let { container, editing, profile = 'homelab', widgetKinds, tabBarTarget, onstate, onedit }: Props = $props();
 
   let view = $state<{ selectTabAt: (index: number) => void; undo: () => void; redo: () => void }>();
 
@@ -54,6 +56,7 @@
   chromeless={(kind) => !!definitionFor(kind)?.chromeless}
   {tabBarTarget}
   {onstate}
+  {onedit}
 >
   {#snippet content(widget: Widget)}
     {@const def = definitionFor(widget.kind)}

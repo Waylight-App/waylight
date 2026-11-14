@@ -94,7 +94,7 @@ func (b Briefing) Text(loc *time.Location) string {
 		sb.WriteString(labels[s.Kind] + ":\n")
 		for _, it := range s.Items {
 			sb.WriteString("• " + it.Text)
-			if !it.At.IsZero() && (s.Kind == SectionEvents || s.Kind == SectionIncidents) {
+			if !it.At.IsZero() && !it.AllDay && (s.Kind == SectionEvents || s.Kind == SectionIncidents) {
 				sb.WriteString(" (" + it.At.In(loc).Format("15:04") + ")")
 			}
 			if it.Detail != "" {

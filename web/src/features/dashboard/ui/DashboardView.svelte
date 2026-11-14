@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { EditHistory, type EditCommand } from '../domain/history';
+  import { EditHistory, type EditCommand, layoutCommand } from '../domain/history';
   import { t } from '../../../shared/i18n';
   import type { Snippet } from 'svelte';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -49,6 +49,8 @@
     tabBarTarget?: string;
     /** Reports the loaded tabs and the active one, e.g. for the greeting line. */
     onstate?: (tabs: Tab[], activeId: string) => void;
+    /** Starts edit mode (the "Add widget" button of an empty tab, #276). */
+    onedit?: () => void;
   }
   let {
     uc,
@@ -61,6 +63,7 @@
     chromeless,
     tabBarTarget = '',
     onstate,
+    onedit,
   }: Props = $props();
 
   const ACTIVE_TAB_KEY = 'trisse-home.activeTab';
@@ -215,9 +218,11 @@
     const tab = active;
     if (!tab) return;
     const before = tab.widgets;
+    const command = layoutCommand(tab.id, before, items);
+    if (!command) return; // nothing moved: no undo step, no save (#272)
     const byId = new Map(items.map((i) => [i.id, i]));
     replaceTab({ ...tab, widgets: tab.widgets.map((w) => ({ ...w, ...byId.get(w.id) })) });
-    record({ type: 'layout', tabId: tab.id, before: layoutOf(before), after: layoutOf(items) });
+    record(command);
     run(() => uc.saveLayout(tab.id, before, items));
   }
 
@@ -447,8 +452,17 @@
     {/if}
     {#if visible.length === 0 && loaded}
       <p class="empty muted">
-        This tab is empty. {#if editing}Use “Add widget” to place one.{:else}Switch to edit mode to add
-          widgets.{/if}
+        {t(editing ? 'dashboard.empty_tab_editing' : 'dashboard.empty_tab_view')}
+        {#if !editing && onedit}
+          <button
+            class="btn"
+            type="button"
+            onclick={() => {
+              onedit();
+              dialog = { kind: 'add-widget' };
+            }}>{t('dashboard.add_widget')}</button
+          >
+        {/if}
       </p>
     {/if}
     {#if editing}

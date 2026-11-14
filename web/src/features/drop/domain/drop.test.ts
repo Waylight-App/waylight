@@ -1,8 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
-import { expiresIn, formatSize, validateFile } from './drop';
+import { expiresIn, formatSize, isPreviewable, validateFile } from './drop';
 import { DropUseCases, type DropGateway } from '../usecase/dropUseCases';
 
 describe('drop zone (#101)', () => {
+  it('previews only image types the server serves as images (#259)', () => {
+    for (const ct of ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'IMAGE/PNG; charset=binary'])
+      expect(isPreviewable(ct)).toBe(true);
+    for (const ct of ['image/svg+xml', 'text/html', 'application/pdf', 'image/bmp', ''])
+      expect(isPreviewable(ct)).toBe(false);
+  });
   it('describes the expiry and sizes', () => {
     const now = new Date(2026, 10, 14, 8, 0);
     const at = (h: number) => ({ expiresAt: new Date(now.getTime() + h * 3600_000) });

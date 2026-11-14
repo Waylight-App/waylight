@@ -1,3 +1,4 @@
+import { newId } from '../../shared/id/uuid';
 import { ApiError } from '../../shared/api-client/http';
 import {
   discard,
@@ -62,7 +63,7 @@ export class OfflineSync {
 
   async record(change: Omit<PendingChange, 'key' | 'at'>): Promise<void> {
     await this.loaded;
-    this.update(enqueue(this.state, { ...change, key: crypto.randomUUID(), at: Date.now() }));
+    this.update(enqueue(this.state, { ...change, key: newId(), at: Date.now() }));
   }
 
   /** Sends the waiting changes in order; stops at the first network error. */

@@ -1,0 +1,19 @@
+{
+  "id": "tokyo-night",
+  "name": "Tokyo Night",
+  "author": "enkia, github.com/enkia/tokyo-night-vscode-theme (MIT)",
+  "scheme": "dark",
+  "tokens": {
+    "--color-bg": "#1a1b26",
+    "--color-surface": "#24283b",
+    "--color-surface-2": "#292e42",
+    "--color-border": "#3b4261",
+    "--color-text": "#c0caf5",
+    "--color-text-muted": "#a9b1d6",
+    "--color-accent": "#7aa2f7",
+    "--color-accent-contrast": "#1a1b26",
+    "--color-danger": "#f7768e",
+    "--color-success": "#9ece6a",
+    "--color-warning": "#e0af68"
+  }
+}

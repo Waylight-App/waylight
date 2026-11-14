@@ -98,10 +98,12 @@ test('widgets can be moved and resized with the keyboard', async ({ page }) => {
 
   const clock = page.getByRole('group', { name: /^Clock, column 1, row 1/ });
   await clock.focus();
+  // The new place is announced through the app's shared live region (#257).
+  const live = page.locator('[aria-live="polite"][aria-atomic="true"]');
   await page.keyboard.press('ArrowRight');
-  await expect(page.getByText(/^Clock moved: column 2, row 1/)).toBeAttached();
+  await expect(live).toHaveText(/^Clock moved: column 2, row 1/);
   await page.keyboard.press('Shift+ArrowRight');
-  await expect(page.getByText(/^Clock resized: column 2, row 1, \d+ × \d+ cells/)).toBeAttached();
+  await expect(live).toHaveText(/^Clock resized: column 2, row 1, \d+ × \d+ cells/);
   await expect(page.getByRole('group', { name: /^Clock, column 2, row 1/ })).toBeFocused();
   await account(page, 'Done');
 
@@ -1478,7 +1480,21 @@ test('the drop zone shares text and files and serves files as downloads (#101)',
   expect(res.headers()['content-type']).toBe('application/octet-stream');
   expect(res.headers()['content-disposition']).toContain('attachment');
 
-  for (let i = 0; i < 2; i++) await page.getByRole('button', { name: 'Delete', exact: true }).first().click();
+  // Images get a thumbnail (#259), although the file is served as an attachment.
+  await page.getByLabel('File…').setInputFiles({
+    name: 'punkt.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64',
+    ),
+  });
+  const thumb = page.locator('li', { hasText: 'punkt.png' }).locator('img.thumb');
+  await expect(thumb).toBeVisible();
+  await expect.poll(() => thumb.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(1);
+  await expect(page.locator('li', { hasText: 'evil.html' }).locator('img')).toHaveCount(0);
+
+  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: 'Delete', exact: true }).first().click();
   await expect(page.getByText('Nothing here.', { exact: false })).toBeVisible();
 });
 
@@ -1670,6 +1686,42 @@ test('parcels of other carriers link to their tracking page and the mailbox is t
   await page.getByRole('button', { name: 'Save mailbox' }).click();
   await expect(page.getByRole('alert')).toContainText('could not be reached');
   await page.getByRole('button', { name: 'Close' }).click();
+});
+
+test('an empty tab offers "Add widget"; a click on a title adds no undo step (#276, #272)', async ({
+  page,
+}) => {
+  const loops: string[] = [];
+  page.on('console', (m) => m.text().includes('effect_update_depth_exceeded') && loops.push(m.text()));
+  await page.goto('/');
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByTestId('dashboard')).toBeVisible();
+  await account(page, 'Edit');
+  await page.getByRole('button', { name: '+ Tab' }).click();
+  await page.getByRole('textbox', { name: 'Name' }).fill('Leer');
+  await page.getByRole('button', { name: 'Create' }).click();
+  await account(page, 'Done');
+  await expect(page.locator('p.empty')).toContainText('This tab is empty.');
+  // The button starts edit mode and opens the picker.
+  await page.locator('p.empty').getByRole('button', { name: '+ Add widget' }).click();
+  await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('clock');
+  await page.getByRole('button', { name: /^Clock/ }).click();
+  // The clock has settings: its dialog opens after adding.
+  await page.getByRole('dialog', { name: 'Clock settings' }).getByRole('button', { name: 'Close' }).click();
+  const undo = page.getByRole('button', { name: '↶ Undo' });
+  await expect(undo).toBeEnabled();
+  // A click on the title bar without dragging must not add a step (#272):
+  // one undo removes the clock again.
+  const clock = page.getByRole('group', { name: /^Clock, column 1, row 1/ });
+  const box = await clock.boundingBox();
+  if (!box) throw new Error('no clock');
+  await page.mouse.click(box.x + box.width / 2, box.y + 12);
+  await undo.click();
+  await expect(clock).toBeHidden();
+  await expect(undo).toBeDisabled();
+  await account(page, 'Done');
+  expect(loops).toEqual([]);
 });
 
 test('two-factor authentication can be enabled and is required at login', async ({ page }) => {

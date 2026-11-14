@@ -273,7 +273,7 @@ func (uc *briefing) readers(s Settings, now time.Time) map[domain.SectionKind]re
 		out[domain.SectionEvents] = func(ctx context.Context) ([]domain.Item, error) {
 			facts, err := src.Events.UpcomingEvents(ctx, tomorrow)
 			return mapFacts(facts, err, func(f EventFact) domain.Item {
-				return domain.Item{Text: f.Title, Detail: f.Location, At: f.Start}
+				return domain.Item{Text: f.Title, Detail: f.Location, At: f.Start, AllDay: f.AllDay}
 			})
 		}
 	}

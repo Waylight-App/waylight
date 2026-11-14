@@ -12,7 +12,7 @@ const DefaultStaleAfter = 2 * time.Hour
 
 // ErrNoExport is returned when no export exists (yet).
 var ErrNoExport = kernel.NewPublicError(kernel.ErrNotFound,
-	"No S.M.A.R.T. export found. Run scripts/smart-export.sh on the host (see README).")
+	"No S.M.A.R.T. export found. Run scripts/smart-export.sh on the host (see docs/host-integrations.md).")
 
 // Protocol of a disk.
 type Protocol string

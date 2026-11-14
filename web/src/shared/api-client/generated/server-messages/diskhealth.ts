@@ -2,7 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
-  srv_74822a0f2779c188: "No S.M.A.R.T. export found. Run scripts/smart-export.sh on the host (see README).",
+  srv_6bf218ac119ae629: "No S.M.A.R.T. export found. Run scripts/smart-export.sh on the host (see docs/host-integrations.md).",
 } as const;
 
 /** Key of a backend message. */
