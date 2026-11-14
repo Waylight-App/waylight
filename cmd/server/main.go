@@ -139,6 +139,9 @@ func build(ctx context.Context, cfg config.Config, log *slog.Logger) (*app, erro
 			return nil, err
 		}
 	}
+	if err := applyConfigFile(ctx, cfg, log, registry); err != nil {
+		return nil, err
+	}
 	return &app{cfg: cfg, log: log, db: db, auth: authModule, registry: registry}, nil
 }
 
@@ -208,7 +211,13 @@ func logNotifyError(log *slog.Logger, err error) {
 // newHandler builds the router with all module routes and the middleware chain.
 func newHandler(a *app) http.Handler {
 	r := router.New(a.auth.Guard)
+	managed := managedSections(a.registry)
 	for _, m := range a.registry.All() {
+		// Sections owned by CONFIG_FILE refuse their config routes (#88).
+		if c, ok := m.(modules.Configurable); ok && managed[c.ConfigSection()] {
+			m.RegisterRoutes(modules.ManagedRouter(r, c.ConfigRoutes()))
+			continue
+		}
 		m.RegisterRoutes(r)
 	}
 	r.Protected("GET /api/modules", a.registry.Handler(frontendOnlyWidgetKinds))

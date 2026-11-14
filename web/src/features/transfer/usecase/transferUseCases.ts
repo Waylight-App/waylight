@@ -6,6 +6,7 @@ export interface TransferGateway {
   import(file: unknown): Promise<ImportResult>;
   configUrl(): string;
   applyConfig(yaml: string): Promise<ConfigResult>;
+  managedSections(): Promise<string[]>;
 }
 
 /** Application logic of the transfer feature. */
@@ -27,6 +28,11 @@ export class TransferUseCases {
   /** URL that downloads trisse-home.yaml (#88). */
   configUrl(): string {
     return this.gateway.configUrl();
+  }
+
+  /** Sections owned by CONFIG_FILE; they are read-only in the UI (#88). */
+  managedSections(): Promise<string[]> {
+    return this.gateway.managedSections();
   }
 
   /** Applies a trisse-home.yaml; the server checks the whole file first. */

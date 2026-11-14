@@ -27,3 +27,12 @@ export interface ConfigResultDTO {
   applied: string[];
   failed: { [key: string]: string};
 }
+/**
+ * ConfigStatusDTO is returned by GET /api/transfer/config/status (#88).
+ */
+export interface ConfigStatusDTO {
+  /**
+   * Managed lists the sections CONFIG_FILE owns; empty without managed mode.
+   */
+  managed: string[];
+}

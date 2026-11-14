@@ -7,6 +7,8 @@ export const en = {
   'transfer.config_apply': 'Apply trisse-home.yaml…',
   'transfer.config_confirm':
     'Each section in the file replaces those settings completely; sections missing from the file stay as they are. Continue?',
+  'transfer.config_managed':
+    'Managed by CONFIG_FILE and read-only here: {sections}. Change them in the file and restart trisse-home.',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

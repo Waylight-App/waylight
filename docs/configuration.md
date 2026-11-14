@@ -31,6 +31,7 @@ Durations use Go syntax: `90s`, `15m`, `24h`, `720h`.
 | `TZ` | `UTC` | Time zone for logs, calendar times without a zone and tab rules, as an IANA name such as `Europe/Berlin`. |
 | `MODULES_DISABLED` | empty | Comma-separated modules to switch off, for example `docker,adguard`. Module names are listed in the [feature overview](features.md). |
 | `SAMPLE_DATA` | `true` | Fill a fresh installation with example tabs, widgets and data after setup. Existing data is never touched. |
+| `CONFIG_FILE` | – | Path to a `trisse-home.yaml` that is applied at every start. The sections it contains become read-only in the UI. See [Settings as a YAML file](config-as-code.md#managed-mode). |
 
 ## Network and access
 

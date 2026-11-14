@@ -91,3 +91,15 @@ var C = kernel.NewPublicError(kernel.ErrInvalid, "Media and arr.")
 		t.Error("a file of an owner without messages must be removed")
 	}
 }
+
+func TestOwnerOf(t *testing.T) {
+	for path, want := range map[string]string{
+		"internal/modules/notes/domain/note.go": "notes",
+		"internal/modules/configurable.go":      "shared",
+		"internal/shared/kernel/errors.go":      "shared",
+	} {
+		if got := ownerOf(path); got != want {
+			t.Errorf("%s: got %q, want %q", path, got, want)
+		}
+	}
+}

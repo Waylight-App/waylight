@@ -44,20 +44,51 @@ type ApplyResult struct {
 // Config exports and applies the config file (input port).
 type Config interface {
 	Export(ctx context.Context) ([]byte, error)
+	// Apply applies a file uploaded by the owner; managed sections are
+	// refused and reported as failed.
 	Apply(ctx context.Context, data []byte) (ApplyResult, error)
+	// ApplyManaged applies CONFIG_FILE at start-up. Every section must
+	// succeed; the sections in the file then become managed.
+	ApplyManaged(ctx context.Context, data []byte) ([]string, error)
+	// Managed lists the sections CONFIG_FILE owns.
+	Managed() []string
 }
+
+// errManagedSection is the reason reported for a section CONFIG_FILE owns.
+const errManagedSection = "managed by CONFIG_FILE"
 
 type configFile struct {
 	sources func() map[string]ConfigSource
 	codec   ConfigCodec
 	env     func(string) (string, bool)
 	audit   kernel.AuditSink
+	managed *Managed
 }
 
 // NewConfig returns the Config use case. sources is called per request so
 // modules registered later are included; env looks up ${NAME} references.
-func NewConfig(sources func() map[string]ConfigSource, codec ConfigCodec, env func(string) (string, bool), audit kernel.AuditSink) Config {
-	return &configFile{sources: sources, codec: codec, env: env, audit: audit}
+func NewConfig(sources func() map[string]ConfigSource, codec ConfigCodec, env func(string) (string, bool), audit kernel.AuditSink, managed *Managed) Config {
+	return &configFile{sources: sources, codec: codec, env: env, audit: audit, managed: managed}
+}
+
+func (uc *configFile) Managed() []string { return uc.managed.List() }
+
+func (uc *configFile) ApplyManaged(ctx context.Context, data []byte) ([]string, error) {
+	res, err := uc.apply(ctx, data, false)
+	if err != nil {
+		return nil, err
+	}
+	if len(res.Failed) > 0 {
+		var parts []string
+		for _, name := range domain.SectionOrder {
+			if reason, ok := res.Failed[name]; ok {
+				parts = append(parts, name+": "+reason)
+			}
+		}
+		return nil, fmt.Errorf("CONFIG_FILE: %s", strings.Join(parts, "; "))
+	}
+	uc.managed.Set(res.Applied)
+	return res.Applied, nil
 }
 
 func (uc *configFile) Export(ctx context.Context) ([]byte, error) {
@@ -81,6 +112,10 @@ func (uc *configFile) Export(ctx context.Context) ([]byte, error) {
 // missing variable leaves every section as it was. Sections missing from
 // the file are left alone; present ones are replaced as a whole.
 func (uc *configFile) Apply(ctx context.Context, data []byte) (ApplyResult, error) {
+	return uc.apply(ctx, data, true)
+}
+
+func (uc *configFile) apply(ctx context.Context, data []byte, respectManaged bool) (ApplyResult, error) {
 	src := uc.sources()
 	expand := func(s string) (string, error) { return domain.ExpandEnv(s, uc.env) }
 	target := func(name string) (any, bool) {
@@ -105,6 +140,10 @@ func (uc *configFile) Apply(ctx context.Context, data []byte) (ApplyResult, erro
 	for _, name := range domain.SectionOrder {
 		v, ok := present[name]
 		if !ok {
+			continue
+		}
+		if respectManaged && uc.managed.Has(name) {
+			res.Failed[name] = errManagedSection
 			continue
 		}
 		if err := src[name].ApplyConfig(ctx, v); err != nil {

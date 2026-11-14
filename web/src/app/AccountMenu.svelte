@@ -9,11 +9,13 @@
     editing: boolean;
     /** Guests cannot edit the layout. */
     canEdit: boolean;
+    /** Why editing is locked although the user may edit, e.g. CONFIG_FILE (#88). */
+    editLocked?: string;
     onedit: () => void;
     onsettings: () => void;
     onlogout: () => void;
   }
-  let { initial, editing, canEdit, onedit, onsettings, onlogout }: Props = $props();
+  let { initial, editing, canEdit, editLocked = '', onedit, onsettings, onlogout }: Props = $props();
 
   let open = $state(false);
   let trigger: HTMLButtonElement;
@@ -96,7 +98,12 @@
       tabindex="-1"
       {onkeydown}
     >
-      {#if canEdit}
+      {#if canEdit && editLocked}
+        <button type="button" role="menuitem" aria-disabled="true" class="locked">
+          <Icon name="pencil" size={18} />
+          <span class="label">{t('app.edit')}<span class="hint">{editLocked}</span></span>
+        </button>
+      {:else if canEdit}
         <button type="button" role="menuitem" onclick={() => choose(onedit)}>
           <Icon name={editing ? 'done' : 'pencil'} size={18} />
           {editing ? t('app.done') : t('app.edit')}
@@ -170,5 +177,17 @@
   [role='menuitem']:focus-visible {
     background: color-mix(in srgb, var(--color-accent) 10%, transparent);
     outline: none;
+  }
+  .locked {
+    cursor: default;
+    color: var(--color-text-muted, var(--color-text));
+  }
+  .label {
+    display: grid;
+  }
+  .hint {
+    font-size: 0.8em;
+    max-width: 16rem;
+    white-space: normal;
   }
 </style>

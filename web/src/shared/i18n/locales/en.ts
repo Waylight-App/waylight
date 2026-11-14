@@ -869,6 +869,7 @@ export const en = {
   'wireguard.offline': 'offline',
   'app.done': 'Done',
   'app.edit': 'Edit',
+  'app.edit_managed': 'The layout comes from the configuration file (CONFIG_FILE).',
   'adguard.blocked_label': 'Blocked',
   'adguard.protection_disabled': 'Protection disabled!',
   'auth.verify': 'Verify',
