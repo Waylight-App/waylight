@@ -1,10 +1,10 @@
 # Module documentation
 
 One file per module, `docs/modules/<name>.md` (#193): what it does, its
-configuration, the external requests it makes and its API. `make new-module`
-creates the skeleton. New modules are described here instead of in the shared
-tables of the [README](../../README.md), so two modules in development never
-edit the same lines.
+configuration, the outside requests it makes and its API. `make new-module`
+creates the skeleton. Each module also adds a single line to the
+[feature overview](../features.md); everything else lives in the module's own
+files, so two modules in development rarely edit the same lines.
 
 ## Why modules do not touch shared files
 
@@ -21,7 +21,7 @@ A module consists of files of its own; collectors find them by convention:
 | Settings section | `web/src/app/settings/<name>.ts` | `web/src/app/SettingsDialog.svelte` |
 | OpenAPI | `api/modules/<name>.yaml` (tags, paths, schemas) | `scripts/openapi` (`make openapi`) |
 | End-to-end check | `cmd/server/api_<name>_test.go` (`registerModuleE2E`: fake upstream, config override, check) | `cmd/server/e2e_registry_test.go` |
-| Documentation | `docs/modules/<name>.md` (what it does, configuration, outbound requests, API) | the directory listing; the README no longer lists modules |
+| Documentation | `docs/modules/<name>.md` (what it does, configuration, outbound requests, API) | the directory listing, plus one line in `docs/features.md` |
 | Search answers (optional) | `web/src/app/search/<name>.ts` (`defineSearch`: intents as data plus an answer source) | `web/src/app/searchSources.ts` |
 
 Existing modules that were added before this layout (the older entries in
