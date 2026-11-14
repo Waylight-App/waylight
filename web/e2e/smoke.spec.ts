@@ -1665,6 +1665,50 @@ test('an empty tab offers "Add widget"; a click on a title adds no undo step (#2
   expect(loops).toEqual([]);
 });
 
+test('edit mode: Done button, Esc, tab menu, rename by double-click, delete in a dialog (#271, #274)', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByTestId('dashboard')).toBeVisible();
+
+  await account(page, 'Edit');
+  await expect(page.getByText('Edit mode: drag a title bar to move')).toBeVisible();
+  const bar = page.getByRole('toolbar', { name: 'Edit actions' });
+  await bar.getByRole('button', { name: '✓ Done' }).click();
+  await expect(bar).toBeHidden();
+
+  await account(page, 'Edit');
+  await page.keyboard.press('Escape');
+  await expect(bar).toBeHidden();
+
+  // Tab actions live in one menu; double-click renames.
+  await account(page, 'Edit');
+  await page.getByRole('button', { name: '+ Tab' }).click();
+  await page.getByRole('textbox', { name: 'Name' }).fill('Menü');
+  await page.getByRole('button', { name: 'Create' }).click();
+  const tabs = page.getByRole('navigation', { name: 'Dashboard tabs' });
+  await tabs.getByRole('button', { name: 'Menü', exact: true }).dblclick();
+  await page.getByRole('textbox', { name: 'Name' }).fill('Umbenannt');
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(tabs.getByRole('button', { name: 'Umbenannt', exact: true })).toBeVisible();
+  await tabs.getByRole('button', { name: 'Actions for tab Umbenannt' }).click();
+  const menu = page.getByRole('menu', { name: 'Actions for tab Umbenannt' });
+  await expect(menu.getByRole('menuitem', { name: 'Rename tab' })).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Escape'); // closes only the menu, edit mode stays
+  await expect(menu).toBeHidden();
+  await expect(bar).toBeVisible();
+  await tabs.getByRole('button', { name: 'Actions for tab Umbenannt' }).click();
+  await menu.getByRole('menuitem', { name: 'Delete tab' }).click();
+  const confirm = page.getByRole('dialog', { name: 'Delete tab' });
+  await expect(confirm).toContainText('Delete the tab “Umbenannt” and all its widgets?');
+  await confirm.getByRole('button', { name: 'Delete tab' }).click();
+  await expect(tabs.getByRole('button', { name: 'Umbenannt', exact: true })).toBeHidden();
+  await bar.getByRole('button', { name: '✓ Done' }).click();
+});
+
 test('two-factor authentication can be enabled and is required at login', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Password').fill(password);
