@@ -19,3 +19,9 @@ type ImportResultDTO struct {
 	Skipped  []string          `json:"skipped"`
 	Failed   map[string]string `json:"failed"`
 }
+
+// ConfigResultDTO is returned by POST /api/transfer/config (#88).
+type ConfigResultDTO struct {
+	Applied []string          `json:"applied"`
+	Failed  map[string]string `json:"failed"`
+}

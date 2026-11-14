@@ -3,6 +3,7 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_1f3976061912504c: "Docker discovery needs the docker module to be enabled.",
+  srv_2ad35206dae11b67: "Each service name can be used only once in the file.",
   srv_591001f7788fb502: "No MAC address is stored for this service.",
   srv_49713b674a89dd04: "The check URL must start with http:// or https://.",
   srv_b6d4e2000983a0fe: "The description must be at most 200 characters long.",

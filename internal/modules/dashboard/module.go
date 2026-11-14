@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"trisse-home/internal/modules"
+	"trisse-home/internal/modules/dashboard/adapter/configfile"
 	"trisse-home/internal/modules/dashboard/adapter/controller"
 	"trisse-home/internal/modules/dashboard/adapter/gateway"
 	"trisse-home/internal/modules/dashboard/usecase"
@@ -22,6 +23,7 @@ type Module struct {
 	seed     usecase.SeedSampleData
 	everyday usecase.SeedSampleData
 	scope    usecase.TabScope
+	config   usecase.Config
 }
 
 // SampleWeather is the location of the example weather widget.
@@ -43,7 +45,36 @@ func New(db *sql.DB, ids kernel.IDGenerator, clock kernel.Clock, widgetKinds []s
 		seed:     usecase.NewSeedSampleData(deps, usecase.SampleLayout(string(weatherConfig))),
 		everyday: usecase.NewSeedSampleData(deps, usecase.EverydayLayout(string(weatherConfig))),
 		scope:    usecase.NewTabScope(deps),
+		config:   usecase.NewConfig(repo, deps.Kinds, ids),
 	}
+}
+
+// ConfigSection implements modules.Configurable.
+func (m *Module) ConfigSection() string { return "dashboard" }
+
+// ExportConfig implements modules.Configurable.
+func (m *Module) ExportConfig(ctx context.Context) (any, error) {
+	tabs, err := m.config.Export(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return configfile.FromTabs(tabs)
+}
+
+// NewConfig implements modules.Configurable.
+func (m *Module) NewConfig() any { return &configfile.Section{} }
+
+// ApplyConfig implements modules.Configurable.
+func (m *Module) ApplyConfig(ctx context.Context, section any) error {
+	s, ok := section.(*configfile.Section)
+	if !ok {
+		return modules.ErrConfigType
+	}
+	tabs, err := s.ToTabs()
+	if err != nil {
+		return err
+	}
+	return m.config.Apply(ctx, tabs)
 }
 
 // SeedSampleData implements modules.Seeder.

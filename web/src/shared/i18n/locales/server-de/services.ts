@@ -24,4 +24,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_c2aa1fabd915da16: 'Das Intervall muss zwischen 1 und {max} Minuten liegen.',
   // Unknown merge rule.
   srv_c64f8cf81797f821: 'Unbekannte Abgleichsregel.',
+  // Each service name can be used only once in the file.
+  srv_2ad35206dae11b67: 'Jeder Dienstname darf in der Datei nur einmal vorkommen.',
 };

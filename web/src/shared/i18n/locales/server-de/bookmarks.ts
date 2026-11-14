@@ -37,4 +37,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_8dec33ac27b43136: 'Die Seite konnte nicht gelesen werden.',
   // The title must be at most 200 characters long.
   srv_1fd35c867febde72: 'Der Titel darf höchstens 200 Zeichen lang sein.',
+  // Each bookmarks entry is either a bookmark with url or a folder with bookmarks, not both.
+  srv_443fe1a26653a369:
+    'Jeder Lesezeichen-Eintrag ist entweder ein Lesezeichen mit url oder ein Ordner mit Lesezeichen, nicht beides.',
+  // Each folder name can be used only once in the file.
+  srv_593595f23054b9e4: 'Jeder Ordnername darf in der Datei nur einmal vorkommen.',
 };

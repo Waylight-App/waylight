@@ -20,3 +20,10 @@ export interface ImportResultDTO {
   skipped: string[];
   failed: { [key: string]: string};
 }
+/**
+ * ConfigResultDTO is returned by POST /api/transfer/config (#88).
+ */
+export interface ConfigResultDTO {
+  applied: string[];
+  failed: { [key: string]: string};
+}

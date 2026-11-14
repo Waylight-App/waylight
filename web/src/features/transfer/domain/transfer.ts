@@ -45,3 +45,14 @@ export function describeResult(r: ImportResult): string {
     parts.push(t('transfer.result_failed', { list: failed.map(([k, v]) => `${k} (${v})`).join('; ') }));
   return parts.join(' ');
 }
+
+/** Result of applying trisse-home.yaml (#88). */
+export interface ConfigResult {
+  applied: string[];
+  failed: Record<string, string>;
+}
+
+/** One-line summary of applying a config file. */
+export function describeConfigResult(r: ConfigResult): string {
+  return describeResult({ imported: r.applied, skipped: [], failed: r.failed });
+}

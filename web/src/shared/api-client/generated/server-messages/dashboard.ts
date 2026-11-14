@@ -2,8 +2,10 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_db1f3b30c394907b: "A widget config must be a mapping of settings.",
   srv_9c62e19aa7e4b027: "At most 10 rules per tab are supported.",
   srv_fb588d9d1c9ff8e5: "At most 50 templates can be stored.",
+  srv_1f452c9f72b6125d: "Each tab name can be used only once.",
   srv_cd8384030060ee99: "Every widget may appear only once.",
   srv_560f31f8940f8cfc: "Rules need weekdays 0–6, times like 07:30 and networks like 192.168.178.0/24.",
   srv_0d5b9b677899722e: "The height must be between 1 and 24 rows.",

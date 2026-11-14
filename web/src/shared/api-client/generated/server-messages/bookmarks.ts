@@ -4,6 +4,8 @@
 export const serverMessages = {
   srv_350d099c21ede260: "A bookmark can have at most 10 tags.",
   srv_c40eff143d7c40cd: "At most {max} bookmarks can be imported at once.",
+  srv_443fe1a26653a369: "Each bookmarks entry is either a bookmark with url or a folder with bookmarks, not both.",
+  srv_593595f23054b9e4: "Each folder name can be used only once in the file.",
   srv_d7bffa395fc89711: "Enable fetching titles and icons in the bookmark settings first.",
   srv_f8405f015011b4d0: "Enable the link check in the bookmark settings first.",
   srv_2e56580cd044b5c5: "No bookmarks found. Please export your bookmarks as HTML from the browser.",

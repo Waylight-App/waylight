@@ -119,6 +119,92 @@ func (r *Repository) SaveBookmark(ctx context.Context, b domain.Bookmark) error 
 	return tx.Commit()
 }
 
+// ReplaceAll implements usecase.ConfigRepository in one transaction.
+func (r *Repository) ReplaceAll(ctx context.Context, folders []domain.Folder, bookmarks []domain.Bookmark) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+	keepB, keepF := map[string]bool{}, map[string]bool{}
+	for _, b := range bookmarks {
+		keepB[b.ID()] = true
+	}
+	for _, f := range folders {
+		keepF[f.ID()] = true
+	}
+	if err := deleteMissing(ctx, tx, `SELECT id FROM bookmarks`, `DELETE FROM bookmarks WHERE id = ?`, keepB); err != nil {
+		return err
+	}
+	if err := deleteMissing(ctx, tx, `SELECT id FROM bookmark_folders`, `DELETE FROM bookmark_folders WHERE id = ?`, keepF); err != nil {
+		return err
+	}
+	for _, f := range folders {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO bookmark_folders (id, name, position) VALUES (?, ?, ?)
+			ON CONFLICT (id) DO UPDATE SET name = excluded.name, position = excluded.position`, f.ID(), f.Name(), f.Position()); err != nil {
+			return fmt.Errorf("upsert folder: %w", err)
+		}
+	}
+	for _, b := range bookmarks {
+		var folder any
+		if b.FolderID() != "" {
+			folder = b.FolderID()
+		}
+		if _, err := tx.ExecContext(ctx, `INSERT INTO bookmarks (id, folder_id, title, url, description, created_at)
+			VALUES (?, ?, ?, ?, ?, ?)
+			ON CONFLICT (id) DO UPDATE SET folder_id = excluded.folder_id, title = excluded.title,
+				url = excluded.url, description = excluded.description`,
+			b.ID(), folder, b.Title(), b.URL(), b.Description(), sqlutil.FormatTime(b.CreatedAt())); err != nil {
+			return fmt.Errorf("upsert bookmark: %w", err)
+		}
+		if _, err := tx.ExecContext(ctx, `DELETE FROM bookmark_tags WHERE bookmark_id = ?`, b.ID()); err != nil {
+			return fmt.Errorf("clear tags: %w", err)
+		}
+		for _, t := range b.Tags() {
+			if _, err := tx.ExecContext(ctx, `INSERT INTO bookmark_tags (bookmark_id, tag) VALUES (?, ?)`, b.ID(), t); err != nil {
+				return fmt.Errorf("insert tag: %w", err)
+			}
+		}
+	}
+	return tx.Commit()
+}
+
+// deleteMissing deletes the ids returned by selectQuery that are not in
+// keep, one by one with deleteQuery (both constants).
+func deleteMissing(ctx context.Context, tx *sql.Tx, selectQuery, deleteQuery string, keep map[string]bool) error {
+	ids, err := queryIDs(ctx, tx, selectQuery)
+	if err != nil {
+		return fmt.Errorf("list ids: %w", err)
+	}
+	for _, id := range ids {
+		if keep[id] {
+			continue
+		}
+		if _, err := tx.ExecContext(ctx, deleteQuery, id); err != nil {
+			return fmt.Errorf("delete: %w", err)
+		}
+	}
+	return nil
+}
+
+// queryIDs runs a constant query that selects one id column.
+func queryIDs(ctx context.Context, tx *sql.Tx, query string) ([]string, error) {
+	rows, err := tx.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, rows.Err()
+}
+
 // DeleteBookmark removes a bookmark (tags cascade).
 func (r *Repository) DeleteBookmark(ctx context.Context, id string) error {
 	if _, err := r.db.ExecContext(ctx, `DELETE FROM bookmarks WHERE id = ?`, id); err != nil {

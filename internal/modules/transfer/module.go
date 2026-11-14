@@ -12,12 +12,33 @@ import (
 type Module struct {
 	modules.Base
 	handlers *controller.Handlers
+	config   *controller.ConfigHandlers
 }
 
-// New builds the transfer module. portables is called per request (usually
-// Registry.Portables) so modules registered later are included.
-func New(portables func() map[string]modules.Portable, clock kernel.Clock, audit kernel.AuditSink) *Module {
-	return &Module{handlers: controller.NewHandlers(usecase.NewTransfer(gateway.Sections(portables), clock, audit))}
+// Deps are the ports of the transfer module. Portables and Configurables
+// are called per request (usually the registry's methods) so modules
+// registered later are included. Env looks up ${NAME} in config files.
+type Deps struct {
+	Portables     func() map[string]modules.Portable
+	Configurables func() map[string]modules.Configurable
+	Env           func(string) (string, bool)
+	Clock         kernel.Clock
+	Audit         kernel.AuditSink
+}
+
+// New builds the transfer module.
+func New(d Deps) *Module {
+	sources := func() map[string]usecase.ConfigSource {
+		out := map[string]usecase.ConfigSource{}
+		for name, c := range d.Configurables() {
+			out[name] = c
+		}
+		return out
+	}
+	return &Module{
+		handlers: controller.NewHandlers(usecase.NewTransfer(gateway.Sections(d.Portables), d.Clock, d.Audit)),
+		config:   controller.NewConfigHandlers(usecase.NewConfig(sources, gateway.YAMLCodec{}, d.Env, d.Audit)),
+	}
 }
 
 // Name implements modules.Module.
@@ -27,4 +48,6 @@ func (m *Module) Name() string { return "transfer" }
 func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/transfer/export", m.handlers.Export)
 	r.Protected("POST /api/transfer/import", m.handlers.Import)
+	r.Protected("GET /api/transfer/config", m.config.Export)
+	r.Protected("POST /api/transfer/config", m.config.Apply)
 }

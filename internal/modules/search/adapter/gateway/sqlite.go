@@ -132,6 +132,25 @@ func (r *Repository) AddShortcut(ctx context.Context, s domain.Shortcut) error {
 	return nil
 }
 
+// ReplaceShortcuts implements usecase.ConfigRepository in one transaction.
+func (r *Repository) ReplaceShortcuts(ctx context.Context, list []domain.Shortcut) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback() }()
+	if _, err := tx.ExecContext(ctx, `DELETE FROM search_shortcuts`); err != nil {
+		return fmt.Errorf("clear shortcuts: %w", err)
+	}
+	for _, sc := range list {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO search_shortcuts (keyword, name, url_template) VALUES (?, ?, ?)`,
+			sc.Keyword(), sc.Name(), sc.Template()); err != nil {
+			return fmt.Errorf("insert shortcut: %w", err)
+		}
+	}
+	return tx.Commit()
+}
+
 // DeleteShortcut implements usecase.Repository.
 func (r *Repository) DeleteShortcut(ctx context.Context, keyword string) error {
 	res, err := r.db.ExecContext(ctx, `DELETE FROM search_shortcuts WHERE keyword = ?`, keyword)

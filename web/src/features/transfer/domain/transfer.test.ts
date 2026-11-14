@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { describeResult, parseExportFile } from './transfer';
+import { describeConfigResult, describeResult, parseExportFile } from './transfer';
 
 describe('transfer domain', () => {
   it('validates export files', () => {
@@ -12,6 +12,11 @@ describe('transfer domain', () => {
   it('summarises results', () => {
     expect(describeResult({ imported: ['notes'], skipped: ['calendar'], failed: { todos: 'broken' } })).toBe(
       'Imported: notes. Skipped (module disabled or unknown): calendar. Failed: todos (broken).',
+    );
+  });
+  it('summarises an applied config file', () => {
+    expect(describeConfigResult({ applied: ['services'], failed: { dashboard: 'unknown widget' } })).toBe(
+      'Imported: services. Failed: dashboard (unknown widget).',
     );
   });
 });

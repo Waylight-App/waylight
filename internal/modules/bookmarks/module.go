@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"trisse-home/internal/modules"
+	"trisse-home/internal/modules/bookmarks/adapter/configfile"
 	"trisse-home/internal/modules/bookmarks/adapter/controller"
 	"trisse-home/internal/modules/bookmarks/adapter/gateway"
 	"trisse-home/internal/modules/bookmarks/usecase"
@@ -21,6 +22,7 @@ type Module struct {
 	handlers *controller.Handlers
 	seed     usecase.SeedSampleData
 	check    usecase.CheckLinks
+	config   usecase.Config
 }
 
 // SeedSampleData implements modules.Seeder.
@@ -43,11 +45,12 @@ func (m *Module) Jobs() []modules.Job {
 func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, client *http.Client) *Module {
 	repo := gateway.NewRepository(db)
 	d := usecase.Deps{Repo: repo, Clock: clock, IDs: ids, Settings: repo, Links: repo, Icons: repo}
+	config := usecase.NewConfig(repo, clock, ids)
 	if client != nil {
 		web := gateway.NewWeb(client)
 		d.Metadata, d.Checker = web, web
 	}
-	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d),
+	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d), config: config,
 		check: usecase.NewCheckLinks(d), handlers: controller.NewHandlers(controller.UseCases{
 			GetSettings: usecase.NewGetSettings(d), SaveSettings: usecase.NewSaveSettings(d), Enrich: usecase.NewEnrichBookmark(d),
 			CheckLink: usecase.NewCheckLink(d), Icon: usecase.NewGetIcon(d),
@@ -56,6 +59,34 @@ func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, client *http.Cl
 			RenameFolder: usecase.NewRenameFolder(d), DeleteFolder: usecase.NewDeleteFolder(d),
 			Import: usecase.NewImportBookmarks(d),
 		})}
+}
+
+// ConfigSection implements modules.Configurable.
+func (m *Module) ConfigSection() string { return "bookmarks" }
+
+// ExportConfig implements modules.Configurable.
+func (m *Module) ExportConfig(ctx context.Context) (any, error) {
+	s, err := m.config.Export(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return configfile.FromSection(s), nil
+}
+
+// NewConfig implements modules.Configurable.
+func (m *Module) NewConfig() any { return &configfile.Section{} }
+
+// ApplyConfig implements modules.Configurable.
+func (m *Module) ApplyConfig(ctx context.Context, section any) error {
+	s, ok := section.(*configfile.Section)
+	if !ok {
+		return modules.ErrConfigType
+	}
+	cs, err := s.Section()
+	if err != nil {
+		return err
+	}
+	return m.config.Apply(ctx, cs)
 }
 
 // Name implements modules.Module.
