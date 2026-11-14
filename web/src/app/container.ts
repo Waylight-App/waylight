@@ -66,8 +66,8 @@ import { OfflineNotesGateway } from './offline/offlineNotes';
 import { OfflineTodosGateway } from './offline/offlineTodos';
 import { OfflineSync } from './offline/sync.svelte';
 import { IndexedDbOutboxStore } from '../shared/offline/adapter/outboxStore';
-import { TodosApi } from '../features/todos/adapter/api/todosApi';
-import { TodosUseCases } from '../features/todos/usecase/todosUseCases';
+import { TodoSourcesApi, TodosApi } from '../features/todos/adapter/api/todosApi';
+import { TodoSourcesUseCases, TodosUseCases } from '../features/todos/usecase/todosUseCases';
 import { WeatherApi } from '../features/weather/adapter/api/weatherApi';
 import { WeatherUseCases } from '../features/weather/usecase/weatherUseCases';
 import type { InfoResponse } from '../shared/api-client/generated/modules';
@@ -92,6 +92,9 @@ export interface Container extends Services {
   bookmarks: BookmarksUseCases;
   notes: NotesUseCases;
   todos: TodosUseCases;
+  /** The to-dos of a list: '' = built-in, else a connected list (#169). */
+  todosFor: (source: string) => TodosUseCases;
+  todoSources: TodoSourcesUseCases;
   rss: RssUseCases;
   system: SystemUseCases;
   docker: DockerUseCases;
@@ -137,6 +140,8 @@ export function createContainer(onUnauthorized: () => void): Container {
   // Offline editing of to-dos and notes (#80): their gateways record changes
   // made without a connection; the sync replays them when it is back.
   const offline = new OfflineSync(new IndexedDbOutboxStore());
+  const localTodos = new TodosUseCases(new OfflineTodosGateway(new TodosApi(http), offline));
+  const todoLists = new Map<string, TodosUseCases>();
   const c: Omit<Container, 'quickActions'> = {
     ...createRegisteredServices(http),
     http,
@@ -148,7 +153,19 @@ export function createContainer(onUnauthorized: () => void): Container {
     services: new ServicesUseCases(new ServicesApi(http)),
     bookmarks: new BookmarksUseCases(new BookmarksApi(http)),
     notes: new NotesUseCases(new OfflineNotesGateway(new NotesApi(http), offline)),
-    todos: new TodosUseCases(new OfflineTodosGateway(new TodosApi(http), offline)),
+    todos: localTodos,
+    todosFor: (source) => {
+      if (!source || source === 'local') return localTodos;
+      let uc = todoLists.get(source);
+      if (!uc) {
+        uc = new TodosUseCases(
+          new OfflineTodosGateway(new TodosApi(http, source), offline, `todo@${source}`),
+        );
+        todoLists.set(source, uc);
+      }
+      return uc;
+    },
+    todoSources: new TodoSourcesUseCases(new TodoSourcesApi(http)),
     offline,
     rss: new RssUseCases(new RssApi(http)),
     system: new SystemUseCases(new SystemApi(http)),

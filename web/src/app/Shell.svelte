@@ -124,6 +124,17 @@
         label: 'shortcuts.redo',
         run: () => dashboard?.redo(),
       }),
+      // Esc finishes editing; open menus and pickers handle Esc themselves
+      // (dialogs are excluded by the registry already) (#271).
+      container.shortcuts.register({
+        id: 'edit.exit',
+        combos: ['Escape'],
+        display: ['Esc'],
+        label: 'shortcuts.finish_edit',
+        run: () => {
+          if (!document.querySelector('[role="menu"]')) editing = false;
+        },
+      }),
     ];
     return () => offs.forEach((off) => off());
   });
@@ -372,6 +383,7 @@
       tabBarTarget="header-tabs"
       onstate={(tabs, activeId) => (dashboardState = { tabs, activeId })}
       onedit={container.auth.guest ? undefined : () => (editing = true)}
+      ondone={() => (editing = false)}
     />
   {/if}
 </main>

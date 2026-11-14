@@ -4,7 +4,8 @@
  * Pure functions; persistence and replay live in adapters.
  */
 
-export type Entity = 'todo' | 'note';
+/** 'todo@<source>' holds changes to a connected to-do list (#169). */
+export type Entity = 'todo' | 'note' | `todo@${string}`;
 export type Op = 'create' | 'update' | 'delete';
 
 /** One waiting change. */

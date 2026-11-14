@@ -164,7 +164,7 @@
     max-height: 60vh;
     max-width: min(90vw, 900px);
     overflow: auto;
-    font-size: 0.75rem;
+    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
     white-space: pre-wrap;
     word-break: break-all;
     background: var(--color-surface-2);
@@ -181,7 +181,7 @@
     color: var(--color-danger);
   }
   .small {
-    font-size: 0.75em;
+    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
   }
   .list {
     list-style: none;

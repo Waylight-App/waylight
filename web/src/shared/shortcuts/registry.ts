@@ -34,6 +34,7 @@ export function comboOf(e: KeyInput): string | null {
   if (e.ctrlKey || e.metaKey) {
     return e.key.length === 1 ? `Mod+${e.shiftKey ? 'Shift+' : ''}${e.key.toUpperCase()}` : null;
   }
+  if (e.key === 'Escape') return 'Escape'; // finishes edit mode (#271)
   return e.key.length === 1 ? e.key : null;
 }
 

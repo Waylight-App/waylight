@@ -86,7 +86,7 @@
     margin: 0 0 var(--space-2);
   }
   .badge {
-    font-size: 0.75em;
+    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
     padding: 1px 6px;
     border-radius: 999px;
     background: var(--color-surface-2);
