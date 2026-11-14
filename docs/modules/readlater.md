@@ -24,11 +24,15 @@ Only the page you save and its images, once, when you save it.
 
 ## API
 
-`GET/POST /api/readlater`, `GET/DELETE /api/readlater/{id}`, `PUT /api/readlater/{id}/status`, `GET /api/readlater/{id}/images/{n}` – see `api/modules/readlater.yaml`.
+`GET/POST /api/readlater`, `GET/DELETE /api/readlater/{id}`, `PUT /api/readlater/{id}/status`, `GET /api/readlater/{id}/images/{n}`, `POST /api/readlater/import/{pocket,instapaper}` – see `api/modules/readlater.yaml`.
 
-## Import from Pocket
+## Import from Pocket or Instapaper
 
-Pocket shut down in 2025, but its export file still works. Under **Settings → Read later → Import Pocket export…**, choose the CSV file (`title,url,time_added,tags,status`; at most 5 MB, 2000 links).
+Under **Settings → Read later**, choose the CSV export file (at most 5 MB, 2000 links):
+- **Import Pocket export…**: Pocket shut down in 2025, but its export file still works (`title,url,time_added,tags,status`).
+- **Import Instapaper export…**: the CSV from Instapaper's settings page (`URL,Title,Selection,Folder,Timestamp`). Links in the folder _Archive_ are imported as archived; other folders and highlighted text are not imported.
+
+What happens:
 - The links are added at once with their title and the date they were saved. Archived ones stay archived.
 - The reader copies follow in the background, five every five minutes, so a large import doesn't flood your network or the sites.
 - Links that are already saved are skipped.
