@@ -1371,6 +1371,7 @@ export const de: Record<BaseMessageKey, string> = {
   'briefing.section.todos': 'To-dos',
   'briefing.section.events': 'Termine',
   'briefing.section.waste': 'Müllabfuhr',
+  'briefing.section.birthdays': 'Geburtstage',
   'briefing.open_source': 'Widget mit den Details zeigen',
   'briefing.more': '… und {n} weitere',
   'briefing.detail.overdue': 'überfällig',

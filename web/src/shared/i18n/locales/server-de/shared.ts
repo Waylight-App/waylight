@@ -69,4 +69,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_9cdf89c6055b9583: "Die ID muss aus 8 bis 64 Buchstaben, Ziffern, '-' oder '_' bestehen.",
   // User name and app password are required.
   srv_970344b28687ee67: 'Benutzername und App-Passwort sind erforderlich.',
+  // Enter the IMAP server name, e.g. imap.example.com.
+  srv_91809f90e8dfc4fb: 'Gib den Namen des IMAP-Servers ein, z. B. imap.example.com.',
+  // The port must be between 1 and 65535 (IMAP over TLS: 993).
+  srv_92285ba58a255b47: 'Der Port muss zwischen 1 und 65535 liegen (IMAP über TLS: 993).',
+  // User name, password and folder must not contain line breaks.
+  srv_b08dda17b8ef851b: 'Benutzername, Passwort und Ordner dürfen keine Zeilenumbrüche enthalten.',
 };

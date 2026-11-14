@@ -80,6 +80,8 @@ linters:
               desc: "SQL helpers belong to the adapter ring"
             - pkg: trisse-home/internal/shared/ical
               desc: "iCalendar parsing belongs to the adapter ring"
+            - pkg: trisse-home/internal/shared/imap
+              desc: "IMAP belongs to the adapter ring"
             - pkg: trisse-home/internal/shared/caldav
               desc: "CalDAV belongs to the adapter ring"
             - pkg: trisse-home/internal/shared/imaging

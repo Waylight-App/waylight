@@ -1,4 +1,4 @@
-package gateway
+package imap
 
 import "testing"
 
@@ -11,8 +11,8 @@ func TestEncodeMailbox(t *testing.T) {
 		"Entwürfe & Ideen":   "Entw&APw-rfe &- Ideen",
 		"~peter/mail/台北/日本語": "~peter/mail/&U,BTFw-/&ZeVnLIqe-",
 	} {
-		if got := encodeMailbox(in); got != want {
-			t.Errorf("encodeMailbox(%q) = %q, want %q", in, got, want)
+		if got := EncodeMailbox(in); got != want {
+			t.Errorf("EncodeMailbox(%q) = %q, want %q", in, got, want)
 		}
 	}
 }
