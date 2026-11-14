@@ -44,9 +44,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_457b52382d260269: 'Die ICS-URL muss mit https://, http:// oder webcal:// beginnen.',
   // The URL must start with http:// or https://.
   srv_33e6dad254bc6264: 'Die URL muss mit http:// oder https:// beginnen.',
-  // The Wake-on-LAN relay did not answer. Is COMPOSE_PROFILES=wol set (see README)?
-  srv_7bd9cc89bdd1560a:
-    'Das Wake-on-LAN-Relay hat nicht geantwortet. Ist COMPOSE_PROFILES=wol gesetzt (siehe README)?',
+  // The Wake-on-LAN relay did not answer. Is COMPOSE_PROFILES=wol set (see docs/host-integrations.md)?
+  srv_39f1fbfcd5e03469:
+    'Das Wake-on-LAN-Relay hat nicht geantwortet. Ist COMPOSE_PROFILES=wol gesetzt (siehe docs/host-integrations.md)?',
   // The background image must be an http(s) URL.
   srv_28004c9379be9be3: 'Das Hintergrundbild muss eine http(s)-URL sein.',
   // The guest does not exist.

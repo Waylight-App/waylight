@@ -11,6 +11,7 @@
     type LayoutItem,
     moveItem,
     resizeItem,
+    sameLayout,
   } from '../domain/layout';
 
   /** Props of the drag & drop grid. */
@@ -90,7 +91,8 @@
   function end() {
     if (!gesture) return;
     gesture = null;
-    if (preview) onlayout(preview);
+    // A click without movement changes nothing (#272).
+    if (preview && !sameLayout(items, preview)) onlayout(preview);
     preview = null;
   }
 </script>

@@ -41,6 +41,22 @@ export default ts.config(
     },
   },
   {
+    // Over plain HTTP on a LAN address the page is no secure context and
+    // crypto.randomUUID is missing (#310): use newId() from shared/id/uuid.
+    files: ['src/**/*.ts', 'src/**/*.svelte'],
+    ignores: ['src/shared/id/**', 'src/**/*.test.ts'],
+    rules: {
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'crypto',
+          property: 'randomUUID',
+          message: 'Use newId() from shared/id/uuid (works over plain HTTP, #310).',
+        },
+      ],
+    },
+  },
+  {
     // Features add their message keys by augmenting an empty interface (#193).
     files: ['src/shared/i18n/registry.ts', 'src/features/*/i18n/en.ts', 'src/app/serviceKit.ts'],
     rules: { '@typescript-eslint/no-empty-object-type': 'off' },
