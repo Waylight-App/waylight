@@ -1641,7 +1641,7 @@ test('an empty tab offers "Add widget"; a click on a title adds no undo step (#2
   await page.getByRole('textbox', { name: 'Name' }).fill('Leer');
   await page.getByRole('button', { name: 'Create' }).click();
   await account(page, 'Done');
-  await expect(page.getByText('This tab is empty.', { exact: true })).toBeVisible();
+  await expect(page.locator('p.empty')).toContainText('This tab is empty.');
   // The button starts edit mode and opens the picker.
   await page.getByRole('main').getByRole('button', { name: '+ Add widget' }).click();
   await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('clock');
