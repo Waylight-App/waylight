@@ -36,6 +36,8 @@
   });
 
   let settingsOpen = $state(false);
+  /** Section the settings open with (#261), e.g. Appearance from the launcher. */
+  let settingsSection = $state<string | undefined>();
   let editing = $state(false);
   let error = $state('');
   let appearance = $state<Appearance>(defaultAppearance);
@@ -317,7 +319,7 @@
       {editing}
       canEdit={!container.auth.guest}
       onedit={() => (editing = !editing)}
-      onsettings={() => (settingsOpen = true)}
+      onsettings={() => ((settingsSection = undefined), (settingsOpen = true))}
       onlogout={logout}
     />
   </div>
@@ -328,7 +330,7 @@
         content={appearance.launcher}
         initialSegment={launcherOpen}
         onclose={closeLauncher}
-        onsettings={() => ((launcherOpen = null), (settingsOpen = true))}
+        onsettings={() => ((launcherOpen = null), (settingsSection = 'appearance'), (settingsOpen = true))}
       />
     {/await}
   {/if}
@@ -395,6 +397,7 @@
       {appearance}
       onappearance={(a) => (appearance = a)}
       onrestarttour={modules.has('onboarding') ? restartTour : undefined}
+      section={settingsSection}
       onclose={() => (settingsOpen = false)}
     />
   {/await}

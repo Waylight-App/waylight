@@ -1,5 +1,11 @@
 import { t } from '../../../shared/i18n';
-import { type Article, type ArticleStatus, type ImportReport, looksLikeUrl } from '../domain/readlater';
+import {
+  type Article,
+  type ArticleStatus,
+  type ExportKind,
+  type ImportReport,
+  looksLikeUrl,
+} from '../domain/readlater';
 
 /** Output port: read-later backend. */
 export interface ReadLaterGateway {
@@ -10,7 +16,7 @@ export interface ReadLaterGateway {
   remove(id: string): Promise<void>;
   archiveDays(): Promise<number>;
   saveArchiveDays(days: number): Promise<number>;
-  importPocket(csv: string): Promise<ImportReport>;
+  importExport(kind: ExportKind, csv: string): Promise<ImportReport>;
 }
 
 /** Application logic of the read-later list (#99). */
@@ -64,9 +70,12 @@ export class ReadLaterUseCases {
   saveArchiveDays(days: number): Promise<number> {
     return this.gateway.saveArchiveDays(days);
   }
-  /** Imports a Pocket CSV export; the reader copies follow in the background. */
-  async importPocket(file: { size: number; text(): Promise<string> }): Promise<ImportReport> {
+  /** Imports a Pocket or Instapaper CSV export; the reader copies follow in the background. */
+  async importExport(
+    kind: ExportKind,
+    file: { size: number; text(): Promise<string> },
+  ): Promise<ImportReport> {
     if (file.size > 5 << 20) throw new Error(t('readlater.import_too_large'));
-    return this.gateway.importPocket(await file.text());
+    return this.gateway.importExport(kind, await file.text());
   }
 }
