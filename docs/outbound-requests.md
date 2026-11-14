@@ -32,6 +32,7 @@ stored encrypted.
 | WebDAV off-site backups | After each backup, and when you restore from it. |
 | ntfy, Gotify, webhooks, SMTP | When a notification is sent. |
 | Connected to-do lists (CalDAV) | While a to-do widget shows the list, at most once a minute: the list's CTag first, then only the to-dos whose ETag changed. None until you connect a list ([details](modules/todos.md)). |
+| Markets (`www.ecb.europa.eu`, `stooq.com`) | Only while a markets widget is shown, at most once an hour per symbol ([details](modules/markets.md)). |
 | IMAP mailbox (parcels) | One folder, read-only over TLS, at the interval you choose. Off by default ([details](parcels-mail.md)). |
 
 ## Public services

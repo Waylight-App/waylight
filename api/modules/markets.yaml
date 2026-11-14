@@ -1,0 +1,28 @@
+tags:
+  - name: markets
+
+paths:
+  /api/markets/watchlist:
+    get:
+      tags: [markets]
+      summary: "Latest value, change against the previous close and 30 days of closes for up to 12 symbols (#284): fx:USD (ECB euro reference rates) or stooq:aapl.us (Stooq: shares, indices, crypto). Cached for an hour; a failing source shows the last value (stale)"
+      parameters:
+        - { name: symbols, in: query, required: true, schema: { type: string }, description: "Comma-separated, e.g. fx:USD,stooq:^dax,stooq:btcusd" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    symbol: { type: string }
+                    value: { type: number, nullable: true }
+                    changePct: { type: number }
+                    asOf: { type: string, format: date }
+                    history: { type: array, items: { type: object, properties: { day: { type: string, format: date }, value: { type: number } } } }
+                    stale: { type: boolean }
+                    error: { type: string }
+        "422": { $ref: "#/components/responses/Invalid" }
