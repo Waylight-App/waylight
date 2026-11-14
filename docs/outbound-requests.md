@@ -35,7 +35,9 @@ stored encrypted.
 | CardDAV address book (birthdays) | When you save the address book in the settings, then every six hours. None until you connect one ([details](modules/birthdays.md)). |
 | Electricity prices (`api.awattar.de` / `api.awattar.at`) | Only while an electricity price widget is shown, at most every 15 minutes per bidding zone ([details](modules/electricity.md)). |
 | Connected to-do lists (CalDAV) | While a to-do widget shows the list, at most once a minute: the list's CTag first, then only the to-dos whose ETag changed. None until you connect a list ([details](modules/todos.md)). |
+| Markets (`www.ecb.europa.eu`, `stooq.com`) | Only while a markets widget is shown, at most once an hour per symbol ([details](modules/markets.md)). |
 | Todoist (`api.todoist.com`) | While a to-do widget shows a connected Todoist project: the sync endpoint at most every 15 seconds (only changes after the first request), plus one request per change you make. Pauses when Todoist answers 429. None until you connect Todoist ([details](modules/todos.md)). |
+| IMAP inboxes (mail widget) | Only after you add an account: one TLS connection per account while a mail widget is shown, at most every two minutes; headers only, read-only ([details](modules/mail.md)). |
 | Microsoft To Do, Google Tasks, TickTick | Only after you sign in with your own app registration: the sign-in and token renewal at the provider (`login.microsoftonline.com`, `oauth2.googleapis.com`, `ticktick.com`), and the list (`graph.microsoft.com`, `tasks.googleapis.com`, `api.ticktick.com`) while a to-do widget shows it, at most every 30 seconds, plus one request per change ([details](modules/todos.md)). |
 | IMAP mailbox (parcels) | One folder, read-only over TLS, at the interval you choose. Off by default ([details](parcels-mail.md)). |
 
