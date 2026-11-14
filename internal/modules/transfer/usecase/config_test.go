@@ -52,7 +52,7 @@ func TestConfigOrderAndPartialFailure(t *testing.T) {
 	}
 	c := &codec{version: 1, decoded: []NamedSection{{Name: "dashboard", Value: "d"}, {Name: "services", Value: "s"}}}
 	a := &audit{}
-	uc := NewConfig(srcs, c, func(string) (string, bool) { return "", false }, a)
+	uc := NewConfig(srcs, c, func(string) (string, bool) { return "", false }, a, &Managed{})
 
 	if _, err := uc.Export(context.Background()); err != nil || len(c.encoded) != 3 || c.encoded[0].Name != "appearance" || c.encoded[2].Name != "dashboard" {
 		t.Fatalf("export order: %+v %v", c.encoded, err)
@@ -70,5 +70,30 @@ func TestConfigOrderAndPartialFailure(t *testing.T) {
 	c.version = 2
 	if _, err := uc.Apply(context.Background(), nil); !errors.Is(err, kernel.ErrInvalid) || dash.applied != "d" {
 		t.Fatalf("newer version: %v", err)
+	}
+}
+
+func TestManagedSections(t *testing.T) {
+	dash := &source{name: "dashboard"}
+	svc := &source{name: "services"}
+	srcs := func() map[string]ConfigSource { return map[string]ConfigSource{"dashboard": dash, "services": svc} }
+	c := &codec{version: 1, decoded: []NamedSection{{Name: "dashboard", Value: "d"}}}
+	m := &Managed{}
+	uc := NewConfig(srcs, c, func(string) (string, bool) { return "", false }, &audit{}, m)
+	got, err := uc.ApplyManaged(context.Background(), nil)
+	if err != nil || len(got) != 1 || !m.Has("dashboard") || m.Has("services") {
+		t.Fatalf("%v %v %v", got, err, m.List())
+	}
+	// An upload must not override the file.
+	dash.applied = nil
+	c.decoded = []NamedSection{{Name: "dashboard", Value: "x"}, {Name: "services", Value: "s"}}
+	res, _ := uc.Apply(context.Background(), nil)
+	if dash.applied != nil || res.Failed["dashboard"] == "" || res.Applied[0] != "services" {
+		t.Fatalf("%+v", res)
+	}
+	// At start-up every section has to succeed.
+	svc.fail = kernel.NewValidationError("url", "bad")
+	if _, err := uc.ApplyManaged(context.Background(), nil); err == nil {
+		t.Fatal("a failing section must stop the start")
 	}
 }

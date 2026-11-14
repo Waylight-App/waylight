@@ -44,13 +44,15 @@ type transfer struct {
 	sections func() map[string]Section
 	clock    kernel.Clock
 	audit    kernel.AuditSink
+	managed  *Managed
 }
 
 // NewTransfer returns the use cases; sections is called on every request so
 // it sees all registered modules.
 // Imports are reported to audit (the security event log).
-func NewTransfer(sections func() map[string]Section, clock kernel.Clock, audit kernel.AuditSink) Transfer {
-	return &transfer{sections: sections, clock: clock, audit: audit}
+// Sections managed by CONFIG_FILE are not imported (#88).
+func NewTransfer(sections func() map[string]Section, clock kernel.Clock, audit kernel.AuditSink, managed *Managed) Transfer {
+	return &transfer{sections: sections, clock: clock, audit: audit, managed: managed}
 }
 
 // Export implements Transfer.
@@ -83,6 +85,10 @@ func (uc *transfer) Import(ctx context.Context, doc Document) (ImportResult, err
 		s, ok := available[name]
 		if !ok {
 			res.Skipped = append(res.Skipped, name)
+			continue
+		}
+		if uc.managed.Has(name) {
+			res.Failed[name] = errManagedSection
 			continue
 		}
 		if err := s.Import(ctx, doc.Sections[name]); err != nil {

@@ -889,6 +889,7 @@ export const de: Record<BaseMessageKey, string> = {
   'wireguard.offline': 'offline',
   'app.done': 'Fertig',
   'app.edit': 'Bearbeiten',
+  'app.edit_managed': 'Das Layout kommt aus der Konfigurationsdatei (CONFIG_FILE).',
   'adguard.blocked_label': 'Blockiert',
   'adguard.protection_disabled': 'Schutz deaktiviert!',
   'auth.verify': 'Bestätigen',

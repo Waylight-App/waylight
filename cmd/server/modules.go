@@ -236,7 +236,7 @@ type profileSeeder interface {
 }
 
 func onAccountCreated(ctx context.Context, cfg config.Config, log *slog.Logger, registry *modules.Registry, profile string) {
-	if profile != "" {
+	if profile != "" && !managedSections(registry)["appearance"] {
 		for _, m := range registry.All() {
 			if p, ok := m.(profileStore); ok {
 				if err := p.SetProfile(ctx, profile); err != nil {
@@ -262,7 +262,12 @@ func seedSampleData(ctx context.Context, cfg config.Config, log *slog.Logger, re
 	if !cfg.SampleData {
 		return
 	}
+	managed := managedSections(registry)
 	for name, s := range registry.Seeders() {
+		// Example data would make a section differ from CONFIG_FILE.
+		if managed[name] {
+			continue
+		}
 		seed := s.SeedSampleData
 		if ps, ok := s.(profileSeeder); ok {
 			seed = func(ctx context.Context) error { return ps.SeedForProfile(ctx, profile) }

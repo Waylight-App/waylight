@@ -23,9 +23,15 @@ paths:
         "200": { description: The YAML file, content: { application/yaml: { schema: { type: string } } } }
     post:
       tags: [transfer]
-      summary: "Apply a trisse-home.yaml (max. 2 MB). ${NAME} in strings is read from the environment. The whole file is checked first (YAML, version, known sections and fields, variables); then each present section replaces its module's settings atomically, sections missing from the file stay unchanged"
+      summary: "Apply a trisse-home.yaml (max. 2 MB); sections managed by CONFIG_FILE are reported as failed. ${NAME} in strings is read from the environment. The whole file is checked first (YAML, version, known sections and fields, variables); then each present section replaces its module's settings atomically, sections missing from the file stay unchanged"
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/yaml: { schema: { type: string } } } }
       responses:
         "200": { description: OK, content: { application/json: { schema: { type: object, properties: { applied: { type: array, items: { type: string } }, failed: { type: object, additionalProperties: { type: string } } } } } } }
         "422": { $ref: "#/components/responses/Invalid" }
+  /api/transfer/config/status:
+    get:
+      tags: [transfer]
+      summary: Sections managed by CONFIG_FILE (#88); they are applied at every start and refuse changes with 409
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { managed: { type: array, items: { type: string } } } } } } }

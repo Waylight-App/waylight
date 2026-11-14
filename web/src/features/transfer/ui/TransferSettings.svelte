@@ -16,6 +16,14 @@
   let configMessage = $state('');
   let configError = $state('');
   let configBusy = $state(false);
+  let managed = $state<string[]>([]);
+
+  $effect(() => {
+    transfer
+      .managedSections()
+      .then((m) => (managed = m))
+      .catch(() => undefined);
+  });
 
   async function onconfig(e: Event) {
     const input = e.currentTarget as HTMLInputElement;
@@ -73,6 +81,9 @@
 
 <h4>{t('transfer.config_title')}</h4>
 <p class="muted">{t('transfer.config_intro')}</p>
+{#if managed.length}
+  <p class="notice" role="note">{t('transfer.config_managed', { sections: managed.join(', ') })}</p>
+{/if}
 <p class="actions">
   <a class="btn" href={transfer.configUrl()} download="trisse-home.yaml">{t('transfer.config_download')}</a>
   <label class="btn file">
@@ -91,6 +102,10 @@
 <style>
   h4 {
     margin: var(--space-3) 0 var(--space-1);
+  }
+  .notice {
+    border-left: 3px solid var(--color-accent);
+    padding-left: var(--space-2);
   }
   .actions {
     display: flex;

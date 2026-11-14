@@ -25,3 +25,9 @@ type ConfigResultDTO struct {
 	Applied []string          `json:"applied"`
 	Failed  map[string]string `json:"failed"`
 }
+
+// ConfigStatusDTO is returned by GET /api/transfer/config/status (#88).
+type ConfigStatusDTO struct {
+	// Managed lists the sections CONFIG_FILE owns; empty without managed mode.
+	Managed []string `json:"managed"`
+}

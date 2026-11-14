@@ -61,6 +61,25 @@ func (m *Module) ExportConfig(ctx context.Context) (any, error) {
 	return configfile.FromTabs(tabs)
 }
 
+// ConfigRoutes implements modules.Configurable. Saving and deleting templates stays available; creating a tab from one does not.
+func (m *Module) ConfigRoutes() []string {
+	return []string{
+		"POST /api/dashboard/tabs",
+		"PUT /api/dashboard/tabs/order",
+		"PATCH /api/dashboard/tabs/{id}",
+		"DELETE /api/dashboard/tabs/{id}",
+		"POST /api/dashboard/tabs/{id}/widgets",
+		"PUT /api/dashboard/tabs/{id}/layout",
+		"PATCH /api/dashboard/widgets/{id}",
+		"DELETE /api/dashboard/widgets/{id}",
+		"PUT /api/dashboard/tabs/{id}/background",
+		"PUT /api/dashboard/tabs/{id}/rules",
+		"PUT /api/dashboard/tabs/{id}/mobile-layout",
+		"DELETE /api/dashboard/tabs/{id}/mobile-layout",
+		"POST /api/dashboard/templates/{id}/tabs",
+	}
+}
+
 // NewConfig implements modules.Configurable.
 func (m *Module) NewConfig() any { return &configfile.Section{} }
 

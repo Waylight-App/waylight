@@ -52,10 +52,11 @@ func literal(e ast.Expr) (string, bool) {
 	return "", false
 }
 
-// ownerOf names the module a source file belongs to ("shared" outside modules).
+// ownerOf names the module a source file belongs to ("shared" outside
+// modules and for the module contract files directly in internal/modules).
 func ownerOf(path string) string {
 	parts := strings.Split(filepath.ToSlash(path), "/")
-	for i := 0; i+2 < len(parts); i++ {
+	for i := 0; i+3 < len(parts); i++ {
 		if parts[i] == "internal" && parts[i+1] == "modules" {
 			return parts[i+2]
 		}

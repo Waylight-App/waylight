@@ -44,6 +44,16 @@ func (m *Module) ExportConfig(ctx context.Context) (any, error) {
 	return configfile.FromSection(s), nil
 }
 
+// ConfigRoutes implements modules.Configurable.
+func (m *Module) ConfigRoutes() []string {
+	return []string{
+		"PUT /api/search/settings",
+		"PUT /api/search/bar",
+		"POST /api/search/shortcuts",
+		"DELETE /api/search/shortcuts/{keyword}",
+	}
+}
+
 // NewConfig implements modules.Configurable.
 func (m *Module) NewConfig() any { return &configfile.Section{} }
 

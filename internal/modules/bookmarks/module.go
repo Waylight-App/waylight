@@ -73,6 +73,19 @@ func (m *Module) ExportConfig(ctx context.Context) (any, error) {
 	return configfile.FromSection(s), nil
 }
 
+// ConfigRoutes implements modules.Configurable. Fetching titles and icons and link checks stay available.
+func (m *Module) ConfigRoutes() []string {
+	return []string{
+		"POST /api/bookmarks",
+		"PUT /api/bookmarks/{id}",
+		"DELETE /api/bookmarks/{id}",
+		"POST /api/bookmarks/folders",
+		"PATCH /api/bookmarks/folders/{id}",
+		"DELETE /api/bookmarks/folders/{id}",
+		"POST /api/bookmarks/import",
+	}
+}
+
 // NewConfig implements modules.Configurable.
 func (m *Module) NewConfig() any { return &configfile.Section{} }
 

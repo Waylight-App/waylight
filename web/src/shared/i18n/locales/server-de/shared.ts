@@ -75,4 +75,7 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_92285ba58a255b47: 'Der Port muss zwischen 1 und 65535 liegen (IMAP über TLS: 993).',
   // User name, password and folder must not contain line breaks.
   srv_b08dda17b8ef851b: 'Benutzername, Passwort und Ordner dürfen keine Zeilenumbrüche enthalten.',
+  // These settings are managed by the configuration file (CONFIG_FILE) and are read-only here.
+  srv_07a824b208b96b62:
+    'Diese Einstellungen werden von der Konfigurationsdatei (CONFIG_FILE) verwaltet und sind hier schreibgeschützt.',
 };
