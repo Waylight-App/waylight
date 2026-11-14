@@ -201,6 +201,33 @@ func (c codec) Pocket([]byte) ([]domain.ImportEntry, error) {
 	return c.entries, nil
 }
 
+func (c codec) Instapaper(data []byte) ([]domain.ImportEntry, error) { return c.Pocket(data) }
+
+func TestImportInstapaper(t *testing.T) {
+	ctx := context.Background()
+	repo := newRepo()
+	now := time.Date(2026, 11, 14, 8, 0, 0, 0, time.UTC)
+	entries := []domain.ImportEntry{
+		{URL: "https://a.example/1", Title: "Eins"},
+		{URL: "https://a.example/2", Title: "Zwei", Archived: true},
+		{URL: "https://a.example/1"},
+	}
+	uc := New(repo, &fakePages{}, &fakeImages{}, codec{entries: entries}, &clk{t: now}, &ids{})
+	r, err := uc.ImportInstapaper(ctx, []byte("csv"))
+	if err != nil || r.Added != 2 || r.Duplicates != 1 || r.Invalid != 0 {
+		t.Fatalf("%+v %v", r, err)
+	}
+	if list, _ := uc.List(ctx, domain.StatusArchived); len(list) != 1 || list[0].Title != "Zwei" {
+		t.Fatalf("archived: %+v", list)
+	}
+	if _, err := New(repo, &fakePages{}, &fakeImages{}, codec{}, &clk{t: now}, &ids{}).ImportInstapaper(ctx, []byte("x")); err == nil {
+		t.Fatal("not an export")
+	}
+	if _, err := uc.ImportInstapaper(ctx, make([]byte, MaxImportBytes+1)); err == nil {
+		t.Fatal("too large")
+	}
+}
+
 func TestImportFetchAndCleanup(t *testing.T) {
 	ctx := context.Background()
 	repo := newRepo()

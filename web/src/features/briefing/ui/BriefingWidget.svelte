@@ -74,6 +74,11 @@
     display: grid;
     gap: var(--space-2);
   }
+  /* Grid and flex children may shrink below their content, so long lines
+     wrap inside the card instead of widening it on phones (#314). */
+  .briefing > * {
+    min-width: 0;
+  }
   .section h4 {
     margin: 0 0 2px;
     font-size: 0.8rem;
@@ -108,18 +113,22 @@
     min-width: 0;
   }
   .text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   .time {
+    flex: none;
+    white-space: nowrap;
     font-variant-numeric: tabular-nums;
     color: var(--color-text-muted);
   }
   .detail {
+    flex: 0 1 auto;
+    min-width: 0;
     font-size: 0.85em;
     color: var(--color-text-muted);
-    white-space: nowrap;
+    overflow-wrap: anywhere;
   }
   li.warning .detail,
   li.warning .text {

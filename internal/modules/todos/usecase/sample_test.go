@@ -17,8 +17,8 @@ func TestSeedSampleData(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	open, _ := NewListTodos(d).Execute(ctx, false)
-	all, _ := NewListTodos(d).Execute(ctx, true)
+	open, _ := NewListTodos(d).Execute(ctx, "", false)
+	all, _ := NewListTodos(d).Execute(ctx, "", true)
 	if len(open) != 4 || len(all) != 5 {
 		t.Fatalf("expected 4 open and 5 total to-dos, got %d/%d", len(open), len(all))
 	}

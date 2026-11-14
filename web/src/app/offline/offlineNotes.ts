@@ -1,3 +1,4 @@
+import { newId } from '../../shared/id/uuid';
 import type {
   Note,
   NoteInput,
@@ -58,7 +59,7 @@ export class OfflineNotesGateway implements NotesGateway {
 
   async save(input: NoteInput, id?: string): Promise<Note> {
     if (!id) {
-      const clientId = crypto.randomUUID();
+      const clientId = newId();
       try {
         return await this.inner.save(input, undefined, { clientId });
       } catch (err) {

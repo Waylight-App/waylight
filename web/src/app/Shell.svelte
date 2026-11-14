@@ -36,6 +36,8 @@
   });
 
   let settingsOpen = $state(false);
+  /** Section the settings open with (#261), e.g. Appearance from the launcher. */
+  let settingsSection = $state<string | undefined>();
   let editing = $state(false);
   let error = $state('');
   let appearance = $state<Appearance>(defaultAppearance);
@@ -121,6 +123,17 @@
         display: [t('shortcuts.ctrl_shift_z'), t('shortcuts.ctrl_y')],
         label: 'shortcuts.redo',
         run: () => dashboard?.redo(),
+      }),
+      // Esc finishes editing; open menus and pickers handle Esc themselves
+      // (dialogs are excluded by the registry already) (#271).
+      container.shortcuts.register({
+        id: 'edit.exit',
+        combos: ['Escape'],
+        display: ['Esc'],
+        label: 'shortcuts.finish_edit',
+        run: () => {
+          if (!document.querySelector('[role="menu"]')) editing = false;
+        },
       }),
     ];
     return () => offs.forEach((off) => off());
@@ -306,7 +319,7 @@
       {editing}
       canEdit={!container.auth.guest}
       onedit={() => (editing = !editing)}
-      onsettings={() => (settingsOpen = true)}
+      onsettings={() => ((settingsSection = undefined), (settingsOpen = true))}
       onlogout={logout}
     />
   </div>
@@ -317,7 +330,7 @@
         content={appearance.launcher}
         initialSegment={launcherOpen}
         onclose={closeLauncher}
-        onsettings={() => ((launcherOpen = null), (settingsOpen = true))}
+        onsettings={() => ((launcherOpen = null), (settingsSection = 'appearance'), (settingsOpen = true))}
       />
     {/await}
   {/if}
@@ -369,6 +382,8 @@
       {widgetKinds}
       tabBarTarget="header-tabs"
       onstate={(tabs, activeId) => (dashboardState = { tabs, activeId })}
+      onedit={container.auth.guest ? undefined : () => (editing = true)}
+      ondone={() => (editing = false)}
     />
   {/if}
 </main>
@@ -382,6 +397,7 @@
       {appearance}
       onappearance={(a) => (appearance = a)}
       onrestarttour={modules.has('onboarding') ? restartTour : undefined}
+      section={settingsSection}
       onclose={() => (settingsOpen = false)}
     />
   {/await}

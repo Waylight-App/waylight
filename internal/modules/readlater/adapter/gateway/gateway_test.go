@@ -104,6 +104,22 @@ func TestPocketCSV(t *testing.T) {
 	}
 }
 
+func TestInstapaperCSV(t *testing.T) {
+	data := "URL,Title,Selection,Folder,Timestamp\n" +
+		"https://a.example/1,\"Eins, mit Komma\",,Unread,1700000000\n" +
+		"https://a.example/2,Zwei,\"markierter Satz\",Archive,1700000100\n" +
+		"https://a.example/3,Drei,,,\n" +
+		",leer,,Unread,1700000200\n"
+	got, err := Codec{}.Instapaper([]byte(data))
+	if err != nil || len(got) != 3 || got[0].Title != "Eins, mit Komma" || got[0].Archived || !got[1].Archived || got[2].Archived ||
+		!got[0].Added.Equal(time.Unix(1700000000, 0).UTC()) || !got[2].Added.IsZero() {
+		t.Fatalf("%+v %v", got, err)
+	}
+	if _, err := (Codec{}).Instapaper([]byte("Title,Folder\nx,y\n")); err == nil {
+		t.Fatal("no url column")
+	}
+}
+
 func TestRepositoryPendingAndSettings(t *testing.T) {
 	ctx := context.Background()
 	repo := NewRepository(dbtest.Open(t, "readlater", Migrations()))

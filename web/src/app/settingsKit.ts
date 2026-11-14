@@ -5,6 +5,7 @@
 import type { Component } from 'svelte';
 import type { MessageKey } from '../shared/i18n';
 import type { Container } from './container';
+import type { SettingsGroup } from './settingsNav';
 
 /** What the dialog knows besides the container. */
 export interface SettingsContext {
@@ -18,6 +19,8 @@ export interface SettingsSection {
   label: MessageKey;
   /** Shown only while this backend module is enabled. */
   module?: string;
+  /** Topic in the navigation (#261); default "integrations". */
+  group?: SettingsGroup;
   load: () => Promise<Component<Record<string, unknown>>>;
   props: (container: Container, context: SettingsContext) => Record<string, unknown>;
 }
@@ -30,6 +33,7 @@ export function defineSettingsSection<P extends object>(def: {
   id: string;
   label: MessageKey;
   module?: string;
+  group?: SettingsGroup;
   load: () => Promise<Component<P>>;
   props: (container: Container, context: SettingsContext) => P;
 }): SettingsSection {

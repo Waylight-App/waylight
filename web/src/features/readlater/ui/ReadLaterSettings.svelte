@@ -1,7 +1,15 @@
 <script lang="ts">
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
-  import { ARCHIVE_DAYS, type Article, type ArticleStatus, formatBytes, STATUSES } from '../domain/readlater';
+  import {
+    ARCHIVE_DAYS,
+    type Article,
+    type ArticleStatus,
+    EXPORT_KINDS,
+    type ExportKind,
+    formatBytes,
+    STATUSES,
+  } from '../domain/readlater';
   import type { ReadLaterUseCases } from '../usecase/readLaterUseCases';
   import ArticleReader from './ArticleReader.svelte';
 
@@ -38,25 +46,24 @@
   }
   const total = $derived(articles.reduce((s, a) => s + a.bytes, 0));
 
-  // Cleanup of archived articles and the Pocket import (#99).
+  // Cleanup of archived articles and the Pocket (#99) and Instapaper (#256) imports.
   let archiveDays = $state(0);
   let report = $state('');
-  let picker = $state<HTMLInputElement>();
   $effect(() => {
     readlater
       .archiveDays()
       .then((d) => (archiveDays = d))
       .catch(() => undefined);
   });
-  async function importFile() {
-    const file = picker?.files?.[0];
+  async function importFile(kind: ExportKind, picker: HTMLInputElement) {
+    const file = picker.files?.[0];
     if (!file) return;
     report = '';
     await run(async () => {
-      const r = await readlater.importPocket(file);
+      const r = await readlater.importExport(kind, file);
       report = t('readlater.import_report', { added: r.added, duplicates: r.duplicates, invalid: r.invalid });
     });
-    if (picker) picker.value = '';
+    picker.value = '';
   }
 </script>
 
@@ -144,15 +151,18 @@
       >{/each}
   </select>
 </label>
-<label class="btn import"
-  >{t('readlater.import_pocket')}<input
-    class="file"
-    bind:this={picker}
-    type="file"
-    accept=".csv,text/csv"
-    onchange={importFile}
-  /></label
->
+<div class="imports">
+  {#each EXPORT_KINDS as kind (kind)}
+    <label class="btn import"
+      >{t(`readlater.import_${kind}`)}<input
+        class="file"
+        type="file"
+        accept=".csv,text/csv"
+        onchange={(e) => importFile(kind, e.currentTarget)}
+      /></label
+    >
+  {/each}
+</div>
 <p class="muted small">{t('readlater.import_hint')}</p>
 {#if report}<p class="muted" role="status">{report}</p>{/if}
 {#if open}
@@ -239,6 +249,11 @@
     width: 1px;
     height: 1px;
     opacity: 0;
+  }
+  .imports {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
   .import:has(:focus-visible) {
     outline: 2px solid var(--color-accent);

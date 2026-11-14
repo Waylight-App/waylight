@@ -1,5 +1,7 @@
 package controller
 
+import "trisse-home/internal/modules/todos/usecase"
+
 // TodoInputDTO is the body of POST /api/todos and PUT /api/todos/{id}.
 // Due is a date (YYYY-MM-DD) or empty.
 type TodoInputDTO struct {
@@ -37,4 +39,22 @@ type ReminderDTO struct {
 // ClearedDTO is returned by POST /api/todos/clear-completed.
 type ClearedDTO struct {
 	Removed int `json:"removed"`
+}
+
+// SourceInputDTO is the body of POST/PUT /api/todos/settings/sources and of
+// .../discover. Kind is "caldav" (url, username, app password) or "todoist"
+// (API token as password, project as listId); an empty password keeps the
+// stored one.
+type SourceInputDTO struct {
+	ID       string `json:"id,omitempty"`
+	Name     string `json:"name"`
+	Kind     string `json:"kind"`
+	URL      string `json:"url"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	ListID   string `json:"listId,omitempty"`
+}
+
+func (d SourceInputDTO) toInput(id string) usecase.SourceInput {
+	return usecase.SourceInput{ID: id, Name: d.Name, Kind: d.Kind, URL: d.URL, Username: d.Username, Password: d.Password, ListID: d.ListID}
 }

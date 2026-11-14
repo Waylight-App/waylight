@@ -43,3 +43,32 @@ export interface ReminderDTO {
   at: string;
   daysBefore: number /* int */;
 }
+/**
+ * CapabilitiesDTO says what a list supports; the UI hides the rest (#169).
+ */
+export interface CapabilitiesDTO {
+  ordering: boolean;
+  repeat: boolean;
+  reminders: boolean;
+}
+/**
+ * SourceDTO is a connected external list; the password is never returned.
+ */
+export interface SourceDTO {
+  id: string;
+  name: string;
+  kind: string;
+  url: string;
+  username: string;
+  listId: string;
+  capabilities: CapabilitiesDTO;
+}
+/**
+ * DiscoveredListDTO is a task list found on a server: a CalDAV collection
+ * (url) or a Todoist project (listId).
+ */
+export interface DiscoveredListDTO {
+  url: string;
+  listId: string;
+  name: string;
+}

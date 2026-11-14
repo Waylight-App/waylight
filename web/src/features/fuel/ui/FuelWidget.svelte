@@ -125,7 +125,7 @@
     margin: 0 0 var(--space-1);
   }
   .tiny {
-    font-size: 0.7em;
+    font-size: max(0.8rem, 0.7em); /* at least 12 px (#317) */
     margin: var(--space-1) 0 0;
   }
 </style>

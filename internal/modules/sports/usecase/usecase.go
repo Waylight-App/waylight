@@ -112,10 +112,12 @@ func (uc *sports) load(ctx context.Context, league string) (*cached, int, error)
 }
 
 func (uc *sports) Teams(ctx context.Context, league string) ([]domain.Team, error) {
-	if _, err := domain.ParseLeague(league); err != nil {
+	l, err := domain.ParseLeague(league)
+	if err != nil {
 		return nil, err
 	}
-	c, _, err := uc.load(ctx, league)
+	// The provider only ever gets an ID from the fixed list, never the input.
+	c, _, err := uc.load(ctx, l.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +129,7 @@ func (uc *sports) Overview(ctx context.Context, league string, teamID int) (Over
 	if err != nil {
 		return Overview{}, err
 	}
-	c, season, err := uc.load(ctx, league)
+	c, season, err := uc.load(ctx, l.ID)
 	if err != nil {
 		return Overview{}, err
 	}

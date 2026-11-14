@@ -12,6 +12,9 @@ type Todo struct {
 	Done      bool
 	Completed time.Time
 	Created   time.Time
+	// Due is the due calendar date at midnight UTC (zero = none); a DUE with
+	// a time counts on its day in the server's time zone.
+	Due time.Time
 }
 
 // ParseTodos extracts the VTODOs of an iCalendar object.
@@ -41,6 +44,7 @@ func ParseTodos(data string) []Todo {
 			if c, _, err := parseDateTime(props["CREATED"], time.UTC); err == nil {
 				t.Created = c
 			}
+			t.Due = dueDate(props["DUE"])
 			out = append(out, t)
 			props = nil
 		case props != nil && depth == 0:
@@ -54,15 +58,39 @@ func ParseTodos(data string) []Todo {
 	return out
 }
 
+// dueDate reads a DUE property as a calendar date (zero if absent or invalid).
+func dueDate(p icalProperty) time.Time {
+	if p.value == "" {
+		return time.Time{}
+	}
+	t, allDay, err := parseDateTime(p, time.Local)
+	if err != nil {
+		return time.Time{}
+	}
+	if !allDay {
+		t = t.In(time.Local)
+	}
+	y, m, d := t.Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+}
+
 // NewTodo serialises a new VTODO.
 func NewTodo(uid, summary string, now time.Time) string {
+	return NewTodoDue(uid, summary, time.Time{}, now)
+}
+
+// NewTodoDue serialises a new VTODO with a due date (zero = none).
+func NewTodoDue(uid, summary string, due, now time.Time) string {
 	stamp := now.UTC().Format("20060102T150405Z")
 	lines := []string{
-		"BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//trisse-home//shopping//EN",
+		"BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//trisse-home//EN",
 		"BEGIN:VTODO", "UID:" + uid, "DTSTAMP:" + stamp, "CREATED:" + stamp, "LAST-MODIFIED:" + stamp,
 		"SUMMARY:" + EscapeText(summary), "STATUS:NEEDS-ACTION",
-		"END:VTODO", "END:VCALENDAR",
 	}
+	if !due.IsZero() {
+		lines = append(lines, "DUE;VALUE=DATE:"+due.Format("20060102"))
+	}
+	lines = append(lines, "END:VTODO", "END:VCALENDAR")
 	var b strings.Builder
 	for _, l := range lines {
 		b.WriteString(FoldLine(l))
@@ -75,6 +103,61 @@ func NewTodo(uid, summary string, now time.Time) string {
 func SetTodoDone(raw string, done bool, now time.Time) string {
 	stamp := now.UTC().Format("20060102T150405Z")
 	replace := map[string]bool{"STATUS": true, "COMPLETED": true, "PERCENT-COMPLETE": true, "LAST-MODIFIED": true, "DTSTAMP": true}
+	add := []string{"DTSTAMP:" + stamp, "LAST-MODIFIED:" + stamp}
+	if done {
+		add = append(add, "STATUS:COMPLETED", "COMPLETED:"+stamp, "PERCENT-COMPLETE:100")
+	} else {
+		add = append(add, "STATUS:NEEDS-ACTION")
+	}
+	return rewriteTodo(raw, replace, add)
+}
+
+// TodoEdit is the new state of a VTODO's text, due date and completion.
+type TodoEdit struct {
+	Summary string
+	Due     time.Time // calendar date; zero removes DUE
+	Done    bool
+}
+
+// EditTodo rewrites summary, due date and completion of the first VTODO in
+// raw. Every other property (also those of other apps, alarms included)
+// stays as it is; so do SUMMARY, DUE and COMPLETED when their value does
+// not change, which keeps a due time or the original completion time.
+func EditTodo(raw string, e TodoEdit, now time.Time) string {
+	stamp := now.UTC().Format("20060102T150405Z")
+	var old Todo
+	if todos := ParseTodos(raw); len(todos) > 0 {
+		old = todos[0]
+	}
+	replace := map[string]bool{"LAST-MODIFIED": true, "DTSTAMP": true}
+	var add []string
+	if old.Summary != strings.TrimSpace(e.Summary) {
+		replace["SUMMARY"] = true
+		add = append(add, "SUMMARY:"+EscapeText(e.Summary))
+	}
+	if !old.Due.Equal(e.Due) {
+		replace["DUE"] = true
+		if !e.Due.IsZero() {
+			add = append(add, "DUE;VALUE=DATE:"+e.Due.Format("20060102"))
+		}
+	}
+	if old.Done != e.Done {
+		for _, n := range []string{"STATUS", "COMPLETED", "PERCENT-COMPLETE"} {
+			replace[n] = true
+		}
+		if e.Done {
+			add = append(add, "STATUS:COMPLETED", "COMPLETED:"+stamp, "PERCENT-COMPLETE:100")
+		} else {
+			add = append(add, "STATUS:NEEDS-ACTION")
+		}
+	}
+	add = append([]string{"DTSTAMP:" + stamp, "LAST-MODIFIED:" + stamp}, add...)
+	return rewriteTodo(raw, replace, add)
+}
+
+// rewriteTodo drops the properties named in replace from the first VTODO
+// of raw and appends add before its END line.
+func rewriteTodo(raw string, replace map[string]bool, add []string) string {
 	var b strings.Builder
 	inTodo, depth, handled := false, 0, false
 	for _, line := range unfold(raw) {
@@ -89,14 +172,8 @@ func SetTodoDone(raw string, done bool, now time.Time) string {
 		case inTodo && depth > 0 && strings.HasPrefix(line, "END:"):
 			depth--
 		case inTodo && depth == 0 && line == "END:VTODO":
-			b.WriteString(FoldLine("DTSTAMP:" + stamp))
-			b.WriteString(FoldLine("LAST-MODIFIED:" + stamp))
-			if done {
-				b.WriteString(FoldLine("STATUS:COMPLETED"))
-				b.WriteString(FoldLine("COMPLETED:" + stamp))
-				b.WriteString(FoldLine("PERCENT-COMPLETE:100"))
-			} else {
-				b.WriteString(FoldLine("STATUS:NEEDS-ACTION"))
+			for _, l := range add {
+				b.WriteString(FoldLine(l))
 			}
 			inTodo, handled = false, true
 		case inTodo && depth == 0:

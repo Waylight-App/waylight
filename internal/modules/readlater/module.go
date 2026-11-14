@@ -58,4 +58,5 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/readlater/settings", m.handlers.Settings)
 	r.Protected("PUT /api/readlater/settings", m.handlers.SaveSettings)
 	r.Protected("POST /api/readlater/import/pocket", m.handlers.ImportPocket)
+	r.Protected("POST /api/readlater/import/instapaper", m.handlers.ImportInstapaper)
 }

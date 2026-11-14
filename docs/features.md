@@ -13,7 +13,7 @@ modules in detail.
 
 | Module | What it does |
 | --- | --- |
-| To-dos (`todos`) | Due dates with overdue highlighting, recurring to-dos (daily, on chosen weekdays, monthly, or N days after completion) and reminders through your notification channels. Works offline. |
+| To-dos (`todos`) | Due dates with overdue highlighting, recurring to-dos (daily, on chosen weekdays, monthly, or N days after completion) and reminders through your notification channels. Works offline. A widget can show a connected CalDAV task list (Nextcloud Tasks, Synology, Radicale, …) or a Todoist project instead ([details](modules/todos.md)). |
 | Notes (`notes`) | Markdown notes that can be pinned to the dashboard, with full-text search, `[[wiki links]]` and backlinks, and a version history with diff and restore. |
 | Calendar (`calendar`) | CalDAV calendars such as Nextcloud, including recurring events, plus read-only ICS subscriptions. Agenda, month or split view with event details; new events can be added from the widget. |
 | Shopping list (`shopping`) | Stored as tasks in a CalDAV task list, so the whole household can use it from their usual task app. |
@@ -32,7 +32,7 @@ modules in detail.
 | Weather (`weather`) | Forecast from Open-Meteo, no API key needed. In Germany also official DWD warnings, pollen forecast, UV index and a rain radar widget. |
 | Clock (`clock`) | Time and date, optionally in another time zone. |
 | Daily briefing (`briefing`) | Weather warnings, failures since last evening, offline services, due to-dos, appointments and waste collection in one widget, optionally pushed at a set time each morning. |
-| Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export. |
+| Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export, and a built-in catalogue of news sources by topic and language (Settings → Feeds → Browse catalogue; no outside request until you subscribe; [format](https://github.com/itadori26/trisse-home/blob/main/web/src/features/rss/catalogue/README.md)). |
 | Public transport (`transit`) | Next departures of a stop with real-time delays, via [Transitous](https://transitous.org). |
 | Waste collection (`waste`) | Collection dates from your municipality's ICS calendar, by link or uploaded file; tomorrow's bin is highlighted. |
 | Holidays (`holidays`) | Public holidays of a German state, computed locally, and school holidays from an ICS link. [Details](modules/holidays.md) |
