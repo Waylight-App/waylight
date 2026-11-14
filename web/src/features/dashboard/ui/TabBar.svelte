@@ -119,6 +119,7 @@
       <button
         type="button"
         class="name"
+        id="tab-name-{tab.id}"
         data-tour="tab-{tab.name}"
         aria-current={tab.id === activeId ? 'page' : undefined}
         title={editing ? t('dashboard.rename_hint') : undefined}
@@ -137,7 +138,8 @@
         <button
           class="btn btn-icon more"
           type="button"
-          aria-label={t('dashboard.tab_actions', { name: tab.name })}
+          aria-label={t('dashboard.tab_actions_button')}
+          aria-describedby="tab-name-{tab.id}"
           title={t('dashboard.tab_actions', { name: tab.name })}
           aria-haspopup="menu"
           aria-expanded={menu?.tab.id === tab.id}

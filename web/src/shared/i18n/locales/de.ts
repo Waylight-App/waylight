@@ -197,6 +197,7 @@ export const de: Record<BaseMessageKey, string> = {
   'dashboard.done': 'Fertig',
   'dashboard.cancel': 'Abbrechen',
   'dashboard.tab_actions': 'Aktionen für Tab {name}',
+  'dashboard.tab_actions_button': 'Tab-Aktionen',
   'dashboard.rename_hint': 'Doppelklick oder F2 zum Umbenennen',
   'dashboard.add_widget': '+ Widget hinzufügen',
   'dashboard.add_widget_2': 'Widget hinzufügen',

@@ -48,6 +48,8 @@ export function highlightWidget(id: string, focus = false): void {
   if (!el) return;
   const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  // One outline at a time: a newer request replaces an older one.
+  for (const other of document.querySelectorAll('.flash')) other.classList.remove('flash');
   el.classList.add('flash');
   setTimeout(() => el.classList.remove('flash'), 1500);
   if (focus) {

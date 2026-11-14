@@ -1693,14 +1693,14 @@ test('edit mode: Done button, Esc, tab menu, rename by double-click, delete in a
   await page.getByRole('textbox', { name: 'Name' }).fill('Umbenannt');
   await page.getByRole('button', { name: 'Save' }).click();
   await expect(tabs.getByRole('button', { name: 'Umbenannt', exact: true })).toBeVisible();
-  await tabs.getByRole('button', { name: 'Actions for tab Umbenannt' }).click();
+  await tabs.locator('.tab', { hasText: 'Umbenannt' }).getByRole('button', { name: 'Tab actions' }).click();
   const menu = page.getByRole('menu', { name: 'Actions for tab Umbenannt' });
   await expect(menu.getByRole('menuitem', { name: 'Rename tab' })).toBeFocused();
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Escape'); // closes only the menu, edit mode stays
   await expect(menu).toBeHidden();
   await expect(bar).toBeVisible();
-  await tabs.getByRole('button', { name: 'Actions for tab Umbenannt' }).click();
+  await tabs.locator('.tab', { hasText: 'Umbenannt' }).getByRole('button', { name: 'Tab actions' }).click();
   await menu.getByRole('menuitem', { name: 'Delete tab' }).click();
   const confirm = page.getByRole('dialog', { name: 'Delete tab' });
   await expect(confirm).toContainText('Delete the tab “Umbenannt” and all its widgets?');

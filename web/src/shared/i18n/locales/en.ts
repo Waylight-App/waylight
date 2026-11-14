@@ -191,6 +191,7 @@ export const en = {
   'dashboard.done': 'Done',
   'dashboard.cancel': 'Cancel',
   'dashboard.tab_actions': 'Actions for tab {name}',
+  'dashboard.tab_actions_button': 'Tab actions',
   'dashboard.rename_hint': 'Double-click or F2 to rename',
   'dashboard.add_widget': '+ Add widget',
   'dashboard.add_widget_2': 'Add widget',
