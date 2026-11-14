@@ -1,0 +1,82 @@
+# OpenAPI fragment of the photo frame module (#286). `make openapi` merges it with
+# api/openapi.base.yaml and checks it.
+tags:
+  - name: photos
+
+paths:
+  /api/photos:
+    get:
+      tags: [photos]
+      summary: Pictures of an album in display order (empty album = the default album "Photos")
+      parameters: [{ name: album, in: query, schema: { type: string, maxLength: 40 } }]
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Photo" } } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+    post:
+      tags: [photos]
+      summary: "Upload one picture (JPEG, PNG or GIF, at most 25 MB) as the multipart field \"file\". It is turned upright, scaled to at most 1920 px and stored as JPEG without EXIF data"
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ name: album, in: query, schema: { type: string, maxLength: 40 } }]
+      requestBody:
+        required: true
+        content: { multipart/form-data: { schema: { type: object, properties: { file: { type: string, format: binary } } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Photo" } } } }
+        "409": { description: The storage is full (300 MB or 2000 pictures) }
+        "413": { description: The file is larger than 25 MB }
+        "415": { description: Not multipart/form-data }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/photos/albums:
+    get:
+      tags: [photos]
+      summary: Albums with their size, and the storage used against its limits
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/PhotoOverview" } } } }
+  /api/photos/order:
+    put:
+      tags: [photos]
+      summary: Set the order of an album; ids must list every picture of the album exactly once
+      security: [{ session: [], csrf: [] }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [ids], properties: { album: { type: string }, ids: { type: array, items: { type: string } } } } } }
+      responses:
+        "204": { description: Saved }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/photos/{id}:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    delete:
+      tags: [photos]
+      summary: Delete a picture
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Deleted }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/photos/{id}/image:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    get:
+      tags: [photos]
+      summary: The stored JPEG (?thumb=1 for the 320 px thumbnail); cacheable, a picture never changes under its id
+      parameters: [{ name: thumb, in: query, schema: { type: string, enum: ["1"] } }]
+      responses:
+        "200": { description: OK, content: { image/jpeg: { schema: { type: string, format: binary } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+schemas:
+  Photo:
+    type: object
+    properties:
+      id: { type: string }
+      album: { type: string }
+      width: { type: integer }
+      height: { type: integer }
+      size: { type: integer, description: Bytes of the picture and its thumbnail }
+  PhotoOverview:
+    type: object
+    properties:
+      albums: { type: array, items: { type: object, properties: { name: { type: string }, count: { type: integer }, bytes: { type: integer } } } }
+      count: { type: integer }
+      usedBytes: { type: integer }
+      quotaBytes: { type: integer }
+      maxPhotos: { type: integer }
+      maxUploadBytes: { type: integer }

@@ -22,6 +22,7 @@ modules in detail.
 | Habits (`habits`) | Daily habits or habits on chosen weekdays, checked off with one tap, with current and best streak and a four-week heatmap. |
 | Read later (`readlater`) | Saves a clean reader copy of a page with its images, so it stays readable when the original disappears. [Details](modules/readlater.md) |
 | Drop zone (`drop`) | Moves text, links and files up to 25 MB between your devices; items expire after one hour, a day or a week. [Details](modules/drop.md) |
+| Photo frame (`photos`) | Your own pictures one after another, uploaded to trisse-home and scaled down there; albums per widget, interval and fit. In backups, not in data exports. [Details](modules/photos.md) |
 | Study progress (`study`) | Modules with credits, semester and grade, progress towards the degree and a weighted average. [Details](modules/study.md) |
 | Bookmarks (`bookmarks`) | Links in folders with tags. Opt-in: fetch title and icon when adding, and a weekly check for broken links. Browser bookmarks can be imported. |
 
