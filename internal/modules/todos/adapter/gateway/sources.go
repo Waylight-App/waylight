@@ -26,12 +26,12 @@ func NewSourceRepository(db *sql.DB, cipher Cipher) *SourceRepository {
 	return &SourceRepository{db: db, cipher: cipher}
 }
 
-const sourceColumns = `id, name, kind, url, username, password_encrypted`
+const sourceColumns = `id, name, kind, url, username, password_encrypted, list_id`
 
 func (r *SourceRepository) scan(row interface{ Scan(...any) error }) (domain.Source, error) {
 	var s domain.Source
 	var kind, enc string
-	if err := row.Scan(&s.ID, &s.Name, &kind, &s.URL, &s.Username, &enc); err != nil {
+	if err := row.Scan(&s.ID, &s.Name, &kind, &s.URL, &s.Username, &enc, &s.ListID); err != nil {
 		return domain.Source{}, err
 	}
 	s.Kind = domain.SourceKind(kind)
@@ -76,10 +76,10 @@ func (r *SourceRepository) Save(ctx context.Context, s domain.Source) error {
 	if err != nil {
 		return fmt.Errorf("encrypt password: %w", err)
 	}
-	_, err = r.db.ExecContext(ctx, `INSERT INTO todos_sources (id, name, kind, url, username, password_encrypted) VALUES (?, ?, ?, ?, ?, ?)
+	_, err = r.db.ExecContext(ctx, `INSERT INTO todos_sources (id, name, kind, url, username, password_encrypted, list_id) VALUES (?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT (id) DO UPDATE SET name = excluded.name, kind = excluded.kind, url = excluded.url,
-		username = excluded.username, password_encrypted = excluded.password_encrypted`,
-		s.ID, s.Name, string(s.Kind), s.URL, s.Username, enc)
+		username = excluded.username, password_encrypted = excluded.password_encrypted, list_id = excluded.list_id`,
+		s.ID, s.Name, string(s.Kind), s.URL, s.Username, enc, s.ListID)
 	if err != nil {
 		return fmt.Errorf("upsert source: %w", err)
 	}

@@ -10,6 +10,7 @@ const nc: TodoSource = {
   kind: 'caldav',
   url: 'https://cloud.example/tasks/',
   username: 'anna',
+  listId: '',
   capabilities: { ordering: false, repeat: false, reminders: false },
 };
 
@@ -53,7 +54,13 @@ describe('connected to-do lists (#169)', () => {
       discover: vi.fn().mockResolvedValue([]),
     } satisfies TodoSourcesGateway;
     const uc = new TodoSourcesUseCases(g);
-    const input = { name: ' NC ', url: ' https://cloud.example/dav ', username: 'anna', password: 'pw' };
+    const input = {
+      kind: 'caldav' as const,
+      name: ' NC ',
+      url: ' https://cloud.example/dav ',
+      username: 'anna',
+      password: 'pw',
+    };
     await uc.list();
     await uc.list();
     expect(g.list).toHaveBeenCalledTimes(1);
@@ -72,6 +79,13 @@ describe('connected to-do lists (#169)', () => {
       url: 'https://cloud.example/dav',
       id: 'nc',
     });
+    // Todoist: token and project only.
+    const td = { kind: 'todoist' as const, name: 'Inbox', url: '', username: '', password: 'tok' };
+    await expect(uc.save('', td)).rejects.toThrow(); // no project chosen yet
+    await expect(uc.discover({ ...td, password: '' })).rejects.toThrow();
+    await uc.discover(td);
+    await uc.save('', { ...td, listId: 'p1' });
+    expect(g.save).toHaveBeenLastCalledWith('', { ...td, listId: 'p1' });
     g.list.mockRejectedValue(new Error('403'));
     expect(await uc.list(true)).toEqual([]);
   });

@@ -54,7 +54,9 @@ export interface ClearedDTO {
 }
 /**
  * SourceInputDTO is the body of POST/PUT /api/todos/settings/sources and of
- * .../discover. Kind is "caldav"; an empty password keeps the stored one.
+ * .../discover. Kind is "caldav" (url, username, app password) or "todoist"
+ * (API token as password, project as listId); an empty password keeps the
+ * stored one.
  */
 export interface SourceInputDTO {
   id?: string;
@@ -63,4 +65,5 @@ export interface SourceInputDTO {
   url: string;
   username: string;
   password: string;
+  listId?: string;
 }

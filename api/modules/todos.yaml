@@ -53,7 +53,7 @@ paths:
         "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/TodoSource" } } } } }
     post:
       tags: [todos]
-      summary: Connect a CalDAV task list (the list is read once to test the connection)
+      summary: Connect a CalDAV task list or a Todoist project (the list is read once to test the connection)
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/TodoSourceInput" } } } }
       responses:
@@ -63,11 +63,11 @@ paths:
   /api/todos/settings/sources/discover:
     post:
       tags: [todos]
-      summary: Find the task lists of a CalDAV account (from the server's DAV address, the calendar home or a list); id may name a stored list whose password is used
+      summary: "Find the task lists of an account: CalDAV (from the server's DAV address, the calendar home or a list) or the Todoist projects of an API token; id may name a stored list whose password is used"
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/TodoSourceInput" } } } }
       responses:
-        "200": { description: OK, content: { application/json: { schema: { type: array, items: { type: object, properties: { url: { type: string }, name: { type: string } } } } } } }
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { type: object, properties: { url: { type: string }, listId: { type: string }, name: { type: string } } } } } } }
         "422": { $ref: "#/components/responses/Invalid" }
         "502": { description: The server refused the login or could not be read }
   /api/todos/settings/sources/{id}:
@@ -122,10 +122,11 @@ schemas:
     properties:
       id: { type: string, description: "Discover only: a stored list whose password is used when password is empty" }
       name: { type: string, maxLength: 80 }
-      kind: { type: string, enum: [caldav] }
-      url: { type: string, description: "The task list (a CalDAV calendar collection with VTODO); for discover also the DAV root" }
-      username: { type: string }
-      password: { type: string, description: "App password; stored encrypted with SECRET_KEY. Empty on update keeps the stored one" }
+      kind: { type: string, enum: [caldav, todoist] }
+      url: { type: string, description: "CalDAV: the task list (a calendar collection with VTODO); for discover also the DAV root. Todoist: unused" }
+      username: { type: string, description: "CalDAV only" }
+      password: { type: string, description: "CalDAV: app password; Todoist: API token. Stored encrypted with SECRET_KEY. Empty on update keeps the stored one" }
+      listId: { type: string, description: "Todoist: the project ID (from discover)" }
   TodoSource:
     type: object
     properties:
@@ -134,6 +135,7 @@ schemas:
       kind: { type: string }
       url: { type: string }
       username: { type: string }
+      listId: { type: string, description: "Todoist: the project ID" }
       capabilities:
         type: object
         description: What the list supports; the UI hides the rest

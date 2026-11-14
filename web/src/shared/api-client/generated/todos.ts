@@ -60,12 +60,15 @@ export interface SourceDTO {
   kind: string;
   url: string;
   username: string;
+  listId: string;
   capabilities: CapabilitiesDTO;
 }
 /**
- * DiscoveredListDTO is a task list found on a server.
+ * DiscoveredListDTO is a task list found on a server: a CalDAV collection
+ * (url) or a Todoist project (listId).
  */
 export interface DiscoveredListDTO {
   url: string;
+  listId: string;
   name: string;
 }

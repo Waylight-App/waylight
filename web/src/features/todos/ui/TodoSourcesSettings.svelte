@@ -2,7 +2,7 @@
   import PlainHttpWarning from '../../../shared/ui/PlainHttpWarning.svelte';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
-  import type { DiscoveredList, TodoSource } from '../domain/todo';
+  import { type DiscoveredList, SOURCE_KINDS, type SourceKind, type TodoSource } from '../domain/todo';
   import type { TodoSourcesUseCases } from '../usecase/todosUseCases';
 
   /** Settings → To-do lists: connect CalDAV task lists (#169). */
@@ -12,6 +12,7 @@
   let { sources }: Props = $props();
 
   let lists = $state<TodoSource[]>([]);
+  let kind = $state<SourceKind>('caldav');
   let name = $state('');
   let url = $state('');
   let username = $state('');
@@ -41,12 +42,14 @@
     }
   }
 
-  const input = () => ({ name, url, username, password });
+  const input = () => ({ kind, name, url, username, password });
+  /** A found list's value: the CalDAV address or the Todoist project. */
+  const value = (l: DiscoveredList) => l.listId || l.url;
 
   function find() {
     void run(async () => {
       found = await sources.discover(input());
-      chosen = found[0]?.url ?? '';
+      chosen = found[0] ? value(found[0]) : '';
       if (found.length === 1 && !name) name = found[0]?.name ?? '';
       if (found.length === 0) error = t('todos.sources.none_found');
     });
@@ -55,7 +58,12 @@
   function connect(e: SubmitEvent) {
     e.preventDefault();
     void run(async () => {
-      await sources.save('', { ...input(), url: chosen || url });
+      await sources.save(
+        '',
+        kind === 'todoist'
+          ? { ...input(), url: '', username: '', listId: chosen }
+          : { ...input(), url: chosen || url },
+      );
       name = url = username = password = chosen = '';
       found = null;
       message = t('todos.sources.saved');
@@ -78,7 +86,9 @@
   {#each lists as s (s.id)}
     <li>
       <span class="what"
-        ><strong>{s.name}</strong><span class="muted small">{s.username} · {s.url}</span></span
+        ><strong>{s.name}</strong><span class="muted small"
+          >{s.kind === 'todoist' ? t('todos.sources.kind_todoist') : `${s.username} · ${s.url}`}</span
+        ></span
       >
       <button
         class="btn btn-icon"
@@ -96,26 +106,34 @@
 <h3>{t('todos.sources.add')}</h3>
 <form onsubmit={connect}>
   <label class="field"
-    ><span>{t('todos.sources.url')}</span><input
-      class="input"
-      type="url"
-      bind:value={url}
-      placeholder="https://cloud.example.com/remote.php/dav"
-      required
-    /></label
-  >
-  <p class="muted small">{t('todos.sources.url_hint')}</p>
-  <PlainHttpWarning {url} />
+    ><span>{t('todos.sources.kind')}</span>
+    <select class="input" bind:value={kind} onchange={() => ((found = null), (chosen = ''))}>
+      {#each SOURCE_KINDS as k (k)}<option value={k}>{t(`todos.sources.kind_${k}`)}</option>{/each}
+    </select>
+  </label>
+  {#if kind === 'caldav'}
+    <label class="field"
+      ><span>{t('todos.sources.url')}</span><input
+        class="input"
+        type="url"
+        bind:value={url}
+        placeholder="https://cloud.example.com/remote.php/dav"
+        required
+      /></label
+    >
+    <p class="muted small">{t('todos.sources.url_hint')}</p>
+    <PlainHttpWarning {url} />
+    <label class="field"
+      ><span>{t('todos.sources.username')}</span><input
+        class="input"
+        bind:value={username}
+        autocomplete="off"
+        required
+      /></label
+    >
+  {/if}
   <label class="field"
-    ><span>{t('todos.sources.username')}</span><input
-      class="input"
-      bind:value={username}
-      autocomplete="off"
-      required
-    /></label
-  >
-  <label class="field"
-    ><span>{t('todos.sources.password')}</span><input
+    ><span>{kind === 'todoist' ? t('todos.sources.token') : t('todos.sources.password')}</span><input
       class="input"
       type="password"
       bind:value={password}
@@ -123,12 +141,13 @@
       required
     /></label
   >
+  {#if kind === 'todoist'}<p class="muted small">{t('todos.sources.token_hint')}</p>{/if}
   <p><button class="btn" type="button" disabled={busy} onclick={find}>{t('todos.sources.find')}</button></p>
   {#if found && found.length > 0}
     <label class="field"
-      ><span>{t('todos.sources.found')}</span>
+      ><span>{kind === 'todoist' ? t('todos.sources.project') : t('todos.sources.found')}</span>
       <select class="input" bind:value={chosen}>
-        {#each found as l (l.url)}<option value={l.url}>{l.name}</option>{/each}
+        {#each found as l (value(l))}<option value={value(l)}>{l.name}</option>{/each}
       </select>
     </label>
   {/if}
@@ -141,6 +160,7 @@
     /></label
   >
   <p class="muted small">{t('todos.sources.limits')}</p>
+  {#if kind === 'todoist'}<p class="muted small">{t('todos.sources.limits_todoist')}</p>{/if}
   <p><button class="btn btn-primary" type="submit" disabled={busy}>{t('todos.sources.connect')}</button></p>
 </form>
 {#if error}<p class="error" role="alert">{error}</p>{/if}

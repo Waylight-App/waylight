@@ -72,9 +72,10 @@ const SOURCES = '/api/todos/settings/sources';
 const toSource = (d: SourceDTO): TodoSource => ({
   id: d.id,
   name: d.name,
-  kind: 'caldav',
+  kind: d.kind === 'todoist' ? 'todoist' : 'caldav',
   url: d.url,
   username: d.username,
+  listId: d.listId ?? '',
   capabilities: { ...d.capabilities },
 });
 
@@ -86,7 +87,7 @@ export class TodoSourcesApi implements TodoSourcesGateway {
     return (await this.http.get<SourceDTO[]>(SOURCES)).map(toSource);
   }
   async save(id: string, input: SourceInput): Promise<TodoSource> {
-    const body: SourceInputDTO = { ...input, kind: 'caldav' };
+    const body: SourceInputDTO = { ...input };
     return toSource(
       id
         ? await this.http.put<SourceDTO>(`${SOURCES}/${encodeURIComponent(id)}`, body)
@@ -97,7 +98,11 @@ export class TodoSourcesApi implements TodoSourcesGateway {
     return this.http.delete(`${SOURCES}/${encodeURIComponent(id)}`);
   }
   async discover(input: SourceInput & { id?: string }): Promise<DiscoveredList[]> {
-    const body: SourceInputDTO = { ...input, kind: 'caldav' };
-    return (await this.http.post<DiscoveredListDTO[]>(`${SOURCES}/discover`, body)).map((l) => ({ ...l }));
+    const body: SourceInputDTO = { ...input };
+    return (await this.http.post<DiscoveredListDTO[]>(`${SOURCES}/discover`, body)).map((l) => ({
+      url: l.url,
+      listId: l.listId ?? '',
+      name: l.name,
+    }));
   }
 }
