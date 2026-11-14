@@ -72,6 +72,7 @@ nav:
           - Immich: modules/immich.md
           - JSON widget: modules/apiwidget.md
           - Jellyfin and Plex: modules/media.md
+          - Markets: modules/markets.md
           - Music releases: modules/releases.md
           - Parcels from e-mails: parcels-mail.md
           - Read later: modules/readlater.md
