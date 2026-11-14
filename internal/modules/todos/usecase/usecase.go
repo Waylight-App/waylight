@@ -24,6 +24,9 @@ type TodoInput struct {
 	ID string
 	// Version is the version the client edited (update); 0 = no check.
 	Version int
+	// Source is the list ("" or "local" = the built-in one, else the ID of
+	// a connected external list, #169).
+	Source string
 }
 
 // RepeatInput describes a recurrence (#68); an empty Kind means none.
@@ -69,7 +72,7 @@ type TodoView struct {
 
 // ListTodos returns open to-dos first (by position), then done ones (input port).
 type ListTodos interface {
-	Execute(ctx context.Context, includeDone bool) ([]TodoView, error)
+	Execute(ctx context.Context, source string, includeDone bool) ([]TodoView, error)
 }
 
 // CreateTodo appends a to-do (input port).
@@ -84,12 +87,12 @@ type UpdateTodo interface {
 
 // DeleteTodo removes a to-do (input port).
 type DeleteTodo interface {
-	Execute(ctx context.Context, id string) error
+	Execute(ctx context.Context, source, id string) error
 }
 
 // ClearCompleted removes all done to-dos (input port).
 type ClearCompleted interface {
-	Execute(ctx context.Context) (int, error)
+	Execute(ctx context.Context, source string) (int, error)
 }
 
 // SendDueReminders pushes reminders of open to-dos that are due (input
@@ -98,7 +101,9 @@ type SendDueReminders interface {
 	Execute(ctx context.Context) (int, error)
 }
 
-// Repository persists to-dos (output port).
+// Repository persists to-dos (output port). The local list and every
+// external provider (#169) implement it; external ones fail writes with
+// domain.ErrVersionConflict when the to-do changed in the other app.
 type Repository interface {
 	List(ctx context.Context) ([]domain.Todo, error)
 	Get(ctx context.Context, id string) (domain.Todo, error)
@@ -116,6 +121,65 @@ type Deps struct {
 	Location *time.Location
 	// Alerts delivers reminders (nil = reminders are not sent).
 	Alerts kernel.AlertSink
+	// Sources stores the connected external lists and Providers opens them
+	// (#169); nil = only the local list.
+	Sources   SourceRepository
+	Providers Providers
+}
+
+// list is the resolved to-do list of a request.
+type list struct {
+	repo     Repository
+	caps     domain.Capabilities
+	external bool
+}
+
+// open resolves a source ID to its repository.
+func (d Deps) open(ctx context.Context, source string) (list, error) {
+	if source == "" || source == domain.LocalSource {
+		return list{repo: d.Repo, caps: domain.CapabilitiesOf("")}, nil
+	}
+	if d.Sources == nil || d.Providers == nil || !domain.ValidSourceID(source) {
+		return list{}, domain.ErrSourceNotFound
+	}
+	s, err := d.Sources.Get(ctx, source)
+	if err != nil {
+		return list{}, err
+	}
+	return list{repo: external{d.Providers.Open(s)}, caps: domain.CapabilitiesOf(s.Kind), external: true}, nil
+}
+
+// external wraps an external provider: errors that are not domain errors
+// (network, refused login) become "unavailable" with the target named.
+type external struct{ r Repository }
+
+func unavailable(err error) error {
+	var pe *kernel.PublicError
+	if err == nil || errors.As(err, &pe) {
+		return err
+	}
+	return kernel.TargetFailure(kernel.ErrUnavailable, err)
+}
+
+func (e external) List(ctx context.Context) ([]domain.Todo, error) {
+	t, err := e.r.List(ctx)
+	return t, unavailable(err)
+}
+
+func (e external) Get(ctx context.Context, id string) (domain.Todo, error) {
+	if !domain.ValidExternalID(id) {
+		return domain.Todo{}, domain.ErrTodoNotFound
+	}
+	t, err := e.r.Get(ctx, id)
+	return t, unavailable(err)
+}
+
+func (e external) Save(ctx context.Context, t domain.Todo) error {
+	return unavailable(e.r.Save(ctx, t))
+}
+
+func (e external) Delete(ctx context.Context, ids ...string) error {
+	return unavailable(e.r.Delete(ctx, ids...))
 }
 
 func (d Deps) loc() *time.Location {
@@ -126,8 +190,11 @@ func (d Deps) loc() *time.Location {
 }
 
 // applySchedule sets recurrence and reminder from the input; nil fields
-// keep the current values.
-func applySchedule(t *domain.Todo, in TodoInput) error {
+// keep the current values. Lists without them refuse a set rule.
+func applySchedule(t *domain.Todo, in TodoInput, caps domain.Capabilities) error {
+	if !caps.Repeat && in.Repeat != nil && in.Repeat.Kind != "" || !caps.Reminders && in.Reminder != nil && in.Reminder.At != "" {
+		return domain.ErrUnsupported
+	}
 	repeat, reminder := t.Repeat(), t.Reminder()
 	var err error
 	if in.Repeat != nil {
@@ -167,8 +234,12 @@ type listTodos struct{ d Deps }
 func NewListTodos(d Deps) ListTodos { return &listTodos{d: d} }
 
 // Execute implements ListTodos.
-func (uc *listTodos) Execute(ctx context.Context, includeDone bool) ([]TodoView, error) {
-	todos, err := uc.d.Repo.List(ctx)
+func (uc *listTodos) Execute(ctx context.Context, source string, includeDone bool) ([]TodoView, error) {
+	l, err := uc.d.open(ctx, source)
+	if err != nil {
+		return nil, err
+	}
+	todos, err := l.repo.List(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("list todos: %w", err)
 	}
@@ -201,34 +272,55 @@ func NewCreateTodo(d Deps) CreateTodo { return &createTodo{d: d} }
 
 // Execute implements CreateTodo.
 func (uc *createTodo) Execute(ctx context.Context, in TodoInput) (TodoView, error) {
+	l, err := uc.d.open(ctx, in.Source)
+	if err != nil {
+		return TodoView{}, err
+	}
 	id := uc.d.IDs.NewID()
 	if in.ID != "" {
 		if !kernel.ValidClientID(in.ID) {
 			return TodoView{}, kernel.ErrInvalidClientID
 		}
 		// A replayed create (offline outbox, #80) returns what it created.
-		if existing, err := uc.d.Repo.Get(ctx, in.ID); err == nil {
+		if existing, err := l.repo.Get(ctx, in.ID); err == nil {
 			return uc.d.view(existing), nil
 		} else if !errors.Is(err, domain.ErrTodoNotFound) {
 			return TodoView{}, err
 		}
 		id = in.ID
 	}
-	todos, err := uc.d.Repo.List(ctx)
-	if err != nil {
-		return TodoView{}, fmt.Errorf("list todos: %w", err)
+	position := 0
+	if l.caps.Ordering {
+		todos, err := l.repo.List(ctx)
+		if err != nil {
+			return TodoView{}, fmt.Errorf("list todos: %w", err)
+		}
+		position = nextPosition(todos)
 	}
-	t, err := domain.NewTodo(id, in.Title, in.Due, nextPosition(todos), uc.d.Clock.Now())
+	t, err := domain.NewTodo(id, in.Title, in.Due, position, uc.d.Clock.Now())
 	if err != nil {
 		return TodoView{}, err
 	}
-	if err := applySchedule(&t, in); err != nil {
+	if err := applySchedule(&t, in, l.caps); err != nil {
 		return TodoView{}, err
 	}
-	if err := uc.d.Repo.Save(ctx, t); err != nil {
+	if err := l.repo.Save(ctx, t); err != nil {
 		return TodoView{}, fmt.Errorf("save todo: %w", err)
 	}
-	return uc.d.view(t), nil
+	return uc.d.saved(ctx, l, t)
+}
+
+// saved returns the view of a stored to-do; external lists are read back,
+// so the answer has the provider's ID and version (ETag).
+func (d Deps) saved(ctx context.Context, l list, t domain.Todo) (TodoView, error) {
+	if l.external {
+		stored, err := l.repo.Get(ctx, t.ID())
+		if err != nil {
+			return TodoView{}, err
+		}
+		t = stored
+	}
+	return d.view(t), nil
 }
 
 type updateTodo struct{ d Deps }
@@ -238,7 +330,11 @@ func NewUpdateTodo(d Deps) UpdateTodo { return &updateTodo{d: d} }
 
 // Execute implements UpdateTodo.
 func (uc *updateTodo) Execute(ctx context.Context, id string, in TodoInput, done bool) (TodoView, error) {
-	t, err := uc.d.Repo.Get(ctx, id)
+	l, err := uc.d.open(ctx, in.Source)
+	if err != nil {
+		return TodoView{}, err
+	}
+	t, err := l.repo.Get(ctx, id)
 	if err != nil {
 		return TodoView{}, err
 	}
@@ -248,7 +344,7 @@ func (uc *updateTodo) Execute(ctx context.Context, id string, in TodoInput, done
 	if err := t.Edit(in.Title, in.Due); err != nil {
 		return TodoView{}, err
 	}
-	if err := applySchedule(&t, in); err != nil {
+	if err := applySchedule(&t, in, l.caps); err != nil {
 		return TodoView{}, err
 	}
 	now := uc.d.Clock.Now()
@@ -257,26 +353,26 @@ func (uc *updateTodo) Execute(ctx context.Context, id string, in TodoInput, done
 	t.Bump()
 	if completing {
 		// Completing a recurring to-do creates its next occurrence (#68).
-		if err := uc.createNext(ctx, t, now); err != nil {
+		if err := uc.createNext(ctx, l.repo, t, now); err != nil {
 			return TodoView{}, err
 		}
 	}
-	if err := uc.d.Repo.Save(ctx, t); err != nil {
+	if err := l.repo.Save(ctx, t); err != nil {
 		return TodoView{}, fmt.Errorf("save todo: %w", err)
 	}
-	return uc.d.view(t), nil
+	return uc.d.saved(ctx, l, t)
 }
 
-func (uc *updateTodo) createNext(ctx context.Context, t domain.Todo, now time.Time) error {
+func (uc *updateTodo) createNext(ctx context.Context, repo Repository, t domain.Todo, now time.Time) error {
 	if !t.Repeat().Repeats() {
 		return nil
 	}
-	todos, err := uc.d.Repo.List(ctx)
+	todos, err := repo.List(ctx)
 	if err != nil {
 		return fmt.Errorf("list todos: %w", err)
 	}
 	next, _ := t.NextOccurrence(uc.d.IDs.NewID(), nextPosition(todos), now.In(uc.d.loc()), now)
-	if err := uc.d.Repo.Save(ctx, next); err != nil {
+	if err := repo.Save(ctx, next); err != nil {
 		return fmt.Errorf("save next occurrence: %w", err)
 	}
 	return nil
@@ -337,11 +433,16 @@ type deleteTodo struct{ d Deps }
 func NewDeleteTodo(d Deps) DeleteTodo { return &deleteTodo{d: d} }
 
 // Execute implements DeleteTodo.
-func (uc *deleteTodo) Execute(ctx context.Context, id string) error {
-	if _, err := uc.d.Repo.Get(ctx, id); err != nil {
+func (uc *deleteTodo) Execute(ctx context.Context, source, id string) error {
+	l, err := uc.d.open(ctx, source)
+	if err != nil {
 		return err
 	}
-	if err := uc.d.Repo.Delete(ctx, id); err != nil {
+	t, err := l.repo.Get(ctx, id)
+	if err != nil {
+		return err
+	}
+	if err := l.repo.Delete(ctx, t.ID()); err != nil {
 		return fmt.Errorf("delete todo: %w", err)
 	}
 	return nil
@@ -353,8 +454,12 @@ type clearCompleted struct{ d Deps }
 func NewClearCompleted(d Deps) ClearCompleted { return &clearCompleted{d: d} }
 
 // Execute implements ClearCompleted.
-func (uc *clearCompleted) Execute(ctx context.Context) (int, error) {
-	todos, err := uc.d.Repo.List(ctx)
+func (uc *clearCompleted) Execute(ctx context.Context, source string) (int, error) {
+	l, err := uc.d.open(ctx, source)
+	if err != nil {
+		return 0, err
+	}
+	todos, err := l.repo.List(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("list todos: %w", err)
 	}
@@ -367,7 +472,7 @@ func (uc *clearCompleted) Execute(ctx context.Context) (int, error) {
 	if len(ids) == 0 {
 		return 0, nil
 	}
-	if err := uc.d.Repo.Delete(ctx, ids...); err != nil {
+	if err := l.repo.Delete(ctx, ids...); err != nil {
 		return 0, fmt.Errorf("delete todos: %w", err)
 	}
 	return len(ids), nil
