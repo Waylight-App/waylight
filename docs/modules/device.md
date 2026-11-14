@@ -7,6 +7,7 @@
 After the first login the appliance asks once: *How do you want to use this device?* You can change the answer any time under **Settings → Device**. The step says whether a display is connected (from `/sys/class/drm/*/status`).
 
 **Server + display** does the following:
+
 - installs `cage` (a minimal Wayland kiosk compositor) and Chromium from the Raspberry Pi OS repository, so the device needs internet for that;
 - creates an unprivileged `trisse-kiosk` user with auto-login;
 - starts Chromium in kiosk mode on `http://localhost/kiosk#…`.

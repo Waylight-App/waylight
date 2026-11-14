@@ -29,6 +29,7 @@ Only the page you save and its images, once, when you save it.
 ## Import from Pocket
 
 Pocket shut down in 2025, but its export file still works. Under **Settings → Read later → Import Pocket export…**, choose the CSV file (`title,url,time_added,tags,status`; at most 5 MB, 2000 links).
+
 - The links are added at once with their title and the date they were saved. Archived ones stay archived.
 - The reader copies follow in the background, five every five minutes, so a large import doesn't flood your network or the sites.
 - Links that are already saved are skipped.
