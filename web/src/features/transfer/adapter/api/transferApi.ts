@@ -2,9 +2,10 @@ import type { HttpClient } from '../../../../shared/api-client/http';
 import type {
   ConfigResultDTO,
   ConfigStatusDTO,
+  ForeignImportDTO,
   ImportResultDTO,
 } from '../../../../shared/api-client/generated/transfer';
-import type { ConfigResult, ImportResult } from '../../domain/transfer';
+import type { ConfigResult, ForeignFormat, ForeignImport, ImportResult } from '../../domain/transfer';
 import type { TransferGateway } from '../../usecase/transferUseCases';
 
 /** TransferGateway backed by the REST API. */
@@ -22,6 +23,20 @@ export class TransferApi implements TransferGateway {
 
   configUrl(): string {
     return '/api/transfer/config';
+  }
+
+  async importForeign(format: ForeignFormat, files: readonly File[], apply: boolean): Promise<ForeignImport> {
+    const form = new FormData();
+    for (const f of files) form.append('file', f, f.name);
+    const d = await this.http.postForm<ForeignImportDTO>(
+      `/api/transfer/import/${format}${apply ? '?apply=true' : ''}`,
+      form,
+    );
+    return {
+      yaml: d.yaml,
+      summary: { ...d.summary, warnings: d.summary.warnings ?? [] },
+      result: d.result ? { applied: d.result.applied ?? [], failed: d.result.failed ?? {} } : null,
+    };
   }
 
   async managedSections(): Promise<string[]> {

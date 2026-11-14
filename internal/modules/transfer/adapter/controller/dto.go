@@ -31,3 +31,21 @@ type ConfigStatusDTO struct {
 	// Managed lists the sections CONFIG_FILE owns; empty without managed mode.
 	Managed []string `json:"managed"`
 }
+
+// ImportSummaryDTO says what an import from another dashboard adds (#77).
+type ImportSummaryDTO struct {
+	Tiles     int      `json:"tiles"`
+	Bookmarks int      `json:"bookmarks"`
+	Widgets   int      `json:"widgets"`
+	Skipped   int      `json:"skipped"`
+	Tab       string   `json:"tab"`
+	Warnings  []string `json:"warnings"`
+}
+
+// ForeignImportDTO is returned by POST /api/transfer/import/{format}: the
+// merged trisse-home.yaml, the summary and, when applied, the result.
+type ForeignImportDTO struct {
+	YAML    string           `json:"yaml"`
+	Summary ImportSummaryDTO `json:"summary"`
+	Result  *ConfigResultDTO `json:"result,omitempty"`
+}

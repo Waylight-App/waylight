@@ -35,3 +35,27 @@ paths:
       summary: Sections managed by CONFIG_FILE (#88); they are applied at every start and refuse changes with 409
       responses:
         "200": { description: OK, content: { application/json: { schema: { type: object, properties: { managed: { type: array, items: { type: string } } } } } } }
+  /api/transfer/import/{format}:
+    post:
+      tags: [transfer]
+      summary: "Import another dashboard (#77): format homepage (services.yaml, bookmarks.yaml, widgets.yaml) or homarr (board JSON of Homarr 0.x), as multipart parts named file, together at most 2 MB. Only adds: tiles with a new name, bookmarks with a new URL and, once, a tab named after the source. Without ?apply=true it is a preview that changes nothing"
+      security: [{ session: [], csrf: [] }]
+      parameters:
+        - { name: format, in: path, required: true, schema: { type: string, enum: [homepage, homarr] } }
+        - { name: apply, in: query, schema: { type: string, enum: ["true"] } }
+      requestBody:
+        required: true
+        content: { multipart/form-data: { schema: { type: object, properties: { file: { type: array, items: { type: string, format: binary } } } } } }
+      responses:
+        "200":
+          description: The changed parts of trisse-home.yaml, a summary with warnings, and the result when applied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  yaml: { type: string }
+                  summary: { type: object, properties: { tiles: { type: integer }, bookmarks: { type: integer }, widgets: { type: integer }, skipped: { type: integer }, tab: { type: string }, warnings: { type: array, items: { type: string } } } }
+                  result: { type: object, properties: { applied: { type: array, items: { type: string } }, failed: { type: object, additionalProperties: { type: string } } } }
+        "415": { description: Not multipart/form-data }
+        "422": { $ref: "#/components/responses/Invalid" }
