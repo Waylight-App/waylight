@@ -83,7 +83,7 @@ describe('layoutCommand (#272)', () => {
   it('records a real move with plain cells', () => {
     const c = layoutCommand(
       't',
-      [{ ...before[0]!, kind: 'clock' } as never, before[1]!],
+      [{ id: 'a', x: 0, y: 0, w: 2, h: 2, kind: 'clock' } as never, { id: 'b', x: 2, y: 0, w: 2, h: 2 }],
       [{ id: 'a', x: 4, y: 0, w: 2, h: 2 }],
     );
     expect(c).toEqual({ type: 'layout', tabId: 't', before, after: [{ id: 'a', x: 4, y: 0, w: 2, h: 2 }] });
