@@ -33,7 +33,7 @@ once and then `make smoke`.
    respect the dependency rule; `make lint` and `make test` enforce it.
 2. Every change starts with an issue (use the issue forms). Pull requests
    reference it with `Closes #<number>`. Keep changes small and focused. New features usually belong in a module
-   (see "How to add a new module" in the README).
+   (see [adding a module](docs/adding-a-module.md)).
 3. Code, comments and documentation are written in English. Exported Go
    identifiers get GoDoc comments starting with their name; comments explain
    *why*, not *what*.
@@ -71,7 +71,7 @@ then replace the example `Item` entity with your own model.
 
 A module that needs a settings section adds `web/src/app/settings/<name>.ts`
 (see `settings/proxmox.ts`). Describe the module in `docs/modules/<name>.md`
-rather than in the shared tables of the README.
+and add one line to the [feature overview](docs/features.md).
 
 A module that should answer in the smart search (`/` or `Ctrl+K`, #155) adds
 `web/src/app/search/<name>.ts` with `defineSearch` (see `search/speedtest.ts`): its
@@ -97,8 +97,8 @@ follows the same pattern:
    vs. Pi-hole) is then just another adapter.
 4. **Opt-in outbound requests:** nothing is contacted until the user saves a
    URL in the settings. Use the shared HTTP client passed to `New`, set
-   timeouts, cache results in the use case and add the host to the README
-   section *Outbound requests*.
+   timeouts, cache results in the use case and add the host to
+   [outbound requests](docs/outbound-requests.md).
 5. **Encrypted secrets:** API keys and passwords go through the `Cipher`
    (`SECRET_KEY`, AES-256-GCM) and are only ever returned as "set / not set".
 6. **Demo:** if the widget should look good in the demo, add a fixture to

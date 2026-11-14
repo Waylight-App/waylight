@@ -54,7 +54,7 @@ account exists (`trisse-home-setup-info.timer`). To choose the token yourself
 | Path | Purpose |
 | --- | --- |
 | `/usr/bin/trisse-home` | The binary (same as in the container image) |
-| `/etc/trisse-home/trisse-home.env` | Configuration (environment variables, see [.env.example](../.env.example)) |
+| `/etc/trisse-home/trisse-home.env` | Configuration (environment variables, see [.env.example](https://github.com/itadori26/trisse-home/blob/main/.env.example)) |
 | `/etc/trisse-home/secret.env` | `SECRET_KEY` and `SETUP_TOKEN`, generated on the first start |
 | `/var/lib/trisse-home/` | Database and automatic backups |
 | `trisse-home.service` | systemd unit, runs as the system user `trisse-home` |
@@ -155,8 +155,8 @@ sudo trisse-home-setup-token
 
 ## Moving from Docker
 
-1. Stop the container and copy the database out of the volume (see *Backup*
-   in the README) to `/var/lib/trisse-home/trisse-home.db`.
+1. Stop the container and copy the database out of the volume (see
+   [backups](backups.md#copies-away-from-the-server)) to `/var/lib/trisse-home/trisse-home.db`.
 2. Put your existing `SECRET_KEY` into `/etc/trisse-home/trisse-home.env` — a
    key there always wins over the generated one.
 3. `sudo chown -R trisse-home:trisse-home /var/lib/trisse-home` and

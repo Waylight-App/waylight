@@ -1,0 +1,71 @@
+# Backups and restore
+
+Everything trisse-home knows lives in one SQLite database. This page explains
+what is backed up automatically, how to keep a copy away from the server and
+how to restore it. The examples use Docker Compose; the
+[Raspberry Pi](raspberry-pi.md#backups) and
+[native install](native-install.md) guides cover the same steps for their
+paths.
+
+## Automatic backups
+
+trisse-home makes a consistent copy of the database once a day and keeps the
+last seven. Both can be changed with `BACKUP_INTERVAL` and
+`BACKUP_RETENTION` ([configuration](configuration.md#storage-and-backups)).
+In Docker the backups are stored in the data volume under `/data/backups`.
+Settings → Backups lists them and lets you download each one.
+
+Backups contain the passwords and tokens of your integrations only in
+encrypted form. **Keep your `SECRET_KEY` separately**, for example in your
+password manager. A backup restored without the matching key still works,
+but you will have to enter every integration password again.
+
+## Copies away from the server
+
+A backup on the same disk does not help when that disk dies. Under Settings
+→ Backups you can add an **off-site target**: any WebDAV folder, such as a
+Nextcloud folder with an app password. Each new backup is then uploaded there
+too, and the copies are pruned with their own retention. A failed upload
+raises a [notification](notifications.md).
+
+To copy the backups by hand instead:
+
+```sh
+sudo docker run --rm -v trisse-home-data:/data -v "$PWD":/backup alpine \
+  cp -r /data/backups /backup/
+```
+
+## Restore in the web interface
+
+Settings → Backups → *Restore a backup*:
+
+1. Pick a local or off-site backup, or upload a file.
+2. Enter your password, and your two-factor code if it is on.
+3. trisse-home checks the file before touching anything: it must be an intact
+   SQLite database with a trisse-home schema that is not newer than the
+   running version.
+4. The current database is kept as `trisse-home.db.before-restore`, the
+   backup takes its place, and trisse-home restarts. Docker and systemd start
+   it again with the restored data.
+
+## Restore without the web interface
+
+If trisse-home does not start any more:
+
+1. Stop it: `sudo docker compose stop trisse-home`.
+2. In the data volume, replace `trisse-home.db` with the backup file and
+   delete `trisse-home.db-wal` and `trisse-home.db-shm` if they exist.
+3. Start it again: `sudo docker compose start trisse-home`.
+
+## Export and import
+
+Settings → Import & export downloads your data as one JSON file: tabs and
+widgets, notes, to-dos, bookmarks, feeds and the other content of each
+module. Passwords, tokens and other secrets are never part of the export.
+
+The export is not a replacement for backups. It is meant for moving data
+between installations, for keeping a readable copy and for starting over.
+Importing it into a fresh installation recreates your dashboard; you then
+enter the integration passwords again.
+
+The same page imports bookmarks exported from a browser as an HTML file.

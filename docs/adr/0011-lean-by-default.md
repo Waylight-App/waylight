@@ -32,7 +32,7 @@ of dependencies. Nothing guarded their *weight*.
    - Poll only what is visible, cache in the use case (ADR 0006), share
      timers instead of one per widget.
 3. **Resource budgets.** CI measures the footprint on every pull request and
-   fails when a budget in [`budgets.json`](../../budgets.json) is exceeded
+   fails when a budget in [`budgets.json`](https://github.com/itadori26/trisse-home/blob/main/budgets.json) is exceeded
    (`scripts/budgets`, job *docker*). The job summary shows each value, its
    budget and the delta to `main`.
 
