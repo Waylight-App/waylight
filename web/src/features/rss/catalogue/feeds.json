@@ -1,0 +1,154 @@
+[
+  {
+    "topic": "news",
+    "language": "de",
+    "title": "tagesschau.de",
+    "url": "https://www.tagesschau.de/index~rss2.xml"
+  },
+  {
+    "topic": "news",
+    "language": "de",
+    "title": "DER SPIEGEL – Schlagzeilen",
+    "url": "https://www.spiegel.de/schlagzeilen/index.rss"
+  },
+  { "topic": "news", "language": "de", "title": "ZEIT ONLINE", "url": "https://newsfeed.zeit.de/index" },
+  {
+    "topic": "news",
+    "language": "de",
+    "title": "Süddeutsche Zeitung – Topthemen",
+    "url": "https://rss.sueddeutsche.de/rss/Topthemen"
+  },
+  {
+    "topic": "news",
+    "language": "de",
+    "title": "FAZ.NET – Aktuell",
+    "url": "https://www.faz.net/rss/aktuell/"
+  },
+  {
+    "topic": "news",
+    "language": "de",
+    "title": "Deutsche Welle",
+    "url": "https://rss.dw.com/xml/rss-de-all"
+  },
+  { "topic": "news", "language": "en", "title": "BBC News", "url": "https://feeds.bbci.co.uk/news/rss.xml" },
+  {
+    "topic": "news",
+    "language": "en",
+    "title": "The Guardian – World",
+    "url": "https://www.theguardian.com/world/rss"
+  },
+  { "topic": "news", "language": "en", "title": "NPR News", "url": "https://feeds.npr.org/1001/rss.xml" },
+  {
+    "topic": "news",
+    "language": "en",
+    "title": "Al Jazeera",
+    "url": "https://www.aljazeera.com/xml/rss/all.xml"
+  },
+  { "topic": "news", "language": "en", "title": "DW News", "url": "https://rss.dw.com/xml/rss-en-all" },
+
+  {
+    "topic": "tech",
+    "language": "de",
+    "title": "heise online",
+    "url": "https://www.heise.de/rss/heise-atom.xml"
+  },
+  {
+    "topic": "tech",
+    "language": "de",
+    "title": "Golem.de",
+    "url": "https://rss.golem.de/rss.php?feed=RSS2.0"
+  },
+  { "topic": "tech", "language": "de", "title": "t3n", "url": "https://t3n.de/rss.xml" },
+  {
+    "topic": "tech",
+    "language": "de",
+    "title": "ComputerBase",
+    "url": "https://www.computerbase.de/rss/news.xml"
+  },
+  { "topic": "tech", "language": "de", "title": "netzpolitik.org", "url": "https://netzpolitik.org/feed/" },
+  {
+    "topic": "tech",
+    "language": "en",
+    "title": "Ars Technica",
+    "url": "https://feeds.arstechnica.com/arstechnica/index"
+  },
+  {
+    "topic": "tech",
+    "language": "en",
+    "title": "The Verge",
+    "url": "https://www.theverge.com/rss/index.xml"
+  },
+  {
+    "topic": "tech",
+    "language": "en",
+    "title": "BBC News – Technology",
+    "url": "https://feeds.bbci.co.uk/news/technology/rss.xml"
+  },
+  {
+    "topic": "tech",
+    "language": "en",
+    "title": "Hacker News – Front page",
+    "url": "https://hnrss.org/frontpage"
+  },
+  { "topic": "tech", "language": "en", "title": "LWN.net", "url": "https://lwn.net/headlines/rss" },
+
+  {
+    "topic": "selfhosting",
+    "language": "en",
+    "title": "selfh.st – This Week in Self-Hosted",
+    "url": "https://selfh.st/rss/"
+  },
+  {
+    "topic": "selfhosting",
+    "language": "en",
+    "title": "Home Assistant – Blog",
+    "url": "https://www.home-assistant.io/atom.xml"
+  },
+  {
+    "topic": "selfhosting",
+    "language": "en",
+    "title": "Raspberry Pi – News",
+    "url": "https://www.raspberrypi.com/news/feed/"
+  },
+  {
+    "topic": "selfhosting",
+    "language": "en",
+    "title": "r/selfhosted",
+    "url": "https://www.reddit.com/r/selfhosted/.rss"
+  },
+  {
+    "topic": "selfhosting",
+    "language": "en",
+    "title": "The Go Blog",
+    "url": "https://go.dev/blog/feed.atom"
+  },
+
+  {
+    "topic": "science",
+    "language": "en",
+    "title": "NASA – News releases",
+    "url": "https://www.nasa.gov/news-release/feed/"
+  },
+  {
+    "topic": "science",
+    "language": "en",
+    "title": "ScienceDaily – All news",
+    "url": "https://www.sciencedaily.com/rss/all.xml"
+  },
+  { "topic": "science", "language": "en", "title": "Nature", "url": "https://www.nature.com/nature.rss" },
+
+  {
+    "topic": "sports",
+    "language": "de",
+    "title": "kicker – Aktuell",
+    "url": "https://newsfeed.kicker.de/news/aktuell"
+  },
+  {
+    "topic": "sports",
+    "language": "en",
+    "title": "BBC Sport",
+    "url": "https://feeds.bbci.co.uk/sport/rss.xml"
+  },
+
+  { "topic": "fun", "language": "en", "title": "xkcd", "url": "https://xkcd.com/rss.xml" }
+]

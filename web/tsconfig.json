@@ -12,6 +12,7 @@
     "exactOptionalPropertyTypes": false,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "allowJs": false,
     "types": ["vite/client"]
