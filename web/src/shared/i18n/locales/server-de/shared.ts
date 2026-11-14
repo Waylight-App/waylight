@@ -67,4 +67,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_63f60053f8b51722: 'Der Server antwortete mit {status}.',
   // The ID must have 8 to 64 letters, digits, '-' or '_'.
   srv_9cdf89c6055b9583: "Die ID muss aus 8 bis 64 Buchstaben, Ziffern, '-' oder '_' bestehen.",
+  // User name and app password are required.
+  srv_970344b28687ee67: 'Benutzername und App-Passwort sind erforderlich.',
 };

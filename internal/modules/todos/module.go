@@ -4,11 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"io/fs"
+	"net/http"
 	"time"
 
 	"trisse-home/internal/modules"
 	"trisse-home/internal/modules/todos/adapter/controller"
 	"trisse-home/internal/modules/todos/adapter/gateway"
+	"trisse-home/internal/modules/todos/domain"
 	"trisse-home/internal/modules/todos/usecase"
 	"trisse-home/internal/shared/kernel"
 )
@@ -39,13 +41,16 @@ func (m *Module) SeedSampleData(ctx context.Context) error { return m.seed.Execu
 
 // New builds the to-do module. Reminders are delivered to alerts (the
 // notifications module, kind "reminder") in the server's time zone.
-func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, alerts kernel.AlertSink) *Module {
-	d := usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids, Location: time.Local, Alerts: alerts}
+// External lists (#169) use client for CalDAV and cipher for their
+// passwords.
+func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, alerts kernel.AlertSink, cipher gateway.Cipher, client *http.Client) *Module {
+	d := usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids, Location: time.Local, Alerts: alerts,
+		Sources: gateway.NewSourceRepository(db, cipher), Providers: gateway.NewCalDAVProviders(client)}
 	list := usecase.NewListTodos(d)
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d),
 		reminders: usecase.NewSendDueReminders(d), list: list, handlers: controller.NewHandlers(controller.UseCases{
 			List: list, Create: usecase.NewCreateTodo(d), Update: usecase.NewUpdateTodo(d),
-			Delete: usecase.NewDeleteTodo(d), ClearCompleted: usecase.NewClearCompleted(d),
+			Delete: usecase.NewDeleteTodo(d), ClearCompleted: usecase.NewClearCompleted(d), Sources: usecase.NewSources(d),
 		})}
 }
 
@@ -66,10 +71,15 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/todos/clear-completed", h.ClearCompleted)
 	r.Protected("PUT /api/todos/{id}", h.Update)
 	r.Protected("DELETE /api/todos/{id}", h.Delete)
+	r.Protected("GET /api/todos/settings/sources", h.Sources)
+	r.Protected("POST /api/todos/settings/sources", h.CreateSource)
+	r.Protected("POST /api/todos/settings/sources/discover", h.DiscoverSources)
+	r.Protected("PUT /api/todos/settings/sources/{id}", h.UpdateSource)
+	r.Protected("DELETE /api/todos/settings/sources/{id}", h.DeleteSource)
 }
 
 // OpenTodos returns the open to-dos (read access for the briefing, wired
 // in the composition root – ADR 0016).
 func (m *Module) OpenTodos(ctx context.Context) ([]usecase.TodoView, error) {
-	return m.list.Execute(ctx, false)
+	return m.list.Execute(ctx, domain.LocalSource, false)
 }

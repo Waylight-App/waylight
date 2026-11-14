@@ -22,4 +22,14 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_deed27849449d0b5: 'Das To-do muss zwischen 1 und 300 Zeichen haben.',
   // The to-do was changed elsewhere in the meantime.
   srv_b4f6dd576f1534c2: 'Die Aufgabe wurde inzwischen an anderer Stelle geändert.',
+  // At most 20 to-do lists can be connected.
+  srv_a284ac8e205f55f5: 'Es können höchstens 20 To-do-Listen verbunden werden.',
+  // The name must have between 1 and 80 characters.
+  srv_59575ee33ddb1b96: 'Der Name muss zwischen 1 und 80 Zeichen haben.',
+  // The to-do list does not exist (any more).
+  srv_984c25c4aa086942: 'Die To-do-Liste existiert nicht (mehr).',
+  // This list does not support repeating to-dos or reminders.
+  srv_b8a4d7c2f106adb7: 'Diese Liste unterstützt keine wiederholten To-dos und keine Erinnerungen.',
+  // Unknown kind of to-do list.
+  srv_e28b70dde38477c1: 'Unbekannte Art von To-do-Liste.',
 };

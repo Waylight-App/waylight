@@ -34,3 +34,33 @@ func TestTodo(t *testing.T) {
 		t.Fatal("reopen failed")
 	}
 }
+
+func TestSources(t *testing.T) {
+	s, err := NewSource("s1", "  Nextcloud   Aufgaben ", KindCalDAV, "https://cloud.example/remote.php/dav/calendars/anna/tasks", " anna ", "pw")
+	if err != nil || s.Name != "Nextcloud Aufgaben" || s.URL != "https://cloud.example/remote.php/dav/calendars/anna/tasks/" || s.Username != "anna" {
+		t.Fatalf("%+v %v", s, err)
+	}
+	for _, bad := range [][5]string{
+		{"", "caldav", "https://a.example/x", "u", "p"},
+		{"n", "todoist", "https://a.example/x", "u", "p"},
+		{"n", "caldav", "ftp://a.example/x", "u", "p"},
+		{"n", "caldav", "https://a.example/x", "", "p"},
+		{"n", "caldav", "https://a.example/x", "u", ""},
+	} {
+		if _, err := NewSource("s", bad[0], SourceKind(bad[1]), bad[2], bad[3], bad[4]); err == nil {
+			t.Errorf("accepted %v", bad)
+		}
+	}
+	if !ValidSourceID("abc_1-2") || ValidSourceID(LocalSource) || ValidSourceID("a/b") || ValidSourceID("") {
+		t.Fatal("source IDs")
+	}
+	if !ValidExternalID("a b@c.ics") || ValidExternalID("../x") || ValidExternalID("..") || ValidExternalID("a/b.ics") {
+		t.Fatal("external IDs")
+	}
+	if c := CapabilitiesOf(""); !c.Repeat || !c.Ordering || !c.Reminders {
+		t.Fatal(c)
+	}
+	if c := CapabilitiesOf(KindCalDAV); c.Repeat || c.Ordering {
+		t.Fatal(c)
+	}
+}

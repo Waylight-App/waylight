@@ -1,0 +1,95 @@
+package gateway
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"fmt"
+
+	"trisse-home/internal/modules/todos/domain"
+)
+
+// Cipher encrypts secrets before they are written to the database.
+type Cipher interface {
+	Encrypt(plaintext string) (string, error)
+	Decrypt(ciphertext string) (string, error)
+}
+
+// SourceRepository implements usecase.SourceRepository.
+type SourceRepository struct {
+	db     *sql.DB
+	cipher Cipher
+}
+
+// NewSourceRepository returns a repository backed by db.
+func NewSourceRepository(db *sql.DB, cipher Cipher) *SourceRepository {
+	return &SourceRepository{db: db, cipher: cipher}
+}
+
+const sourceColumns = `id, name, kind, url, username, password_encrypted`
+
+func (r *SourceRepository) scan(row interface{ Scan(...any) error }) (domain.Source, error) {
+	var s domain.Source
+	var kind, enc string
+	if err := row.Scan(&s.ID, &s.Name, &kind, &s.URL, &s.Username, &enc); err != nil {
+		return domain.Source{}, err
+	}
+	s.Kind = domain.SourceKind(kind)
+	pw, err := r.cipher.Decrypt(enc)
+	if err != nil {
+		return domain.Source{}, fmt.Errorf("decrypt password of list %s (was SECRET_KEY changed?): %w", s.ID, err)
+	}
+	s.Password = pw
+	return s, nil
+}
+
+// List implements usecase.SourceRepository (oldest first).
+func (r *SourceRepository) List(ctx context.Context) ([]domain.Source, error) {
+	rows, err := r.db.QueryContext(ctx, `SELECT `+sourceColumns+` FROM todos_sources ORDER BY created_at, name`)
+	if err != nil {
+		return nil, fmt.Errorf("select sources: %w", err)
+	}
+	defer rows.Close()
+	var out []domain.Source
+	for rows.Next() {
+		s, err := r.scan(rows)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, s)
+	}
+	return out, rows.Err()
+}
+
+// Get implements usecase.SourceRepository.
+func (r *SourceRepository) Get(ctx context.Context, id string) (domain.Source, error) {
+	s, err := r.scan(r.db.QueryRowContext(ctx, `SELECT `+sourceColumns+` FROM todos_sources WHERE id = ?`, id))
+	if errors.Is(err, sql.ErrNoRows) {
+		return domain.Source{}, domain.ErrSourceNotFound
+	}
+	return s, err
+}
+
+// Save implements usecase.SourceRepository (insert or update).
+func (r *SourceRepository) Save(ctx context.Context, s domain.Source) error {
+	enc, err := r.cipher.Encrypt(s.Password)
+	if err != nil {
+		return fmt.Errorf("encrypt password: %w", err)
+	}
+	_, err = r.db.ExecContext(ctx, `INSERT INTO todos_sources (id, name, kind, url, username, password_encrypted) VALUES (?, ?, ?, ?, ?, ?)
+		ON CONFLICT (id) DO UPDATE SET name = excluded.name, kind = excluded.kind, url = excluded.url,
+		username = excluded.username, password_encrypted = excluded.password_encrypted`,
+		s.ID, s.Name, string(s.Kind), s.URL, s.Username, enc)
+	if err != nil {
+		return fmt.Errorf("upsert source: %w", err)
+	}
+	return nil
+}
+
+// Delete implements usecase.SourceRepository.
+func (r *SourceRepository) Delete(ctx context.Context, id string) error {
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM todos_sources WHERE id = ?`, id); err != nil {
+		return fmt.Errorf("delete source: %w", err)
+	}
+	return nil
+}

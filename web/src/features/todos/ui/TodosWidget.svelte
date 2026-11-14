@@ -1,18 +1,33 @@
 <script lang="ts">
   import { intlLocale, t } from '../../../shared/i18n';
   import TodoEditDialog from './TodoEditDialog.svelte';
-  import { errorMessage } from '../../../shared/api-client/http';
-  import { describeReminder, describeRepeat, formatDue, parseTodosConfig, type Todo } from '../domain/todo';
-  import type { TodosUseCases } from '../usecase/todosUseCases';
+  import { ApiError, errorMessage } from '../../../shared/api-client/http';
+  import { usePolling } from '../../../shared/refresh';
+  import {
+    capabilitiesOf,
+    describeReminder,
+    describeRepeat,
+    formatDue,
+    parseTodosConfig,
+    type Todo,
+    type TodoSource,
+  } from '../domain/todo';
+  import type { TodoSourcesUseCases, TodosUseCases } from '../usecase/todosUseCases';
 
   /** Props of the to-do widget. */
   interface Props {
+    /** The to-dos of the list the widget shows (built-in or connected, #169). */
     todos: TodosUseCases;
     config: Record<string, unknown>;
+    /** Connected lists, for their names and capabilities. */
+    sources?: TodoSourcesUseCases;
   }
-  let { todos, config }: Props = $props();
+  let { todos, config, sources }: Props = $props();
 
   const cfg = $derived(parseTodosConfig(config));
+  let connected = $state<TodoSource[]>([]);
+  const caps = $derived(capabilitiesOf(cfg.source, connected));
+  const poll = usePolling();
   let list = $state<Todo[]>([]);
   let text = $state('');
   let error = $state('');
@@ -28,12 +43,27 @@
       list = await todos.list(cfg.showDone);
     } catch (err) {
       error = errorMessage(err);
+      // Changed in the other app meanwhile: its version wins, show it (#169).
+      if (err instanceof ApiError && err.status === 409) {
+        error = t('todos.changed_elsewhere');
+        list = await todos.list(cfg.showDone).catch(() => list);
+      }
     }
   }
 
   $effect(() => {
     void cfg;
-    run(async () => {});
+    if (!cfg.source) {
+      void run(async () => {});
+      return;
+    }
+    // A connected list is refreshed every minute, so changes made in the
+    // other app show up (the server only downloads what changed).
+    sources
+      ?.list()
+      .then((l) => (connected = l))
+      .catch(() => undefined);
+    return poll(() => run(async () => {}), 60_000);
   });
 
   function add(e: SubmitEvent) {
@@ -90,6 +120,7 @@
   <TodoEditDialog
     todo={editing}
     {todos}
+    capabilities={caps}
     onsaved={() => run(async () => {})}
     onclose={() => (editing = null)}
   />
