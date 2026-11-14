@@ -13,7 +13,7 @@ modules in detail.
 
 | Module | What it does |
 | --- | --- |
-| To-dos (`todos`) | Due dates with overdue highlighting, recurring to-dos (daily, on chosen weekdays, monthly, or N days after completion) and reminders through your notification channels. Works offline. A widget can show a connected CalDAV task list (Nextcloud Tasks, Synology, Radicale, …) or a Todoist project instead ([details](modules/todos.md)). |
+| To-dos (`todos`) | Due dates with overdue highlighting, recurring to-dos (daily, on chosen weekdays, monthly, or N days after completion) and reminders through your notification channels. Works offline. A widget can show a connected CalDAV task list (Nextcloud Tasks, Synology, Radicale, …) a Todoist project or a list in Microsoft To Do, Google Tasks or TickTick instead ([details](modules/todos.md)). |
 | Notes (`notes`) | Markdown notes that can be pinned to the dashboard, with full-text search, `[[wiki links]]` and backlinks, and a version history with diff and restore. |
 | Calendar (`calendar`) | CalDAV calendars such as Nextcloud, including recurring events, plus read-only ICS subscriptions. Agenda, month or split view with event details; new events can be added from the widget. |
 | Shopping list (`shopping`) | Stored as tasks in a CalDAV task list, so the whole household can use it from their usual task app. |
@@ -39,6 +39,9 @@ modules in detail.
 | Mail (`mail`) | Unread count and the newest unread messages of one or more IMAP inboxes; read-only, headers only. [Details](modules/mail.md) |
 | Parcels (`parcels`) | DHL tracking with your free API key; Hermes, DPD, GLS and UPS with a link to the carrier. Opt-in: find parcels in shipping e-mails ([guide](parcels-mail.md)). |
 | Fuel prices (`fuel`) | Cheapest open stations around a place, or your favourites, in Germany via Tankerkönig. [Details](modules/fuel.md) |
+| Markets (`markets`) | Watchlist of currencies (ECB), shares, indices and crypto (Stooq) with daily change and sparkline; no API key. [Details](modules/markets.md) |
+| Sports (`sports`) | Last result, next fixture and table position of a followed team, or the top of the table (German football leagues via OpenLigaDB, no API key). [Details](modules/sports.md) |
+| Electricity prices (`electricity`) | Day-ahead market price per hour for today and tomorrow, cheapest hours highlighted (Germany/Luxembourg, Austria; no API key). [Details](modules/electricity.md) |
 | Space (`space`) | Next rocket launches with countdown and NASA's Astronomy Picture of the Day. Opt-in. [Details](modules/space.md) |
 | AI summaries (`summary`) | Summarises notes and feed articles with a local Ollama; nothing leaves your network. Opt-in. [Details](modules/summary.md) |
 

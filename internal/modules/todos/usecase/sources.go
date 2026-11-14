@@ -44,6 +44,8 @@ type SourceInput struct {
 	Username string
 	Password string
 	ListID   string
+	// OAuthState names a finished sign-in (OAuth kinds, #171).
+	OAuthState string
 }
 
 // SourceView is a list at the use case boundary; it never has the password.
@@ -66,12 +68,23 @@ type Sources interface {
 	// Discover lists the task lists of an account; in.ID may name a stored
 	// list whose password is used when in.Password is empty.
 	Discover(ctx context.Context, in SourceInput) ([]DiscoveredList, error)
+	// OAuth kinds (#171): start a sign-in, finish it from the provider's
+	// redirect, and ask for its state while the browser signs in.
+	OAuthInfo() OAuthInfo
+	StartOAuth(ctx context.Context, in SourceInput) (OAuthStart, error)
+	FinishOAuth(ctx context.Context, state, code, providerError string) error
+	OAuthStatus(state string) (string, error)
 }
 
-type sources struct{ d Deps }
+type sources struct {
+	d       Deps
+	pending *signIns
+}
 
 // NewSources returns the Sources use cases.
-func NewSources(d Deps) Sources { return &sources{d: d} }
+func NewSources(d Deps) Sources {
+	return &sources{d: d, pending: &signIns{m: map[string]*pendingSignIn{}}}
+}
 
 func sourceView(s domain.Source) SourceView {
 	return SourceView{ID: s.ID, Name: s.Name, Kind: string(s.Kind), URL: s.URL, Username: s.Username, ListID: s.ListID, Capabilities: domain.CapabilitiesOf(s.Kind)}
@@ -117,11 +130,7 @@ func (uc *sources) Save(ctx context.Context, in SourceInput) (SourceView, error)
 	} else if _, err := uc.d.Sources.Get(ctx, id); err != nil {
 		return SourceView{}, err // PUT never creates a list
 	}
-	pw, err := uc.password(ctx, in)
-	if err != nil {
-		return SourceView{}, err
-	}
-	s, err := domain.NewSource(id, in.Name, domain.SourceKind(in.Kind), in.URL, in.Username, pw, in.ListID)
+	s, err := uc.build(ctx, id, in)
 	if err != nil {
 		return SourceView{}, err
 	}
@@ -134,17 +143,65 @@ func (uc *sources) Save(ctx context.Context, in SourceInput) (SourceView, error)
 	return sourceView(s), nil
 }
 
+// build validates the input into a list; OAuth kinds take their grant from
+// the finished sign-in or, when editing, from the stored list.
+func (uc *sources) build(ctx context.Context, id string, in SourceInput) (domain.Source, error) {
+	kind := domain.SourceKind(in.Kind)
+	if !kind.OAuth() {
+		pw, err := uc.password(ctx, in)
+		if err != nil {
+			return domain.Source{}, err
+		}
+		return domain.NewSource(id, in.Name, kind, in.URL, in.Username, pw, in.ListID)
+	}
+	if in.OAuthState == "" {
+		old, err := uc.d.Sources.Get(ctx, in.ID)
+		if err != nil {
+			return domain.Source{}, errSignInUnknown
+		}
+		return domain.NewOAuthSource(id, in.Name, kind, old.Username, in.ListID, old.Grant)
+	}
+	p, err := uc.signedIn(in.OAuthState)
+	if err != nil {
+		return domain.Source{}, err
+	}
+	if p.kind != kind {
+		return domain.Source{}, errSignInUnknown
+	}
+	g := p.grant
+	g.ClientSecret = p.clientSecret
+	return domain.NewOAuthSource(id, in.Name, kind, p.clientID, in.ListID, g)
+}
+
 func (uc *sources) Delete(ctx context.Context, id string) error {
 	if !domain.ValidSourceID(id) {
 		return domain.ErrSourceNotFound
 	}
-	if _, err := uc.d.Sources.Get(ctx, id); err != nil {
+	s, err := uc.d.Sources.Get(ctx, id)
+	if err != nil {
 		return err
 	}
-	return uc.d.Sources.Delete(ctx, id)
+	if err := uc.d.Sources.Delete(ctx, id); err != nil {
+		return err
+	}
+	if s.Kind.OAuth() && uc.d.OAuth != nil {
+		_ = uc.d.OAuth.Revoke(ctx, s.Kind, s.Username, s.Grant) // best effort; the list is gone either way
+	}
+	return nil
 }
 
 func (uc *sources) Discover(ctx context.Context, in SourceInput) ([]DiscoveredList, error) {
+	if kind := domain.SourceKind(in.Kind); kind.OAuth() {
+		p, err := uc.signedIn(in.OAuthState)
+		if err != nil {
+			return nil, err
+		}
+		lists, err := uc.d.Providers.Discover(ctx, kind, "", p.clientID, p.grant.Access)
+		if err != nil {
+			return nil, kernel.TargetFailure(kernel.ErrUnavailable, err)
+		}
+		return lists, nil
+	}
 	pw, err := uc.password(ctx, in)
 	if err != nil {
 		return nil, err

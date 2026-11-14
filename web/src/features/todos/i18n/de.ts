@@ -32,6 +32,24 @@ export const de: Record<keyof typeof en, string> = {
   'todos.sources.kind': 'Dienst',
   'todos.sources.kind_caldav': 'CalDAV (Nextcloud, Synology, Radicale, …)',
   'todos.sources.kind_todoist': 'Todoist',
+  'todos.sources.kind_microsoft': 'Microsoft To Do',
+  'todos.sources.kind_google': 'Google Tasks',
+  'todos.sources.kind_ticktick': 'TickTick',
+  'todos.sources.oauth_intro':
+    'Melde dich mit einer selbst registrierten App an, damit trisse-home ohne Dritte mit {service} spricht. Registriere diese Weiterleitungsadresse:',
+  'todos.sources.oauth_console': 'App-Registrierung von {service} öffnen',
+  'todos.sources.oauth_unavailable':
+    'Zum Anmelden muss PUBLIC_URL gesetzt sein, die https://-Adresse von trisse-home (siehe Konfiguration).',
+  'todos.sources.client_id': 'Client-ID',
+  'todos.sources.client_secret': 'Client-Secret',
+  'todos.sources.client_id_needed': 'Gib die Client-ID deiner App-Registrierung ein.',
+  'todos.sources.sign_in': 'Anmelden',
+  'todos.sources.signing_in': 'Warte auf die Anmeldung im anderen Fenster …',
+  'todos.sources.signed_in': 'Angemeldet. Wähle unten die Liste.',
+  'todos.sources.sign_in_failed':
+    'Die Anmeldung hat nicht geklappt. Prüfe Client-ID, Client-Secret und die Weiterleitungsadresse.',
+  'todos.sources.popup_blocked':
+    'Der Browser hat das Anmeldefenster blockiert. Erlaube Pop-ups für trisse-home und versuche es erneut.',
   'todos.sources.token': 'API-Token',
   'todos.sources.token_hint':
     'In Todoist: Einstellungen → Integrationen → Entwickler → API-Token kopieren. Dann unten die Projekte suchen.',

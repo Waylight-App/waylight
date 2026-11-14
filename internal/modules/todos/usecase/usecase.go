@@ -125,6 +125,8 @@ type Deps struct {
 	// (#169); nil = only the local list.
 	Sources   SourceRepository
 	Providers Providers
+	// OAuth signs in to Microsoft, Google and TickTick (#171); nil = off.
+	OAuth OAuth
 }
 
 // list is the resolved to-do list of a request.
@@ -146,12 +148,15 @@ func (d Deps) open(ctx context.Context, source string) (list, error) {
 	if err != nil {
 		return list{}, err
 	}
-	return list{repo: external{d.Providers.Open(s)}, caps: domain.CapabilitiesOf(s.Kind), external: true}, nil
+	return list{repo: external{d.Providers.Open(s), s.Kind}, caps: domain.CapabilitiesOf(s.Kind), external: true}, nil
 }
 
 // external wraps an external provider: errors that are not domain errors
 // (network, refused login) become "unavailable" with the target named.
-type external struct{ r Repository }
+type external struct {
+	r    Repository
+	kind domain.SourceKind
+}
 
 func unavailable(err error) error {
 	var pe *kernel.PublicError
@@ -167,7 +172,11 @@ func (e external) List(ctx context.Context) ([]domain.Todo, error) {
 }
 
 func (e external) Get(ctx context.Context, id string) (domain.Todo, error) {
-	if !domain.ValidExternalID(id) {
+	valid := domain.ValidExternalID(id)
+	if e.kind != domain.KindCalDAV {
+		valid = domain.ValidProviderID(id)
+	}
+	if !valid {
 		return domain.Todo{}, domain.ErrTodoNotFound
 	}
 	t, err := e.r.Get(ctx, id)

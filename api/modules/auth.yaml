@@ -125,6 +125,7 @@ schemas:
     properties:
       setupToken: { type: string }
       password: { type: string, minLength: 12, maxLength: 256 }
+      profile: { type: string, enum: [everyday, homelab], description: "What the start page shows (#281); everyday seeds no Server tab. Omitted = homelab" }
   LoginRequest:
     type: object
     required: [password]

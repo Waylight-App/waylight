@@ -110,7 +110,8 @@ type SetupTokenVerifier interface {
 // SetupObserver is notified once the account has been created, e.g. to fill
 // the installation with sample data. It must not fail the setup.
 type SetupObserver interface {
-	AccountCreated(ctx context.Context)
+	// AccountCreated gets the start-page profile chosen in the setup (#281).
+	AccountCreated(ctx context.Context, profile string)
 }
 
 // OneTimePasswords implements TOTP (RFC 6238) and recovery codes.

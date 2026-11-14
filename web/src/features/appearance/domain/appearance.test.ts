@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cssVariables, defaultAppearance } from './appearance';
+import { categoryShown, cssVariables, defaultAppearance } from './appearance';
 
 describe('cssVariables', () => {
   it('is empty for defaults', () => {
@@ -18,5 +18,15 @@ describe('cssVariables', () => {
     expect(
       cssVariables({ ...defaultAppearance, backgroundImage: 'https://x.y/a.png") ; color: red' }),
     ).toEqual({});
+  });
+});
+
+describe('start-page profile (#281)', () => {
+  it('hides home-server and network widgets only for "everyday"', () => {
+    expect(categoryShown('everyday', 'everyday')).toBe(true);
+    expect(categoryShown('everyday', 'information')).toBe(true);
+    expect(categoryShown('everyday', 'server')).toBe(false);
+    expect(categoryShown('everyday', 'network')).toBe(false);
+    expect(categoryShown('homelab', 'server')).toBe(true);
   });
 });

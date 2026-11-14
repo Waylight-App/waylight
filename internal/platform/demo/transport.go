@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -32,6 +33,14 @@ func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return respond(req, http.StatusOK, "application/json", forecast(now))
 	case host == "geocoding-api.open-meteo.com":
 		return respond(req, http.StatusOK, "application/json", geocoding)
+	case host == "www.ecb.europa.eu":
+		return respond(req, http.StatusOK, "application/xml", ecbRates(now))
+	case host == "stooq.com":
+		return respond(req, http.StatusOK, "text/csv", stooqCloses(req.URL.Query().Get("s"), now))
+	case host == "api.openligadb.de":
+		return respond(req, http.StatusOK, "application/json", football(path, now))
+	case strings.HasPrefix(host, "api.awattar."):
+		return respond(req, http.StatusOK, "application/json", marketPrices(req))
 	case strings.HasSuffix(path, "/containers/json"):
 		return respond(req, http.StatusOK, "application/json", containers(now))
 	case strings.HasSuffix(host, "go.dev") || strings.HasSuffix(host, "hnrss.org") || strings.Contains(path, "feed") || strings.HasSuffix(path, ".xml"):
@@ -142,4 +151,70 @@ func (HealthyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		_ = req.Body.Close()
 	}
 	return respond(req, http.StatusOK, "text/plain", "ok")
+}
+
+// ecbRates is a short ECB reference rate file (#284), newest day first.
+func ecbRates(now time.Time) string {
+	var b strings.Builder
+	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?><gesmes:Envelope xmlns:gesmes="http://www.gesmes.org/xml/2002-08-01" xmlns="http://www.ecb.int/vocabulary/2002-08-01/eurofxref"><Cube>`)
+	for d := range 30 {
+		day := now.AddDate(0, 0, -1-d).Format(time.DateOnly)
+		fmt.Fprintf(&b, `<Cube time=%q><Cube currency="USD" rate="%.4f"/><Cube currency="CHF" rate="%.4f"/><Cube currency="GBP" rate="%.4f"/></Cube>`,
+			day, 1.08+0.004*float64(d%7), 0.93-0.002*float64(d%5), 0.84+0.001*float64(d%4))
+	}
+	b.WriteString(`</Cube></gesmes:Envelope>`)
+	return b.String()
+}
+
+// stooqCloses are 30 daily closes of any symbol (#284), a gentle wave.
+func stooqCloses(symbol string, now time.Time) string {
+	base := 100.0 + float64(len(symbol))*37
+	var b strings.Builder
+	b.WriteString("Date,Open,High,Low,Close,Volume\n")
+	for d := 30; d >= 1; d-- {
+		v := base * (1 + 0.02*float64((d*7)%11-5)/5)
+		fmt.Fprintf(&b, "%s,%.2f,%.2f,%.2f,%.2f,0\n", now.AddDate(0, 0, -d).Format(time.DateOnly), v, v, v, v)
+	}
+	return b.String()
+}
+
+// football answers OpenLigaDB (#285) with three clubs, a finished and an
+// upcoming match and a table.
+func football(path string, now time.Time) string {
+	teams := []map[string]any{
+		{"teamId": 1, "teamName": "FC Musterstadt", "shortName": "Musterstadt"},
+		{"teamId": 2, "teamName": "SV Beispielhausen", "shortName": "Beispielhausen"},
+		{"teamId": 3, "teamName": "VfB Demodorf", "shortName": "Demodorf"},
+	}
+	switch {
+	case strings.Contains(path, "/getavailableteams/"):
+		return mustJSON(teams)
+	case strings.Contains(path, "/getbltable/"):
+		return mustJSON([]map[string]any{
+			{"teamInfoId": 1, "teamName": "FC Musterstadt", "shortName": "Musterstadt", "points": 25, "matches": 11, "goalDiff": 12},
+			{"teamInfoId": 3, "teamName": "VfB Demodorf", "shortName": "Demodorf", "points": 20, "matches": 11, "goalDiff": 5},
+			{"teamInfoId": 2, "teamName": "SV Beispielhausen", "shortName": "Beispielhausen", "points": 14, "matches": 11, "goalDiff": -4},
+		})
+	}
+	return mustJSON([]map[string]any{
+		{"matchDateTimeUTC": now.AddDate(0, 0, -6).UTC().Format(time.RFC3339), "team1": teams[1], "team2": teams[0], "matchIsFinished": true,
+			"group":        map[string]any{"groupName": "11. Spieltag"},
+			"matchResults": []map[string]any{{"resultTypeID": 2, "pointsTeam1": 1, "pointsTeam2": 2}}},
+		{"matchDateTimeUTC": now.AddDate(0, 0, 3).UTC().Format(time.RFC3339), "team1": teams[0], "team2": teams[2], "matchIsFinished": false,
+			"group": map[string]any{"groupName": "12. Spieltag"}, "matchResults": []any{}},
+	})
+}
+
+// marketPrices is an aWATTar answer (#288): 48 hourly day-ahead prices from
+// the requested start with a typical daily curve (cheap at night and around
+// noon, expensive in the evening).
+func marketPrices(req *http.Request) string {
+	start, _ := strconv.ParseInt(req.URL.Query().Get("start"), 10, 64)
+	curve := []float64{78, 72, 68, 66, 67, 74, 92, 118, 124, 105, 84, 61, 48, 45, 52, 70, 96, 138, 152, 141, 118, 102, 94, 86}
+	data := make([]map[string]any, 0, 48)
+	for h := range 48 {
+		s := start + int64(h)*3_600_000
+		data = append(data, map[string]any{"start_timestamp": s, "end_timestamp": s + 3_600_000, "marketprice": curve[h%24] + float64(h/24)*6, "unit": "Eur/MWh"})
+	}
+	return mustJSON(map[string]any{"object": "list", "data": data})
 }

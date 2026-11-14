@@ -66,4 +66,32 @@ export interface SourceInputDTO {
   username: string;
   password: string;
   listId?: string;
+  /**
+   * OAuthState names a finished sign-in (microsoft, google, ticktick; #171).
+   */
+  oauthState?: string;
+}
+/**
+ * OAuthInfoDTO is returned by GET /api/todos/settings/oauth.
+ */
+export interface OAuthInfoDTO {
+  /**
+   * RedirectURL is the address to register at the provider; "" when
+   * PUBLIC_URL is not set and signing in is not available.
+   */
+  redirectUrl: string;
+}
+/**
+ * OAuthStartDTO is returned by POST /api/todos/settings/oauth/start.
+ */
+export interface OAuthStartDTO {
+  url: string;
+  state: string;
+}
+/**
+ * OAuthStatusDTO is returned by GET /api/todos/settings/oauth/state/{state}:
+ * "pending", "ready" or "failed".
+ */
+export interface OAuthStatusDTO {
+  status: string;
 }

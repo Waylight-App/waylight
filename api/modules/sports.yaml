@@ -1,0 +1,65 @@
+tags:
+  - name: sports
+
+paths:
+  /api/sports/leagues:
+    get:
+      tags: [sports]
+      summary: Leagues offered by the providers (#285)
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { type: object, properties: { id: { type: string }, name: { type: string } } } } } } }
+  /api/sports/teams:
+    get:
+      tags: [sports]
+      summary: Teams of a league in the running season
+      parameters: [{ name: league, in: query, required: true, schema: { type: string } }]
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/SportsTeam" } } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "502": { description: The provider did not answer and nothing is cached }
+  /api/sports/overview:
+    get:
+      tags: [sports]
+      summary: "With team: last result, next fixture and table position; without: the top of the table. Source: OpenLigaDB, cached for 15 minutes"
+      parameters:
+        - { name: league, in: query, required: true, schema: { type: string } }
+        - { name: team, in: query, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/SportsOverview" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "502": { description: The provider did not answer and nothing is cached }
+
+schemas:
+  SportsTeam:
+    type: object
+    properties: { id: { type: integer }, name: { type: string }, shortName: { type: string } }
+  SportsMatch:
+    type: object
+    properties:
+      kickoff: { type: string, format: date-time }
+      home: { $ref: "#/components/schemas/SportsTeam" }
+      away: { $ref: "#/components/schemas/SportsTeam" }
+      finished: { type: boolean }
+      hasScore: { type: boolean }
+      homeGoals: { type: integer }
+      awayGoals: { type: integer }
+      matchday: { type: string }
+  SportsStanding:
+    type: object
+    properties:
+      position: { type: integer }
+      team: { $ref: "#/components/schemas/SportsTeam" }
+      played: { type: integer }
+      points: { type: integer }
+      goalDiff: { type: integer }
+  SportsOverview:
+    type: object
+    properties:
+      league: { type: object, properties: { id: { type: string }, name: { type: string } } }
+      season: { type: integer }
+      team: { $ref: "#/components/schemas/SportsTeam" }
+      last: { $ref: "#/components/schemas/SportsMatch" }
+      next: { $ref: "#/components/schemas/SportsMatch" }
+      position: { $ref: "#/components/schemas/SportsStanding" }
+      table: { type: array, items: { $ref: "#/components/schemas/SportsStanding" } }

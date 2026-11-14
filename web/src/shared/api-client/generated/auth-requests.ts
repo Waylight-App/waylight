@@ -9,6 +9,10 @@
 export interface SetupRequestDTO {
   setupToken: string;
   password: string;
+  /**
+   * Profile is what the start page shows: "everyday" or "homelab" (#281).
+   */
+  profile?: string;
 }
 /**
  * LoginRequestDTO is the body of POST /api/auth/login.
