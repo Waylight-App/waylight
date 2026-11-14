@@ -31,6 +31,7 @@ stored encrypted.
 | Ollama | Only when you ask for a summary. |
 | WebDAV off-site backups | After each backup, and when you restore from it. |
 | ntfy, Gotify, webhooks, SMTP | When a notification is sent. |
+| Football results (`api.openligadb.de`) | Only while a sports widget is shown, at most every 15 minutes per league ([details](modules/sports.md)). |
 | Electricity prices (`api.awattar.de` / `api.awattar.at`) | Only while an electricity price widget is shown, at most every 15 minutes per bidding zone ([details](modules/electricity.md)). |
 | Connected to-do lists (CalDAV) | While a to-do widget shows the list, at most once a minute: the list's CTag first, then only the to-dos whose ETag changed. None until you connect a list ([details](modules/todos.md)). |
 | Todoist (`api.todoist.com`) | While a to-do widget shows a connected Todoist project: the sync endpoint at most every 15 seconds (only changes after the first request), plus one request per change you make. Pauses when Todoist answers 429. None until you connect Todoist ([details](modules/todos.md)). |

@@ -38,6 +38,7 @@ modules in detail.
 | Holidays (`holidays`) | Public holidays of a German state, computed locally, and school holidays from an ICS link. [Details](modules/holidays.md) |
 | Parcels (`parcels`) | DHL tracking with your free API key; Hermes, DPD, GLS and UPS with a link to the carrier. Opt-in: find parcels in shipping e-mails ([guide](parcels-mail.md)). |
 | Fuel prices (`fuel`) | Cheapest open stations around a place, or your favourites, in Germany via Tankerkönig. [Details](modules/fuel.md) |
+| Sports (`sports`) | Last result, next fixture and table position of a followed team, or the top of the table (German football leagues via OpenLigaDB, no API key). [Details](modules/sports.md) |
 | Electricity prices (`electricity`) | Day-ahead market price per hour for today and tomorrow, cheapest hours highlighted (Germany/Luxembourg, Austria; no API key). [Details](modules/electricity.md) |
 | Space (`space`) | Next rocket launches with countdown and NASA's Astronomy Picture of the Day. Opt-in. [Details](modules/space.md) |
 | AI summaries (`summary`) | Summarises notes and feed articles with a local Ollama; nothing leaves your network. Opt-in. [Details](modules/summary.md) |
