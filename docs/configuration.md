@@ -84,6 +84,7 @@ see the [host integrations](host-integrations.md) and the
 | `DISKHEALTH_STALE_AFTER` | `2h` | S.M.A.R.T. exports older than this are shown as unknown. |
 | `WOL_RELAY` | `host.docker.internal:9009` in Compose | The Wake-on-LAN relay. Empty sends the broadcast directly, for installations without Docker or in the host network. |
 | `WOL_BROADCAST` | `255.255.255.255:9` | Where the magic packet is sent, by the relay or directly. |
+| `DEVICE_DIR` | `/var/lib/trisse-home/device` | Raspberry Pi image only: where the chosen display mode is handed to the system service that switches the screen. |
 
 ## External services
 

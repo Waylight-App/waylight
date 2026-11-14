@@ -65,6 +65,7 @@ nav:
       - Modules:
           - modules/README.md
           - AI summaries: modules/summary.md
+          - Device display mode: modules/device.md
           - Drop zone: modules/drop.md
           - Fuel prices: modules/fuel.md
           - Game deals: modules/gamedeals.md

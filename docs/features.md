@@ -85,3 +85,4 @@ cannot be switched off.
 | Backups (`backup`) | Automatic database backups, off-site copies over WebDAV and a guided restore. See [backups](backups.md). |
 | Import and export (`transfer`) | All your data as one JSON file, without secrets. See [backups](backups.md#export-and-import). |
 | Guided tour (`onboarding`) | A short tour after the first sign-in. |
+| Device (`device`) | Raspberry Pi image only: run the Pi as a server or also show the dashboard full-screen on a connected display. [Details](modules/device.md) |
