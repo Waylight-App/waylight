@@ -94,10 +94,12 @@ test('widgets can be moved and resized with the keyboard', async ({ page }) => {
 
   const clock = page.getByRole('group', { name: /^Clock, column 1, row 1/ });
   await clock.focus();
+  // The new place is announced through the app's shared live region (#257).
+  const live = page.locator('[aria-live="polite"][aria-atomic="true"]');
   await page.keyboard.press('ArrowRight');
-  await expect(page.getByText(/^Clock moved: column 2, row 1/)).toBeAttached();
+  await expect(live).toHaveText(/^Clock moved: column 2, row 1/);
   await page.keyboard.press('Shift+ArrowRight');
-  await expect(page.getByText(/^Clock resized: column 2, row 1, \d+ × \d+ cells/)).toBeAttached();
+  await expect(live).toHaveText(/^Clock resized: column 2, row 1, \d+ × \d+ cells/);
   await expect(page.getByRole('group', { name: /^Clock, column 2, row 1/ })).toBeFocused();
   await account(page, 'Done');
 

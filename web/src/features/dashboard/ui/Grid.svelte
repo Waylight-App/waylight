@@ -1,8 +1,10 @@
 <script lang="ts" generics="T extends LayoutItem">
   import { t } from '../../../shared/i18n';
+  import { announce } from '../../../shared/a11y/live.svelte';
   import type { Snippet } from 'svelte';
   import {
     type ArrowKey,
+    describeKeyboardStep,
     describeRect,
     GRID_COLUMNS,
     keyboardStep,
@@ -37,8 +39,6 @@
     item,
     label = () => t('dashboard.widget'),
   }: Props = $props();
-  let announcement = $state('');
-
   /** Arrow keys move, Shift + arrow keys resize the focused item. */
   function onkeydown(it: T, e: KeyboardEvent) {
     if (!editing || e.target !== e.currentTarget) return;
@@ -48,15 +48,8 @@
     const next = keyboardStep(base, it.id, e.key as ArrowKey, e.shiftKey);
     const r = (next ?? base).find((i) => i.id === it.id);
     if (!r) return;
-    announcement = next
-      ? t(e.shiftKey ? 'dashboard.announce_resized' : 'dashboard.announce_moved', {
-          name: label(it),
-          position: describeRect(r),
-        })
-      : t(e.shiftKey ? 'dashboard.announce_cannot_resize' : 'dashboard.announce_cannot_move', {
-          name: label(it),
-          position: describeRect(r),
-        });
+    // Through the app's shared live region; mouse dragging stays silent.
+    announce(describeKeyboardStep(label(it), r, e.shiftKey, next !== null), { repeat: true });
     if (next) onlayout(next);
   }
 
@@ -142,7 +135,6 @@
     </div>
   {/each}
 </div>
-<p class="sr-only" aria-live="polite">{announcement}</p>
 
 <style>
   .grid {
@@ -167,14 +159,6 @@
     outline: 3px solid var(--color-accent);
     outline-offset: 2px;
     border-radius: var(--radius);
-  }
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
   .cell.active {
     z-index: 2;
