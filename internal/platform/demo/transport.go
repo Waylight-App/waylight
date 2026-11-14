@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 	"net/http"
 	"strings"
 	"time"
@@ -32,6 +33,8 @@ func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return respond(req, http.StatusOK, "application/json", forecast(now))
 	case host == "geocoding-api.open-meteo.com":
 		return respond(req, http.StatusOK, "application/json", geocoding)
+	case strings.HasPrefix(host, "api.awattar."):
+		return respond(req, http.StatusOK, "application/json", marketPrices(req))
 	case strings.HasSuffix(path, "/containers/json"):
 		return respond(req, http.StatusOK, "application/json", containers(now))
 	case strings.HasSuffix(host, "go.dev") || strings.HasSuffix(host, "hnrss.org") || strings.Contains(path, "feed") || strings.HasSuffix(path, ".xml"):
@@ -142,4 +145,18 @@ func (HealthyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		_ = req.Body.Close()
 	}
 	return respond(req, http.StatusOK, "text/plain", "ok")
+}
+
+// marketPrices is an aWATTar answer (#288): 48 hourly day-ahead prices from
+// the requested start with a typical daily curve (cheap at night and around
+// noon, expensive in the evening).
+func marketPrices(req *http.Request) string {
+	start, _ := strconv.ParseInt(req.URL.Query().Get("start"), 10, 64)
+	curve := []float64{78, 72, 68, 66, 67, 74, 92, 118, 124, 105, 84, 61, 48, 45, 52, 70, 96, 138, 152, 141, 118, 102, 94, 86}
+	data := make([]map[string]any, 0, 48)
+	for h := range 48 {
+		s := start + int64(h)*3_600_000
+		data = append(data, map[string]any{"start_timestamp": s, "end_timestamp": s + 3_600_000, "marketprice": curve[h%24] + float64(h/24)*6, "unit": "Eur/MWh"})
+	}
+	return mustJSON(map[string]any{"object": "list", "data": data})
 }

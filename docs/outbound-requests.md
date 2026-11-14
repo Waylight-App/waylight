@@ -31,6 +31,7 @@ stored encrypted.
 | Ollama | Only when you ask for a summary. |
 | WebDAV off-site backups | After each backup, and when you restore from it. |
 | ntfy, Gotify, webhooks, SMTP | When a notification is sent. |
+| Electricity prices (`api.awattar.de` / `api.awattar.at`) | Only while an electricity price widget is shown, at most every 15 minutes per bidding zone ([details](modules/electricity.md)). |
 | IMAP mailbox (parcels) | One folder, read-only over TLS, at the interval you choose. Off by default ([details](parcels-mail.md)). |
 
 ## Public services
