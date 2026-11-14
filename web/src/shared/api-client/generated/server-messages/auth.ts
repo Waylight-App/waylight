@@ -14,7 +14,7 @@ export const serverMessages = {
   srv_7b34c09128db40de: "Night dimming needs a start and an end such as 22:00 and 06:30.",
   srv_a53afcf337b06aea: "No account has been set up yet.",
   srv_67f0ba90e3a4e5b4: "Only the owner can do this.",
-  srv_b90b21f1d731b4f6: "Passkeys need HTTPS and PUBLIC_URL (see the README).",
+  srv_a9f3222a9472a3de: "Passkeys need HTTPS and PUBLIC_URL (see docs/accounts.md).",
   srv_fd5d4b3fb31aa85f: "Password login is disabled. Use single sign-on.",
   srv_2c825edcb1338a1c: "Please enter the code from your authenticator app or a recovery code.",
   srv_11e7a84aac8d61b2: "Rotate every 10 seconds to 1 hour, or never.",

@@ -103,9 +103,12 @@ func TestText(t *testing.T) {
 	loc := time.FixedZone("CET", 3600)
 	b := Briefing{Sections: []Section{
 		{Kind: SectionWarnings, Items: []Item{{Text: "Storm", Detail: "until 18:00", Severity: SeverityCritical}}},
-		{Kind: SectionEvents, Items: []Item{{Text: "Dentist", At: time.Date(2026, 11, 12, 8, 30, 0, 0, time.UTC)}}, More: 2},
+		{Kind: SectionEvents, Items: []Item{
+			{Text: "Dentist", At: time.Date(2026, 11, 12, 8, 30, 0, 0, time.UTC)},
+			{Text: "Holiday", At: time.Date(2026, 11, 12, 0, 0, 0, 0, time.UTC), AllDay: true}, // no 01:00 (#312)
+		}, More: 2},
 	}}
-	want := "Weather warnings:\n• Storm – until 18:00\n\nAppointments:\n• Dentist (09:30)\n• … and 2 more"
+	want := "Weather warnings:\n• Storm – until 18:00\n\nAppointments:\n• Dentist (09:30)\n• Holiday\n• … and 2 more"
 	if got := b.Text(loc); got != want {
 		t.Fatalf("got %q", got)
 	}

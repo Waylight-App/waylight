@@ -12,6 +12,9 @@ export const de: Record<keyof typeof en, string> = {
   'launcher.show_all_bookmarks': 'Alle {n} anzeigen',
   'launcher.no_services': 'Keine passenden Dienste.',
   'launcher.no_bookmarks': 'Keine passenden Lesezeichen.',
+  'launcher.none_services': 'Noch keine Dienste. Lege sie unter Einstellungen → Dienste an.',
+  'launcher.none_bookmarks':
+    'Noch keine Lesezeichen. Lege sie in einem Lesezeichen-Widget an oder importiere sie unter Einstellungen → Import & Export.',
   'launcher.online_ms': 'online · {ms} ms',
   'launcher.offline': 'offline',
   'launcher.unknown': 'noch nicht geprüft',

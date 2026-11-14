@@ -50,6 +50,7 @@ describe('briefing domain (#52)', () => {
     expect(itemTime('events', item, 'de-DE')).toBe('09:30');
     expect(itemTime('todos', item, 'de-DE')).toBe('');
     expect(itemTime('events', { ...item, at: null })).toBe('');
+    expect(itemTime('events', { ...item, allDay: true }, 'de-DE')).toBe('all day'); // not 01:00 (#312)
   });
 });
 

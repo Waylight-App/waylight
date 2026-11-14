@@ -17,6 +17,7 @@ const toBriefing = (d: BriefingDTO): Briefing => ({
               text: i.text,
               detail: i.detail,
               at: i.at ? new Date(i.at) : null,
+              allDay: i.allDay === true,
               severity: severity(i.severity),
             })),
           },

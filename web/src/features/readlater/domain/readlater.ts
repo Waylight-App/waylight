@@ -25,6 +25,10 @@ export interface ImportReport {
 }
 
 /** Cleanup options for archived articles, in days (0 = keep). */
+/** Export files of other read-later services that can be imported. */
+export type ExportKind = 'pocket' | 'instapaper';
+export const EXPORT_KINDS: readonly ExportKind[] = ['pocket', 'instapaper'];
+
 export const ARCHIVE_DAYS = [0, 7, 30, 90, 365] as const;
 
 export type ArticleStatus = 'unread' | 'read' | 'archived';

@@ -24,7 +24,7 @@ var publicKeyPattern = regexp.MustCompile(`^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw048]=
 
 // ErrNoExport is returned when the export file does not exist (yet).
 var ErrNoExport = kernel.NewPublicError(kernel.ErrNotFound,
-	"No WireGuard export found. Run scripts/wireguard-export.sh on the host (see README).")
+	"No WireGuard export found. Run scripts/wireguard-export.sh on the host (see docs/host-integrations.md).")
 
 // ValidPublicKey reports whether s looks like a WireGuard public key.
 func ValidPublicKey(s string) bool { return publicKeyPattern.MatchString(s) }

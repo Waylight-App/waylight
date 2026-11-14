@@ -22,8 +22,8 @@ that text on buttons stays readable.
 ## Theme gallery
 
 The gallery offers ready-made themes: Nord, Catppuccin Latte and Mocha,
-Gruvbox Dark, Solarized Light and Dark, a high-contrast theme and a classic portal
-look. *Apply* switches to a theme at once.
+Gruvbox Dark, Solarized Light and Dark, Dracula, Tokyo Night, One Dark, a
+high-contrast theme and a classic portal look. *Apply* switches to a theme at once.
 
 Applying a theme replaces your light or dark choice, accent colour and custom
 CSS. Your own settings are kept, and **Restore my own style** brings them

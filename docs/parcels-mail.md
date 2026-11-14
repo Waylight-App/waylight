@@ -14,7 +14,7 @@ The parcels widget can find tracking numbers in your shipping e-mails by itself 
 
 1. **Create an app password.** Most providers offer one for mail apps, e.g. Gmail, GMX, web.de, Outlook, Posteo or mailbox.org. Don't use your main password.
 2. **Create a folder**, e.g. `Pakete`, and a **filter rule** that moves shipping mails into it. A rule with these conditions catches most of them:
-   - sender contains `dhl.de`, `hermesworld`, `myhermes`, `dpd.de`, `gls-pakete`, `gls-group` or `ups.com`, **or**
+   - sender contains `dhl.de`, `deutschepost.de`, `hermesworld`, `myhermes`, `dpd.de`, `gls-pakete`, `gls-group` or `ups.com`, **or**
    - subject contains `Sendung`, `Versand`, `versandt`, `shipped`, `on its way` or `unterwegs`.
 3. **Optional: turn on DHL parcel announcements.** In your DHL customer account under _Einstellungen → Benachrichtigungen_, enable e-mail notifications. DHL then mails you about every parcel addressed to you, even when the shop doesn't send a tracking number.
 4. In trisse-home open **Settings → Parcels → Parcels from e-mails**:
@@ -24,13 +24,14 @@ The parcels widget can find tracking numbers in your shipping e-mails by itself 
 
 ## Carriers
 
-| Carrier | Recognised                                                                            | Tracking in the widget            |
-| ------- | ------------------------------------------------------------------------------------- | --------------------------------- |
-| DHL     | Sendungsnummer, JJD numbers, dhl.de links (check digit verified for 20-digit numbers) | Live status with your DHL API key |
-| Hermes  | Sendungsnummer in Hermes mails, myhermes/hermesworld links                            | Link to the Hermes tracking page  |
-| DPD     | Paketnummer in DPD mails, tracking.dpd.de links                                       | Link to the DPD tracking page     |
-| GLS     | Paketnummer in GLS mails, gls-pakete.de links                                         | Link to the GLS tracking page     |
-| UPS     | `1Z…` numbers anywhere (check digit verified)                                         | Link to the UPS tracking page     |
+| Carrier                                        | Recognised                                                                            | Tracking in the widget            |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------- |
+| DHL                                            | Sendungsnummer, JJD numbers, dhl.de links (check digit verified for 20-digit numbers) | Live status with your DHL API key |
+| Deutsche Post registered mail (_Einschreiben_) | S10 numbers such as `RR123456785DE` after a tracking keyword (check digit verified)   | As DHL (DHL tracks them)          |
+| Hermes                                         | Sendungsnummer in Hermes mails, myhermes/hermesworld links                            | Link to the Hermes tracking page  |
+| DPD                                            | Paketnummer in DPD mails, tracking.dpd.de links                                       | Link to the DPD tracking page     |
+| GLS                                            | Paketnummer in GLS mails, gls-pakete.de links                                         | Link to the GLS tracking page     |
+| UPS                                            | `1Z…` numbers anywhere (check digit verified)                                         | Link to the UPS tracking page     |
 
 A number only counts when it appears right after a word like _Sendungsnummer_, _Paketnummer_ or _tracking number_, or inside a carrier's tracking link. Order numbers, phone numbers and IBANs don't match. When a shop mail doesn't say which carrier ships, the number is skipped instead of guessed.
 

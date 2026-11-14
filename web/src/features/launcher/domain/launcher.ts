@@ -119,3 +119,17 @@ export function initial(name: string): string {
   const m = name.trim().match(/[\p{L}\p{N}]/u);
   return (m?.[0] ?? '?').toUpperCase();
 }
+
+/**
+ * Message of an empty list: "none yet" when there is nothing at all, "no
+ * match" only when a filter hides everything (#315).
+ */
+export function emptyKey(
+  kind: 'services' | 'bookmarks',
+  total: number,
+  filter: string,
+): 'launcher.no_services' | 'launcher.no_bookmarks' | 'launcher.none_services' | 'launcher.none_bookmarks' {
+  if (total > 0 && filter.trim() !== '')
+    return kind === 'services' ? 'launcher.no_services' : 'launcher.no_bookmarks';
+  return kind === 'services' ? 'launcher.none_services' : 'launcher.none_bookmarks';
+}

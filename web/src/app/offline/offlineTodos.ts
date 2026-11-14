@@ -1,3 +1,4 @@
+import { newId } from '../../shared/id/uuid';
 import type { Reminder, Repeat, Todo } from '../../features/todos/domain/todo';
 import type { TodosGateway } from '../../features/todos/usecase/todosUseCases';
 import { overlay, type PendingChange } from '../../shared/offline/domain/outbox';
@@ -59,7 +60,7 @@ export class OfflineTodosGateway implements TodosGateway {
   }
 
   async create(title: string, due: string): Promise<Todo> {
-    const id = crypto.randomUUID();
+    const id = newId();
     try {
       return await this.inner.create(title, due, id);
     } catch (err) {
