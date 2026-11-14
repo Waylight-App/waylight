@@ -17,7 +17,7 @@ type ItemDTO struct {
 	Detail string `json:"detail"`
 	At     string `json:"at"`
 	// AllDay marks an all-day appointment: at is its day, not a time.
-	AllDay   bool   `json:"allDay"`
+	AllDay   bool   `json:"allDay,omitempty"`
 	Severity string `json:"severity"`
 }
 

@@ -19,7 +19,7 @@ export interface ItemDTO {
   /**
    * AllDay marks an all-day appointment: at is its day, not a time.
    */
-  allDay: boolean;
+  allDay?: boolean;
   severity: string;
 }
 /**
