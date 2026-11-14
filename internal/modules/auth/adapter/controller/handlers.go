@@ -113,7 +113,7 @@ func (h *Handlers) Setup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res, err := h.uc.Setup.Execute(r.Context(), usecase.SetupRequest{
-		SetupToken: dto.SetupToken, Password: dto.Password, ClientKey: clientKey(r), UserAgent: r.UserAgent(),
+		SetupToken: dto.SetupToken, Password: dto.Password, ClientKey: clientKey(r), UserAgent: r.UserAgent(), Profile: dto.Profile,
 	})
 	h.respondWithSession(w, r, res, err)
 }

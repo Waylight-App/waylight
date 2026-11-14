@@ -53,7 +53,7 @@
   }
   let { container, modules, appearance, onappearance, onrestarttour, section, onclose }: Props = $props();
 
-  type Section = { id: string; label: MessageKey; module?: string; group?: SettingsGroup };
+  type Section = { id: string; label: MessageKey; module?: string; group?: SettingsGroup; homelab?: boolean };
   // The sections built into the dialog, with their topic (#261). Features
   // add theirs from src/app/settings (#193) and choose the group there.
   const ownSections: Section[] = [
@@ -65,7 +65,7 @@
       module: 'notifications',
       group: 'general',
     },
-    { id: 'forecast', label: 'settings.section.forecast', module: 'system', group: 'general' },
+    { id: 'forecast', label: 'settings.section.forecast', module: 'system', group: 'general', homelab: true },
     { id: 'services', label: 'settings.section.services', module: 'services', group: 'content' },
     { id: 'feeds', label: 'settings.section.feeds', module: 'rss', group: 'content' },
     { id: 'folders', label: 'settings.section.bookmark_folders', module: 'bookmarks', group: 'content' },
@@ -76,14 +76,20 @@
     { id: 'waste', label: 'settings.section.waste', module: 'waste', group: 'content' },
     { id: 'parcels', label: 'settings.section.parcels', module: 'parcels', group: 'content' },
     { id: 'transfer', label: 'settings.section.transfer', module: 'transfer', group: 'content' },
-    { id: 'adguard', label: 'settings.section.adguard', module: 'adguard' },
-    { id: 'speedtest', label: 'settings.section.speedtest', module: 'speedtest' },
-    { id: 'docker-updates', label: 'settings.section.docker_updates', module: 'docker' },
-    { id: 'nextcloud', label: 'settings.section.nextcloud', module: 'nextcloud' },
-    { id: 'fritzbox', label: 'settings.section.fritzbox', module: 'fritzbox' },
-    { id: 'wireguard', label: 'settings.section.wireguard', module: 'wireguard' },
+    { id: 'adguard', label: 'settings.section.adguard', module: 'adguard', homelab: true },
+    { id: 'speedtest', label: 'settings.section.speedtest', module: 'speedtest', homelab: true },
+    { id: 'docker-updates', label: 'settings.section.docker_updates', module: 'docker', homelab: true },
+    { id: 'nextcloud', label: 'settings.section.nextcloud', module: 'nextcloud', homelab: true },
+    { id: 'fritzbox', label: 'settings.section.fritzbox', module: 'fritzbox', homelab: true },
+    { id: 'wireguard', label: 'settings.section.wireguard', module: 'wireguard', homelab: true },
     { id: 'backups', label: 'settings.section.backups', module: 'backup', group: 'data' },
-    { id: 'backupmonitor', label: 'settings.section.backupmonitor', module: 'backupmonitor', group: 'data' },
+    {
+      id: 'backupmonitor',
+      label: 'settings.section.backupmonitor',
+      module: 'backupmonitor',
+      group: 'data',
+      homelab: true,
+    },
     { id: 'account', label: 'settings.section.account', group: 'account' },
     { id: 'tokens', label: 'settings.section.tokens', group: 'account' },
     { id: 'guests', label: 'settings.section.guests', group: 'account' },
@@ -96,7 +102,11 @@
   const guestSections = new Set(['account']);
   const visible = $derived(
     sections.filter(
-      (s) => (!s.module || modules.has(s.module)) && (!container.auth.guest || guestSections.has(s.id)),
+      (s) =>
+        (!s.module || modules.has(s.module)) &&
+        (!container.auth.guest || guestSections.has(s.id)) &&
+        // The "everyday" profile hides home-server and network settings (#281).
+        !(s.homelab && appearance.profile === 'everyday'),
     ),
   );
   let guestTabs = $state<{ id: string; name: string }[]>([]);

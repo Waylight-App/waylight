@@ -15,6 +15,8 @@
   let token = $state('');
   let password = $state('');
   let confirmation = $state('');
+  // What the start page shows (#281); "everyday" is the safe default.
+  let profile = $state<'everyday' | 'homelab'>('everyday');
   let error = $state('');
   let busy = $state(false);
 
@@ -23,7 +25,7 @@
     busy = true;
     error = '';
     try {
-      await auth.setup(token, password, confirmation);
+      await auth.setup(token, password, confirmation, profile);
       ondone();
     } catch (err) {
       error = errorMessage(err);
@@ -65,6 +67,47 @@
       />
     </label>
     {#if error}<p class="error" role="alert">{error}</p>{/if}
+    <fieldset class="profile">
+      <legend>{t('auth.profile_question')}</legend>
+      <label
+        ><input type="radio" name="profile" value="everyday" bind:group={profile} />
+        <span
+          ><strong>{t('auth.profile_everyday')}</strong><br /><span class="muted small"
+            >{t('auth.profile_everyday_hint')}</span
+          ></span
+        ></label
+      >
+      <label
+        ><input type="radio" name="profile" value="homelab" bind:group={profile} />
+        <span
+          ><strong>{t('auth.profile_homelab')}</strong><br /><span class="muted small"
+            >{t('auth.profile_homelab_hint')}</span
+          ></span
+        ></label
+      >
+      <p class="muted small">{t('auth.profile_unsure')}</p>
+    </fieldset>
     <button class="btn btn-primary" type="submit" disabled={busy}>{t('auth.create_account')}</button>
   </form>
 </AuthCard>
+
+<style>
+  .profile {
+    display: grid;
+    gap: var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    padding: var(--space-3);
+  }
+  .profile label {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+  .profile p {
+    margin: 0;
+  }
+  .small {
+    font-size: 0.85em;
+  }
+</style>
