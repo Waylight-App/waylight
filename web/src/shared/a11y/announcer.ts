@@ -12,11 +12,15 @@ export class Announcer {
     private readonly repeatAfterMs = 5 * 60_000,
   ) {}
 
-  /** Announces message unless it was announced recently; returns whether it was. */
-  announce(message: string): boolean {
+  /**
+   * Announces message unless it was announced recently; returns whether it was.
+   * repeat skips that check, for answers to the user's own key presses
+   * (moving a widget back to where it was says the same text again).
+   */
+  announce(message: string, repeat = false): boolean {
     const at = this.now();
     const last = this.recent.get(message);
-    if (message === '' || (last !== undefined && at - last < this.repeatAfterMs)) return false;
+    if (message === '' || (!repeat && last !== undefined && at - last < this.repeatAfterMs)) return false;
     for (const [m, t] of this.recent) if (at - t >= this.repeatAfterMs) this.recent.delete(m);
     this.recent.set(message, at);
     this.sink(message);

@@ -99,6 +99,14 @@ interface Job extends JobState {
 
 const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
 
+/**
+ * A module that is not set up yet answers 404 ("not configured"). That is a
+ * neutral state, not a failed refresh: no error badge, no announcement, and
+ * the job asks less and less often until the user sets it up (#311).
+ */
+export const isNotConfigured = (err: unknown): boolean =>
+  typeof err === 'object' && err !== null && (err as { status?: unknown }).status === 404;
+
 /** The shared scheduler. */
 export class RefreshScheduler {
   private readonly jobs = new Set<Job>();
@@ -199,7 +207,12 @@ export class RefreshScheduler {
           job.lastError = null;
         },
         (err: unknown) => {
-          job.failures = Math.min(job.failures + 1, 20);
+          job.failures = Math.min(job.failures + 1, 20); // backs off either way
+          if (isNotConfigured(err)) {
+            job.fetchedAt = this.clock.now();
+            job.lastError = null;
+            return;
+          }
           job.lastError = message(err);
         },
       )

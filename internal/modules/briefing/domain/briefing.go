@@ -39,8 +39,10 @@ const (
 type Item struct {
 	Text string
 	// Detail is secondary text, e.g. a location or "overdue".
-	Detail   string
-	At       time.Time
+	Detail string
+	At     time.Time
+	// AllDay marks an all-day appointment: At is its day, not a time (#312).
+	AllDay   bool
 	Severity Severity
 }
 

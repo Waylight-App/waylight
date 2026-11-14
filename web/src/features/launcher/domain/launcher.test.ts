@@ -8,6 +8,7 @@ import {
   safeUrl,
   SERVICE_PREVIEW,
   statusSummary,
+  emptyKey,
 } from './launcher';
 
 const services: LauncherService[] = Array.from({ length: 8 }, (_, i) => ({
@@ -76,5 +77,15 @@ describe('launcher', () => {
     expect(initial(' über')).toBe('Ü');
     expect(initial('42 news')).toBe('4');
     expect(initial('—')).toBe('?');
+  });
+});
+
+describe('empty launcher lists (#315)', () => {
+  it('says "none yet" without data and "no match" only for a filter', () => {
+    expect(emptyKey('services', 0, '')).toBe('launcher.none_services');
+    expect(emptyKey('services', 0, 'nas')).toBe('launcher.none_services');
+    expect(emptyKey('services', 3, 'nas')).toBe('launcher.no_services');
+    expect(emptyKey('bookmarks', 0, '')).toBe('launcher.none_bookmarks');
+    expect(emptyKey('bookmarks', 2, ' x ')).toBe('launcher.no_bookmarks');
   });
 });

@@ -24,8 +24,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_a53afcf337b06aea: 'Es wurde noch kein Konto eingerichtet.',
   // Only the owner can do this.
   srv_67f0ba90e3a4e5b4: 'Das kann nur der Besitzer.',
-  // Passkeys need HTTPS and PUBLIC_URL (see the README).
-  srv_b90b21f1d731b4f6: 'Passkeys brauchen HTTPS und PUBLIC_URL (siehe README).',
+  // Passkeys need HTTPS and PUBLIC_URL (see docs/accounts.md).
+  srv_a9f3222a9472a3de: 'Passkeys brauchen HTTPS und PUBLIC_URL (siehe docs/accounts.md).',
   // Password login is disabled. Use single sign-on.
   srv_fd5d4b3fb31aa85f: 'Die Anmeldung mit Passwort ist deaktiviert. Bitte Single Sign-on verwenden.',
   // Please enter the code from your authenticator app or a recovery code.

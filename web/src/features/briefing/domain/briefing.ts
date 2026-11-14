@@ -12,6 +12,8 @@ export interface BriefingItem {
   detail: string;
   /** Time of the item (due date, start, collection day …) or null. */
   at: Date | null;
+  /** All-day appointment: at is its day, not a time (#312). */
+  allDay?: boolean;
   severity: Severity;
 }
 
@@ -125,5 +127,6 @@ export function itemDetail(kind: SectionKind, item: BriefingItem): string {
  */
 export function itemTime(kind: SectionKind, item: BriefingItem, locale?: string): string {
   if (!item.at || (kind !== 'events' && kind !== 'incidents')) return '';
+  if (item.allDay) return t('calendar.all_day_short');
   return item.at.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 }
