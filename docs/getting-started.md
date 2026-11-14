@@ -54,10 +54,21 @@ sudo docker compose logs trisse-home | grep setup_token
 Open `http://<server-ip>:8090`, enter the token and choose a password of at
 least 12 characters. The token stops working as soon as the account exists.
 
+The setup also asks what your start page should show:
+
+- **Everyday** (preselected): weather, calendar, to-dos, news. Widgets and
+  settings for a home server or network (Docker, Proxmox, Pi-hole, …) are
+  hidden.
+- **Everyday and home network:** everything, including your own devices and
+  services.
+
+You can switch at any time under **Settings → Appearance**; switching only
+shows or hides widgets and settings and never deletes anything.
+
 You land on a dashboard that is already filled with sample data: a *Home*
 tab with search, clock, weather, to-dos, a welcome note, bookmarks, news and
-a calendar, and a *Server* tab with service tiles, host metrics, Docker and
-AdGuard Home. It is there to show what each widget does. Change or delete
+a calendar, and, with "Everyday and home network", a *Server* tab with
+service tiles, host metrics, Docker and AdGuard Home. It is there to show what each widget does. Change or delete
 anything you like. If you would rather start from an almost empty page, set
 `SAMPLE_DATA=false` before the first start.
 
