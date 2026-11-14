@@ -82,6 +82,8 @@ linters:
               desc: "iCalendar parsing belongs to the adapter ring"
             - pkg: trisse-home/internal/shared/caldav
               desc: "CalDAV belongs to the adapter ring"
+            - pkg: trisse-home/internal/shared/imaging
+              desc: "image decoding belongs to the adapter ring"
         adapter-ring:
           files:
             - "**/internal/modules/*/adapter/**"
