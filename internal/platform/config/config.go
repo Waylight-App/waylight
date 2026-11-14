@@ -61,6 +61,8 @@ type Config struct {
 	TransitAPIURL string
 	// FuelAPIURL is the Tankerkönig API for fuel prices (#53).
 	FuelAPIURL string
+	// SportsAPIURL is the OpenLigaDB API for football results (#285).
+	SportsAPIURL string
 	// ElectricityAPIURL is the aWATTar market data API (#288); "{tld}" is
 	// replaced by de or at.
 	ElectricityAPIURL string
@@ -159,6 +161,7 @@ func Load(getenv func(string) string) (Config, error) {
 		DiskHealthStaleAfter:     l.duration("DISKHEALTH_STALE_AFTER", 2*time.Hour),
 		TransitAPIURL:            l.str("TRANSIT_API_URL", "https://api.transitous.org"),
 		FuelAPIURL:               l.str("FUEL_API_URL", "https://creativecommons.tankerkoenig.de/json"),
+		SportsAPIURL:             l.str("SPORTS_API_URL", "https://api.openligadb.de"),
 		ElectricityAPIURL:        l.str("ELECTRICITY_API_URL", "https://api.awattar.{tld}/v1"),
 		SpaceLaunchAPIURL:        l.str("SPACE_LAUNCH_API_URL", "https://ll.thespacedevs.com/2.2.0/launch/upcoming/"),
 		SpacePictureAPIURL:       l.str("SPACE_APOD_API_URL", "https://api.nasa.gov/planetary/apod"),
