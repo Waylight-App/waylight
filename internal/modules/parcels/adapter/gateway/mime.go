@@ -12,15 +12,15 @@ import (
 	"net/textproto"
 	"regexp"
 	"strings"
-	"unicode/utf8"
 
 	"trisse-home/internal/modules/parcels/domain"
+	"trisse-home/internal/shared/imap"
 )
 
 var (
 	hrefRe = regexp.MustCompile(`(?i)href\s*=\s*["']([^"']+)["']`)
 	tagRe  = regexp.MustCompile(`(?s)<(?:style|script)[^>]*>.*?</(?:style|script)>|<[^>]+>`)
-	words  = &mime.WordDecoder{CharsetReader: charsetReader}
+	words  = imap.Words
 )
 
 // ParseMail turns the fetched header and text into what the extractors read:
@@ -67,7 +67,7 @@ func collect(b *strings.Builder, h textproto.MIMEHeader, body io.Reader, depth i
 		}
 	case mt == "text/plain" || mt == "text/html":
 		raw, _ := io.ReadAll(io.LimitReader(decodeTransfer(h.Get("Content-Transfer-Encoding"), body), maxTextBytes))
-		s := toUTF8(raw, params["charset"])
+		s := imap.ToUTF8(raw, params["charset"])
 		if mt == "text/html" {
 			s = htmlText(s)
 		}
@@ -111,25 +111,4 @@ func htmlText(s string) string {
 	}
 	b.WriteString(html.UnescapeString(tagRe.ReplaceAllString(s, "\n")))
 	return b.String()
-}
-
-// toUTF8 converts Latin-1/Windows-1252 text; UTF-8 and ASCII stay.
-func toUTF8(raw []byte, charset string) string {
-	cs := strings.ToLower(charset)
-	if utf8.Valid(raw) && !strings.HasPrefix(cs, "iso-8859") && !strings.HasPrefix(cs, "windows-125") {
-		return string(raw)
-	}
-	r := make([]rune, len(raw))
-	for i, c := range raw {
-		r[i] = rune(c)
-	}
-	return string(r)
-}
-
-func charsetReader(charset string, input io.Reader) (io.Reader, error) {
-	raw, err := io.ReadAll(io.LimitReader(input, 4096))
-	if err != nil {
-		return nil, err
-	}
-	return strings.NewReader(toUTF8(raw, charset)), nil
 }
