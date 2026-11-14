@@ -38,11 +38,6 @@ markdown_extensions:
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
 
-# Raw files and screenshots are served as they are; the Grafana dashboard is
-# a download, not a page.
-exclude_docs: |
-  grafana-dashboard.json
-
 nav:
   - Home: index.md
   - Is it for me?:
@@ -100,6 +95,23 @@ nav:
       - Developer guide: developer-guide.md
       - Adding a module: adding-a-module.md
       - Architecture: architecture.md
-      - Decision records: adr/README.md
+      - Decision records:
+          - adr/README.md
+          - "0001 – Strict Clean Architecture for every module": adr/0001-clean-architecture.md
+          - "0002 – Go with the standard library for the backend": adr/0002-go-backend.md
+          - "0003 – SQLite via a pure-Go driver": adr/0003-sqlite.md
+          - "0004 – Svelte 5 SPA embedded into the binary": adr/0004-svelte-spa.md
+          - "0005 – Single-user auth with setup token and sessions": adr/0005-single-user-auth.md
+          - "0006 – Background jobs and cache-aside for integrations": adr/0006-background-jobs-cache-aside.md
+          - "0007 – Own grid implementation for the dashboard": adr/0007-own-dashboard-grid.md
+          - "0008 – Sample data after the first setup": adr/0008-sample-data-on-setup.md
+          - "0009 – Two-factor authentication with TOTP": adr/0009-two-factor-authentication.md
+          - "ADR 0010: Internationalisation without a framework": adr/0010-internationalisation.md
+          - "ADR 0011: Lean by default (dependency policy and resource budgets)": adr/0011-lean-by-default.md
+          - "ADR 0012: Owner and read-only guest accounts": adr/0012-owner-and-guest-roles.md
+          - "ADR 0013: Single sign-on with OpenID Connect and trusted proxy headers": adr/0013-single-sign-on.md
+          - "ADR 0014: Passkeys as second factor with a minimal WebAuthn implementation": adr/0014-passkeys.md
+          - "ADR 0015: Raspberry Pi appliance image": adr/0015-raspberry-pi-image.md
+          - "ADR 0016: Cross-module read models": adr/0016-cross-module-read-models.md
       - Contributing: https://github.com/itadori26/trisse-home/blob/main/CONTRIBUTING.md
       - Roadmap: https://github.com/itadori26/trisse-home/blob/main/ROADMAP.md

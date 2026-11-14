@@ -54,7 +54,7 @@ account exists (`trisse-home-setup-info.timer`). To choose the token yourself
 | Path | Purpose |
 | --- | --- |
 | `/usr/bin/trisse-home` | The binary (same as in the container image) |
-| `/etc/trisse-home/trisse-home.env` | Configuration (environment variables, see [.env.example](../.env.example)) |
+| `/etc/trisse-home/trisse-home.env` | Configuration (environment variables, see [.env.example](https://github.com/itadori26/trisse-home/blob/main/.env.example)) |
 | `/etc/trisse-home/secret.env` | `SECRET_KEY` and `SETUP_TOKEN`, generated on the first start |
 | `/var/lib/trisse-home/` | Database and automatic backups |
 | `trisse-home.service` | systemd unit, runs as the system user `trisse-home` |

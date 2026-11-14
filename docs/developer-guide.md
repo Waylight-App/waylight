@@ -16,7 +16,7 @@ git clone https://github.com/itadori26/trisse-home.git && cd trisse-home
 make deps && make ci
 ```
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md#development-setup-about-10-minutes)
+See [CONTRIBUTING.md](https://github.com/itadori26/trisse-home/blob/main/CONTRIBUTING.md#development-setup-about-10-minutes)
 for running the app with hot reload.
 
 ## 1. The dependency rule in one picture
