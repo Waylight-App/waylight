@@ -139,6 +139,20 @@ describe('refresh scheduler (#117)', () => {
     expect(settled).toBe(3); // initial run, failed run, manual refresh
   });
 
+  it('treats "not configured" (404) as neutral, but asks less often (#311)', async () => {
+    const { s, advance } = setup();
+    let runs = 0;
+    const h = s.register(async () => {
+      runs++;
+      throw Object.assign(new Error('The waste calendar is not configured yet.'), { status: 404 });
+    }, 10_000);
+    await flush();
+    expect(h.status().lastError).toBeNull();
+    expect(h.status().fetchedAt).not.toBeNull();
+    await advance(60_000);
+    expect(runs).toBeLessThan(4); // backed off: 10 s, 20 s, 40 s …
+  });
+
   it('caps the backoff and adds jitter', () => {
     const job: JobState = { intervalMs: 60_000, lastRun: 0, failures: 10, inViewport: true, running: false };
     expect(effectiveDelay(job, { ...defaultOptions, random: () => 0 })).toBe(15 * 60_000 * 0.9);

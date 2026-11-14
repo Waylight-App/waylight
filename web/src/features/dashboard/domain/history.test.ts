@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EditHistory, type EditCommand } from './history';
+import { EditHistory, type EditCommand, layoutCommand } from './history';
 
 const widget = (id: string) => ({
   id,
@@ -62,5 +62,30 @@ describe('edit history (#93)', () => {
     h.restore(c, true);
     expect(h.canUndo).toBe(true);
     expect(h.canRedo).toBe(false);
+  });
+});
+
+describe('layoutCommand (#272)', () => {
+  const before = [
+    { id: 'a', x: 0, y: 0, w: 2, h: 2 },
+    { id: 'b', x: 2, y: 0, w: 2, h: 2 },
+  ];
+  it('records nothing for a click without movement', () => {
+    expect(
+      layoutCommand(
+        't',
+        before,
+        before.map((i) => ({ ...i })),
+      ),
+    ).toBeNull();
+    expect(layoutCommand('t', before, [{ id: 'a', x: 0, y: 0, w: 2, h: 2 }])).toBeNull();
+  });
+  it('records a real move with plain cells', () => {
+    const c = layoutCommand(
+      't',
+      [{ id: 'a', x: 0, y: 0, w: 2, h: 2, kind: 'clock' } as never, { id: 'b', x: 2, y: 0, w: 2, h: 2 }],
+      [{ id: 'a', x: 4, y: 0, w: 2, h: 2 }],
+    );
+    expect(c).toEqual({ type: 'layout', tabId: 't', before, after: [{ id: 'a', x: 4, y: 0, w: 2, h: 2 }] });
   });
 });

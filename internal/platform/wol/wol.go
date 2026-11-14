@@ -22,7 +22,7 @@ const (
 
 // ErrRelayUnreachable is returned when the relay did not acknowledge.
 var ErrRelayUnreachable = kernel.NewPublicError(kernel.ErrUnavailable,
-	"The Wake-on-LAN relay did not answer. Is COMPOSE_PROFILES=wol set (see README)?")
+	"The Wake-on-LAN relay did not answer. Is COMPOSE_PROFILES=wol set (see docs/host-integrations.md)?")
 
 // sendBroadcast sends p to a broadcast address.
 func sendBroadcast(ctx context.Context, addr string, p []byte) error {
