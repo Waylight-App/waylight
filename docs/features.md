@@ -13,7 +13,7 @@ modules in detail.
 
 | Module | What it does |
 | --- | --- |
-| To-dos (`todos`) | Due dates with overdue highlighting, recurring to-dos (daily, on chosen weekdays, monthly, or N days after completion) and reminders through your notification channels. Works offline. |
+| To-dos (`todos`) | Due dates with overdue highlighting, recurring to-dos (daily, on chosen weekdays, monthly, or N days after completion) and reminders through your notification channels. Works offline. A widget can show a connected CalDAV task list instead (Nextcloud Tasks, Synology, Radicale, …; [details](modules/todos.md)). |
 | Notes (`notes`) | Markdown notes that can be pinned to the dashboard, with full-text search, `[[wiki links]]` and backlinks, and a version history with diff and restore. |
 | Calendar (`calendar`) | CalDAV calendars such as Nextcloud, including recurring events, plus read-only ICS subscriptions. Agenda, month or split view with event details; new events can be added from the widget. |
 | Shopping list (`shopping`) | Stored as tasks in a CalDAV task list, so the whole household can use it from their usual task app. |

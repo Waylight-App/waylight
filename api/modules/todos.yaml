@@ -6,12 +6,13 @@ paths:
     get:
       tags: [todos]
       summary: Open to-dos (and completed ones with done=true)
-      parameters: [{ name: done, in: query, schema: { type: boolean } }]
+      parameters: [{ name: done, in: query, schema: { type: boolean } }, { name: source, in: query, schema: { type: string }, description: "List: empty or local = the built-in list, else the ID of a connected external list (#169)" }]
       responses:
         "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Todo" } } } } }
     post:
       tags: [todos]
       summary: Create a to-do
+      parameters: [{ name: source, in: query, schema: { type: string }, description: "List: empty or local = the built-in list, else the ID of a connected external list (#169)" }]
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/TodoInput" } } } }
       responses:
@@ -21,11 +22,12 @@ paths:
     post:
       tags: [todos]
       summary: Delete all completed to-dos
+      parameters: [{ name: source, in: query, schema: { type: string }, description: "List: empty or local = the built-in list, else the ID of a connected external list (#169)" }]
       security: [{ session: [], csrf: [] }]
       responses:
         "200": { description: OK, content: { application/json: { schema: { type: object, properties: { removed: { type: integer } }, required: [removed] } } } }
   /api/todos/{id}:
-    parameters: [{ $ref: "#/components/parameters/id" }]
+    parameters: [{ $ref: "#/components/parameters/id" }, { name: source, in: query, schema: { type: string }, description: "List: empty or local = the built-in list, else the ID of a connected external list (#169)" }]
     put:
       tags: [todos]
       summary: Update text, due date and completion
@@ -34,7 +36,7 @@ paths:
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Todo" } } } }
         "404": { $ref: "#/components/responses/NotFound" }
-        "409": { description: Changed elsewhere since the given version (#80) }
+        "409": { description: "Changed elsewhere since the given version (#80); for external lists the version follows the ETag, so a change in the other app wins" }
         "422": { $ref: "#/components/responses/Invalid" }
     delete:
       tags: [todos]
@@ -43,6 +45,51 @@ paths:
       responses:
         "204": { description: Deleted }
         "404": { $ref: "#/components/responses/NotFound" }
+  /api/todos/settings/sources:
+    get:
+      tags: [todos]
+      summary: Connected external to-do lists (#169); passwords are never returned
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/TodoSource" } } } } }
+    post:
+      tags: [todos]
+      summary: Connect a CalDAV task list (the list is read once to test the connection)
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/TodoSourceInput" } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/TodoSource" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "502": { description: The server refused the login or could not be read }
+  /api/todos/settings/sources/discover:
+    post:
+      tags: [todos]
+      summary: Find the task lists of a CalDAV account (from the server's DAV address, the calendar home or a list); id may name a stored list whose password is used
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/TodoSourceInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { type: object, properties: { url: { type: string }, name: { type: string } } } } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "502": { description: The server refused the login or could not be read }
+  /api/todos/settings/sources/{id}:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    put:
+      tags: [todos]
+      summary: Change a connected list; an empty password keeps the stored one
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/TodoSourceInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/TodoSource" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "502": { description: The server refused the login or could not be read }
+    delete:
+      tags: [todos]
+      summary: Disconnect a list (nothing is deleted on the server)
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Deleted }
+        "404": { $ref: "#/components/responses/NotFound" }
+
 
 schemas:
   TodoInput:
@@ -69,3 +116,25 @@ schemas:
       repeat: { $ref: "#/components/schemas/TodoRepeat" }
       reminder: { $ref: "#/components/schemas/TodoReminder" }
       version: { type: integer, description: Number of stored changes (#80) }
+  TodoSourceInput:
+    type: object
+    required: [kind, url, username]
+    properties:
+      id: { type: string, description: "Discover only: a stored list whose password is used when password is empty" }
+      name: { type: string, maxLength: 80 }
+      kind: { type: string, enum: [caldav] }
+      url: { type: string, description: "The task list (a CalDAV calendar collection with VTODO); for discover also the DAV root" }
+      username: { type: string }
+      password: { type: string, description: "App password; stored encrypted with SECRET_KEY. Empty on update keeps the stored one" }
+  TodoSource:
+    type: object
+    properties:
+      id: { type: string }
+      name: { type: string }
+      kind: { type: string }
+      url: { type: string }
+      username: { type: string }
+      capabilities:
+        type: object
+        description: What the list supports; the UI hides the rest
+        properties: { ordering: { type: boolean }, repeat: { type: boolean }, reminders: { type: boolean } }

@@ -17,6 +17,8 @@ type UseCases struct {
 	Update         usecase.UpdateTodo
 	Delete         usecase.DeleteTodo
 	ClearCompleted usecase.ClearCompleted
+	// Sources manages connected external lists (#169); nil = not offered.
+	Sources usecase.Sources
 }
 
 // Handlers serves the to-do endpoints.
@@ -43,9 +45,12 @@ func (d TodoInputDTO) toInput() (usecase.TodoInput, error) {
 	return in, nil
 }
 
-// List handles GET /api/todos?done=true.
+// source is the list a request is about: ?source=<id>, empty = local.
+func source(r *http.Request) string { return r.URL.Query().Get("source") }
+
+// List handles GET /api/todos?done=true&source=<id>.
 func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
-	res, err := h.uc.List.Execute(r.Context(), r.URL.Query().Get("done") == "true")
+	res, err := h.uc.List.Execute(r.Context(), source(r), r.URL.Query().Get("done") == "true")
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
@@ -65,6 +70,7 @@ func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
+	in.Source = source(r)
 	res, err := h.uc.Create.Execute(r.Context(), in)
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
@@ -85,6 +91,7 @@ func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
+	in.Source = source(r)
 	res, err := h.uc.Update.Execute(r.Context(), r.PathValue("id"), in, dto.Done)
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
@@ -95,7 +102,7 @@ func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 
 // Delete handles DELETE /api/todos/{id}.
 func (h *Handlers) Delete(w http.ResponseWriter, r *http.Request) {
-	if err := h.uc.Delete.Execute(r.Context(), r.PathValue("id")); err != nil {
+	if err := h.uc.Delete.Execute(r.Context(), source(r), r.PathValue("id")); err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
@@ -104,10 +111,71 @@ func (h *Handlers) Delete(w http.ResponseWriter, r *http.Request) {
 
 // ClearCompleted handles POST /api/todos/clear-completed.
 func (h *Handlers) ClearCompleted(w http.ResponseWriter, r *http.Request) {
-	n, err := h.uc.ClearCompleted.Execute(r.Context())
+	n, err := h.uc.ClearCompleted.Execute(r.Context(), source(r))
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
 	httpapi.WriteJSON(w, http.StatusOK, ClearedDTO{Removed: n})
+}
+
+// Sources handles GET /api/todos/settings/sources.
+func (h *Handlers) Sources(w http.ResponseWriter, r *http.Request) {
+	res, err := h.uc.Sources.List(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Sources(res))
+}
+
+func (h *Handlers) saveSource(w http.ResponseWriter, r *http.Request, id string, status int) {
+	var dto SourceInputDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	res, err := h.uc.Sources.Save(r.Context(), dto.toInput(id))
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, status, presenter.Source(res))
+}
+
+// CreateSource handles POST /api/todos/settings/sources (tests the connection).
+func (h *Handlers) CreateSource(w http.ResponseWriter, r *http.Request) {
+	h.saveSource(w, r, "", http.StatusCreated)
+}
+
+// UpdateSource handles PUT /api/todos/settings/sources/{id}; an empty
+// password keeps the stored one.
+func (h *Handlers) UpdateSource(w http.ResponseWriter, r *http.Request) {
+	h.saveSource(w, r, r.PathValue("id"), http.StatusOK)
+}
+
+// DeleteSource handles DELETE /api/todos/settings/sources/{id}.
+func (h *Handlers) DeleteSource(w http.ResponseWriter, r *http.Request) {
+	if err := h.uc.Sources.Delete(r.Context(), r.PathValue("id")); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// DiscoverSources handles POST /api/todos/settings/sources/discover: the
+// task lists of an account (id names a stored list whose password is used
+// when password is empty).
+func (h *Handlers) DiscoverSources(w http.ResponseWriter, r *http.Request) {
+	var dto SourceInputDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	res, err := h.uc.Sources.Discover(r.Context(), dto.toInput(dto.ID))
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Discovered(res))
 }

@@ -184,11 +184,15 @@ const legacyDefinitions: WidgetDefinition[] = [
     icon: 'check',
     view: lazy(
       () => import('../features/todos/ui/TodosWidget.svelte'),
-      (config, c) => ({ config, todos: c.todos }),
+      (config, c) => ({
+        config,
+        todos: c.todosFor(typeof config['source'] === 'string' ? config['source'] : ''),
+        sources: c.todoSources,
+      }),
     ),
     settings: lazy(
       () => import('../features/todos/ui/TodosWidgetSettings.svelte'),
-      (config) => ({ config }),
+      (config, c) => ({ config, sources: c.todoSources }),
     ),
   },
   {
