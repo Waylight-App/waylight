@@ -22,4 +22,4 @@ that supersedes the old one.
 | [0014](0014-passkeys.md)                    | Passkeys as second factor with a minimal WebAuthn implementation | Accepted |
 | [0015](0015-raspberry-pi-image.md)          | Raspberry Pi appliance image: native systemd service on Raspberry Pi OS Lite | Proposed |
 | [0016](0016-cross-module-read-models.md)    | Cross-module read models: consumer-owned ports, adapters in the composition root | Accepted |
-| [0017](0017-open-core.md)                   | Open core: MIT core, team features in `ee/` under the Fair Core License | Proposed |
+| [0017](0017-open-core.md)                   | Open core: MIT core, team features in `ee/` under the Fair Core License | Accepted |
