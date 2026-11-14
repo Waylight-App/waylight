@@ -29,7 +29,7 @@ func TestSetupAccount(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			obs := &countingObserver{}
 			uc := NewSetupAccount(tt.env.deps, staticSetupToken("setup-secret"), obs)
-			res, err := uc.Execute(ctx, SetupRequest{SetupToken: tt.token, Password: tt.pw, ClientKey: "ip"})
+			res, err := uc.Execute(ctx, SetupRequest{SetupToken: tt.token, Password: tt.pw, ClientKey: "ip", Profile: "everyday"})
 			if !errors.Is(err, tt.wantErr) {
 				t.Fatalf("err = %v, want %v", err, tt.wantErr)
 			}
@@ -38,6 +38,9 @@ func TestSetupAccount(t *testing.T) {
 			}
 			if wantCalls := map[bool]int{true: 1, false: 0}[tt.wantErr == nil]; obs.calls != wantCalls {
 				t.Fatalf("observer called %d times, want %d", obs.calls, wantCalls)
+			}
+			if tt.wantErr == nil && obs.profile != "everyday" {
+				t.Fatalf("profile not passed on: %q", obs.profile)
 			}
 		})
 	}

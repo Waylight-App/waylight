@@ -21,6 +21,8 @@ export interface SettingsSection {
   module?: string;
   /** Topic in the navigation (#261); default "integrations". */
   group?: SettingsGroup;
+  /** Home server or network integration: hidden by the "everyday" profile (#281). */
+  homelab?: boolean;
   load: () => Promise<Component<Record<string, unknown>>>;
   props: (container: Container, context: SettingsContext) => Record<string, unknown>;
 }
@@ -34,6 +36,7 @@ export function defineSettingsSection<P extends object>(def: {
   label: MessageKey;
   module?: string;
   group?: SettingsGroup;
+  homelab?: boolean;
   load: () => Promise<Component<P>>;
   props: (container: Container, context: SettingsContext) => P;
 }): SettingsSection {

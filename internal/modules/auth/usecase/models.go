@@ -27,6 +27,9 @@ type SetupRequest struct {
 	Password   string
 	ClientKey  string
 	UserAgent  string
+	// Profile is what the start page shows (#281), passed on unchanged to
+	// the SetupObserver; auth does not interpret it.
+	Profile string
 }
 
 // LoginRequest is the input of Login. ClientKey identifies the client for

@@ -12,7 +12,19 @@ export interface Appearance {
   greetingName: string;
   /** What the launcher lists (#189). */
   launcher: 'both' | 'services' | 'bookmarks';
+  /** What the start page shows (#281): everyday topics, or also the home network. */
+  profile: StartProfile;
 }
+
+/** Start-page profiles (#281). */
+export type StartProfile = 'everyday' | 'homelab';
+
+/** Widget categories that the "everyday" profile hides (#281). */
+export const HOMELAB_CATEGORIES: readonly string[] = ['server', 'network'];
+
+/** Whether a widget category is shown for a profile. */
+export const categoryShown = (profile: StartProfile, category: string): boolean =>
+  profile === 'homelab' || !HOMELAB_CATEGORIES.includes(category);
 
 /** Defaults before the preferences are loaded. */
 export const defaultAppearance: Appearance = {
@@ -23,6 +35,7 @@ export const defaultAppearance: Appearance = {
   language: '',
   greetingName: '',
   launcher: 'both',
+  profile: 'homelab',
 };
 
 /**

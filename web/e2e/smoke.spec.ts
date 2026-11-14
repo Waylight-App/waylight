@@ -20,6 +20,10 @@ test('setup, logout and login lead to the dashboard', async ({ page }) => {
   await page.getByLabel('Setup token').fill(setupToken);
   await page.getByLabel('Password (at least 12 characters)').fill(password);
   await page.getByLabel('Repeat password').fill(password);
+  // What the start page shows (#281): "Everyday" is preselected; the tests
+  // below use the Server tab, so this instance takes the home network too.
+  await expect(page.getByRole('radio', { name: /^Everyday Weather/ })).toBeChecked();
+  await page.getByRole('radio', { name: /^Everyday and home network/ }).check();
   await page.getByRole('button', { name: 'Create account' }).click();
   await expect(page.getByTestId('dashboard')).toBeVisible();
 

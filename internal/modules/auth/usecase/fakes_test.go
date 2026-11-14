@@ -213,9 +213,15 @@ func (l *fakeLimiter) RecordFailure(k string, _ time.Time) bool {
 }
 func (l *fakeLimiter) Reset(k string) { delete(l.failures, k) }
 
-type countingObserver struct{ calls int }
+type countingObserver struct {
+	calls   int
+	profile string
+}
 
-func (o *countingObserver) AccountCreated(context.Context) { o.calls++ }
+func (o *countingObserver) AccountCreated(_ context.Context, profile string) {
+	o.calls++
+	o.profile = profile
+}
 
 type env struct {
 	deps     Deps

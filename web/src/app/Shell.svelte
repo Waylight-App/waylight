@@ -369,6 +369,7 @@
       {container}
       {editing}
       {widgetKinds}
+      profile={appearance.profile}
       tabBarTarget="header-tabs"
       onstate={(tabs, activeId) => (dashboardState = { tabs, activeId })}
     />

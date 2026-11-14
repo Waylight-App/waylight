@@ -39,6 +39,39 @@ type Appearance struct {
 	language        string
 	greetingName    string
 	launcher        Launcher
+	profile         Profile
+}
+
+// Profile says what the start page is about (#281): everyday topics only,
+// or also the home network and server. It only shows or hides module
+// groups; it never deletes anything.
+type Profile string
+
+// Profiles; homelab is the default of existing installations.
+const (
+	ProfileEveryday Profile = "everyday"
+	ProfileHomelab  Profile = "homelab"
+)
+
+// SetProfile chooses the profile; empty means homelab.
+func (a *Appearance) SetProfile(p string) error {
+	switch Profile(p) {
+	case "", ProfileHomelab:
+		a.profile = ProfileHomelab
+	case ProfileEveryday:
+		a.profile = ProfileEveryday
+	default:
+		return kernel.NewValidationError("profile", "The start page shows everyday topics or also the home network.")
+	}
+	return nil
+}
+
+// Profile returns what the start page is about.
+func (a Appearance) Profile() Profile {
+	if a.profile == "" {
+		return ProfileHomelab
+	}
+	return a.profile
 }
 
 // Launcher says what the launcher of the top bar lists (#189).

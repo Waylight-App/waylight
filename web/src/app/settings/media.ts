@@ -4,6 +4,7 @@ export const section = defineSettingsSection({
   id: 'media',
   label: 'settings.section.media',
   module: 'media',
+  homelab: true,
   load: () => import('../../features/media').then((m) => m.MediaSettings),
   props: (c) => ({ media: c.media }),
 });

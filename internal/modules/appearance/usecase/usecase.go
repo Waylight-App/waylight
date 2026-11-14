@@ -16,6 +16,7 @@ type AppearanceResponse struct {
 	CustomCSS       string
 	GreetingName    string
 	Launcher        string
+	Profile         string
 }
 
 // UpdateAppearanceRequest is the input of UpdateAppearance.
@@ -27,6 +28,8 @@ type UpdateAppearanceRequest struct {
 	CustomCSS       string
 	GreetingName    string
 	Launcher        string
+	// Profile is "everyday" or "homelab" (#281); empty keeps the stored one.
+	Profile string
 }
 
 // GetAppearance returns the current preferences (input port).
@@ -48,7 +51,7 @@ type Repository interface {
 
 func toResponse(a domain.Appearance) AppearanceResponse {
 	return AppearanceResponse{Theme: string(a.Theme()), AccentColor: a.AccentColor(), BackgroundImage: a.BackgroundImage(), CustomCSS: a.CustomCSS(), Language: a.Language(),
-		GreetingName: a.GreetingName(), Launcher: string(a.Launcher())}
+		GreetingName: a.GreetingName(), Launcher: string(a.Launcher()), Profile: string(a.Profile())}
 }
 
 type getAppearance struct{ repo Repository }
@@ -81,6 +84,17 @@ func (uc *updateAppearance) Execute(ctx context.Context, req UpdateAppearanceReq
 	}
 	if err == nil {
 		err = a.SetLauncher(req.Launcher)
+	}
+	if err == nil {
+		profile := req.Profile
+		if profile == "" { // older clients do not send it
+			stored, lerr := uc.repo.Load(ctx)
+			if lerr != nil {
+				return AppearanceResponse{}, fmt.Errorf("load appearance: %w", lerr)
+			}
+			profile = string(stored.Profile())
+		}
+		err = a.SetProfile(profile)
 	}
 	if err != nil {
 		return AppearanceResponse{}, err

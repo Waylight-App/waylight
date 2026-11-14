@@ -4,6 +4,8 @@ package controller
 type SetupRequestDTO struct {
 	SetupToken string `json:"setupToken"`
 	Password   string `json:"password"`
+	// Profile is what the start page shows: "everyday" or "homelab" (#281).
+	Profile string `json:"profile,omitempty"`
 }
 
 // LoginRequestDTO is the body of POST /api/auth/login.

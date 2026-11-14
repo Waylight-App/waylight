@@ -4,6 +4,7 @@ export const section = defineSettingsSection({
   id: 'immich',
   label: 'settings.section.immich',
   module: 'immich',
+  homelab: true,
   load: () => import('../../features/immich').then((m) => m.ImmichSettings),
   props: (c) => ({ immich: c.immich }),
 });
