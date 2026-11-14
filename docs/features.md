@@ -32,7 +32,7 @@ modules in detail.
 | Weather (`weather`) | Forecast from Open-Meteo, no API key needed. In Germany also official DWD warnings, pollen forecast, UV index and a rain radar widget. |
 | Clock (`clock`) | Time and date, optionally in another time zone. |
 | Daily briefing (`briefing`) | Weather warnings, failures since last evening, offline services, due to-dos, appointments and waste collection in one widget, optionally pushed at a set time each morning. |
-| Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export. |
+| Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export, and a built-in catalogue of news sources by topic and language (Settings → Feeds → Browse catalogue; no outside request until you subscribe; [format](../web/src/features/rss/catalogue/README.md)). |
 | Public transport (`transit`) | Next departures of a stop with real-time delays, via [Transitous](https://transitous.org). |
 | Waste collection (`waste`) | Collection dates from your municipality's ICS calendar, by link or uploaded file; tomorrow's bin is highlighted. |
 | Holidays (`holidays`) | Public holidays of a German state, computed locally, and school holidays from an ICS link. [Details](modules/holidays.md) |
