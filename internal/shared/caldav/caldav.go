@@ -55,7 +55,17 @@ type Client struct{ HTTP *http.Client }
 
 // Do sends one authenticated request.
 func (c Client) Do(ctx context.Context, a Account, method, target string, body io.Reader, headers map[string]string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, method, target, body)
+	// Every address goes through the integration URL rules again: list
+	// addresses are owner-configured, but hrefs of principals and calendar
+	// homes come from the server's answers.
+	u, err := kernel.ParseTarget("url", target, kernel.WithTargetQuery())
+	if err != nil {
+		return nil, err
+	}
+	if strings.HasSuffix(strings.SplitN(target, "?", 2)[0], "/") {
+		u.Path += "/" // collections end with a slash; ParseTarget trims it
+	}
+	req, err := http.NewRequestWithContext(ctx, method, u.String(), body)
 	if err != nil {
 		return nil, fmt.Errorf("build request: %w", err)
 	}
