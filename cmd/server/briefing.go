@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"trisse-home/internal/modules"
+	"trisse-home/internal/modules/birthdays"
 	"trisse-home/internal/modules/briefing"
 	"trisse-home/internal/modules/calendar"
 	"trisse-home/internal/modules/services"
@@ -39,6 +40,8 @@ func briefingSources(registry *modules.Registry) briefing.Sources {
 			src.Services = serviceReader{m}
 		case *timeline.Module:
 			src.Incidents = incidentReader{m}
+		case *birthdays.Module:
+			src.Birthdays = birthdayReader{m}
 		}
 	}
 	return src
@@ -129,6 +132,25 @@ func (r collectionReader) Collections(ctx context.Context, until time.Time) ([]b
 				out = append(out, briefing.CollectionFact{Type: u.Style.Label, Day: time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC)})
 			}
 		}
+	}
+	return out, nil
+}
+
+type birthdayReader struct{ m *birthdays.Module }
+
+// briefingBirthdayDays covers today and tomorrow, like the waste section.
+const briefingBirthdayDays = 2
+
+// Birthdays implements the briefing's BirthdayReader.
+func (r birthdayReader) Birthdays(ctx context.Context) ([]briefing.BirthdayFact, error) {
+	list, err := r.m.Soon(ctx, briefingBirthdayDays)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]briefing.BirthdayFact, 0, len(list))
+	for _, u := range list {
+		d := u.Date
+		out = append(out, briefing.BirthdayFact{Name: u.Name, Age: u.Age, Day: time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC)})
 	}
 	return out, nil
 }

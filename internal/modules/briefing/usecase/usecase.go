@@ -82,6 +82,18 @@ type CollectionReader interface {
 	Collections(ctx context.Context, until time.Time) ([]CollectionFact, error)
 }
 
+// BirthdayFact is a birthday; Age is 0 when the year of birth is unknown.
+type BirthdayFact struct {
+	Name string
+	Day  time.Time // date
+	Age  int
+}
+
+// BirthdayReader lists the birthdays of today and tomorrow (#287).
+type BirthdayReader interface {
+	Birthdays(ctx context.Context) ([]BirthdayFact, error)
+}
+
 // ServiceFact is a service that is not online.
 type ServiceFact struct {
 	Name  string
@@ -136,6 +148,7 @@ type Sources struct {
 	Collection CollectionReader
 	Services   ServiceStatusReader
 	Incidents  IncidentReader
+	Birthdays  BirthdayReader
 }
 
 // Deps bundles the output ports. DefaultLat/Lon is the weather location
@@ -301,6 +314,22 @@ func (uc *briefing) readers(s Settings, now time.Time) map[domain.SectionKind]re
 			})
 		}
 	}
+	if src.Birthdays != nil {
+		out[domain.SectionBirthdays] = func(ctx context.Context) ([]domain.Item, error) {
+			facts, err := src.Birthdays.Birthdays(ctx)
+			return mapFacts(facts, err, func(f BirthdayFact) domain.Item {
+				text, detail := f.Name, "tomorrow"
+				if f.Age > 0 {
+					// The age is a bare number so the text needs no translation.
+					text = fmt.Sprintf("%s (%d)", f.Name, f.Age)
+				}
+				if !f.Day.After(today) {
+					detail = "today"
+				}
+				return domain.Item{Text: text, Detail: detail, At: f.Day}
+			})
+		}
+	}
 	if src.Services != nil {
 		out[domain.SectionServices] = func(ctx context.Context) ([]domain.Item, error) {
 			facts, err := src.Services.DownServices(ctx)
@@ -342,6 +371,7 @@ func (d Deps) available() []domain.SectionKind {
 		domain.SectionTodos: src.Todos != nil, domain.SectionEvents: src.Events != nil,
 		domain.SectionWarnings: src.Warnings != nil, domain.SectionWaste: src.Collection != nil,
 		domain.SectionServices: src.Services != nil, domain.SectionIncidents: src.Incidents != nil,
+		domain.SectionBirthdays: src.Birthdays != nil,
 	}
 	var out []domain.SectionKind
 	for _, k := range domain.DefaultOrder {

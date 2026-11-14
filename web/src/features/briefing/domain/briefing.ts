@@ -1,7 +1,7 @@
 import { t, type MessageKey } from '../../../shared/i18n';
 
 /** Parts of the briefing, in their default order (#52). */
-export const SECTION_KINDS = ['warnings', 'incidents', 'services', 'todos', 'events', 'waste'] as const;
+export const SECTION_KINDS = ['warnings', 'incidents', 'services', 'todos', 'events', 'waste', 'birthdays'] as const;
 export type SectionKind = (typeof SECTION_KINDS)[number];
 
 export type Severity = 'info' | 'warning' | 'critical';
@@ -61,6 +61,7 @@ const titles: Record<SectionKind, MessageKey> = {
   todos: 'briefing.section.todos',
   events: 'briefing.section.events',
   waste: 'briefing.section.waste',
+  birthdays: 'briefing.section.birthdays',
 };
 
 /** Heading of a section. */
@@ -74,6 +75,7 @@ export const SOURCE_WIDGETS: Record<SectionKind, string[]> = {
   todos: ['todos'],
   events: ['calendar'],
   waste: ['waste'],
+  birthdays: ['birthdays'],
 };
 
 /** Moves a layout entry by delta places; returns null at the edges. */
@@ -105,7 +107,7 @@ export function validateSettings(s: BriefingSettings): string | null {
   return null;
 }
 
-/** Markers the server sends as detail of to-dos and collections. */
+/** Markers the server sends as detail of to-dos, collections and birthdays. */
 const detailKeys: Record<string, MessageKey> = {
   overdue: 'briefing.detail.overdue',
   today: 'briefing.detail.today',
@@ -117,7 +119,7 @@ const detailKeys: Record<string, MessageKey> = {
  * translated, free text (locations, error messages) is shown as is.
  */
 export function itemDetail(kind: SectionKind, item: BriefingItem): string {
-  const key = kind === 'todos' || kind === 'waste' ? detailKeys[item.detail] : undefined;
+  const key = kind === 'todos' || kind === 'waste' || kind === 'birthdays' ? detailKeys[item.detail] : undefined;
   return key ? t(key) : item.detail;
 }
 
