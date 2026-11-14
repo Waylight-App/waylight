@@ -94,10 +94,12 @@ test('widgets can be moved and resized with the keyboard', async ({ page }) => {
 
   const clock = page.getByRole('group', { name: /^Clock, column 1, row 1/ });
   await clock.focus();
+  // The new place is announced through the app's shared live region (#257).
+  const live = page.locator('[aria-live="polite"][aria-atomic="true"]');
   await page.keyboard.press('ArrowRight');
-  await expect(page.getByText(/^Clock moved: column 2, row 1/)).toBeAttached();
+  await expect(live).toHaveText(/^Clock moved: column 2, row 1/);
   await page.keyboard.press('Shift+ArrowRight');
-  await expect(page.getByText(/^Clock resized: column 2, row 1, \d+ × \d+ cells/)).toBeAttached();
+  await expect(live).toHaveText(/^Clock resized: column 2, row 1, \d+ × \d+ cells/);
   await expect(page.getByRole('group', { name: /^Clock, column 2, row 1/ })).toBeFocused();
   await account(page, 'Done');
 
@@ -1435,7 +1437,21 @@ test('the drop zone shares text and files and serves files as downloads (#101)',
   expect(res.headers()['content-type']).toBe('application/octet-stream');
   expect(res.headers()['content-disposition']).toContain('attachment');
 
-  for (let i = 0; i < 2; i++) await page.getByRole('button', { name: 'Delete', exact: true }).first().click();
+  // Images get a thumbnail (#259), although the file is served as an attachment.
+  await page.getByLabel('File…').setInputFiles({
+    name: 'punkt.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64',
+    ),
+  });
+  const thumb = page.locator('li', { hasText: 'punkt.png' }).locator('img.thumb');
+  await expect(thumb).toBeVisible();
+  await expect.poll(() => thumb.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(1);
+  await expect(page.locator('li', { hasText: 'evil.html' }).locator('img')).toHaveCount(0);
+
+  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: 'Delete', exact: true }).first().click();
   await expect(page.getByText('Nothing here.', { exact: false })).toBeVisible();
 });
 

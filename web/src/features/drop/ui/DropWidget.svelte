@@ -2,7 +2,14 @@
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
-  import { type DropItem, EXPIRIES, type ExpiryHours, expiresIn, formatSize } from '../domain/drop';
+  import {
+    type DropItem,
+    EXPIRIES,
+    type ExpiryHours,
+    expiresIn,
+    formatSize,
+    isPreviewable,
+  } from '../domain/drop';
   import type { DropUseCases } from '../usecase/dropUseCases';
 
   /** The drop zone (#101): paste text or links, drop files, pick them up elsewhere. */
@@ -100,6 +107,9 @@
 <ul class="list">
   {#each items as i (i.id)}
     <li>
+      {#if i.kind === 'file' && isPreviewable(i.contentType)}
+        <img class="thumb" src={drop.fileUrl(i.id)} alt="" loading="lazy" width="48" height="48" />
+      {/if}
       <span class="what">
         {#if i.kind === 'link'}
           <a href={i.text} target="_blank" rel="noopener noreferrer" class="text">{i.text}</a>
@@ -196,5 +206,13 @@
   }
   .small {
     font-size: 0.8em;
+  }
+  .thumb {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: var(--radius-small);
+    background: var(--color-surface-2);
   }
 </style>

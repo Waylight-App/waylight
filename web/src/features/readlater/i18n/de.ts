@@ -12,8 +12,9 @@ export const de: Record<keyof typeof en, string> = {
   'readlater.after_days': 'nach {n} Tagen',
   'readlater.keep': 'nie',
   'readlater.import_pocket': 'Pocket-Export importieren …',
+  'readlater.import_instapaper': 'Instapaper-Export importieren …',
   'readlater.import_hint':
-    'Die CSV-Datei aus dem Pocket-Export. Die Links werden sofort übernommen; Lesekopien folgen im Hintergrund, einige alle fünf Minuten.',
+    'Die CSV-Datei aus dem Pocket- oder Instapaper-Export. Die Links werden sofort übernommen; Lesekopien folgen im Hintergrund, einige alle fünf Minuten.',
   'readlater.import_report':
     '{added} hinzugefügt, {duplicates} schon gespeichert, {invalid} nicht importierbar.',
   'readlater.import_too_large': 'Die Exportdatei darf höchstens 5 MB groß sein.',
