@@ -65,6 +65,9 @@ type Config struct {
 	// widget (#284): ECB reference rates and Stooq daily closes.
 	MarketsECBURL   string
 	MarketsStooqURL string
+	// ElectricityAPIURL is the aWATTar market data API (#288); "{tld}" is
+	// replaced by de or at.
+	ElectricityAPIURL string
 	// SpaceLaunchAPIURL and SpacePictureAPIURL are Launch Library 2 and NASA
 	// APOD for the space widget (#64).
 	SpaceLaunchAPIURL  string
@@ -162,6 +165,7 @@ func Load(getenv func(string) string) (Config, error) {
 		FuelAPIURL:               l.str("FUEL_API_URL", "https://creativecommons.tankerkoenig.de/json"),
 		MarketsECBURL:            l.str("MARKETS_ECB_URL", "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml"),
 		MarketsStooqURL:          l.str("MARKETS_STOOQ_URL", "https://stooq.com/q/d/l/"),
+		ElectricityAPIURL:        l.str("ELECTRICITY_API_URL", "https://api.awattar.{tld}/v1"),
 		SpaceLaunchAPIURL:        l.str("SPACE_LAUNCH_API_URL", "https://ll.thespacedevs.com/2.2.0/launch/upcoming/"),
 		SpacePictureAPIURL:       l.str("SPACE_APOD_API_URL", "https://api.nasa.gov/planetary/apod"),
 		WolBroadcast:             l.str("WOL_BROADCAST", "255.255.255.255:9"),

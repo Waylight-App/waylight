@@ -6,7 +6,7 @@ export const de: Record<keyof typeof en, string> = {
   'todos.changed_elsewhere':
     'Dieses To-do wurde inzwischen in der anderen App geändert. Jetzt wird dessen Stand angezeigt.',
   'todos.sources.intro':
-    'Zeige eine Aufgabenliste aus Nextcloud Tasks, Synology, Radicale, Baïkal, Fastmail oder einem anderen CalDAV-Server in einem To-do-Widget. Änderungen gehen in beide Richtungen; das Widget prüft jede Minute auf Änderungen.',
+    'Zeige eine Aufgabenliste aus Todoist, Nextcloud Tasks, Synology, Radicale, Baïkal, Fastmail oder einem anderen CalDAV-Server in einem To-do-Widget. Änderungen gehen in beide Richtungen; das Widget prüft jede Minute auf Änderungen.',
   'todos.sources.connected': 'Verbundene Listen',
   'todos.sources.none': 'Noch keine Liste verbunden.',
   'todos.sources.add': 'Liste verbinden',
@@ -29,6 +29,35 @@ export const de: Record<keyof typeof en, string> = {
   'todos.sources.login_needed': 'Benutzername und App-Passwort sind erforderlich.',
   'todos.sources.name_needed': 'Gib der Liste einen Namen.',
   'todos.sources.list': 'Liste',
+  'todos.sources.kind': 'Dienst',
+  'todos.sources.kind_caldav': 'CalDAV (Nextcloud, Synology, Radicale, …)',
+  'todos.sources.kind_todoist': 'Todoist',
+  'todos.sources.kind_microsoft': 'Microsoft To Do',
+  'todos.sources.kind_google': 'Google Tasks',
+  'todos.sources.kind_ticktick': 'TickTick',
+  'todos.sources.oauth_intro':
+    'Melde dich mit einer selbst registrierten App an, damit trisse-home ohne Dritte mit {service} spricht. Registriere diese Weiterleitungsadresse:',
+  'todos.sources.oauth_console': 'App-Registrierung von {service} öffnen',
+  'todos.sources.oauth_unavailable':
+    'Zum Anmelden muss PUBLIC_URL gesetzt sein, die https://-Adresse von trisse-home (siehe Konfiguration).',
+  'todos.sources.client_id': 'Client-ID',
+  'todos.sources.client_secret': 'Client-Secret',
+  'todos.sources.client_id_needed': 'Gib die Client-ID deiner App-Registrierung ein.',
+  'todos.sources.sign_in': 'Anmelden',
+  'todos.sources.signing_in': 'Warte auf die Anmeldung im anderen Fenster …',
+  'todos.sources.signed_in': 'Angemeldet. Wähle unten die Liste.',
+  'todos.sources.sign_in_failed':
+    'Die Anmeldung hat nicht geklappt. Prüfe Client-ID, Client-Secret und die Weiterleitungsadresse.',
+  'todos.sources.popup_blocked':
+    'Der Browser hat das Anmeldefenster blockiert. Erlaube Pop-ups für trisse-home und versuche es erneut.',
+  'todos.sources.token': 'API-Token',
+  'todos.sources.token_hint':
+    'In Todoist: Einstellungen → Integrationen → Entwickler → API-Token kopieren. Dann unten die Projekte suchen.',
+  'todos.sources.token_needed': 'Gib das Todoist-API-Token ein.',
+  'todos.sources.project': 'Projekt',
+  'todos.sources.project_needed': 'Suche deine Projekte und wähle eines.',
+  'todos.sources.limits_todoist':
+    'Todoist wird höchstens alle 15 Sekunden nach Änderungen gefragt. Wird eine wiederkehrende Todoist-Aufgabe erledigt, springt sie wie in den Todoist-Apps auf ihren nächsten Termin.',
   'todos.sources.local': 'Eingebaute Liste',
   'todos.sources.missing': 'Getrennte Liste',
   'todos.sources.widget_hint': 'Listen verbindest du unter Einstellungen → To-do-Listen.',

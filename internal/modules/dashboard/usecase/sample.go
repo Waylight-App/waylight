@@ -26,6 +26,12 @@ type SampleTab struct {
 	Widgets []SampleWidget
 }
 
+// EverydayLayout is the sample layout of the "everyday" start page (#281):
+// only the Home tab.
+func EverydayLayout(weatherConfig string) []SampleTab {
+	return SampleLayout(weatherConfig)[:1]
+}
+
 // SampleLayout returns the layout shown after the first setup. It presents
 // every widget kind; weatherConfig is the JSON configuration of the weather
 // widget (location chosen by the operator).

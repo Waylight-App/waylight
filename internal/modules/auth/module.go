@@ -32,8 +32,9 @@ type Config struct {
 	// SetupToken authorises the first setup. If empty, a random token is
 	// generated at start and written to the log.
 	SetupToken string
-	// OnAccountCreated runs after the first-run setup; may be nil.
-	OnAccountCreated func(ctx context.Context)
+	// OnAccountCreated runs after the first-run setup with the chosen
+	// start-page profile (#281); may be nil.
+	OnAccountCreated func(ctx context.Context, profile string)
 	// Demo enables the password-less demo login (DEMO_MODE).
 	Demo bool
 	// SSO configures single sign-on for the owner (ADR 0013).
@@ -87,12 +88,12 @@ func (a oidcAdapter) Exchange(ctx context.Context, code, verifier, nonce string)
 }
 
 // observerFunc adapts a function to usecase.SetupObserver.
-type observerFunc func(ctx context.Context)
+type observerFunc func(ctx context.Context, profile string)
 
 // AccountCreated implements usecase.SetupObserver.
-func (f observerFunc) AccountCreated(ctx context.Context) {
+func (f observerFunc) AccountCreated(ctx context.Context, profile string) {
 	if f != nil {
-		f(ctx)
+		f(ctx, profile)
 	}
 }
 

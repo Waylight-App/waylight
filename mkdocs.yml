@@ -64,6 +64,7 @@ nav:
           - AI summaries: modules/summary.md
           - Device display mode: modules/device.md
           - Drop zone: modules/drop.md
+          - Electricity prices: modules/electricity.md
           - Fuel prices: modules/fuel.md
           - Game deals: modules/gamedeals.md
           - Habits: modules/habits.md
@@ -78,7 +79,7 @@ nav:
           - Sonarr, Radarr, Prowlarr: modules/arr.md
           - Space: modules/space.md
           - Study progress: modules/study.md
-          - To-do lists (CalDAV): modules/todos.md
+          - To-do lists (CalDAV, Todoist, Microsoft, Google, TickTick): modules/todos.md
   - Run it:
       - Configuration: configuration.md
       - Host integrations: host-integrations.md

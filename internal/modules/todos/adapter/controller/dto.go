@@ -42,7 +42,9 @@ type ClearedDTO struct {
 }
 
 // SourceInputDTO is the body of POST/PUT /api/todos/settings/sources and of
-// .../discover. Kind is "caldav"; an empty password keeps the stored one.
+// .../discover. Kind is "caldav" (url, username, app password) or "todoist"
+// (API token as password, project as listId); an empty password keeps the
+// stored one.
 type SourceInputDTO struct {
 	ID       string `json:"id,omitempty"`
 	Name     string `json:"name"`
@@ -50,8 +52,30 @@ type SourceInputDTO struct {
 	URL      string `json:"url"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+	ListID   string `json:"listId,omitempty"`
+	// OAuthState names a finished sign-in (microsoft, google, ticktick; #171).
+	OAuthState string `json:"oauthState,omitempty"`
+}
+
+// OAuthInfoDTO is returned by GET /api/todos/settings/oauth.
+type OAuthInfoDTO struct {
+	// RedirectURL is the address to register at the provider; "" when
+	// PUBLIC_URL is not set and signing in is not available.
+	RedirectURL string `json:"redirectUrl"`
+}
+
+// OAuthStartDTO is returned by POST /api/todos/settings/oauth/start.
+type OAuthStartDTO struct {
+	URL   string `json:"url"`
+	State string `json:"state"`
+}
+
+// OAuthStatusDTO is returned by GET /api/todos/settings/oauth/state/{state}:
+// "pending", "ready" or "failed".
+type OAuthStatusDTO struct {
+	Status string `json:"status"`
 }
 
 func (d SourceInputDTO) toInput(id string) usecase.SourceInput {
-	return usecase.SourceInput{ID: id, Name: d.Name, Kind: d.Kind, URL: d.URL, Username: d.Username, Password: d.Password}
+	return usecase.SourceInput{ID: id, Name: d.Name, Kind: d.Kind, URL: d.URL, Username: d.Username, Password: d.Password, ListID: d.ListID, OAuthState: d.OAuthState}
 }

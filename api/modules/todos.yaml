@@ -53,7 +53,7 @@ paths:
         "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/TodoSource" } } } } }
     post:
       tags: [todos]
-      summary: Connect a CalDAV task list (the list is read once to test the connection)
+      summary: Connect a CalDAV task list or a Todoist project (the list is read once to test the connection)
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/TodoSourceInput" } } } }
       responses:
@@ -63,11 +63,11 @@ paths:
   /api/todos/settings/sources/discover:
     post:
       tags: [todos]
-      summary: Find the task lists of a CalDAV account (from the server's DAV address, the calendar home or a list); id may name a stored list whose password is used
+      summary: "Find the task lists of an account: CalDAV (from the server's DAV address, the calendar home or a list) or the Todoist projects of an API token; id may name a stored list whose password is used"
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/TodoSourceInput" } } } }
       responses:
-        "200": { description: OK, content: { application/json: { schema: { type: array, items: { type: object, properties: { url: { type: string }, name: { type: string } } } } } } }
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { type: object, properties: { url: { type: string }, listId: { type: string }, name: { type: string } } } } } } }
         "422": { $ref: "#/components/responses/Invalid" }
         "502": { description: The server refused the login or could not be read }
   /api/todos/settings/sources/{id}:
@@ -90,6 +90,41 @@ paths:
         "204": { description: Deleted }
         "404": { $ref: "#/components/responses/NotFound" }
 
+  /api/todos/settings/oauth:
+    get:
+      tags: [todos]
+      summary: "Signing in to Microsoft, Google and TickTick (#171): the redirect address to register; empty when PUBLIC_URL is not set"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { redirectUrl: { type: string } } } } } }
+  /api/todos/settings/oauth/start:
+    post:
+      tags: [todos]
+      summary: Start a sign-in with the user's own app registration (kind, username = client ID, password = client secret); open url in a new window
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/TodoSourceInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { url: { type: string }, state: { type: string } } } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/todos/settings/oauth/callback:
+    get:
+      tags: [todos]
+      summary: "Where the provider sends the browser back (public: the session cookie is SameSite=Strict; the unguessable state binds it). Answers a small HTML page"
+      security: []
+      parameters:
+        - { name: state, in: query, required: true, schema: { type: string } }
+        - { name: code, in: query, schema: { type: string } }
+        - { name: error, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Signed in, content: { text/html: { schema: { type: string } } } }
+        "502": { description: The sign-in failed or the state is unknown, content: { text/html: { schema: { type: string } } } }
+  /api/todos/settings/oauth/state/{state}:
+    get:
+      tags: [todos]
+      summary: State of a sign-in while the browser signs in
+      parameters: [{ name: state, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { status: { type: string, enum: [pending, ready, failed] } } } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
 
 schemas:
   TodoInput:
@@ -122,10 +157,12 @@ schemas:
     properties:
       id: { type: string, description: "Discover only: a stored list whose password is used when password is empty" }
       name: { type: string, maxLength: 80 }
-      kind: { type: string, enum: [caldav] }
-      url: { type: string, description: "The task list (a CalDAV calendar collection with VTODO); for discover also the DAV root" }
-      username: { type: string }
-      password: { type: string, description: "App password; stored encrypted with SECRET_KEY. Empty on update keeps the stored one" }
+      kind: { type: string, enum: [caldav, todoist, microsoft, google, ticktick] }
+      url: { type: string, description: "CalDAV: the task list (a calendar collection with VTODO); for discover also the DAV root. Todoist: unused" }
+      username: { type: string, description: "CalDAV only" }
+      password: { type: string, description: "CalDAV: app password; Todoist: API token. Stored encrypted with SECRET_KEY. Empty on update keeps the stored one" }
+      listId: { type: string, description: "Todoist, Microsoft, Google, TickTick: the project or list ID (from discover)" }
+      oauthState: { type: string, description: "Microsoft, Google, TickTick: the state of a finished sign-in (discover, create)" }
   TodoSource:
     type: object
     properties:
@@ -134,6 +171,7 @@ schemas:
       kind: { type: string }
       url: { type: string }
       username: { type: string }
+      listId: { type: string, description: "Todoist: the project ID" }
       capabilities:
         type: object
         description: What the list supports; the UI hides the rest

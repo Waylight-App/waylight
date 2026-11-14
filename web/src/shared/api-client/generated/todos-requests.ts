@@ -54,7 +54,9 @@ export interface ClearedDTO {
 }
 /**
  * SourceInputDTO is the body of POST/PUT /api/todos/settings/sources and of
- * .../discover. Kind is "caldav"; an empty password keeps the stored one.
+ * .../discover. Kind is "caldav" (url, username, app password) or "todoist"
+ * (API token as password, project as listId); an empty password keeps the
+ * stored one.
  */
 export interface SourceInputDTO {
   id?: string;
@@ -63,4 +65,33 @@ export interface SourceInputDTO {
   url: string;
   username: string;
   password: string;
+  listId?: string;
+  /**
+   * OAuthState names a finished sign-in (microsoft, google, ticktick; #171).
+   */
+  oauthState?: string;
+}
+/**
+ * OAuthInfoDTO is returned by GET /api/todos/settings/oauth.
+ */
+export interface OAuthInfoDTO {
+  /**
+   * RedirectURL is the address to register at the provider; "" when
+   * PUBLIC_URL is not set and signing in is not available.
+   */
+  redirectUrl: string;
+}
+/**
+ * OAuthStartDTO is returned by POST /api/todos/settings/oauth/start.
+ */
+export interface OAuthStartDTO {
+  url: string;
+  state: string;
+}
+/**
+ * OAuthStatusDTO is returned by GET /api/todos/settings/oauth/state/{state}:
+ * "pending", "ready" or "failed".
+ */
+export interface OAuthStatusDTO {
+  status: string;
 }

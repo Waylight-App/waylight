@@ -1,9 +1,11 @@
 import {
   type DiscoveredList,
   type Reminder,
+  type SourceKind,
   type Repeat,
   type Todo,
   type TodoSource,
+  isOAuthKind,
   validateSchedule,
 } from '../domain/todo';
 import { t } from '../../../shared/i18n';
@@ -81,13 +83,23 @@ export class TodosUseCases {
   }
 }
 
-/** A list to connect or change; an empty password keeps the stored one. */
+/**
+ * A list to connect or change; an empty password keeps the stored one.
+ * Todoist needs only the API token (password) and a project (listId).
+ */
 export interface SourceInput {
+  kind: SourceKind;
   name: string;
   url: string;
   username: string;
   password: string;
+  listId?: string;
+  /** A finished sign-in (OAuth kinds, #171). */
+  oauthState?: string;
 }
+
+/** State of a sign-in in the provider's window. */
+export type OAuthStatus = 'pending' | 'ready' | 'failed';
 
 /** Output port: connected external lists (#169). */
 export interface TodoSourcesGateway {
@@ -96,6 +108,10 @@ export interface TodoSourcesGateway {
   save(id: string, input: SourceInput): Promise<TodoSource>;
   delete(id: string): Promise<void>;
   discover(input: SourceInput & { id?: string }): Promise<DiscoveredList[]>;
+  /** Address to register at the provider; '' when PUBLIC_URL is not set. */
+  oauthRedirect(): Promise<string>;
+  startOAuth(input: SourceInput): Promise<{ url: string; state: string }>;
+  oauthStatus(state: string): Promise<OAuthStatus>;
 }
 
 /** Connecting external to-do lists (CalDAV, #169). */
@@ -110,14 +126,47 @@ export class TodoSourcesUseCases {
     return this.cached;
   }
 
+  /** The redirect address to register; '' = signing in is not available. */
+  oauthRedirect(): Promise<string> {
+    return this.gateway.oauthRedirect().catch(() => '');
+  }
+
+  /** Starts a sign-in; the caller opens the returned URL in a new window. */
+  async startOAuth(input: SourceInput): Promise<{ url: string; state: string }> {
+    if (!input.username.trim()) throw new Error(t('todos.sources.client_id_needed'));
+    return this.gateway.startOAuth({ ...input, username: input.username.trim() });
+  }
+
+  /**
+   * Waits until the sign-in in the other window has finished: asks every
+   * two seconds, for at most ten minutes or until stopped.
+   */
+  async waitForSignIn(
+    state: string,
+    stopped: () => boolean,
+    sleep: (ms: number) => Promise<void> = (ms) => new Promise((r) => setTimeout(r, ms)),
+  ): Promise<OAuthStatus> {
+    for (let i = 0; i < 300 && !stopped(); i++) {
+      const s = await this.gateway.oauthStatus(state);
+      if (s !== 'pending') return s;
+      await sleep(2000);
+    }
+    return 'pending';
+  }
+
   private check(input: SourceInput, needsPassword: boolean): void {
+    if (input.oauthState || isOAuthKind(input.kind)) return; // checked when signing in
+    if (input.kind === 'todoist') {
+      if (needsPassword && !input.password.trim()) throw new Error(t('todos.sources.token_needed'));
+      return;
+    }
     if (!/^https?:\/\/\S+/i.test(input.url.trim())) throw new Error(t('todos.sources.url_needed'));
     if (!input.username.trim() || (needsPassword && !input.password))
       throw new Error(t('todos.sources.login_needed'));
   }
 
   /** Finds the task lists of an account (from the DAV address or a list). */
-  discover(input: SourceInput, id = ''): Promise<DiscoveredList[]> {
+  async discover(input: SourceInput, id = ''): Promise<DiscoveredList[]> {
     this.check(input, !id);
     return this.gateway.discover({ ...input, url: input.url.trim(), ...(id ? { id } : {}) });
   }
@@ -125,6 +174,8 @@ export class TodoSourcesUseCases {
   async save(id: string, input: SourceInput): Promise<TodoSource> {
     if (!input.name.trim()) throw new Error(t('todos.sources.name_needed'));
     this.check(input, !id);
+    if ((input.kind === 'todoist' || isOAuthKind(input.kind)) && !input.listId)
+      throw new Error(t('todos.sources.project_needed'));
     const s = await this.gateway.save(id, { ...input, name: input.name.trim(), url: input.url.trim() });
     this.cached = null;
     return s;

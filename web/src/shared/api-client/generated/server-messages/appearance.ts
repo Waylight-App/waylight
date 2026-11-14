@@ -12,6 +12,7 @@ export const serverMessages = {
   srv_d55a4312396d903f: "The language must be en, de or empty (browser).",
   srv_64b6233c48b2792b: "The launcher shows both, services or bookmarks.",
   srv_a285cd5903e89e3c: "The scheme must be light or dark.",
+  srv_0b5bd2bd6b39fd9a: "The start page shows everyday topics or also the home network.",
   srv_911cd2bd497af69e: "The theme does not exist.",
   srv_02919e323edadf49: "The theme id must be 2–40 lowercase letters, digits or '-'.",
   srv_d28e94f3f2756a0b: "The theme must be system, light or dark.",

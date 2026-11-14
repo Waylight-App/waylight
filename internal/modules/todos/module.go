@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"time"
 
 	"trisse-home/internal/modules"
@@ -43,9 +44,12 @@ func (m *Module) SeedSampleData(ctx context.Context) error { return m.seed.Execu
 // notifications module, kind "reminder") in the server's time zone.
 // External lists (#169) use client for CalDAV and cipher for their
 // passwords.
-func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, alerts kernel.AlertSink, cipher gateway.Cipher, client *http.Client) *Module {
+// publicURL (PUBLIC_URL) enables signing in to Microsoft, Google and
+// TickTick (#171); nil leaves those kinds unavailable.
+func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, alerts kernel.AlertSink, cipher gateway.Cipher, client *http.Client, publicURL *url.URL) *Module {
 	d := usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids, Location: time.Local, Alerts: alerts,
-		Sources: gateway.NewSourceRepository(db, cipher), Providers: gateway.NewCalDAVProviders(client)}
+		Sources: gateway.NewSourceRepository(db, cipher), OAuth: newOAuthPort(client, publicURL, clock.Now)}
+	d.Providers = gateway.NewProviders(client, usecase.NewTokenSource(d))
 	list := usecase.NewListTodos(d)
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d),
 		reminders: usecase.NewSendDueReminders(d), list: list, handlers: controller.NewHandlers(controller.UseCases{
@@ -76,6 +80,13 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/todos/settings/sources/discover", h.DiscoverSources)
 	r.Protected("PUT /api/todos/settings/sources/{id}", h.UpdateSource)
 	r.Protected("DELETE /api/todos/settings/sources/{id}", h.DeleteSource)
+	r.Protected("GET /api/todos/settings/oauth", h.OAuthInfo)
+	r.Protected("POST /api/todos/settings/oauth/start", h.StartOAuth)
+	// Public: the session cookie is SameSite=Strict and does not come along
+	// on the provider's redirect. The unguessable state of a sign-in that a
+	// signed-in user started binds the answer, as in the SSO callback.
+	r.Public("GET "+CallbackPath, h.OAuthCallback)
+	r.Protected("GET /api/todos/settings/oauth/state/{state}", h.OAuthStatus)
 }
 
 // OpenTodos returns the open to-dos (read access for the briefing, wired

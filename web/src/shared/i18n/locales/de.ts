@@ -501,6 +501,15 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.password_at_least_12_characters': 'Passwort (mindestens 12 Zeichen)',
   'auth.repeat_password': 'Passwort wiederholen',
   'auth.create_account': 'Konto anlegen',
+  'auth.profile_question': 'Was soll deine Startseite zeigen?',
+  'auth.profile_everyday': 'Alltag',
+  'auth.profile_everyday_hint': 'Wetter, Kalender, To-dos, Nachrichten',
+  'auth.profile_homelab': 'Alltag und Heimnetz',
+  'auth.profile_homelab_hint': 'Auch deine eigenen Geräte und Dienste, zum Beispiel NAS, Docker, Pi-hole',
+  'auth.profile_unsure':
+    'Unsicher? Wähle „Alltag“. Du kannst das jederzeit unter Einstellungen → Darstellung ändern.',
+  'appearance.profile': 'Die Startseite zeigt',
+  'appearance.profile_hint': 'Blendet nur Widgets und Einstellungen ein oder aus; gelöscht wird nichts.',
   'auth.welcome_to_trisse_home': 'Willkommen bei trisse-home',
   'auth.two_factor_authentication_is_on': 'Die Zwei-Faktor-Anmeldung ist aktiv.',
   'auth.store_these_recovery_codes_in_a':

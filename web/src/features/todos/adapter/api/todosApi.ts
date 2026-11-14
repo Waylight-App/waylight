@@ -2,9 +2,23 @@ import type { HttpClient } from '../../../../shared/api-client/http';
 import type { TodoDTO } from '../../../../shared/api-client/generated/todos';
 import type { ClearedDTO, TodoInputDTO } from '../../../../shared/api-client/generated/todos-requests';
 import type { DiscoveredListDTO, SourceDTO } from '../../../../shared/api-client/generated/todos';
-import type { SourceInputDTO } from '../../../../shared/api-client/generated/todos-requests';
-import type { DiscoveredList, Reminder, Repeat, RepeatKind, Todo, TodoSource } from '../../domain/todo';
-import type { SourceInput, TodoSourcesGateway, TodosGateway } from '../../usecase/todosUseCases';
+import type {
+  OAuthInfoDTO,
+  OAuthStartDTO,
+  OAuthStatusDTO,
+  SourceInputDTO,
+} from '../../../../shared/api-client/generated/todos-requests';
+import {
+  type DiscoveredList,
+  type Reminder,
+  type Repeat,
+  type RepeatKind,
+  SOURCE_KINDS,
+  type SourceKind,
+  type Todo,
+  type TodoSource,
+} from '../../domain/todo';
+import type { OAuthStatus, SourceInput, TodoSourcesGateway, TodosGateway } from '../../usecase/todosUseCases';
 
 const toTodo = (d: TodoDTO): Todo => ({
   id: d.id,
@@ -72,9 +86,10 @@ const SOURCES = '/api/todos/settings/sources';
 const toSource = (d: SourceDTO): TodoSource => ({
   id: d.id,
   name: d.name,
-  kind: 'caldav',
+  kind: (SOURCE_KINDS as readonly string[]).includes(d.kind) ? (d.kind as SourceKind) : 'caldav',
   url: d.url,
   username: d.username,
+  listId: d.listId ?? '',
   capabilities: { ...d.capabilities },
 });
 
@@ -86,7 +101,7 @@ export class TodoSourcesApi implements TodoSourcesGateway {
     return (await this.http.get<SourceDTO[]>(SOURCES)).map(toSource);
   }
   async save(id: string, input: SourceInput): Promise<TodoSource> {
-    const body: SourceInputDTO = { ...input, kind: 'caldav' };
+    const body: SourceInputDTO = { ...input };
     return toSource(
       id
         ? await this.http.put<SourceDTO>(`${SOURCES}/${encodeURIComponent(id)}`, body)
@@ -96,8 +111,25 @@ export class TodoSourcesApi implements TodoSourcesGateway {
   delete(id: string): Promise<void> {
     return this.http.delete(`${SOURCES}/${encodeURIComponent(id)}`);
   }
+  async oauthRedirect(): Promise<string> {
+    return (await this.http.get<OAuthInfoDTO>('/api/todos/settings/oauth')).redirectUrl;
+  }
+  async startOAuth(input: SourceInput): Promise<{ url: string; state: string }> {
+    const body: SourceInputDTO = { ...input };
+    return { ...(await this.http.post<OAuthStartDTO>('/api/todos/settings/oauth/start', body)) };
+  }
+  async oauthStatus(state: string): Promise<OAuthStatus> {
+    const r = await this.http.get<OAuthStatusDTO>(
+      `/api/todos/settings/oauth/state/${encodeURIComponent(state)}`,
+    );
+    return r.status === 'ready' || r.status === 'failed' ? r.status : 'pending';
+  }
   async discover(input: SourceInput & { id?: string }): Promise<DiscoveredList[]> {
-    const body: SourceInputDTO = { ...input, kind: 'caldav' };
-    return (await this.http.post<DiscoveredListDTO[]>(`${SOURCES}/discover`, body)).map((l) => ({ ...l }));
+    const body: SourceInputDTO = { ...input };
+    return (await this.http.post<DiscoveredListDTO[]>(`${SOURCES}/discover`, body)).map((l) => ({
+      url: l.url,
+      listId: l.listId ?? '',
+      name: l.name,
+    }));
   }
 }
