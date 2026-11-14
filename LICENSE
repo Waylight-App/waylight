@@ -1,3 +1,10 @@
+trisse-home is published under two licences:
+
+- Everything inside the "ee/" directory is licensed under the Fair Core
+  License, Version 1.0, MIT Future License. See ee/LICENSE.md.
+- Everything outside the "ee/" directory is licensed under the MIT License
+  below.
+
 MIT License
 
 Copyright (c) 2026 The trisse-home contributors
