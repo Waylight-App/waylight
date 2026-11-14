@@ -45,7 +45,7 @@ func (m *Module) SeedSampleData(ctx context.Context) error { return m.seed.Execu
 // passwords.
 func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, alerts kernel.AlertSink, cipher gateway.Cipher, client *http.Client) *Module {
 	d := usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids, Location: time.Local, Alerts: alerts,
-		Sources: gateway.NewSourceRepository(db, cipher), Providers: gateway.NewCalDAVProviders(client)}
+		Sources: gateway.NewSourceRepository(db, cipher), Providers: gateway.NewProviders(client)}
 	list := usecase.NewListTodos(d)
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d),
 		reminders: usecase.NewSendDueReminders(d), list: list, handlers: controller.NewHandlers(controller.UseCases{

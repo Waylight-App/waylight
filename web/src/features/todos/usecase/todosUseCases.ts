@@ -1,6 +1,7 @@
 import {
   type DiscoveredList,
   type Reminder,
+  type SourceKind,
   type Repeat,
   type Todo,
   type TodoSource,
@@ -81,12 +82,17 @@ export class TodosUseCases {
   }
 }
 
-/** A list to connect or change; an empty password keeps the stored one. */
+/**
+ * A list to connect or change; an empty password keeps the stored one.
+ * Todoist needs only the API token (password) and a project (listId).
+ */
 export interface SourceInput {
+  kind: SourceKind;
   name: string;
   url: string;
   username: string;
   password: string;
+  listId?: string;
 }
 
 /** Output port: connected external lists (#169). */
@@ -111,13 +117,17 @@ export class TodoSourcesUseCases {
   }
 
   private check(input: SourceInput, needsPassword: boolean): void {
+    if (input.kind === 'todoist') {
+      if (needsPassword && !input.password.trim()) throw new Error(t('todos.sources.token_needed'));
+      return;
+    }
     if (!/^https?:\/\/\S+/i.test(input.url.trim())) throw new Error(t('todos.sources.url_needed'));
     if (!input.username.trim() || (needsPassword && !input.password))
       throw new Error(t('todos.sources.login_needed'));
   }
 
   /** Finds the task lists of an account (from the DAV address or a list). */
-  discover(input: SourceInput, id = ''): Promise<DiscoveredList[]> {
+  async discover(input: SourceInput, id = ''): Promise<DiscoveredList[]> {
     this.check(input, !id);
     return this.gateway.discover({ ...input, url: input.url.trim(), ...(id ? { id } : {}) });
   }
@@ -125,6 +135,7 @@ export class TodoSourcesUseCases {
   async save(id: string, input: SourceInput): Promise<TodoSource> {
     if (!input.name.trim()) throw new Error(t('todos.sources.name_needed'));
     this.check(input, !id);
+    if (input.kind === 'todoist' && !input.listId) throw new Error(t('todos.sources.project_needed'));
     const s = await this.gateway.save(id, { ...input, name: input.name.trim(), url: input.url.trim() });
     this.cached = null;
     return s;

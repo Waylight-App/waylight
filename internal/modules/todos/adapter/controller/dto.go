@@ -42,7 +42,9 @@ type ClearedDTO struct {
 }
 
 // SourceInputDTO is the body of POST/PUT /api/todos/settings/sources and of
-// .../discover. Kind is "caldav"; an empty password keeps the stored one.
+// .../discover. Kind is "caldav" (url, username, app password) or "todoist"
+// (API token as password, project as listId); an empty password keeps the
+// stored one.
 type SourceInputDTO struct {
 	ID       string `json:"id,omitempty"`
 	Name     string `json:"name"`
@@ -50,8 +52,9 @@ type SourceInputDTO struct {
 	URL      string `json:"url"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+	ListID   string `json:"listId,omitempty"`
 }
 
 func (d SourceInputDTO) toInput(id string) usecase.SourceInput {
-	return usecase.SourceInput{ID: id, Name: d.Name, Kind: d.Kind, URL: d.URL, Username: d.Username, Password: d.Password}
+	return usecase.SourceInput{ID: id, Name: d.Name, Kind: d.Kind, URL: d.URL, Username: d.Username, Password: d.Password, ListID: d.ListID}
 }

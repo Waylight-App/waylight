@@ -114,6 +114,16 @@ func TestSources(t *testing.T) {
 	if _, err := uc.Save(ctx, in); !errors.Is(err, domain.ErrTooManySources) {
 		t.Fatal("limit", err)
 	}
+	// Todoist: an API token and a project, no address or user.
+	delete(src.m, v.ID)
+	td, err := uc.Save(ctx, SourceInput{Name: "Inbox", Kind: "todoist", Password: "tok", ListID: "6Jf8VQXxpwv56VQ7"})
+	if err != nil || td.ListID != "6Jf8VQXxpwv56VQ7" || td.Kind != "todoist" || src.m[td.ID].Password != "tok" {
+		t.Fatalf("%+v %v", td, err)
+	}
+	if err := uc.Delete(ctx, td.ID); err != nil {
+		t.Fatal(err)
+	}
+	src.m[v.ID] = domain.Source{ID: v.ID}
 	if err := uc.Delete(ctx, v.ID); err != nil || src.m[v.ID].ID != "" {
 		t.Fatal(err)
 	}

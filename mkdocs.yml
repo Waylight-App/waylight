@@ -77,7 +77,7 @@ nav:
           - Sonarr, Radarr, Prowlarr: modules/arr.md
           - Space: modules/space.md
           - Study progress: modules/study.md
-          - To-do lists (CalDAV): modules/todos.md
+          - To-do lists (CalDAV, Todoist): modules/todos.md
   - Run it:
       - Configuration: configuration.md
       - Host integrations: host-integrations.md
