@@ -13,6 +13,7 @@ import (
 
 	"trisse-home/internal/modules/parcels/domain"
 	"trisse-home/internal/modules/parcels/usecase"
+	"trisse-home/internal/shared/imap"
 )
 
 // fakeIMAP is a scripted IMAP server: it records every command and fails
@@ -115,7 +116,7 @@ func (f *fakeIMAP) settings() domain.MailSettings {
 }
 
 func plainIMAP() *IMAP {
-	return &IMAP{dial: (&net.Dialer{}).DialContext, plain: true}
+	return &IMAP{client: imap.Client{Dial: (&net.Dialer{}).DialContext, Plain: true}}
 }
 
 const dhlMail = "From: DHL Paket <noreply@dhl.de>\r\nSubject: =?UTF-8?Q?Ihre_Sendung_von_B=C3=BCcher_Huber?=\r\nContent-Type: multipart/alternative; boundary=\"b1\"\r\n\r\n" +

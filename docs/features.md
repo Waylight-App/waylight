@@ -36,6 +36,7 @@ modules in detail.
 | Public transport (`transit`) | Next departures of a stop with real-time delays, via [Transitous](https://transitous.org). |
 | Waste collection (`waste`) | Collection dates from your municipality's ICS calendar, by link or uploaded file; tomorrow's bin is highlighted. |
 | Holidays (`holidays`) | Public holidays of a German state, computed locally, and school holidays from an ICS link. [Details](modules/holidays.md) |
+| Mail (`mail`) | Unread count and the newest unread messages of one or more IMAP inboxes; read-only, headers only. [Details](modules/mail.md) |
 | Parcels (`parcels`) | DHL tracking with your free API key; Hermes, DPD, GLS and UPS with a link to the carrier. Opt-in: find parcels in shipping e-mails ([guide](parcels-mail.md)). |
 | Fuel prices (`fuel`) | Cheapest open stations around a place, or your favourites, in Germany via Tankerkönig. [Details](modules/fuel.md) |
 | Markets (`markets`) | Watchlist of currencies (ECB), shares, indices and crypto (Stooq) with daily change and sparkline; no API key. [Details](modules/markets.md) |

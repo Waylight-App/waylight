@@ -1,0 +1,80 @@
+tags:
+  - name: mail
+
+paths:
+  /api/mail/inbox:
+    get:
+      tags: [mail]
+      summary: "Unread count and the ten newest unread messages (headers only: sender, subject, date) of one account or all accounts (#283). Read-only: EXAMINE and BODY.PEEK, nothing is marked as read. Cached for two minutes per account"
+      parameters: [{ name: account, in: query, schema: { type: string }, description: Account ID; omitted = all accounts }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  unread: { type: integer }
+                  messages: { type: array, items: { type: object, properties: { account: { type: string }, from: { type: string }, subject: { type: string }, date: { type: string, format: date-time } } } }
+                  webmailUrl: { type: string }
+                  failed: { type: array, items: { type: string }, description: Names of accounts that could not be read }
+        "404": { description: No account is set up yet, or the account does not exist }
+        "502": { description: No account could be read }
+  /api/mail/settings/accounts:
+    get:
+      tags: [mail]
+      summary: IMAP accounts of the mail widget (passwords are never returned)
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/MailAccount" } } } } }
+    post:
+      tags: [mail]
+      summary: Add an account (login and folder are tested first; at most 10)
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MailAccountInput" } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/MailAccount" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "502": { description: The server refused the login or could not be reached }
+  /api/mail/settings/accounts/{id}:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    put:
+      tags: [mail]
+      summary: Change an account; an empty password keeps the stored one
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MailAccountInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/MailAccount" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "502": { description: The server refused the login or could not be reached }
+    delete:
+      tags: [mail]
+      summary: Remove an account
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Deleted }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+schemas:
+  MailAccountInput:
+    type: object
+    required: [name, host, username]
+    properties:
+      name: { type: string, maxLength: 60 }
+      host: { type: string }
+      port: { type: integer, description: 0 = 993 }
+      username: { type: string }
+      password: { type: string, description: App password; stored encrypted with SECRET_KEY }
+      folder: { type: string, description: Empty = INBOX }
+      webmailUrl: { type: string, description: Opened by a click on the widget (optional) }
+  MailAccount:
+    type: object
+    properties:
+      id: { type: string }
+      name: { type: string }
+      host: { type: string }
+      port: { type: integer }
+      username: { type: string }
+      folder: { type: string }
+      webmailUrl: { type: string }

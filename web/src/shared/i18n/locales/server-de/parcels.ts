@@ -28,10 +28,4 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_e4cd1895823b2401: 'Sendungsnummern bestehen aus 8 bis 35 Buchstaben und Ziffern.',
   // Check the mailbox every 5 minutes to 24 hours.
   srv_cee130f3904d48b7: 'Prüfe das Postfach alle 5 Minuten bis 24 Stunden.',
-  // Enter the IMAP server name, e.g. imap.example.com.
-  srv_91809f90e8dfc4fb: 'Gib den Namen des IMAP-Servers ein, z. B. imap.example.com.',
-  // The port must be between 1 and 65535 (IMAP over TLS: 993).
-  srv_92285ba58a255b47: 'Der Port muss zwischen 1 und 65535 liegen (IMAP über TLS: 993).',
-  // User name, password and folder must not contain line breaks.
-  srv_b08dda17b8ef851b: 'Benutzername, Passwort und Ordner dürfen keine Zeilenumbrüche enthalten.',
 };
