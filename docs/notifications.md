@@ -23,9 +23,44 @@ Under *More channels* you can add:
 - **webhooks**, which receive a JSON message. If you set a secret, each
   request carries an `X-Trisse-Signature: sha256=…` header, an HMAC of the
   body, so the receiver can check that it came from trisse-home;
-- **e-mail** through an SMTP server.
+- **e-mail** through an SMTP server;
+- **Slack**, through an incoming webhook;
+- **Microsoft Teams**, through a Workflows webhook.
 
-All channel secrets are stored encrypted with `SECRET_KEY`.
+All channel secrets are stored encrypted with `SECRET_KEY`. For Slack and
+Teams the webhook address itself is the secret: it is never shown again
+after saving, and it is removed from error messages.
+
+### Slack
+
+1. In Slack, open the channel's settings → *Integrations* → *Add an app*
+   and add **Incoming Webhooks**, or create your own Slack app with incoming
+   webhooks at [api.slack.com/apps](https://api.slack.com/apps).
+2. Copy the webhook URL (`https://hooks.slack.com/services/…`).
+3. In trisse-home choose **+ Slack**, paste the URL and save. *Test* posts
+   a sample message.
+
+Messages show the title, the text, the importance and the alert type. With
+`PUBLIC_URL` set, they link back to the start page. Mentions such as
+`<!channel>` in a service name are escaped, so an alert never pings a whole
+channel.
+
+### Microsoft Teams
+
+The old Office 365 connectors ("Incoming Webhook" in a channel's
+connectors) were switched off by Microsoft. trisse-home uses the
+replacement, a Workflows webhook:
+
+1. In Teams, open the channel's **⋯** menu → **Workflows**.
+2. Choose the template **Post to a channel when a webhook request is
+   received**, give it a name, and pick the team and channel.
+3. Copy the address the workflow shows at the end.
+4. In trisse-home choose **+ Microsoft Teams**, paste the address and save.
+   *Test* posts a sample card.
+
+Messages arrive as an Adaptive Card with the title in the colour of the
+importance, the text and, with `PUBLIC_URL` set, an *Open trisse-home*
+button.
 
 ## What you are notified about
 

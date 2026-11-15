@@ -23,11 +23,11 @@ paths:
   /api/notifications/channels:
     get:
       tags: [notifications]
-      summary: Additional channels (Gotify, webhook, e-mail) without secrets
+      summary: Additional channels (Gotify, webhook, e-mail, Slack, Teams) without secrets; for Slack and Teams the webhook URL is the secret and is never returned
       responses: { "200": { description: OK } }
     post:
       tags: [notifications]
-      summary: Add a channel with minimum importance and optional alert types
+      summary: "Add a channel with minimum importance and optional alert types; kind gotify, webhook, email, slack (secret = https://hooks.slack.com/services/… URL) or teams (secret = https:// address of a Teams Workflows webhook)"
       responses: { "200": { description: Created } }
   /api/notifications/channels/{id}:
     put:

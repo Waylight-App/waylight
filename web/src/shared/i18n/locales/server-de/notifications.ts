@@ -28,8 +28,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_55663fc836edb6a7: 'Die Zertifikatswarnung muss zwischen 1 und 90 Tagen liegen.',
   // The channel does not exist.
   srv_e97962ce6df48c04: 'Der Kanal existiert nicht.',
-  // The channel type must be gotify, webhook or email.
-  srv_369ee646cdd39767: 'Die Kanalart muss gotify, webhook oder email sein.',
   // The disk threshold must be between 50 and 99 %.
   srv_1c6e2427a40c8139: 'Der Speicher-Schwellwert muss zwischen 50 und 99 % liegen.',
   // The maintenance window does not exist.
@@ -44,4 +42,11 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_53e6d03eb73e5456: 'Es gibt bereits 10 Kanäle.',
   // Unknown alert type {type}.
   srv_fc5b4d698d5d3c6f: 'Unbekannte Benachrichtigungsart {type}.',
+  // Paste the Slack webhook URL; it starts with https://hooks.slack.com/services/.
+  srv_c0e9b689d32a723e: 'Füge die Slack-Webhook-URL ein; sie beginnt mit https://hooks.slack.com/services/.',
+  // Paste the https:// address of the Teams workflow (trigger: when a Teams webhook request is received).
+  srv_138e19899f7b394a:
+    'Füge die https://-Adresse des Teams-Workflows ein (Auslöser: wenn eine Teams-Webhookanforderung empfangen wird).',
+  // The channel type must be gotify, webhook, email, slack or teams.
+  srv_6b04c0c71a64ec19: 'Der Kanaltyp muss gotify, webhook, email, slack oder teams sein.',
 };
