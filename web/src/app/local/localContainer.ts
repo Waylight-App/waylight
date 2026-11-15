@@ -25,6 +25,7 @@ export function createLocalContainer(store: DocumentStore = new IndexedDbDocumen
   const base = createContainer(() => undefined);
   return {
     ...base,
+    localMode: true,
     auth: new AuthUseCases(new LocalAuthGateway(), noCsrf),
     dashboard: new DashboardUseCases(new LocalDashboardGateway(store)),
     appearance: new AppearanceUseCases(new LocalAppearanceGateway(store)),

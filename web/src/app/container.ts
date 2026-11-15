@@ -81,6 +81,11 @@ import type { ServiceFactory, Services } from './serviceKit';
  */
 export interface Container extends Services {
   http: FetchHttpClient;
+  /**
+   * True in the browser extension's local mode (ADR 0019): no server, only
+   * the modules of app/local/modules.ts. The UI then says what a server adds.
+   */
+  localMode: boolean;
   /** Outbox of to-do and note changes made offline (#80). */
   offline: OfflineSync;
   auth: AuthUseCases;
@@ -148,6 +153,7 @@ export function createContainer(onUnauthorized: () => void): Container {
   const todoLists = new Map<string, TodosUseCases>();
   const c: Omit<Container, 'quickActions'> = {
     ...createRegisteredServices(http),
+    localMode: false,
     http,
     auth: new AuthUseCases(new AuthApi(http), http, new BrowserPasskeys()),
     dashboard: new DashboardUseCases(new DashboardApi(http)),

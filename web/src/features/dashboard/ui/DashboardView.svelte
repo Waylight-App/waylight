@@ -61,6 +61,8 @@
      * the tab background is a plain URL prompt.
      */
     onbackground?: (tab: Tab) => void;
+    /** Extra content below the widget picker, e.g. what a server adds (#291). */
+    pickerFooter?: Snippet;
   }
   let {
     uc,
@@ -76,6 +78,7 @@
     onedit,
     ondone,
     onbackground,
+    pickerFooter,
   }: Props = $props();
 
   const ACTIVE_TAB_KEY = 'trisse-home.activeTab';
@@ -550,7 +553,13 @@
 {/if}
 
 {#if dialog?.kind === 'add-widget'}
-  <WidgetPicker types={widgetTypes} icon={widgetIcon} onpick={addWidget} onclose={() => (dialog = null)} />
+  <WidgetPicker
+    types={widgetTypes}
+    icon={widgetIcon}
+    onpick={addWidget}
+    onclose={() => (dialog = null)}
+    footer={pickerFooter}
+  />
 {:else if dialog?.kind === 'new-tab'}
   <NewTabDialog
     {uc}

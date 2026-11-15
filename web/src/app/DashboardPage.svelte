@@ -99,6 +99,7 @@
   {onedit}
   {ondone}
   onbackground={container.auth.guest ? undefined : (tab) => (pickerTab = tab)}
+  pickerFooter={container.localMode ? fullVersionHint : undefined}
 >
   {#snippet content(widget: Widget)}
     {@const def = definitionFor(widget.kind)}
@@ -123,6 +124,13 @@
     {/if}
   {/snippet}
 </DashboardView>
+
+{#snippet fullVersionHint()}
+  <!-- Local mode of the extension (#291): say what a server adds. -->
+  {#await import('./local/FullVersionHint.svelte') then { default: FullVersionHint }}
+    <FullVersionHint variant="short" />
+  {/await}
+{/snippet}
 
 {#if pickerTab}
   {@const tab = pickerTab}

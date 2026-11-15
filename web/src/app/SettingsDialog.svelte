@@ -109,6 +109,7 @@
     { id: 'kiosks', label: 'settings.section.kiosks', group: 'account' },
     { id: 'security-log', label: 'settings.section.security_log', group: 'account' },
     { id: 'about', label: 'settings.section.about', module: 'system', group: 'about' },
+    { id: 'full-version', label: 'settings.section.full_version', group: 'about' },
   ];
   const sections: Section[] = [...ownSections, ...registeredSections];
   /** Guests only manage their own account (ADR 0012). */
@@ -123,6 +124,8 @@
   const personal = (module: string) =>
     dataKinds[module] === 'personal-content' || dataKinds[module] === 'personal-settings';
   const allowed = (s: Section) => {
+    // What a server adds (#291) only makes sense in the extension's local mode.
+    if (s.id === 'full-version') return container.localMode;
     if (container.auth.guest) return guestSections.has(s.id);
     if (container.auth.member)
       return s.module ? personal(s.module) && !memberHidden.has(s.id) : memberSections.has(s.id);
@@ -228,6 +231,10 @@
       {:else if current === 'members'}
         {#await import('../features/auth/ui/MembersSettings.svelte') then { default: MembersSettings }}
           <MembersSettings auth={container.auth} />
+        {/await}
+      {:else if current === 'full-version'}
+        {#await import('./local/FullVersionHint.svelte') then { default: FullVersionHint }}
+          <FullVersionHint variant="full" />
         {/await}
       {:else if current === 'invites'}
         {#await import('../features/auth/ui/InvitesSettings.svelte') then { default: InvitesSettings }}
