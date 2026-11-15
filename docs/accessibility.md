@@ -8,7 +8,8 @@ trisse-home aims for **WCAG 2.2 level AA** (#113). Everything can be used with a
   - login, dashboard and edit mode;
   - the widget picker and the shortcuts overview;
   - **every settings section**;
-  - the dashboard in dark mode.
+  - the new-tab, tab rules and widget settings dialogs, the tab menu and the background picker;
+  - the dashboard in dark mode and on a phone.
 
   A new violation fails CI.
 
@@ -53,7 +54,7 @@ With _reduce motion_ switched on in the operating system:
 
 ## Known limitations
 
-- **Not yet audited manually with NVDA, JAWS or VoiceOver.** Automated checks find roughly a third of WCAG problems. Findings from a manual audit will be tracked as sub-issues of #113.
+- **Not yet audited manually with NVDA, JAWS or VoiceOver.** Automated checks find roughly a third of WCAG problems. The manual audit is tracked in #354; findings become issues of their own.
 - Charts (sparklines, heatmaps, radar) show their key values as text. The radar image itself has no text alternative beyond its title.
 - Custom CSS and imported themes can lower the contrast. Only the built-in themes are checked.
 
