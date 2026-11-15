@@ -77,6 +77,21 @@ func TestMemberAccess(t *testing.T) {
 	m.do(http.MethodGet, "/api/notes/"+ownerNote["id"].(string), nil, http.StatusOK)
 	m.do(http.MethodPut, "/api/notes/"+ownerNote["id"].(string), obj{"title": "Hijacked", "body": "y"}, http.StatusForbidden)
 	m.do(http.MethodDelete, "/api/notes/"+ownerNote["id"].(string), nil, http.StatusForbidden)
+	// To-dos follow the same rules.
+	var memberTodo, ownerTodo obj
+	m.json(http.MethodPost, "/api/todos", obj{"title": "Member task"}, http.StatusCreated, &memberTodo)
+	owner.json(http.MethodPost, "/api/todos", obj{"title": "Family task"}, http.StatusCreated, &ownerTodo)
+	var ownerTodos []obj
+	owner.json(http.MethodGet, "/api/todos", nil, http.StatusOK, &ownerTodos)
+	for _, td := range ownerTodos {
+		if td["id"] == memberTodo["id"] {
+			t.Fatal("the owner sees the member's private to-do")
+		}
+	}
+	m.do(http.MethodPut, "/api/todos/"+ownerTodo["id"].(string), obj{"title": "Hijacked"}, http.StatusForbidden)
+	m.do(http.MethodDelete, "/api/todos/"+ownerTodo["id"].(string), nil, http.StatusForbidden)
+	owner.do(http.MethodDelete, "/api/todos/"+memberTodo["id"].(string), nil, http.StatusNotFound)
+
 	var hits []obj
 	owner.json(http.MethodGet, "/api/notes/search?q=secret", nil, http.StatusOK, &hits)
 	if len(hits) != 0 {
