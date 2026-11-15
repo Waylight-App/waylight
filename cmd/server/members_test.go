@@ -20,6 +20,15 @@ func TestMembersStayOff(t *testing.T) {
 		t.Fatalf("members must be off: %v", list)
 	}
 	owner.do(http.MethodPost, "/api/auth/members", obj{"name": "ben", "password": "member-password-1"}, http.StatusConflict)
+
+	// The interface learns who owns each module's data (ADR 0018).
+	var info struct {
+		DataKinds map[string]string `json:"dataKinds"`
+	}
+	owner.json(http.MethodGet, "/api/modules", nil, http.StatusOK, &info)
+	if info.DataKinds["notes"] != "personal-content" || info.DataKinds["appearance"] != "personal-settings" || info.DataKinds["services"] != "instance" {
+		t.Fatalf("data kinds: %v", info.DataKinds)
+	}
 }
 
 // TestMemberAccess checks the guard for members (#294) with members switched

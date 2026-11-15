@@ -13,6 +13,10 @@ export interface AuthStatus {
   guest: boolean;
   /** Kiosk display (#50): no controls, rotation, night dimming. */
   kiosk: boolean;
+  /** Admin of the instance (today the owner, ADR 0018). */
+  admin: boolean;
+  /** Member: own tabs and content, no instance settings (#294). */
+  member: boolean;
   /** Available sign-in methods (ADR 0013). */
   sso: { oidc: boolean; header: boolean; localLogin: boolean };
 }
@@ -35,6 +39,29 @@ export interface Guest {
   tabs: string[];
   disabled: boolean;
   createdAt: Date;
+}
+
+/** A member account as managed by an admin (#294). */
+export interface Member {
+  id: string;
+  name: string;
+  groups: string[];
+  disabled: boolean;
+  createdAt: Date;
+}
+
+/** The members and whether new ones can be created in this version. */
+export interface MemberList {
+  available: boolean;
+  members: Member[];
+}
+
+/** A group that records can be shared with (ADR 0018). */
+export interface Group {
+  id: string;
+  name: string;
+  /** IDs of the members and guests in the group. */
+  accounts: string[];
 }
 
 /** Guest names: 2–32 lowercase letters, digits, dots, dashes, underscores. */

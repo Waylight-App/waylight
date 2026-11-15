@@ -11,6 +11,9 @@ import type {
   TwoFactorStatusDTO,
   CreatedTokenDTO,
   GuestDTO,
+  GroupDTO,
+  MemberDTO,
+  MembersDTO,
   KioskCreatedDTO,
   KioskDTO,
   KioskLinkDTO,
@@ -25,6 +28,8 @@ import type {
   ChangePasswordRequestDTO,
   DisableTwoFactorDTO,
   GuestRequestDTO,
+  GroupRequestDTO,
+  MemberRequestDTO,
   LoginRequestDTO,
   PasskeyLoginDTO,
   PasskeyRegistrationDTO,
@@ -43,7 +48,17 @@ import type {
   PasskeyRegistrationOptions,
   SecondFactorChallenge,
 } from '../../domain/passkey';
-import type { AuthStatus, Guest, KioskDisplay, KioskInput, KioskOptions, Session } from '../../domain/auth';
+import type {
+  AuthStatus,
+  Group,
+  Guest,
+  KioskDisplay,
+  KioskInput,
+  KioskOptions,
+  Member,
+  MemberList,
+  Session,
+} from '../../domain/auth';
 import type { TwoFactorEnrollment, TwoFactorStatus } from '../../domain/twoFactor';
 import type { SecurityEvent } from '../../domain/securityEvent';
 import type { SessionInfo } from '../../domain/session';
@@ -66,6 +81,16 @@ const toKiosk = (d: KioskDTO): KioskDisplay => ({
   lastUsedAt: d.lastUsedAt ? new Date(d.lastUsedAt) : null,
 });
 
+const toMember = (d: MemberDTO): Member => ({
+  id: d.id,
+  name: d.name,
+  groups: d.groups,
+  disabled: d.disabled,
+  createdAt: new Date(d.createdAt),
+});
+
+const toGroup = (d: GroupDTO): Group => ({ id: d.id, name: d.name, accounts: d.accounts });
+
 /** AuthGateway implementation backed by the REST API. */
 export class AuthApi implements AuthGateway {
   constructor(private readonly http: HttpClient) {}
@@ -79,6 +104,8 @@ export class AuthApi implements AuthGateway {
       demo: dto.demo,
       guest: dto.role === 'guest' || dto.role === 'kiosk',
       kiosk: dto.role === 'kiosk',
+      admin: dto.role === 'owner',
+      member: dto.role === 'member',
       sso: dto.sso ?? { oidc: false, header: false, localLogin: true },
     };
   }
@@ -159,6 +186,43 @@ export class AuthApi implements AuthGateway {
 
   deleteGuest(id: string): Promise<void> {
     return this.http.delete(`/api/auth/guests/${encodeURIComponent(id)}`);
+  }
+
+  async members(): Promise<MemberList> {
+    const r = await this.http.get<MembersDTO>('/api/auth/members');
+    return { available: r.available, members: r.members.map(toMember) };
+  }
+
+  async createMember(name: string, password: string): Promise<Member> {
+    const body: MemberRequestDTO = { name, password, disabled: false };
+    return toMember(await this.http.post<MemberDTO>('/api/auth/members', body));
+  }
+
+  async updateMember(id: string, disabled: boolean, password: string): Promise<Member> {
+    const body: MemberRequestDTO = { disabled, ...(password ? { password } : {}) };
+    return toMember(await this.http.put<MemberDTO>(`/api/auth/members/${encodeURIComponent(id)}`, body));
+  }
+
+  deleteMember(id: string): Promise<void> {
+    return this.http.delete(`/api/auth/members/${encodeURIComponent(id)}`);
+  }
+
+  async groups(): Promise<Group[]> {
+    return (await this.http.get<GroupDTO[]>('/api/auth/groups')).map(toGroup);
+  }
+
+  async createGroup(name: string, accounts: string[]): Promise<Group> {
+    const body: GroupRequestDTO = { name, accounts };
+    return toGroup(await this.http.post<GroupDTO>('/api/auth/groups', body));
+  }
+
+  async updateGroup(id: string, name: string, accounts: string[]): Promise<Group> {
+    const body: GroupRequestDTO = { name, accounts };
+    return toGroup(await this.http.put<GroupDTO>(`/api/auth/groups/${encodeURIComponent(id)}`, body));
+  }
+
+  deleteGroup(id: string): Promise<void> {
+    return this.http.delete(`/api/auth/groups/${encodeURIComponent(id)}`);
   }
 
   async kiosks(): Promise<KioskDisplay[]> {
