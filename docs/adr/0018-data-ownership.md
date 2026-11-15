@@ -1,6 +1,6 @@
 # ADR 0018: Data ownership for several full accounts
 
-- Status: Proposed
+- Status: Accepted (2026-11-15, by the maintainer)
 - Date: 2026-11-15
 - Issue: [#293](https://github.com/itadori26/trisse-home/issues/293), part of [#292](https://github.com/itadori26/trisse-home/issues/292)
 - Extends: [ADR 0012](0012-owner-and-guest-roles.md)
