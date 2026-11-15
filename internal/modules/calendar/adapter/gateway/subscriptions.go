@@ -8,12 +8,22 @@ import (
 	"time"
 
 	"trisse-home/internal/modules/calendar/domain"
+	"trisse-home/internal/shared/kernel"
+	"trisse-home/internal/shared/sqlutil"
 )
 
 // SubscriptionRepository stores ICS subscriptions with encrypted URLs.
 type SubscriptionRepository struct {
 	db     *sql.DB
 	cipher Cipher
+}
+
+// mine is the condition for the calendars of the account whose settings
+// apply (ADR 0018): an account's own, and the admin's for guests, kiosk
+// displays and background work. There is no fallback from a member to the
+// admin's calendars; they are private.
+func mine(ctx context.Context) (string, []any) {
+	return sqlutil.OwnedBy(kernel.PrincipalFor(kernel.PrincipalFrom(ctx).SettingsAccount()), "")
 }
 
 // NewSubscriptionRepository returns a repository backed by db.
@@ -40,7 +50,9 @@ func (r *SubscriptionRepository) scan(row interface{ Scan(...any) error }) (doma
 
 // List implements usecase.SubscriptionRepository in creation order.
 func (r *SubscriptionRepository) List(ctx context.Context) ([]domain.Subscription, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+subscriptionColumns+` FROM calendar_subscriptions ORDER BY position, name`)
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT `+subscriptionColumns+` FROM calendar_subscriptions WHERE `+cond+` ORDER BY position, name`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query subscriptions: %w", err)
 	}
@@ -58,7 +70,8 @@ func (r *SubscriptionRepository) List(ctx context.Context) ([]domain.Subscriptio
 
 // Get implements usecase.SubscriptionRepository.
 func (r *SubscriptionRepository) Get(ctx context.Context, id string) (domain.Subscription, error) {
-	s, err := r.scan(r.db.QueryRowContext(ctx, `SELECT `+subscriptionColumns+` FROM calendar_subscriptions WHERE id = ?`, id))
+	cond, args := mine(ctx)
+	s, err := r.scan(r.db.QueryRowContext(ctx, `SELECT `+subscriptionColumns+` FROM calendar_subscriptions WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Subscription{}, domain.ErrSubscriptionNotFound
 	}
@@ -71,11 +84,14 @@ func (r *SubscriptionRepository) Save(ctx context.Context, s domain.Subscription
 	if err != nil {
 		return fmt.Errorf("encrypt subscription URL: %w", err)
 	}
-	_, err = r.db.ExecContext(ctx, `INSERT INTO calendar_subscriptions (id, name, url_encrypted, color, refresh_minutes, position)
-		VALUES (?, ?, ?, ?, ?, (SELECT COALESCE(MAX(position), -1) + 1 FROM calendar_subscriptions))
+	cond, args := mine(ctx)
+	owned, ownedArgs := sqlutil.OwnedBy(kernel.PrincipalFor(kernel.PrincipalFrom(ctx).SettingsAccount()), "calendar_subscriptions")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	_, err = r.db.ExecContext(ctx, `INSERT INTO calendar_subscriptions (id, name, url_encrypted, color, refresh_minutes, position, owner_id)
+		VALUES (?, ?, ?, ?, ?, (SELECT COALESCE(MAX(position), -1) + 1 FROM calendar_subscriptions WHERE `+cond+`), ?)
 		ON CONFLICT (id) DO UPDATE SET name = excluded.name, url_encrypted = excluded.url_encrypted, color = excluded.color,
-			refresh_minutes = excluded.refresh_minutes`,
-		s.ID, s.Name, enc, s.Color, int(s.RefreshInterval/time.Minute))
+			refresh_minutes = excluded.refresh_minutes WHERE `+owned,
+		append(append(append([]any{s.ID, s.Name, enc, s.Color, int(s.RefreshInterval / time.Minute)}, args...), kernel.PrincipalFrom(ctx).SettingsAccount()), ownedArgs...)...)
 	if err != nil {
 		return fmt.Errorf("upsert subscription: %w", err)
 	}
@@ -84,7 +100,9 @@ func (r *SubscriptionRepository) Save(ctx context.Context, s domain.Subscription
 
 // Delete implements usecase.SubscriptionRepository.
 func (r *SubscriptionRepository) Delete(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM calendar_subscriptions WHERE id = ?`, id); err != nil {
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM calendar_subscriptions WHERE id = ? AND `+cond, append([]any{id}, args...)...); err != nil {
 		return fmt.Errorf("delete subscription: %w", err)
 	}
 	return nil

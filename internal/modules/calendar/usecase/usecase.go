@@ -140,15 +140,44 @@ type calendar struct {
 	oauth    OAuth
 	acc      accountState
 	mu       sync.RWMutex
-	cached   *AgendaResponse
-	// window is the period covered by cached.
+	// agendas caches the agenda per account whose calendars apply
+	// (kernel.Principal.SettingsAccount, ADR 0018).
+	agendas map[string]*agendaCache
+}
+
+// agendaCache is the cached agenda of one account and the period it covers.
+type agendaCache struct {
+	cached               *AgendaResponse
 	windowFrom, windowTo time.Time
+}
+
+// cacheOf returns the agenda cache of the principal's account, creating it;
+// the caller holds uc.mu for writing.
+func (uc *calendar) cacheOf(ctx context.Context) *agendaCache {
+	key := kernel.PrincipalFrom(ctx).SettingsAccount()
+	c := uc.agendas[key]
+	if c == nil {
+		c = &agendaCache{}
+		uc.agendas[key] = c
+	}
+	return c
+}
+
+// snapshot reads the principal's cached agenda and its window.
+func (uc *calendar) snapshot(ctx context.Context) (*AgendaResponse, time.Time, time.Time) {
+	uc.mu.RLock()
+	defer uc.mu.RUnlock()
+	c := uc.agendas[kernel.PrincipalFrom(ctx).SettingsAccount()]
+	if c == nil {
+		return nil, time.Time{}, time.Time{}
+	}
+	return c.cached, c.windowFrom, c.windowTo
 }
 
 // NewCalendar returns the calendar use cases.
 func NewCalendar(d Deps) Service {
 	return &calendar{repo: d.Repo, source: d.Source, writer: d.Writer, subs: d.Subscriptions, feeds: d.Feeds, ids: d.IDs, clock: d.Clock,
-		accounts: d.Accounts, api: d.API, oauth: d.OAuth, acc: accountState{pending: map[string]*pendingSignIn{}}}
+		accounts: d.Accounts, api: d.API, oauth: d.OAuth, acc: accountState{pending: map[string]*pendingSignIn{}}, agendas: map[string]*agendaCache{}}
 }
 
 // sourceSet is everything the agenda is built from.
@@ -260,17 +289,13 @@ func (uc *calendar) Upcoming(ctx context.Context, days int) (AgendaResponse, err
 		days = DefaultDays
 	}
 	days = min(days, MaxDays)
-	uc.mu.RLock()
-	cached := uc.cached
-	uc.mu.RUnlock()
+	cached, _, _ := uc.snapshot(ctx)
 	if cached == nil {
 		if _, err := uc.sources(ctx); err != nil {
 			return AgendaResponse{}, err
 		}
 		_ = uc.Refresh(ctx) // errors are reported through AgendaResponse.Error
-		uc.mu.RLock()
-		cached = uc.cached
-		uc.mu.RUnlock()
+		cached, _, _ = uc.snapshot(ctx)
 		if cached == nil {
 			return AgendaResponse{}, kernel.NewPublicError(kernel.ErrUnavailable, "The calendar server is not reachable.")
 		}
@@ -296,9 +321,7 @@ func (uc *calendar) Range(ctx context.Context, from, to time.Time) (AgendaRespon
 	if err != nil {
 		return AgendaResponse{}, err
 	}
-	uc.mu.RLock()
-	cached, wFrom, wTo := uc.cached, uc.windowFrom, uc.windowTo
-	uc.mu.RUnlock()
+	cached, wFrom, wTo := uc.snapshot(ctx)
 	agenda := cached
 	if cached == nil || from.Before(wFrom) || to.After(wTo) {
 		live, err := uc.fetchRange(ctx, src, from, to)
@@ -353,12 +376,34 @@ func (uc *calendar) CreateEvent(ctx context.Context, in NewEventInput) (EventVie
 		Start: e.Start, End: e.End, AllDay: e.AllDay}, nil
 }
 
-// Refresh implements Calendar; it is run by the background job.
+// Refresh implements Calendar. For a request it reloads the principal's
+// agenda; the background job (the system) reloads the admin's and every
+// account's agenda that was asked for since the start.
 func (uc *calendar) Refresh(ctx context.Context) error {
+	if !kernel.PrincipalFrom(ctx).IsSystem() {
+		return uc.refreshOne(ctx)
+	}
+	uc.mu.RLock()
+	accounts := []string{kernel.SystemAccountID}
+	for key := range uc.agendas {
+		if key != kernel.SystemAccountID {
+			accounts = append(accounts, key)
+		}
+	}
+	uc.mu.RUnlock()
+	var errs []error
+	for _, a := range accounts {
+		errs = append(errs, uc.refreshOne(kernel.WithPrincipal(ctx, kernel.PrincipalFor(a))))
+	}
+	return errors.Join(errs...)
+}
+
+// refreshOne reloads the agenda of the principal's account.
+func (uc *calendar) refreshOne(ctx context.Context) error {
 	src, err := uc.sources(ctx)
 	if errors.Is(err, domain.ErrNotConfigured) {
 		uc.mu.Lock()
-		uc.cached = nil // the last source was removed
+		uc.cacheOf(ctx).cached = nil // the last source was removed
 		uc.mu.Unlock()
 		return nil
 	}
@@ -368,16 +413,17 @@ func (uc *calendar) Refresh(ctx context.Context) error {
 	agenda, err := uc.fetch(ctx, src)
 	if err != nil {
 		uc.mu.Lock()
+		c := uc.cacheOf(ctx)
 		res := AgendaResponse{}
-		if uc.cached != nil {
-			res = *uc.cached
+		if c.cached != nil {
+			res = *c.cached
 		}
 		res.Error = "The calendar server is not reachable; showing the last known events."
-		uc.cached = &res
+		c.cached = &res
 		uc.mu.Unlock()
 		return err
 	}
-	uc.store(agenda)
+	uc.store(ctx, agenda)
 	return nil
 }
 
@@ -387,7 +433,8 @@ func (uc *calendar) fetch(ctx context.Context, src sourceSet) (AgendaResponse, e
 	res, err := uc.fetchRange(ctx, src, from, now.Add(domain.Horizon))
 	if err == nil {
 		uc.mu.Lock()
-		uc.windowFrom, uc.windowTo = from, now.Add(domain.Horizon)
+		c := uc.cacheOf(ctx)
+		c.windowFrom, c.windowTo = from, now.Add(domain.Horizon)
 		uc.mu.Unlock()
 	}
 	return res, err
@@ -446,9 +493,9 @@ func (e *fetchError) Error() string { return strings.Join(e.failures, "; ") }
 // Unwrap classifies the error as an unavailable dependency.
 func (e *fetchError) Unwrap() error { return kernel.ErrUnavailable }
 
-func (uc *calendar) store(a AgendaResponse) {
+func (uc *calendar) store(ctx context.Context, a AgendaResponse) {
 	uc.mu.Lock()
 	defer uc.mu.Unlock()
 	a.Events = slices.Clone(a.Events)
-	uc.cached = &a
+	uc.cacheOf(ctx).cached = &a
 }

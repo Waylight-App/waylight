@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"trisse-home/internal/modules/calendar/domain"
+	"trisse-home/internal/shared/kernel"
+	"trisse-home/internal/shared/sqlutil"
 )
 
 // AccountRepository implements usecase.AccountRepository (#282). Secrets
@@ -65,7 +67,9 @@ func (r *AccountRepository) scan(row interface{ Scan(...any) error }) (domain.Ac
 
 // List implements usecase.AccountRepository, oldest first.
 func (r *AccountRepository) List(ctx context.Context) ([]domain.Account, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+accountColumns+` FROM calendar_accounts ORDER BY created_at`)
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT `+accountColumns+` FROM calendar_accounts WHERE `+cond+` ORDER BY created_at`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("list accounts: %w", err)
 	}
@@ -83,7 +87,8 @@ func (r *AccountRepository) List(ctx context.Context) ([]domain.Account, error) 
 
 // Get implements usecase.AccountRepository.
 func (r *AccountRepository) Get(ctx context.Context, id string) (domain.Account, error) {
-	a, err := r.scan(r.db.QueryRowContext(ctx, `SELECT `+accountColumns+` FROM calendar_accounts WHERE id = ?`, id))
+	cond, args := mine(ctx)
+	a, err := r.scan(r.db.QueryRowContext(ctx, `SELECT `+accountColumns+` FROM calendar_accounts WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Account{}, domain.ErrAccountNotFound
 	}
@@ -123,11 +128,14 @@ func (r *AccountRepository) Save(ctx context.Context, a domain.Account) error {
 	if !a.Grant.Expiry.IsZero() {
 		expiry = a.Grant.Expiry.UTC().Format(time.RFC3339)
 	}
-	_, err = r.db.ExecContext(ctx, `INSERT INTO calendar_accounts (`+accountColumns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	account := kernel.PrincipalFrom(ctx).SettingsAccount()
+	owned, ownedArgs := sqlutil.OwnedBy(kernel.PrincipalFor(account), "calendar_accounts")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	_, err = r.db.ExecContext(ctx, `INSERT INTO calendar_accounts (`+accountColumns+`, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT (id) DO UPDATE SET name = excluded.name, secret_encrypted = excluded.secret_encrypted,
 		access_encrypted = excluded.access_encrypted, refresh_encrypted = excluded.refresh_encrypted,
-		expiry = excluded.expiry, calendars = excluded.calendars`,
-		a.ID, string(a.Provider), a.ClientID, a.Name, secret, access, refresh, expiry, string(cals))
+		expiry = excluded.expiry, calendars = excluded.calendars WHERE `+owned,
+		append([]any{a.ID, string(a.Provider), a.ClientID, a.Name, secret, access, refresh, expiry, string(cals), account}, ownedArgs...)...)
 	if err != nil {
 		return fmt.Errorf("save account: %w", err)
 	}
@@ -136,7 +144,9 @@ func (r *AccountRepository) Save(ctx context.Context, a domain.Account) error {
 
 // Delete implements usecase.AccountRepository.
 func (r *AccountRepository) Delete(ctx context.Context, id string) error {
-	res, err := r.db.ExecContext(ctx, `DELETE FROM calendar_accounts WHERE id = ?`, id)
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `DELETE FROM calendar_accounts WHERE id = ? AND `+cond, append([]any{id}, args...)...)
 	if err != nil {
 		return fmt.Errorf("delete account: %w", err)
 	}
