@@ -14,6 +14,7 @@ import (
 
 	"trisse-home/internal/modules/birthdays/domain"
 	"trisse-home/internal/modules/birthdays/usecase"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -50,7 +51,9 @@ func NewRepository(db *sql.DB, cipher Cipher) *Repository { return &Repository{d
 
 // List implements usecase.Repository.
 func (r *Repository) List(ctx context.Context) ([]domain.Birthday, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT id, name, month, day, year, source FROM birthdays ORDER BY month, day, name`)
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT id, name, month, day, year, source FROM birthdays WHERE `+cond+` ORDER BY month, day, name`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("list birthdays: %w", err)
 	}
@@ -72,12 +75,20 @@ type execer interface {
 	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
 }
 
+// save inserts a birthday owned by the principal or updates one it owns
+// (ADR 0018); a foreign one returns kernel.ErrNotOwner.
 func save(ctx context.Context, db execer, b domain.Birthday) error {
-	_, err := db.ExecContext(ctx, `INSERT INTO birthdays (id, name, month, day, year, source) VALUES (?, ?, ?, ?, ?, ?)
-		ON CONFLICT(id) DO UPDATE SET name = excluded.name, month = excluded.month, day = excluded.day, year = excluded.year, source = excluded.source`,
-		b.ID, b.Name, int(b.Month), b.Day, b.Year, b.Source)
+	p := kernel.PrincipalFrom(ctx)
+	owned, args := sqlutil.OwnedBy(p, "birthdays")
+	res, err := db.ExecContext(ctx, `INSERT INTO birthdays (id, name, month, day, year, source, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT(id) DO UPDATE SET name = excluded.name, month = excluded.month, day = excluded.day, year = excluded.year, source = excluded.source
+		WHERE `+owned,
+		append([]any{b.ID, b.Name, int(b.Month), b.Day, b.Year, b.Source, p.AccountID, string(kernel.DefaultVisibility(p))}, args...)...)
 	if err != nil {
 		return fmt.Errorf("save birthday: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return kernel.ErrNotOwner
 	}
 	return nil
 }
@@ -85,13 +96,22 @@ func save(ctx context.Context, db execer, b domain.Birthday) error {
 // Save implements usecase.Repository.
 func (r *Repository) Save(ctx context.Context, b domain.Birthday) error { return save(ctx, r.db, b) }
 
-// Delete implements usecase.Repository.
+// Delete implements usecase.Repository for the owner. A visible birthday of
+// someone else returns kernel.ErrNotOwner, an invisible one ErrNotFound.
 func (r *Repository) Delete(ctx context.Context, id string) error {
-	res, err := r.db.ExecContext(ctx, `DELETE FROM birthdays WHERE id = ?`, id)
+	p := kernel.PrincipalFrom(ctx)
+	owned, args := sqlutil.OwnedBy(p, "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `DELETE FROM birthdays WHERE id = ? AND `+owned, append([]any{id}, args...)...)
 	if err != nil {
 		return fmt.Errorf("delete birthday: %w", err)
 	}
 	if n, _ := res.RowsAffected(); n == 0 {
+		cond, vargs := sqlutil.VisibleTo(p, "")
+		var one int
+		if r.db.QueryRowContext(ctx, `SELECT 1 FROM birthdays WHERE id = ? AND `+cond, append([]any{id}, vargs...)...).Scan(&one) == nil {
+			return kernel.ErrNotOwner
+		}
 		return domain.ErrNotFound
 	}
 	return nil
@@ -104,7 +124,11 @@ func (r *Repository) ReplaceSource(ctx context.Context, source string, list []do
 		return fmt.Errorf("begin: %w", err)
 	}
 	defer func() { _ = tx.Rollback() }()
-	if _, err := tx.ExecContext(ctx, `DELETE FROM birthdays WHERE source = ?`, source); err != nil {
+	// The address book sync runs as the system; an account only replaces
+	// its own synced birthdays.
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	if _, err := tx.ExecContext(ctx, `DELETE FROM birthdays WHERE source = ? AND `+owned, append([]any{source}, args...)...); err != nil {
 		return fmt.Errorf("clear %s birthdays: %w", source, err)
 	}
 	for _, b := range list {
