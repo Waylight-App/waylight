@@ -58,6 +58,21 @@ export interface GuestRequestDTO {
   disabled: boolean;
 }
 /**
+ * MemberRequestDTO creates or updates a member; an empty password keeps it.
+ */
+export interface MemberRequestDTO {
+  name?: string;
+  password?: string;
+  disabled: boolean;
+}
+/**
+ * GroupRequestDTO creates or updates a group.
+ */
+export interface GroupRequestDTO {
+  name: string;
+  accounts: string[];
+}
+/**
  * TokenRequestDTO creates an API token; ExpiresInDays 0 means never.
  */
 export interface TokenRequestDTO {

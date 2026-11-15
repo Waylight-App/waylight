@@ -134,6 +134,54 @@ func Guests(list []usecase.GuestView) []GuestDTO {
 	return out
 }
 
+// MemberDTO is a member account (#294).
+type MemberDTO struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Groups    []string  `json:"groups"`
+	Disabled  bool      `json:"disabled"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+// MembersDTO is GET /api/auth/members. Available is false while members
+// cannot be created in this version (ADR 0018 follow-up work).
+type MembersDTO struct {
+	Available bool        `json:"available"`
+	Members   []MemberDTO `json:"members"`
+}
+
+// Member maps one member.
+func Member(m usecase.MemberView) MemberDTO { return MemberDTO(m) }
+
+// Members maps the member list.
+func Members(available bool, list []usecase.MemberView) MembersDTO {
+	out := MembersDTO{Available: available, Members: make([]MemberDTO, 0, len(list))}
+	for _, m := range list {
+		out.Members = append(out.Members, Member(m))
+	}
+	return out
+}
+
+// GroupDTO is a group (#294).
+type GroupDTO struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Accounts  []string  `json:"accounts"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+// Group maps one group.
+func Group(g usecase.GroupView) GroupDTO { return GroupDTO(g) }
+
+// Groups maps the group list.
+func Groups(list []usecase.GroupView) []GroupDTO {
+	out := make([]GroupDTO, 0, len(list))
+	for _, g := range list {
+		out = append(out, Group(g))
+	}
+	return out
+}
+
 // TokenDTO describes an API token without its secret.
 type TokenDTO struct {
 	ID         string     `json:"id"`

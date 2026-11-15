@@ -23,6 +23,8 @@ const labels: Record<string, MessageKey> = {
   session_revoked: 'auth.event.session_revoked',
   external: 'auth.event.external',
   guest_changed: 'auth.event.guest_changed',
+  member_changed: 'auth.event.member_changed',
+  group_changed: 'auth.event.group_changed',
   token_created: 'auth.event.token_created',
   token_revoked: 'auth.event.token_revoked',
   token_used: 'auth.event.token_used',
