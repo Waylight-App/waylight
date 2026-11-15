@@ -29,6 +29,8 @@ type UseCases struct {
 	SecurityLog    usecase.SecurityLog
 	Authorizer     usecase.Authorizer
 	Guests         usecase.Guests
+	Members        usecase.Members
+	Groups         usecase.Groups
 	Kiosks         usecase.Kiosks
 	APITokens      usecase.APITokens
 	// SSO is nil when no single sign-on method is configured.
@@ -304,6 +306,104 @@ func (h *Handlers) UpdateGuest(w http.ResponseWriter, r *http.Request) {
 // DeleteGuest handles DELETE /api/auth/guests/{id}.
 func (h *Handlers) DeleteGuest(w http.ResponseWriter, r *http.Request) {
 	if err := h.uc.Guests.Delete(r.Context(), r.PathValue("id")); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// ListMembers handles GET /api/auth/members.
+func (h *Handlers) ListMembers(w http.ResponseWriter, r *http.Request) {
+	list, err := h.uc.Members.List(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Members(h.uc.Members.Available(), list))
+}
+
+// CreateMember handles POST /api/auth/members.
+func (h *Handlers) CreateMember(w http.ResponseWriter, r *http.Request) {
+	var dto MemberRequestDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	m, err := h.uc.Members.Create(r.Context(), usecase.NewMemberRequest{Name: dto.Name, Password: dto.Password})
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusCreated, presenter.Member(m))
+}
+
+// UpdateMember handles PUT /api/auth/members/{id}.
+func (h *Handlers) UpdateMember(w http.ResponseWriter, r *http.Request) {
+	var dto MemberRequestDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	m, err := h.uc.Members.Update(r.Context(), usecase.UpdateMemberRequest{ID: r.PathValue("id"), Disabled: dto.Disabled, Password: dto.Password})
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Member(m))
+}
+
+// DeleteMember handles DELETE /api/auth/members/{id}.
+func (h *Handlers) DeleteMember(w http.ResponseWriter, r *http.Request) {
+	if err := h.uc.Members.Delete(r.Context(), r.PathValue("id")); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// ListGroups handles GET /api/auth/groups.
+func (h *Handlers) ListGroups(w http.ResponseWriter, r *http.Request) {
+	list, err := h.uc.Groups.List(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Groups(list))
+}
+
+// CreateGroup handles POST /api/auth/groups.
+func (h *Handlers) CreateGroup(w http.ResponseWriter, r *http.Request) {
+	var dto GroupRequestDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	g, err := h.uc.Groups.Create(r.Context(), usecase.GroupRequest{Name: dto.Name, Accounts: dto.Accounts})
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusCreated, presenter.Group(g))
+}
+
+// UpdateGroup handles PUT /api/auth/groups/{id}.
+func (h *Handlers) UpdateGroup(w http.ResponseWriter, r *http.Request) {
+	var dto GroupRequestDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	g, err := h.uc.Groups.Update(r.Context(), usecase.GroupRequest{ID: r.PathValue("id"), Name: dto.Name, Accounts: dto.Accounts})
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Group(g))
+}
+
+// DeleteGroup handles DELETE /api/auth/groups/{id}.
+func (h *Handlers) DeleteGroup(w http.ResponseWriter, r *http.Request) {
+	if err := h.uc.Groups.Delete(r.Context(), r.PathValue("id")); err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}

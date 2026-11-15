@@ -46,8 +46,11 @@ type guests struct{ deps Deps }
 // NewGuests returns the guest management use cases.
 func NewGuests(deps Deps) Guests { return &guests{deps: deps} }
 
+// ownerOnly lets only the admin (today the owner) and the system through.
+// It is an allow-list on purpose: a new role, such as member (#294), is
+// refused until someone decides otherwise.
 func ownerOnly(ctx context.Context) error {
-	if p := kernel.PrincipalFrom(ctx); p.TabScoped() || p.IsToken() {
+	if p := kernel.PrincipalFrom(ctx); p.Role != string(domain.RoleOwner) && !p.IsSystem() {
 		return domain.ErrOwnerOnly
 	}
 	return nil
@@ -171,6 +174,11 @@ func (uc *guests) Delete(ctx context.Context, id string) error {
 			return err
 		}
 	}
+	if uc.deps.Groups != nil {
+		if err := uc.deps.Groups.RemoveAccount(ctx, g.ID()); err != nil {
+			return fmt.Errorf("leave groups: %w", err)
+		}
+	}
 	if err := uc.deps.Accounts.Delete(ctx, g.ID()); err != nil {
 		return err
 	}
@@ -178,11 +186,14 @@ func (uc *guests) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-// GuestScope tells what a set of dashboard tabs opens up for a guest: the
-// modules serving their widgets and the routes that stay closed (output port,
-// implemented in the composition root).
+// GuestScope tells what the instance opens up for accounts that are not the
+// admin (output port, implemented in the composition root): for a guest, the
+// modules serving the widgets on its tabs and the routes that stay closed;
+// for a member, the data kind of every module (ADR 0018).
 type GuestScope interface {
 	ReachForTabs(ctx context.Context, tabs []string) (domain.GuestReach, error)
+	// DataKinds maps module names to their data kind.
+	DataKinds() map[string]string
 }
 
 // Authorizer decides whether the principal may call an endpoint (input
@@ -197,17 +208,29 @@ type authorizer struct{ scope GuestScope }
 // guests can only use the self-service endpoints).
 func NewAuthorizer(scope GuestScope) Authorizer { return &authorizer{scope: scope} }
 
-// Authorize implements Authorizer: the owner may do everything, guests what
-// domain.GuestMayAccess allows.
+// Authorize implements Authorizer: the owner may do everything, members
+// what domain.MemberMayAccess allows, guests what domain.GuestMayAccess
+// allows. An unknown role is refused.
 func (uc *authorizer) Authorize(ctx context.Context, p kernel.Principal, method, path string) error {
-	if p.IsToken() {
+	switch {
+	case p.IsToken():
 		if !domain.TokenMayAccess(p.Scopes, method, path) {
 			return domain.ErrTokenScope
 		}
 		return nil
-	}
-	if !p.TabScoped() {
+	case p.Role == string(domain.RoleOwner) || p.IsSystem():
 		return nil
+	case p.Role == string(domain.RoleMember):
+		var kinds map[string]string
+		if uc.scope != nil {
+			kinds = uc.scope.DataKinds()
+		}
+		if !domain.MemberMayAccess(method, path, kinds) {
+			return domain.ErrMemberNotAllowed
+		}
+		return nil
+	case !p.TabScoped():
+		return domain.ErrMemberNotAllowed
 	}
 	reach := domain.GuestReach{Modules: map[string]bool{}}
 	if uc.scope != nil {

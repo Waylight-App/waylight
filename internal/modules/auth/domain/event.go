@@ -23,6 +23,8 @@ const (
 	EventRecoveryCodeUsed  EventType = "recovery_code_used"
 	EventSessionRevoked    EventType = "session_revoked"
 	EventGuestChanged      EventType = "guest_changed"
+	EventMemberChanged     EventType = "member_changed"
+	EventGroupChanged      EventType = "group_changed"
 	EventTokenCreated      EventType = "token_created"
 	EventTokenRevoked      EventType = "token_revoked"
 	EventTokenUsed         EventType = "token_used"

@@ -22,8 +22,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_eccd19aa12e79824: 'CSRF-Token fehlt oder ist ungültig.',
   // No account has been set up yet.
   srv_a53afcf337b06aea: 'Es wurde noch kein Konto eingerichtet.',
-  // Only the owner can do this.
-  srv_67f0ba90e3a4e5b4: 'Das kann nur der Besitzer.',
+  // Only an admin can do this.
+  srv_3a7ce116148b4992: 'Das kann nur ein Admin.',
   // Passkeys need HTTPS and PUBLIC_URL (see docs/accounts.md).
   srv_a9f3222a9472a3de: 'Passkeys brauchen HTTPS und PUBLIC_URL (siehe docs/accounts.md).',
   // Password login is disabled. Use single sign-on.
@@ -134,4 +134,21 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_272f687c666a4c51: 'Die ID ist erforderlich',
   // The name this-device is taken by a guest.
   srv_9737b26eae1b7ac5: 'Der Name this-device ist von einem Gast belegt.',
+  // A group with this name already exists.
+  srv_ed9c5c61fef0f9b0: 'Es gibt schon eine Gruppe mit diesem Namen.',
+  // Members are not available yet: personal content is not separated per account in this version.
+  srv_381a488cb15b35ce:
+    'Mitglieder sind noch nicht verfügbar: Persönliche Inhalte werden in dieser Version noch nicht pro Konto getrennt.',
+  // Members cannot change this; ask an admin.
+  srv_d8f679283dba6727: 'Mitglieder können das nicht ändern; bitte einen Admin fragen.',
+  // The group does not exist.
+  srv_aa197fc26a5b3a24: 'Die Gruppe gibt es nicht.',
+  // The group name must be 1–40 characters.
+  srv_69b3e544a59f8d98: 'Der Gruppenname muss 1–40 Zeichen lang sein.',
+  // The member does not exist.
+  srv_d7f0b2abe0b557e5: 'Das Mitglied gibt es nicht.',
+  // There are already 50 groups.
+  srv_ff45a7ead80407b2: 'Es gibt bereits 50 Gruppen.',
+  // There are already 50 members.
+  srv_7396c7b16437339f: 'Es gibt bereits 50 Mitglieder.',
 };

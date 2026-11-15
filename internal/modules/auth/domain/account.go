@@ -22,7 +22,14 @@ const (
 	RoleGuest Role = "guest"
 	// RoleKiosk is a wall display: reads its tabs, signs in with a link (#50).
 	RoleKiosk Role = "kiosk"
+	// RoleMember has its own tabs and personal content and reads instance
+	// data, but manages nothing of the instance (ADR 0018, #294).
+	RoleMember Role = "member"
 )
+
+// MaxMembers bounds the number of member accounts; trisse-home is meant for
+// a household or a small office.
+const MaxMembers = 50
 
 // MaxGuests bounds the number of guest accounts.
 const MaxGuests = 20
@@ -61,6 +68,18 @@ func NewGuest(id, name, passwordHash string, tabs []string, now time.Time) (Acco
 	return Account{id: id, role: RoleGuest, name: name, passwordHash: passwordHash, createdAt: now, updatedAt: now, tabs: normaliseTabs(tabs)}, nil
 }
 
+// NewMember creates a member account. Names follow the rules of guests and
+// share one namespace with them, because both sign in with a name.
+func NewMember(id, name, passwordHash string, now time.Time) (Account, error) {
+	if !guestNamePattern.MatchString(name) || name == OwnerID {
+		return Account{}, kernel.NewValidationError("name", "The name must be 2–32 lowercase letters, digits, dots, dashes or underscores.")
+	}
+	if id == "" || id == OwnerID || passwordHash == "" {
+		return Account{}, kernel.NewValidationError("member", "id and password are required")
+	}
+	return Account{id: id, role: RoleMember, name: name, passwordHash: passwordHash, createdAt: now, updatedAt: now}, nil
+}
+
 // RestoreAccount rebuilds an account from persisted state.
 func RestoreAccount(id string, role Role, name, passwordHash string, createdAt, updatedAt time.Time, disabled bool, tabs []string) Account {
 	return Account{id: id, role: role, name: name, passwordHash: passwordHash, createdAt: createdAt, updatedAt: updatedAt, disabled: disabled, tabs: tabs}
@@ -87,6 +106,19 @@ func (a Account) Name() string { return a.name }
 
 // IsOwner reports whether this is the owner account.
 func (a Account) IsOwner() bool { return a.role == RoleOwner }
+
+// IsAdmin reports whether the account manages the instance. Today the owner
+// is the only admin; ADR 0018 calls it the first admin.
+func (a Account) IsAdmin() bool { return a.role == RoleOwner }
+
+// SetMemberAccess enables or disables a member.
+func (a *Account) SetMemberAccess(disabled bool, now time.Time) error {
+	if a.role != RoleMember {
+		return ErrMemberNotFound
+	}
+	a.disabled, a.updatedAt = disabled, now
+	return nil
+}
 
 // Disabled reports whether a guest may currently not sign in.
 func (a Account) Disabled() bool { return a.disabled }
@@ -121,7 +153,9 @@ func (a *Account) SetGuestAccess(tabs []string, disabled bool, now time.Time) er
 	return nil
 }
 
-// CanSee reports whether the account may see a dashboard tab.
+// CanSee reports whether the account may see a dashboard tab. Members are
+// not limited to shared tabs; which tabs are theirs is the dashboard's
+// business (ADR 0018).
 func (a Account) CanSee(tabID string) bool {
-	return a.IsOwner() || slices.Contains(a.tabs, tabID)
+	return a.IsOwner() || a.role == RoleMember || slices.Contains(a.tabs, tabID)
 }

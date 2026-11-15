@@ -1,6 +1,9 @@
 package domain
 
-import "strings"
+import (
+	"slices"
+	"strings"
+)
 
 // guestSelfService are the auth endpoints a guest may use for its own
 // account (password, two-factor, sessions, logout) with any method.
@@ -56,4 +59,52 @@ func GuestMayAccess(method, path string, reach GuestReach) bool {
 		return false
 	}
 	return reach.Modules[parts[0]]
+}
+
+// Data kinds of modules as the composition root reports them (ADR 0018). The
+// values match modules.DataKind; auth's domain does not import the module
+// registry.
+const (
+	KindPersonalContent  = "personal-content"
+	KindPersonalSettings = "personal-settings"
+)
+
+// adminOnly are the API prefixes a member may not use at all, not even to
+// read: account management, the instance export and backups, notification
+// channels (they hold webhook secrets) and the device of a Pi appliance.
+var adminOnly = []string{"auth", "transfer", "backups", "backup", "backupmonitor", "notifications", "device", "docker", "system"}
+
+// MemberMayAccess decides whether a member may call method on path (#294).
+// kinds maps module names (the first path segment after /api/) to their data
+// kind. A member
+//
+//   - uses the self-service endpoints of its own account like a guest,
+//   - reads every module except the admin-only ones and settings pages of
+//     instance modules (which may name hosts and keys),
+//   - writes only to modules with personal content or personal settings.
+//
+// Everything else is denied, so a new module without a kind stays closed for
+// writes by members.
+func MemberMayAccess(method, path string, kinds map[string]string) bool {
+	for _, p := range guestSelfService {
+		if path == p || strings.HasPrefix(path, p+"/") {
+			return true
+		}
+	}
+	if path == "/api/auth/status" && (method == "GET" || method == "HEAD") {
+		return true
+	}
+	if !strings.HasPrefix(path, "/api/") {
+		return false
+	}
+	module, _, _ := strings.Cut(strings.TrimPrefix(path, "/api/"), "/")
+	if module == "" || slices.Contains(adminOnly, module) {
+		return false
+	}
+	kind := kinds[module]
+	personal := kind == KindPersonalContent || kind == KindPersonalSettings
+	if method == "GET" || method == "HEAD" {
+		return personal || !strings.Contains(path, "/settings")
+	}
+	return personal
 }

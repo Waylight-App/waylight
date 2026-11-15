@@ -42,6 +42,19 @@ type GuestRequestDTO struct {
 	Disabled bool     `json:"disabled"`
 }
 
+// MemberRequestDTO creates or updates a member; an empty password keeps it.
+type MemberRequestDTO struct {
+	Name     string `json:"name,omitempty"`
+	Password string `json:"password,omitempty"`
+	Disabled bool   `json:"disabled"`
+}
+
+// GroupRequestDTO creates or updates a group.
+type GroupRequestDTO struct {
+	Name     string   `json:"name"`
+	Accounts []string `json:"accounts"`
+}
+
 // TokenRequestDTO creates an API token; ExpiresInDays 0 means never.
 type TokenRequestDTO struct {
 	Name          string   `json:"name"`
