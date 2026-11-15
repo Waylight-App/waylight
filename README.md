@@ -17,6 +17,9 @@ program with an SQLite database, on a home server, a NAS or a Raspberry Pi.
 - **Least privilege.** Read-only Docker access, no WireGuard keys in the
   container, and every action that changes another system is off until you
   list exactly what may be changed ([security model](docs/security-model.md)).
+- **Accessible.** Works with keyboard and screen reader and aims for WCAG
+  2.2 AA; automated checks in CI cover every main view and dialog
+  ([accessibility](docs/accessibility.md)).
 - **Modular.** About 50 modules, from notes and habits to Proxmox, Home
   Assistant and Jellyfin, and each one can be switched off
   ([features](docs/features.md)).
