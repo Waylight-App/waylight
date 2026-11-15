@@ -61,6 +61,9 @@ export interface AuthGateway {
   createInvite(input: InviteInput): Promise<{ invite: Invite; token: string }>;
   revokeInvite(id: string): Promise<void>;
   createResetLink(accountId: string): Promise<{ token: string; expiresAt: Date }>;
+  requestPasswordReset(name: string): Promise<void>;
+  myEmail(): Promise<string>;
+  setMyEmail(email: string): Promise<string>;
   inspectLink(token: string): Promise<LinkInfo>;
   acceptLink(token: string, password: string): Promise<LinkInfo>;
   apiTokens(): Promise<ApiToken[]>;

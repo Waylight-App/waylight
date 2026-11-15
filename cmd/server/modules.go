@@ -75,6 +75,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	client, secrets := out.client, out.secrets
 	registry := &modules.Registry{}
 	alerts := &alertRelay{}
+	mailer := &mailRelay{}
 	scope := &guestScope{registry: registry}
 
 	authModule, err := auth.New(
@@ -85,8 +86,9 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 			SSO:              ssoConfig(cfg, out.client, clk),
 			WebAuthn:         relyingParty(cfg),
 			MembersEnabled:   membersEnabled,
+			PublicURL:        cfg.PublicURL,
 		},
-		auth.Deps{DB: db, Clock: clk, Hasher: crypto.NewArgon2id(crypto.DefaultArgon2idParams), Tokens: crypto.RandomTokens{}, IDs: ids, OTP: crypto.TOTP{}, Cipher: secrets, Log: log, Alerts: alerts, GuestScope: scope},
+		auth.Deps{DB: db, Clock: clk, Hasher: crypto.NewArgon2id(crypto.DefaultArgon2idParams), Tokens: crypto.RandomTokens{}, IDs: ids, OTP: crypto.TOTP{}, Cipher: secrets, Log: log, Alerts: alerts, GuestScope: scope, Mailer: mailer},
 	)
 	if err != nil {
 		return nil, nil, err
@@ -105,6 +107,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		registry.Register(n)
 		sinks = append(sinks, n)
 		alerts.targets = append(alerts.targets, n)
+		mailer.target = n
 		maintenance = n
 	}
 	if cfg.ModuleEnabled("timeline") {
@@ -359,6 +362,23 @@ func (a *alertRelay) Alert(ctx context.Context, al kernel.Alert) {
 	for _, t := range a.targets {
 		t.Alert(ctx, al)
 	}
+}
+
+// mailRelay forwards account mail of the auth module (built first) to the
+// notifications module once that exists; without it nothing can be sent.
+type mailRelay struct{ target kernel.Mailer }
+
+// CanSend implements kernel.Mailer.
+func (m *mailRelay) CanSend(ctx context.Context) bool {
+	return m.target != nil && m.target.CanSend(ctx)
+}
+
+// Send implements kernel.Mailer.
+func (m *mailRelay) Send(ctx context.Context, mail kernel.Mail) error {
+	if m.target == nil {
+		return kernel.ErrUnavailable
+	}
+	return m.target.Send(ctx, mail)
 }
 
 // observationFanOut sends every observation to all consumers

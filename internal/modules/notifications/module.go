@@ -52,6 +52,12 @@ func (m *Module) Alert(ctx context.Context, a kernel.Alert) { m.uc.Alert(ctx, a)
 // Observe implements kernel.ObservationSink.
 func (m *Module) Observe(ctx context.Context, o kernel.Observation) { m.uc.Observe(ctx, o) }
 
+// CanSend implements kernel.Mailer (#296).
+func (m *Module) CanSend(ctx context.Context) bool { return m.uc.CanSend(ctx) }
+
+// Send implements kernel.Mailer (#296).
+func (m *Module) Send(ctx context.Context, mail kernel.Mail) error { return m.uc.Send(ctx, mail) }
+
 // Name implements modules.Module.
 func (m *Module) Name() string { return "notifications" }
 

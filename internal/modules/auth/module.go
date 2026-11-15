@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/netip"
+	"net/url"
 	"time"
 
 	"trisse-home/internal/modules"
@@ -44,6 +45,9 @@ type Config struct {
 	// MembersEnabled allows creating member accounts (#294); see
 	// usecase.Deps.MembersEnabled for why it is off for now.
 	MembersEnabled bool
+	// PublicURL is the origin used in reset mails (#296); nil switches the
+	// self-service reset off, because the request's Host is not trusted.
+	PublicURL *url.URL
 }
 
 // webauthnAdapter maps the platform verifier to the use case port.
@@ -114,6 +118,8 @@ type Deps struct {
 	Alerts kernel.AlertSink
 	// GuestScope maps a guest's tabs to the modules it may read; may be nil.
 	GuestScope usecase.GuestScope
+	// Mailer sends reset links by e-mail (#296); may be nil.
+	Mailer kernel.Mailer
 }
 
 // Module wires the auth rings and implements modules.Module.
@@ -162,18 +168,20 @@ func New(cfg Config, d Deps) (*Module, error) {
 	status := usecase.NewGetStatus(accounts, sessions, d.Clock)
 	kiosks := usecase.NewKiosks(deps, gateway.NewKioskRepository(d.DB))
 	uc := controller.UseCases{
-		Status:         status,
-		Setup:          usecase.NewSetupAccount(deps, gateway.NewSetupToken(token), observerFunc(cfg.OnAccountCreated)),
-		Login:          usecase.NewLogin(deps),
-		Logout:         usecase.NewLogout(sessions),
-		Authenticate:   usecase.NewAuthenticate(sessions, accounts, groups, prefs, d.Clock, ttl),
-		Authorizer:     usecase.NewAuthorizer(d.GuestScope),
-		Guests:         usecase.NewGuests(deps),
-		Members:        usecase.NewMembers(deps),
-		Groups:         usecase.NewGroups(deps),
-		Preferences:    usecase.NewPreferences(deps),
-		Kiosks:         kiosks,
-		AccountLinks:   usecase.NewAccountLinks(deps, gateway.NewAccountLinkRepository(d.DB)),
+		Status:       status,
+		Setup:        usecase.NewSetupAccount(deps, gateway.NewSetupToken(token), observerFunc(cfg.OnAccountCreated)),
+		Login:        usecase.NewLogin(deps),
+		Logout:       usecase.NewLogout(sessions),
+		Authenticate: usecase.NewAuthenticate(sessions, accounts, groups, prefs, d.Clock, ttl),
+		Authorizer:   usecase.NewAuthorizer(d.GuestScope),
+		Guests:       usecase.NewGuests(deps),
+		Members:      usecase.NewMembers(deps),
+		Groups:       usecase.NewGroups(deps),
+		Preferences:  usecase.NewPreferences(deps),
+		Kiosks:       kiosks,
+		AccountLinks: usecase.NewAccountLinks(deps, gateway.NewAccountLinkRepository(d.DB)),
+		PasswordReset: usecase.NewPasswordReset(deps, gateway.NewAccountLinkRepository(d.DB), gateway.NewEmailRepository(d.DB),
+			d.Mailer, cfg.PublicURL),
 		APITokens:      usecase.NewAPITokens(deps, gateway.NewTokenRepository(d.DB)),
 		SSO:            newSSO(deps, cfg.SSO),
 		Passkeys:       usecase.NewPasskeys(deps),
@@ -252,6 +260,9 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/auth/accounts/{id}/reset-link", m.handlers.CreateResetLink)
 	r.Public("POST /api/auth/link/inspect", m.handlers.InspectLink)
 	r.Public("POST /api/auth/link/accept", m.handlers.AcceptLink)
+	r.Public("POST /api/auth/password-reset", m.handlers.RequestPasswordReset)
+	r.Protected("GET /api/auth/email", m.handlers.MyEmail)
+	r.Protected("PUT /api/auth/email", m.handlers.SetMyEmail)
 	r.Protected("GET /api/auth/guests", m.handlers.ListGuests)
 	r.Protected("POST /api/auth/guests", m.handlers.CreateGuest)
 	r.Protected("PUT /api/auth/guests/{id}", m.handlers.UpdateGuest)

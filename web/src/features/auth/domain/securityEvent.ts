@@ -29,6 +29,8 @@ const labels: Record<string, MessageKey> = {
   invite_accepted: 'auth.event.invite_accepted',
   reset_link_created: 'auth.event.reset_link_created',
   password_reset: 'auth.event.password_reset',
+  reset_requested: 'auth.event.reset_requested',
+  email_changed: 'auth.event.email_changed',
   group_changed: 'auth.event.group_changed',
   token_created: 'auth.event.token_created',
   token_revoked: 'auth.event.token_revoked',
