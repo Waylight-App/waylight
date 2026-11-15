@@ -32,7 +32,7 @@ stored encrypted.
 | JSON widget endpoints | While a widget shows them, at most once per configured interval. |
 | Ollama | Only when you ask for a summary. |
 | WebDAV off-site backups | After each backup, and when you restore from it. |
-| ntfy, Gotify, webhooks, SMTP | When a notification is sent. |
+| ntfy, Gotify, webhooks, SMTP, Slack (`hooks.slack.com`), Teams (the workflow's address, usually `*.logic.azure.com` or `*.powerplatform.com`) | When a notification is sent. None until you add the channel. |
 | Football results (`api.openligadb.de`) | Only while a sports widget is shown, at most every 15 minutes per league ([details](modules/sports.md)). |
 | CardDAV address book (birthdays) | When you save the address book in the settings, then every six hours. None until you connect one ([details](modules/birthdays.md)). |
 | Electricity prices (`api.awattar.de` / `api.awattar.at`) | Only while an electricity price widget is shown, at most every 15 minutes per bidding zone ([details](modules/electricity.md)). |

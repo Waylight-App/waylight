@@ -60,7 +60,7 @@ export interface NotificationPolicy {
 /** An additional delivery channel (#87); the secret is never returned. */
 export interface Channel {
   id: string;
-  kind: 'gotify' | 'webhook' | 'email';
+  kind: 'gotify' | 'webhook' | 'email' | 'slack' | 'teams';
   name: string;
   enabled: boolean;
   minSeverity: Severity;
@@ -101,6 +101,9 @@ export function parseScope(input: string): string[] {
     .map((s) => s.trim())
     .filter(Boolean);
 }
+
+/** Slack and Teams keep the whole webhook URL as the secret (#324, #325). */
+export const isChatChannel = (kind: Channel['kind']): boolean => kind === 'slack' || kind === 'teams';
 
 /** An empty channel of the given kind with sensible defaults. */
 export function newChannel(kind: Channel['kind']): ChannelInput {

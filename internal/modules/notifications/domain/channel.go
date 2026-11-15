@@ -16,7 +16,19 @@ const (
 	ChannelGotify  ChannelKind = "gotify"
 	ChannelWebhook ChannelKind = "webhook"
 	ChannelEmail   ChannelKind = "email"
+	// ChannelSlack posts to a Slack incoming webhook (#324).
+	ChannelSlack ChannelKind = "slack"
+	// ChannelTeams posts an Adaptive Card to a Teams Workflows webhook (#325).
+	ChannelTeams ChannelKind = "teams"
 )
+
+// slackWebhookPrefix is where every Slack incoming webhook lives; another
+// host would not be a Slack webhook, so it is refused.
+const slackWebhookPrefix = "https://hooks.slack.com/services/"
+
+// maxWebhookURL bounds a pasted Slack or Teams address; real ones are well
+// below 1000 characters.
+const maxWebhookURL = 2048
 
 // MaxChannels bounds the number of additional channels.
 const MaxChannels = 10
@@ -35,8 +47,10 @@ type Channel struct {
 	Types []string
 	// URL is the Gotify server or the webhook endpoint.
 	URL string
-	// Secret is the Gotify app token, the webhook HMAC key or the SMTP
-	// password; it is encrypted at rest and never returned by the API.
+	// Secret is the Gotify app token, the webhook HMAC key, the SMTP
+	// password or, for Slack and Teams, the whole webhook URL (it is the
+	// credential there); it is encrypted at rest and never returned by
+	// the API.
 	Secret string
 	// Template is the webhook JSON body with {{title}}, {{body}},
 	// {{severity}} and {{type}} (JSON-encoded values).
@@ -119,8 +133,21 @@ func (c *Channel) Validate() error {
 		default:
 			return kernel.NewValidationError("tls", "TLS must be starttls, tls or none.")
 		}
+	case ChannelSlack:
+		hook := strings.TrimSpace(c.Secret)
+		if !strings.HasPrefix(hook, slackWebhookPrefix) || len(hook) > maxWebhookURL || strings.ContainsAny(hook, " \n") {
+			return kernel.NewValidationError("secret", "Paste the Slack webhook URL; it starts with https://hooks.slack.com/services/.")
+		}
+		c.Secret, c.URL = hook, ""
+	case ChannelTeams:
+		hook := strings.TrimSpace(c.Secret)
+		u, err := kernel.ParseTarget("secret", hook, kernel.WithTargetPath(), kernel.WithTargetQuery())
+		if err != nil || u.Scheme != "https" || len(hook) > maxWebhookURL {
+			return kernel.NewValidationError("secret", "Paste the https:// address of the Teams workflow (trigger: when a Teams webhook request is received).")
+		}
+		c.Secret, c.URL = u.String(), ""
 	default:
-		return kernel.NewValidationError("kind", "The channel type must be gotify, webhook or email.")
+		return kernel.NewValidationError("kind", "The channel type must be gotify, webhook, email, slack or teams.")
 	}
 	return nil
 }

@@ -99,7 +99,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	var maintenance maintenanceReader
 	var notifier kernel.AlertSink
 	if cfg.ModuleEnabled("notifications") {
-		n := notifications.New(db, secrets, out.integration, clk, ids)
+		n := notifications.New(db, secrets, out.integration, clk, ids, cfg.PublicURL)
 		notifier = n
 		registry.Register(n)
 		sinks = append(sinks, n)
