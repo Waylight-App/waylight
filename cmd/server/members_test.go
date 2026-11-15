@@ -113,6 +113,12 @@ func TestMemberAccess(t *testing.T) {
 	// Self-service on the own account works.
 	m.do(http.MethodGet, "/api/auth/sessions", nil, http.StatusOK)
 
+	// Settings that act for the instance stay with the admin (#294 step 5).
+	m.do(http.MethodGet, "/api/parcels/mail", nil, http.StatusForbidden)
+	m.do(http.MethodPut, "/api/parcels/settings", obj{"dhlApiKey": "x", "hideDeliveredDays": 3}, http.StatusForbidden)
+	m.do(http.MethodPut, "/api/birthdays/settings", obj{"remindEnabled": true, "remindAt": "08:00"}, http.StatusForbidden)
+	m.do(http.MethodPut, "/api/bookmarks/settings", obj{"enrich": true, "checkLinks": true}, http.StatusForbidden)
+
 	// Personal tabs (#294 step 2): the member gets its own dashboard and
 	// cannot see or change the owner's tabs.
 	var odash, mdash struct {

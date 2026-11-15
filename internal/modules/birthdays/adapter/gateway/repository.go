@@ -139,12 +139,33 @@ func (r *Repository) ReplaceSource(ctx context.Context, source string, list []do
 	return tx.Commit()
 }
 
+// SyncAccounts implements usecase.Repository: the accounts with an address
+// book to synchronise.
+func (r *Repository) SyncAccounts(ctx context.Context) ([]string, error) {
+	rows, err := r.db.QueryContext(ctx, `SELECT account_id FROM birthday_settings WHERE carddav_url != '' ORDER BY account_id`)
+	if err != nil {
+		return nil, fmt.Errorf("select address books: %w", err)
+	}
+	defer rows.Close()
+	var out []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, fmt.Errorf("scan account: %w", err)
+		}
+		out = append(out, id)
+	}
+	return out, rows.Err()
+}
+
 // Settings implements usecase.Repository; no row means defaults.
 func (r *Repository) Settings(ctx context.Context) (usecase.Settings, error) {
 	var s usecase.Settings
 	var enabled bool
 	var enc string
-	err := r.db.QueryRowContext(ctx, `SELECT remind_enabled, remind_at, last_reminded, carddav_url, username, password_encrypted FROM birthday_settings WHERE id = 1`).
+	// The own settings only; the address book credentials are personal.
+	err := r.db.QueryRowContext(ctx, `SELECT remind_enabled, remind_at, last_reminded, carddav_url, username, password_encrypted FROM birthday_settings WHERE account_id = ?`,
+		kernel.PrincipalFrom(ctx).SettingsAccount()).
 		Scan(&enabled, &s.Reminder.At, &s.LastReminded, &s.CardDAVURL, &s.Username, &enc)
 	if errors.Is(err, sql.ErrNoRows) {
 		return usecase.Settings{Reminder: domain.Reminder{At: "08:00"}}, nil
@@ -170,10 +191,10 @@ func (r *Repository) SaveSettings(ctx context.Context, s usecase.Settings) error
 			return fmt.Errorf("encrypt CardDAV password: %w", err)
 		}
 	}
-	_, err := r.db.ExecContext(ctx, `INSERT INTO birthday_settings (id, remind_enabled, remind_at, last_reminded, carddav_url, username, password_encrypted)
-		VALUES (1, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET remind_enabled = excluded.remind_enabled, remind_at = excluded.remind_at,
+	_, err := r.db.ExecContext(ctx, `INSERT INTO birthday_settings (account_id, remind_enabled, remind_at, last_reminded, carddav_url, username, password_encrypted)
+		VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(account_id) DO UPDATE SET remind_enabled = excluded.remind_enabled, remind_at = excluded.remind_at,
 		last_reminded = excluded.last_reminded, carddav_url = excluded.carddav_url, username = excluded.username, password_encrypted = excluded.password_encrypted`,
-		s.Reminder.Enabled, s.Reminder.At, s.LastReminded, s.CardDAVURL, s.Username, enc)
+		kernel.PrincipalFrom(ctx).SettingsAccount(), s.Reminder.Enabled, s.Reminder.At, s.LastReminded, s.CardDAVURL, s.Username, enc)
 	if err != nil {
 		return fmt.Errorf("save birthday settings: %w", err)
 	}
