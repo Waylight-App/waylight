@@ -116,6 +116,35 @@ choice then shows *A group that no longer exists* until the owner picks
 something else. To-dos from an external list (CalDAV or another provider)
 cannot be shared and have no sharing choice.
 
+## Invitations and reset links
+
+Instead of choosing a password for someone, you can send them a link.
+
+**Invite:** *Settings → Invitations* creates a link for a new guest (with the
+tabs it may see) or, once members are available, a new member. You pick the
+name and how long the link waits: one day, a week or 30 days. The invited
+person opens the link, sets a password and then signs in with the name and
+that password. Open invitations are listed there and can be revoked.
+
+**Reset a password:** *Reset link* next to a member or guest creates a link
+that sets a new password. It is valid for 24 hours, and a new reset link
+replaces the previous one. Using it signs the account out on all devices.
+
+Both kinds of link:
+
+- are shown once, as text and as a QR code; send them on a channel you trust;
+- work once and stop working when they expire;
+- carry the secret after `#`, so it is not written to server or proxy logs;
+- are limited like the sign-in: repeated wrong links lock the client out for
+  a while;
+- appear in the security log when they are created and used.
+
+The link does not sign anyone in. After setting the password, the person
+signs in normally, including the second factor if one is set up.
+
+There is no reset link for the admin account. Its password is reset on the
+server, as described above.
+
 ## Kiosk displays
 
 A kiosk display shows tabs on a device that hangs on the wall or stands in

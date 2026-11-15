@@ -105,6 +105,7 @@
     { id: 'tokens', label: 'settings.section.tokens', group: 'account' },
     { id: 'guests', label: 'settings.section.guests', group: 'account' },
     { id: 'members', label: 'settings.section.members', group: 'account' },
+    { id: 'invites', label: 'settings.section.invites', group: 'account' },
     { id: 'kiosks', label: 'settings.section.kiosks', group: 'account' },
     { id: 'security-log', label: 'settings.section.security_log', group: 'account' },
     { id: 'about', label: 'settings.section.about', module: 'system', group: 'about' },
@@ -227,6 +228,10 @@
       {:else if current === 'members'}
         {#await import('../features/auth/ui/MembersSettings.svelte') then { default: MembersSettings }}
           <MembersSettings auth={container.auth} />
+        {/await}
+      {:else if current === 'invites'}
+        {#await import('../features/auth/ui/InvitesSettings.svelte') then { default: InvitesSettings }}
+          <InvitesSettings auth={container.auth} tabs={guestTabs} />
         {/await}
       {:else if current === 'kiosks'}
         {#await import('../features/auth/ui/KiosksSettings.svelte') then { default: KiosksSettings }}
