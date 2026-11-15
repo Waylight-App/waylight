@@ -12,6 +12,4 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_98c9fc1eaba891b7: 'Der Fotospeicher ist voll (300 MB oder 2000 Bilder). Lösche zuerst Bilder.',
   // The picture does not exist (any more).
   srv_164729afbb572b99: 'Das Bild gibt es nicht (mehr).',
-  // Upload a JPEG, PNG or GIF picture.
-  srv_eac41835716f01a3: 'Lade ein JPEG-, PNG- oder GIF-Bild hoch.',
 };

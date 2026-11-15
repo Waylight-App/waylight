@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"net/url"
 	"regexp"
 	"slices"
 	"strings"
@@ -14,7 +13,6 @@ import (
 // Limits of user-provided values.
 const (
 	MaxCustomCSSBytes = 64 * 1024
-	MaxURLLength      = 2048
 )
 
 // Theme is the color scheme preference.
@@ -152,23 +150,14 @@ func NewAppearance(theme Theme, accentColor, backgroundImage, customCSS string) 
 	if accentColor != "" && !hexColor.MatchString(accentColor) {
 		return Appearance{}, kernel.NewValidationError("accentColor", "The accent color must look like #3b6ef5.")
 	}
-	backgroundImage = strings.TrimSpace(backgroundImage)
-	if backgroundImage != "" && !isHTTPURL(backgroundImage) {
-		return Appearance{}, kernel.NewValidationError("backgroundImage", "The background image must be an http(s) URL.")
+	backgroundImage, err := kernel.ParseBackground("backgroundImage", backgroundImage)
+	if err != nil {
+		return Appearance{}, err
 	}
 	if len(customCSS) > MaxCustomCSSBytes {
 		return Appearance{}, kernel.NewValidationError("customCss", "The custom CSS must be at most 64 KiB.")
 	}
 	return Appearance{theme: theme, accentColor: strings.ToLower(accentColor), backgroundImage: backgroundImage, customCSS: customCSS}, nil
-}
-
-func isHTTPURL(raw string) bool {
-	if len(raw) > MaxURLLength || strings.ContainsAny(raw, "\"'()\\ \n") {
-		// Quotes, parentheses and whitespace could break out of url(...) in CSS.
-		return false
-	}
-	u, err := url.Parse(raw)
-	return err == nil && (u.Scheme == "http" || u.Scheme == "https") && u.Host != ""
 }
 
 // Theme returns the color scheme.
@@ -179,6 +168,16 @@ func (a Appearance) AccentColor() string { return a.accentColor }
 
 // BackgroundImage returns the background image URL or "".
 func (a Appearance) BackgroundImage() string { return a.backgroundImage }
+
+// SetBackgroundImage changes only the background (see kernel.ParseBackground).
+func (a *Appearance) SetBackgroundImage(raw string) error {
+	bg, err := kernel.ParseBackground("backgroundImage", raw)
+	if err != nil {
+		return err
+	}
+	a.backgroundImage = bg
+	return nil
+}
 
 // CustomCSS returns the user's CSS.
 func (a Appearance) CustomCSS() string { return a.customCSS }

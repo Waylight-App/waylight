@@ -1,3 +1,4 @@
+import { backgroundCss } from '../../../shared/theme/background';
 import type { ThemeMode } from '../../../shared/theme/theme';
 
 /** Visual preferences of the start page. */
@@ -45,8 +46,9 @@ export const defaultAppearance: Appearance = {
 export function cssVariables(a: Appearance): Record<string, string> {
   const vars: Record<string, string> = {};
   if (/^#[0-9a-f]{6}$/i.test(a.accentColor)) vars['--color-accent'] = a.accentColor;
-  if (/^https?:\/\/[^\s"'()\\]+$/i.test(a.backgroundImage)) {
-    vars['--background-image'] = `url("${a.backgroundImage}")`;
+  const bg = backgroundCss(a.backgroundImage);
+  if (bg) {
+    vars['--background-image'] = bg;
     // Slightly translucent cards keep the background visible.
     vars['--widget-opacity'] = '0.94';
   }

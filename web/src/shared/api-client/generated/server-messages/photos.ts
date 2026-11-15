@@ -7,7 +7,6 @@ export const serverMessages = {
   srv_3a266f56f76134ba: "The order must list every picture of the album exactly once.",
   srv_98c9fc1eaba891b7: "The photo storage is full (300 MB or 2000 pictures). Delete pictures first.",
   srv_164729afbb572b99: "The picture does not exist (any more).",
-  srv_eac41835716f01a3: "Upload a JPEG, PNG or GIF picture.",
 } as const;
 
 /** Key of a backend message. */

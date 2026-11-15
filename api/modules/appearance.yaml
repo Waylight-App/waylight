@@ -17,6 +17,49 @@ paths:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Appearance" } } } }
         "422": { $ref: "#/components/responses/Invalid" }
 
+  /api/appearance/background:
+    put:
+      tags: [appearance]
+      summary: Set only the global background (#277), e.g. from the dashboard
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { backgroundImage: { type: string } } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Appearance" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/appearance/backgrounds:
+    get:
+      tags: [appearance]
+      summary: Pictures uploaded as backgrounds, newest first, with the limits
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: "#/components/schemas/UploadedBackground" } }, max: { type: integer }, maxUploadBytes: { type: integer } } } } } }
+    post:
+      tags: [appearance]
+      summary: "Upload a background picture (JPEG, PNG or GIF, at most 25 MB) as the multipart field \"file\"; turned upright, scaled to at most 2560 px and stored as JPEG without EXIF data. At most 30 pictures"
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { multipart/form-data: { schema: { type: object, properties: { file: { type: string, format: binary } } } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/UploadedBackground" } } } }
+        "409": { description: 30 pictures are stored already }
+        "413": { description: Larger than 25 MB }
+        "415": { description: Not multipart/form-data }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/appearance/backgrounds/{id}:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    get:
+      tags: [appearance]
+      summary: The picture as JPEG (?thumb=1 for a 320 px preview); cacheable, it never changes under its id
+      parameters: [{ name: thumb, in: query, schema: { type: string, enum: ["1"] } }]
+      responses:
+        "200": { description: OK, content: { image/jpeg: { schema: { type: string, format: binary } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [appearance]
+      summary: Delete a picture; if it is the global background, that falls back to the default
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Deleted }
+        "404": { $ref: "#/components/responses/NotFound" }
+
   /api/appearance/themes:
     get:
       tags: [appearance]
@@ -70,7 +113,7 @@ schemas:
     properties:
       theme: { type: string, enum: [system, light, dark] }
       accentColor: { type: string, description: '#rrggbb or empty', pattern: '^(#[0-9a-fA-F]{6})?$' }
-      backgroundImage: { type: string, description: http(s) URL or empty }
+      backgroundImage: { type: string, description: "Empty (default), an http(s) image URL, /api/appearance/backgrounds/<id> (uploaded) or builtin:<name>" }
       customCss: { type: string, maxLength: 65536 }
       language: { type: string, enum: ["", en, de], description: '"" follows the browser' }
       greeting: { type: boolean, description: Greeting line below the top bar (#167), off by default }
@@ -102,3 +145,12 @@ schemas:
       themes: { type: array, items: { $ref: "#/components/schemas/Theme" } }
       applied: { type: string, description: Id of the applied theme, "" for own or no custom CSS }
       canRestore: { type: boolean }
+  UploadedBackground:
+    type: object
+    properties:
+      id: { type: string }
+      url: { type: string, description: Value to store as background }
+      thumb: { type: string }
+      width: { type: integer }
+      height: { type: integer }
+      size: { type: integer }

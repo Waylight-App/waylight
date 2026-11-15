@@ -1,5 +1,12 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
-import type { AppearanceDTO, GalleryDTO, ThemeDTO } from '../../../../shared/api-client/generated/appearance';
+import type {
+  AppearanceDTO,
+  BackgroundDTO,
+  BackgroundListDTO,
+  GalleryDTO,
+  ThemeDTO,
+} from '../../../../shared/api-client/generated/appearance';
+import type { BackgroundLibrary, UploadedBackground } from '../../domain/backgrounds';
 import type { Appearance } from '../../domain/appearance';
 import type { ThemeGallery, ThemeInfo } from '../../domain/themes';
 import type { AppearanceGateway } from '../../usecase/appearanceUseCases';
@@ -26,6 +33,27 @@ export class AppearanceApi implements AppearanceGateway {
   async save(a: Appearance): Promise<Appearance> {
     const body: AppearanceDTO = { ...a };
     return toAppearance(await this.http.put<AppearanceDTO>('/api/appearance', body));
+  }
+
+  async setBackground(value: string): Promise<Appearance> {
+    return toAppearance(
+      await this.http.put<AppearanceDTO>('/api/appearance/background', { backgroundImage: value }),
+    );
+  }
+
+  async backgrounds(): Promise<BackgroundLibrary> {
+    const d = await this.http.get<BackgroundListDTO>('/api/appearance/backgrounds');
+    return { ...d, items: d.items.map((b) => ({ ...b })) };
+  }
+
+  async uploadBackground(file: Blob, name: string): Promise<UploadedBackground> {
+    const form = new FormData();
+    form.append('file', file, name);
+    return { ...(await this.http.postForm<BackgroundDTO>('/api/appearance/backgrounds', form)) };
+  }
+
+  async deleteBackground(id: string): Promise<void> {
+    await this.http.delete(`/api/appearance/backgrounds/${encodeURIComponent(id)}`);
   }
 
   gallery(): Promise<ThemeGallery> {

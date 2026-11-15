@@ -42,8 +42,8 @@ In edit mode you can:
 - save a tab as a template, so you can stamp out similar tabs later
   (templates keep the layout and widget settings, not the content such as
   notes or to-dos);
-- set a background image for one tab, which overrides the global background
-  from the [appearance settings](appearance.md);
+- choose a background for one tab, which overrides the background of all
+  tabs (see [background image](appearance.md#background-image));
 - move tabs left and right, rename and delete them.
 
 `1` to `9` switch to the first nine tabs.

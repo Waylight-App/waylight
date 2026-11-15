@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { Appearance } from '../features/appearance';
+  import type { BackgroundScope } from '../features/appearance/domain/backgrounds';
   import { DashboardView, type Tab, type Widget, type WidgetConfig } from '../features/dashboard';
   import type { Container } from './container';
   import LazyComponent from './LazyComponent.svelte';
@@ -21,6 +23,10 @@
     onedit?: () => void;
     /** Finishes edit mode (#271). */
     ondone?: () => void;
+    /** The global background, for the background picker (#277). */
+    globalBackground?: string;
+    /** Reports a global background saved from the dashboard. */
+    onappearance?: (a: Appearance) => void;
   }
   let {
     container,
@@ -31,9 +37,32 @@
     onstate,
     onedit,
     ondone,
+    globalBackground = '',
+    onappearance,
   }: Props = $props();
 
-  let view = $state<{ selectTabAt: (index: number) => void; undo: () => void; redo: () => void }>();
+  let view = $state<{
+    selectTabAt: (index: number) => void;
+    undo: () => void;
+    redo: () => void;
+    showTabBackground: (tabId: string, background: string) => void;
+  }>();
+  // The picker is loaded only when someone opens it (#116).
+  let pickerTab = $state<Tab | null>(null);
+  const loadPicker = () => import('../features/appearance/ui/BackgroundPicker.svelte');
+
+  async function saveBackground(tab: Tab, value: string, scope: BackgroundScope, clearTab: boolean) {
+    if (scope === 'tab') {
+      const updated = await container.dashboard.setBackground(tab.id, value);
+      view?.showTabBackground(tab.id, updated.background);
+      return;
+    }
+    onappearance?.(await container.appearance.setBackground(value));
+    if (clearTab) {
+      await container.dashboard.setBackground(tab.id, '');
+      view?.showTabBackground(tab.id, '');
+    }
+  }
 
   /** Selects the n-th tab (0-based). */
   export function selectTabAt(index: number) {
@@ -69,6 +98,7 @@
   {onstate}
   {onedit}
   {ondone}
+  onbackground={container.auth.guest ? undefined : (tab) => (pickerTab = tab)}
 >
   {#snippet content(widget: Widget)}
     {@const def = definitionFor(widget.kind)}
@@ -93,3 +123,16 @@
     {/if}
   {/snippet}
 </DashboardView>
+
+{#if pickerTab}
+  {@const tab = pickerTab}
+  {#await loadPicker() then { default: BackgroundPicker }}
+    <BackgroundPicker
+      appearance={container.appearance}
+      globalValue={globalBackground}
+      tab={{ name: tab.name, background: tab.background }}
+      onsave={(value, scope, clearTab) => saveBackground(tab, value, scope, clearTab)}
+      onclose={() => (pickerTab = null)}
+    />
+  {/await}
+{/if}

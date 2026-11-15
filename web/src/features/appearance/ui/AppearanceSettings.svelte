@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { backgroundCss } from '../../../shared/theme/background';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import type { Appearance } from '../domain/appearance';
@@ -18,6 +19,16 @@
   let form = $state<Appearance>({ ...current });
   let error = $state('');
   let saved = $state(false);
+  let picking = $state(false);
+  const loadPicker = () => import('./BackgroundPicker.svelte');
+
+  // The picker saves right away, like on the dashboard; the rest of the
+  // form keeps waiting for its own Save button.
+  async function saveBackground(value: string) {
+    const result = await appearance.setBackground(value);
+    form.backgroundImage = result.backgroundImage;
+    onchange({ ...current, backgroundImage: result.backgroundImage });
+  }
 
   async function submit(e: SubmitEvent) {
     e.preventDefault();
@@ -81,10 +92,15 @@
       <input class="input" bind:value={form.accentColor} placeholder={t('appearance.default')} />
     </span>
   </label>
-  <label class="field">
-    <span>{t('appearance.background_image_url')}</span>
-    <input class="input" type="url" bind:value={form.backgroundImage} placeholder="https://…" />
-  </label>
+  <div class="field">
+    <span>{t('appearance.background_image')}</span>
+    <span class="bg-row">
+      <span class="bg-preview" style:background-image={backgroundCss(form.backgroundImage) ?? 'none'}></span>
+      <button class="btn" type="button" onclick={() => (picking = true)}
+        >{t('appearance.background_choose')}</button
+      >
+    </span>
+  </div>
   <label class="field">
     <span>{t('appearance.custom_css_override_variables_such_as')}</span>
     <textarea class="input css" bind:value={form.customCss} rows="6" spellcheck="false"></textarea>
@@ -103,7 +119,32 @@
   }}
 />
 
+{#if picking}
+  {#await loadPicker() then { default: BackgroundPicker }}
+    <BackgroundPicker
+      {appearance}
+      globalValue={form.backgroundImage}
+      onsave={(value) => saveBackground(value)}
+      onclose={() => (picking = false)}
+    />
+  {/await}
+{/if}
+
 <style>
+  .bg-row {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+  .bg-preview {
+    width: 5rem;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--radius-small, 6px);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    background-size: cover;
+    background-position: center;
+  }
   .color {
     display: flex;
     gap: var(--space-2);

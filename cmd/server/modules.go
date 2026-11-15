@@ -130,7 +130,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		build func() modules.Module
 	}{
 		{"onboarding", func() modules.Module { return onboarding.New(db, clk) }},
-		{"appearance", func() modules.Module { return appearance.New(db) }},
+		{"appearance", func() modules.Module { return appearance.New(db, clk, ids) }},
 		{"search", func() modules.Module { return search.New(db) }},
 		{"weather", func() modules.Module { return weather.New(client, clk) }},
 		{"services", func() modules.Module {
