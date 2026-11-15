@@ -121,12 +121,9 @@ func (uc *releases) Unfollow(ctx context.Context, id string) error {
 	if err := uc.repo.Remove(ctx, id); err != nil {
 		return fmt.Errorf("remove artist: %w", err)
 	}
-	uc.mu.Lock()
-	defer uc.mu.Unlock()
-	if uc.cached != nil {
-		name := list[i].Name
-		uc.cached.Releases = slices.DeleteFunc(slices.Clone(uc.cached.Releases), func(r domain.Release) bool { return r.Artist == name })
-	}
+	// The cache is shared by all accounts (ADR 0018) and filtered per
+	// account in List, so the artist's releases stay for others who follow
+	// it; the next refresh drops them if nobody does.
 	return nil
 }
 
@@ -143,8 +140,24 @@ func (uc *releases) List(ctx context.Context, weeks int) (ReleasesView, error) {
 		cached = uc.cached
 		uc.mu.RUnlock()
 	}
+	// The cache holds the releases of every account's artists; each account
+	// sees those of the artists it follows.
+	followed, err := uc.repo.List(ctx)
+	if err != nil {
+		return ReleasesView{}, fmt.Errorf("list artists: %w", err)
+	}
+	names := map[string]bool{}
+	for _, a := range followed {
+		names[a.Name] = true
+	}
 	v := *cached
-	v.Releases = domain.Recent(v.Releases, weeks, uc.clock.Now())
+	mine := make([]domain.Release, 0, len(v.Releases))
+	for _, rel := range v.Releases {
+		if names[rel.Artist] {
+			mine = append(mine, rel)
+		}
+	}
+	v.Releases = domain.Recent(mine, weeks, uc.clock.Now())
 	return v, nil
 }
 
@@ -153,9 +166,17 @@ var errPartial = errors.New("some artists could not be loaded")
 // Refresh implements Releases. Requests are sequential because MusicBrainz
 // allows one per second; the provider enforces the rate.
 func (uc *releases) Refresh(ctx context.Context) error {
-	artists, err := uc.repo.List(ctx)
+	// The cache serves all accounts, so it is filled with every account's
+	// artists, each loaded once, whoever triggers the refresh.
+	all, err := uc.repo.List(kernel.WithPrincipal(ctx, kernel.Principal{AccountID: kernel.SystemAccountID, Role: "system"}))
 	if err != nil {
 		return fmt.Errorf("list artists: %w", err)
+	}
+	var artists []domain.Artist
+	for _, a := range all {
+		if !slices.ContainsFunc(artists, func(x domain.Artist) bool { return x.ID == a.ID }) {
+			artists = append(artists, a)
+		}
 	}
 	now := uc.clock.Now()
 	since := now.AddDate(0, 0, -7*domain.MaxWeeks)
