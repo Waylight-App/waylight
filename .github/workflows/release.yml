@@ -96,8 +96,34 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: extension
         run: |
+          # The add-on carries the release version, so every store upload is
+          # a new version (addons.mozilla.org refuses a version twice).
+          version="${GITHUB_REF_NAME#v}"
+          case "$version" in
+            *[!0-9.]*|"") echo "tag $GITHUB_REF_NAME is not x.y.z; keeping the manifest version" ;;
+            *) node -e 'const fs=require("fs");const m=JSON.parse(fs.readFileSync("manifest.json"));m.version=process.argv[1];fs.writeFileSync("manifest.json",JSON.stringify(m,null,2)+"\n")' "$version" ;;
+          esac
           npm test && npm run check && npm run build
           gh release upload "$GITHUB_REF_NAME" dist/*.zip --clobber
+      - name: Submit the extension to addons.mozilla.org (#290)
+        # Runs once the maintainer has stored AMO API credentials
+        # (addons.mozilla.org → Developer Hub → Manage API Keys) as the
+        # secrets AMO_JWT_ISSUER and AMO_JWT_SECRET; without them it skips.
+        # web-ext only runs here in CI and is not a dependency of the add-on.
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        working-directory: extension
+        run: |
+          if [ -z "$AMO_JWT_ISSUER" ] || [ -z "$AMO_JWT_SECRET" ]; then
+            echo "AMO credentials not set; skipping the store submission"
+            exit 0
+          fi
+          # Sign exactly the files of the released zip.
+          mkdir -p amo-src && cd amo-src && unzip -q ../dist/trisse-home-extension-*.zip
+          npx --yes web-ext@8.3.0 sign --source-dir . --artifacts-dir ../dist/amo \
+            --channel listed --amo-metadata ../store/amo-metadata.json --approval-timeout 0 \
+            --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET"
 
   # Native .deb packages for amd64 and arm64 (ADR 0015), attached to the release.
   packages:

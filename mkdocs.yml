@@ -58,6 +58,7 @@ nav:
       - Accounts, guests and kiosk displays: accounts.md
       - Appearance: appearance.md
       - Phones, offline and the extension: apps-and-offline.md
+      - Privacy of the extension: extension-privacy.md
       - Accessibility: accessibility.md
       - Modules:
           - modules/README.md
