@@ -6,8 +6,13 @@
   /** Settings → Birthdays (#287): vCard import, CardDAV address book and reminder. */
   interface Props {
     birthdays: BirthdaysUseCases;
+    /**
+     * The reminder goes to the instance's notification channels, so the
+     * server lets only admins switch it on (#382); members don't see it (#387).
+     */
+    admin?: boolean;
   }
-  let { birthdays }: Props = $props();
+  let { birthdays, admin = true }: Props = $props();
 
   let remindEnabled = $state(false);
   let remindAt = $state('08:00');
@@ -104,19 +109,21 @@
     >
   {/if}
 
-  <h3>{t('birthdays.remind_title')}</h3>
-  <label class="check"
-    ><input type="checkbox" bind:checked={remindEnabled} /> {t('birthdays.remind_on')}</label
-  >
-  {#if remindEnabled}
-    <label class="field time"
-      ><span>{t('birthdays.remind_at')}</span><input
-        class="input"
-        type="time"
-        bind:value={remindAt}
-        required
-      /></label
+  {#if admin}
+    <h3>{t('birthdays.remind_title')}</h3>
+    <label class="check"
+      ><input type="checkbox" bind:checked={remindEnabled} /> {t('birthdays.remind_on')}</label
     >
+    {#if remindEnabled}
+      <label class="field time"
+        ><span>{t('birthdays.remind_at')}</span><input
+          class="input"
+          type="time"
+          bind:value={remindAt}
+          required
+        /></label
+      >
+    {/if}
   {/if}
   {#if error}<p class="error" role="alert">{error}</p>{/if}
   {#if message}<p class="muted" role="status">{message}</p>{/if}

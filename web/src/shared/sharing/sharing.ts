@@ -13,6 +13,14 @@ export type Visibility = string;
 export const groupVisibility = (id: string): Visibility => `group:${id}`;
 
 /**
+ * True when a value names a group that is not in the list: the group was
+ * deleted, or the account is no longer in it. The record is then visible to
+ * its owner only, and the choice must still show that state (#390).
+ */
+export const isUnknownGroup = (value: Visibility, groups: ShareGroup[]): boolean =>
+  value.startsWith('group:') && !groups.some((g) => groupVisibility(g.id) === value);
+
+/**
  * Loads the groups the signed-in account may share with: its own groups, or
  * every group for an admin. Used by the gateways of shareable features.
  */

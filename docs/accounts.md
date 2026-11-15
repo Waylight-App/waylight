@@ -96,6 +96,26 @@ see only yours, and guests keep seeing exactly the tabs you shared with them.
 
 Account and group changes are written to the security log.
 
+### Sharing notes and to-dos
+
+A note or a to-do belongs to the account that created it, and only that
+account can decide who else sees it. The note editor and the to-do dialog
+have a *Who can see this* choice:
+
+- **Only me**: nobody else sees the record.
+- **Group: …**: the members and guests of that group can read it. You can
+  pick the groups you belong to; an admin can pick any group.
+- **Everyone on this dashboard**: every account on the instance can read it.
+
+Shared records are read-only for everyone but the owner. This also applies to
+admins: an admin sees another account's notes and to-dos only when they are
+shared with the admin, a group the admin is in, or everyone.
+
+If a group is deleted, the records shared with it become private again. The
+choice then shows *A group that no longer exists* until the owner picks
+something else. To-dos from an external list (CalDAV or another provider)
+cannot be shared and have no sharing choice.
+
 ## Kiosk displays
 
 A kiosk display shows tabs on a device that hangs on the wall or stands in

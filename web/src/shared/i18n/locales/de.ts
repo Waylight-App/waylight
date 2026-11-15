@@ -969,6 +969,7 @@ export const de: Record<BaseMessageKey, string> = {
   'sharing.private': 'Nur ich',
   'sharing.everyone': 'Alle auf diesem Dashboard',
   'sharing.group': 'Gruppe: {name}',
+  'sharing.unknown_group': 'Eine Gruppe, die es nicht mehr gibt (nur du siehst das)',
   'sharing.not_yours': 'Mit dir geteilt; nur der Eigentümer kann es ändern.',
   'auth.private_by_default': 'Meine neuen Einträge sind privat',
   'auth.private_by_default_hint':
@@ -993,6 +994,9 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.no_groups': 'Noch keine Gruppen.',
   'auth.group_name': 'Name der neuen Gruppe',
   'auth.create_group': 'Gruppe anlegen',
+  'auth.member_groups': 'Gruppen: {groups}',
+  'auth.group_rename': 'Umbenennen',
+  'auth.group_rename_label': 'Neuer Name für {name}',
   'auth.group_name_invalid': 'Der Gruppenname muss 1–40 Zeichen lang sein.',
   'auth.guests_hint':
     'Gäste melden sich mit eigenem Namen und Passwort an und sehen nur die Tabs, die du freigibst. Sie können nichts ändern und sehen keine Einstellungen oder Zugangsdaten. Hinweis: Ein Widget zeigt alle Daten seines Moduls – ein freigegebenes Notizen-Widget zeigt alle Notizen.',

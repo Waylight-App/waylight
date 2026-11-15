@@ -65,9 +65,13 @@ type sourceKey struct {
 
 type cached struct {
 	settings domain.Settings
-	deals    []domain.Deal
-	free     []domain.FreeGame
-	errors   []string
+	// usedAt is the last time an account asked for this entry; the job
+	// forgets entries nobody asked for within StaleAfter (#391), e.g. the
+	// old Steam ID after an account switched to a new one.
+	usedAt time.Time
+	deals  []domain.Deal
+	free   []domain.FreeGame
+	errors []string
 }
 
 func keyOf(s domain.Settings) sourceKey { return sourceKey{s.SteamID, s.Country, s.Epic} }
@@ -111,13 +115,15 @@ func (uc *gameDeals) Overview(ctx context.Context) (domain.Overview, error) {
 	if !loaded {
 		_ = uc.refreshFor(ctx, s)
 	}
-	uc.mu.RLock()
-	defer uc.mu.RUnlock()
+	// A write lock, because reading marks the entry as used.
+	uc.mu.Lock()
+	defer uc.mu.Unlock()
 	c := uc.cache[keyOf(s)]
 	if c == nil {
 		return domain.Overview{}, nil // sources switched off
 	}
 	now := uc.d.Clock.Now()
+	c.usedAt = now
 	o := domain.Overview{Errors: slices.Clone(c.errors), Deals: domain.FilterDeals(c.deals, s.MinDiscount)}
 	o.Deals = o.Deals[:min(len(o.Deals), MaxDeals)]
 	for _, g := range c.free {
@@ -133,20 +139,25 @@ func (uc *gameDeals) Overview(ctx context.Context) (domain.Overview, error) {
 
 // Refresh implements GameDeals: the job reloads the principal's sources
 // (the admin's, when it runs as the system) and every set of sources that
-// was asked for since the start.
+// was asked for within StaleAfter; older entries are dropped.
 func (uc *gameDeals) Refresh(ctx context.Context) error {
 	s, err := uc.d.Repo.Load(ctx)
 	if err != nil {
 		return fmt.Errorf("load settings: %w", err)
 	}
-	uc.mu.RLock()
+	now := uc.d.Clock.Now()
+	uc.mu.Lock()
 	all := []domain.Settings{s}
 	for k, c := range uc.cache {
-		if k != keyOf(s) {
+		switch {
+		case k == keyOf(s):
+		case now.Sub(c.usedAt) > StaleAfter:
+			delete(uc.cache, k) // deleting during range is safe in Go
+		default:
 			all = append(all, c.settings)
 		}
 	}
-	uc.mu.RUnlock()
+	uc.mu.Unlock()
 	var errs []error
 	for _, one := range all {
 		errs = append(errs, uc.refreshFor(ctx, one))
@@ -179,7 +190,9 @@ func (uc *gameDeals) refreshFor(ctx context.Context, s domain.Settings) error {
 	defer uc.mu.Unlock()
 	c := uc.cache[keyOf(s)]
 	if c == nil {
-		c = &cached{}
+		// A new entry counts as used: it was loaded because someone
+		// asked for it (overview or saved settings).
+		c = &cached{usedAt: uc.d.Clock.Now()}
 		uc.cache[keyOf(s)] = c
 	}
 	c.settings = s
@@ -195,3 +208,6 @@ func (uc *gameDeals) refreshFor(ctx context.Context, s domain.Settings) error {
 
 // RefreshInterval is how often the job runs: offers change at most daily.
 const RefreshInterval = 12 * time.Hour
+
+// StaleAfter is how long the job keeps refreshing an entry nobody asks for.
+const StaleAfter = 24 * time.Hour

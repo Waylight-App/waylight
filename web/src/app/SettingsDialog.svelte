@@ -212,7 +212,7 @@
         <FeedsManager rss={container.rss} />
       {:else if current === 'folders'}
         <FoldersManager bookmarks={container.bookmarks} />
-        <BookmarkLinkSettings bookmarks={container.bookmarks} />
+        {#if container.auth.admin}<BookmarkLinkSettings bookmarks={container.bookmarks} />{/if}
       {:else if current === 'calendar'}
         <CalendarSettings calendar={container.calendar} />
       {:else if current === 'transfer'}
