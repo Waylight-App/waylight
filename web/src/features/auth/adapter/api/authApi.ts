@@ -13,6 +13,7 @@ import type {
   GuestDTO,
   GroupDTO,
   MemberDTO,
+  PreferencesDTO,
   MembersDTO,
   KioskCreatedDTO,
   KioskDTO,
@@ -30,6 +31,7 @@ import type {
   GuestRequestDTO,
   GroupRequestDTO,
   MemberRequestDTO,
+  PreferencesRequestDTO,
   LoginRequestDTO,
   PasskeyLoginDTO,
   PasskeyRegistrationDTO,
@@ -223,6 +225,15 @@ export class AuthApi implements AuthGateway {
 
   deleteGroup(id: string): Promise<void> {
     return this.http.delete(`/api/auth/groups/${encodeURIComponent(id)}`);
+  }
+
+  async privateByDefault(): Promise<boolean> {
+    return (await this.http.get<PreferencesDTO>('/api/auth/preferences')).privateByDefault;
+  }
+
+  async setPrivateByDefault(on: boolean): Promise<void> {
+    const body: PreferencesRequestDTO = { privateByDefault: on };
+    await this.http.put<PreferencesDTO>('/api/auth/preferences', body);
   }
 
   async kiosks(): Promise<KioskDisplay[]> {

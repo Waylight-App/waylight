@@ -47,6 +47,8 @@ function setup(status: Partial<AuthStatus> = {}) {
     createGroup: vi.fn(),
     updateGroup: vi.fn(),
     deleteGroup: vi.fn(),
+    privateByDefault: vi.fn(),
+    setPrivateByDefault: vi.fn(),
     kiosks: vi.fn(),
     createKiosk: vi.fn().mockResolvedValue({ kiosk: {}, token: 't' }),
     updateKiosk: vi.fn(),

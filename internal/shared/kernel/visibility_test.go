@@ -59,3 +59,17 @@ func TestPrincipalWithoutRequestIsSystem(t *testing.T) {
 		t.Fatalf("%+v", p)
 	}
 }
+
+func TestDefaultVisibility(t *testing.T) {
+	if DefaultVisibility(Principal{Role: "member"}) != Private {
+		t.Fatal("members start private")
+	}
+	if DefaultVisibility(AdminPrincipal()) != Everyone {
+		t.Fatal("the admin keeps everyone by default")
+	}
+	admin := AdminPrincipal()
+	admin.PrivateByDefault = true
+	if DefaultVisibility(admin) != Private {
+		t.Fatal("the admin's choice of private is respected")
+	}
+}

@@ -182,6 +182,11 @@ func Groups(list []usecase.GroupView) []GroupDTO {
 	return out
 }
 
+// PreferencesDTO is GET /api/auth/preferences.
+type PreferencesDTO struct {
+	PrivateByDefault bool `json:"privateByDefault"`
+}
+
 // TokenDTO describes an API token without its secret.
 type TokenDTO struct {
 	ID         string     `json:"id"`

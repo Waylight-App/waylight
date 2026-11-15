@@ -31,6 +31,7 @@ type UseCases struct {
 	Guests         usecase.Guests
 	Members        usecase.Members
 	Groups         usecase.Groups
+	Preferences    usecase.Preferences
 	Kiosks         usecase.Kiosks
 	APITokens      usecase.APITokens
 	// SSO is nil when no single sign-on method is configured.
@@ -408,6 +409,30 @@ func (h *Handlers) DeleteGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// GetPreferences handles GET /api/auth/preferences.
+func (h *Handlers) GetPreferences(w http.ResponseWriter, r *http.Request) {
+	on, err := h.uc.Preferences.PrivateByDefault(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.PreferencesDTO{PrivateByDefault: on})
+}
+
+// SavePreferences handles PUT /api/auth/preferences.
+func (h *Handlers) SavePreferences(w http.ResponseWriter, r *http.Request) {
+	var dto PreferencesRequestDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	if err := h.uc.Preferences.SetPrivateByDefault(r.Context(), dto.PrivateByDefault); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.PreferencesDTO(dto))
 }
 
 // ListTokens handles GET /api/auth/tokens.

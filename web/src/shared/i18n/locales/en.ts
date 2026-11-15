@@ -942,6 +942,9 @@ export const en = {
   'auth.guest_name_invalid': 'Use 2–32 lowercase letters, digits, dots, dashes or underscores.',
   'settings.section.guests': 'Guests',
   'settings.section.members': 'Members and groups',
+  'auth.private_by_default': 'My new entries are private',
+  'auth.private_by_default_hint':
+    'Until now your notes, to-dos and lists were visible to everyone on this instance. With members, choose whether your new entries are only for you. Existing entries stay as they are.',
   'auth.members_hint':
     'Members are full accounts with their own tabs, notes and lists. They cannot change instance settings. Groups name a set of members and guests that records can be shared with.',
   'auth.members_unavailable':

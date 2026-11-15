@@ -20,6 +20,10 @@ type Principal struct {
 	// Groups the account belongs to (#294); records shared with one of
 	// them are visible to it (ADR 0018).
 	Groups []string
+	// PrivateByDefault is the admin's choice that their own new records
+	// start private (ADR 0018, migration step 3). Members always start
+	// private.
+	PrivateByDefault bool
 }
 
 // SystemAccountID is the account that background jobs act for. It is the
