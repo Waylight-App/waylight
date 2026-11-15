@@ -401,6 +401,9 @@ export const de: Record<BaseMessageKey, string> = {
   'bookmarks.setting_enrich':
     'Titel und Favicon beim Hinzufügen abrufen (das Icon wird auf diesem Server gespeichert)',
   'bookmarks.setting_check_links': 'Alle Links einmal pro Woche prüfen und defekte markieren',
+  'bookmarks.folder_sharing_hint':
+    'Teile einen Ordner mit einer Gruppe, um ihr eine Linkliste zu geben. Ihre Mitglieder sehen die Links im Widget, im Launcher und in der Suche, ändern kann sie nur du.',
+  'bookmarks.shared_with_you': 'Mit dir geteilt',
   'bookmarks.links_privacy':
     'Standardmäßig aus. Wenn aktiv, ruft dieser Server die verlinkten Seiten selbst ab (8 s Timeout, höchstens 512 KB, keine Loopback- oder Link-Local-Adressen).',
   'bookmarks.save': 'Speichern',

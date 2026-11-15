@@ -392,6 +392,9 @@ export const en = {
   'bookmarks.setting_enrich':
     'Fetch title and favicon when a bookmark is added (the icon is stored on this server)',
   'bookmarks.setting_check_links': 'Check all links once a week and mark broken ones',
+  'bookmarks.folder_sharing_hint':
+    'Share a folder with a group to give it a list of links. Its members see the links in the widget, the launcher and the search, but only you can change them.',
+  'bookmarks.shared_with_you': 'Shared with you',
   'bookmarks.links_privacy':
     'Off by default. When enabled, this server requests the bookmarked pages themselves (8 s timeout, at most 512 KB, no loopback or link-local addresses).',
   'bookmarks.save': 'Save',

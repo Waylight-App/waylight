@@ -22,6 +22,12 @@ export interface BookmarkDTO {
    * HasIcon reports whether a favicon is stored (GET /api/bookmarks/{id}/icon).
    */
   hasIcon: boolean;
+  /**
+   * Visibility is "private", "everyone" or "group:<id>"; Mine is false
+   * for a bookmark shared with the viewer (ADR 0018, #298).
+   */
+  visibility: string;
+  mine: boolean;
 }
 /**
  * LinkDTO is a link check result: state "" (not checked), "ok",
@@ -48,6 +54,12 @@ export interface FolderDTO {
   name: string;
   position: number /* int */;
   count: number /* int */;
+  /**
+   * Visibility and Mine: a folder shared with a group is its link
+   * directory; only the owner changes it (#298).
+   */
+  visibility: string;
+  mine: boolean;
 }
 /**
  * TagDTO is a tag with its usage count.

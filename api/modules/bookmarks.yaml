@@ -114,6 +114,17 @@ paths:
       responses:
         "204": { description: Deleted }
         "404": { $ref: "#/components/responses/NotFound" }
+  /api/bookmarks/folders/{id}/visibility:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    put:
+      tags: [bookmarks]
+      summary: Share a folder and its bookmarks with only the owner, a group or everyone (owner only, ADR 0018); a folder shared with a group is that group's link directory (#298)
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [visibility], properties: { visibility: { type: string, description: '"private", "everyone" or "group:<id>"' } } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Folder" } } } }
+        "403": { description: Not the owner, or not a group of the account }
+        "404": { $ref: "#/components/responses/NotFound" }
 
 schemas:
   Name: { type: object, required: [name], properties: { name: { type: string } } }
@@ -134,6 +145,8 @@ schemas:
           id: { type: string }
           createdAt: { type: string, format: date-time }
           hasIcon: { type: boolean, description: "A favicon is stored (GET /api/bookmarks/{id}/icon)" }
+          visibility: { type: string, description: Follows the folder the bookmark is in }
+          mine: { type: boolean, description: False for a bookmark shared with the viewer (read-only) }
           link:
             type: object
             description: Result of the last link check
@@ -143,7 +156,15 @@ schemas:
               target: { type: string, description: Final URL of a redirect }
               checkedAt: { type: string, description: RFC 3339 or empty }
   BookmarkSettings: { type: object, properties: { enrich: { type: boolean }, checkLinks: { type: boolean } } }
-  Folder: { type: object, properties: { id: { type: string }, name: { type: string }, position: { type: integer }, count: { type: integer } } }
+  Folder:
+    type: object
+    properties:
+      id: { type: string }
+      name: { type: string }
+      position: { type: integer }
+      count: { type: integer }
+      visibility: { type: string, description: '"private", "everyone" or "group:<id>"' }
+      mine: { type: boolean, description: False for a folder shared with the viewer }
   BookmarkList:
     type: object
     properties:

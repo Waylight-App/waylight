@@ -26,3 +26,10 @@ export interface SettingsInputDTO {
 export interface FolderInputDTO {
   name: string;
 }
+/**
+ * VisibilityDTO is the body of PUT /api/bookmarks/folders/{id}/visibility:
+ * "private", "everyone" or "group:<id>" (ADR 0018, #298).
+ */
+export interface VisibilityDTO {
+  visibility: string;
+}

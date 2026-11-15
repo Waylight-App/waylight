@@ -116,6 +116,19 @@ choice then shows *A group that no longer exists* until the owner picks
 something else. To-dos from an external list (CalDAV or another provider)
 cannot be shared and have no sharing choice.
 
+### Link directories for groups
+
+A bookmark folder can be shared the same way. In *Settings → Bookmarks*,
+pick who can see a folder: only you, a group or everyone. All
+bookmarks in the folder follow that choice, including ones you add later.
+
+Shared with a group, the folder becomes that group's link directory: its
+members see the links in the launcher and the search next to their own, and
+in the bookmarks widget marked with 👥. Only the folder's owner can change, add
+or remove links; for everyone else they are read-only, and nobody can file
+their own bookmarks into someone else's folder. Personal bookmarks outside
+shared folders stay private.
+
 ## Kiosk displays
 
 A kiosk display shows tabs on a device that hangs on the wall or stands in

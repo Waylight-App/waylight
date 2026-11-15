@@ -13,6 +13,10 @@ export interface Bookmark {
   hasIcon: boolean;
   /** ISO time the bookmark was added. */
   createdAt: string;
+  /** "private", "everyone" or "group:<id>"; follows its folder (#298). */
+  visibility: string;
+  /** False for a bookmark someone shared with the viewer; it is read-only. */
+  mine: boolean;
 }
 
 /** Result of a link check; state '' = not checked yet. */
@@ -56,6 +60,10 @@ export interface Folder {
   id: string;
   name: string;
   count: number;
+  /** "private", "everyone" or "group:<id>": a folder shared with a group is its link directory (#298). */
+  visibility: string;
+  /** False for a folder someone shared with the viewer. */
+  mine: boolean;
 }
 
 /** A tag with its usage count. */

@@ -56,7 +56,7 @@ func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, client *http.Cl
 			CheckLink: usecase.NewCheckLink(d), Icon: usecase.NewGetIcon(d),
 			List: usecase.NewListBookmarks(d), Create: usecase.NewCreateBookmark(d), Update: usecase.NewUpdateBookmark(d),
 			Delete: usecase.NewDeleteBookmark(d), CreateFolder: usecase.NewCreateFolder(d),
-			RenameFolder: usecase.NewRenameFolder(d), DeleteFolder: usecase.NewDeleteFolder(d),
+			RenameFolder: usecase.NewRenameFolder(d), ShareFolder: usecase.NewShareFolder(d), DeleteFolder: usecase.NewDeleteFolder(d),
 			Import: usecase.NewImportBookmarks(d),
 		})}
 }
@@ -128,6 +128,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("DELETE /api/bookmarks/{id}", h.Delete)
 	r.Protected("POST /api/bookmarks/folders", h.CreateFolder)
 	r.Protected("PATCH /api/bookmarks/folders/{id}", h.RenameFolder)
+	r.Protected("PUT /api/bookmarks/folders/{id}/visibility", h.ShareFolder)
 	r.Protected("DELETE /api/bookmarks/folders/{id}", h.DeleteFolder)
 	r.Protected("POST /api/bookmarks/import", h.Import)
 }
