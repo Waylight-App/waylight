@@ -129,3 +129,25 @@ export interface KioskRequestDTO {
 export interface KioskLoginDTO {
   token: string;
 }
+/**
+ * InviteRequestDTO is the body of POST /api/auth/invites (#296).
+ */
+export interface InviteRequestDTO {
+  name: string;
+  role: string;
+  tabs: string[];
+  validDays: number /* int */;
+}
+/**
+ * LinkTokenDTO is the body of POST /api/auth/link/inspect.
+ */
+export interface LinkTokenDTO {
+  token: string;
+}
+/**
+ * AcceptLinkDTO is the body of POST /api/auth/link/accept.
+ */
+export interface AcceptLinkDTO {
+  token: string;
+  password: string;
+}

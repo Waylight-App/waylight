@@ -4,6 +4,9 @@ import {
   type AuthView,
   type Group,
   type Guest,
+  type Invite,
+  type InviteInput,
+  type LinkInfo,
   type Member,
   type MemberList,
   type KioskDisplay,
@@ -238,6 +241,39 @@ export class AuthUseCases {
 
   setPrivateByDefault(on: boolean): Promise<void> {
     return this.gateway.setPrivateByDefault(on);
+  }
+
+  /** Open invitations (admin only, #296). */
+  invites(): Promise<Invite[]> {
+    return this.gateway.invites();
+  }
+
+  /** Invites a member or a guest; the token is shown once. */
+  async createInvite(input: InviteInput): Promise<{ invite: Invite; token: string }> {
+    const name = input.name.trim().toLowerCase();
+    if (!validGuestName(name)) throw new ValidationError(t('auth.guest_name_invalid'));
+    return this.gateway.createInvite({ ...input, name, tabs: input.role === 'guest' ? input.tabs : [] });
+  }
+
+  revokeInvite(id: string): Promise<void> {
+    return this.gateway.revokeInvite(id);
+  }
+
+  /** A link that lets a member or guest set a new password (24 hours). */
+  createResetLink(accountId: string): Promise<{ token: string; expiresAt: Date }> {
+    return this.gateway.createResetLink(accountId);
+  }
+
+  /** What an invitation or reset link is for; public. */
+  inspectLink(token: string): Promise<LinkInfo> {
+    return this.gateway.inspectLink(token);
+  }
+
+  /** Sets the password behind an invitation or reset link; public. */
+  async acceptLink(token: string, password: string, confirmation: string): Promise<LinkInfo> {
+    const problem = validateNewPassword(password, confirmation);
+    if (problem) throw new ValidationError(problem);
+    return this.gateway.acceptLink(token, password);
   }
 
   /** Kiosk displays (owner only, #50). */

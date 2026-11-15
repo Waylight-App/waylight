@@ -10,9 +10,12 @@ import type {
   AuthStatus,
   Group,
   Guest,
+  Invite,
+  InviteInput,
   KioskDisplay,
   KioskInput,
   KioskOptions,
+  LinkInfo,
   MemberList,
   Member,
   Session,
@@ -54,6 +57,12 @@ export interface AuthGateway {
   deleteKiosk(id: string): Promise<void>;
   kioskLogin(token: string): Promise<Session>;
   kioskOptions(): Promise<KioskOptions>;
+  invites(): Promise<Invite[]>;
+  createInvite(input: InviteInput): Promise<{ invite: Invite; token: string }>;
+  revokeInvite(id: string): Promise<void>;
+  createResetLink(accountId: string): Promise<{ token: string; expiresAt: Date }>;
+  inspectLink(token: string): Promise<LinkInfo>;
+  acceptLink(token: string, password: string): Promise<LinkInfo>;
   apiTokens(): Promise<ApiToken[]>;
   createApiToken(name: string, scopes: string[], expiresInDays: number): Promise<string>;
   revokeApiToken(id: string): Promise<void>;

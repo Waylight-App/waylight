@@ -56,6 +56,12 @@ function setup(status: Partial<AuthStatus> = {}) {
     deleteKiosk: vi.fn(),
     kioskLogin: vi.fn().mockResolvedValue({ csrfToken: 'c' }),
     kioskOptions: vi.fn(),
+    invites: vi.fn().mockResolvedValue([]),
+    createInvite: vi.fn().mockResolvedValue({ invite: {}, token: 't' }),
+    revokeInvite: vi.fn(),
+    createResetLink: vi.fn(),
+    inspectLink: vi.fn(),
+    acceptLink: vi.fn().mockResolvedValue({ purpose: 'invite', name: 'lena' }),
     apiTokens: vi.fn().mockResolvedValue([]),
     createApiToken: vi.fn().mockResolvedValue('th_secret'),
     revokeApiToken: vi.fn(),
@@ -153,6 +159,27 @@ describe('AuthUseCases', () => {
     expect(csrf.setCsrfToken).toHaveBeenLastCalledWith('csrf-1');
     expect(await uc.addPasskey('Key')).toEqual(['abcd-efgh']);
     expect(authenticator.create).toHaveBeenCalled();
+  });
+
+  it('validates invitations and the password behind a link (#296)', async () => {
+    const { uc, gateway } = setup();
+    await expect(uc.createInvite({ name: 'A', role: 'guest', tabs: [], validDays: 7 })).rejects.toThrow(
+      ValidationError,
+    );
+    await uc.createInvite({ name: ' Lena ', role: 'member', tabs: ['home'], validDays: 7 });
+    expect(gateway.createInvite).toHaveBeenCalledWith({
+      name: 'lena',
+      role: 'member',
+      tabs: [],
+      validDays: 7,
+    });
+
+    await expect(uc.acceptLink('t', 'member-password-1', 'other-password-1')).rejects.toThrow(
+      ValidationError,
+    );
+    expect(gateway.acceptLink).not.toHaveBeenCalled();
+    await uc.acceptLink('t', 'member-password-1', 'member-password-1');
+    expect(gateway.acceptLink).toHaveBeenCalledWith('t', 'member-password-1');
   });
 
   it('validates new members and group names before calling the backend', async () => {

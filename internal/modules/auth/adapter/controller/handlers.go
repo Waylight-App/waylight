@@ -33,6 +33,7 @@ type UseCases struct {
 	Groups         usecase.Groups
 	Preferences    usecase.Preferences
 	Kiosks         usecase.Kiosks
+	AccountLinks   usecase.AccountLinks
 	APITokens      usecase.APITokens
 	// SSO is nil when no single sign-on method is configured.
 	SSO      usecase.SSO
@@ -730,4 +731,82 @@ func (h *Handlers) KioskOptions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpapi.WriteJSON(w, http.StatusOK, presenter.KioskOptions(o))
+}
+
+// ListInvites handles GET /api/auth/invites (#296).
+func (h *Handlers) ListInvites(w http.ResponseWriter, r *http.Request) {
+	list, err := h.uc.AccountLinks.Invites(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Invites(list))
+}
+
+// CreateInvite handles POST /api/auth/invites; the token is returned once.
+func (h *Handlers) CreateInvite(w http.ResponseWriter, r *http.Request) {
+	var dto InviteRequestDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	v, token, err := h.uc.AccountLinks.CreateInvite(r.Context(), usecase.InviteInput(dto))
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusCreated, presenter.InviteCreatedDTO{Invite: presenter.Invite(v), Token: token})
+}
+
+// RevokeInvite handles DELETE /api/auth/invites/{id}.
+func (h *Handlers) RevokeInvite(w http.ResponseWriter, r *http.Request) {
+	if err := h.uc.AccountLinks.RevokeInvite(r.Context(), r.PathValue("id")); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// CreateResetLink handles POST /api/auth/accounts/{id}/reset-link.
+func (h *Handlers) CreateResetLink(w http.ResponseWriter, r *http.Request) {
+	token, expires, err := h.uc.AccountLinks.CreateResetLink(r.Context(), r.PathValue("id"))
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusCreated, presenter.ResetLinkDTO{Token: token, ExpiresAt: expires})
+}
+
+// InspectLink handles POST /api/auth/link/inspect: what an invitation or
+// reset link is for. The token comes in the body, never in a URL.
+func (h *Handlers) InspectLink(w http.ResponseWriter, r *http.Request) {
+	var dto LinkTokenDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	info, err := h.uc.AccountLinks.Inspect(r.Context(), dto.Token, clientKey(r))
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.LinkInfo(info))
+}
+
+// AcceptLink handles POST /api/auth/link/accept: sets the password of the
+// invited account or the reset one. It does not sign in.
+func (h *Handlers) AcceptLink(w http.ResponseWriter, r *http.Request) {
+	var dto AcceptLinkDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	info, err := h.uc.AccountLinks.Accept(r.Context(), usecase.AcceptLinkRequest{
+		Token: dto.Token, Password: dto.Password, ClientKey: clientKey(r), UserAgent: r.UserAgent(),
+	})
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.LinkInfo(info))
 }
