@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"trisse-home/internal/modules/drop/domain"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -49,9 +50,22 @@ func scan(row interface{ Scan(...any) error }) (domain.Item, error) {
 	return i, err
 }
 
+// mine is the condition for the principal's drop items (they move things between the own devices). The list is personal:
+// an account sees only its own, also when the admin's are visible to
+// everyone; guests and kiosk displays see what is shared (ADR 0018).
+func mine(ctx context.Context) (string, []any) {
+	p := kernel.PrincipalFrom(ctx)
+	if p.TabScoped() {
+		return sqlutil.VisibleTo(p, "")
+	}
+	return sqlutil.OwnedBy(p, "")
+}
+
 // List implements usecase.Repository.
 func (r *Repository) List(ctx context.Context) ([]domain.Item, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM drop_items`)
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM drop_items WHERE `+cond, args...)
 	if err != nil {
 		return nil, fmt.Errorf("select items: %w", err)
 	}
@@ -69,7 +83,8 @@ func (r *Repository) List(ctx context.Context) ([]domain.Item, error) {
 
 // Get implements usecase.Repository.
 func (r *Repository) Get(ctx context.Context, id string) (domain.Item, error) {
-	i, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM drop_items WHERE id = ?`, id))
+	cond, args := mine(ctx)
+	i, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM drop_items WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Item{}, domain.ErrNotFound
 	}
@@ -90,8 +105,10 @@ func (r *Repository) Add(ctx context.Context, i domain.Item, data []byte) (err e
 			_ = tx.Rollback()
 		}
 	}()
-	if _, err = tx.ExecContext(ctx, `INSERT INTO drop_items (`+columns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-		i.ID, string(i.Kind), i.Text, i.FileName, i.ContentType, i.Size, sqlutil.FormatTime(i.CreatedAt), sqlutil.FormatTime(i.ExpiresAt)); err != nil {
+	p := kernel.PrincipalFrom(ctx)
+	if _, err = tx.ExecContext(ctx, `INSERT INTO drop_items (`+columns+`, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		i.ID, string(i.Kind), i.Text, i.FileName, i.ContentType, i.Size, sqlutil.FormatTime(i.CreatedAt), sqlutil.FormatTime(i.ExpiresAt),
+		p.AccountID, string(kernel.DefaultVisibility(p))); err != nil {
 		return fmt.Errorf("insert item: %w", err)
 	}
 	if data != nil {
@@ -102,12 +119,16 @@ func (r *Repository) Add(ctx context.Context, i domain.Item, data []byte) (err e
 	return tx.Commit()
 }
 
-// Delete implements usecase.Repository.
+// Delete implements usecase.Repository for the item's owner.
 func (r *Repository) Delete(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM drop_files WHERE item_id = ?`, id); err != nil {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM drop_files WHERE item_id = ? AND item_id IN (SELECT id FROM drop_items WHERE `+owned+`)`,
+		append([]any{id}, args...)...); err != nil {
 		return fmt.Errorf("delete file: %w", err)
 	}
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM drop_items WHERE id = ?`, id); err != nil {
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM drop_items WHERE id = ? AND `+owned, append([]any{id}, args...)...); err != nil {
 		return fmt.Errorf("delete item: %w", err)
 	}
 	return nil
@@ -116,7 +137,9 @@ func (r *Repository) Delete(ctx context.Context, id string) error {
 // File implements usecase.Repository.
 func (r *Repository) File(ctx context.Context, id string) ([]byte, error) {
 	var data []byte
-	err := r.db.QueryRowContext(ctx, `SELECT data FROM drop_files WHERE item_id = ?`, id).Scan(&data)
+	cond, args := mine(ctx)
+	err := r.db.QueryRowContext(ctx, `SELECT data FROM drop_files WHERE item_id = ? AND item_id IN (SELECT id FROM drop_items WHERE `+cond+`)`,
+		append([]any{id}, args...)...).Scan(&data)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, domain.ErrNotFound
 	}
@@ -129,10 +152,16 @@ func (r *Repository) File(ctx context.Context, id string) ([]byte, error) {
 // DeleteExpired implements usecase.Repository.
 func (r *Repository) DeleteExpired(ctx context.Context, now time.Time) (int, error) {
 	at := sqlutil.FormatTime(now)
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM drop_files WHERE item_id IN (SELECT id FROM drop_items WHERE expires_at <= ?)`, at); err != nil {
+	// The cleanup job runs as the system and removes everyone's expired
+	// items; an account only its own.
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM drop_files WHERE item_id IN (SELECT id FROM drop_items WHERE expires_at <= ? AND `+owned+`)`,
+		append([]any{at}, args...)...); err != nil {
 		return 0, fmt.Errorf("delete expired files: %w", err)
 	}
-	res, err := r.db.ExecContext(ctx, `DELETE FROM drop_items WHERE expires_at <= ?`, at)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `DELETE FROM drop_items WHERE expires_at <= ? AND `+owned, append([]any{at}, args...)...)
 	if err != nil {
 		return 0, fmt.Errorf("delete expired items: %w", err)
 	}
