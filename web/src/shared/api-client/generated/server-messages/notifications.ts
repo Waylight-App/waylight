@@ -23,6 +23,7 @@ export const serverMessages = {
   srv_218a25cf9751b7dd: "The topic may contain letters, digits, - and _ (max. 64 characters).",
   srv_53e6d03eb73e5456: "There are already 10 channels.",
   srv_fc5b4d698d5d3c6f: "Unknown alert type {type}.",
+  srv_e05c34f2652ddd0f: "invalid recipient",
 } as const;
 
 /** Key of a backend message. */

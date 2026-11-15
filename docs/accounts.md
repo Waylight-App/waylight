@@ -142,6 +142,22 @@ Both kinds of link:
 The link does not sign anyone in. After setting the password, the person
 signs in normally, including the second factor if one is set up.
 
+**Reset by e-mail:** members and guests can store an e-mail address under
+*Settings → Account → E-mail for password reset*. On the sign-in page,
+*Sign in as guest or member → Forgot your password?* then sends a reset link
+to that address. This needs two things on the instance:
+
+- an enabled e-mail channel under *Settings → Notifications*; its mail
+  server sends the reset mails, but its own recipients get nothing;
+- `PUBLIC_URL`, because the link in the mail is built from it and never
+  from the address the request came in on.
+
+The mailed link is valid for one hour, and an account gets at most one such
+mail every five minutes. The sign-in page answers the same whether or not
+the name exists or has an address, so it does not tell anyone which accounts
+exist. The address is used for nothing else and does not appear in the
+security log.
+
 There is no reset link for the admin account. Its password is reset on the
 server, as described above.
 

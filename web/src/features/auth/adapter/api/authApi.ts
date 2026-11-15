@@ -15,6 +15,7 @@ import type {
   MemberDTO,
   PreferencesDTO,
   MembersDTO,
+  EmailDTO,
   InviteCreatedDTO,
   InviteDTO,
   KioskCreatedDTO,
@@ -48,6 +49,7 @@ import type {
   KioskLoginDTO,
   KioskRequestDTO,
   LinkTokenDTO,
+  PasswordResetRequestDTO,
 } from '../../../../shared/api-client/generated/auth-requests';
 import type { ApiToken } from '../../domain/apiToken';
 import type {
@@ -133,6 +135,7 @@ export class AuthApi implements AuthGateway {
       admin: dto.role === 'owner',
       member: dto.role === 'member',
       sso: dto.sso ?? { oidc: false, header: false, localLogin: true },
+      passwordReset: dto.passwordReset ?? false,
     };
   }
 
@@ -277,6 +280,17 @@ export class AuthApi implements AuthGateway {
       {},
     );
     return { token: r.token, expiresAt: new Date(r.expiresAt) };
+  }
+  requestPasswordReset(name: string): Promise<void> {
+    const body: PasswordResetRequestDTO = { name };
+    return this.http.post('/api/auth/password-reset', body);
+  }
+  async myEmail(): Promise<string> {
+    return (await this.http.get<EmailDTO>('/api/auth/email')).email;
+  }
+  async setMyEmail(email: string): Promise<string> {
+    const body: EmailDTO = { email };
+    return (await this.http.put<EmailDTO>('/api/auth/email', body)).email;
   }
   async inspectLink(token: string): Promise<LinkInfo> {
     const body: LinkTokenDTO = { token };

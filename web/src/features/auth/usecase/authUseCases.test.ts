@@ -17,6 +17,7 @@ function setup(status: Partial<AuthStatus> = {}) {
       admin: false,
       member: false,
       sso: { oidc: false, header: false, localLogin: true },
+      passwordReset: false,
       ...status,
     }),
     setup: vi.fn().mockResolvedValue(session),
@@ -61,6 +62,9 @@ function setup(status: Partial<AuthStatus> = {}) {
     revokeInvite: vi.fn(),
     createResetLink: vi.fn(),
     inspectLink: vi.fn(),
+    requestPasswordReset: vi.fn(),
+    myEmail: vi.fn().mockResolvedValue(''),
+    setMyEmail: vi.fn(),
     acceptLink: vi.fn().mockResolvedValue({ purpose: 'invite', name: 'lena' }),
     apiTokens: vi.fn().mockResolvedValue([]),
     createApiToken: vi.fn().mockResolvedValue('th_secret'),
@@ -120,6 +124,7 @@ describe('AuthUseCases', () => {
       authenticated: false,
       csrfToken: null,
       sso: { oidc: false, header: true, localLogin: true },
+      passwordReset: false,
     });
     expect(await uc.currentView()).toBe('app');
     expect(gateway.headerLogin).toHaveBeenCalled();
@@ -130,6 +135,7 @@ describe('AuthUseCases', () => {
       authenticated: false,
       csrfToken: null,
       sso: { oidc: false, header: true, localLogin: true },
+      passwordReset: false,
     });
     vi.mocked(gateway.headerLogin).mockResolvedValue({ ticket: 't1' });
     expect(await uc.currentView()).toBe('login');

@@ -1043,6 +1043,20 @@ export const en = {
   'auth.event.invite_accepted': 'Invitation accepted',
   'auth.event.reset_link_created': 'Password reset link created',
   'auth.event.password_reset': 'Password reset with a link',
+  'auth.forgot_password': 'Forgot your password?',
+  'auth.reset_mail_hint':
+    'Enter your name. If your account has an e-mail address, a link to set a new password is sent there.',
+  'auth.reset_mail_send': 'Send link',
+  'auth.reset_mail_sent':
+    'If the name belongs to an account with an e-mail address, a link is on its way. It is valid for one hour.',
+  'auth.reset_email_title': 'E-mail for password reset',
+  'auth.reset_email': 'E-mail address',
+  'auth.reset_email_hint':
+    'If you forget your password, you can have a reset link sent to this address. It is used for nothing else.',
+  'auth.reset_email_unavailable':
+    'Password reset by e-mail is not set up on this instance yet; the admin can send you a reset link instead. You can store an address already.',
+  'auth.event.reset_requested': 'Password reset requested by e-mail',
+  'auth.event.email_changed': 'Reset e-mail address changed',
   'auth.event.member_changed': 'Member account changed',
   'auth.event.group_changed': 'Group changed',
   'auth.event.token_created': 'API token created',

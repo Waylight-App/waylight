@@ -110,3 +110,37 @@ func (r *AccountLinkRepository) DeleteExpired(ctx context.Context, now time.Time
 	}
 	return nil
 }
+
+// EmailRepository implements usecase.EmailRepository (#296).
+type EmailRepository struct{ db *sql.DB }
+
+// NewEmailRepository returns a repository backed by db.
+func NewEmailRepository(db *sql.DB) *EmailRepository { return &EmailRepository{db: db} }
+
+// Get implements usecase.EmailRepository; "" when none is set.
+func (r *EmailRepository) Get(ctx context.Context, accountID string) (string, error) {
+	var email string
+	err := r.db.QueryRowContext(ctx, `SELECT email FROM auth_account_emails WHERE account_id = ?`, accountID).Scan(&email)
+	if errors.Is(err, sql.ErrNoRows) {
+		return "", nil
+	}
+	if err != nil {
+		return "", fmt.Errorf("select e-mail: %w", err)
+	}
+	return email, nil
+}
+
+// Set implements usecase.EmailRepository; "" removes the address.
+func (r *EmailRepository) Set(ctx context.Context, accountID, email string) error {
+	var err error
+	if email == "" {
+		_, err = r.db.ExecContext(ctx, `DELETE FROM auth_account_emails WHERE account_id = ?`, accountID)
+	} else {
+		_, err = r.db.ExecContext(ctx, `INSERT INTO auth_account_emails (account_id, email) VALUES (?, ?)
+			ON CONFLICT (account_id) DO UPDATE SET email = excluded.email`, accountID, email)
+	}
+	if err != nil {
+		return fmt.Errorf("save e-mail: %w", err)
+	}
+	return nil
+}
