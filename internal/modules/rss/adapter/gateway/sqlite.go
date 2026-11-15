@@ -10,6 +10,7 @@ import (
 
 	"trisse-home/internal/modules/rss/domain"
 	"trisse-home/internal/modules/rss/usecase"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -45,9 +46,30 @@ func scanFeed(s interface{ Scan(...any) error }) (domain.Feed, error) {
 	return f, err
 }
 
-// ListFeeds returns all feeds ordered by title.
+// mine is the condition for the principal's subscriptions. They are
+// personal like a watch list: an account sees only its own feeds and their
+// read state, also when the admin's are visible to everyone; guests and
+// kiosk displays see what is shared (ADR 0018). The fetch job runs as the
+// system and sees all feeds.
+func mine(ctx context.Context) (string, []any) {
+	p := kernel.PrincipalFrom(ctx)
+	if p.TabScoped() {
+		return sqlutil.VisibleTo(p, "")
+	}
+	return sqlutil.OwnedBy(p, "")
+}
+
+// ownedFeeds is the condition for the feeds the principal may change (and
+// whose items it may mark as read).
+func ownedFeeds(ctx context.Context) (string, []any) {
+	return sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+}
+
+// ListFeeds returns the principal's feeds ordered by title.
 func (r *Repository) ListFeeds(ctx context.Context) ([]domain.Feed, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+feedColumns+` FROM rss_feeds ORDER BY title COLLATE NOCASE`)
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT `+feedColumns+` FROM rss_feeds WHERE `+cond+` ORDER BY title COLLATE NOCASE`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query feeds: %w", err)
 	}
@@ -65,7 +87,8 @@ func (r *Repository) ListFeeds(ctx context.Context) ([]domain.Feed, error) {
 
 // GetFeed returns one feed.
 func (r *Repository) GetFeed(ctx context.Context, id string) (domain.Feed, error) {
-	f, err := scanFeed(r.db.QueryRowContext(ctx, `SELECT `+feedColumns+` FROM rss_feeds WHERE id = ?`, id))
+	cond, args := mine(ctx)
+	f, err := scanFeed(r.db.QueryRowContext(ctx, `SELECT `+feedColumns+` FROM rss_feeds WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Feed{}, domain.ErrFeedNotFound
 	}
@@ -75,10 +98,13 @@ func (r *Repository) GetFeed(ctx context.Context, id string) (domain.Feed, error
 	return f, nil
 }
 
-// CreateFeed inserts a feed.
+// CreateFeed subscribes the principal to a feed; the same URL twice for one
+// account is ErrAlreadySubscribed.
 func (r *Repository) CreateFeed(ctx context.Context, f domain.Feed) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO rss_feeds (`+feedColumns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-		f.ID, f.URL, f.Title, f.SiteURL, sqlutil.FormatNullableTime(f.LastFetchedAt), f.LastError, sqlutil.FormatTime(f.CreatedAt), f.Category)
+	p := kernel.PrincipalFrom(ctx)
+	_, err := r.db.ExecContext(ctx, `INSERT INTO rss_feeds (`+feedColumns+`, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		f.ID, f.URL, f.Title, f.SiteURL, sqlutil.FormatNullableTime(f.LastFetchedAt), f.LastError, sqlutil.FormatTime(f.CreatedAt), f.Category,
+		p.AccountID, string(kernel.DefaultVisibility(p)))
 	if sqlutil.IsUniqueViolation(err) {
 		return domain.ErrAlreadySubscribed
 	}
@@ -90,8 +116,10 @@ func (r *Repository) CreateFeed(ctx context.Context, f domain.Feed) error {
 
 // UpdateFeed stores the fetch metadata of a feed.
 func (r *Repository) UpdateFeed(ctx context.Context, f domain.Feed) error {
-	_, err := r.db.ExecContext(ctx, `UPDATE rss_feeds SET title = ?, site_url = ?, last_fetched_at = ?, last_error = ? WHERE id = ?`,
-		f.Title, f.SiteURL, sqlutil.FormatNullableTime(f.LastFetchedAt), f.LastError, f.ID)
+	cond, args := ownedFeeds(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	_, err := r.db.ExecContext(ctx, `UPDATE rss_feeds SET title = ?, site_url = ?, last_fetched_at = ?, last_error = ? WHERE id = ? AND `+cond,
+		append([]any{f.Title, f.SiteURL, sqlutil.FormatNullableTime(f.LastFetchedAt), f.LastError, f.ID}, args...)...)
 	if err != nil {
 		return fmt.Errorf("update feed: %w", err)
 	}
@@ -100,7 +128,9 @@ func (r *Repository) UpdateFeed(ctx context.Context, f domain.Feed) error {
 
 // DeleteFeed removes a feed; its items cascade.
 func (r *Repository) DeleteFeed(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM rss_feeds WHERE id = ?`, id); err != nil {
+	cond, args := ownedFeeds(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM rss_feeds WHERE id = ? AND `+cond, append([]any{id}, args...)...); err != nil {
 		return fmt.Errorf("delete feed: %w", err)
 	}
 	return nil
@@ -113,11 +143,16 @@ func (r *Repository) AddItems(ctx context.Context, items []domain.Item) (int, er
 		return 0, fmt.Errorf("begin: %w", err)
 	}
 	defer func() { _ = tx.Rollback() }()
+	// Items go only into feeds the principal owns (the fetch job, as the
+	// system, fills all of them).
+	cond, args := ownedFeeds(ctx)
 	inserted := 0
 	for _, it := range items {
+		//nolint:gosec // the condition comes from sqlutil with bound arguments
 		res, err := tx.ExecContext(ctx, `INSERT INTO rss_items (id, feed_id, guid, title, link, published_at, read)
-			VALUES (?, ?, ?, ?, ?, ?, 0) ON CONFLICT (feed_id, guid) DO UPDATE SET title = excluded.title, link = excluded.link`,
-			it.ID, it.FeedID, it.GUID, it.Title, it.Link, sqlutil.FormatTime(it.PublishedAt))
+			SELECT ?, ?, ?, ?, ?, ?, 0 WHERE EXISTS (SELECT 1 FROM rss_feeds WHERE id = ? AND `+cond+`)
+			ON CONFLICT (feed_id, guid) DO UPDATE SET title = excluded.title, link = excluded.link`,
+			append([]any{it.ID, it.FeedID, it.GUID, it.Title, it.Link, sqlutil.FormatTime(it.PublishedAt), it.FeedID}, args...)...)
 		if err != nil {
 			return 0, fmt.Errorf("insert item: %w", err)
 		}
@@ -130,8 +165,10 @@ func (r *Repository) AddItems(ctx context.Context, items []domain.Item) (int, er
 
 // PruneItems keeps only the newest `keep` items of a feed.
 func (r *Repository) PruneItems(ctx context.Context, feedID string, keep int) error {
-	_, err := r.db.ExecContext(ctx, `DELETE FROM rss_items WHERE feed_id = ? AND id NOT IN (
-		SELECT id FROM rss_items WHERE feed_id = ? ORDER BY published_at DESC LIMIT ?)`, feedID, feedID, keep)
+	cond, args := ownedFeeds(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	_, err := r.db.ExecContext(ctx, `DELETE FROM rss_items WHERE feed_id = ? AND feed_id IN (SELECT id FROM rss_feeds WHERE `+cond+`) AND id NOT IN (
+		SELECT id FROM rss_items WHERE feed_id = ? ORDER BY published_at DESC LIMIT ?)`, append(append([]any{feedID}, args...), feedID, keep)...)
 	if err != nil {
 		return fmt.Errorf("prune items: %w", err)
 	}
@@ -140,8 +177,9 @@ func (r *Repository) PruneItems(ctx context.Context, feedID string, keep int) er
 
 // ListItems returns items, newest first.
 func (r *Repository) ListItems(ctx context.Context, f usecase.ItemFilter) ([]domain.Item, error) {
-	query := `SELECT id, feed_id, guid, title, link, published_at, read FROM rss_items WHERE 1 = 1`
-	var args []any
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	query := `SELECT id, feed_id, guid, title, link, published_at, read FROM rss_items WHERE feed_id IN (SELECT id FROM rss_feeds WHERE ` + cond + `)`
 	if f.FeedID != "" {
 		query += ` AND feed_id = ?`
 		args = append(args, f.FeedID)
@@ -175,7 +213,11 @@ func (r *Repository) ListItems(ctx context.Context, f usecase.ItemFilter) ([]dom
 
 // SetRead sets the read state of one item.
 func (r *Repository) SetRead(ctx context.Context, itemID string, read bool) error {
-	res, err := r.db.ExecContext(ctx, `UPDATE rss_items SET read = ? WHERE id = ?`, sqlutil.BoolToInt(read), itemID)
+	// The read state belongs to the subscription, so only its owner sets it.
+	cond, args := ownedFeeds(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `UPDATE rss_items SET read = ? WHERE id = ? AND feed_id IN (SELECT id FROM rss_feeds WHERE `+cond+`)`,
+		append([]any{sqlutil.BoolToInt(read), itemID}, args...)...)
 	if err != nil {
 		return fmt.Errorf("update item: %w", err)
 	}
@@ -188,10 +230,14 @@ func (r *Repository) SetRead(ctx context.Context, itemID string, read bool) erro
 // MarkAllRead marks all items, or those of one feed, as read.
 func (r *Repository) MarkAllRead(ctx context.Context, feedID string) error {
 	var err error
+	cond, args := ownedFeeds(ctx)
 	if feedID == "" {
-		_, err = r.db.ExecContext(ctx, `UPDATE rss_items SET read = 1 WHERE read = 0`)
+		//nolint:gosec // the condition comes from sqlutil with bound arguments
+		_, err = r.db.ExecContext(ctx, `UPDATE rss_items SET read = 1 WHERE read = 0 AND feed_id IN (SELECT id FROM rss_feeds WHERE `+cond+`)`, args...)
 	} else {
-		_, err = r.db.ExecContext(ctx, `UPDATE rss_items SET read = 1 WHERE read = 0 AND feed_id = ?`, feedID)
+		//nolint:gosec // the condition comes from sqlutil with bound arguments
+		_, err = r.db.ExecContext(ctx, `UPDATE rss_items SET read = 1 WHERE read = 0 AND feed_id = ? AND feed_id IN (SELECT id FROM rss_feeds WHERE `+cond+`)`,
+			append([]any{feedID}, args...)...)
 	}
 	if err != nil {
 		return fmt.Errorf("mark all read: %w", err)
@@ -201,7 +247,9 @@ func (r *Repository) MarkAllRead(ctx context.Context, feedID string) error {
 
 // UnreadCounts returns the number of unread items per feed.
 func (r *Repository) UnreadCounts(ctx context.Context) (map[string]int, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT feed_id, COUNT(*) FROM rss_items WHERE read = 0 GROUP BY feed_id`)
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT feed_id, COUNT(*) FROM rss_items WHERE read = 0 AND feed_id IN (SELECT id FROM rss_feeds WHERE `+cond+`) GROUP BY feed_id`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("count unread: %w", err)
 	}
