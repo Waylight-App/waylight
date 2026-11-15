@@ -1,13 +1,13 @@
 // Packs the extension into dist/trisse-home-extension-<version>.zip with
 // Node's own zlib (no dependencies). Store order and fixed timestamps keep
 // the archive reproducible.
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { crc32, deflateRawSync } from 'node:zlib';
-import { files } from './files.mjs';
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { crc32, deflateRawSync } from "node:zlib";
+import { appFiles, files } from "./files.mjs";
 
-const { version } = JSON.parse(readFileSync('manifest.json', 'utf8'));
+const { version } = JSON.parse(readFileSync("manifest.json", "utf8"));
 const DOS_TIME = 0; // 00:00:00
-const DOS_DATE = (2024 - 1980) << 9 | 1 << 5 | 1; // 2024-01-01
+const DOS_DATE = ((2024 - 1980) << 9) | (1 << 5) | 1; // 2024-01-01
 
 const locals = [];
 const centrals = [];
@@ -52,7 +52,20 @@ end.writeUInt16LE(files.length, 8);
 end.writeUInt16LE(files.length, 10);
 end.writeUInt32LE(dir.length, 12);
 end.writeUInt32LE(offset, 16);
-mkdirSync('dist', { recursive: true });
+mkdirSync("dist", { recursive: true });
 const out = `dist/trisse-home-extension-${version}.zip`;
-writeFileSync(out, Buffer.concat([...locals, dir, end]));
-console.log(`✓ ${out}`);
+const zip = Buffer.concat([...locals, dir, end]);
+writeFileSync(out, zip);
+const kb = zip.length / 1024;
+console.log(`✓ ${out} (${kb.toFixed(0)} KB)`);
+// With the local-mode app the package is subject to a size budget (ADR 0011,
+// ADR 0019); the forwarding extension alone is a few kilobytes.
+if (appFiles.length) {
+  const { budgets } = JSON.parse(readFileSync("../budgets.json", "utf8"));
+  if (kb > budgets.extensionZipKB) {
+    console.error(
+      `✗ extension zip is ${kb.toFixed(0)} KB, budget ${budgets.extensionZipKB} KB (budgets.json)`,
+    );
+    process.exitCode = 1;
+  }
+}

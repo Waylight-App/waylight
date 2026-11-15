@@ -3,11 +3,15 @@
   import { accountLinkPath, type AuthView } from '../features/auth';
   import { errorMessage } from '../shared/api-client/http';
   import { canStartOffline, clearOfflineData, rememberSignedIn } from '../shared/pwa';
-  import { createContainer } from './container';
+  import { createContainer, type Container } from './container';
   // The dashboard shell is fetched right away, in parallel with the session
   // check, but kept out of the initial bundle (#116); sign-in pages load
   // only when needed.
   const shell = import('./Shell.svelte');
+
+  // The browser extension's local mode passes its own container (ADR 0019);
+  // the web app builds the one that talks to the server.
+  let { localContainer }: { localContainer?: Container } = $props();
 
   let view = $state<AuthView | 'loading'>('loading');
   // An invitation or reset link (#296): like a kiosk link, the token is in
@@ -20,7 +24,9 @@
   }
   let loadError = $state('');
 
-  const container = createContainer(() => (view = 'login'));
+  // The container is built once; a changed prop would not rebuild it.
+  // svelte-ignore state_referenced_locally
+  const container = localContainer ?? createContainer(() => (view = 'login'));
 
   async function refresh() {
     try {
