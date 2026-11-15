@@ -111,6 +111,11 @@ type Deps struct {
 	Feeds         FeedSource
 	IDs           kernel.IDGenerator
 	Clock         kernel.Clock
+	// Accounts, API and OAuth connect Google and Microsoft calendars
+	// (#282); without them no account can be connected.
+	Accounts AccountRepository
+	API      AccountAPI
+	OAuth    OAuth
 }
 
 // Service bundles both input ports; one value implements them so CalDAV
@@ -118,6 +123,7 @@ type Deps struct {
 type Service interface {
 	Calendar
 	Subscriptions
+	Accounts
 }
 
 type calendar struct {
@@ -128,20 +134,63 @@ type calendar struct {
 	feeds  FeedSource
 	ids    kernel.IDGenerator
 	clock  kernel.Clock
-	mu     sync.RWMutex
-	cached *AgendaResponse
+	// connected accounts (#282)
+	accounts AccountRepository
+	api      AccountAPI
+	oauth    OAuth
+	acc      accountState
+	mu       sync.RWMutex
+	cached   *AgendaResponse
 	// window is the period covered by cached.
 	windowFrom, windowTo time.Time
 }
 
 // NewCalendar returns the calendar use cases.
 func NewCalendar(d Deps) Service {
-	return &calendar{repo: d.Repo, source: d.Source, writer: d.Writer, subs: d.Subscriptions, feeds: d.Feeds, ids: d.IDs, clock: d.Clock}
+	return &calendar{repo: d.Repo, source: d.Source, writer: d.Writer, subs: d.Subscriptions, feeds: d.Feeds, ids: d.IDs, clock: d.Clock,
+		accounts: d.Accounts, api: d.API, oauth: d.OAuth, acc: accountState{pending: map[string]*pendingSignIn{}}}
 }
 
-// sources returns the CalDAV settings (nil when not configured) and the
+// sourceSet is everything the agenda is built from.
+type sourceSet struct {
+	caldav   *domain.Settings // nil when not configured
+	subs     []domain.Subscription
+	accounts []domain.Account
+}
+
+// listAccounts returns the connected accounts; none when the module was
+// built without account support.
+func (uc *calendar) listAccounts(ctx context.Context) ([]domain.Account, error) {
+	if uc.accounts == nil {
+		return nil, nil
+	}
+	list, err := uc.accounts.List(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list accounts: %w", err)
+	}
+	return list, nil
+}
+
+// sources returns every configured source; domain.ErrNotConfigured when
+// there is none.
+func (uc *calendar) sources(ctx context.Context) (sourceSet, error) {
+	caldav, subs, err := uc.feedSources(ctx)
+	if err != nil && !errors.Is(err, domain.ErrNotConfigured) {
+		return sourceSet{}, err
+	}
+	accounts, aerr := uc.listAccounts(ctx)
+	if aerr != nil {
+		return sourceSet{}, aerr
+	}
+	if err != nil && len(accounts) == 0 {
+		return sourceSet{}, err
+	}
+	return sourceSet{caldav: caldav, subs: subs, accounts: accounts}, nil
+}
+
+// feedSources returns the CalDAV settings (nil when not configured) and the
 // subscriptions; domain.ErrNotConfigured when there is neither.
-func (uc *calendar) sources(ctx context.Context) (*domain.Settings, []domain.Subscription, error) {
+func (uc *calendar) feedSources(ctx context.Context) (*domain.Settings, []domain.Subscription, error) {
 	var caldav *domain.Settings
 	s, err := uc.repo.Load(ctx)
 	switch {
@@ -195,7 +244,7 @@ func (uc *calendar) SaveSettings(ctx context.Context, in SettingsInput) (Setting
 		return SettingsView{}, err
 	}
 	now := uc.clock.Now()
-	if _, err := uc.fetchRange(ctx, &s, nil, now, now.Add(domain.Horizon)); err != nil {
+	if _, err := uc.fetchRange(ctx, sourceSet{caldav: &s}, now, now.Add(domain.Horizon)); err != nil {
 		return SettingsView{}, kernel.TargetFailure(kernel.ErrInvalid, err)
 	}
 	if err := uc.repo.Save(ctx, s); err != nil {
@@ -215,7 +264,7 @@ func (uc *calendar) Upcoming(ctx context.Context, days int) (AgendaResponse, err
 	cached := uc.cached
 	uc.mu.RUnlock()
 	if cached == nil {
-		if _, _, err := uc.sources(ctx); err != nil {
+		if _, err := uc.sources(ctx); err != nil {
 			return AgendaResponse{}, err
 		}
 		_ = uc.Refresh(ctx) // errors are reported through AgendaResponse.Error
@@ -243,23 +292,23 @@ func (uc *calendar) Range(ctx context.Context, from, to time.Time) (AgendaRespon
 	if err := domain.CheckRange(from, to); err != nil {
 		return AgendaResponse{}, err
 	}
-	caldav, subs, err := uc.sources(ctx)
+	src, err := uc.sources(ctx)
 	if err != nil {
 		return AgendaResponse{}, err
 	}
 	uc.mu.RLock()
 	cached, wFrom, wTo := uc.cached, uc.windowFrom, uc.windowTo
 	uc.mu.RUnlock()
-	src := cached
+	agenda := cached
 	if cached == nil || from.Before(wFrom) || to.After(wTo) {
-		live, err := uc.fetchRange(ctx, caldav, subs, from, to)
+		live, err := uc.fetchRange(ctx, src, from, to)
 		if err != nil {
 			return AgendaResponse{}, err
 		}
-		src = &live
+		agenda = &live
 	}
-	res := AgendaResponse{UpdatedAt: src.UpdatedAt, Error: src.Error, Events: []EventView{}}
-	for _, e := range src.Events {
+	res := AgendaResponse{UpdatedAt: agenda.UpdatedAt, Error: agenda.Error, Events: []EventView{}}
+	for _, e := range agenda.Events {
 		if e.Start.Before(to) && e.End.After(from) {
 			res.Events = append(res.Events, e)
 		}
@@ -267,15 +316,9 @@ func (uc *calendar) Range(ctx context.Context, from, to time.Time) (AgendaRespon
 	return res, nil
 }
 
-// CreateEvent implements Calendar.
+// CreateEvent implements Calendar. CalendarURL is a CalDAV collection or a
+// calendar of a connected account (domain.CalendarRef).
 func (uc *calendar) CreateEvent(ctx context.Context, in NewEventInput) (EventView, error) {
-	s, err := uc.repo.Load(ctx)
-	if err != nil {
-		return EventView{}, err
-	}
-	if !s.Contains(in.CalendarURL) {
-		return EventView{}, domain.ErrUnknownCalendar
-	}
 	end := in.End
 	if in.AllDay {
 		end = end.AddDate(0, 0, 1) // inclusive date → exclusive end
@@ -284,17 +327,35 @@ func (uc *calendar) CreateEvent(ctx context.Context, in NewEventInput) (EventVie
 	if err != nil {
 		return EventView{}, err
 	}
-	if err := uc.writer.Create(ctx, s, in.CalendarURL, e); err != nil {
-		return EventView{}, kernel.TargetFailure(kernel.ErrUnavailable, err)
+	var name string
+	if accountID, calendarID, ok := domain.ParseCalendarRef(in.CalendarURL); ok && uc.accounts != nil {
+		if name, err = uc.createInAccount(ctx, accountID, calendarID, e); err != nil {
+			return EventView{}, err
+		}
+	} else {
+		s, err := uc.repo.Load(ctx)
+		if errors.Is(err, domain.ErrNotConfigured) {
+			return EventView{}, domain.ErrUnknownCalendar
+		}
+		if err != nil {
+			return EventView{}, err
+		}
+		if !s.Contains(in.CalendarURL) {
+			return EventView{}, domain.ErrUnknownCalendar
+		}
+		if err := uc.writer.Create(ctx, s, in.CalendarURL, e); err != nil {
+			return EventView{}, kernel.TargetFailure(kernel.ErrUnavailable, err)
+		}
+		name = domain.CalendarName(in.CalendarURL)
 	}
 	_ = uc.Refresh(ctx) // the new event shows up in the agenda right away
-	return EventView{UID: e.UID, Summary: e.Summary, Location: e.Location, Calendar: domain.CalendarName(in.CalendarURL),
+	return EventView{UID: e.UID, Summary: e.Summary, Location: e.Location, Calendar: name,
 		Start: e.Start, End: e.End, AllDay: e.AllDay}, nil
 }
 
 // Refresh implements Calendar; it is run by the background job.
 func (uc *calendar) Refresh(ctx context.Context) error {
-	caldav, subs, err := uc.sources(ctx)
+	src, err := uc.sources(ctx)
 	if errors.Is(err, domain.ErrNotConfigured) {
 		uc.mu.Lock()
 		uc.cached = nil // the last source was removed
@@ -304,7 +365,7 @@ func (uc *calendar) Refresh(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	agenda, err := uc.fetch(ctx, caldav, subs)
+	agenda, err := uc.fetch(ctx, src)
 	if err != nil {
 		uc.mu.Lock()
 		res := AgendaResponse{}
@@ -320,10 +381,10 @@ func (uc *calendar) Refresh(ctx context.Context) error {
 	return nil
 }
 
-func (uc *calendar) fetch(ctx context.Context, caldav *domain.Settings, subs []domain.Subscription) (AgendaResponse, error) {
+func (uc *calendar) fetch(ctx context.Context, src sourceSet) (AgendaResponse, error) {
 	now := uc.clock.Now()
 	from := now.Add(-24 * time.Hour) // include today's all-day events in every time zone
-	res, err := uc.fetchRange(ctx, caldav, subs, from, now.Add(domain.Horizon))
+	res, err := uc.fetchRange(ctx, src, from, now.Add(domain.Horizon))
 	if err == nil {
 		uc.mu.Lock()
 		uc.windowFrom, uc.windowTo = from, now.Add(domain.Horizon)
@@ -332,13 +393,13 @@ func (uc *calendar) fetch(ctx context.Context, caldav *domain.Settings, subs []d
 	return res, err
 }
 
-// fetchRange merges the events of every CalDAV calendar and subscription;
-// it fails only when every source failed.
-func (uc *calendar) fetchRange(ctx context.Context, caldav *domain.Settings, subs []domain.Subscription, from, to time.Time) (AgendaResponse, error) {
+// fetchRange merges the events of every CalDAV calendar, subscription and
+// account calendar; it fails only when every source failed.
+func (uc *calendar) fetchRange(ctx context.Context, src sourceSet, from, to time.Time) (AgendaResponse, error) {
 	now := uc.clock.Now()
-	var all []domain.Event
-	var failed []string
-	total := len(subs)
+	caldav, subs := src.caldav, src.subs
+	all, failed, total := uc.accountEvents(ctx, src.accounts, from, to)
+	total += len(subs)
 	if caldav != nil {
 		total += len(caldav.CalendarURLs)
 		for _, u := range caldav.CalendarURLs {

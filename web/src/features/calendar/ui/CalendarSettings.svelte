@@ -3,6 +3,7 @@
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import type { CalendarUseCases } from '../usecase/calendarUseCases';
+  import CalendarAccounts from './CalendarAccounts.svelte';
   import CalendarSubscriptions from './CalendarSubscriptions.svelte';
 
   /** Props of the CalDAV connection settings. */
@@ -88,3 +89,4 @@
 </form>
 
 <CalendarSubscriptions {calendar} />
+<CalendarAccounts {calendar} />

@@ -15,7 +15,7 @@ modules in detail.
 | --- | --- |
 | To-dos (`todos`) | Due dates with overdue highlighting, recurring to-dos (daily, on chosen weekdays, monthly, or N days after completion) and reminders through your notification channels. Works offline. A widget can show a connected CalDAV task list (Nextcloud Tasks, Synology, Radicale, …) a Todoist project or a list in Microsoft To Do, Google Tasks or TickTick instead ([details](modules/todos.md)). |
 | Notes (`notes`) | Markdown notes that can be pinned to the dashboard, with full-text search, `[[wiki links]]` and backlinks, and a version history with diff and restore. |
-| Calendar (`calendar`) | CalDAV calendars such as Nextcloud, including recurring events, plus read-only ICS subscriptions. Agenda, month or split view with event details; new events can be added from the widget. |
+| Calendar (`calendar`) | CalDAV calendars such as Nextcloud, including recurring events, Google Calendar and Microsoft 365 accounts, plus read-only ICS subscriptions. Agenda, month or split view with event details; new events can be added from the widget. [Details](modules/calendar.md) |
 | Shopping list (`shopping`) | Stored as tasks in a CalDAV task list, so the whole household can use it from their usual task app. |
 | Countdowns (`countdown`) | Days left until exams, holidays or deadlines, highlighted when the date is close. |
 | Focus timer (`focus`) | Pomodoro timer that keeps running in background tabs, with an optional browser notification and a count of finished sessions per day. |

@@ -81,4 +81,12 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Der Hintergrund muss eine http(s)-Bildadresse, ein hochgeladenes Bild oder ein eingebauter Hintergrund sein.',
   // Upload a JPEG, PNG or GIF picture.
   srv_eac41835716f01a3: 'Lade ein JPEG-, PNG- oder GIF-Bild hoch.',
+  // Enter the client ID of your app registration.
+  srv_c8433603152a8aec: 'Gib die Client-ID deiner App-Registrierung ein.',
+  // Signing in needs PUBLIC_URL (an https:// address of trisse-home).
+  srv_698a9e2d65efdf8f: 'Zum Anmelden muss PUBLIC_URL gesetzt sein (eine https://-Adresse von trisse-home).',
+  // The sign-in was not started here or has expired. Please start again.
+  srv_cd970adb7028a7ce: 'Die Anmeldung wurde nicht hier gestartet oder ist abgelaufen. Bitte neu beginnen.',
+  // Too many sign-ins at once. Please wait a few minutes.
+  srv_851e9d41e5c4c49f: 'Zu viele Anmeldungen gleichzeitig. Bitte warte ein paar Minuten.',
 };

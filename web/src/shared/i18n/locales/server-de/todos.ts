@@ -40,18 +40,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_31173fc19f6e7f41: 'Der Dienst bittet um weniger Anfragen. Die Liste wird in einer Minute neu geladen.',
   // Choose a list.
   srv_01e6a58b40c54321: 'Wähle eine Liste.',
-  // Enter the client ID of your app registration.
-  srv_c8433603152a8aec: 'Gib die Client-ID deiner App-Registrierung ein.',
-  // Signing in needs PUBLIC_URL (an https:// address of trisse-home).
-  srv_698a9e2d65efdf8f: 'Zum Anmelden muss PUBLIC_URL gesetzt sein (eine https://-Adresse von trisse-home).',
   // The sign-in did not succeed. Check client ID, client secret and the registered redirect address.
   srv_f61fe037ae3068a8:
     'Die Anmeldung hat nicht geklappt. Prüfe Client-ID, Client-Secret und die registrierte Weiterleitungsadresse.',
   // The sign-in has expired or was revoked. Disconnect the list and connect it again.
   srv_77c57fca0b0dafe3:
     'Die Anmeldung ist abgelaufen oder wurde widerrufen. Trenne die Liste und verbinde sie neu.',
-  // The sign-in was not started here or has expired. Please start again.
-  srv_cd970adb7028a7ce: 'Die Anmeldung wurde nicht hier gestartet oder ist abgelaufen. Bitte neu beginnen.',
-  // Too many sign-ins at once. Please wait a few minutes.
-  srv_851e9d41e5c4c49f: 'Zu viele Anmeldungen gleichzeitig. Bitte warte ein paar Minuten.',
 };
