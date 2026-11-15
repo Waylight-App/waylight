@@ -42,7 +42,8 @@ func (r *repo) ReplaceSource(_ context.Context, source string, list []domain.Bir
 	}
 	return nil
 }
-func (r *repo) Settings(context.Context) (Settings, error)       { return r.s, nil }
+func (r *repo) Settings(context.Context) (Settings, error) { return r.s, nil }
+
 // SyncAccounts: the fake has one address book, the owner's, when configured.
 func (r *repo) SyncAccounts(context.Context) ([]string, error) {
 	if r.s.CardDAVURL == "" {
