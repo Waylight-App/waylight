@@ -1,0 +1,27 @@
+import type { en } from './en';
+
+/** German texts of the calendar accounts; every key is mandatory. */
+export const de: Record<keyof typeof en, string> = {
+  'calendar.accounts.title': 'Google- und Microsoft-Konten',
+  'calendar.accounts.intro':
+    'Zeige deine Google- oder Microsoft-365-Kalender und trage dort Termine ein. Du meldest dich mit einer eigenen App-Registrierung an; vorher fragt trisse-home nichts bei Google oder Microsoft an.',
+  'calendar.accounts.provider': 'Dienst',
+  'calendar.accounts.register':
+    'Lege bei {service} eine App-Registrierung an (OAuth-Client, Typ Webanwendung) und trage diese Weiterleitungsadresse ein:',
+  'calendar.accounts.console': 'Konsole von {service} öffnen',
+  'calendar.accounts.client_id': 'Client-ID',
+  'calendar.accounts.client_secret': 'Client-Secret',
+  'calendar.accounts.sign_in': 'Mit {service} anmelden',
+  'calendar.accounts.signing_in': 'Schließe die Anmeldung im neuen Fenster ab …',
+  'calendar.accounts.sign_in_failed':
+    'Die Anmeldung hat nicht geklappt. Prüfe Client-ID, Client-Secret und die eingetragene Weiterleitungsadresse.',
+  'calendar.accounts.connected': 'Verbunden. Die Kalender erscheinen im Kalender-Widget.',
+  'calendar.accounts.popup_blocked':
+    'Der Browser hat das Anmeldefenster blockiert. Erlaube Pop-ups für trisse-home und versuche es erneut.',
+  'calendar.accounts.unavailable':
+    'Die Anmeldung bei Google oder Microsoft braucht PUBLIC_URL, eine https://-Adresse, an die die Anbieter den Browser zurückschicken können.',
+  'calendar.accounts.disconnect': 'Trennen',
+  'calendar.accounts.disconnect_confirm':
+    '{name} trennen? Die Kalender verschwinden aus trisse-home, und der Zugriff wird widerrufen.',
+  'calendar.accounts.read_only': 'schreibgeschützt',
+};

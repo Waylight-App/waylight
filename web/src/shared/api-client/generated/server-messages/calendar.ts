@@ -3,13 +3,17 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_326bb72e415244d3: "At most 10 calendars are supported.",
+  srv_4668b7fe22c08fca: "At most 5 accounts can be connected.",
   srv_f74740ac20c25101: "At most {max} calendar subscriptions are supported.",
+  srv_2fff1508d4ce6e8a: "Choose Google or Microsoft.",
   srv_97f22fc39ea1794a: "Could not load the ICS calendar: {detail}",
   srv_38ba62864162fcec: "Events can be at most one year long.",
   srv_92fe9be68e4fbeb4: "No calendar is configured yet.",
   srv_f5627673a11b56bd: "Please choose one of the configured calendars.",
   srv_b71f32ebd27a0b6a: "Please enter a valid start and end.",
   srv_a4d2757d3ca7d004: "Please enter at least one calendar URL.",
+  srv_0756151be3234993: "The account is not connected (any more).",
+  srv_124d16b34844185b: "The account needs to be signed in again.",
   srv_3e73df212f6df359: "The calendar server is not reachable.",
   srv_210a34361dc2d298: "The calendar subscription does not exist.",
   srv_5fd12f163f5132ff: "The colour must look like #3b6ef5.",

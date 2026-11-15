@@ -62,6 +62,7 @@ nav:
       - Modules:
           - modules/README.md
           - AI summaries: modules/summary.md
+          - Calendar: modules/calendar.md
           - Device display mode: modules/device.md
           - Drop zone: modules/drop.md
           - Electricity prices: modules/electricity.md

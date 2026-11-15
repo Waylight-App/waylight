@@ -1332,7 +1332,7 @@ export const en = {
   'calendar.subscription_name_required': 'Please enter a name.',
   'calendar.subscription_url_invalid': 'The ICS URL must start with https://, http:// or webcal://.',
   'calendar.quick_add_needs_caldav':
-    'New events are saved in a CalDAV calendar; ICS subscriptions are read-only. Connect one under Settings → Calendar.',
+    'New events are saved in a CalDAV, Google or Microsoft calendar; ICS subscriptions are read-only. Connect one under Settings → Calendar.',
   'widget.briefing.title': 'Daily briefing',
   'widget.briefing.description':
     'Today at a glance: warnings, overnight incidents, offline services, due to-dos, appointments and waste collection.',

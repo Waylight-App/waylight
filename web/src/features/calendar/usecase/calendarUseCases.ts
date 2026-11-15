@@ -9,6 +9,13 @@ import {
   type WeekStart,
   validateSubscription,
 } from '../domain/calendar';
+import type {
+  CalendarAccount,
+  CalendarAccounts,
+  CalendarChoice,
+  CalendarProvider,
+  SignInStatus,
+} from '../domain/accounts';
 
 /** Upcoming events with status information. */
 export interface Agenda {
@@ -34,6 +41,16 @@ export interface CalendarGateway {
   addSubscription(input: SubscriptionInput): Promise<CalendarSubscription>;
   updateSubscription(id: string, input: SubscriptionInput): Promise<CalendarSubscription>;
   deleteSubscription(id: string): Promise<void>;
+  accounts(): Promise<CalendarAccounts>;
+  startSignIn(
+    provider: CalendarProvider,
+    clientId: string,
+    clientSecret: string,
+  ): Promise<{ url: string; state: string }>;
+  signInStatus(state: string): Promise<SignInStatus>;
+  setCalendars(id: string, enabled: string[]): Promise<CalendarAccount>;
+  disconnect(id: string): Promise<void>;
+  writable(): Promise<CalendarChoice[]>;
 }
 
 /** Application logic of the calendar feature. */
@@ -118,5 +135,47 @@ export class CalendarUseCases {
 
   deleteSubscription(id: string): Promise<void> {
     return this.gateway.deleteSubscription(id);
+  }
+
+  /** Connected Google and Microsoft accounts (#282). */
+  accounts(): Promise<CalendarAccounts> {
+    return this.gateway.accounts();
+  }
+
+  /** Starts signing in with the user's own app registration. */
+  startSignIn(
+    provider: CalendarProvider,
+    clientId: string,
+    clientSecret: string,
+  ): Promise<{ url: string; state: string }> {
+    return this.gateway.startSignIn(provider, clientId.trim(), clientSecret.trim());
+  }
+
+  /** Polls until the sign-in window finished, failed or stop() says so. */
+  async waitForSignIn(
+    state: string,
+    stopped: () => boolean,
+    sleep: (ms: number) => Promise<void> = (ms) => new Promise((r) => setTimeout(r, ms)),
+  ): Promise<SignInStatus> {
+    // About ten minutes, then the sign-in on the server expires anyway.
+    for (let i = 0; i < 300 && !stopped(); i++) {
+      const s = await this.gateway.signInStatus(state);
+      if (s !== 'pending') return s;
+      await sleep(2000);
+    }
+    return 'pending';
+  }
+
+  setCalendars(id: string, enabled: string[]): Promise<CalendarAccount> {
+    return this.gateway.setCalendars(id, enabled);
+  }
+
+  disconnect(id: string): Promise<void> {
+    return this.gateway.disconnect(id);
+  }
+
+  /** Calendars that accept new events: CalDAV and account calendars. */
+  writable(): Promise<CalendarChoice[]> {
+    return this.gateway.writable();
   }
 }

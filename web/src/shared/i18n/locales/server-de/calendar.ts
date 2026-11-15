@@ -40,4 +40,12 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_5fd12f163f5132ff: 'Die Farbe muss wie #3b6ef5 aussehen.',
   // The refresh interval must be between 15 minutes and 24 hours.
   srv_99e5a87eee94b355: 'Das Aktualisierungsintervall muss zwischen 15 Minuten und 24 Stunden liegen.',
+  // At most 5 accounts can be connected.
+  srv_4668b7fe22c08fca: 'Es können höchstens 5 Konten verbunden werden.',
+  // Choose Google or Microsoft.
+  srv_2fff1508d4ce6e8a: 'Wähle Google oder Microsoft.',
+  // The account is not connected (any more).
+  srv_0756151be3234993: 'Das Konto ist nicht (mehr) verbunden.',
+  // The account needs to be signed in again.
+  srv_124d16b34844185b: 'Das Konto muss neu angemeldet werden.',
 };

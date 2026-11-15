@@ -1360,7 +1360,7 @@ export const de: Record<BaseMessageKey, string> = {
   'calendar.subscription_name_required': 'Bitte gib einen Namen ein.',
   'calendar.subscription_url_invalid': 'Die ICS-URL muss mit https://, http:// oder webcal:// beginnen.',
   'calendar.quick_add_needs_caldav':
-    'Neue Termine werden in einem CalDAV-Kalender gespeichert; ICS-Abos sind schreibgeschützt. Verbinde einen unter Einstellungen → Kalender.',
+    'Neue Termine werden in einem CalDAV-, Google- oder Microsoft-Kalender gespeichert; ICS-Abos sind schreibgeschützt. Verbinde einen unter Einstellungen → Kalender.',
   'widget.briefing.title': 'Tages-Briefing',
   'widget.briefing.description':
     'Der Tag auf einen Blick: Warnungen, nächtliche Störungen, ausgefallene Dienste, fällige To-dos, Termine und Müllabfuhr.',

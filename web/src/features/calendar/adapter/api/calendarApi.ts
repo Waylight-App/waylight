@@ -6,7 +6,12 @@ import type {
   SubscriptionDTO,
 } from '../../../../shared/api-client/generated/calendar';
 import type {
+  AccountDTO,
+  AccountsDTO,
+  CalendarChoiceDTO,
   NewEventDTO,
+  SignInStartDTO,
+  SignInStatusDTO,
   SettingsInputDTO,
   SubscriptionInputDTO,
 } from '../../../../shared/api-client/generated/calendar-requests';
@@ -17,7 +22,20 @@ import {
   parseLocalDate,
   type SubscriptionInput,
 } from '../../domain/calendar';
+import type {
+  CalendarAccount,
+  CalendarAccounts,
+  CalendarChoice,
+  CalendarProvider,
+  SignInStatus,
+} from '../../domain/accounts';
 import type { Agenda, CalendarGateway } from '../../usecase/calendarUseCases';
+
+const toAccount = (d: AccountDTO): CalendarAccount => ({
+  ...d,
+  provider: d.provider === 'microsoft' ? 'microsoft' : 'google',
+  calendars: d.calendars.map((c) => ({ ...c })),
+});
 
 const toEvent = (d: EventDTO): CalendarEvent => ({
   uid: d.uid,
@@ -55,6 +73,41 @@ export class CalendarApi implements CalendarGateway {
   }
   async create(input: NewEventDTO): Promise<CalendarEvent> {
     return toEvent(await this.http.post<EventDTO>('/api/calendar/events', input));
+  }
+
+  async accounts(): Promise<CalendarAccounts> {
+    const d = await this.http.get<AccountsDTO>('/api/calendar/accounts');
+    return { redirectUrl: d.redirectUrl, accounts: d.accounts.map(toAccount) };
+  }
+  async startSignIn(
+    provider: CalendarProvider,
+    clientId: string,
+    clientSecret: string,
+  ): Promise<{ url: string; state: string }> {
+    return {
+      ...(await this.http.post<SignInStartDTO>('/api/calendar/accounts/oauth/start', {
+        provider,
+        clientId,
+        clientSecret,
+      })),
+    };
+  }
+  async signInStatus(state: string): Promise<SignInStatus> {
+    const s = (
+      await this.http.get<SignInStatusDTO>(`/api/calendar/accounts/oauth/state/${encodeURIComponent(state)}`)
+    ).status;
+    return s === 'ready' || s === 'failed' ? s : 'pending';
+  }
+  async setCalendars(id: string, enabled: string[]): Promise<CalendarAccount> {
+    return toAccount(
+      await this.http.put<AccountDTO>(`/api/calendar/accounts/${encodeURIComponent(id)}`, { enabled }),
+    );
+  }
+  async disconnect(id: string): Promise<void> {
+    await this.http.delete(`/api/calendar/accounts/${encodeURIComponent(id)}`);
+  }
+  async writable(): Promise<CalendarChoice[]> {
+    return (await this.http.get<CalendarChoiceDTO[]>('/api/calendar/writable')).map((c) => ({ ...c }));
   }
 
   async subscriptions(): Promise<CalendarSubscription[]> {
