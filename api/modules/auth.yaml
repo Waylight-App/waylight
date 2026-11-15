@@ -123,6 +123,31 @@ paths:
         "401": { description: Unknown, used or expired link }
         "422": { $ref: "#/components/responses/Invalid" }
         "429": { $ref: "#/components/responses/TooManyRequests" }
+  /api/auth/password-reset:
+    post:
+      tags: [auth]
+      summary: Ask for a password reset link by e-mail (public, rate limited, #296). Answers 202 whether or not the name exists or has an address; the link goes only to the account's own address and uses PUBLIC_URL.
+      security: []
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [name], properties: { name: { type: string } } } } } }
+      responses:
+        "202": { description: Accepted }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "503": { description: No e-mail channel or no PUBLIC_URL }
+  /api/auth/email:
+    get:
+      tags: [auth]
+      summary: The signed-in member's or guest's own address for reset links
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { email: { type: string } } } } } }
+    put:
+      tags: [auth]
+      summary: Set or remove (empty) the own address for reset links; not for the admin or kiosks
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [email], properties: { email: { type: string } } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { email: { type: string } } } } } }
+        "403": { description: The admin account or a kiosk }
+        "422": { $ref: "#/components/responses/Invalid" }
   /api/auth/kiosks:
     get:
       tags: [auth]
@@ -172,6 +197,7 @@ schemas:
       setupRequired: { type: boolean }
       authenticated: { type: boolean }
       csrfToken: { type: string }
+      passwordReset: { type: boolean, description: Members and guests can ask for a reset link by e-mail (#296) }
   SetupRequest:
     type: object
     required: [setupToken, password]

@@ -20,6 +20,9 @@ type StatusDTO struct {
 	Username string `json:"username,omitempty"`
 	// SSO lists the available sign-in methods.
 	SSO SSOStatusDTO `json:"sso"`
+	// PasswordReset is true when members and guests can ask for a reset
+	// link by e-mail (#296).
+	PasswordReset bool `json:"passwordReset"`
 }
 
 // SSOStatusDTO tells the login page which methods exist.
@@ -417,4 +420,9 @@ func Invites(list []usecase.InviteView) []InviteDTO {
 // LinkInfo maps what a link does.
 func LinkInfo(i usecase.LinkInfo) LinkInfoDTO {
 	return LinkInfoDTO{Purpose: string(i.Purpose), Name: i.Name}
+}
+
+// EmailDTO is the own address for reset links (GET/PUT /api/auth/email).
+type EmailDTO struct {
+	Email string `json:"email"`
 }

@@ -49,4 +49,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Füge die https://-Adresse des Teams-Workflows ein (Auslöser: wenn eine Teams-Webhookanforderung empfangen wird).',
   // The channel type must be gotify, webhook, email, slack or teams.
   srv_6b04c0c71a64ec19: 'Der Kanaltyp muss gotify, webhook, email, slack oder teams sein.',
+  // invalid recipient
+  srv_e05c34f2652ddd0f: 'Ungültiger Empfänger',
 };
