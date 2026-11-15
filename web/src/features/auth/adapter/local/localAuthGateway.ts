@@ -33,6 +33,8 @@ export class LocalAuthGateway implements AuthGateway {
       admin: true,
       member: false,
       sso: { oidc: false, header: false, localLogin: false },
+      // No accounts and no mail server, so nothing to reset.
+      passwordReset: false,
     });
   }
 
@@ -75,6 +77,9 @@ export class LocalAuthGateway implements AuthGateway {
   createResetLink = unavailable;
   inspectLink = unavailable;
   acceptLink = unavailable;
+  requestPasswordReset = unavailable;
+  myEmail = unavailable;
+  setMyEmail = unavailable;
   apiTokens = unavailable;
   createApiToken = unavailable;
   revokeApiToken = unavailable;

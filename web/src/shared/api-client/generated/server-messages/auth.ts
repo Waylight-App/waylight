@@ -22,6 +22,8 @@ export const serverMessages = {
   srv_3a7ce116148b4992: "Only an admin can do this.",
   srv_a9f3222a9472a3de: "Passkeys need HTTPS and PUBLIC_URL (see docs/accounts.md).",
   srv_fd5d4b3fb31aa85f: "Password login is disabled. Use single sign-on.",
+  srv_3a24b1058006ec4b: "Password reset by e-mail is not set up on this instance. Ask the admin for a reset link.",
+  srv_6ddc9c2076b9e645: "Please enter a valid e-mail address.",
   srv_2c825edcb1338a1c: "Please enter the code from your authenticator app or a recovery code.",
   srv_11e7a84aac8d61b2: "Rotate every 10 seconds to 1 hour, or never.",
   srv_785eadcc6dca712c: "Session not found.",

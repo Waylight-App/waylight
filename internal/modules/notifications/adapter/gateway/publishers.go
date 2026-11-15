@@ -152,7 +152,11 @@ func BuildEmail(c domain.Channel, m domain.Message, date time.Time) []byte {
 	fmt.Fprintf(&b, "From: %s\r\nTo: %s\r\n", headerValue(c.From), headerValue(c.To))
 	fmt.Fprintf(&b, "Subject: %s\r\n", mime.QEncoding.Encode("utf-8", headerValue("[trisse-home] "+m.Title)))
 	fmt.Fprintf(&b, "Date: %s\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n", date.Format(time.RFC1123Z))
-	fmt.Fprintf(&b, "%s\r\n\r\nSeverity: %s\r\n", bodyText(m.Body), headerValue(string(m.Severity)))
+	fmt.Fprintf(&b, "%s\r\n", bodyText(m.Body))
+	// Account mail (#296) has no severity; alerts keep the line.
+	if m.Severity != "" {
+		fmt.Fprintf(&b, "\r\nSeverity: %s\r\n", headerValue(string(m.Severity)))
+	}
 	return []byte(b.String())
 }
 

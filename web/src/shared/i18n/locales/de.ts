@@ -1088,6 +1088,20 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.event.invite_accepted': 'Einladung angenommen',
   'auth.event.reset_link_created': 'Link zum Zurücksetzen erstellt',
   'auth.event.password_reset': 'Passwort per Link zurückgesetzt',
+  'auth.forgot_password': 'Passwort vergessen?',
+  'auth.reset_mail_hint':
+    'Gib deinen Namen ein. Hat dein Konto eine E-Mail-Adresse, geht dorthin ein Link zum Festlegen eines neuen Passworts.',
+  'auth.reset_mail_send': 'Link senden',
+  'auth.reset_mail_sent':
+    'Gehört der Name zu einem Konto mit E-Mail-Adresse, ist ein Link unterwegs. Er gilt eine Stunde.',
+  'auth.reset_email_title': 'E-Mail zum Zurücksetzen',
+  'auth.reset_email': 'E-Mail-Adresse',
+  'auth.reset_email_hint':
+    'Wenn du dein Passwort vergisst, kannst du dir an diese Adresse einen Reset-Link schicken lassen. Sie wird für nichts anderes verwendet.',
+  'auth.reset_email_unavailable':
+    'Das Zurücksetzen per E-Mail ist auf dieser Instanz noch nicht eingerichtet; der Admin kann dir stattdessen einen Reset-Link schicken. Eine Adresse kannst du schon hinterlegen.',
+  'auth.event.reset_requested': 'Zurücksetzen per E-Mail angefordert',
+  'auth.event.email_changed': 'E-Mail-Adresse zum Zurücksetzen geändert',
   'auth.event.member_changed': 'Mitgliedskonto geändert',
   'auth.event.group_changed': 'Gruppe geändert',
   'auth.event.token_created': 'API-Token erstellt',

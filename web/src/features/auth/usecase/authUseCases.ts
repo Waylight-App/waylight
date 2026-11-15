@@ -52,6 +52,8 @@ export class AuthUseCases {
   member = false;
   /** Sign-in methods offered by the server (set by currentView). */
   sso = { oidc: false, header: false, localLogin: true };
+  /** Reset links by e-mail are available (#296). */
+  passwordReset = false;
   /** Ticket of an SSO sign-in that still needs the local code. */
   ssoTicket = '';
 
@@ -64,6 +66,7 @@ export class AuthUseCases {
     this.admin = status.admin;
     this.member = status.member;
     this.sso = status.sso;
+    this.passwordReset = status.passwordReset;
     // Behind a reverse proxy with forward auth the user is already known.
     if (status.sso.header && !status.authenticated && !status.setupRequired) {
       try {
@@ -262,6 +265,22 @@ export class AuthUseCases {
   /** A link that lets a member or guest set a new password (24 hours). */
   createResetLink(accountId: string): Promise<{ token: string; expiresAt: Date }> {
     return this.gateway.createResetLink(accountId);
+  }
+
+  /** Asks for a reset link by e-mail; the answer is the same for every name. */
+  async requestPasswordReset(name: string): Promise<void> {
+    const n = name.trim().toLowerCase();
+    if (!validGuestName(n)) throw new ValidationError(t('auth.guest_name_invalid'));
+    return this.gateway.requestPasswordReset(n);
+  }
+
+  /** The own address for reset links (members and guests). */
+  myEmail(): Promise<string> {
+    return this.gateway.myEmail();
+  }
+
+  setMyEmail(email: string): Promise<string> {
+    return this.gateway.setMyEmail(email.trim());
   }
 
   /** What an invitation or reset link is for; public. */

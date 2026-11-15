@@ -123,3 +123,8 @@ type AcceptLinkDTO struct {
 	Token    string `json:"token"`
 	Password string `json:"password"`
 }
+
+// PasswordResetRequestDTO is the body of POST /api/auth/password-reset.
+type PasswordResetRequestDTO struct {
+	Name string `json:"name"`
+}

@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"net/mail"
+	"strings"
 	"time"
 
 	"trisse-home/internal/shared/kernel"
@@ -27,6 +29,14 @@ const (
 const (
 	// ResetLinkTTL is short: a reset link replaces a password.
 	ResetLinkTTL = 24 * time.Hour
+	// EmailResetLinkTTL is shorter still: the link travels by e-mail and
+	// was asked for by whoever knew the account name.
+	EmailResetLinkTTL = time.Hour
+	// ResetRequestInterval is the minimum time between two reset mails to
+	// the same account, so nobody can flood a mailbox.
+	ResetRequestInterval = 5 * time.Minute
+	// maxEmailLength is the longest address SMTP allows (RFC 5321).
+	maxEmailLength = 254
 	// MinInviteDays and MaxInviteDays bound how long an invitation waits.
 	MinInviteDays = 1
 	MaxInviteDays = 30
@@ -76,7 +86,7 @@ func NewInvite(id string, hash TokenHash, name string, role Role, tabs []string,
 // NewResetLink creates a password reset link for a member or a guest. The
 // owner (today the only admin) keeps the shell-only reset on purpose: a
 // link that can take over the admin account must not exist.
-func NewResetLink(id string, hash TokenHash, a Account, now time.Time) (AccountLink, error) {
+func NewResetLink(id string, hash TokenHash, a Account, now time.Time, ttl time.Duration) (AccountLink, error) {
 	switch a.Role() {
 	case RoleMember, RoleGuest:
 	case RoleOwner:
@@ -87,7 +97,7 @@ func NewResetLink(id string, hash TokenHash, a Account, now time.Time) (AccountL
 	if id == "" || hash == "" {
 		return AccountLink{}, kernel.NewValidationError("reset", "id and token are required")
 	}
-	return AccountLink{ID: id, TokenHash: hash, Purpose: LinkReset, AccountID: a.ID(), Name: a.Name(), Role: a.Role(), CreatedAt: now, ExpiresAt: now.Add(ResetLinkTTL)}, nil
+	return AccountLink{ID: id, TokenHash: hash, Purpose: LinkReset, AccountID: a.ID(), Name: a.Name(), Role: a.Role(), CreatedAt: now, ExpiresAt: now.Add(ttl)}, nil
 }
 
 // Expired reports whether the link can no longer be used.
@@ -109,3 +119,20 @@ var ErrNameTaken = kernel.NewPublicError(kernel.ErrConflict, "This name is alrea
 
 // ErrNoPassword is returned for accounts without a password (kiosks).
 var ErrNoPassword = kernel.NewPublicError(kernel.ErrInvalid, "This account has no password.")
+
+// NormaliseEmail validates an address an account gives for reset links;
+// "" means none. Only a bare address is accepted, no display name.
+func NormaliseEmail(raw string) (string, error) {
+	s := strings.TrimSpace(raw)
+	if s == "" {
+		return "", nil
+	}
+	a, err := mail.ParseAddress(s)
+	if err != nil || a.Name != "" || a.Address != s || len(s) > maxEmailLength || strings.ContainsAny(s, ",\r\n") {
+		return "", kernel.NewValidationError("email", "Please enter a valid e-mail address.")
+	}
+	return s, nil
+}
+
+// ErrResetUnavailable is returned when reset mails cannot be sent.
+var ErrResetUnavailable = kernel.NewPublicError(kernel.ErrUnavailable, "Password reset by e-mail is not set up on this instance. Ask the admin for a reset link.")

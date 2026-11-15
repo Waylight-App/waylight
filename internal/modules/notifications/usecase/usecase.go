@@ -57,6 +57,7 @@ type ChannelView struct {
 type Notifier interface {
 	kernel.ObservationSink
 	kernel.AlertSink
+	kernel.Mailer
 	Settings(ctx context.Context) (SettingsView, error)
 	SaveSettings(ctx context.Context, in SettingsInput) (SettingsView, error)
 	SendTest(ctx context.Context) error
@@ -476,6 +477,46 @@ func (uc *notifier) DeleteChannel(ctx context.Context, id string) error {
 		return err
 	}
 	return uc.d.Channels.Delete(ctx, id)
+}
+
+// mailChannel returns the first enabled e-mail channel. Its SMTP account
+// sends account mail such as reset links (#296); its own recipients and
+// routing rules do not apply to that mail.
+func (uc *notifier) mailChannel(ctx context.Context) (domain.Channel, bool) {
+	if _, ok := uc.d.Publishers[domain.ChannelEmail]; !ok {
+		return domain.Channel{}, false
+	}
+	list, err := uc.d.Channels.List(ctx)
+	if err != nil {
+		return domain.Channel{}, false
+	}
+	for _, c := range list {
+		if c.Kind == domain.ChannelEmail && c.Enabled {
+			return c, true
+		}
+	}
+	return domain.Channel{}, false
+}
+
+// CanSend implements kernel.Mailer.
+func (uc *notifier) CanSend(ctx context.Context) bool {
+	_, ok := uc.mailChannel(ctx)
+	return ok
+}
+
+// Send implements kernel.Mailer: one message to one address through the
+// e-mail channel's server.
+func (uc *notifier) Send(ctx context.Context, m kernel.Mail) error {
+	c, ok := uc.mailChannel(ctx)
+	if !ok {
+		return kernel.ErrUnavailable
+	}
+	to := strings.TrimSpace(m.To)
+	if to == "" || strings.ContainsAny(to, ",\r\n") {
+		return kernel.NewValidationError("to", "invalid recipient")
+	}
+	c.To = to
+	return uc.d.Publishers[domain.ChannelEmail].Publish(ctx, c, domain.Message{Title: m.Subject, Body: m.Body, Type: "account"})
 }
 
 // TestChannel implements Notifier; it ignores the routing rules.
