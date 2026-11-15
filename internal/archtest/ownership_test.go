@@ -162,6 +162,16 @@ func callsFilter(fn *ast.FuncDecl, helpers map[string]bool) bool {
 
 func checkFunc(fset *token.FileSet, fn *ast.FuncDecl, owned, helpers map[string]bool) []string {
 	filtered := callsFilter(fn, helpers)
+	// A statement is often split into several literals around a column
+	// list constant, so an INSERT counts as setting owner_id when any
+	// literal of the function names the column.
+	setsOwner := false
+	ast.Inspect(fn.Body, func(n ast.Node) bool {
+		if lit, ok := n.(*ast.BasicLit); ok && lit.Kind == token.STRING && strings.Contains(strings.ToLower(lit.Value), "owner_id") {
+			setsOwner = true
+		}
+		return true
+	})
 	var problems []string
 	ast.Inspect(fn.Body, func(n ast.Node) bool {
 		lit, ok := n.(*ast.BasicLit)
@@ -180,7 +190,7 @@ func checkFunc(fset *token.FileSet, fn *ast.FuncDecl, owned, helpers map[string]
 			pos := fset.Position(lit.Pos())
 			where := pos.Filename + ":" + strconv.Itoa(pos.Line) + " " + fn.Name.Name
 			if strings.EqualFold(m[1], "INTO") {
-				if !strings.Contains(strings.ToLower(sql), "owner_id") {
+				if !setsOwner {
 					problems = append(problems, where+": INSERT INTO "+table+" must set owner_id from the principal")
 				}
 			} else if !filtered {
