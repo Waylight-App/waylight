@@ -229,7 +229,6 @@ export const en = {
   'appearance.light': 'Light',
   'appearance.dark': 'Dark',
   'appearance.accent_color': 'Accent color',
-  'appearance.background_image_url': 'Background image URL',
   'appearance.custom_css_override_variables_such_as':
     'Custom CSS (override variables such as --radius or --color-bg)',
   'appearance.save_appearance': 'Save appearance',

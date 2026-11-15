@@ -58,3 +58,35 @@ func Gallery(g usecase.Gallery) GalleryDTO {
 func Theme(t domain.ThemeDef) ThemeDTO {
 	return ThemeDTO{ID: t.ID, Name: t.Name, Author: t.Author, Scheme: string(t.Scheme), Tokens: t.Tokens, BuiltIn: t.BuiltIn}
 }
+
+// BackgroundDTO is an uploaded background picture (#277); url is the value
+// to store as background, thumb a small preview.
+type BackgroundDTO struct {
+	ID     string `json:"id"`
+	URL    string `json:"url"`
+	Thumb  string `json:"thumb"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
+	Size   int64  `json:"size"`
+}
+
+// BackgroundListDTO lists the uploaded backgrounds with the limits.
+type BackgroundListDTO struct {
+	Items     []BackgroundDTO `json:"items"`
+	Max       int             `json:"max"`
+	MaxUpload int64           `json:"maxUploadBytes"`
+}
+
+// Background maps one picture.
+func Background(b domain.Background) BackgroundDTO {
+	return BackgroundDTO{ID: b.ID, URL: b.URL(), Thumb: b.URL() + "?thumb=1", Width: b.Width, Height: b.Height, Size: b.Size}
+}
+
+// Backgrounds maps the list.
+func Backgrounds(list []domain.Background) BackgroundListDTO {
+	items := make([]BackgroundDTO, 0, len(list))
+	for _, b := range list {
+		items = append(items, Background(b))
+	}
+	return BackgroundListDTO{Items: items, Max: domain.MaxBackgrounds, MaxUpload: domain.MaxBackgroundUploadBytes}
+}

@@ -396,6 +396,8 @@
       tabBarTarget="header-tabs"
       onstate={(tabs, activeId) => (dashboardState = { tabs, activeId })}
       onedit={container.auth.guest || dashboardManaged ? undefined : () => (editing = true)}
+      globalBackground={appearance.backgroundImage}
+      onappearance={(a) => (appearance = a)}
       ondone={() => (editing = false)}
     />
   {/if}

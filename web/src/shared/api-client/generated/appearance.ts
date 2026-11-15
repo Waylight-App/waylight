@@ -48,3 +48,23 @@ export interface GalleryDTO {
   applied: string;
   canRestore: boolean;
 }
+/**
+ * BackgroundDTO is an uploaded background picture (#277); url is the value
+ * to store as background, thumb a small preview.
+ */
+export interface BackgroundDTO {
+  id: string;
+  url: string;
+  thumb: string;
+  width: number /* int */;
+  height: number /* int */;
+  size: number /* int64 */;
+}
+/**
+ * BackgroundListDTO lists the uploaded backgrounds with the limits.
+ */
+export interface BackgroundListDTO {
+  items: BackgroundDTO[];
+  max: number /* int */;
+  maxUploadBytes: number /* int64 */;
+}

@@ -10,17 +10,19 @@ import (
 	"trisse-home/internal/modules/appearance/adapter/controller"
 	"trisse-home/internal/modules/appearance/adapter/gateway"
 	"trisse-home/internal/modules/appearance/usecase"
+	"trisse-home/internal/shared/kernel"
 )
 
 // Module wires the appearance rings and implements modules.Module.
 type Module struct {
 	modules.Base
 	modules.Transferable
-	handlers *controller.Handlers
-	themes   *controller.ThemeHandlers
-	repo     usecase.Repository
-	get      usecase.GetAppearance
-	update   usecase.UpdateAppearance
+	handlers    *controller.Handlers
+	themes      *controller.ThemeHandlers
+	backgrounds *controller.BackgroundHandlers
+	repo        usecase.Repository
+	get         usecase.GetAppearance
+	update      usecase.UpdateAppearance
 }
 
 // SetProfile stores the start-page profile chosen at the first setup
@@ -36,8 +38,9 @@ func (m *Module) SetProfile(ctx context.Context, profile string) error {
 	return m.repo.Save(ctx, a)
 }
 
-// New builds the appearance module.
-func New(db *sql.DB) *Module {
+// New builds the appearance module; clock and ids are used for uploaded
+// backgrounds (#277).
+func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
 	repo := gateway.NewRepository(db)
 	themes := usecase.NewThemes(repo, gateway.NewThemeStore(db), gateway.Codec{}, gateway.BuiltinThemes())
 	get, update := usecase.NewGetAppearance(repo), usecase.NewUpdateAppearance(repo)
@@ -47,7 +50,10 @@ func New(db *sql.DB) *Module {
 		get:          get,
 		update:       update,
 		themes:       controller.NewThemeHandlers(themes),
-		repo:         repo,
+		backgrounds: controller.NewBackgroundHandlers(usecase.NewBackgrounds(usecase.BackgroundDeps{
+			Store: gateway.NewBackgroundStore(db), Processor: gateway.ImageProcessor{}, Repo: repo, Clock: clock, IDs: ids,
+		})),
+		repo: repo,
 	}
 }
 
@@ -71,6 +77,7 @@ func (m *Module) ConfigRoutes() []string {
 		"POST /api/appearance/themes/restore",
 		"DELETE /api/appearance/themes/{id}",
 		"POST /api/appearance/themes/{id}/apply",
+		"PUT /api/appearance/background",
 	}
 }
 
@@ -103,4 +110,9 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/appearance/themes/{id}", m.themes.Export)
 	r.Protected("DELETE /api/appearance/themes/{id}", m.themes.Delete)
 	r.Protected("POST /api/appearance/themes/{id}/apply", m.themes.Apply)
+	r.Protected("PUT /api/appearance/background", m.backgrounds.Set)
+	r.Protected("GET /api/appearance/backgrounds", m.backgrounds.List)
+	r.Protected("POST /api/appearance/backgrounds", m.backgrounds.Upload)
+	r.Protected("GET /api/appearance/backgrounds/{id}", m.backgrounds.Image)
+	r.Protected("DELETE /api/appearance/backgrounds/{id}", m.backgrounds.Delete)
 }

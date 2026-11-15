@@ -42,4 +42,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_213674f4c3cbfcf5: 'Unbekanntes Token {token}.',
   // The start page shows everyday topics or also the home network.
   srv_0b5bd2bd6b39fd9a: 'Die Startseite zeigt Alltagsthemen oder zusätzlich das Heimnetz.',
+  // A background picture must be at most 25 MB.
+  srv_5d3afd2bbd181bb2: 'Ein Hintergrundbild darf höchstens 25 MB groß sein.',
+  // At most 30 background pictures can be stored. Delete one first.
+  srv_1d1fc935d2c877da: 'Es können höchstens 30 Hintergrundbilder gespeichert werden. Lösche zuerst eines.',
+  // The background picture does not exist (any more).
+  srv_d972a27017a770c5: 'Das Hintergrundbild gibt es nicht (mehr).',
 };

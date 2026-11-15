@@ -47,8 +47,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // The Wake-on-LAN relay did not answer. Is COMPOSE_PROFILES=wol set (see docs/host-integrations.md)?
   srv_39f1fbfcd5e03469:
     'Das Wake-on-LAN-Relay hat nicht geantwortet. Ist COMPOSE_PROFILES=wol gesetzt (siehe docs/host-integrations.md)?',
-  // The background image must be an http(s) URL.
-  srv_28004c9379be9be3: 'Das Hintergrundbild muss eine http(s)-URL sein.',
   // The guest does not exist.
   srv_23575e607ab8d86b: 'Der Gast existiert nicht.',
   // The name must be at most 40 characters long.
@@ -78,4 +76,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // These settings are managed by the configuration file (CONFIG_FILE) and are read-only here.
   srv_07a824b208b96b62:
     'Diese Einstellungen werden von der Konfigurationsdatei (CONFIG_FILE) verwaltet und sind hier schreibgeschützt.',
+  // The background must be an http(s) image URL, an uploaded picture or a built-in background.
+  srv_fc9cd325f2b0b2ac:
+    'Der Hintergrund muss eine http(s)-Bildadresse, ein hochgeladenes Bild oder ein eingebauter Hintergrund sein.',
+  // Upload a JPEG, PNG or GIF picture.
+  srv_eac41835716f01a3: 'Lade ein JPEG-, PNG- oder GIF-Bild hoch.',
 };

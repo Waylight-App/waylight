@@ -38,10 +38,28 @@ explains how to write one and how to contribute it.
 
 ## Background image
 
-A *background image URL* sets a picture behind all tabs. Each tab can have
-its own background instead, set in edit mode (see
-[tabs and widgets](dashboard.md#tabs)). The Astronomy Picture of the Day from
-the [space module](modules/space.md) can also serve as a background.
+The background picker opens from **Settings → Appearance → Background** and,
+in edit mode, from the **Background** button in the action bar or the tab's
+menu. It offers three kinds of backgrounds and shows a live preview before
+you save:
+
+- **Built in:** a few gradients and plain colours. They are drawn with CSS,
+  so they cost nothing and work offline.
+- **Your pictures:** upload a JPEG, PNG or GIF of up to 25 MB. trisse-home
+  turns it upright, scales it to at most 2560 pixels and stores it as JPEG
+  without EXIF data, so the location where a photo was taken is not kept.
+  Up to 30 pictures are stored in the database, which means backups contain
+  them; the JSON data export does not. Deleting a picture that is in use
+  brings back the default background.
+- **Image from the web:** any http(s) address of a picture, as before. The
+  Astronomy Picture of the Day from the [space module](modules/space.md) works
+  here too.
+
+Opened from the dashboard, the picker asks whether the background is for
+**all tabs** or **only this tab**. A tab's own background always wins over the
+one for all tabs; the picker says so and offers to remove the tab's own
+background when you change the one for all tabs. **Default background**
+(or, for a tab, **Use the background of all tabs**) resets the choice.
 
 ## Greeting and top bar
 

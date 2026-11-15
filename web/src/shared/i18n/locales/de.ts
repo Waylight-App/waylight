@@ -235,7 +235,6 @@ export const de: Record<BaseMessageKey, string> = {
   'appearance.light': 'Hell',
   'appearance.dark': 'Dunkel',
   'appearance.accent_color': 'Akzentfarbe',
-  'appearance.background_image_url': 'URL des Hintergrundbilds',
   'appearance.custom_css_override_variables_such_as':
     'Eigenes CSS (überschreibt Variablen wie --radius oder --color-bg)',
   'appearance.save_appearance': 'Darstellung speichern',

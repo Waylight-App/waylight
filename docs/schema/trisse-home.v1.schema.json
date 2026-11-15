@@ -14,7 +14,7 @@
       "properties": {
         "theme": { "enum": ["system", "light", "dark"] },
         "accentColor": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
-        "backgroundImage": { "type": "string", "description": "http(s) URL; empty uses the built-in background" },
+        "backgroundImage": { "type": "string", "description": "Empty (default), an http(s) image URL, /api/appearance/backgrounds/<id> or builtin:<name>" },
         "language": { "enum": ["", "en", "de"], "description": "Empty follows the browser" },
         "greetingName": { "type": "string" },
         "launcher": { "enum": ["both", "services", "bookmarks"] },
@@ -102,7 +102,7 @@
             "required": ["name"],
             "properties": {
               "name": { "type": "string", "minLength": 1, "maxLength": 40 },
-              "background": { "type": "string" },
+              "background": { "type": "string", "description": "Like appearance.backgroundImage; empty uses the background of all tabs" },
               "rules": {
                 "type": "array",
                 "description": "Open this tab by default on these weekdays (0 = Sunday), in this time range and/or from these networks; empty parts always match.",
