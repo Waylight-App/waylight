@@ -49,17 +49,19 @@ It works in Chrome, Edge and Firefox:
 2. Load it:
    - **Chrome and Edge:** open `chrome://extensions`, switch on
      *Developer mode*, choose *Load unpacked* and select the unzipped folder.
-   - **Firefox:** open `about:debugging#/runtime/this-firefox`, choose
-     *Load Temporary Add-on* and select `manifest.json`. Firefox removes
-     temporary add-ons on restart; a permanent install needs a signed add-on
-     from addons.mozilla.org.
+   - **Firefox:** once the add-on is listed on addons.mozilla.org (#290), install
+     it from there like any other add-on; it then updates itself. Until then,
+     open `about:debugging#/runtime/this-firefox`, choose *Load Temporary
+     Add-on* and select `manifest.json`; Firefox removes temporary add-ons on
+     restart.
 3. In the extension's options, enter the address of your dashboard, for
    example `http://homeserver:8090`.
 
 The extension asks for three permissions: `storage` for the address,
 `contextMenus` for the menu entry and `activeTab` to read the URL and title
 of the tab you save, only at the moment you click. It has no access to other
-sites, injects no scripts into pages and sends no data anywhere. Its only
+sites, injects no scripts into pages and sends nothing to anyone but your own
+dashboard ([privacy of the extension](extension-privacy.md)). Its only
 request of its own checks whether your dashboard is reachable; if it is
 not, the new tab says so.
 
