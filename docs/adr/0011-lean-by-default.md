@@ -50,6 +50,15 @@ of dependencies. Nothing guarded their *weight*.
    request that edits `budgets.json` and explains why the increase is worth
    it; lowering a budget after an optimisation is encouraged.
 
+   **Allowance per module** (added 2026-11-15 after the measurement in
+   [#358](https://github.com/itadori26/trisse-home/issues/358)): a new module
+   costs about 0.2 MB of binary, roughly 40 KB of code plus the same again in
+   Go's runtime metadata, and about 0.1 MB of image. A pull request that adds
+   a module may raise the binary budget by up to 0.2 MB and the image budget
+   by up to 0.1 MB with the module as the reason. Anything above that, or a
+   raise without a new module, needs its own explanation, because it points
+   at a dependency or an asset that grew, not at a feature.
+
 ## Consequences
 
 - Contributors see the cost of a change in the PR itself instead of months
