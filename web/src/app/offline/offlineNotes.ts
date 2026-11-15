@@ -1,3 +1,4 @@
+import type { ShareGroup, Visibility } from '../../shared/sharing/sharing';
 import { newId } from '../../shared/id/uuid';
 import type {
   Note,
@@ -40,6 +41,15 @@ export class OfflineNotesGateway implements NotesGateway {
       (c) => this.send(c),
       (c) => this.currentVersion(c.itemId),
     );
+  }
+
+  /** Sharing needs the server; it is not queued offline. */
+  share(id: string, visibility: Visibility): Promise<Note> {
+    return this.inner.share(id, visibility);
+  }
+
+  shareGroups(): Promise<ShareGroup[]> {
+    return this.inner.shareGroups();
   }
 
   async list(pinnedOnly: boolean): Promise<Note[]> {

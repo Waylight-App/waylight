@@ -1,3 +1,4 @@
+import { fetchShareGroups, type ShareGroup, type Visibility } from '../../../../shared/sharing/sharing';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type {
   NoteDTO,
@@ -25,6 +26,8 @@ const toNote = (d: NoteDTO): Note => ({
   pinned: d.pinned,
   updatedAt: new Date(d.updatedAt),
   version: d.version ?? 0,
+  visibility: d.visibility,
+  mine: d.mine,
 });
 
 const path = (id: string) => `/api/notes/${encodeURIComponent(id)}`;
@@ -38,6 +41,14 @@ const toRevision = (d: RevisionDTO): Revision => ({
 /** NotesGateway backed by the REST API. */
 export class NotesApi implements NotesGateway {
   constructor(private readonly http: HttpClient) {}
+
+  async share(id: string, visibility: Visibility): Promise<Note> {
+    return toNote(await this.http.put<NoteDTO>(`${path(id)}/visibility`, { visibility }));
+  }
+
+  shareGroups(): Promise<ShareGroup[]> {
+    return fetchShareGroups(this.http);
+  }
 
   async list(pinnedOnly: boolean): Promise<Note[]> {
     return (await this.http.get<NoteDTO[]>(`/api/notes${pinnedOnly ? '?pinned=true' : ''}`)).map(toNote);
