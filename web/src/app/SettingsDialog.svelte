@@ -297,6 +297,12 @@
         <SessionsList auth={container.auth} />
         <h3>{t('app.change_password')}</h3>
         <ChangePasswordForm auth={container.auth} />
+        {#if !container.auth.admin && !container.auth.kiosk}
+          <h3>{t('auth.reset_email_title')}</h3>
+          {#await import('../features/auth/ui/ResetEmailSettings.svelte') then { default: ResetEmailSettings }}
+            <ResetEmailSettings auth={container.auth} />
+          {/await}
+        {/if}
       {/if}
     </section>
   </div>

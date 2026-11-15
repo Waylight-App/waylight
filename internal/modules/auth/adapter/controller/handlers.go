@@ -34,6 +34,7 @@ type UseCases struct {
 	Preferences    usecase.Preferences
 	Kiosks         usecase.Kiosks
 	AccountLinks   usecase.AccountLinks
+	PasswordReset  usecase.PasswordReset
 	APITokens      usecase.APITokens
 	// SSO is nil when no single sign-on method is configured.
 	SSO      usecase.SSO
@@ -100,6 +101,7 @@ func (h *Handlers) Status(w http.ResponseWriter, r *http.Request) {
 	} else {
 		dto.SSO = presenter.SSOStatusDTO{LocalLogin: true}
 	}
+	dto.PasswordReset = h.uc.PasswordReset != nil && h.uc.PasswordReset.Available(r.Context())
 	httpapi.WriteJSON(w, http.StatusOK, dto)
 }
 
@@ -809,4 +811,44 @@ func (h *Handlers) AcceptLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpapi.WriteJSON(w, http.StatusOK, presenter.LinkInfo(info))
+}
+
+// RequestPasswordReset handles POST /api/auth/password-reset (#296). It
+// answers 202 whether or not a mail was sent.
+func (h *Handlers) RequestPasswordReset(w http.ResponseWriter, r *http.Request) {
+	var dto PasswordResetRequestDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	if err := h.uc.PasswordReset.Request(r.Context(), dto.Name, clientKey(r)); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusAccepted)
+}
+
+// MyEmail handles GET /api/auth/email: the own address for reset links.
+func (h *Handlers) MyEmail(w http.ResponseWriter, r *http.Request) {
+	email, err := h.uc.PasswordReset.MyEmail(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.EmailDTO{Email: email})
+}
+
+// SetMyEmail handles PUT /api/auth/email; an empty address removes it.
+func (h *Handlers) SetMyEmail(w http.ResponseWriter, r *http.Request) {
+	var dto presenter.EmailDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	email, err := h.uc.PasswordReset.SetMyEmail(r.Context(), dto.Email)
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.EmailDTO{Email: email})
 }
