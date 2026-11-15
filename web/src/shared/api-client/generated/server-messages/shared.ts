@@ -9,6 +9,7 @@ export const serverMessages = {
   srv_91809f90e8dfc4fb: "Enter the IMAP server name, e.g. imap.example.com.",
   srv_c8433603152a8aec: "Enter the client ID of your app registration.",
   srv_62a7030824310857: "Link-local and cloud metadata addresses are not allowed.",
+  srv_e5be262a5868a63b: "Only an admin can change this.",
   srv_6699f3250edaed8e: "Only the person who created this can change it.",
   srv_83cc78074d3e2ff6: "Remove the user name and password from the address and use the fields below.",
   srv_698a9e2d65efdf8f: "Signing in needs PUBLIC_URL (an https:// address of trisse-home).",

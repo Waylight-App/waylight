@@ -79,3 +79,20 @@ func (p Principal) SettingsAccount() string {
 	}
 	return p.AccountID
 }
+
+// IsAdmin reports whether p manages the instance: the owner (the first
+// admin, ADR 0018) or work without a request.
+func (p Principal) IsAdmin() bool { return p.Role == "owner" || p.IsSystem() }
+
+// PrincipalFor is the principal a background job uses when it acts for one
+// account, for example to apply that account's settings to its records.
+func PrincipalFor(accountID string) Principal {
+	if accountID == SystemAccountID {
+		return AdminPrincipal()
+	}
+	return Principal{AccountID: accountID, Role: "member"}
+}
+
+// ErrAdminOnly refuses a change that affects the whole instance to anyone
+// but an admin, in places where the module otherwise belongs to everyone.
+var ErrAdminOnly = NewPublicError(ErrForbidden, "Only an admin can change this.")

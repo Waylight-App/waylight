@@ -49,6 +49,8 @@ type Repository interface {
 	Pending(ctx context.Context, limit int) ([]domain.Article, error)
 	Settings(ctx context.Context) (domain.Settings, error)
 	SaveSettings(ctx context.Context, s domain.Settings) error
+	// Owners lists the accounts that have articles.
+	Owners(ctx context.Context) ([]string, error)
 }
 
 // ExportCodec reads export files of other read-later services (output port).
@@ -312,6 +314,22 @@ func (uc *readLater) FetchPending(ctx context.Context) error {
 }
 
 func (uc *readLater) Cleanup(ctx context.Context) error {
+	// Each account's articles follow that account's setting (ADR 0018).
+	owners, err := uc.repo.Owners(ctx)
+	if err != nil {
+		return err
+	}
+	for _, owner := range owners {
+		if err := uc.cleanupFor(kernel.WithPrincipal(ctx, kernel.PrincipalFor(owner))); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// cleanupFor deletes the principal's archived articles older than its
+// archive setting.
+func (uc *readLater) cleanupFor(ctx context.Context) error {
 	s, err := uc.repo.Settings(ctx)
 	if err != nil || s.ArchiveDays == 0 {
 		return err

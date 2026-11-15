@@ -221,7 +221,10 @@ func (r *Repository) Pending(ctx context.Context, limit int) ([]domain.Article, 
 // Settings implements usecase.Repository; defaults without a row.
 func (r *Repository) Settings(ctx context.Context) (domain.Settings, error) {
 	var s domain.Settings
-	err := r.db.QueryRowContext(ctx, `SELECT archive_days FROM readlater_settings WHERE id = 1`).Scan(&s.ArchiveDays)
+	// The own setting, or the admin's (ADR 0018).
+	account := kernel.PrincipalFrom(ctx).SettingsAccount()
+	err := r.db.QueryRowContext(ctx, `SELECT archive_days FROM readlater_settings WHERE account_id IN (?, ?) ORDER BY account_id = ? DESC LIMIT 1`,
+		account, kernel.SystemAccountID, account).Scan(&s.ArchiveDays)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Settings{}, nil
 	}
@@ -233,9 +236,30 @@ func (r *Repository) Settings(ctx context.Context) (domain.Settings, error) {
 
 // SaveSettings implements usecase.Repository.
 func (r *Repository) SaveSettings(ctx context.Context, s domain.Settings) error {
-	if _, err := r.db.ExecContext(ctx, `INSERT INTO readlater_settings (id, archive_days) VALUES (1, ?)
-		ON CONFLICT (id) DO UPDATE SET archive_days = excluded.archive_days`, s.ArchiveDays); err != nil {
+	if _, err := r.db.ExecContext(ctx, `INSERT INTO readlater_settings (account_id, archive_days) VALUES (?, ?)
+		ON CONFLICT (account_id) DO UPDATE SET archive_days = excluded.archive_days`, kernel.PrincipalFrom(ctx).SettingsAccount(), s.ArchiveDays); err != nil {
 		return fmt.Errorf("upsert settings: %w", err)
 	}
 	return nil
+}
+
+// Owners implements usecase.Repository: the accounts that have articles, so
+// the cleanup can apply each account's own setting.
+func (r *Repository) Owners(ctx context.Context) ([]string, error) {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT DISTINCT owner_id FROM readlater_articles WHERE `+owned+` ORDER BY owner_id`, args...)
+	if err != nil {
+		return nil, fmt.Errorf("select owners: %w", err)
+	}
+	defer rows.Close()
+	var out []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, fmt.Errorf("scan owner: %w", err)
+		}
+		out = append(out, id)
+	}
+	return out, rows.Err()
 }

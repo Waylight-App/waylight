@@ -93,4 +93,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_9f138e811fd44724: 'Der Name muss zwischen 1 und 60 Zeichen haben.',
   // Only the person who created this can change it.
   srv_6699f3250edaed8e: 'Das kann nur ändern, wer es angelegt hat.',
+  // Only an admin can change this.
+  srv_e5be262a5868a63b: 'Das kann nur ein Admin ändern.',
 };
