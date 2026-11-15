@@ -21,6 +21,10 @@ import (
 // sqlutil.VisibleTo or sqlutil.OwnedBy, and an INSERT into it must set
 // owner_id.
 //
+// A helper in the same package that calls sqlutil.VisibleTo or OwnedBy
+// itself (say, one that adds a special case for guests) counts as the
+// filter too, so the rule follows one level of indirection.
+//
 // A function that deliberately works across all owners (the JSON export of
 // the whole instance, a background job) says so with a comment line
 //
@@ -82,6 +86,9 @@ func ownershipViolations(t *testing.T, modulesDir string) []string {
 		if len(owned) == 0 {
 			continue
 		}
+		// Functions grouped by package directory, so helpers are found
+		// across the files of one package.
+		pkgs := map[string][]*ast.FuncDecl{}
 		err = filepath.WalkDir(filepath.Join(dir, "adapter"), func(path string, d fs.DirEntry, err error) error {
 			if os.IsNotExist(err) {
 				return filepath.SkipDir
@@ -94,16 +101,27 @@ func ownershipViolations(t *testing.T, modulesDir string) []string {
 				return err
 			}
 			for _, decl := range f.Decls {
-				fn, ok := decl.(*ast.FuncDecl)
-				if !ok || fn.Body == nil || exempt(fn) {
-					continue
+				if fn, ok := decl.(*ast.FuncDecl); ok && fn.Body != nil {
+					pkgs[filepath.Dir(path)] = append(pkgs[filepath.Dir(path)], fn)
 				}
-				problems = append(problems, checkFunc(fset, fn, owned)...)
 			}
 			return nil
 		})
 		if err != nil {
 			t.Fatal(err)
+		}
+		for _, fns := range pkgs {
+			helpers := map[string]bool{}
+			for _, fn := range fns {
+				if callsFilter(fn, nil) {
+					helpers[fn.Name.Name] = true
+				}
+			}
+			for _, fn := range fns {
+				if !exempt(fn) {
+					problems = append(problems, checkFunc(fset, fn, owned, helpers)...)
+				}
+			}
 		}
 	}
 	return problems
@@ -116,16 +134,34 @@ func exempt(fn *ast.FuncDecl) bool {
 	return slices.ContainsFunc(fn.Doc.List, func(c *ast.Comment) bool { return allOwners.MatchString(c.Text) })
 }
 
-func checkFunc(fset *token.FileSet, fn *ast.FuncDecl, owned map[string]bool) []string {
-	filtered := false
+// callsFilter reports whether fn calls sqlutil.VisibleTo/OwnedBy or one of
+// the helpers (functions or methods of the same package that do).
+func callsFilter(fn *ast.FuncDecl, helpers map[string]bool) bool {
+	found := false
 	ast.Inspect(fn.Body, func(n ast.Node) bool {
-		if sel, ok := n.(*ast.SelectorExpr); ok {
-			if id, ok := sel.X.(*ast.Ident); ok && id.Name == "sqlutil" && (sel.Sel.Name == "VisibleTo" || sel.Sel.Name == "OwnedBy") {
-				filtered = true
+		call, ok := n.(*ast.CallExpr)
+		if !ok {
+			return true
+		}
+		switch f := call.Fun.(type) {
+		case *ast.SelectorExpr:
+			if id, ok := f.X.(*ast.Ident); ok && id.Name == "sqlutil" && (f.Sel.Name == "VisibleTo" || f.Sel.Name == "OwnedBy") {
+				found = true
+			} else if helpers[f.Sel.Name] {
+				found = true
+			}
+		case *ast.Ident:
+			if helpers[f.Name] {
+				found = true
 			}
 		}
 		return true
 	})
+	return found
+}
+
+func checkFunc(fset *token.FileSet, fn *ast.FuncDecl, owned, helpers map[string]bool) []string {
+	filtered := callsFilter(fn, helpers)
 	var problems []string
 	ast.Inspect(fn.Body, func(n ast.Node) bool {
 		lit, ok := n.(*ast.BasicLit)
@@ -176,7 +212,7 @@ func TestOwnershipRuleCatchesLeaks(t *testing.T) {
 			t.Errorf("rule missed %s; reported:\n%s", name, all)
 		}
 	}
-	for _, name := range []string{"filteredList", "ownedDelete", "insertWithOwner", "exportAll", "untouchedTable"} {
+	for _, name := range []string{"filteredList", "ownedDelete", "insertWithOwner", "exportAll", "untouchedTable", "viaHelper"} {
 		if strings.Contains(all, " "+name+":") {
 			t.Errorf("rule reported %s, which is fine:\n%s", name, all)
 		}

@@ -71,6 +71,32 @@ func TestMemberAccess(t *testing.T) {
 	// Self-service on the own account works.
 	m.do(http.MethodGet, "/api/auth/sessions", nil, http.StatusOK)
 
+	// Personal tabs (#294 step 2): the member gets its own dashboard and
+	// cannot see or change the owner's tabs.
+	var odash, mdash struct {
+		Tabs []obj `json:"tabs"`
+	}
+	owner.json(http.MethodGet, "/api/dashboard", nil, http.StatusOK, &odash)
+	ownerTab := odash.Tabs[0]["id"].(string)
+	m.json(http.MethodGet, "/api/dashboard", nil, http.StatusOK, &mdash)
+	for _, tab := range mdash.Tabs {
+		if tab["id"] == ownerTab {
+			t.Fatalf("member sees the owner's tab: %v", mdash.Tabs)
+		}
+	}
+	var mine obj
+	m.json(http.MethodPost, "/api/dashboard/tabs", obj{"name": "Ben"}, http.StatusCreated, &mine)
+	m.do(http.MethodPost, "/api/dashboard/tabs/"+mine["id"].(string)+"/widgets", obj{"kind": "clock", "x": 0, "y": 0, "w": 4, "h": 2}, http.StatusCreated)
+	m.do(http.MethodPost, "/api/dashboard/tabs/"+ownerTab+"/widgets", obj{"kind": "clock", "x": 0, "y": 0, "w": 4, "h": 2}, http.StatusNotFound)
+	m.do(http.MethodPut, "/api/dashboard/tabs/"+ownerTab, obj{"name": "Mine"}, http.StatusNotFound)
+	m.do(http.MethodDelete, "/api/dashboard/tabs/"+ownerTab, nil, http.StatusNotFound)
+	owner.json(http.MethodGet, "/api/dashboard", nil, http.StatusOK, &odash)
+	for _, tab := range odash.Tabs {
+		if tab["id"] == mine["id"] {
+			t.Fatal("the owner sees the member's personal tab")
+		}
+	}
+
 	// The security log records the account and group changes.
 	var events []obj
 	owner.json(http.MethodGet, "/api/auth/events", nil, http.StatusOK, &events)

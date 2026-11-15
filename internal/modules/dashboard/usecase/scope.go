@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"slices"
+
+	"trisse-home/internal/shared/kernel"
 )
 
 // TabScope answers which widget kinds are placed on a set of tabs; the
@@ -36,9 +38,10 @@ func (uc *tabScope) WidgetKindsOnTabs(ctx context.Context, tabIDs []string) ([]s
 	return kinds, nil
 }
 
-// TabIDs implements TabScope.
+// TabIDs implements TabScope: the admin's tabs, which the display of an
+// appliance shows (#140); members' personal tabs are not part of it.
 func (uc *tabScope) TabIDs(ctx context.Context) ([]string, error) {
-	tabs, err := uc.deps.Tabs.ListTabs(ctx)
+	tabs, err := uc.deps.Tabs.ListTabs(kernel.WithPrincipal(ctx, kernel.AdminPrincipal()))
 	if err != nil {
 		return nil, fmt.Errorf("list tabs: %w", err)
 	}
