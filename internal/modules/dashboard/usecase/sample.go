@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"trisse-home/internal/modules/dashboard/domain"
+	"trisse-home/internal/shared/kernel"
 )
 
 // SeedSampleData fills an empty dashboard with example tabs and widgets
@@ -68,6 +69,9 @@ func NewSeedSampleData(deps Deps, tabs []SampleTab) SeedSampleData {
 // Execute implements SeedSampleData. An existing dashboard is never touched,
 // and widgets of disabled modules are skipped.
 func (uc *seedSampleData) Execute(ctx context.Context) error {
+	// Sample tabs are the admin's; seeding runs right after setup as the
+	// system, which would otherwise create and count tabs of every account.
+	ctx = kernel.WithPrincipal(ctx, kernel.AdminPrincipal())
 	existing, err := uc.deps.Tabs.ListTabs(ctx)
 	if err != nil {
 		return fmt.Errorf("list tabs: %w", err)
