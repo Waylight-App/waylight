@@ -60,7 +60,11 @@ func toConfig(b domain.Bookmark) ConfigBookmark {
 	return ConfigBookmark{Title: b.Title(), URL: b.URL(), Description: b.Description(), Tags: b.Tags()}
 }
 
+// Export and Apply work on the admin's bookmarks: config as code describes
+// the instance, not members' personal bookmarks (ADR 0018), and they also
+// run at start as the system, which would see everyone's.
 func (uc *config) Export(ctx context.Context) (ConfigSection, error) {
+	ctx = kernel.WithPrincipal(ctx, kernel.AdminPrincipal())
 	folders, err := uc.repo.ListFolders(ctx)
 	if err != nil {
 		return ConfigSection{}, fmt.Errorf("list folders: %w", err)
@@ -85,6 +89,7 @@ var errDuplicateFolder = kernel.NewValidationError("folder", "Each folder name c
 // Apply keeps the IDs of folders with the same name and of bookmarks with
 // the same URL, so fetched icons and link checks survive a re-import.
 func (uc *config) Apply(ctx context.Context, s ConfigSection) error {
+	ctx = kernel.WithPrincipal(ctx, kernel.AdminPrincipal())
 	oldFolders, err := uc.repo.ListFolders(ctx)
 	if err != nil {
 		return fmt.Errorf("list folders: %w", err)
