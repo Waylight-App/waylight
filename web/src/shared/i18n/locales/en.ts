@@ -946,6 +946,7 @@ export const en = {
   'sharing.private': 'Only me',
   'sharing.everyone': 'Everyone on this dashboard',
   'sharing.group': 'Group: {name}',
+  'sharing.unknown_group': 'A group that no longer exists (only you see this)',
   'sharing.not_yours': 'Shared with you; only its owner can change it.',
   'auth.private_by_default': 'My new entries are private',
   'auth.private_by_default_hint':
@@ -970,6 +971,9 @@ export const en = {
   'auth.no_groups': 'No groups yet.',
   'auth.group_name': 'Name of the new group',
   'auth.create_group': 'Create group',
+  'auth.member_groups': 'Groups: {groups}',
+  'auth.group_rename': 'Rename',
+  'auth.group_rename_label': 'New name for {name}',
   'auth.group_name_invalid': 'The group name must be 1–40 characters.',
   'auth.guests_hint':
     'Guests sign in with their own name and password and can only view the tabs you share with them. They cannot change anything and never see settings or credentials. Note: a widget shows all data of its module — a shared notes widget reveals all notes.',

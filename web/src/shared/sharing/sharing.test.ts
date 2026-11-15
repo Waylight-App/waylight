@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { HttpClient } from '../api-client/http';
-import { fetchShareGroups, groupVisibility } from './sharing';
+import { fetchShareGroups, groupVisibility, isUnknownGroup } from './sharing';
 
 describe('sharing', () => {
   it('builds group visibilities and loads the groups', async () => {
@@ -10,5 +10,13 @@ describe('sharing', () => {
     } as unknown as HttpClient;
     await expect(fetchShareGroups(http)).resolves.toEqual([{ id: 'g1', name: 'Office' }]);
     expect(http.get).toHaveBeenCalledWith('/api/auth/my-groups');
+  });
+
+  it('spots a group value that is not in the list', () => {
+    const groups = [{ id: 'g1', name: 'Office' }];
+    expect(isUnknownGroup('group:g1', groups)).toBe(false);
+    expect(isUnknownGroup('group:gone', groups)).toBe(true);
+    expect(isUnknownGroup('private', groups)).toBe(false);
+    expect(isUnknownGroup('everyone', [])).toBe(false);
   });
 });
