@@ -1,3 +1,4 @@
+import type { ShareGroup, Visibility } from '../../../shared/sharing/sharing';
 import { t } from '../../../shared/i18n';
 import type { Bookmark, BookmarkInput, BookmarkSettings, Folder, Tag } from '../domain/bookmark';
 
@@ -26,6 +27,10 @@ export interface BookmarksGateway {
   createFolder(name: string): Promise<Folder>;
   renameFolder(id: string, name: string): Promise<Folder>;
   deleteFolder(id: string): Promise<void>;
+  /** Shares an own folder and its bookmarks (ADR 0018, #298). */
+  shareFolder(id: string, visibility: Visibility): Promise<Folder>;
+  /** Groups the signed-in account may share with. */
+  shareGroups(): Promise<ShareGroup[]>;
   importHtml(html: string): Promise<BookmarkImportResult>;
   getSettings(): Promise<BookmarkSettings>;
   saveSettings(s: BookmarkSettings): Promise<BookmarkSettings>;
@@ -66,6 +71,15 @@ export class BookmarksUseCases {
 
   renameFolder(id: string, name: string): Promise<Folder> {
     return this.gateway.renameFolder(id, name.trim());
+  }
+
+  /** Shares a folder: with a group it becomes that group's link directory (#298). */
+  shareFolder(id: string, visibility: Visibility): Promise<Folder> {
+    return this.gateway.shareFolder(id, visibility);
+  }
+
+  shareGroups(): Promise<ShareGroup[]> {
+    return this.gateway.shareGroups();
   }
 
   deleteFolder(id: string): Promise<void> {

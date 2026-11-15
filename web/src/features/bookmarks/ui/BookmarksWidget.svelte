@@ -104,12 +104,22 @@
             role="img">{b.link.state === 'broken' ? '⚠' : '↪'}</span
           >{/if}
         {#each b.tags as t (t)}<span class="tag">#{t}</span>{/each}
-        <button
-          class="btn btn-icon edit"
-          type="button"
-          aria-label={t('bookmarks.edit', { title: b.title })}
-          onclick={() => (editing = b)}>✎</button
-        >
+        {#if b.mine}
+          <button
+            class="btn btn-icon edit"
+            type="button"
+            aria-label={t('bookmarks.edit', { title: b.title })}
+            onclick={() => (editing = b)}>✎</button
+          >
+        {:else}
+          <!-- Shared links (#298) are read-only and marked as such. -->
+          <span
+            class="shared"
+            title={t('bookmarks.shared_with_you')}
+            aria-label={t('bookmarks.shared_with_you')}
+            role="img">👥</span
+          >
+        {/if}
       </li>
     {:else}
       <li class="muted">
@@ -126,7 +136,7 @@
   >
     <BookmarkForm
       {bookmarks}
-      folders={data.folders}
+      folders={data.folders.filter((f) => f.mine)}
       bookmark={editing === 'new' ? undefined : editing}
       folderId={cfg.folderId === 'none' ? '' : cfg.folderId}
       onsaved={() => {
@@ -188,6 +198,10 @@
   .tag {
     font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
     color: var(--color-text-muted);
+  }
+  .shared {
+    font-size: 0.8em;
+    opacity: 0.7;
   }
   .edit {
     margin-left: auto;

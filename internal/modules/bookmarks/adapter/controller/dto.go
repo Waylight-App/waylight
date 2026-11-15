@@ -19,3 +19,9 @@ type SettingsInputDTO struct {
 type FolderInputDTO struct {
 	Name string `json:"name"`
 }
+
+// VisibilityDTO is the body of PUT /api/bookmarks/folders/{id}/visibility:
+// "private", "everyone" or "group:<id>" (ADR 0018, #298).
+type VisibilityDTO struct {
+	Visibility string `json:"visibility"`
+}

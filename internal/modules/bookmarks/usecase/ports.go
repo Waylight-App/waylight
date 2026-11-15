@@ -39,6 +39,12 @@ type RenameFolder interface {
 	Execute(ctx context.Context, id, name string) (FolderView, error)
 }
 
+// ShareFolder sets who else may see a folder and its bookmarks (input
+// port, ADR 0018, #298).
+type ShareFolder interface {
+	Execute(ctx context.Context, id, visibility string) (FolderView, error)
+}
+
 // DeleteFolder removes a folder; its bookmarks become unfiled.
 type DeleteFolder interface {
 	Execute(ctx context.Context, id string) error
@@ -87,6 +93,8 @@ type Repository interface {
 	ListFolders(ctx context.Context) ([]domain.Folder, error)
 	GetFolder(ctx context.Context, id string) (domain.Folder, error)
 	SaveFolder(ctx context.Context, f domain.Folder) error
+	// SetFolderVisibility shares an own folder and its bookmarks.
+	SetFolderVisibility(ctx context.Context, id string, v kernel.Visibility) error
 	// DeleteFolder removes the folder and unfiles its bookmarks atomically.
 	DeleteFolder(ctx context.Context, id string) error
 }
