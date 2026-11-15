@@ -14,6 +14,7 @@ describe('viewFor', () => {
         admin: false,
         member: false,
         sso: { oidc: false, header: false, localLogin: true },
+        passwordReset: false,
       }),
     ).toBe('setup');
   });
@@ -29,6 +30,7 @@ describe('viewFor', () => {
         admin: false,
         member: false,
         sso: { oidc: false, header: false, localLogin: true },
+        passwordReset: false,
       }),
     ).toBe('app');
   });
@@ -44,6 +46,7 @@ describe('viewFor', () => {
         admin: false,
         member: false,
         sso: { oidc: false, header: false, localLogin: true },
+        passwordReset: false,
       }),
     ).toBe('login');
   });
