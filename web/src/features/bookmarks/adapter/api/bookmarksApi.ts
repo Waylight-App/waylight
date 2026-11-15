@@ -9,7 +9,9 @@ import type {
   BookmarkInputDTO,
   FolderInputDTO,
   SettingsInputDTO,
+  VisibilityDTO,
 } from '../../../../shared/api-client/generated/bookmarks-requests';
+import { fetchShareGroups, type ShareGroup, type Visibility } from '../../../../shared/sharing/sharing';
 import type { Bookmark, BookmarkInput, BookmarkSettings, Folder, LinkStatus } from '../../domain/bookmark';
 import type {
   BookmarkFilter,
@@ -33,8 +35,16 @@ const toBookmark = (d: BookmarkDTO): Bookmark => ({
   },
   hasIcon: d.hasIcon ?? false,
   createdAt: d.createdAt,
+  visibility: d.visibility ?? 'private',
+  mine: d.mine ?? true,
 });
-const toFolder = (d: FolderDTO): Folder => ({ id: d.id, name: d.name, count: d.count });
+const toFolder = (d: FolderDTO): Folder => ({
+  id: d.id,
+  name: d.name,
+  count: d.count,
+  visibility: d.visibility ?? 'private',
+  mine: d.mine ?? true,
+});
 const toDTO = (i: BookmarkInput): BookmarkInputDTO => ({
   folderId: i.folderId,
   title: i.title,
@@ -77,6 +87,13 @@ export class BookmarksApi implements BookmarksGateway {
   }
   deleteFolder(id: string): Promise<void> {
     return this.http.delete(folderPath(id));
+  }
+  async shareFolder(id: string, visibility: Visibility): Promise<Folder> {
+    const body: VisibilityDTO = { visibility };
+    return toFolder(await this.http.put<FolderDTO>(`${folderPath(id)}/visibility`, body));
+  }
+  shareGroups(): Promise<ShareGroup[]> {
+    return fetchShareGroups(this.http);
   }
 
   async getSettings(): Promise<BookmarkSettings> {
