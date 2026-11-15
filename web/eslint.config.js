@@ -17,6 +17,7 @@ export default ts.config(
   {
     ignores: [
       'dist/',
+      'dist-extension/',
       'node_modules/',
       'test-results/',
       'playwright-report/',

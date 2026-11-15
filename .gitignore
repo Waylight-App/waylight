@@ -18,6 +18,7 @@ coverage.out
 
 # Frontend tooling
 /web/node_modules
+/web/dist-extension/
 web/test-results/
 web/playwright-report/
 
