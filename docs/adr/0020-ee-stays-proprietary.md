@@ -55,6 +55,9 @@ As of today this covers:
 | [#307](https://github.com/itadori26/trisse-home/issues/307) | The licence key itself |
 | [#326](https://github.com/itadori26/trisse-home/issues/326) | Connected accounts per member |
 | [#327](https://github.com/itadori26/trisse-home/issues/327)–[#331](https://github.com/itadori26/trisse-home/issues/331) | Workplace search: Confluence, SharePoint/OneDrive, Notion, Slack, Teams |
+| [#332](https://github.com/itadori26/trisse-home/issues/332)–[#334](https://github.com/itadori26/trisse-home/issues/334) | Announcements to Slack/Teams channels, Slack app, Teams app |
+| [#346](https://github.com/itadori26/trisse-home/issues/346) | Live presence widget |
+| [#396](https://github.com/itadori26/trisse-home/issues/396) | Directory sync: LDAP, Active Directory and SCIM |
 
 These stay in the MIT core:
 
