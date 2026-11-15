@@ -127,5 +127,6 @@ nav:
           - "ADR 0016: Cross-module read models": adr/0016-cross-module-read-models.md
           - "ADR 0017: Open core": adr/0017-open-core.md
           - "ADR 0018: Data ownership": adr/0018-data-ownership.md
+          - "ADR 0019: Extension without a server": adr/0019-extension-without-server.md
       - Contributing: https://github.com/itadori26/trisse-home/blob/main/CONTRIBUTING.md
       - Roadmap: https://github.com/itadori26/trisse-home/blob/main/ROADMAP.md
