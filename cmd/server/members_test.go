@@ -54,7 +54,34 @@ func TestMemberAccess(t *testing.T) {
 
 	// Personal content and settings: read and write.
 	m.do(http.MethodGet, "/api/notes", nil, http.StatusOK)
-	m.do(http.MethodPost, "/api/notes", obj{"title": "Mine", "body": "x"}, http.StatusCreated)
+	var memberNote, ownerNote obj
+	m.json(http.MethodPost, "/api/notes", obj{"title": "Mine", "body": "member secret"}, http.StatusCreated, &memberNote)
+	owner.json(http.MethodPost, "/api/notes", obj{"title": "Family", "body": "for everyone"}, http.StatusCreated, &ownerNote)
+
+	// Notes are owned per record (ADR 0018, #294 step 3): the member's note
+	// is private, the owner's new note is for everyone as before, and only
+	// the owner of a note can change it.
+	var ownerNotes, memberNotes []obj
+	owner.json(http.MethodGet, "/api/notes", nil, http.StatusOK, &ownerNotes)
+	for _, n := range ownerNotes {
+		if n["id"] == memberNote["id"] {
+			t.Fatal("the owner sees the member's private note")
+		}
+	}
+	owner.do(http.MethodGet, "/api/notes/"+memberNote["id"].(string), nil, http.StatusNotFound)
+	owner.do(http.MethodPut, "/api/notes/"+memberNote["id"].(string), obj{"title": "x", "body": "y"}, http.StatusNotFound)
+	m.json(http.MethodGet, "/api/notes", nil, http.StatusOK, &memberNotes)
+	if len(memberNotes) < 2 {
+		t.Fatalf("member sees its own and the shared note: %v", memberNotes)
+	}
+	m.do(http.MethodGet, "/api/notes/"+ownerNote["id"].(string), nil, http.StatusOK)
+	m.do(http.MethodPut, "/api/notes/"+ownerNote["id"].(string), obj{"title": "Hijacked", "body": "y"}, http.StatusForbidden)
+	m.do(http.MethodDelete, "/api/notes/"+ownerNote["id"].(string), nil, http.StatusForbidden)
+	var hits []obj
+	owner.json(http.MethodGet, "/api/notes/search?q=secret", nil, http.StatusOK, &hits)
+	if len(hits) != 0 {
+		t.Fatalf("the owner found the member's note: %v", hits)
+	}
 	m.do(http.MethodGet, "/api/appearance", nil, http.StatusOK)
 	m.do(http.MethodGet, "/api/modules", nil, http.StatusOK)
 

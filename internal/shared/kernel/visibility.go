@@ -64,3 +64,18 @@ func (v Visibility) VisibleTo(p Principal, ownerID string) bool {
 	}
 	return false
 }
+
+// ErrNotOwner is returned when someone tries to change or delete a record
+// they can see but do not own (ADR 0018: only the owner changes a record).
+var ErrNotOwner = NewPublicError(ErrForbidden, "Only the person who created this can change it.")
+
+// DefaultVisibility is the visibility of a new record created by p. Members
+// start private. The admin keeps today's behaviour, everyone, so a household
+// without members notices no change (ADR 0018, migration step 3); asking the
+// admin to switch to private comes with the first member.
+func DefaultVisibility(p Principal) Visibility {
+	if p.Role == "member" {
+		return Private
+	}
+	return Everyone
+}
