@@ -89,4 +89,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_cd970adb7028a7ce: 'Die Anmeldung wurde nicht hier gestartet oder ist abgelaufen. Bitte neu beginnen.',
   // Too many sign-ins at once. Please wait a few minutes.
   srv_851e9d41e5c4c49f: 'Zu viele Anmeldungen gleichzeitig. Bitte warte ein paar Minuten.',
+  // The name must have between 1 and 60 characters.
+  srv_9f138e811fd44724: 'Der Name muss zwischen 1 und 60 Zeichen haben.',
 };

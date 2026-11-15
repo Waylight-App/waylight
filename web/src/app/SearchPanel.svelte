@@ -16,6 +16,11 @@
   import { itemTarget, type QuickItem, search } from './quickSearch';
   import { answerTarget, searchUsage } from './searchUsage';
   import { quickItemLoaders } from './quickItems';
+  import {
+    MIN_QUERY_LENGTH as MIN_WIKI_QUERY,
+    pageDetail,
+    wikiOnlyQuery,
+  } from '../features/wiki/domain/wiki';
   import { createSmartSearch } from './searchSources';
   import { buildAiContext } from './aiContext';
   import { buildRows, keyIntent, move, type Row } from './searchRows';
@@ -107,15 +112,24 @@
 
   // Body matches from the notes full-text search (#73).
   let noteHits = $state(new Map<string, string>());
-  const searchable = $derived(
-    items.map((i) => {
+  // Pages from connected wikis (#321), asked while typing; "w …" asks only them.
+  let wikiItems = $state<QuickItem[]>([]);
+  let wikiFailed = $state<string[]>([]);
+  const wikiOnly = $derived(wikiOnlyQuery(query));
+  const searchable = $derived([
+    ...items.map((i) => {
       const snippet = i.kind === 'note' ? noteHits.get(i.id) : undefined;
       return snippet === undefined ? i : { ...i, detail: snippet, keywords: [...(i.keywords ?? []), query] };
     }),
-  );
+    ...wikiItems,
+  ]);
   // Results chosen before for this query rank higher (#159).
   const groups = $derived(
-    command ? [] : search(searchable, query, 5, (it, s) => searchUsage.score(query, itemTarget(it), s)),
+    command
+      ? []
+      : search(searchable, query, 5, (it, s) => searchUsage.score(query, itemTarget(it), s)).filter(
+          (g) => wikiOnly === null || g.kind === 'wiki',
+        ),
   );
   const rowGroups = $derived(
     buildRows({ command, alternative, groups, web: modules.has('search') && query.trim() !== '' }),
@@ -142,6 +156,40 @@
     return () => clearTimeout(noteTimer);
   });
 
+  // The wiki is asked from two characters on, after a short pause; the
+  // newest query wins and a slow wiki never holds up the other results.
+  let wikiTimer: ReturnType<typeof setTimeout> | undefined;
+  $effect(() => {
+    const q = query;
+    const wq = (wikiOnlyQuery(q) ?? q).trim();
+    clearTimeout(wikiTimer);
+    if (!modules.has('wiki') || container.auth.guest || command || wq.length < MIN_WIKI_QUERY) {
+      wikiItems = [];
+      wikiFailed = [];
+      return;
+    }
+    wikiTimer = setTimeout(() => {
+      container.wiki
+        .search(wq)
+        .then((r) => {
+          if (q !== query) return;
+          wikiFailed = r.failed;
+          // The wiki already matched the page; the query as keyword keeps
+          // the local ranking from dropping it.
+          wikiItems = r.pages.map((p, i) => ({
+            kind: 'wiki' as const,
+            id: `${p.wiki}:${i}:${p.url}`,
+            title: p.title,
+            detail: pageDetail(p),
+            keywords: [q],
+            url: p.url,
+          }));
+        })
+        .catch(() => ((wikiItems = []), (wikiFailed = [])));
+    }, 250);
+    return () => clearTimeout(wikiTimer);
+  });
+
   $effect(() => {
     // Load everything once when the panel opens; one failing source does not
     // block the others. The module calls live in quickItems.ts (#156).
@@ -161,7 +209,7 @@
   let answers = $state<Answer[]>([]);
   $effect(() => {
     const q = query;
-    if (command || q.trim().length < 2) {
+    if (command || wikiOnlyQuery(q) !== null || q.trim().length < 2) {
       answers = [];
       return;
     }
@@ -410,6 +458,9 @@
         {#await import('./AskAi.svelte') then m}
           <m.default question={aiQuestion} ask={askAi} />
         {/await}
+      {/if}
+      {#if wikiFailed.length}
+        <p class="muted hint">{t('wiki.failed', { names: wikiFailed.join(', ') })}</p>
       {/if}
       <p class="muted hint" role="status">
         {status}

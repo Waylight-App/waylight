@@ -39,6 +39,11 @@ describe('module search contributions (#161)', () => {
 
 /** Regression table of the module intents (#161); the built-in ones live in intents.test.ts. */
 const table: [string, string | null][] = [
+  // wiki-only prefix (#321): "w …" goes to the wikis, never to an intent,
+  // while words that only start with w keep their intents
+  ['w vpn einrichten', null],
+  ['wiki drucker', null],
+  ['wann kommt die gelbe tonne', 'waste.next'],
   // waste
   ['müll', 'waste.next'],
   ['abfall', 'waste.next'],

@@ -24,6 +24,7 @@ export const serverMessages = {
   srv_23575e607ab8d86b: "The guest does not exist.",
   srv_a81a70289d9d44d1: "The name must be at most 40 characters long.",
   srv_71604d59e2455245: "The name must be between 1 and 60 characters long.",
+  srv_9f138e811fd44724: "The name must have between 1 and 60 characters.",
   srv_92285ba58a255b47: "The port must be between 1 and 65535 (IMAP over TLS: 993).",
   srv_63f60053f8b51722: "The server answered {status}.",
   srv_0d59baf576015864: "The server answered, but the path was not found. Check the address.",

@@ -43,4 +43,18 @@ describe('quick search', () => {
     // A boost never turns a non-match into a result.
     expect(search(list, 'jelly', 5, (_, s) => s + 10)).toEqual([]);
   });
+
+  it('keeps wiki pages, which the wiki already matched, as their own last group (#321)', () => {
+    const wiki: QuickItem = {
+      kind: 'wiki',
+      id: 'w1',
+      title: 'VPN setup',
+      detail: 'IT · Handbook',
+      keywords: ['w remote'],
+      url: 'https://w/p',
+    };
+    const groups = search([...items, wiki], 'w remote');
+    expect(groups.map((g) => g.kind)).toEqual(['wiki']);
+    expect(search([...items, wiki], 'router').map((g) => g.kind)).toEqual(['note']);
+  });
 });
