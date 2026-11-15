@@ -45,6 +45,8 @@ export interface AuthGateway {
   createGroup(name: string, accounts: string[]): Promise<Group>;
   updateGroup(id: string, name: string, accounts: string[]): Promise<Group>;
   deleteGroup(id: string): Promise<void>;
+  privateByDefault(): Promise<boolean>;
+  setPrivateByDefault(on: boolean): Promise<void>;
   kiosks(): Promise<KioskDisplay[]>;
   createKiosk(input: KioskInput): Promise<{ kiosk: KioskDisplay; token: string }>;
   updateKiosk(id: string, input: KioskInput): Promise<KioskDisplay>;

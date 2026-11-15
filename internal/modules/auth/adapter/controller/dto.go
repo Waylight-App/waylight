@@ -55,6 +55,11 @@ type GroupRequestDTO struct {
 	Accounts []string `json:"accounts"`
 }
 
+// PreferencesRequestDTO changes the admin's preferences (ADR 0018).
+type PreferencesRequestDTO struct {
+	PrivateByDefault bool `json:"privateByDefault"`
+}
+
 // TokenRequestDTO creates an API token; ExpiresInDays 0 means never.
 type TokenRequestDTO struct {
 	Name          string   `json:"name"`

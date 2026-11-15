@@ -965,6 +965,9 @@ export const de: Record<BaseMessageKey, string> = {
     'Bitte 2–32 Kleinbuchstaben, Ziffern, Punkte, Binde- oder Unterstriche verwenden.',
   'settings.section.guests': 'Gäste',
   'settings.section.members': 'Mitglieder und Gruppen',
+  'auth.private_by_default': 'Meine neuen Einträge sind privat',
+  'auth.private_by_default_hint':
+    'Bisher waren deine Notizen, To-dos und Listen für alle auf dieser Instanz sichtbar. Mit Mitgliedern kannst du wählen, ob neue Einträge nur für dich sind. Bestehende Einträge bleiben, wie sie sind.',
   'auth.members_hint':
     'Mitglieder sind vollwertige Konten mit eigenen Tabs, Notizen und Listen. Instanz-Einstellungen können sie nicht ändern. Gruppen fassen Mitglieder und Gäste zusammen, mit denen Einträge geteilt werden können.',
   'auth.members_unavailable':

@@ -20,6 +20,7 @@
   let confirmation = $state('');
   let newPassword = $state<Record<string, string>>({});
   let groupName = $state('');
+  let privateByDefault = $state(false);
 
   // Groups can hold members and guests; both lists feed the checkboxes.
   const accounts = $derived([
@@ -29,7 +30,13 @@
 
   async function load() {
     try {
-      const [list, gs, gr] = await Promise.all([auth.members(), auth.guests(), auth.groups()]);
+      const [list, gs, gr, priv] = await Promise.all([
+        auth.members(),
+        auth.guests(),
+        auth.groups(),
+        auth.privateByDefault(),
+      ]);
+      privateByDefault = priv;
       available = list.available;
       members = list.members;
       guests = gs;
@@ -76,6 +83,23 @@
 <p class="muted">{t('auth.members_hint')}</p>
 {#if !available}<p class="notice" role="status">{t('auth.members_unavailable')}</p>{/if}
 {#if error}<p class="error" role="alert">{error}</p>{/if}
+
+<!-- Asked once members exist (ADR 0018, migration step 3): until now the
+     admin's entries were visible to everyone on the instance. -->
+<label class="privacy" class:highlight={members.length > 0 && !privateByDefault}>
+  <input
+    type="checkbox"
+    checked={privateByDefault}
+    onchange={(e) => {
+      const on = e.currentTarget.checked;
+      run(() => auth.setPrivateByDefault(on));
+    }}
+  />
+  <span>
+    <strong>{t('auth.private_by_default')}</strong><br />
+    <span class="muted">{t('auth.private_by_default_hint')}</span>
+  </span>
+</label>
 
 <h3>{t('auth.members')}</h3>
 <ul class="accounts">
@@ -227,6 +251,18 @@
   }
   .new {
     margin-top: var(--space-3);
+  }
+  .privacy {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+    margin: var(--space-2) 0;
+    padding: var(--space-2);
+    border-radius: var(--radius-2, 8px);
+  }
+  .privacy.highlight {
+    background: var(--color-surface-2, rgba(127, 127, 127, 0.12));
+    outline: 2px solid var(--color-accent, currentColor);
   }
   .notice {
     padding: var(--space-2);
