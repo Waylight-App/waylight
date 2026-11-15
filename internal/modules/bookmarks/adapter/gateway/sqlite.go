@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"trisse-home/internal/modules/bookmarks/domain"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -59,9 +60,10 @@ func scanBookmark(s interface{ Scan(...any) error }) (domain.Bookmark, error) {
 	return r.toDomain()
 }
 
-// ListBookmarks returns all bookmarks ordered by title.
+// ListBookmarks returns the bookmarks the principal may see, by title.
 func (r *Repository) ListBookmarks(ctx context.Context) ([]domain.Bookmark, error) {
-	rows, err := r.db.QueryContext(ctx, bookmarkQuery+` ORDER BY b.title COLLATE NOCASE`)
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "b")
+	rows, err := r.db.QueryContext(ctx, bookmarkQuery+` WHERE `+cond+` ORDER BY b.title COLLATE NOCASE`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query bookmarks: %w", err)
 	}
@@ -79,7 +81,8 @@ func (r *Repository) ListBookmarks(ctx context.Context) ([]domain.Bookmark, erro
 
 // GetBookmark returns one bookmark.
 func (r *Repository) GetBookmark(ctx context.Context, id string) (domain.Bookmark, error) {
-	b, err := scanBookmark(r.db.QueryRowContext(ctx, bookmarkQuery+` WHERE b.id = ?`, id))
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "b")
+	b, err := scanBookmark(r.db.QueryRowContext(ctx, bookmarkQuery+` WHERE b.id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Bookmark{}, domain.ErrBookmarkNotFound
 	}
@@ -89,8 +92,12 @@ func (r *Repository) GetBookmark(ctx context.Context, id string) (domain.Bookmar
 	return b, nil
 }
 
-// SaveBookmark inserts or updates a bookmark and replaces its tags.
+// SaveBookmark inserts a bookmark owned by the principal or updates one it
+// owns, and replaces its tags. A bookmark can only be filed into one of
+// the principal's own folders (ADR 0018).
 func (r *Repository) SaveBookmark(ctx context.Context, b domain.Bookmark) error {
+	p := kernel.PrincipalFrom(ctx)
+	owned, ownedArgs := sqlutil.OwnedBy(p, "")
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("begin: %w", err)
@@ -100,13 +107,31 @@ func (r *Repository) SaveBookmark(ctx context.Context, b domain.Bookmark) error 
 	if b.FolderID() != "" {
 		folder = b.FolderID()
 	}
-	_, err = tx.ExecContext(ctx, `INSERT INTO bookmarks (id, folder_id, title, url, description, created_at)
-		VALUES (?, ?, ?, ?, ?, ?)
+	ownedRow, rowArgs := sqlutil.OwnedBy(p, "bookmarks")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := tx.ExecContext(ctx, `INSERT INTO bookmarks (id, folder_id, title, url, description, created_at, owner_id, visibility)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT (id) DO UPDATE SET folder_id = excluded.folder_id, title = excluded.title,
-			url = excluded.url, description = excluded.description`,
-		b.ID(), folder, b.Title(), b.URL(), b.Description(), sqlutil.FormatTime(b.CreatedAt()))
+			url = excluded.url, description = excluded.description
+		WHERE `+ownedRow,
+		append([]any{b.ID(), folder, b.Title(), b.URL(), b.Description(), sqlutil.FormatTime(b.CreatedAt()), p.AccountID, string(kernel.DefaultVisibility(p))}, rowArgs...)...)
 	if err != nil {
 		return fmt.Errorf("upsert bookmark: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return kernel.ErrNotOwner
+	}
+	// Checked after the upsert, in the same transaction, so a foreign
+	// bookmark is refused as such first.
+	if b.FolderID() != "" {
+		var one int
+		err := tx.QueryRowContext(ctx, `SELECT 1 FROM bookmark_folders WHERE id = ? AND `+owned, append([]any{b.FolderID()}, ownedArgs...)...).Scan(&one)
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.ErrFolderNotFound
+		}
+		if err != nil {
+			return fmt.Errorf("check folder: %w", err)
+		}
 	}
 	if _, err := tx.ExecContext(ctx, `DELETE FROM bookmark_tags WHERE bookmark_id = ?`, b.ID()); err != nil {
 		return fmt.Errorf("clear tags: %w", err)
@@ -119,8 +144,13 @@ func (r *Repository) SaveBookmark(ctx context.Context, b domain.Bookmark) error 
 	return tx.Commit()
 }
 
-// ReplaceAll implements usecase.ConfigRepository in one transaction.
+// ReplaceAll implements usecase.ConfigRepository in one transaction. It
+// works on the principal's own folders and bookmarks (config as code passes
+// the admin, ADR 0018) and never takes over another account's IDs.
 func (r *Repository) ReplaceAll(ctx context.Context, folders []domain.Folder, bookmarks []domain.Bookmark) error {
+	p := kernel.PrincipalFrom(ctx)
+	owned, ownedArgs := sqlutil.OwnedBy(p, "")
+	vis := string(kernel.DefaultVisibility(p))
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("begin: %w", err)
@@ -133,29 +163,42 @@ func (r *Repository) ReplaceAll(ctx context.Context, folders []domain.Folder, bo
 	for _, f := range folders {
 		keepF[f.ID()] = true
 	}
-	if err := deleteMissing(ctx, tx, `SELECT id FROM bookmarks`, `DELETE FROM bookmarks WHERE id = ?`, keepB); err != nil {
+	if err := deleteMissing(ctx, tx, `SELECT id FROM bookmarks WHERE `+owned, ownedArgs, `DELETE FROM bookmarks WHERE id = ?`, keepB); err != nil {
 		return err
 	}
-	if err := deleteMissing(ctx, tx, `SELECT id FROM bookmark_folders`, `DELETE FROM bookmark_folders WHERE id = ?`, keepF); err != nil {
+	if err := deleteMissing(ctx, tx, `SELECT id FROM bookmark_folders WHERE `+owned, ownedArgs, `DELETE FROM bookmark_folders WHERE id = ?`, keepF); err != nil {
 		return err
 	}
+	ownedFolder, folderArgs := sqlutil.OwnedBy(p, "bookmark_folders")
 	for _, f := range folders {
-		if _, err := tx.ExecContext(ctx, `INSERT INTO bookmark_folders (id, name, position) VALUES (?, ?, ?)
-			ON CONFLICT (id) DO UPDATE SET name = excluded.name, position = excluded.position`, f.ID(), f.Name(), f.Position()); err != nil {
+		//nolint:gosec // the condition comes from sqlutil with bound arguments
+		res, err := tx.ExecContext(ctx, `INSERT INTO bookmark_folders (id, name, position, owner_id, visibility) VALUES (?, ?, ?, ?, ?)
+			ON CONFLICT (id) DO UPDATE SET name = excluded.name, position = excluded.position WHERE `+ownedFolder,
+			append([]any{f.ID(), f.Name(), f.Position(), p.AccountID, vis}, folderArgs...)...)
+		if err != nil {
 			return fmt.Errorf("upsert folder: %w", err)
 		}
+		if n, _ := res.RowsAffected(); n == 0 {
+			return kernel.ErrNotOwner
+		}
 	}
+	ownedBookmark, bookmarkArgs := sqlutil.OwnedBy(p, "bookmarks")
 	for _, b := range bookmarks {
 		var folder any
 		if b.FolderID() != "" {
 			folder = b.FolderID()
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO bookmarks (id, folder_id, title, url, description, created_at)
-			VALUES (?, ?, ?, ?, ?, ?)
+		//nolint:gosec // the condition comes from sqlutil with bound arguments
+		res, err := tx.ExecContext(ctx, `INSERT INTO bookmarks (id, folder_id, title, url, description, created_at, owner_id, visibility)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 			ON CONFLICT (id) DO UPDATE SET folder_id = excluded.folder_id, title = excluded.title,
-				url = excluded.url, description = excluded.description`,
-			b.ID(), folder, b.Title(), b.URL(), b.Description(), sqlutil.FormatTime(b.CreatedAt())); err != nil {
+				url = excluded.url, description = excluded.description WHERE `+ownedBookmark,
+			append([]any{b.ID(), folder, b.Title(), b.URL(), b.Description(), sqlutil.FormatTime(b.CreatedAt()), p.AccountID, vis}, bookmarkArgs...)...)
+		if err != nil {
 			return fmt.Errorf("upsert bookmark: %w", err)
+		}
+		if n, _ := res.RowsAffected(); n == 0 {
+			return kernel.ErrNotOwner
 		}
 		if _, err := tx.ExecContext(ctx, `DELETE FROM bookmark_tags WHERE bookmark_id = ?`, b.ID()); err != nil {
 			return fmt.Errorf("clear tags: %w", err)
@@ -169,10 +212,10 @@ func (r *Repository) ReplaceAll(ctx context.Context, folders []domain.Folder, bo
 	return tx.Commit()
 }
 
-// deleteMissing deletes the ids returned by selectQuery that are not in
-// keep, one by one with deleteQuery (both constants).
-func deleteMissing(ctx context.Context, tx *sql.Tx, selectQuery, deleteQuery string, keep map[string]bool) error {
-	ids, err := queryIDs(ctx, tx, selectQuery)
+// deleteMissing deletes the ids returned by selectQuery (with args) that
+// are not in keep, one by one with deleteQuery.
+func deleteMissing(ctx context.Context, tx *sql.Tx, selectQuery string, args []any, deleteQuery string, keep map[string]bool) error {
+	ids, err := queryIDs(ctx, tx, selectQuery, args...)
 	if err != nil {
 		return fmt.Errorf("list ids: %w", err)
 	}
@@ -187,9 +230,9 @@ func deleteMissing(ctx context.Context, tx *sql.Tx, selectQuery, deleteQuery str
 	return nil
 }
 
-// queryIDs runs a constant query that selects one id column.
-func queryIDs(ctx context.Context, tx *sql.Tx, query string) ([]string, error) {
-	rows, err := tx.QueryContext(ctx, query)
+// queryIDs runs a query that selects one id column.
+func queryIDs(ctx context.Context, tx *sql.Tx, query string, args ...any) ([]string, error) {
+	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -205,17 +248,28 @@ func queryIDs(ctx context.Context, tx *sql.Tx, query string) ([]string, error) {
 	return ids, rows.Err()
 }
 
-// DeleteBookmark removes a bookmark (tags cascade).
+// DeleteBookmark removes an own bookmark (tags cascade); a visible bookmark
+// of someone else returns kernel.ErrNotOwner.
 func (r *Repository) DeleteBookmark(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM bookmarks WHERE id = ?`, id); err != nil {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `DELETE FROM bookmarks WHERE id = ? AND `+owned, append([]any{id}, args...)...)
+	if err != nil {
 		return fmt.Errorf("delete bookmark: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		if _, err := r.GetBookmark(ctx, id); err == nil {
+			return kernel.ErrNotOwner
+		}
 	}
 	return nil
 }
 
-// ListFolders returns all folders ordered by position.
+// ListFolders returns the folders the principal may see by position.
 func (r *Repository) ListFolders(ctx context.Context) ([]domain.Folder, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position FROM bookmark_folders ORDER BY position, name`)
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position FROM bookmark_folders WHERE `+cond+` ORDER BY position, name`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query folders: %w", err)
 	}
@@ -236,7 +290,8 @@ func (r *Repository) ListFolders(ctx context.Context) ([]domain.Folder, error) {
 func (r *Repository) GetFolder(ctx context.Context, id string) (domain.Folder, error) {
 	var name string
 	var pos int
-	err := r.db.QueryRowContext(ctx, `SELECT name, position FROM bookmark_folders WHERE id = ?`, id).Scan(&name, &pos)
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	err := r.db.QueryRowContext(ctx, `SELECT name, position FROM bookmark_folders WHERE id = ? AND `+cond, append([]any{id}, args...)...).Scan(&name, &pos)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Folder{}, domain.ErrFolderNotFound
 	}
@@ -246,20 +301,36 @@ func (r *Repository) GetFolder(ctx context.Context, id string) (domain.Folder, e
 	return domain.RestoreFolder(id, name, pos), nil
 }
 
-// SaveFolder inserts or updates a folder.
+// SaveFolder inserts a folder owned by the principal or updates one it owns.
 func (r *Repository) SaveFolder(ctx context.Context, f domain.Folder) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO bookmark_folders (id, name, position) VALUES (?, ?, ?)
-		ON CONFLICT (id) DO UPDATE SET name = excluded.name, position = excluded.position`, f.ID(), f.Name(), f.Position())
+	p := kernel.PrincipalFrom(ctx)
+	owned, args := sqlutil.OwnedBy(p, "bookmark_folders")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `INSERT INTO bookmark_folders (id, name, position, owner_id, visibility) VALUES (?, ?, ?, ?, ?)
+		ON CONFLICT (id) DO UPDATE SET name = excluded.name, position = excluded.position WHERE `+owned,
+		append([]any{f.ID(), f.Name(), f.Position(), p.AccountID, string(kernel.DefaultVisibility(p))}, args...)...)
 	if err != nil {
 		return fmt.Errorf("upsert folder: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return kernel.ErrNotOwner
 	}
 	return nil
 }
 
-// DeleteFolder removes a folder; ON DELETE SET NULL unfiles its bookmarks.
+// DeleteFolder removes an own folder; ON DELETE SET NULL unfiles its
+// bookmarks, which can only be the owner's own (see SaveBookmark).
 func (r *Repository) DeleteFolder(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM bookmark_folders WHERE id = ?`, id); err != nil {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `DELETE FROM bookmark_folders WHERE id = ? AND `+owned, append([]any{id}, args...)...)
+	if err != nil {
 		return fmt.Errorf("delete folder: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		if _, err := r.GetFolder(ctx, id); err == nil {
+			return kernel.ErrNotOwner
+		}
 	}
 	return nil
 }

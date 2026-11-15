@@ -3,6 +3,8 @@ package usecase
 import (
 	"context"
 	"fmt"
+
+	"trisse-home/internal/shared/kernel"
 )
 
 // SeedSampleData creates example folders and bookmarks if there are none
@@ -36,6 +38,8 @@ var sampleFolders = []sampleFolder{
 
 // Execute implements SeedSampleData.
 func (uc *seedSampleData) Execute(ctx context.Context) error {
+	// Sample bookmarks are the admin's (seeding runs as the system).
+	ctx = kernel.WithPrincipal(ctx, kernel.AdminPrincipal())
 	bookmarks, err := uc.d.Repo.ListBookmarks(ctx)
 	if err != nil {
 		return fmt.Errorf("list bookmarks: %w", err)
