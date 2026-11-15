@@ -35,6 +35,9 @@ func New(c Config) *Module {
 // Name implements modules.Module.
 func (m *Module) Name() string { return "device" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
+
 // RegisterRoutes implements modules.Module.
 func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/device", m.handlers.State)

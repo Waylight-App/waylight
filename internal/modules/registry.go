@@ -39,6 +39,9 @@ type Module interface {
 	Jobs() []Job
 	// WidgetKinds lists the dashboard widget kinds the module backs.
 	WidgetKinds() []string
+	// DataKind says who owns the module's data (ADR 0018). Base has no
+	// default on purpose: every module has to decide.
+	DataKind() DataKind
 }
 
 // Seeder is implemented by modules that can fill a fresh installation with

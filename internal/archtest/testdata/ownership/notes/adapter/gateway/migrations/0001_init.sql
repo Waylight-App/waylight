@@ -1,0 +1,9 @@
+CREATE TABLE notes (
+    id TEXT PRIMARY KEY,
+    body TEXT NOT NULL,
+    owner_id TEXT NOT NULL DEFAULT 'owner',
+    visibility TEXT NOT NULL DEFAULT 'everyone'
+);
+CREATE TABLE tags (id TEXT PRIMARY KEY, name TEXT NOT NULL);
+ALTER TABLE tags ADD COLUMN owner_id TEXT NOT NULL DEFAULT 'owner';
+CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
