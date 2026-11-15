@@ -104,3 +104,22 @@ type KioskRequestDTO struct {
 type KioskLoginDTO struct {
 	Token string `json:"token"`
 }
+
+// InviteRequestDTO is the body of POST /api/auth/invites (#296).
+type InviteRequestDTO struct {
+	Name      string   `json:"name"`
+	Role      string   `json:"role"`
+	Tabs      []string `json:"tabs"`
+	ValidDays int      `json:"validDays"`
+}
+
+// LinkTokenDTO is the body of POST /api/auth/link/inspect.
+type LinkTokenDTO struct {
+	Token string `json:"token"`
+}
+
+// AcceptLinkDTO is the body of POST /api/auth/link/accept.
+type AcceptLinkDTO struct {
+	Token    string `json:"token"`
+	Password string `json:"password"`
+}
