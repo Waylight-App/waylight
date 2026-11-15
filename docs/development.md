@@ -65,7 +65,7 @@ web/src/
   app/                   frontend composition root and widget registry
   features/<name>/       domain, usecase, adapter/api and ui per feature
   shared/                API client, generated DTO types, theme, UI components
-web/e2e/                 Playwright suite
+web/e2e/                 Playwright suite: setup, general flows, features/<name>.spec.ts, two-factor last
 api/                     OpenAPI description, one fragment per module
 docs/                    this documentation
 ```

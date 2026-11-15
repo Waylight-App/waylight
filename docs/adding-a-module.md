@@ -80,16 +80,23 @@ example.
     icon) and, if the module has settings, `web/src/app/settings/quotes.ts`.
     Answers in the quick search go into `web/src/app/search/quotes.ts`.
 
+12. **Browser test**, `web/e2e/features/quotes.spec.ts`, if the widget does
+    something worth clicking through. Import `account` and `password` from
+    `../support` and log in at the start; the account already exists,
+    because the `setup` project runs first. Leave shared state as you found
+    it, or work on a tab of your own, since all specs use one server. The
+    file is new, so it never conflicts with other open pull requests.
+
 ## Documentation and API
 
-12. **Module page**, `docs/modules/quotes.md`: what the module does, its
+13. **Module page**, `docs/modules/quotes.md`: what the module does, its
     configuration, the outside requests it makes and its endpoints. Add a
     line to the [feature overview](features.md) as well.
 
-13. **OpenAPI**, `api/modules/quotes.yaml`: tags, paths and schemas of the
+14. **OpenAPI**, `api/modules/quotes.yaml`: tags, paths and schemas of the
     module. `make openapi` merges and checks the fragments.
 
-14. **Decision record.** If the module introduces a notable decision, such
+15. **Decision record.** If the module introduces a notable decision, such
     as a new kind of outside access, write an ADR in `docs/adr/`.
 
 Run `make ci` and `make smoke` before you open the pull request. The
