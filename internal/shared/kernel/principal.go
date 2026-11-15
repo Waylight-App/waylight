@@ -68,3 +68,14 @@ func PrincipalFrom(ctx context.Context) Principal {
 	}
 	return Principal{AccountID: SystemAccountID, Role: "system"}
 }
+
+// SettingsAccount is the account whose personal settings (ADR 0018) apply
+// to p. Guests, kiosk displays and work without a request see the admin's,
+// as the household look; everyone else has their own. API tokens act for
+// their account.
+func (p Principal) SettingsAccount() string {
+	if p.TabScoped() || p.IsSystem() || p.AccountID == "" {
+		return SystemAccountID
+	}
+	return p.AccountID
+}
