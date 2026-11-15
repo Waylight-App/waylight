@@ -87,7 +87,7 @@ cannot be switched off.
 | Dashboard (`dashboard`) | Tabs, the widget grid, templates, the phone layout and default-tab rules. See [tabs and widgets](dashboard.md). |
 | Search (`search`) | Web search, quick search, answers about your server, calculator and quick capture. See [search](search.md). |
 | Appearance (`appearance`) | Language, light and dark mode, theme gallery, backgrounds and custom CSS. See [appearance](appearance.md). |
-| Notifications (`notifications`) | ntfy, Gotify, webhooks and e-mail with importance levels, quiet hours and maintenance windows. See [notifications](notifications.md). |
+| Notifications (`notifications`) | ntfy, Gotify, webhooks, e-mail, Slack and Microsoft Teams with importance levels, quiet hours and maintenance windows. See [notifications](notifications.md). |
 | Backups (`backup`) | Automatic database backups, off-site copies over WebDAV and a guided restore. See [backups](backups.md). |
 | Import and export (`transfer`) | All your data as one JSON file, without secrets. See [backups](backups.md#export-and-import). Settings (appearance, search, services, bookmarks, dashboard) also as a readable `trisse-home.yaml` for Git, with `${ENV}` references and a JSON Schema, and an import from Homepage and Homarr 0.x ([details](config-as-code.md)). |
 | Guided tour (`onboarding`) | A short tour after the first sign-in. |
