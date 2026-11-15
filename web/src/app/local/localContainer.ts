@@ -11,6 +11,9 @@ import { AuthUseCases } from '../../features/auth/usecase/authUseCases';
 import { LocalAuthGateway, noCsrf } from '../../features/auth/adapter/local/localAuthGateway';
 import { DashboardUseCases } from '../../features/dashboard/usecase/dashboardUseCases';
 import { LocalDashboardGateway } from '../../features/dashboard/adapter/local/localDashboardGateway';
+import { LocalWeatherGateway } from '../../features/weather/adapter/local/localWeatherGateway';
+import { WeatherUseCases } from '../../features/weather/usecase/weatherUseCases';
+import { locale } from '../../shared/i18n';
 import { IndexedDbDocumentStore, type DocumentStore } from '../../shared/local/documentStore';
 import { createContainer, type Container } from '../container';
 import { localDataKinds, localModules, localWidgetKinds } from './modules';
@@ -28,6 +31,7 @@ export function createLocalContainer(store: DocumentStore = new IndexedDbDocumen
     auth: new AuthUseCases(new LocalAuthGateway(), noCsrf),
     dashboard: new DashboardUseCases(new LocalDashboardGateway(store)),
     appearance: new AppearanceUseCases(new LocalAppearanceGateway(store)),
+    weather: new WeatherUseCases(new LocalWeatherGateway(locale)),
     enabledModules() {
       return Promise.resolve({
         modules: new Set(localModules),
