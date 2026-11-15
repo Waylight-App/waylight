@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"trisse-home/internal/modules/habits/domain"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -61,7 +62,9 @@ func scan(sc interface{ Scan(...any) error }) (domain.Habit, error) {
 
 // List implements usecase.Repository.
 func (r *Repository) List(ctx context.Context) ([]domain.Habit, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM habits ORDER BY position, created_at`)
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM habits WHERE `+cond+` ORDER BY position, created_at`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query habits: %w", err)
 	}
@@ -79,7 +82,8 @@ func (r *Repository) List(ctx context.Context) ([]domain.Habit, error) {
 
 // Get implements usecase.Repository.
 func (r *Repository) Get(ctx context.Context, id string) (domain.Habit, error) {
-	h, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM habits WHERE id = ?`, id))
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	h, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM habits WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Habit{}, domain.ErrNotFound
 	}
@@ -95,26 +99,47 @@ func (r *Repository) Save(ctx context.Context, h domain.Habit) error {
 	for _, d := range h.Schedule.Days() {
 		days = append(days, strconv.Itoa(d))
 	}
-	_, err := r.db.ExecContext(ctx, `INSERT INTO habits (`+columns+`) VALUES (?, ?, ?, ?, ?, ?)
-		ON CONFLICT (id) DO UPDATE SET name = excluded.name, emoji = excluded.emoji, days = excluded.days, position = excluded.position`,
-		h.ID, h.Name, h.Emoji, strings.Join(days, ","), h.Position, sqlutil.FormatTime(h.CreatedAt))
+	// New habits belong to the principal; only the owner changes one.
+	p := kernel.PrincipalFrom(ctx)
+	owned, ownedArgs := sqlutil.OwnedBy(p, "habits")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `INSERT INTO habits (`+columns+`, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT (id) DO UPDATE SET name = excluded.name, emoji = excluded.emoji, days = excluded.days, position = excluded.position
+		WHERE `+owned,
+		append([]any{h.ID, h.Name, h.Emoji, strings.Join(days, ","), h.Position, sqlutil.FormatTime(h.CreatedAt), p.AccountID, string(kernel.DefaultVisibility(p))}, ownedArgs...)...)
 	if err != nil {
 		return fmt.Errorf("upsert habit: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return kernel.ErrNotOwner
 	}
 	return nil
 }
 
-// Delete implements usecase.Repository; completions go with the habit.
+// Delete implements usecase.Repository for the owner; completions go with
+// the habit.
 func (r *Repository) Delete(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM habits WHERE id = ?`, id); err != nil {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `DELETE FROM habits WHERE id = ? AND `+owned, append([]any{id}, args...)...)
+	if err != nil {
 		return fmt.Errorf("delete habit: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		if _, err := r.Get(ctx, id); err == nil {
+			return kernel.ErrNotOwner
+		}
 	}
 	return nil
 }
 
 // Completions implements usecase.Repository.
 func (r *Repository) Completions(ctx context.Context, since domain.Day) (map[string]map[domain.Day]bool, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT habit_id, day FROM habit_completions WHERE day >= ?`, since.Format(time.DateOnly))
+	// Completions of the habits the principal may see.
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT habit_id, day FROM habit_completions WHERE day >= ? AND habit_id IN (SELECT id FROM habits WHERE `+cond+`)`,
+		append([]any{since.Format(time.DateOnly)}, args...)...)
 	if err != nil {
 		return nil, fmt.Errorf("query completions: %w", err)
 	}
@@ -137,8 +162,21 @@ func (r *Repository) Completions(ctx context.Context, since domain.Day) (map[str
 	return out, rows.Err()
 }
 
-// SetCompletion implements usecase.Repository.
+// SetCompletion implements usecase.Repository. Only the owner ticks off a
+// habit; a visible habit of someone else returns kernel.ErrNotOwner.
 func (r *Repository) SetCompletion(ctx context.Context, id string, day domain.Day, done bool) error {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	var one int
+	err := r.db.QueryRowContext(ctx, `SELECT 1 FROM habits WHERE id = ? AND `+owned, append([]any{id}, args...)...).Scan(&one)
+	if errors.Is(err, sql.ErrNoRows) {
+		if _, err := r.Get(ctx, id); err == nil {
+			return kernel.ErrNotOwner
+		}
+		return domain.ErrNotFound
+	}
+	if err != nil {
+		return fmt.Errorf("check habit owner: %w", err)
+	}
 	q := `DELETE FROM habit_completions WHERE habit_id = ? AND day = ?`
 	if done {
 		q = `INSERT OR IGNORE INTO habit_completions (habit_id, day) VALUES (?, ?)`
