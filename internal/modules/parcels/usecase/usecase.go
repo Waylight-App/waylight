@@ -79,6 +79,11 @@ func (uc *parcels) Settings(ctx context.Context) (SettingsView, error) {
 
 // SaveSettings implements Parcels; an empty key keeps the stored one.
 func (uc *parcels) SaveSettings(ctx context.Context, dhlKey string, hideDays int) (SettingsView, error) {
+	// The DHL key is the instance's developer key and the setting applies
+	// to everyone's parcels (ADR 0018).
+	if !kernel.PrincipalFrom(ctx).IsAdmin() {
+		return SettingsView{}, kernel.ErrAdminOnly
+	}
 	old, err := uc.d.Repo.LoadSettings(ctx)
 	if err != nil {
 		return SettingsView{}, fmt.Errorf("load settings: %w", err)
