@@ -9,6 +9,7 @@ import (
 	"io/fs"
 
 	"trisse-home/internal/modules/onboarding/domain"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -30,7 +31,9 @@ func NewRepository(db *sql.DB) *Repository { return &Repository{db: db} }
 // Load returns the stored state or the pending zero state.
 func (r *Repository) Load(ctx context.Context) (domain.State, error) {
 	var completed *string
-	err := r.db.QueryRowContext(ctx, `SELECT completed_at FROM onboarding_state WHERE id = 1`).Scan(&completed)
+	// Per account and without falling back to the admin, so every new
+	// member gets the tour.
+	err := r.db.QueryRowContext(ctx, `SELECT completed_at FROM onboarding_state WHERE account_id = ?`, kernel.PrincipalFrom(ctx).SettingsAccount()).Scan(&completed)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.State{}, nil
 	}
@@ -46,8 +49,8 @@ func (r *Repository) Load(ctx context.Context) (domain.State, error) {
 
 // Save stores the state.
 func (r *Repository) Save(ctx context.Context, s domain.State) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO onboarding_state (id, completed_at) VALUES (1, ?)
-		ON CONFLICT (id) DO UPDATE SET completed_at = excluded.completed_at`, sqlutil.FormatNullableTime(s.CompletedAt()))
+	_, err := r.db.ExecContext(ctx, `INSERT INTO onboarding_state (account_id, completed_at) VALUES (?, ?)
+		ON CONFLICT (account_id) DO UPDATE SET completed_at = excluded.completed_at`, kernel.PrincipalFrom(ctx).SettingsAccount(), sqlutil.FormatNullableTime(s.CompletedAt()))
 	if err != nil {
 		return fmt.Errorf("upsert onboarding state: %w", err)
 	}
