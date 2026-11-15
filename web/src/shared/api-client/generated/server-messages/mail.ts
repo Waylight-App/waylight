@@ -5,7 +5,6 @@ export const serverMessages = {
   srv_a6a19c77984be1a4: "At most 10 mail accounts can be added.",
   srv_f2d32e363bfff9e9: "No mail account is set up yet.",
   srv_1cd466bb63b42a23: "The mail account does not exist (any more).",
-  srv_9f138e811fd44724: "The name must have between 1 and 60 characters.",
 } as const;
 
 /** Key of a backend message. */

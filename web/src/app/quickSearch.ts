@@ -1,7 +1,7 @@
 import type { MessageKey } from '../shared/i18n';
 
 /** Kinds of entries the quick search finds. */
-export type QuickKind = 'bookmark' | 'service' | 'note' | 'todo';
+export type QuickKind = 'bookmark' | 'service' | 'note' | 'todo' | 'wiki';
 
 /** One searchable entry. */
 export interface QuickItem {
@@ -26,12 +26,13 @@ export interface QuickGroup {
 /** Id of an item in the search history (#159). */
 export const itemTarget = (item: QuickItem) => `${item.kind}:${item.id}`;
 
-const order: QuickKind[] = ['bookmark', 'service', 'note', 'todo'];
+const order: QuickKind[] = ['bookmark', 'service', 'note', 'todo', 'wiki'];
 const labels: Record<QuickKind, MessageKey> = {
   bookmark: 'app.group.bookmarks',
   service: 'app.group.services',
   note: 'app.group.notes',
   todo: 'app.group.todos',
+  wiki: 'app.group.wiki',
 };
 
 /** Lower-cased text without diacritics, so "Büro" matches "buro". */

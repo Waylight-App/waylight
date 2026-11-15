@@ -1,0 +1,4 @@
+{"data":[
+ {"id":12,"name":"VPN setup","slug":"vpn-setup","book_id":3,"chapter_id":0,"type":"page","url":"https://wiki.example.org/books/it-handbook/page/vpn-setup","updated_at":"2026-10-02T08:15:00.000000Z","preview_html":{"name":"<strong>VPN</strong> setup","content":"How to connect to the office <strong>VPN</strong> from home &amp; abroad"},"tags":[],"book":{"id":3,"name":"IT handbook","slug":"it-handbook"}},
+ {"id":4,"name":"Network","slug":"network","type":"chapter","url":"https://evil.example/steal","preview_html":{"name":"","content":""}}
+],"total":2}

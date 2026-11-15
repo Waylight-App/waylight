@@ -41,8 +41,8 @@ of dependencies. Nothing guarded their *weight*.
    | Initial JS (gzip) | 134 KB | 140 KB (goal ≤ 90 KB after lazy loading, #116) |
    | Initial CSS (gzip) | 6.6 KB | 10 KB |
    | Largest lazy JS chunk (gzip) | – | 60 KB |
-   | Go binary | 16.2 MB | 20.5 MB (raised from 20.0 MB for the YAML library of config as code, #88) |
-   | Container image | 7.7 MB | 9.5 MB (raised from 9.3 MB to match the binary budget) |
+   | Go binary | 16.2 MB | 21.0 MB (raised from 20.5 MB for the wiki search, #321; size review in #358) |
+   | Container image | 7.7 MB | 9.8 MB (raised from 9.5 MB to match the binary budget) |
    | Idle memory (demo instance, RSS after 60 s) | 76.2 MB | 84 MB |
    | Raspberry Pi image, `.img.xz` (added 2026-11-12, [ADR 0015](0015-raspberry-pi-image.md)) | 557.5 MB | 613 MB |
 
