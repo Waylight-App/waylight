@@ -965,6 +965,11 @@ export const de: Record<BaseMessageKey, string> = {
     'Bitte 2–32 Kleinbuchstaben, Ziffern, Punkte, Binde- oder Unterstriche verwenden.',
   'settings.section.guests': 'Gäste',
   'settings.section.members': 'Mitglieder und Gruppen',
+  'sharing.label': 'Wer das sehen kann',
+  'sharing.private': 'Nur ich',
+  'sharing.everyone': 'Alle auf diesem Dashboard',
+  'sharing.group': 'Gruppe: {name}',
+  'sharing.not_yours': 'Mit dir geteilt; nur der Eigentümer kann es ändern.',
   'auth.private_by_default': 'Meine neuen Einträge sind privat',
   'auth.private_by_default_hint':
     'Bisher waren deine Notizen, To-dos und Listen für alle auf dieser Instanz sichtbar. Mit Mitgliedern kannst du wählen, ob neue Einträge nur für dich sind. Bestehende Einträge bleiben, wie sie sind.',

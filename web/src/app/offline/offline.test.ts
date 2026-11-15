@@ -69,6 +69,15 @@ class FakeServer implements TodosGateway {
   async clearCompleted() {
     return 0;
   }
+  async share(id: string): Promise<Todo> {
+    this.net();
+    const t = this.items.get(id);
+    if (!t) throw new Error('unknown to-do');
+    return t;
+  }
+  async shareGroups() {
+    return [];
+  }
 }
 
 describe('offline to-dos (#80)', () => {

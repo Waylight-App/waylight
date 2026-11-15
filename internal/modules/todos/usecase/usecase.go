@@ -68,6 +68,11 @@ type TodoView struct {
 	Repeat      RepeatView
 	Reminder    ReminderView
 	Version     int
+	// Visibility is "private", "everyone" or "group:<id>" for local
+	// to-dos and empty for external lists (ADR 0018).
+	Visibility string
+	// Mine is true when the viewer owns the to-do and may share it.
+	Mine bool
 }
 
 // ListTodos returns open to-dos first (by position), then done ones (input port).
@@ -111,6 +116,11 @@ type Repository interface {
 	Delete(ctx context.Context, ids ...string) error
 }
 
+// VisibilityStore changes who else may see a local to-do (output port).
+type VisibilityStore interface {
+	SetVisibility(ctx context.Context, id string, v kernel.Visibility) error
+}
+
 // Deps bundles the output ports.
 type Deps struct {
 	Repo  Repository
@@ -127,6 +137,8 @@ type Deps struct {
 	Providers Providers
 	// OAuth signs in to Microsoft, Google and TickTick (#171); nil = off.
 	OAuth OAuth
+	// Visibility shares local to-dos (ADR 0018, #301); nil = not offered.
+	Visibility VisibilityStore
 }
 
 // list is the resolved to-do list of a request.
@@ -227,13 +239,14 @@ func nextPosition(todos []domain.Todo) int {
 	return next
 }
 
-func (d Deps) view(t domain.Todo) TodoView {
+func (d Deps) view(ctx context.Context, t domain.Todo) TodoView {
 	return TodoView{
 		ID: t.ID(), Title: t.Title(), Due: t.Due(), Done: t.Done(), Overdue: t.IsOverdue(d.Clock.Now()),
 		Position: t.Position(), CreatedAt: t.CreatedAt(), CompletedAt: t.CompletedAt(),
-		Repeat:   RepeatView{Kind: string(t.Repeat().Kind()), Every: t.Repeat().Every(), Days: t.Repeat().Days()},
-		Reminder: ReminderView{At: t.Reminder().At(), DaysBefore: t.Reminder().DaysBefore()},
-		Version:  t.Version(),
+		Repeat:     RepeatView{Kind: string(t.Repeat().Kind()), Every: t.Repeat().Every(), Days: t.Repeat().Days()},
+		Reminder:   ReminderView{At: t.Reminder().At(), DaysBefore: t.Reminder().DaysBefore()},
+		Version:    t.Version(),
+		Visibility: string(t.Access().Visibility), Mine: t.Access().Mine(kernel.PrincipalFrom(ctx)),
 	}
 }
 
@@ -268,7 +281,7 @@ func (uc *listTodos) Execute(ctx context.Context, source string, includeDone boo
 	out := make([]TodoView, 0, len(todos))
 	for _, t := range todos {
 		if includeDone || !t.Done() {
-			out = append(out, uc.d.view(t))
+			out = append(out, uc.d.view(ctx, t))
 		}
 	}
 	return out, nil
@@ -292,7 +305,7 @@ func (uc *createTodo) Execute(ctx context.Context, in TodoInput) (TodoView, erro
 		}
 		// A replayed create (offline outbox, #80) returns what it created.
 		if existing, err := l.repo.Get(ctx, in.ID); err == nil {
-			return uc.d.view(existing), nil
+			return uc.d.view(ctx, existing), nil
 		} else if !errors.Is(err, domain.ErrTodoNotFound) {
 			return TodoView{}, err
 		}
@@ -309,6 +322,9 @@ func (uc *createTodo) Execute(ctx context.Context, in TodoInput) (TodoView, erro
 	t, err := domain.NewTodo(id, in.Title, in.Due, position, uc.d.Clock.Now())
 	if err != nil {
 		return TodoView{}, err
+	}
+	if in.Source == "" {
+		t = t.WithAccess(kernel.NewAccess(kernel.PrincipalFrom(ctx)))
 	}
 	if err := applySchedule(&t, in, l.caps); err != nil {
 		return TodoView{}, err
@@ -329,7 +345,7 @@ func (d Deps) saved(ctx context.Context, l list, t domain.Todo) (TodoView, error
 		}
 		t = stored
 	}
-	return d.view(t), nil
+	return d.view(ctx, t), nil
 }
 
 type updateTodo struct{ d Deps }
@@ -485,4 +501,42 @@ func (uc *clearCompleted) Execute(ctx context.Context, source string) (int, erro
 		return 0, fmt.Errorf("delete todos: %w", err)
 	}
 	return len(ids), nil
+}
+
+// ShareTodo changes who else may see a local to-do (input port, ADR 0018).
+type ShareTodo interface {
+	Execute(ctx context.Context, id, visibility string) (TodoView, error)
+}
+
+type shareTodo struct{ d Deps }
+
+// NewShareTodo returns the ShareTodo use case.
+func NewShareTodo(d Deps) ShareTodo { return &shareTodo{d: d} }
+
+var errSharingUnavailable = kernel.NewPublicError(kernel.ErrNotFound, "Sharing is not available here.")
+
+// Execute implements ShareTodo: the owner shares with only themselves,
+// everyone, or one of their groups.
+func (uc *shareTodo) Execute(ctx context.Context, id, visibility string) (TodoView, error) {
+	if uc.d.Visibility == nil {
+		return TodoView{}, errSharingUnavailable
+	}
+	p := kernel.PrincipalFrom(ctx)
+	v, err := kernel.CheckShare(p, visibility)
+	if err != nil {
+		return TodoView{}, err
+	}
+	t, err := uc.d.Repo.Get(ctx, id)
+	if err != nil {
+		return TodoView{}, err
+	}
+	if !t.Access().Mine(p) {
+		return TodoView{}, kernel.ErrNotOwner
+	}
+	if err := uc.d.Visibility.SetVisibility(ctx, id, v); err != nil {
+		return TodoView{}, err
+	}
+	a := t.Access()
+	a.Visibility = v
+	return uc.d.view(ctx, t.WithAccess(a)), nil
 }

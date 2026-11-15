@@ -73,3 +73,19 @@ func TestDefaultVisibility(t *testing.T) {
 		t.Fatal("the admin's choice of private is respected")
 	}
 }
+
+func TestCheckShareAndMine(t *testing.T) {
+	anna := Principal{AccountID: "anna", Role: "member", Groups: []string{"office"}}
+	for raw, ok := range map[string]bool{"private": true, "everyone": true, "group:office": true, "group:home": false, "nonsense": false} {
+		if _, err := CheckShare(anna, raw); (err == nil) != ok {
+			t.Errorf("anna %q: %v", raw, err)
+		}
+	}
+	if _, err := CheckShare(AdminPrincipal(), "group:home"); err != nil {
+		t.Fatalf("admins name any group: %v", err)
+	}
+	a := NewAccess(anna)
+	if a.Owner != "anna" || a.Visibility != Private || !a.Mine(anna) || a.Mine(AdminPrincipal()) {
+		t.Fatalf("%+v", a)
+	}
+}

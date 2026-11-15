@@ -2,6 +2,11 @@ package controller
 
 import "trisse-home/internal/modules/todos/usecase"
 
+// VisibilityDTO shares a to-do: "private", "everyone" or "group:<id>".
+type VisibilityDTO struct {
+	Visibility string `json:"visibility"`
+}
+
 // TodoInputDTO is the body of POST /api/todos and PUT /api/todos/{id}.
 // Due is a date (YYYY-MM-DD) or empty.
 type TodoInputDTO struct {

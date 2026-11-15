@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"trisse-home/internal/modules/notes/domain"
+	"trisse-home/internal/shared/kernel"
 )
 
 type memRepo struct{ m map[string]domain.Note }
@@ -19,6 +20,14 @@ func (r *memRepo) List(context.Context) ([]domain.Note, error) {
 	}
 	return out, nil
 }
+func (r *memRepo) SetVisibility(_ context.Context, id string, v kernel.Visibility) error {
+	n := r.m[id]
+	a := n.Access()
+	a.Visibility = v
+	r.m[id] = n.WithAccess(a)
+	return nil
+}
+
 func (r *memRepo) Get(_ context.Context, id string) (domain.Note, error) {
 	n, ok := r.m[id]
 	if !ok {

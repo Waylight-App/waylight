@@ -942,6 +942,11 @@ export const en = {
   'auth.guest_name_invalid': 'Use 2–32 lowercase letters, digits, dots, dashes or underscores.',
   'settings.section.guests': 'Guests',
   'settings.section.members': 'Members and groups',
+  'sharing.label': 'Who can see this',
+  'sharing.private': 'Only me',
+  'sharing.everyone': 'Everyone on this dashboard',
+  'sharing.group': 'Group: {name}',
+  'sharing.not_yours': 'Shared with you; only its owner can change it.',
   'auth.private_by_default': 'My new entries are private',
   'auth.private_by_default_hint':
     'Until now your notes, to-dos and lists were visible to everyone on this instance. With members, choose whether your new entries are only for you. Existing entries stay as they are.',

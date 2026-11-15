@@ -1,3 +1,4 @@
+import { fetchShareGroups, type ShareGroup, type Visibility } from '../../../../shared/sharing/sharing';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { TodoDTO } from '../../../../shared/api-client/generated/todos';
 import type { ClearedDTO, TodoInputDTO } from '../../../../shared/api-client/generated/todos-requests';
@@ -33,6 +34,8 @@ const toTodo = (d: TodoDTO): Todo => ({
   },
   reminder: { at: d.reminder?.at ?? '', daysBefore: d.reminder?.daysBefore ?? 0 },
   version: d.version ?? 0,
+  visibility: d.visibility,
+  mine: d.mine,
 });
 
 /** TodosGateway backed by the REST API; source '' is the built-in list (#169). */
@@ -41,6 +44,17 @@ export class TodosApi implements TodosGateway {
     private readonly http: HttpClient,
     private readonly source = '',
   ) {}
+
+  /** Shares a to-do of the built-in list; external lists cannot be shared. */
+  async share(id: string, visibility: Visibility): Promise<Todo> {
+    return toTodo(
+      await this.http.put<TodoDTO>(`/api/todos/${encodeURIComponent(id)}/visibility`, { visibility }),
+    );
+  }
+
+  shareGroups(): Promise<ShareGroup[]> {
+    return fetchShareGroups(this.http);
+  }
 
   /** Adds ?source= (or &source=) for external lists. */
   private url(path: string, query = ''): string {

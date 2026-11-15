@@ -18,6 +18,11 @@ type TodoDTO struct {
 	// Version counts the stored changes; send it back with an update to
 	// detect concurrent changes (#80).
 	Version int `json:"version"`
+	// Visibility is "private", "everyone" or "group:<id>"; empty for
+	// to-dos of external lists (ADR 0018).
+	Visibility string `json:"visibility"`
+	// Mine is true when the viewer owns the to-do and may share it.
+	Mine bool `json:"mine"`
 }
 
 // RepeatDTO describes a recurrence.
@@ -39,7 +44,8 @@ const dateLayout = "2006-01-02"
 func Todo(v usecase.TodoView) TodoDTO {
 	dto := TodoDTO{ID: v.ID, Title: v.Title, Done: v.Done, Overdue: v.Overdue, Position: v.Position,
 		Repeat:   RepeatDTO{Kind: v.Repeat.Kind, Every: v.Repeat.Every, Days: append([]int{}, v.Repeat.Days...)},
-		Reminder: ReminderDTO{At: v.Reminder.At, DaysBefore: v.Reminder.DaysBefore}, Version: v.Version}
+		Reminder: ReminderDTO{At: v.Reminder.At, DaysBefore: v.Reminder.DaysBefore}, Version: v.Version,
+		Visibility: v.Visibility, Mine: v.Mine}
 	if !v.Due.IsZero() {
 		dto.Due = v.Due.Format(dateLayout)
 	}

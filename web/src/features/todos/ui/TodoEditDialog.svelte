@@ -1,6 +1,8 @@
 <script lang="ts">
   import { intlLocale, t } from '../../../shared/i18n';
   import Modal from '../../../shared/ui/Modal.svelte';
+  import VisibilitySelect from '../../../shared/ui/VisibilitySelect.svelte';
+  import type { ShareGroup } from '../../../shared/sharing/sharing';
   import {
     type Capabilities,
     LOCAL_CAPABILITIES,
@@ -46,6 +48,28 @@
   let daysBefore = $state(todo.reminder.daysBefore);
   let error = $state('');
   let busy = $state(false);
+  // Sharing (#301): only the owner of a to-do of the built-in list gets
+  // the choice; external lists report no visibility.
+  // svelte-ignore state_referenced_locally
+  let visibility = $state(todo.visibility ?? '');
+  let groups = $state<ShareGroup[]>([]);
+  $effect(() => {
+    if (todo.mine && todo.visibility)
+      todos
+        .shareGroups()
+        .then((g) => (groups = g))
+        .catch(() => (groups = []));
+  });
+
+  async function share(v: string) {
+    error = '';
+    try {
+      visibility = (await todos.share(todo.id, v)).visibility ?? v;
+      onsaved();
+    } catch (err) {
+      error = err instanceof Error ? err.message : String(err);
+    }
+  }
 
   const unit = $derived(
     kind === 'weekly'
@@ -146,6 +170,11 @@
           <p class="muted small">{t('todos.reminder_hint')}</p>
         {/if}
       </fieldset>{/if}
+    {#if todo.mine && visibility}
+      <VisibilitySelect value={visibility} {groups} onchange={share} />
+    {:else if todo.mine === false}
+      <p class="muted">{t('sharing.not_yours')}</p>
+    {/if}
     {#if error}<p class="error" role="alert">{error}</p>{/if}
     <button class="btn btn-primary" type="submit" disabled={busy}>{t('todos.save')}</button>
   </form>

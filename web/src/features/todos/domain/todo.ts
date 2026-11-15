@@ -12,6 +12,10 @@ export interface Todo {
   reminder: Reminder;
   /** Stored version (#80); 0 = only on this device so far (offline). */
   version: number;
+  /** Who else may see it (ADR 0018); empty for external lists. */
+  visibility?: string;
+  /** The viewer owns the to-do and may share it. */
+  mine?: boolean;
 }
 
 /** How a to-do recurs: fixed schedule or N days after completion. */
