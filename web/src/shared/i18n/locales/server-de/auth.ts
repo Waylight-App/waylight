@@ -167,4 +167,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_6330f6a3d5db3d75: 'Dieser Name gehört schon zu einem Konto oder einer offenen Einladung.',
   // id and token are required
   srv_a7f0df8ff2599767: 'ID und Token sind erforderlich',
+  // Password reset by e-mail is not set up on this instance. Ask the admin for a reset link.
+  srv_3a24b1058006ec4b:
+    'Das Zurücksetzen per E-Mail ist auf dieser Instanz nicht eingerichtet. Bitte den Admin um einen Reset-Link.',
+  // Please enter a valid e-mail address.
+  srv_6ddc9c2076b9e645: 'Bitte gib eine gültige E-Mail-Adresse ein.',
 };

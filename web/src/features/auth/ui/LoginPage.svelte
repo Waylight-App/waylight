@@ -6,6 +6,7 @@
   import type { SecondFactorChallenge } from '../domain/passkey';
   import type { AuthUseCases } from '../usecase/authUseCases';
   import AuthCard from './AuthCard.svelte';
+  import ForgotPassword from './ForgotPassword.svelte';
 
   /** Props of the login screen. */
   interface Props {
@@ -29,6 +30,8 @@
   let needsCode = $state(false);
   /** Passkey challenge of the second login step. */
   let challenge = $state<SecondFactorChallenge | null>(null);
+  /** Shows the "forgot your password?" form (#296). */
+  let forgot = $state(false);
 
   async function usePasskey() {
     if (!challenge) return;
@@ -83,79 +86,89 @@
 
 <AuthCard title="trisse-home" subtitle={needsCode ? t('auth.enter_code_hint') : t('auth.please_log_in')}>
   {#if ssoError}<p class="error" role="alert">{t(ssoError)}</p>{/if}
-  {#if auth.sso.oidc && !ticket && !needsCode}
-    <a class="btn btn-primary sso" href="/api/auth/oidc/start">{t('auth.sign_in_with_sso')}</a>
-  {/if}
-  <form onsubmit={submit}>
-    {#if asGuest}
-      <label class="field" class:hidden={needsCode}>
-        <span>{t('auth.guest_name')}</span>
-        <input
-          class="input"
-          name="username"
-          autocomplete="username"
-          autocapitalize="none"
-          bind:value={username}
-          required
-        />
-      </label>
+  {#if forgot}
+    <ForgotPassword {auth} onback={() => (forgot = false)} />
+  {:else}
+    {#if auth.sso.oidc && !ticket && !needsCode}
+      <a class="btn btn-primary sso" href="/api/auth/oidc/start">{t('auth.sign_in_with_sso')}</a>
     {/if}
-    <label class="field" class:hidden={passwordHidden}>
-      <span>{t('auth.password')}</span>
-      <!-- svelte-ignore a11y_autofocus -->
-      <input
-        class="input"
-        type="password"
-        name="password"
-        autocomplete="current-password"
-        bind:value={password}
-        autofocus
-        required={!passwordHidden}
-      />
-    </label>
-    {#if challenge}
-      <button class="btn btn-primary" type="button" disabled={busy} onclick={usePasskey}
-        >{t('auth.use_passkey')}</button
-      >
-      <p class="muted">{t('auth.or_enter_code')}</p>
-    {/if}
-    {#if needsCode || ticket}
-      <label class="field">
-        <span>{t('auth.authentication_code_or_recovery_code')}</span>
+    <form onsubmit={submit}>
+      {#if asGuest}
+        <label class="field" class:hidden={needsCode}>
+          <span>{t('auth.guest_name')}</span>
+          <input
+            class="input"
+            name="username"
+            autocomplete="username"
+            autocapitalize="none"
+            bind:value={username}
+            required
+          />
+        </label>
+      {/if}
+      <label class="field" class:hidden={passwordHidden}>
+        <span>{t('auth.password')}</span>
         <!-- svelte-ignore a11y_autofocus -->
         <input
-          class="input code"
-          name="code"
-          inputmode="text"
-          autocomplete="one-time-code"
-          bind:value={code}
-          autofocus={!challenge}
-          required
+          class="input"
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          bind:value={password}
+          autofocus
+          required={!passwordHidden}
         />
       </label>
-    {/if}
-    {#if error}<p class="error" role="alert">{error}</p>{/if}
-    {#if !passwordHidden || needsCode || ticket}
-      <button class="btn btn-primary" type="submit" disabled={busy}
-        >{needsCode || ticket ? t('auth.verify') : t('auth.log_in')}</button
-      >
-    {/if}
-    {#if !needsCode}
-      <button class="btn btn-icon" type="button" onclick={() => ((asGuest = !asGuest), (error = ''))}
-        >{asGuest ? t('auth.sign_in_as_owner') : t('auth.sign_in_as_guest')}</button
-      >
-    {/if}
-    {#if needsCode}
-      <button
-        class="btn btn-icon"
-        type="button"
-        onclick={() => {
-          needsCode = false;
-          code = error = '';
-        }}>{t('auth.back')}</button
-      >
-    {/if}
-  </form>
+      {#if challenge}
+        <button class="btn btn-primary" type="button" disabled={busy} onclick={usePasskey}
+          >{t('auth.use_passkey')}</button
+        >
+        <p class="muted">{t('auth.or_enter_code')}</p>
+      {/if}
+      {#if needsCode || ticket}
+        <label class="field">
+          <span>{t('auth.authentication_code_or_recovery_code')}</span>
+          <!-- svelte-ignore a11y_autofocus -->
+          <input
+            class="input code"
+            name="code"
+            inputmode="text"
+            autocomplete="one-time-code"
+            bind:value={code}
+            autofocus={!challenge}
+            required
+          />
+        </label>
+      {/if}
+      {#if error}<p class="error" role="alert">{error}</p>{/if}
+      {#if !passwordHidden || needsCode || ticket}
+        <button class="btn btn-primary" type="submit" disabled={busy}
+          >{needsCode || ticket ? t('auth.verify') : t('auth.log_in')}</button
+        >
+      {/if}
+      {#if !needsCode}
+        <button class="btn btn-icon" type="button" onclick={() => ((asGuest = !asGuest), (error = ''))}
+          >{asGuest ? t('auth.sign_in_as_owner') : t('auth.sign_in_as_guest')}</button
+        >
+      {/if}
+      {#if needsCode}
+        <button
+          class="btn btn-icon"
+          type="button"
+          onclick={() => {
+            needsCode = false;
+            code = error = '';
+          }}>{t('auth.back')}</button
+        >
+      {/if}
+      <!-- Members and guests only: the admin resets on the server. -->
+      {#if asGuest && auth.passwordReset && !needsCode}
+        <button class="btn btn-icon" type="button" onclick={() => ((forgot = true), (error = ''))}
+          >{t('auth.forgot_password')}</button
+        >
+      {/if}
+    </form>
+  {/if}
 </AuthCard>
 
 <style>

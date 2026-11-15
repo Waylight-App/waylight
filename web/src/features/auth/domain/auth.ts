@@ -19,6 +19,8 @@ export interface AuthStatus {
   member: boolean;
   /** Available sign-in methods (ADR 0013). */
   sso: { oidc: boolean; header: boolean; localLogin: boolean };
+  /** Members and guests can ask for a reset link by e-mail (#296). */
+  passwordReset: boolean;
 }
 
 /** Result of a single sign-on attempt. */

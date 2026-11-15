@@ -23,6 +23,11 @@ export interface StatusDTO {
    * SSO lists the available sign-in methods.
    */
   sso: SSOStatusDTO;
+  /**
+   * PasswordReset is true when members and guests can ask for a reset
+   * link by e-mail (#296).
+   */
+  passwordReset: boolean;
 }
 /**
  * SSOStatusDTO tells the login page which methods exist.
@@ -273,4 +278,10 @@ export interface ResetLinkDTO {
 export interface LinkInfoDTO {
   purpose: string;
   name: string;
+}
+/**
+ * EmailDTO is the own address for reset links (GET/PUT /api/auth/email).
+ */
+export interface EmailDTO {
+  email: string;
 }

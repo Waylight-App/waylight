@@ -151,3 +151,9 @@ export interface AcceptLinkDTO {
   token: string;
   password: string;
 }
+/**
+ * PasswordResetRequestDTO is the body of POST /api/auth/password-reset.
+ */
+export interface PasswordResetRequestDTO {
+  name: string;
+}

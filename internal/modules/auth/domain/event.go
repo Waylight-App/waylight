@@ -35,6 +35,8 @@ const (
 	EventInviteAccepted    EventType = "invite_accepted"
 	EventResetLinkCreated  EventType = "reset_link_created"
 	EventPasswordReset     EventType = "password_reset"
+	EventResetRequested    EventType = "reset_requested"
+	EventEmailChanged      EventType = "email_changed"
 	EventExternal          EventType = "external"
 )
 

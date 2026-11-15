@@ -189,7 +189,7 @@ func (uc *accountLinks) CreateResetLink(ctx context.Context, accountID string) (
 	if err != nil {
 		return "", time.Time{}, err
 	}
-	l, err := domain.NewResetLink(uc.deps.IDs.NewID(), hash, a, uc.deps.Clock.Now())
+	l, err := domain.NewResetLink(uc.deps.IDs.NewID(), hash, a, uc.deps.Clock.Now(), domain.ResetLinkTTL)
 	if err != nil {
 		return "", time.Time{}, err
 	}
