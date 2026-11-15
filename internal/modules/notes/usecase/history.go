@@ -176,5 +176,5 @@ func (uc *restoreRevision) Execute(ctx context.Context, id, revID string) (NoteV
 	if err := uc.d.Repo.Save(ctx, n); err != nil {
 		return NoteView{}, fmt.Errorf("save note: %w", err)
 	}
-	return toView(n), nil
+	return toView(ctx, n), nil
 }

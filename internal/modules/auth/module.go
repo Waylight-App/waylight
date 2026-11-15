@@ -254,6 +254,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/auth/members/{id}", m.handlers.UpdateMember)
 	r.Protected("DELETE /api/auth/members/{id}", m.handlers.DeleteMember)
 	r.Protected("GET /api/auth/groups", m.handlers.ListGroups)
+	r.Protected("GET /api/auth/my-groups", m.handlers.MyGroups)
 	r.Protected("POST /api/auth/groups", m.handlers.CreateGroup)
 	r.Protected("PUT /api/auth/groups/{id}", m.handlers.UpdateGroup)
 	r.Protected("DELETE /api/auth/groups/{id}", m.handlers.DeleteGroup)

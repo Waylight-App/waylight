@@ -7,6 +7,10 @@ export interface Note {
   updatedAt: Date;
   /** Stored version (#80); 0 = only on this device so far (offline). */
   version: number;
+  /** Who else may see it (ADR 0018); unknown for notes made offline. */
+  visibility?: string;
+  /** The viewer owns the note and may share it. */
+  mine?: boolean;
 }
 
 /** Editable fields of a note. */

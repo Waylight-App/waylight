@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"trisse-home/internal/modules/auth/domain"
+	"trisse-home/internal/shared/kernel"
 )
 
 // GroupView describes a group.
@@ -32,6 +33,9 @@ type Groups interface {
 	Create(ctx context.Context, req GroupRequest) (GroupView, error)
 	Update(ctx context.Context, req GroupRequest) (GroupView, error)
 	Delete(ctx context.Context, id string) error
+	// Mine lists the groups the principal may share with: its own groups,
+	// or every group for an admin (#301).
+	Mine(ctx context.Context) ([]GroupView, error)
 }
 
 type groups struct{ deps Deps }
@@ -144,4 +148,24 @@ func (uc *groups) Delete(ctx context.Context, id string) error {
 	}
 	uc.deps.Events.record(ctx, domain.EventGroupChanged, "", domain.Client{}, "deleted "+g.Name())
 	return nil
+}
+
+// Mine implements Groups. It is self-service: members and guests learn the
+// names of the groups they are in, nothing about other groups.
+func (uc *groups) Mine(ctx context.Context) ([]GroupView, error) {
+	if uc.deps.Groups == nil {
+		return []GroupView{}, nil
+	}
+	p := kernel.PrincipalFrom(ctx)
+	all, err := uc.deps.Groups.List(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list groups: %w", err)
+	}
+	out := []GroupView{}
+	for _, g := range all {
+		if p.IsAdmin() || slices.Contains(p.Groups, g.ID()) {
+			out = append(out, GroupView{ID: g.ID(), Name: g.Name(), Accounts: []string{}, CreatedAt: g.CreatedAt()})
+		}
+	}
+	return out, nil
 }

@@ -17,6 +17,10 @@ type NoteDTO struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 	// Version counts the stored changes; send it back with an update (#80).
 	Version int `json:"version"`
+	// Visibility is "private", "everyone" or "group:<id>" (ADR 0018).
+	Visibility string `json:"visibility"`
+	// Mine is true when the viewer owns the note and may change it.
+	Mine bool `json:"mine"`
 }
 
 // Note maps a NoteView.

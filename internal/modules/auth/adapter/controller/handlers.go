@@ -372,6 +372,17 @@ func (h *Handlers) ListGroups(w http.ResponseWriter, r *http.Request) {
 	httpapi.WriteJSON(w, http.StatusOK, presenter.Groups(list))
 }
 
+// MyGroups handles GET /api/auth/my-groups: the groups the signed-in
+// account may share records with (#301). Members of a group are not listed.
+func (h *Handlers) MyGroups(w http.ResponseWriter, r *http.Request) {
+	list, err := h.uc.Groups.Mine(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Groups(list))
+}
+
 // CreateGroup handles POST /api/auth/groups.
 func (h *Handlers) CreateGroup(w http.ResponseWriter, r *http.Request) {
 	var dto GroupRequestDTO

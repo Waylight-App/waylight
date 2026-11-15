@@ -12,6 +12,8 @@ describe('NotesUseCases', () => {
     revisions: vi.fn(),
     revision: vi.fn(),
     restore: vi.fn(),
+    share: vi.fn(),
+    shareGroups: vi.fn(),
   } satisfies NotesGateway;
   const uc = new NotesUseCases(gateway);
   it('maps the scope to the pinned filter', async () => {

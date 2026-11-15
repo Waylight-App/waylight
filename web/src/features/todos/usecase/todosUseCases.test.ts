@@ -9,6 +9,8 @@ describe('TodosUseCases', () => {
     update: vi.fn(),
     delete: vi.fn(),
     clearCompleted: vi.fn(),
+    share: vi.fn(),
+    shareGroups: vi.fn(),
   } satisfies TodosGateway;
   const uc = new TodosUseCases(gateway);
 

@@ -79,3 +79,37 @@ func DefaultVisibility(p Principal) Visibility {
 	}
 	return Everyone
 }
+
+// Access is who owns a record and who else may see it (ADR 0018).
+type Access struct {
+	Owner      string
+	Visibility Visibility
+}
+
+// NewAccess is the access of a record p creates now.
+func NewAccess(p Principal) Access {
+	return Access{Owner: p.AccountID, Visibility: DefaultVisibility(p)}
+}
+
+// Mine reports whether p owns the record and may therefore change it and
+// its visibility.
+func (a Access) Mine(p Principal) bool {
+	return p.IsSystem() || (a.Owner != "" && a.Owner == p.AccountID)
+}
+
+// ErrShareNotAllowed refuses a visibility the principal may not give.
+var ErrShareNotAllowed = NewValidationError("visibility", "Share with only you, everyone or one of your groups.")
+
+// CheckShare parses a visibility p wants to give one of its records:
+// private, everyone, or a group p belongs to. Admins may name any group;
+// they manage groups without being in them.
+func CheckShare(p Principal, raw string) (Visibility, error) {
+	v, err := ParseVisibility(raw)
+	if err != nil {
+		return "", ErrShareNotAllowed
+	}
+	if id, ok := v.Group(); ok && !p.IsAdmin() && !slices.Contains(p.Groups, id) {
+		return "", ErrShareNotAllowed
+	}
+	return v, nil
+}

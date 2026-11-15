@@ -1,3 +1,4 @@
+import type { ShareGroup, Visibility } from '../../../shared/sharing/sharing';
 import { t } from '../../../shared/i18n';
 import type {
   Note,
@@ -20,6 +21,10 @@ export interface NotesGateway {
   revisions(id: string): Promise<Revision[]>;
   revision(id: string, revisionId: string): Promise<RevisionDetail>;
   restore(id: string, revisionId: string): Promise<Note>;
+  /** Changes who else may see a note (owner only, #301). */
+  share(id: string, visibility: Visibility): Promise<Note>;
+  /** Groups the signed-in account may share with. */
+  shareGroups(): Promise<ShareGroup[]>;
 }
 
 /** Error for input rejected before it reaches the backend. */
@@ -30,6 +35,14 @@ export class NoteValidationError extends Error {
 /** Application logic of the notes feature. */
 export class NotesUseCases {
   constructor(private readonly gateway: NotesGateway) {}
+
+  share(id: string, visibility: Visibility): Promise<Note> {
+    return this.gateway.share(id, visibility);
+  }
+
+  shareGroups(): Promise<ShareGroup[]> {
+    return this.gateway.shareGroups();
+  }
 
   list(scope: NotesScope): Promise<Note[]> {
     return this.gateway.list(scope === 'pinned');

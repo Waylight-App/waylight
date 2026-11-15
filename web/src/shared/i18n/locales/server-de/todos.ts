@@ -46,4 +46,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // The sign-in has expired or was revoked. Disconnect the list and connect it again.
   srv_77c57fca0b0dafe3:
     'Die Anmeldung ist abgelaufen oder wurde widerrufen. Trenne die Liste und verbinde sie neu.',
+  // Sharing is not available here.
+  srv_821a541a7d6c7b9f: 'Teilen ist hier nicht verfügbar.',
 };

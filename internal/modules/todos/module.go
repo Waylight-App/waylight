@@ -47,7 +47,8 @@ func (m *Module) SeedSampleData(ctx context.Context) error { return m.seed.Execu
 // publicURL (PUBLIC_URL) enables signing in to Microsoft, Google and
 // TickTick (#171); nil leaves those kinds unavailable.
 func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, alerts kernel.AlertSink, cipher gateway.Cipher, client *http.Client, publicURL *url.URL) *Module {
-	d := usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids, Location: time.Local, Alerts: alerts,
+	local := gateway.NewRepository(db)
+	d := usecase.Deps{Repo: local, Visibility: local, Clock: clock, IDs: ids, Location: time.Local, Alerts: alerts,
 		Sources: gateway.NewSourceRepository(db, cipher), OAuth: newOAuthPort(client, publicURL, clock.Now)}
 	d.Providers = gateway.NewProviders(client, usecase.NewTokenSource(d))
 	list := usecase.NewListTodos(d)
@@ -55,6 +56,7 @@ func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, alerts kernel.A
 		reminders: usecase.NewSendDueReminders(d), list: list, handlers: controller.NewHandlers(controller.UseCases{
 			List: list, Create: usecase.NewCreateTodo(d), Update: usecase.NewUpdateTodo(d),
 			Delete: usecase.NewDeleteTodo(d), ClearCompleted: usecase.NewClearCompleted(d), Sources: usecase.NewSources(d),
+			Share: usecase.NewShareTodo(d),
 		})}
 }
 
@@ -78,6 +80,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/todos/clear-completed", h.ClearCompleted)
 	r.Protected("PUT /api/todos/{id}", h.Update)
 	r.Protected("DELETE /api/todos/{id}", h.Delete)
+	r.Protected("PUT /api/todos/{id}/visibility", h.Share)
 	r.Protected("GET /api/todos/settings/sources", h.Sources)
 	r.Protected("POST /api/todos/settings/sources", h.CreateSource)
 	r.Protected("POST /api/todos/settings/sources/discover", h.DiscoverSources)

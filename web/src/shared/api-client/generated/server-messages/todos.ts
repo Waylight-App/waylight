@@ -9,6 +9,7 @@ export const serverMessages = {
   srv_844dc15540ba01b8: "Enter the API token from Todoist's settings (Integrations → Developer).",
   srv_33507329e3cf1562: "Reminders need a time like 08:00 and at most 30 days before the due date.",
   srv_5f173b47eee5e70d: "Repeat every 1–365 days, weeks or months; weekly repeats need at least one weekday.",
+  srv_821a541a7d6c7b9f: "Sharing is not available here.",
   srv_8fd5a1f81a5668ce: "The due date must look like 2026-12-24.",
   srv_59575ee33ddb1b96: "The name must have between 1 and 80 characters.",
   srv_31173fc19f6e7f41: "The service asks to slow down. The list is loaded again in a minute.",
