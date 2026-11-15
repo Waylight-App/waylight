@@ -13,6 +13,7 @@ import (
 	"io/fs"
 
 	"trisse-home/internal/modules/shopping/domain"
+	"trisse-home/internal/shared/kernel"
 )
 
 //go:embed migrations/*.sql
@@ -45,7 +46,10 @@ func NewSettingsRepository(db *sql.DB, cipher Cipher) *SettingsRepository {
 func (r *SettingsRepository) Load(ctx context.Context) (domain.Settings, error) {
 	var s domain.Settings
 	var enc string
-	err := r.db.QueryRowContext(ctx, `SELECT list_url, username, password_encrypted FROM shopping_settings WHERE id = 1`).Scan(&s.ListURL, &s.Username, &enc)
+	// The own list, or the admin's as the household default (ADR 0018).
+	account := kernel.PrincipalFrom(ctx).SettingsAccount()
+	err := r.db.QueryRowContext(ctx, `SELECT list_url, username, password_encrypted FROM shopping_settings
+		WHERE account_id IN (?, ?) ORDER BY account_id = ? DESC LIMIT 1`, account, kernel.SystemAccountID, account).Scan(&s.ListURL, &s.Username, &enc)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Settings{}, domain.ErrNotConfigured
 	}
@@ -64,9 +68,9 @@ func (r *SettingsRepository) Save(ctx context.Context, s domain.Settings) error 
 	if err != nil {
 		return fmt.Errorf("encrypt password: %w", err)
 	}
-	_, err = r.db.ExecContext(ctx, `INSERT INTO shopping_settings (id, list_url, username, password_encrypted) VALUES (1, ?, ?, ?)
-		ON CONFLICT (id) DO UPDATE SET list_url = excluded.list_url, username = excluded.username, password_encrypted = excluded.password_encrypted`,
-		s.ListURL, s.Username, enc)
+	_, err = r.db.ExecContext(ctx, `INSERT INTO shopping_settings (account_id, list_url, username, password_encrypted) VALUES (?, ?, ?, ?)
+		ON CONFLICT (account_id) DO UPDATE SET list_url = excluded.list_url, username = excluded.username, password_encrypted = excluded.password_encrypted`,
+		kernel.PrincipalFrom(ctx).SettingsAccount(), s.ListURL, s.Username, enc)
 	if err != nil {
 		return fmt.Errorf("upsert settings: %w", err)
 	}
