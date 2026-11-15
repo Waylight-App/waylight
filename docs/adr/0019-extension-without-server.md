@@ -1,6 +1,6 @@
 # ADR 0019: The browser extension without a server
 
-- Status: Proposed
+- Status: Accepted (2026-11-15)
 - Date: 2026-11-15
 - Issue: [#291](https://github.com/itadori26/trisse-home/issues/291), part of [#280](https://github.com/itadori26/trisse-home/issues/280)
 
@@ -65,7 +65,7 @@ Compile the server to WebAssembly and run it in the extension.
   in a Manifest V3 service worker that is stopped when idle; far beyond the
   lean budget of ADR 0011.
 
-## Decision (proposed)
+## Decision
 
 **Option B, local gateways per feature**, with these rules:
 
@@ -89,6 +89,13 @@ Compile the server to WebAssembly and run it in the extension.
 - **Modules out of scope are hidden**, not broken: the local modules list
   contains only the modules in scope, and the widget picker, settings and
   search already follow that list.
+- **Pointer to the full version:** local mode says plainly what it leaves
+  out. Where a module is hidden (widget picker, settings, modules list) and in
+  a short "What you get with a server" section in the settings, the extension
+  names what a server or the Raspberry Pi image adds (services, Docker,
+  parcels, notifications, several devices and accounts, sync) and links to
+  the installation guides. The hint is static text bundled with the
+  extension, can be dismissed, and causes no outbound request.
 - **Build:** a second Vite entry `web/src/extension.ts` builds the app into
   `extension/app/` for the extension zip. The forwarding mode stays as it is;
   the local app is only loaded when the user chooses local mode.
@@ -121,3 +128,5 @@ Compile the server to WebAssembly and run it in the extension.
    entered.
 5. Options page: choose "Use without a server" or enter a server; store
    listing text updated (#290).
+6. Pointer to the full version in the widget picker, the modules list and
+   the settings, with links to the server and Raspberry Pi guides.

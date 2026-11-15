@@ -24,8 +24,5 @@ that supersedes the old one.
 | [0016](0016-cross-module-read-models.md)    | Cross-module read models: consumer-owned ports, adapters in the composition root | Accepted |
 | [0017](0017-open-core.md)                   | Open core: MIT core, team features in `ee/` under the Fair Core License | Accepted, superseded in part by 0020 |
 | [0018](0018-data-ownership.md)              | Data ownership for several full accounts: owner and visibility per record for personal content | Accepted |
-<<<<<<< HEAD
-| [0019](0019-extension-without-server.md)    | The browser extension without a server: local gateways per feature | Proposed |
-=======
+| [0019](0019-extension-without-server.md)    | The browser extension without a server: local gateways per feature | Accepted |
 | [0020](0020-ee-stays-proprietary.md)        | `ee/` stays proprietary, and only organisation features go there (supersedes part of 0017) | Accepted |
->>>>>>> origin/main
