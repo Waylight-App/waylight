@@ -407,6 +407,11 @@ func (uc *settings) Save(ctx context.Context, in SettingsInput) (SettingsView, e
 	if err != nil {
 		return SettingsView{}, err
 	}
+	// The push goes to the instance's notification channels; until there
+	// are channels per person, only an admin can switch it on (ADR 0018).
+	if in.PushOn && !kernel.PrincipalFrom(ctx).IsAdmin() {
+		return SettingsView{}, kernel.ErrAdminOnly
+	}
 	push, err := domain.NewPushSchedule(in.PushOn, in.PushAt, in.PushDays, in.SkipEmpty)
 	if err != nil {
 		return SettingsView{}, err
@@ -461,6 +466,9 @@ func (uc *send) Execute(ctx context.Context) (bool, error) {
 func (uc *send) SendNow(ctx context.Context) error {
 	if uc.d.Publisher == nil {
 		return kernel.NewPublicError(kernel.ErrUnavailable, "Notifications are not enabled.")
+	}
+	if !kernel.PrincipalFrom(ctx).IsAdmin() {
+		return kernel.ErrAdminOnly // the instance's channels, see Save
 	}
 	s, err := uc.d.settings(ctx)
 	if err != nil {

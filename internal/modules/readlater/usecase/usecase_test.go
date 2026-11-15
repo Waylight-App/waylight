@@ -28,6 +28,10 @@ func (r *memRepo) Pending(_ context.Context, limit int) ([]domain.Article, error
 	}
 	return out, nil
 }
+
+// Owners: the fake has no accounts, everything is the owner's.
+func (r *memRepo) Owners(context.Context) ([]string, error) { return []string{"owner"}, nil }
+
 func (r *memRepo) Settings(context.Context) (domain.Settings, error) { return r.settings, nil }
 func (r *memRepo) SaveSettings(_ context.Context, s domain.Settings) error {
 	r.settings = s
