@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"time"
 
 	"trisse-home/internal/modules"
@@ -24,7 +25,12 @@ type Module struct {
 }
 
 // New builds the notifications module; cipher encrypts the ntfy token.
-func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator) *Module {
+// publicURL (PUBLIC_URL, may be nil) is linked from Slack and Teams messages.
+func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator, publicURL *url.URL) *Module {
+	link := ""
+	if publicURL != nil {
+		link = publicURL.String()
+	}
 	uc := usecase.NewNotifier(usecase.Deps{
 		Repo: gateway.NewRepository(db, cipher), Sender: gateway.NewNtfySender(client),
 		Channels: gateway.NewChannelRepository(db, cipher), Maintenance: gateway.NewMaintenanceRepository(db),
@@ -33,6 +39,8 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 			domain.ChannelGotify:  gateway.NewGotifyPublisher(client),
 			domain.ChannelWebhook: gateway.NewWebhookPublisher(client),
 			domain.ChannelEmail:   gateway.NewEmailPublisher(clock.Now),
+			domain.ChannelSlack:   gateway.NewSlackPublisher(client, link),
+			domain.ChannelTeams:   gateway.NewTeamsPublisher(client, link),
 		},
 	})
 	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}

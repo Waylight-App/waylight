@@ -2,7 +2,13 @@
   import PlainHttpWarning from '../../../shared/ui/PlainHttpWarning.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
-  import { type Channel, type ChannelInput, alertTypes, newChannel } from '../domain/notifications';
+  import {
+    type Channel,
+    type ChannelInput,
+    alertTypes,
+    isChatChannel,
+    newChannel,
+  } from '../domain/notifications';
   import type { NotificationsUseCases } from '../usecase/notificationsUseCases';
 
   /** Props of the additional channels section (#87). */
@@ -101,7 +107,11 @@
         required
       /></label
     >
-    {#if editing.form.kind !== 'email'}
+    {#if isChatChannel(editing.form.kind)}
+      <p class="muted small">
+        {t(editing.form.kind === 'slack' ? 'notifications.slack_hint' : 'notifications.teams_hint')}
+      </p>
+    {:else if editing.form.kind !== 'email'}
       <label class="field"
         ><span
           >{editing.form.kind === 'gotify'
@@ -161,17 +171,20 @@
     {/if}
     <label class="field"
       ><span
-        >{editing.form.kind === 'gotify'
-          ? t('notifications.gotify_token')
-          : editing.form.kind === 'webhook'
-            ? t('notifications.webhook_secret')
-            : t('notifications.smtp_password')}{#if editing.hasSecret}
+        >{isChatChannel(editing.form.kind)
+          ? t('notifications.chat_webhook_url')
+          : editing.form.kind === 'gotify'
+            ? t('notifications.gotify_token')
+            : editing.form.kind === 'webhook'
+              ? t('notifications.webhook_secret')
+              : t('notifications.smtp_password')}{#if editing.hasSecret}
           {t('common.keep_stored')}{/if}</span
       ><input
         class="input"
         type="password"
         autocomplete="new-password"
         bind:value={editing.form.secret}
+        required={isChatChannel(editing.form.kind) && !editing.hasSecret}
       /></label
     >
     {#if editing.form.kind === 'webhook'}
@@ -235,6 +248,17 @@
       type="button"
       onclick={() => (editing = { id: null, form: newChannel('email'), hasSecret: false })}
       >+ {t('notifications.email')}</button
+    >
+    <button
+      class="btn"
+      type="button"
+      onclick={() => (editing = { id: null, form: newChannel('slack'), hasSecret: false })}>+ Slack</button
+    >
+    <button
+      class="btn"
+      type="button"
+      onclick={() => (editing = { id: null, form: newChannel('teams'), hasSecret: false })}
+      >+ Microsoft Teams</button
     >
   </p>
 {/if}
