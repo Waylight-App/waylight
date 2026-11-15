@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"trisse-home/internal/modules/bookmarks/domain"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -35,7 +36,11 @@ func (r *Repository) SaveSettings(ctx context.Context, s domain.Settings) error 
 
 // ListLinkStatuses implements usecase.LinkStatusRepository.
 func (r *Repository) ListLinkStatuses(ctx context.Context) (map[string]domain.LinkStatus, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT bookmark_id, state, code, target, checked_at FROM bookmark_links`)
+	// Link checks of the bookmarks the principal may see.
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT bookmark_id, state, code, target, checked_at FROM bookmark_links
+		WHERE bookmark_id IN (SELECT id FROM bookmarks WHERE `+cond+`)`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query link statuses: %w", err)
 	}
@@ -58,10 +63,15 @@ func (r *Repository) ListLinkStatuses(ctx context.Context) (map[string]domain.Li
 
 // SaveLinkStatus implements usecase.LinkStatusRepository.
 func (r *Repository) SaveLinkStatus(ctx context.Context, id string, s domain.LinkStatus) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO bookmark_links (bookmark_id, state, code, target, checked_at) VALUES (?, ?, ?, ?, ?)
+	// The link checker runs as the system; anyone else only records the
+	// state of an own bookmark.
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	_, err := r.db.ExecContext(ctx, `INSERT INTO bookmark_links (bookmark_id, state, code, target, checked_at) SELECT ?, ?, ?, ?, ?
+		WHERE EXISTS (SELECT 1 FROM bookmarks WHERE id = ? AND `+owned+`)
 		ON CONFLICT (bookmark_id) DO UPDATE SET state = excluded.state, code = excluded.code,
 			target = excluded.target, checked_at = excluded.checked_at`,
-		id, string(s.State), s.Code, s.Target, sqlutil.FormatTime(s.CheckedAt))
+		append([]any{id, string(s.State), s.Code, s.Target, sqlutil.FormatTime(s.CheckedAt), id}, args...)...)
 	if err != nil {
 		return fmt.Errorf("upsert link status: %w", err)
 	}
@@ -70,9 +80,12 @@ func (r *Repository) SaveLinkStatus(ctx context.Context, id string, s domain.Lin
 
 // SaveIcon implements usecase.IconStore.
 func (r *Repository) SaveIcon(ctx context.Context, id string, icon domain.Icon) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO bookmark_icons (bookmark_id, content_type, data) VALUES (?, ?, ?)
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	_, err := r.db.ExecContext(ctx, `INSERT INTO bookmark_icons (bookmark_id, content_type, data) SELECT ?, ?, ?
+		WHERE EXISTS (SELECT 1 FROM bookmarks WHERE id = ? AND `+owned+`)
 		ON CONFLICT (bookmark_id) DO UPDATE SET content_type = excluded.content_type, data = excluded.data`,
-		id, icon.ContentType, icon.Data)
+		append([]any{id, icon.ContentType, icon.Data, id}, args...)...)
 	if err != nil {
 		return fmt.Errorf("upsert icon: %w", err)
 	}
@@ -82,7 +95,9 @@ func (r *Repository) SaveIcon(ctx context.Context, id string, icon domain.Icon) 
 // Icon implements usecase.IconStore.
 func (r *Repository) Icon(ctx context.Context, id string) (domain.Icon, error) {
 	var icon domain.Icon
-	err := r.db.QueryRowContext(ctx, `SELECT content_type, data FROM bookmark_icons WHERE bookmark_id = ?`, id).Scan(&icon.ContentType, &icon.Data)
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	err := r.db.QueryRowContext(ctx, `SELECT content_type, data FROM bookmark_icons WHERE bookmark_id = ? AND bookmark_id IN (SELECT id FROM bookmarks WHERE `+cond+`)`,
+		append([]any{id}, args...)...).Scan(&icon.ContentType, &icon.Data)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Icon{}, domain.ErrIconNotFound
 	}
@@ -94,7 +109,9 @@ func (r *Repository) Icon(ctx context.Context, id string) (domain.Icon, error) {
 
 // IconIDs implements usecase.IconStore.
 func (r *Repository) IconIDs(ctx context.Context) (map[string]bool, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT bookmark_id FROM bookmark_icons`)
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT bookmark_id FROM bookmark_icons WHERE bookmark_id IN (SELECT id FROM bookmarks WHERE `+cond+`)`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query icons: %w", err)
 	}
