@@ -89,6 +89,9 @@ type Accounts interface {
 
 // pendingSignIn is a sign-in between StartSignIn and the redirect.
 type pendingSignIn struct {
+	// account started the sign-in; the callback arrives without a session,
+	// so the connected account is stored for it (ADR 0018).
+	account      string
 	provider     domain.Provider
 	clientID     string
 	clientSecret string
@@ -159,7 +162,7 @@ func (uc *calendar) StartSignIn(ctx context.Context, p domain.Provider, clientID
 	if len(uc.acc.pending) >= maxPendingSignIns {
 		return OAuthStart{}, errTooManySignIn
 	}
-	uc.acc.pending[state] = &pendingSignIn{provider: p, clientID: clientID, clientSecret: clientSecret, verifier: verifier, started: now}
+	uc.acc.pending[state] = &pendingSignIn{account: kernel.PrincipalFrom(ctx).SettingsAccount(), provider: p, clientID: clientID, clientSecret: clientSecret, verifier: verifier, started: now}
 	return OAuthStart{URL: uc.oauth.AuthURL(p, clientID, state, verifier), State: state}, nil
 }
 
@@ -170,6 +173,7 @@ func (uc *calendar) FinishSignIn(ctx context.Context, state, code, providerError
 	if p == nil || state == "" {
 		return errSignInUnknown
 	}
+	ctx = kernel.WithPrincipal(ctx, kernel.PrincipalFor(p.account))
 	err := uc.connect(ctx, p, code, providerError)
 	uc.acc.mu.Lock()
 	p.done, p.err = true, err

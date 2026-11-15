@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"trisse-home/internal/modules/calendar/domain"
+	"trisse-home/internal/shared/kernel"
 )
 
 //go:embed migrations/*.sql
@@ -41,7 +42,9 @@ func NewSettingsRepository(db *sql.DB, cipher Cipher) *SettingsRepository {
 // Load implements usecase.SettingsRepository.
 func (r *SettingsRepository) Load(ctx context.Context) (domain.Settings, error) {
 	var urls, username, enc string
-	err := r.db.QueryRowContext(ctx, `SELECT calendar_urls, username, password_encrypted FROM calendar_settings WHERE id = 1`).Scan(&urls, &username, &enc)
+	// The own CalDAV settings only; no fallback to the admin's (ADR 0018).
+	err := r.db.QueryRowContext(ctx, `SELECT calendar_urls, username, password_encrypted FROM calendar_settings WHERE account_id = ?`,
+		kernel.PrincipalFrom(ctx).SettingsAccount()).Scan(&urls, &username, &enc)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Settings{}, domain.ErrNotConfigured
 	}
@@ -61,10 +64,10 @@ func (r *SettingsRepository) Save(ctx context.Context, s domain.Settings) error 
 	if err != nil {
 		return fmt.Errorf("encrypt password: %w", err)
 	}
-	_, err = r.db.ExecContext(ctx, `INSERT INTO calendar_settings (id, calendar_urls, username, password_encrypted) VALUES (1, ?, ?, ?)
-		ON CONFLICT (id) DO UPDATE SET calendar_urls = excluded.calendar_urls, username = excluded.username,
+	_, err = r.db.ExecContext(ctx, `INSERT INTO calendar_settings (account_id, calendar_urls, username, password_encrypted) VALUES (?, ?, ?, ?)
+		ON CONFLICT (account_id) DO UPDATE SET calendar_urls = excluded.calendar_urls, username = excluded.username,
 			password_encrypted = excluded.password_encrypted`,
-		strings.Join(s.CalendarURLs, "\n"), s.Username, enc)
+		kernel.PrincipalFrom(ctx).SettingsAccount(), strings.Join(s.CalendarURLs, "\n"), s.Username, enc)
 	if err != nil {
 		return fmt.Errorf("upsert settings: %w", err)
 	}
