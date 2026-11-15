@@ -1,6 +1,6 @@
 # ADR 0017: Open core – MIT core, team features in `ee/` under the Fair Core License
 
-- Status: Accepted
+- Status: Accepted, superseded in part by [ADR 0020](0020-ee-stays-proprietary.md) (licence of `ee/` and its scope)
 - Date: 2026-11-14
 
 ## Context
