@@ -941,6 +941,28 @@ export const en = {
   'auth.sign_in_as_owner': 'Sign in as owner',
   'auth.guest_name_invalid': 'Use 2–32 lowercase letters, digits, dots, dashes or underscores.',
   'settings.section.guests': 'Guests',
+  'settings.section.members': 'Members and groups',
+  'auth.members_hint':
+    'Members are full accounts with their own tabs, notes and lists. They cannot change instance settings. Groups name a set of members and guests that records can be shared with.',
+  'auth.members_unavailable':
+    'New members cannot be created yet: this version does not separate all personal data per account. Groups can already be prepared.',
+  'auth.members': 'Members',
+  'auth.no_members': 'No members yet.',
+  'auth.new_member': 'New member',
+  'auth.create_member': 'Create member',
+  'auth.member_delete_confirm': 'Delete the member {name}? Their account is removed.',
+  'auth.member_guest': 'guest',
+  'auth.groups': 'Groups',
+  'auth.groups_hint': 'Records shared with a group are visible to its members and guests.',
+  'auth.group_accounts': 'In this group',
+  'auth.group_no_accounts': 'No members or guests yet.',
+  'auth.group_delete': 'Delete group',
+  'auth.group_delete_confirm':
+    'Delete the group {name}? Records shared with it become visible to their owners only.',
+  'auth.no_groups': 'No groups yet.',
+  'auth.group_name': 'Name of the new group',
+  'auth.create_group': 'Create group',
+  'auth.group_name_invalid': 'The group name must be 1–40 characters.',
   'auth.guests_hint':
     'Guests sign in with their own name and password and can only view the tabs you share with them. They cannot change anything and never see settings or credentials. Note: a widget shows all data of its module — a shared notes widget reveals all notes.',
   'auth.guest_disabled': 'disabled',

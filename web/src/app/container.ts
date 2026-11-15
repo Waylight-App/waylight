@@ -122,7 +122,11 @@ export interface Container extends Services {
   backupMonitor: BackupMonitorUseCases;
   notifications: NotificationsUseCases;
   /** Loads which backend modules and widget kinds are enabled. */
-  enabledModules(): Promise<{ modules: Set<string>; widgetKinds: Set<string> }>;
+  enabledModules(): Promise<{
+    modules: Set<string>;
+    widgetKinds: Set<string>;
+    dataKinds: Record<string, string>;
+  }>;
 }
 
 const registered = import.meta.glob<{ service: ServiceFactory }>('./services/*.ts', { eager: true });
@@ -191,7 +195,11 @@ export function createContainer(onUnauthorized: () => void): Container {
     notifications: new NotificationsUseCases(new NotificationsApi(http)),
     async enabledModules() {
       const info = await http.get<InfoResponse>('/api/modules');
-      return { modules: new Set(info.modules), widgetKinds: new Set(info.widgetKinds) };
+      return {
+        modules: new Set(info.modules),
+        widgetKinds: new Set(info.widgetKinds),
+        dataKinds: info.dataKinds ?? {},
+      };
     },
   };
   return { ...c, quickActions: new QuickActionsUseCases(quickTargets(c)) };

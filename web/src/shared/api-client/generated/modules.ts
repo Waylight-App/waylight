@@ -9,4 +9,9 @@
 export interface InfoResponse {
   modules: string[];
   widgetKinds: string[];
+  /**
+   * DataKinds maps module names to who owns their data (ADR 0018), so the
+   * interface can offer members only the settings they may change.
+   */
+  dataKinds: { [key: string]: string};
 }
