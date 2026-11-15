@@ -48,6 +48,61 @@ paths:
       responses:
         "201": { description: Created }
         "422": { description: Validation error or unknown calendar, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+  /api/calendar/writable:
+    get:
+      tags: [calendar]
+      summary: Calendars that accept new events (#282); id is a CalDAV URL or account:<account>:<calendar>, used as calendarUrl of POST /api/calendar/events
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { type: object, properties: { id: { type: string }, name: { type: string } } } } } } }
+  /api/calendar/accounts:
+    get:
+      tags: [calendar]
+      summary: Connected Google and Microsoft accounts with their calendars, and the redirect address to register ("" without PUBLIC_URL); tokens are never returned
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CalendarAccounts" } } } }
+  /api/calendar/accounts/oauth/start:
+    post:
+      tags: [calendar]
+      summary: Start signing in with the user's own app registration (OAuth authorization code with PKCE); answers the provider's sign-in address
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [provider, clientId], properties: { provider: { type: string, enum: [google, microsoft] }, clientId: { type: string }, clientSecret: { type: string } } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { url: { type: string }, state: { type: string } } } } } }
+        "409": { description: 5 accounts are connected already }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/calendar/accounts/oauth/state/{state}:
+    get:
+      tags: [calendar]
+      summary: Progress of a sign-in (pending, ready, failed)
+      parameters: [{ name: state, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: object, properties: { status: { type: string, enum: [pending, ready, failed] } } } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/calendar/accounts/oauth/callback:
+    get:
+      tags: [calendar]
+      summary: Redirect target of the providers (public; the state ties it to a sign-in started here). Answers a small HTML page
+      security: []
+      responses:
+        "200": { description: Signed in }
+        "502": { description: The sign-in failed }
+  /api/calendar/accounts/{id}:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    put:
+      tags: [calendar]
+      summary: Choose which calendars of the account are shown
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { enabled: { type: array, items: { type: string } } } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CalendarAccount" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [calendar]
+      summary: Disconnect; the token is revoked at the provider where it supports that (Google)
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Disconnected }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/calendar/subscriptions:
     get:
       tags: [calendar]
@@ -133,3 +188,17 @@ schemas:
             allDay: { type: boolean }
       updatedAt: { type: string, format: date-time }
       error: { type: string }
+  CalendarAccount:
+    type: object
+    properties:
+      id: { type: string }
+      provider: { type: string, enum: [google, microsoft] }
+      name: { type: string }
+      calendars:
+        type: array
+        items: { type: object, properties: { id: { type: string }, name: { type: string }, color: { type: string }, writable: { type: boolean }, enabled: { type: boolean } } }
+  CalendarAccounts:
+    type: object
+    properties:
+      redirectUrl: { type: string }
+      accounts: { type: array, items: { $ref: "#/components/schemas/CalendarAccount" } }

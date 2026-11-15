@@ -15,6 +15,7 @@ stored encrypted.
 | --- | --- |
 | Service tiles | A health check of each tile every minute; the TLS certificate is read from the same connection. |
 | CalDAV calendars and task lists | Every 15 minutes, and when you add an event or item. |
+| Google Calendar, Microsoft 365 | Only after you connect an account with your own app registration: the sign-in and token renewal (`accounts.google.com`, `oauth2.googleapis.com`, `login.microsoftonline.com`) and the shown calendars (`www.googleapis.com`, `graph.microsoft.com`) every 15 minutes, plus one request per new event ([details](modules/calendar.md)). |
 | ICS subscriptions (calendar, waste, school holidays) | At their refresh interval, hourly by default, with `If-None-Match` and `If-Modified-Since`; school holidays at most weekly. |
 | RSS, Atom and JSON feeds | Every 30 minutes. |
 | AdGuard Home | Every minute. |

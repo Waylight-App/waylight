@@ -2,7 +2,8 @@
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import Modal from '../../../shared/ui/Modal.svelte';
-  import { calendarName, dateInputValue, type NewEventInput } from '../domain/calendar';
+  import { dateInputValue, type NewEventInput } from '../domain/calendar';
+  import type { CalendarChoice } from '../domain/accounts';
   import type { CalendarUseCases } from '../usecase/calendarUseCases';
 
   /** Props of the quick-add dialog. */
@@ -20,7 +21,7 @@
   // svelte-ignore state_referenced_locally
   const initialDate = dateInputValue(date);
   const nextHour = (now.getHours() + 1) % 24;
-  let calendars = $state<string[]>([]);
+  let calendars = $state<CalendarChoice[]>([]);
   let form = $state<NewEventInput>({
     calendarUrl: '',
     summary: '',
@@ -36,10 +37,10 @@
   let loaded = $state(false);
 
   $effect(() => {
-    calendar.settings().then((s) => {
+    calendar.writable().then((list) => {
       loaded = true;
-      calendars = s.calendarUrls;
-      form.calendarUrl ||= s.calendarUrls[0] ?? '';
+      calendars = list;
+      form.calendarUrl ||= list[0]?.id ?? '';
     });
   });
 
@@ -76,7 +77,7 @@
     {#if calendars.length > 1}
       <label class="field"
         ><span>{t('calendar.calendar')}</span><select class="input" bind:value={form.calendarUrl}>
-          {#each calendars as url (url)}<option value={url}>{calendarName(url)}</option>{/each}
+          {#each calendars as c (c.id)}<option value={c.id}>{c.name}</option>{/each}
         </select></label
       >
     {/if}

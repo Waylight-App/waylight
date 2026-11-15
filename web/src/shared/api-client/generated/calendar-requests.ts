@@ -36,3 +36,64 @@ export interface SubscriptionInputDTO {
   color: string;
   refreshMinutes: number /* int */;
 }
+/**
+ * AccountCalendarDTO is a calendar of a connected account (#282).
+ */
+export interface AccountCalendarDTO {
+  id: string;
+  name: string;
+  color: string;
+  writable: boolean;
+  enabled: boolean;
+}
+/**
+ * AccountDTO is a connected account; tokens never leave the server.
+ */
+export interface AccountDTO {
+  id: string;
+  provider: string;
+  name: string;
+  calendars: AccountCalendarDTO[];
+}
+/**
+ * AccountsDTO lists the accounts and the redirect address to register
+ * ("" when PUBLIC_URL is not set and signing in is unavailable).
+ */
+export interface AccountsDTO {
+  redirectUrl: string;
+  accounts: AccountDTO[];
+}
+/**
+ * SignInInputDTO starts a sign-in with the user's app registration.
+ */
+export interface SignInInputDTO {
+  provider: string;
+  clientId: string;
+  clientSecret: string;
+}
+/**
+ * SignInStartDTO is where the sign-in window goes.
+ */
+export interface SignInStartDTO {
+  url: string;
+  state: string;
+}
+/**
+ * SignInStatusDTO is "pending", "ready" or "failed".
+ */
+export interface SignInStatusDTO {
+  status: string;
+}
+/**
+ * AccountCalendarsInputDTO lists the calendars to show.
+ */
+export interface AccountCalendarsInputDTO {
+  enabled: string[];
+}
+/**
+ * CalendarChoiceDTO is a calendar new events can be written to.
+ */
+export interface CalendarChoiceDTO {
+  id: string;
+  name: string;
+}

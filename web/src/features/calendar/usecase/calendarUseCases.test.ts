@@ -12,6 +12,12 @@ const gateway = () =>
     addSubscription: vi.fn(),
     updateSubscription: vi.fn(),
     deleteSubscription: vi.fn(),
+    accounts: vi.fn(),
+    startSignIn: vi.fn(),
+    signInStatus: vi.fn(),
+    setCalendars: vi.fn(),
+    disconnect: vi.fn(),
+    writable: vi.fn(),
   }) satisfies CalendarGateway;
 
 describe('CalendarUseCases', () => {
@@ -87,5 +93,28 @@ describe('CalendarUseCases', () => {
     await expect(uc.month(2026, 10, 1)).rejects.toThrow('offline');
     await uc.month(2026, 10, 1);
     expect(g.range).toHaveBeenCalledTimes(2);
+  });
+
+  it('waits for the sign-in window and trims the app registration (#282)', async () => {
+    const g = gateway();
+    g.signInStatus.mockResolvedValueOnce('pending').mockResolvedValueOnce('ready');
+    const uc = new CalendarUseCases(g);
+    await uc.startSignIn('google', ' id ', ' secret ');
+    expect(g.startSignIn).toHaveBeenCalledWith('google', 'id', 'secret');
+    expect(
+      await uc.waitForSignIn(
+        's',
+        () => false,
+        async () => {},
+      ),
+    ).toBe('ready');
+    expect(g.signInStatus).toHaveBeenCalledTimes(2);
+    expect(
+      await uc.waitForSignIn(
+        's',
+        () => true,
+        async () => {},
+      ),
+    ).toBe('pending');
   });
 });
