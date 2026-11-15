@@ -43,6 +43,7 @@
   let appearance = $state<Appearance>(defaultAppearance);
   let modules = $state<Set<string> | null>(null);
   let widgetKinds = $state<Set<string>>(new Set());
+  let dataKinds = $state<Record<string, string>>({});
   let touring = $state(false);
   let shortcutHelp = $state(false);
   let dashboard = $state<{ selectTabAt: (index: number) => void; undo: () => void; redo: () => void }>();
@@ -88,7 +89,8 @@
   // CONFIG_FILE can own the dashboard; then the layout is read-only (#88).
   let dashboardManaged = $state(false);
   $effect(() => {
-    if (!modules?.has('transfer') || container.auth.guest) return;
+    // Config as code and the appliance are the admin's business (ADR 0018).
+    if (!modules?.has('transfer') || !container.auth.admin) return;
     container.transfer
       .managedSections()
       .then((m) => (dashboardManaged = m.includes('dashboard')))
@@ -97,7 +99,7 @@
   // Appliances ask once how the device is used (#140).
   let deviceSetup = $state(false);
   $effect(() => {
-    if (!modules?.has('device') || container.auth.guest) return;
+    if (!modules?.has('device') || !container.auth.admin) return;
     container.device
       .state()
       .then((s) => (deviceSetup = s.requested === ''))
@@ -220,6 +222,7 @@
       const info = await container.enabledModules();
       modules = info.modules;
       widgetKinds = info.widgetKinds;
+      dataKinds = info.dataKinds;
       if (info.modules.has('appearance')) appearance = await container.appearance.load();
       // Wait a moment so the dashboard is rendered before the tour measures it.
       if (
@@ -384,7 +387,7 @@
   <SyncStatus sync={container.offline} />
   {#if error}<p class="error" role="alert">{error}</p>{/if}
   {#if modules}
-    {#if modules.has('notifications') && !container.auth.guest}<MaintenanceBanner
+    {#if modules.has('notifications') && container.auth.admin}<MaintenanceBanner
         notifications={container.notifications}
       />{/if}
     <DashboardPage
@@ -409,6 +412,7 @@
     <SettingsDialog
       {container}
       {modules}
+      {dataKinds}
       {appearance}
       onappearance={(a) => (appearance = a)}
       onrestarttour={modules.has('onboarding') ? restartTour : undefined}

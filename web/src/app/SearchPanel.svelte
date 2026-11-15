@@ -241,7 +241,8 @@
   // Ollama is set up, never for guests; the component is loaded on demand.
   let aiReady = $state(false);
   $effect(() => {
-    if (modules.has('summary') && !container.auth.guest)
+    // The summary uses the instance's language model; admins only (ADR 0018).
+    if (modules.has('summary') && container.auth.admin)
       void container.summary.available().then((ok) => (aiReady = ok));
   });
   const aiQuestion = $derived(

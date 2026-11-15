@@ -964,6 +964,28 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.guest_name_invalid':
     'Bitte 2–32 Kleinbuchstaben, Ziffern, Punkte, Binde- oder Unterstriche verwenden.',
   'settings.section.guests': 'Gäste',
+  'settings.section.members': 'Mitglieder und Gruppen',
+  'auth.members_hint':
+    'Mitglieder sind vollwertige Konten mit eigenen Tabs, Notizen und Listen. Instanz-Einstellungen können sie nicht ändern. Gruppen fassen Mitglieder und Gäste zusammen, mit denen Einträge geteilt werden können.',
+  'auth.members_unavailable':
+    'Neue Mitglieder können noch nicht angelegt werden: Diese Version trennt noch nicht alle persönlichen Daten pro Konto. Gruppen lassen sich schon vorbereiten.',
+  'auth.members': 'Mitglieder',
+  'auth.no_members': 'Noch keine Mitglieder.',
+  'auth.new_member': 'Neues Mitglied',
+  'auth.create_member': 'Mitglied anlegen',
+  'auth.member_delete_confirm': 'Mitglied {name} löschen? Das Konto wird entfernt.',
+  'auth.member_guest': 'Gast',
+  'auth.groups': 'Gruppen',
+  'auth.groups_hint': 'Mit einer Gruppe geteilte Einträge sehen ihre Mitglieder und Gäste.',
+  'auth.group_accounts': 'In dieser Gruppe',
+  'auth.group_no_accounts': 'Noch keine Mitglieder oder Gäste.',
+  'auth.group_delete': 'Gruppe löschen',
+  'auth.group_delete_confirm':
+    'Gruppe {name} löschen? Mit ihr geteilte Einträge sehen dann nur noch ihre Eigentümer.',
+  'auth.no_groups': 'Noch keine Gruppen.',
+  'auth.group_name': 'Name der neuen Gruppe',
+  'auth.create_group': 'Gruppe anlegen',
+  'auth.group_name_invalid': 'Der Gruppenname muss 1–40 Zeichen lang sein.',
   'auth.guests_hint':
     'Gäste melden sich mit eigenem Namen und Passwort an und sehen nur die Tabs, die du freigibst. Sie können nichts ändern und sehen keine Einstellungen oder Zugangsdaten. Hinweis: Ein Widget zeigt alle Daten seines Moduls – ein freigegebenes Notizen-Widget zeigt alle Notizen.',
   'auth.guest_disabled': 'deaktiviert',

@@ -131,6 +131,10 @@ func (r *Registry) WidgetKinds() []string {
 func (r *Registry) Handler(staticKinds []string) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		kinds := append(slices.Clone(staticKinds), r.WidgetKinds()...)
-		httpapi.WriteJSON(w, http.StatusOK, InfoResponse{Modules: r.Names(), WidgetKinds: kinds})
+		dataKinds := map[string]string{}
+		for _, m := range r.modules {
+			dataKinds[m.Name()] = string(m.DataKind())
+		}
+		httpapi.WriteJSON(w, http.StatusOK, InfoResponse{Modules: r.Names(), WidgetKinds: kinds, DataKinds: dataKinds})
 	}
 }
