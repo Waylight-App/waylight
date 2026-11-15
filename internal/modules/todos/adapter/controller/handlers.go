@@ -20,6 +20,8 @@ type UseCases struct {
 	ClearCompleted usecase.ClearCompleted
 	// Sources manages connected external lists (#169); nil = not offered.
 	Sources usecase.Sources
+	// Share changes the visibility of a local to-do (ADR 0018, #301).
+	Share usecase.ShareTodo
 }
 
 // Handlers serves the to-do endpoints.
@@ -99,6 +101,21 @@ func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpapi.WriteJSON(w, http.StatusOK, presenter.Todo(res))
+}
+
+// Share handles PUT /api/todos/{id}/visibility.
+func (h *Handlers) Share(w http.ResponseWriter, r *http.Request) {
+	var dto VisibilityDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	v, err := h.uc.Share.Execute(r.Context(), r.PathValue("id"), dto.Visibility)
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Todo(v))
 }
 
 // Delete handles DELETE /api/todos/{id}.

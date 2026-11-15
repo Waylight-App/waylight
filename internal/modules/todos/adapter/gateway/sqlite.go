@@ -34,12 +34,15 @@ func NewRepository(db *sql.DB) *Repository { return &Repository{db: db} }
 const columns = `id, title, due, position, created_at, completed_at,
 	repeat_kind, repeat_every, repeat_days, remind_at, remind_days_before, reminded_for, version`
 
+// selectColumns adds owner and visibility for reads (ADR 0018).
+const selectColumns = columns + `, owner_id, visibility`
+
 func scan(s interface{ Scan(...any) error }) (domain.Todo, error) {
 	var id, title, created string
 	var due, completed, reminded *string
 	var pos, every, daysBefore, version int
-	var kind, days, remindAt string
-	if err := s.Scan(&id, &title, &due, &pos, &created, &completed, &kind, &every, &days, &remindAt, &daysBefore, &reminded, &version); err != nil {
+	var kind, days, remindAt, owner, visibility string
+	if err := s.Scan(&id, &title, &due, &pos, &created, &completed, &kind, &every, &days, &remindAt, &daysBefore, &reminded, &version, &owner, &visibility); err != nil {
 		return domain.Todo{}, err
 	}
 	var times [3]time.Time
@@ -61,7 +64,8 @@ func scan(s interface{ Scan(...any) error }) (domain.Todo, error) {
 	// instead of hiding the to-do.
 	repeat, _ := domain.NewRecurrence(domain.RepeatKind(kind), every, parseDays(days))
 	reminder, _ := domain.NewReminder(remindAt, daysBefore)
-	return domain.RestoreTodo(id, title, times[0], pos, times[1], times[2]).WithState(repeat, reminder, remindedFor).WithVersion(version), nil
+	return domain.RestoreTodo(id, title, times[0], pos, times[1], times[2]).WithState(repeat, reminder, remindedFor).WithVersion(version).
+		WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(visibility)}), nil
 }
 
 func parseDays(s string) []int {
@@ -87,7 +91,7 @@ func (r *Repository) List(ctx context.Context) ([]domain.Todo, error) {
 	// Only the to-dos the principal may see (ADR 0018).
 	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
 	//nolint:gosec // the condition comes from sqlutil with bound arguments
-	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM todos WHERE `+cond+` ORDER BY position`, args...)
+	rows, err := r.db.QueryContext(ctx, `SELECT `+selectColumns+` FROM todos WHERE `+cond+` ORDER BY position`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query todos: %w", err)
 	}
@@ -106,7 +110,7 @@ func (r *Repository) List(ctx context.Context) ([]domain.Todo, error) {
 // Get returns one to-do.
 func (r *Repository) Get(ctx context.Context, id string) (domain.Todo, error) {
 	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
-	t, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM todos WHERE id = ? AND `+cond, append([]any{id}, args...)...))
+	t, err := scan(r.db.QueryRowContext(ctx, `SELECT `+selectColumns+` FROM todos WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Todo{}, domain.ErrTodoNotFound
 	}
@@ -184,6 +188,21 @@ func (r *Repository) Delete(ctx context.Context, ids ...string) error {
 		if _, err := r.Get(ctx, ids[0]); err == nil {
 			return kernel.ErrNotOwner
 		}
+	}
+	return nil
+}
+
+// SetVisibility implements usecase.VisibilityStore: only the owner changes
+// who else may see a to-do.
+func (r *Repository) SetVisibility(ctx context.Context, id string, v kernel.Visibility) error {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `UPDATE todos SET visibility = ? WHERE id = ? AND `+owned, append([]any{string(v), id}, args...)...)
+	if err != nil {
+		return fmt.Errorf("update visibility: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return r.whyUnchanged(ctx, id)
 	}
 	return nil
 }

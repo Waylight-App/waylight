@@ -95,4 +95,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_6699f3250edaed8e: 'Das kann nur ändern, wer es angelegt hat.',
   // Only an admin can change this.
   srv_e5be262a5868a63b: 'Das kann nur ein Admin ändern.',
+  // Share with only you, everyone or one of your groups.
+  srv_cacad70ec42d516f: 'Teile nur mit dir, mit allen oder mit einer deiner Gruppen.',
 };

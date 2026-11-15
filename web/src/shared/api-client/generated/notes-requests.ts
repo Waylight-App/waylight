@@ -4,6 +4,12 @@
 // source: dto.go
 
 /**
+ * VisibilityDTO shares a note: "private", "everyone" or "group:<id>".
+ */
+export interface VisibilityDTO {
+  visibility: string;
+}
+/**
  * NoteInputDTO is the body of POST /api/notes and PUT /api/notes/{id}.
  */
 export interface NoteInputDTO {

@@ -12,6 +12,7 @@ export const serverMessages = {
   srv_e5be262a5868a63b: "Only an admin can change this.",
   srv_6699f3250edaed8e: "Only the person who created this can change it.",
   srv_83cc78074d3e2ff6: "Remove the user name and password from the address and use the fields below.",
+  srv_cacad70ec42d516f: "Share with only you, everyone or one of your groups.",
   srv_698a9e2d65efdf8f: "Signing in needs PUBLIC_URL (an https:// address of trisse-home).",
   srv_ea4ce39d77587136: "Storing credentials is disabled in the demo.",
   srv_457b52382d260269: "The ICS URL must start with https://, http:// or webcal://.",

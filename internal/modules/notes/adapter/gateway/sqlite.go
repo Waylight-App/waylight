@@ -30,10 +30,13 @@ func NewRepository(db *sql.DB) *Repository { return &Repository{db: db} }
 
 const columns = `id, title, body, pinned, created_at, updated_at, version`
 
+// selectColumns adds owner and visibility for reads (ADR 0018).
+const selectColumns = columns + `, owner_id, visibility`
+
 func scan(s interface{ Scan(...any) error }) (domain.Note, error) {
-	var id, title, body, created, updated string
+	var id, title, body, created, updated, owner, visibility string
 	var pinned, version int
-	if err := s.Scan(&id, &title, &body, &pinned, &created, &updated, &version); err != nil {
+	if err := s.Scan(&id, &title, &body, &pinned, &created, &updated, &version, &owner, &visibility); err != nil {
 		return domain.Note{}, err
 	}
 	c, err := sqlutil.ParseTime(created)
@@ -44,7 +47,8 @@ func scan(s interface{ Scan(...any) error }) (domain.Note, error) {
 	if err != nil {
 		return domain.Note{}, err
 	}
-	return domain.RestoreNote(id, title, body, pinned == 1, c, u).WithVersion(version), nil
+	return domain.RestoreNote(id, title, body, pinned == 1, c, u).WithVersion(version).
+		WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(visibility)}), nil
 }
 
 // List returns the notes the principal may see, pinned first, then by last
@@ -52,7 +56,7 @@ func scan(s interface{ Scan(...any) error }) (domain.Note, error) {
 func (r *Repository) List(ctx context.Context) ([]domain.Note, error) {
 	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
 	//nolint:gosec // cond comes from sqlutil with bound arguments
-	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM notes WHERE `+cond+` ORDER BY pinned DESC, updated_at DESC`, args...)
+	rows, err := r.db.QueryContext(ctx, `SELECT `+selectColumns+` FROM notes WHERE `+cond+` ORDER BY pinned DESC, updated_at DESC`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query notes: %w", err)
 	}
@@ -71,7 +75,7 @@ func (r *Repository) List(ctx context.Context) ([]domain.Note, error) {
 // Get returns one note the principal may see; others are not found.
 func (r *Repository) Get(ctx context.Context, id string) (domain.Note, error) {
 	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
-	n, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM notes WHERE id = ? AND `+cond, append([]any{id}, args...)...))
+	n, err := scan(r.db.QueryRowContext(ctx, `SELECT `+selectColumns+` FROM notes WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Note{}, domain.ErrNoteNotFound
 	}
@@ -132,6 +136,21 @@ func (r *Repository) Delete(ctx context.Context, id string) error {
 		if _, err := r.Get(ctx, id); err == nil {
 			return kernel.ErrNotOwner
 		}
+	}
+	return nil
+}
+
+// SetVisibility implements usecase.Repository: only the owner changes who
+// else may see a note.
+func (r *Repository) SetVisibility(ctx context.Context, id string, v kernel.Visibility) error {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `UPDATE notes SET visibility = ? WHERE id = ? AND `+owned, append([]any{string(v), id}, args...)...)
+	if err != nil {
+		return fmt.Errorf("update visibility: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return r.whyUnchanged(ctx, id)
 	}
 	return nil
 }

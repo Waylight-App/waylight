@@ -30,7 +30,7 @@ func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d), handlers: controller.NewHandlers(controller.UseCases{
 		List: usecase.NewListNotes(d), Get: usecase.NewGetNote(d), Save: usecase.NewSaveNote(d), Delete: usecase.NewDeleteNote(d),
 		Search: usecase.NewSearchNotes(d), Backlinks: usecase.NewListBacklinks(d), Revisions: usecase.NewListRevisions(d),
-		Revision: usecase.NewGetRevision(d), Restore: usecase.NewRestoreRevision(d),
+		Revision: usecase.NewGetRevision(d), Restore: usecase.NewRestoreRevision(d), Share: usecase.NewShareNote(d),
 	})}
 }
 
@@ -59,4 +59,5 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/notes/{id}", h.Get)
 	r.Protected("PUT /api/notes/{id}", h.Update)
 	r.Protected("DELETE /api/notes/{id}", h.Delete)
+	r.Protected("PUT /api/notes/{id}/visibility", h.Share)
 }

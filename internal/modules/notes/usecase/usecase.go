@@ -28,6 +28,10 @@ type NoteView struct {
 	Pinned               bool
 	CreatedAt, UpdatedAt time.Time
 	Version              int
+	// Visibility is "private", "everyone" or "group:<id>" (ADR 0018).
+	Visibility string
+	// Mine is true when the viewer owns the note and may change it.
+	Mine bool
 }
 
 // ListNotes returns all notes, pinned first, then most recently edited (input port).
@@ -113,6 +117,8 @@ type Repository interface {
 	Get(ctx context.Context, id string) (domain.Note, error)
 	Save(ctx context.Context, n domain.Note) error
 	Delete(ctx context.Context, id string) error
+	// SetVisibility changes who else may see a note (owner only).
+	SetVisibility(ctx context.Context, id string, v kernel.Visibility) error
 }
 
 // Deps bundles the output ports.
@@ -125,9 +131,9 @@ type Deps struct {
 	Revisions RevisionRepository
 }
 
-func toView(n domain.Note) NoteView {
+func toView(ctx context.Context, n domain.Note) NoteView {
 	return NoteView{ID: n.ID(), Title: n.Title(), Body: n.Body(), Pinned: n.Pinned(), CreatedAt: n.CreatedAt(), UpdatedAt: n.UpdatedAt(),
-		Version: n.Version()}
+		Version: n.Version(), Visibility: string(n.Access().Visibility), Mine: n.Access().Mine(kernel.PrincipalFrom(ctx))}
 }
 
 type listNotes struct{ d Deps }
@@ -144,7 +150,7 @@ func (uc *listNotes) Execute(ctx context.Context, pinnedOnly bool) ([]NoteView, 
 	out := make([]NoteView, 0, len(notes))
 	for _, n := range notes {
 		if !pinnedOnly || n.Pinned() {
-			out = append(out, toView(n))
+			out = append(out, toView(ctx, n))
 		}
 	}
 	return out, nil
@@ -161,7 +167,7 @@ func (uc *getNote) Execute(ctx context.Context, id string) (NoteView, error) {
 	if err != nil {
 		return NoteView{}, err
 	}
-	return toView(n), nil
+	return toView(ctx, n), nil
 }
 
 type saveNote struct{ d Deps }
@@ -181,7 +187,7 @@ func (uc *saveNote) Execute(ctx context.Context, id string, in NoteInput) (NoteV
 			}
 			// A replayed create (offline outbox, #80) returns what it created.
 			if existing, err := uc.d.Repo.Get(ctx, in.ID); err == nil {
-				return toView(existing), nil
+				return toView(ctx, existing), nil
 			} else if !errors.Is(err, domain.ErrNoteNotFound) {
 				return NoteView{}, err
 			}
@@ -191,7 +197,7 @@ func (uc *saveNote) Execute(ctx context.Context, id string, in NoteInput) (NoteV
 		if err != nil {
 			return NoteView{}, err
 		}
-		n = created
+		n = created.WithAccess(kernel.NewAccess(kernel.PrincipalFrom(ctx)))
 	} else {
 		existing, err := uc.d.Repo.Get(ctx, id)
 		if err != nil {
@@ -213,7 +219,7 @@ func (uc *saveNote) Execute(ctx context.Context, id string, in NoteInput) (NoteV
 	if err := uc.d.Repo.Save(ctx, n); err != nil {
 		return NoteView{}, fmt.Errorf("save note: %w", err)
 	}
-	return toView(n), nil
+	return toView(ctx, n), nil
 }
 
 type deleteNote struct{ d Deps }
@@ -230,4 +236,37 @@ func (uc *deleteNote) Execute(ctx context.Context, id string) error {
 		return fmt.Errorf("delete note: %w", err)
 	}
 	return nil
+}
+
+// ShareNote changes who else may see a note (input port, ADR 0018).
+type ShareNote interface {
+	Execute(ctx context.Context, id, visibility string) (NoteView, error)
+}
+
+type shareNote struct{ d Deps }
+
+// NewShareNote returns the ShareNote use case.
+func NewShareNote(d Deps) ShareNote { return &shareNote{d: d} }
+
+// Execute implements ShareNote: the owner shares with only themselves,
+// everyone, or one of their groups.
+func (uc *shareNote) Execute(ctx context.Context, id, visibility string) (NoteView, error) {
+	p := kernel.PrincipalFrom(ctx)
+	v, err := kernel.CheckShare(p, visibility)
+	if err != nil {
+		return NoteView{}, err
+	}
+	n, err := uc.d.Repo.Get(ctx, id)
+	if err != nil {
+		return NoteView{}, err
+	}
+	if !n.Access().Mine(p) {
+		return NoteView{}, kernel.ErrNotOwner
+	}
+	if err := uc.d.Repo.SetVisibility(ctx, id, v); err != nil {
+		return NoteView{}, err
+	}
+	a := n.Access()
+	a.Visibility = v
+	return toView(ctx, n.WithAccess(a)), nil
 }

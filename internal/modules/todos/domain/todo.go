@@ -31,6 +31,9 @@ type Todo struct {
 	remindedFor time.Time // due date the reminder was sent for
 	// version counts the stored changes, starting at 1 (#80).
 	version int
+	// access is the owner and visibility of a local to-do (ADR 0018); zero
+	// for to-dos of external lists, which cannot be shared here.
+	access kernel.Access
 }
 
 // errReminderNeedsDue rejects reminders on to-dos without a due date.
@@ -106,6 +109,15 @@ func (t Todo) WithVersion(v int) Todo {
 
 // Version is the number of stored changes (#80).
 func (t Todo) Version() int { return t.version }
+
+// WithAccess returns t with owner and visibility.
+func (t Todo) WithAccess(a kernel.Access) Todo {
+	t.access = a
+	return t
+}
+
+// Access returns owner and visibility.
+func (t Todo) Access() kernel.Access { return t.access }
 
 // CheckVersion fails with ErrVersionConflict when the client edited another
 // version than the stored one; 0 means the client did not say (no check).

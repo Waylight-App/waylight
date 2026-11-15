@@ -1,5 +1,10 @@
 package controller
 
+// VisibilityDTO shares a note: "private", "everyone" or "group:<id>".
+type VisibilityDTO struct {
+	Visibility string `json:"visibility"`
+}
+
 // NoteInputDTO is the body of POST /api/notes and PUT /api/notes/{id}.
 type NoteInputDTO struct {
 	Title  string `json:"title"`
