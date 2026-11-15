@@ -13,6 +13,10 @@ import (
 
 // MailSettings implements Parcels.
 func (uc *parcels) MailSettings(ctx context.Context) (MailSettingsView, error) {
+	// The admin's mailbox (host, user, folder) is nobody else's business.
+	if !kernel.PrincipalFrom(ctx).IsAdmin() {
+		return MailSettingsView{}, kernel.ErrAdminOnly
+	}
 	s, st, err := uc.d.MailStore.LoadMail(ctx)
 	if err != nil {
 		return MailSettingsView{}, fmt.Errorf("load mail settings: %w", err)
@@ -23,6 +27,11 @@ func (uc *parcels) MailSettings(ctx context.Context) (MailSettingsView, error) {
 // SaveMailSettings implements Parcels. An enabled mailbox is tested first,
 // so typos are reported right away.
 func (uc *parcels) SaveMailSettings(ctx context.Context, in MailSettingsInput) (MailSettingsView, error) {
+	// Detection reads the admin's mailbox and creates parcels for the
+	// admin; members add their parcels by hand for now (ADR 0018).
+	if !kernel.PrincipalFrom(ctx).IsAdmin() {
+		return MailSettingsView{}, kernel.ErrAdminOnly
+	}
 	old, st, err := uc.d.MailStore.LoadMail(ctx)
 	if err != nil {
 		return MailSettingsView{}, fmt.Errorf("load mail settings: %w", err)

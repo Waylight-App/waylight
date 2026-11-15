@@ -5,6 +5,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -32,6 +33,8 @@ type Repository interface {
 	ReplaceSource(ctx context.Context, source string, list []domain.Birthday) error
 	Settings(ctx context.Context) (Settings, error)
 	SaveSettings(ctx context.Context, s Settings) error
+	// SyncAccounts lists the accounts that have an address book.
+	SyncAccounts(ctx context.Context) ([]string, error)
 }
 
 // AddressBook reads the vCards of a CardDAV address book (output port).
@@ -222,6 +225,11 @@ func (uc *birthdays) SaveSettings(ctx context.Context, in SettingsInput) (Settin
 	if err != nil {
 		return SettingsView{}, err
 	}
+	// The reminder goes to the instance's notification channels; until
+	// there are channels per person only an admin switches it on (ADR 0018).
+	if in.RemindEnabled && !kernel.PrincipalFrom(ctx).IsAdmin() {
+		return SettingsView{}, kernel.ErrAdminOnly
+	}
 	r, err := domain.NewReminder(in.RemindEnabled, in.RemindAt)
 	if err != nil {
 		return SettingsView{}, err
@@ -260,8 +268,14 @@ func (uc *birthdays) SaveSettings(ctx context.Context, in SettingsInput) (Settin
 
 func (uc *birthdays) replace(ctx context.Context, cards []domain.Card) error {
 	var list []domain.Birthday
+	// Two accounts may sync the same contact; members' IDs carry the account
+	// so they never collide (the owner keeps the IDs it always had).
+	prefix := "carddav-"
+	if a := kernel.PrincipalFrom(ctx).SettingsAccount(); a != kernel.SystemAccountID {
+		prefix += a + "-"
+	}
 	for _, c := range cards {
-		id := "carddav-" + c.UID
+		id := prefix + c.UID
 		if c.UID == "" {
 			id = uc.d.IDs.NewID()
 		}
@@ -275,7 +289,24 @@ func (uc *birthdays) replace(ctx context.Context, cards []domain.Card) error {
 	return uc.d.Repo.ReplaceSource(ctx, domain.SourceCardDAV, list)
 }
 
+// Sync implements Birthdays: the job synchronises every account's address
+// book with that account's credentials (ADR 0018).
 func (uc *birthdays) Sync(ctx context.Context) error {
+	if !kernel.PrincipalFrom(ctx).IsSystem() {
+		return uc.syncOne(ctx)
+	}
+	accounts, err := uc.d.Repo.SyncAccounts(ctx)
+	if err != nil {
+		return err
+	}
+	var errs []error
+	for _, a := range accounts {
+		errs = append(errs, uc.syncOne(kernel.WithPrincipal(ctx, kernel.PrincipalFor(a))))
+	}
+	return errors.Join(errs...)
+}
+
+func (uc *birthdays) syncOne(ctx context.Context) error {
 	s, err := uc.d.Repo.Settings(ctx)
 	if err != nil || s.CardDAVURL == "" {
 		return err
@@ -291,6 +322,9 @@ func (uc *birthdays) Remind(ctx context.Context) (int, error) {
 	if uc.d.Alerts == nil {
 		return 0, nil
 	}
+	// The reminder is the admin's and lists the birthdays the admin sees,
+	// never members' private ones, although the job runs as the system.
+	ctx = kernel.WithPrincipal(ctx, kernel.AdminPrincipal())
 	s, err := uc.d.Repo.Settings(ctx)
 	if err != nil {
 		return 0, err
