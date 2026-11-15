@@ -82,8 +82,8 @@ func TestResetByEmail(t *testing.T) {
 		!strings.Contains(mailer.sent[0].Body, "https://home.example.org/account-link#") {
 		t.Fatalf("mail %+v", mailer.sent)
 	}
-	token := mailer.sent[0].Body[strings.Index(mailer.sent[0].Body, "#")+1:]
-	token = token[:strings.Index(token, "\n")]
+	_, rest, _ := strings.Cut(mailer.sent[0].Body, "#")
+	token, _, _ := strings.Cut(rest, "\n")
 	// A second request right away sends nothing new.
 	if err := pr.Request(ctx, "oma", "c2"); err != nil || len(mailer.sent) != 1 {
 		t.Fatal("a mailbox must not be flooded", err)
@@ -93,7 +93,6 @@ func TestResetByEmail(t *testing.T) {
 	if _, err := accept.Accept(ctx, AcceptLinkRequest{Token: token, Password: "another-good-password", ClientKey: "c3"}); err != nil {
 		t.Fatal(err)
 	}
-	// The e-mail link is valid for an hour only.
 	for _, l := range links.m {
 		t.Fatalf("link not consumed: %+v", l)
 	}
