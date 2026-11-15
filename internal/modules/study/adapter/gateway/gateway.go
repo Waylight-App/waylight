@@ -134,7 +134,8 @@ func (r *Repository) Delete(ctx context.Context, id string) error {
 // TotalECTS implements usecase.Repository.
 func (r *Repository) TotalECTS(ctx context.Context) (float64, error) {
 	var v float64
-	err := r.db.QueryRowContext(ctx, `SELECT total_ects FROM study_settings WHERE id = 1`).Scan(&v)
+	// The goal is personal; without an own row it is the default.
+	err := r.db.QueryRowContext(ctx, `SELECT total_ects FROM study_settings WHERE account_id = ?`, kernel.PrincipalFrom(ctx).SettingsAccount()).Scan(&v)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.DefaultTotalECTS, nil
 	}
@@ -146,8 +147,8 @@ func (r *Repository) TotalECTS(ctx context.Context) (float64, error) {
 
 // SetTotalECTS implements usecase.Repository.
 func (r *Repository) SetTotalECTS(ctx context.Context, v float64) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO study_settings (id, total_ects) VALUES (1, ?)
-		ON CONFLICT (id) DO UPDATE SET total_ects = excluded.total_ects`, v)
+	_, err := r.db.ExecContext(ctx, `INSERT INTO study_settings (account_id, total_ects) VALUES (?, ?)
+		ON CONFLICT (account_id) DO UPDATE SET total_ects = excluded.total_ects`, kernel.PrincipalFrom(ctx).SettingsAccount(), v)
 	if err != nil {
 		return fmt.Errorf("upsert total: %w", err)
 	}
