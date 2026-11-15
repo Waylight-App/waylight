@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"time"
 
 	"trisse-home/internal/modules"
@@ -22,17 +23,21 @@ type Module struct {
 	uc       usecase.Service
 	handlers *controller.Handlers
 	subs     *controller.SubscriptionHandlers
+	accounts *controller.AccountHandlers
 }
 
 // New builds the calendar module. Floating event times are interpreted in loc.
-func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator, loc *time.Location) *Module {
+// publicURL (PUBLIC_URL) enables signing in to Google and Microsoft (#282);
+// nil leaves that unavailable.
+func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator, loc *time.Location, publicURL *url.URL) *Module {
 	caldav := gateway.NewCalDAV(client, loc)
 	uc := usecase.NewCalendar(usecase.Deps{
 		Repo: gateway.NewSettingsRepository(db, cipher), Source: caldav, Writer: caldav,
 		Subscriptions: gateway.NewSubscriptionRepository(db, cipher), Feeds: gateway.NewFeed(client, loc, clock.Now),
 		IDs: ids, Clock: clock,
+		Accounts: gateway.NewAccountRepository(db, cipher), API: gateway.NewAccountAPI(client), OAuth: newOAuthPort(client, publicURL, clock.Now),
 	})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc), subs: controller.NewSubscriptionHandlers(uc)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), subs: controller.NewSubscriptionHandlers(uc), accounts: controller.NewAccountHandlers(uc)}
 }
 
 // Name implements modules.Module.
@@ -54,6 +59,13 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/calendar/subscriptions", m.subs.Add)
 	r.Protected("PUT /api/calendar/subscriptions/{id}", m.subs.Update)
 	r.Protected("DELETE /api/calendar/subscriptions/{id}", m.subs.Delete)
+	r.Protected("GET /api/calendar/writable", m.accounts.Writable)
+	r.Protected("GET /api/calendar/accounts", m.accounts.List)
+	r.Protected("POST /api/calendar/accounts/oauth/start", m.accounts.Start)
+	r.Protected("GET /api/calendar/accounts/oauth/state/{state}", m.accounts.Status)
+	r.Public("GET "+CallbackPath, m.accounts.Callback)
+	r.Protected("PUT /api/calendar/accounts/{id}", m.accounts.SetCalendars)
+	r.Protected("DELETE /api/calendar/accounts/{id}", m.accounts.Disconnect)
 }
 
 // Jobs implements modules.Module.

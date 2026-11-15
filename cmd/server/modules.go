@@ -173,7 +173,9 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 			return diskhealth.New(diskhealth.Config{Dir: cfg.DiskHealthDir, StaleAfter: cfg.DiskHealthStaleAfter}, sink, clk)
 		}},
 		{"speedtest", func() modules.Module { return speedtest.New(db, secrets, out.integration, sink, clk) }},
-		{"calendar", func() modules.Module { return calendar.New(db, secrets, out.integration, clk, ids, time.Local) }},
+		{"calendar", func() modules.Module {
+			return calendar.New(db, secrets, out.integration, clk, ids, time.Local, cfg.PublicURL)
+		}},
 		{"proxmox", func() modules.Module {
 			return proxmox.New(proxmox.Config{DB: db, Cipher: secrets, Client: out.integration, Pinned: out.pinned,
 				ActionGuests: cfg.ProxmoxActionsGuests, Clock: clk, Audit: authModule})
