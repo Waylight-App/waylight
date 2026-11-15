@@ -39,3 +39,11 @@ func exportAll() {
 func untouchedTable() {
 	_ = `SELECT value FROM settings`
 }
+
+// visible wraps the filter, e.g. with a special case for guests.
+func visible(p any) (string, []any) { return sqlutil.VisibleTo(p, "") }
+
+func viaHelper(p any) {
+	cond, _ := visible(p)
+	_ = `SELECT id FROM notes WHERE ` + cond
+}

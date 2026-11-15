@@ -69,7 +69,12 @@ func readingOrder(ws []domain.Widget) {
 	})
 }
 
+// Export and Apply work on the admin's tabs: config as code describes the
+// instance, and members' personal tabs are not part of it (ADR 0018). They
+// also run at start without a request, as the system, which would see
+// every account's tabs.
 func (uc *config) Export(ctx context.Context) ([]ConfigTab, error) {
+	ctx = kernel.WithPrincipal(ctx, kernel.AdminPrincipal())
 	tabs, err := uc.repo.ListTabs(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("list tabs: %w", err)
@@ -106,6 +111,7 @@ var errDuplicateTab = kernel.NewValidationError("tabs", "Each tab name can be us
 // survives a re-import; widgets always get new IDs. An empty list is fine:
 // the dashboard creates its "Home" tab on the next visit, as after setup.
 func (uc *config) Apply(ctx context.Context, in []ConfigTab) error {
+	ctx = kernel.WithPrincipal(ctx, kernel.AdminPrincipal())
 	old, err := uc.repo.ListTabs(ctx)
 	if err != nil {
 		return fmt.Errorf("list tabs: %w", err)

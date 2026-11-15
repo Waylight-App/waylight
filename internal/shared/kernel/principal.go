@@ -26,6 +26,12 @@ type Principal struct {
 // owner's ID, so records they create belong to the owner as before.
 const SystemAccountID = "owner"
 
+// AdminPrincipal is the first admin (the owner) as a principal. Code that
+// works on instance-level data on behalf of the admin, such as config as
+// code, uses it instead of the system, which would see every account's
+// records (ADR 0018).
+func AdminPrincipal() Principal { return Principal{AccountID: SystemAccountID, Role: "owner"} }
+
 // IsSystem reports whether there is no signed-in principal: a background
 // job, a CLI command or a test. The system sees all records (ADR 0018).
 func (p Principal) IsSystem() bool { return p.Role == "system" }

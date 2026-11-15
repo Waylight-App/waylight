@@ -90,6 +90,10 @@ What a member may do, enforced for every request like the guest rules:
   Docker or the system pages. A module without a declared kind stays closed
   for changes by members.
 
+Every account has its own dashboard tabs: a member sees only their own, you
+see only yours, and guests keep seeing exactly the tabs you shared with them.
+`trisse-home.yaml` describes your (the admin's) tabs, never a member's.
+
 Account and group changes are written to the security log.
 
 ## Kiosk displays

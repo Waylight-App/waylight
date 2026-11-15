@@ -5,8 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"trisse-home/internal/modules/dashboard/domain"
+	"trisse-home/internal/shared/kernel"
+	"trisse-home/internal/shared/sqlutil"
 )
 
 // Repository stores tabs and widgets in SQLite and implements both
@@ -16,9 +19,35 @@ type Repository struct{ db *sql.DB }
 // NewRepository returns a repository backed by db.
 func NewRepository(db *sql.DB) *Repository { return &Repository{db: db} }
 
-// ListTabs returns all tabs ordered by position.
+// visibleTabs is the condition for the tabs the principal of ctx may see
+// (ADR 0018): guests and kiosk displays see the tabs shared with them by ID,
+// everyone else their own tabs and, once team tabs exist (#295), those
+// shared with their groups. Background jobs see all.
+func visibleTabs(ctx context.Context) (string, []any) {
+	p := kernel.PrincipalFrom(ctx)
+	if p.TabScoped() {
+		if len(p.Tabs) == 0 {
+			return "0 = 1", nil
+		}
+		args := make([]any, len(p.Tabs))
+		for i, t := range p.Tabs {
+			args[i] = t
+		}
+		return "id IN (?" + strings.Repeat(", ?", len(p.Tabs)-1) + ")", args
+	}
+	return sqlutil.VisibleTo(p, "")
+}
+
+// ownedTabs is the condition for the tabs the principal of ctx may change:
+// only its own, whatever their visibility.
+func ownedTabs(ctx context.Context) (string, []any) {
+	return sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+}
+
+// ListTabs returns the tabs the principal may see, ordered by position.
 func (r *Repository) ListTabs(ctx context.Context) ([]domain.Tab, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position, background, rules, mobile_layout FROM dashboard_tabs ORDER BY position, name`)
+	cond, args := visibleTabs(ctx)
+	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position, background, rules, mobile_layout FROM dashboard_tabs WHERE `+cond+` ORDER BY position, name`, args...) //nolint:gosec // cond comes from sqlutil with bound arguments
 	if err != nil {
 		return nil, fmt.Errorf("query tabs: %w", err)
 	}
@@ -41,7 +70,8 @@ func (r *Repository) GetTab(ctx context.Context, id string) (domain.Tab, error) 
 	var name, bg, rules string
 	var mobile sql.NullString
 	var pos int
-	err := r.db.QueryRowContext(ctx, `SELECT name, position, background, rules, mobile_layout FROM dashboard_tabs WHERE id = ?`, id).
+	cond, args := visibleTabs(ctx)
+	err := r.db.QueryRowContext(ctx, `SELECT name, position, background, rules, mobile_layout FROM dashboard_tabs WHERE id = ? AND `+cond, append([]any{id}, args...)...).
 		Scan(&name, &pos, &bg, &rules, &mobile)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Tab{}, domain.ErrTabNotFound
@@ -52,10 +82,11 @@ func (r *Repository) GetTab(ctx context.Context, id string) (domain.Tab, error) 
 	return domain.RestoreTab(id, name, pos, bg).WithRules(decodeRules(rules)).WithMobile(decodeMobile(mobile)), nil
 }
 
-// CreateTab inserts a tab.
+// CreateTab inserts a private tab owned by the principal of ctx.
 func (r *Repository) CreateTab(ctx context.Context, t domain.Tab) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background, rules, mobile_layout) VALUES (?, ?, ?, ?, ?, ?)`,
-		t.ID(), t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()))
+	_, err := r.db.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background, rules, mobile_layout, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		t.ID(), t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()),
+		kernel.PrincipalFrom(ctx).AccountID, string(kernel.Private))
 	if err != nil {
 		return fmt.Errorf("insert tab: %w", err)
 	}
@@ -64,8 +95,9 @@ func (r *Repository) CreateTab(ctx context.Context, t domain.Tab) error {
 
 // UpdateTab stores name and position of a tab.
 func (r *Repository) UpdateTab(ctx context.Context, t domain.Tab) error {
-	res, err := r.db.ExecContext(ctx, `UPDATE dashboard_tabs SET name = ?, position = ?, background = ?, rules = ?, mobile_layout = ? WHERE id = ?`,
-		t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()), t.ID())
+	cond, args := ownedTabs(ctx)
+	res, err := r.db.ExecContext(ctx, `UPDATE dashboard_tabs SET name = ?, position = ?, background = ?, rules = ?, mobile_layout = ? WHERE id = ? AND `+cond, //nolint:gosec // cond comes from sqlutil with bound arguments
+		append([]any{t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()), t.ID()}, args...)...)
 	if err != nil {
 		return fmt.Errorf("update tab: %w", err)
 	}
@@ -75,9 +107,11 @@ func (r *Repository) UpdateTab(ctx context.Context, t domain.Tab) error {
 	return nil
 }
 
-// DeleteTab removes a tab; widgets are removed by the foreign key cascade.
+// DeleteTab removes an own tab; widgets are removed by the foreign key
+// cascade.
 func (r *Repository) DeleteTab(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM dashboard_tabs WHERE id = ?`, id); err != nil {
+	cond, args := ownedTabs(ctx)
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM dashboard_tabs WHERE id = ? AND `+cond, append([]any{id}, args...)...); err != nil { //nolint:gosec // cond comes from sqlutil with bound arguments
 		return fmt.Errorf("delete tab: %w", err)
 	}
 	return nil
@@ -85,9 +119,10 @@ func (r *Repository) DeleteTab(ctx context.Context, id string) error {
 
 // SaveTabOrder stores the positions of all given tabs in one transaction.
 func (r *Repository) SaveTabOrder(ctx context.Context, tabs []domain.Tab) error {
+	cond, args := ownedTabs(ctx)
 	return r.inTx(ctx, func(tx *sql.Tx) error {
 		for _, t := range tabs {
-			if _, err := tx.ExecContext(ctx, `UPDATE dashboard_tabs SET position = ? WHERE id = ?`, t.Position(), t.ID()); err != nil {
+			if _, err := tx.ExecContext(ctx, `UPDATE dashboard_tabs SET position = ? WHERE id = ? AND `+cond, append([]any{t.Position(), t.ID()}, args...)...); err != nil { //nolint:gosec // cond comes from sqlutil with bound arguments
 				return fmt.Errorf("update tab position: %w", err)
 			}
 		}
@@ -123,19 +158,27 @@ func (r *Repository) queryWidgets(ctx context.Context, query string, args ...any
 	return out, rows.Err()
 }
 
-// ListWidgets returns all widgets ordered by position.
+// Widgets have no owner of their own: they belong to their tab, so every
+// widget query is limited to tabs the principal may see or change.
+
+// ListWidgets returns the widgets on visible tabs ordered by position.
 func (r *Repository) ListWidgets(ctx context.Context) ([]domain.Widget, error) {
-	return r.queryWidgets(ctx, `SELECT `+widgetColumns+` FROM dashboard_widgets ORDER BY y, x`)
+	cond, args := visibleTabs(ctx)
+	return r.queryWidgets(ctx, `SELECT `+widgetColumns+` FROM dashboard_widgets WHERE tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`) ORDER BY y, x`, args...)
 }
 
-// ListWidgetsByTab returns the widgets of one tab.
+// ListWidgetsByTab returns the widgets of one visible tab.
 func (r *Repository) ListWidgetsByTab(ctx context.Context, tabID string) ([]domain.Widget, error) {
-	return r.queryWidgets(ctx, `SELECT `+widgetColumns+` FROM dashboard_widgets WHERE tab_id = ? ORDER BY y, x`, tabID)
+	cond, args := visibleTabs(ctx)
+	return r.queryWidgets(ctx, `SELECT `+widgetColumns+` FROM dashboard_widgets WHERE tab_id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`) ORDER BY y, x`,
+		append([]any{tabID}, args...)...)
 }
 
-// GetWidget returns one widget or domain.ErrWidgetNotFound.
+// GetWidget returns one widget on a visible tab or domain.ErrWidgetNotFound.
 func (r *Repository) GetWidget(ctx context.Context, id string) (domain.Widget, error) {
-	w, err := scanWidget(r.db.QueryRowContext(ctx, `SELECT `+widgetColumns+` FROM dashboard_widgets WHERE id = ?`, id))
+	cond, args := visibleTabs(ctx)
+	w, err := scanWidget(r.db.QueryRowContext(ctx, `SELECT `+widgetColumns+` FROM dashboard_widgets WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`,
+		append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Widget{}, domain.ErrWidgetNotFound
 	}
@@ -145,13 +188,20 @@ func (r *Repository) GetWidget(ctx context.Context, id string) (domain.Widget, e
 	return w, nil
 }
 
-// CreateWidget inserts a widget.
+// CreateWidget inserts a widget on an own tab; on any other tab it returns
+// domain.ErrTabNotFound.
 func (r *Repository) CreateWidget(ctx context.Context, w domain.Widget) error {
 	rect := w.Rect()
-	_, err := r.db.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-		w.ID(), w.TabID(), w.Kind(), rect.X, rect.Y, rect.W, rect.H, w.Config())
+	cond, args := ownedTabs(ctx)
+	//nolint:gosec // cond comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) SELECT ?, ?, ?, ?, ?, ?, ?, ?
+		WHERE EXISTS (SELECT 1 FROM dashboard_tabs WHERE id = ? AND `+cond+`)`,
+		append([]any{w.ID(), w.TabID(), w.Kind(), rect.X, rect.Y, rect.W, rect.H, w.Config(), w.TabID()}, args...)...)
 	if err != nil {
 		return fmt.Errorf("insert widget: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return domain.ErrTabNotFound
 	}
 	return nil
 }
@@ -159,8 +209,9 @@ func (r *Repository) CreateWidget(ctx context.Context, w domain.Widget) error {
 // UpdateWidget stores the configuration and rectangle of a widget.
 func (r *Repository) UpdateWidget(ctx context.Context, w domain.Widget) error {
 	rect := w.Rect()
-	_, err := r.db.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ?, config = ? WHERE id = ?`,
-		rect.X, rect.Y, rect.W, rect.H, w.Config(), w.ID())
+	cond, args := ownedTabs(ctx)
+	_, err := r.db.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ?, config = ? WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
+		append([]any{rect.X, rect.Y, rect.W, rect.H, w.Config(), w.ID()}, args...)...)
 	if err != nil {
 		return fmt.Errorf("update widget: %w", err)
 	}
@@ -169,11 +220,12 @@ func (r *Repository) UpdateWidget(ctx context.Context, w domain.Widget) error {
 
 // SaveWidgetRects stores the rectangles of several widgets atomically.
 func (r *Repository) SaveWidgetRects(ctx context.Context, widgets []domain.Widget) error {
+	cond, args := ownedTabs(ctx)
 	return r.inTx(ctx, func(tx *sql.Tx) error {
 		for _, w := range widgets {
 			rect := w.Rect()
-			if _, err := tx.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ? WHERE id = ?`,
-				rect.X, rect.Y, rect.W, rect.H, w.ID()); err != nil {
+			if _, err := tx.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ? WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
+				append([]any{rect.X, rect.Y, rect.W, rect.H, w.ID()}, args...)...); err != nil {
 				return fmt.Errorf("update widget rect: %w", err)
 			}
 		}
@@ -181,23 +233,29 @@ func (r *Repository) SaveWidgetRects(ctx context.Context, widgets []domain.Widge
 	})
 }
 
-// DeleteWidget removes a widget.
+// DeleteWidget removes a widget from an own tab.
 func (r *Repository) DeleteWidget(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM dashboard_widgets WHERE id = ?`, id); err != nil {
+	cond, args := ownedTabs(ctx)
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM dashboard_widgets WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
+		append([]any{id}, args...)...); err != nil {
 		return fmt.Errorf("delete widget: %w", err)
 	}
 	return nil
 }
 
-// ReplaceAll implements usecase.ConfigRepository in one transaction. Kept
-// tabs lose their old widgets; removed tabs take theirs along (cascade).
+// ReplaceAll implements usecase.ConfigRepository in one transaction. It
+// works on the tabs of the principal of ctx (config as code passes the
+// admin, ADR 0018): kept tabs lose their old widgets; removed tabs take
+// theirs along (cascade). Other accounts' tabs are not touched.
 func (r *Repository) ReplaceAll(ctx context.Context, tabs []domain.Tab, widgets []domain.Widget) error {
+	cond, args := ownedTabs(ctx)
+	owner := kernel.PrincipalFrom(ctx).AccountID
 	return r.inTx(ctx, func(tx *sql.Tx) error {
 		keep := map[string]bool{}
 		for _, t := range tabs {
 			keep[t.ID()] = true
 		}
-		existing, err := queryIDs(ctx, tx, `SELECT id FROM dashboard_tabs`)
+		existing, err := queryIDs(ctx, tx, `SELECT id FROM dashboard_tabs WHERE `+cond, args...)
 		if err != nil {
 			return fmt.Errorf("list tabs: %w", err)
 		}
@@ -209,15 +267,21 @@ func (r *Repository) ReplaceAll(ctx context.Context, tabs []domain.Tab, widgets 
 				return fmt.Errorf("delete tab: %w", err)
 			}
 		}
-		if _, err := tx.ExecContext(ctx, `DELETE FROM dashboard_widgets`); err != nil {
+		if _, err := tx.ExecContext(ctx, `DELETE FROM dashboard_widgets WHERE tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, args...); err != nil { //nolint:gosec // cond comes from sqlutil with bound arguments
 			return fmt.Errorf("clear widgets: %w", err)
 		}
 		for _, t := range tabs {
-			if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background, rules, mobile_layout) VALUES (?, ?, ?, ?, ?, ?)
+			// The upsert only takes over a tab of the same owner; an ID of
+			// someone else's tab is refused instead of moved.
+			res, err := tx.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background, rules, mobile_layout, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 				ON CONFLICT (id) DO UPDATE SET name = excluded.name, position = excluded.position, background = excluded.background,
-				rules = excluded.rules, mobile_layout = excluded.mobile_layout`,
-				t.ID(), t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile())); err != nil {
+				rules = excluded.rules, mobile_layout = excluded.mobile_layout WHERE dashboard_tabs.owner_id = excluded.owner_id`,
+				t.ID(), t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()), owner, string(kernel.Private))
+			if err != nil {
 				return fmt.Errorf("upsert tab: %w", err)
+			}
+			if n, _ := res.RowsAffected(); n == 0 {
+				return domain.ErrTabNotFound
 			}
 		}
 		for _, w := range widgets {
@@ -231,9 +295,9 @@ func (r *Repository) ReplaceAll(ctx context.Context, tabs []domain.Tab, widgets 
 	})
 }
 
-// queryIDs runs a constant query that selects one id column.
-func queryIDs(ctx context.Context, tx *sql.Tx, query string) ([]string, error) {
-	rows, err := tx.QueryContext(ctx, query)
+// queryIDs runs a query that selects one id column.
+func queryIDs(ctx context.Context, tx *sql.Tx, query string, args ...any) ([]string, error) {
+	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
