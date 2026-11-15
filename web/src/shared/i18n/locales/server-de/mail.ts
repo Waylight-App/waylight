@@ -8,6 +8,4 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_f2d32e363bfff9e9: 'Es ist noch kein E-Mail-Konto eingerichtet.',
   // The mail account does not exist (any more).
   srv_1cd466bb63b42a23: 'Das E-Mail-Konto existiert nicht (mehr).',
-  // The name must have between 1 and 60 characters.
-  srv_9f138e811fd44724: 'Der Name muss zwischen 1 und 60 Zeichen haben.',
 };

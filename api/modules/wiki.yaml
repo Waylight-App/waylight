@@ -1,0 +1,87 @@
+# OpenAPI fragment of the wiki search module (#321, #322, #323).
+tags:
+  - name: wiki
+
+paths:
+  /api/wiki/search:
+    get:
+      tags: [wiki]
+      summary: "Search all connected wikis at the same time (federated, nothing is stored); at least 2 characters, 5 results per wiki, 4 s per wiki; wikis that did not answer are listed in failed"
+      parameters: [{ name: q, in: query, required: true, schema: { type: string, minLength: 2, maxLength: 200 } }]
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/WikiSearch" } } } }
+  /api/wiki/wikis:
+    get:
+      tags: [wiki]
+      summary: Connected wikis; the API token is never returned
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Wiki" } } } } }
+    post:
+      tags: [wiki]
+      summary: "Connect a wiki (kind bookstack, outline or wikijs; BookStack token as id:secret); at most 5"
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/WikiInput" } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Wiki" } } } }
+        "409": { description: 5 wikis are connected already }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/wiki/wikis/{id}:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    put:
+      tags: [wiki]
+      summary: Change a wiki; an empty token keeps the stored one unless the address or kind changes
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/WikiInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Wiki" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+    delete:
+      tags: [wiki]
+      summary: Remove a wiki
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Removed }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/wiki/wikis/{id}/test:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    post:
+      tags: [wiki]
+      summary: Send a sample search to the wiki
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: The wiki answered }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { description: The wiki did not answer or refused the token }
+
+schemas:
+  WikiPage:
+    type: object
+    properties:
+      title: { type: string }
+      excerpt: { type: string, description: Plain text }
+      url: { type: string, description: Always on the wiki's own host }
+      space: { type: string, description: Book, collection or locale }
+      wiki: { type: string }
+      updated: { type: string, format: date-time }
+  WikiSearch:
+    type: object
+    properties:
+      pages: { type: array, items: { $ref: "#/components/schemas/WikiPage" } }
+      failed: { type: array, items: { type: string } }
+  Wiki:
+    type: object
+    properties:
+      id: { type: string }
+      name: { type: string }
+      kind: { type: string, enum: [bookstack, outline, wikijs] }
+      url: { type: string }
+      hasToken: { type: boolean }
+  WikiInput:
+    type: object
+    required: [name, kind, url]
+    properties:
+      name: { type: string, maxLength: 60 }
+      kind: { type: string, enum: [bookstack, outline, wikijs] }
+      url: { type: string }
+      token: { type: string }
