@@ -123,6 +123,38 @@ export interface KioskInput extends KioskOptions {
   disabled: boolean;
 }
 
+/** An open invitation (#296). */
+export interface Invite {
+  id: string;
+  name: string;
+  role: 'member' | 'guest';
+  tabs: string[];
+  createdAt: Date;
+  expiresAt: Date;
+}
+
+/** Input of an invitation. */
+export interface InviteInput {
+  name: string;
+  role: 'member' | 'guest';
+  tabs: string[];
+  validDays: number;
+}
+
+/** What an invitation or reset link is for. */
+export interface LinkInfo {
+  purpose: 'invite' | 'reset';
+  name: string;
+}
+
+/** The page behind invitation and reset links; the token stays in the fragment. */
+export const accountLinkPath = '/account-link';
+
+/** The link of an invitation or reset token. */
+export function accountLink(origin: string, token: string): string {
+  return `${origin}${accountLinkPath}#${encodeURIComponent(token)}`;
+}
+
 /** The link that signs a display in; the token travels in the fragment, never to the server log. */
 export function kioskLink(origin: string, token: string): string {
   return `${origin}/kiosk#${encodeURIComponent(token)}`;

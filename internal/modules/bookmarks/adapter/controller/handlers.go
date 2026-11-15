@@ -17,6 +17,7 @@ type UseCases struct {
 	Delete       usecase.DeleteBookmark
 	CreateFolder usecase.CreateFolder
 	RenameFolder usecase.RenameFolder
+	ShareFolder  usecase.ShareFolder
 	DeleteFolder usecase.DeleteFolder
 	Import       usecase.ImportBookmarks
 	GetSettings  usecase.GetSettings
@@ -160,6 +161,21 @@ func (h *Handlers) CreateFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpapi.WriteJSON(w, http.StatusCreated, presenter.Folder(res))
+}
+
+// ShareFolder handles PUT /api/bookmarks/folders/{id}/visibility (#298).
+func (h *Handlers) ShareFolder(w http.ResponseWriter, r *http.Request) {
+	var dto VisibilityDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	res, err := h.uc.ShareFolder.Execute(r.Context(), r.PathValue("id"), dto.Visibility)
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Folder(res))
 }
 
 // RenameFolder handles PATCH /api/bookmarks/folders/{id}.

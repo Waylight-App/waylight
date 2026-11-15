@@ -242,3 +242,35 @@ export interface KioskCreatedDTO {
 export interface KioskLinkDTO {
   token: string;
 }
+/**
+ * InviteDTO is an open invitation in GET /api/auth/invites (#296).
+ */
+export interface InviteDTO {
+  id: string;
+  name: string;
+  role: string;
+  tabs: string[];
+  createdAt: string /* RFC 3339 */;
+  expiresAt: string /* RFC 3339 */;
+}
+/**
+ * InviteCreatedDTO answers POST /api/auth/invites; the token is shown once.
+ */
+export interface InviteCreatedDTO {
+  invite: InviteDTO;
+  token: string;
+}
+/**
+ * ResetLinkDTO answers POST /api/auth/accounts/{id}/reset-link.
+ */
+export interface ResetLinkDTO {
+  token: string;
+  expiresAt: string /* RFC 3339 */;
+}
+/**
+ * LinkInfoDTO says what a link does: "invite" or "reset", for which name.
+ */
+export interface LinkInfoDTO {
+  purpose: string;
+  name: string;
+}

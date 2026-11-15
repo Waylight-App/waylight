@@ -38,6 +38,9 @@ type Bookmark struct {
 	description string
 	tags        []string
 	createdAt   time.Time
+	// access is the owner and visibility (ADR 0018); a bookmark in a folder
+	// is seen by whoever may see the folder (#298).
+	access kernel.Access
 }
 
 // BookmarkInput carries the editable fields of a bookmark.
@@ -131,6 +134,24 @@ func (b Bookmark) Tags() []string { return slices.Clone(b.tags) }
 // CreatedAt returns when the bookmark was created.
 func (b Bookmark) CreatedAt() time.Time { return b.createdAt }
 
+// WithAccess returns b with owner and visibility.
+func (b Bookmark) WithAccess(a kernel.Access) Bookmark {
+	b.access = a
+	return b
+}
+
+// Access returns owner and visibility; empty for a bookmark not stored yet.
+func (b Bookmark) Access() kernel.Access { return b.access }
+
+// WithAccess returns f with owner and visibility.
+func (f Folder) WithAccess(a kernel.Access) Folder {
+	f.access = a
+	return f
+}
+
+// Access returns owner and visibility; empty for a folder not stored yet.
+func (f Folder) Access() kernel.Access { return f.access }
+
 // MoveToFolder files the bookmark into folderID ("" = unfiled).
 func (b *Bookmark) MoveToFolder(folderID string) { b.folderID = folderID }
 
@@ -139,6 +160,9 @@ type Folder struct {
 	id       string
 	name     string
 	position int
+	// access is the owner and visibility (ADR 0018): a folder shared with
+	// a group is that group's link directory (#298).
+	access kernel.Access
 }
 
 // NewFolder validates and creates a folder.

@@ -1,8 +1,9 @@
 <script lang="ts">
   import { errorMessage } from '../../../shared/api-client/http';
-  import { t } from '../../../shared/i18n';
-  import type { Guest } from '../domain/auth';
+  import { intlLocale, t } from '../../../shared/i18n';
+  import { accountLink, type Guest } from '../domain/auth';
   import type { AuthUseCases } from '../usecase/authUseCases';
+  import AccountLinkBox from './AccountLinkBox.svelte';
 
   /** Props of the guest management section (owner only). */
   interface Props {
@@ -14,6 +15,22 @@
 
   let guests = $state<Guest[]>([]);
   let error = $state('');
+  // A reset link that was just created, shown once (#296).
+  let resetLink = $state<{ name: string; url: string; expires: string } | null>(null);
+
+  async function createResetLink(account: { id: string; name: string }) {
+    error = '';
+    try {
+      const r = await auth.createResetLink(account.id);
+      resetLink = {
+        name: account.name,
+        url: accountLink(location.origin, r.token),
+        expires: r.expiresAt.toLocaleString(intlLocale(), { dateStyle: 'medium', timeStyle: 'short' }),
+      };
+    } catch (err) {
+      error = errorMessage(err);
+    }
+  }
   let name = $state('');
   let password = $state('');
   let confirmation = $state('');
@@ -54,6 +71,14 @@
 </script>
 
 <p class="muted">{t('auth.guests_hint')}</p>
+{#if resetLink}
+  <AccountLinkBox
+    title={t('auth.reset_link_for', { name: resetLink.name })}
+    url={resetLink.url}
+    expires={resetLink.expires}
+    ondone={() => (resetLink = null)}
+  />
+{/if}
 {#if error}<p class="error" role="alert">{error}</p>{/if}
 
 <ul class="guests">
@@ -96,6 +121,9 @@
               await auth.updateGuest(g, g.tabs, g.disabled, newPassword[g.id] ?? '');
               newPassword[g.id] = '';
             })}>{t('auth.guest_set_password')}</button
+        >
+        <button class="btn" type="button" onclick={() => createResetLink(g)}
+          >{t('auth.reset_link_create')}</button
         >
         <button
           class="btn btn-danger"

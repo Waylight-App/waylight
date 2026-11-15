@@ -173,6 +173,7 @@ func New(cfg Config, d Deps) (*Module, error) {
 		Groups:         usecase.NewGroups(deps),
 		Preferences:    usecase.NewPreferences(deps),
 		Kiosks:         kiosks,
+		AccountLinks:   usecase.NewAccountLinks(deps, gateway.NewAccountLinkRepository(d.DB)),
 		APITokens:      usecase.NewAPITokens(deps, gateway.NewTokenRepository(d.DB)),
 		SSO:            newSSO(deps, cfg.SSO),
 		Passkeys:       usecase.NewPasskeys(deps),
@@ -245,6 +246,12 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/auth/kiosks/{id}", m.handlers.UpdateKiosk)
 	r.Protected("POST /api/auth/kiosks/{id}/link", m.handlers.RenewKioskLink)
 	r.Protected("DELETE /api/auth/kiosks/{id}", m.handlers.DeleteKiosk)
+	r.Protected("GET /api/auth/invites", m.handlers.ListInvites)
+	r.Protected("POST /api/auth/invites", m.handlers.CreateInvite)
+	r.Protected("DELETE /api/auth/invites/{id}", m.handlers.RevokeInvite)
+	r.Protected("POST /api/auth/accounts/{id}/reset-link", m.handlers.CreateResetLink)
+	r.Public("POST /api/auth/link/inspect", m.handlers.InspectLink)
+	r.Public("POST /api/auth/link/accept", m.handlers.AcceptLink)
 	r.Protected("GET /api/auth/guests", m.handlers.ListGuests)
 	r.Protected("POST /api/auth/guests", m.handlers.CreateGuest)
 	r.Protected("PUT /api/auth/guests/{id}", m.handlers.UpdateGuest)

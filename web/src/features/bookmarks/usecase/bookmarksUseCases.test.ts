@@ -10,6 +10,8 @@ describe('BookmarksUseCases', () => {
     createFolder: vi.fn(),
     renameFolder: vi.fn(),
     deleteFolder: vi.fn(),
+    shareFolder: vi.fn(),
+    shareGroups: vi.fn().mockResolvedValue([]),
     importHtml: vi.fn(),
     getSettings: vi.fn(),
     saveSettings: vi.fn(),

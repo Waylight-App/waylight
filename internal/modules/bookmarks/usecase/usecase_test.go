@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"trisse-home/internal/modules/bookmarks/domain"
+	"trisse-home/internal/shared/kernel"
 )
 
 type memRepo struct {
@@ -57,6 +58,16 @@ func (m *memRepo) GetFolder(_ context.Context, id string) (domain.Folder, error)
 }
 func (m *memRepo) SaveFolder(_ context.Context, f domain.Folder) error {
 	m.folders[f.ID()] = f
+	return nil
+}
+func (m *memRepo) SetFolderVisibility(_ context.Context, id string, v kernel.Visibility) error {
+	f, ok := m.folders[id]
+	if !ok {
+		return domain.ErrFolderNotFound
+	}
+	a := f.Access()
+	a.Visibility = v
+	m.folders[id] = f.WithAccess(a)
 	return nil
 }
 func (m *memRepo) DeleteFolder(_ context.Context, id string) error {

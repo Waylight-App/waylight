@@ -151,4 +151,20 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_ff45a7ead80407b2: 'Es gibt bereits 50 Gruppen.',
   // There are already 50 members.
   srv_7396c7b16437339f: 'Es gibt bereits 50 Mitglieder.',
+  // An invitation is valid for 1 to 30 days.
+  srv_7446a4ecf0cb75e6: 'Eine Einladung gilt 1 bis 30 Tage.',
+  // At most 20 invitations can be open at the same time.
+  srv_fb200f2e8942d8e7: 'Es können höchstens 20 Einladungen gleichzeitig offen sein.',
+  // Invite a member or a guest.
+  srv_c9d91e1ff5289f27: 'Lade ein Mitglied oder einen Gast ein.',
+  // The admin password is reset on the server only (see docs/accounts.md).
+  srv_2d855ec17092911d: 'Das Admin-Passwort wird nur auf dem Server zurückgesetzt (siehe docs/accounts.md).',
+  // This account has no password.
+  srv_920db87f11531520: 'Dieses Konto hat kein Passwort.',
+  // This link is not valid (any more). Ask for a new one.
+  srv_54c513952f5013f1: 'Dieser Link ist (nicht mehr) gültig. Lass dir einen neuen geben.',
+  // This name is already used by an account or an open invitation.
+  srv_6330f6a3d5db3d75: 'Dieser Name gehört schon zu einem Konto oder einer offenen Einladung.',
+  // id and token are required
+  srv_a7f0df8ff2599767: 'ID und Token sind erforderlich',
 };

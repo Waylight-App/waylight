@@ -69,6 +69,12 @@ export class LocalAuthGateway implements AuthGateway {
   deleteKiosk = unavailable;
   kioskLogin = unavailable;
   kioskOptions = unavailable;
+  invites = unavailable;
+  createInvite = unavailable;
+  revokeInvite = unavailable;
+  createResetLink = unavailable;
+  inspectLink = unavailable;
+  acceptLink = unavailable;
   apiTokens = unavailable;
   createApiToken = unavailable;
   revokeApiToken = unavailable;

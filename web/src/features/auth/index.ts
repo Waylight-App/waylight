@@ -2,6 +2,7 @@
 export { AuthApi } from './adapter/api/authApi';
 export { AuthUseCases } from './usecase/authUseCases';
 export type { AuthView } from './domain/auth';
+export { accountLinkPath } from './domain/auth';
 export { default as SetupPage } from './ui/SetupPage.svelte';
 export { default as LoginPage } from './ui/LoginPage.svelte';
 export { default as ChangePasswordForm } from './ui/ChangePasswordForm.svelte';
