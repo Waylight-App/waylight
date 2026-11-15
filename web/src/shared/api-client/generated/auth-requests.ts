@@ -73,6 +73,12 @@ export interface GroupRequestDTO {
   accounts: string[];
 }
 /**
+ * PreferencesRequestDTO changes the admin's preferences (ADR 0018).
+ */
+export interface PreferencesRequestDTO {
+  privateByDefault: boolean;
+}
+/**
  * TokenRequestDTO creates an API token; ExpiresInDays 0 means never.
  */
 export interface TokenRequestDTO {

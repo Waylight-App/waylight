@@ -231,6 +231,15 @@ export class AuthUseCases {
     return this.gateway.deleteGroup(id);
   }
 
+  /** Whether the admin's own new entries start private (ADR 0018). */
+  privateByDefault(): Promise<boolean> {
+    return this.gateway.privateByDefault();
+  }
+
+  setPrivateByDefault(on: boolean): Promise<void> {
+    return this.gateway.setPrivateByDefault(on);
+  }
+
   /** Kiosk displays (owner only, #50). */
   kiosks(): Promise<KioskDisplay[]> {
     return this.gateway.kiosks();

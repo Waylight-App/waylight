@@ -58,6 +58,12 @@ type PurgeExpiredSessions interface {
 
 // Output ports.
 
+// PreferenceRepository stores per-account preferences (ADR 0018).
+type PreferenceRepository interface {
+	PrivateByDefault(ctx context.Context, accountID string) (bool, error)
+	SetPrivateByDefault(ctx context.Context, accountID string, on bool) error
+}
+
 // GroupRepository stores groups and who is in them (#294).
 type GroupRepository interface {
 	// List returns all groups ordered by name.

@@ -134,6 +134,12 @@ export interface GroupDTO {
   createdAt: string /* RFC 3339 */;
 }
 /**
+ * PreferencesDTO is GET /api/auth/preferences.
+ */
+export interface PreferencesDTO {
+  privateByDefault: boolean;
+}
+/**
  * TokenDTO describes an API token without its secret.
  */
 export interface TokenDTO {

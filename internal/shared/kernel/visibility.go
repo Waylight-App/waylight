@@ -71,10 +71,10 @@ var ErrNotOwner = NewPublicError(ErrForbidden, "Only the person who created this
 
 // DefaultVisibility is the visibility of a new record created by p. Members
 // start private. The admin keeps today's behaviour, everyone, so a household
-// without members notices no change (ADR 0018, migration step 3); asking the
-// admin to switch to private comes with the first member.
+// without members notices no change, until they choose private for their
+// new records once members exist (ADR 0018, migration step 3).
 func DefaultVisibility(p Principal) Visibility {
-	if p.Role == "member" {
+	if p.Role == "member" || p.PrivateByDefault {
 		return Private
 	}
 	return Everyone

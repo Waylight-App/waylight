@@ -102,7 +102,7 @@ func TestMemberLifecycleAndGroups(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	auth := NewAuthenticate(e.sessions, e.accounts, groupsRepo, e.clock, e.deps.TTL)
+	auth := NewAuthenticate(e.sessions, e.accounts, groupsRepo, nil, e.clock, e.deps.TTL)
 	res, err := auth.Execute(ctx, AuthenticateRequest{SessionToken: session.SessionToken})
 	if err != nil || res.Principal.Role != "member" || res.Principal.AccountID != m.ID || !slices.Equal(res.Principal.Groups, []string{office.ID}) {
 		t.Fatalf("principal %+v %v", res.Principal, err)

@@ -146,13 +146,14 @@ func New(cfg Config, d Deps) (*Module, error) {
 	accounts := gateway.NewAccountRepository(d.DB, d.Cipher)
 	sessions := gateway.NewSessionRepository(d.DB)
 	groups := gateway.NewGroupRepository(d.DB)
+	prefs := gateway.NewPreferenceRepository(d.DB)
 	ttl := usecase.SessionTTL(cfg.SessionTTL)
 	events := usecase.NewRecorder(gateway.NewEventRepository(d.DB), d.Alerts, d.IDs, d.Clock, d.Log)
 	deps := usecase.Deps{
 		Accounts: accounts, Sessions: sessions, Hasher: d.Hasher, Tokens: d.Tokens,
 		Limiter: gateway.NewAttemptLimiter(domain.DefaultLoginThrottle), Clock: d.Clock, TTL: ttl, IDs: d.IDs, OTP: d.OTP,
 		Events: events, Passkeys: gateway.NewPasskeyRepository(d.DB), Challenges: usecase.NewChallenges(),
-		Groups: groups, MembersEnabled: cfg.MembersEnabled, PasswordLoginDisabled: !cfg.SSO.PasswordLogin && (cfg.SSO.OIDC != nil || cfg.SSO.ProxyHeader != ""),
+		Groups: groups, Preferences: prefs, MembersEnabled: cfg.MembersEnabled, PasswordLoginDisabled: !cfg.SSO.PasswordLogin && (cfg.SSO.OIDC != nil || cfg.SSO.ProxyHeader != ""),
 	}
 	if cfg.WebAuthn != nil {
 		deps.WebAuthn = webauthnAdapter{*cfg.WebAuthn}
@@ -165,11 +166,12 @@ func New(cfg Config, d Deps) (*Module, error) {
 		Setup:          usecase.NewSetupAccount(deps, gateway.NewSetupToken(token), observerFunc(cfg.OnAccountCreated)),
 		Login:          usecase.NewLogin(deps),
 		Logout:         usecase.NewLogout(sessions),
-		Authenticate:   usecase.NewAuthenticate(sessions, accounts, groups, d.Clock, ttl),
+		Authenticate:   usecase.NewAuthenticate(sessions, accounts, groups, prefs, d.Clock, ttl),
 		Authorizer:     usecase.NewAuthorizer(d.GuestScope),
 		Guests:         usecase.NewGuests(deps),
 		Members:        usecase.NewMembers(deps),
 		Groups:         usecase.NewGroups(deps),
+		Preferences:    usecase.NewPreferences(deps),
 		Kiosks:         kiosks,
 		APITokens:      usecase.NewAPITokens(deps, gateway.NewTokenRepository(d.DB)),
 		SSO:            newSSO(deps, cfg.SSO),
@@ -255,6 +257,8 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/auth/groups", m.handlers.CreateGroup)
 	r.Protected("PUT /api/auth/groups/{id}", m.handlers.UpdateGroup)
 	r.Protected("DELETE /api/auth/groups/{id}", m.handlers.DeleteGroup)
+	r.Protected("GET /api/auth/preferences", m.handlers.GetPreferences)
+	r.Protected("PUT /api/auth/preferences", m.handlers.SavePreferences)
 	r.Protected("POST /api/auth/sessions/revoke-others", m.handlers.RevokeOtherSessions)
 	r.Protected("DELETE /api/auth/sessions/{id}", m.handlers.RevokeSession)
 }

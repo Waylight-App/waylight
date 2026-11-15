@@ -101,6 +101,21 @@ func TestMemberAccess(t *testing.T) {
 	m.do(http.MethodDelete, "/api/todos/"+ownerTodo["id"].(string), nil, http.StatusForbidden)
 	owner.do(http.MethodDelete, "/api/todos/"+memberTodo["id"].(string), nil, http.StatusNotFound)
 
+	// The admin chooses private for their own new records (ADR 0018,
+	// migration step 3); from the next request on, members no longer see
+	// them, while older shared notes stay visible.
+	var prefs obj
+	owner.json(http.MethodGet, "/api/auth/preferences", nil, http.StatusOK, &prefs)
+	if prefs["privateByDefault"] != false {
+		t.Fatalf("preferences: %v", prefs)
+	}
+	owner.do(http.MethodPut, "/api/auth/preferences", obj{"privateByDefault": true}, http.StatusOK)
+	m.do(http.MethodGet, "/api/auth/preferences", nil, http.StatusForbidden)
+	var diary obj
+	owner.json(http.MethodPost, "/api/notes", obj{"title": "Admin diary", "body": "private now"}, http.StatusCreated, &diary)
+	m.do(http.MethodGet, "/api/notes/"+diary["id"].(string), nil, http.StatusNotFound)
+	m.do(http.MethodGet, "/api/notes/"+ownerNote["id"].(string), nil, http.StatusOK)
+
 	var hits []obj
 	owner.json(http.MethodGet, "/api/notes/search?q=secret", nil, http.StatusOK, &hits)
 	if len(hits) != 0 {
