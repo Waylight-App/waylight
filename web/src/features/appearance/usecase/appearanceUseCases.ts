@@ -1,11 +1,17 @@
 import { t } from '../../../shared/i18n';
 import type { Appearance } from '../domain/appearance';
+import type { BackgroundLibrary, UploadedBackground } from '../domain/backgrounds';
+import { isValidBackground } from '../../../shared/theme/background';
 import { MAX_THEME_BYTES, type ThemeGallery, type ThemeInfo } from '../domain/themes';
 
 /** Output port: appearance backend. */
 export interface AppearanceGateway {
   load(): Promise<Appearance>;
   save(a: Appearance): Promise<Appearance>;
+  setBackground(value: string): Promise<Appearance>;
+  backgrounds(): Promise<BackgroundLibrary>;
+  uploadBackground(file: Blob, name: string): Promise<UploadedBackground>;
+  deleteBackground(id: string): Promise<void>;
   gallery(): Promise<ThemeGallery>;
   applyTheme(id: string): Promise<Appearance>;
   restoreStyle(): Promise<Appearance>;
@@ -29,6 +35,27 @@ export class AppearanceUseCases {
       accentColor: a.accentColor.trim(),
       backgroundImage: a.backgroundImage.trim(),
     });
+  }
+
+  /** Sets only the global background (#277). */
+  async setBackground(value: string): Promise<Appearance> {
+    if (!isValidBackground(value)) throw new Error(t('appearance.background_invalid'));
+    return this.gateway.setBackground(value.trim());
+  }
+
+  /** Pictures uploaded as backgrounds, newest first. */
+  backgrounds(): Promise<BackgroundLibrary> {
+    return this.gateway.backgrounds();
+  }
+
+  /** Uploads a picture; the server scales it and strips its metadata. */
+  async uploadBackground(file: File, maxBytes: number): Promise<UploadedBackground> {
+    if (file.size > maxBytes) throw new Error(t('appearance.background_too_large'));
+    return this.gateway.uploadBackground(file, file.name);
+  }
+
+  deleteBackground(id: string): Promise<void> {
+    return this.gateway.deleteBackground(id);
   }
 
   /** The theme gallery (#111). */

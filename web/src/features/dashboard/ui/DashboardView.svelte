@@ -1,6 +1,7 @@
 <script lang="ts">
   import { EditHistory, type EditCommand, layoutCommand } from '../domain/history';
   import { t } from '../../../shared/i18n';
+  import { backgroundCss } from '../../../shared/theme/background';
   import type { Snippet } from 'svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import Modal from '../../../shared/ui/Modal.svelte';
@@ -54,6 +55,12 @@
     onedit?: () => void;
     /** Finishes edit mode (the Done button of the action bar, #271). */
     ondone?: () => void;
+    /**
+     * Opens the background picker for a tab (#277). It lives outside this
+     * feature because it also changes the global background; without it
+     * the tab background is a plain URL prompt.
+     */
+    onbackground?: (tab: Tab) => void;
   }
   let {
     uc,
@@ -68,6 +75,7 @@
     onstate,
     onedit,
     ondone,
+    onbackground,
   }: Props = $props();
 
   const ACTIVE_TAB_KEY = 'trisse-home.activeTab';
@@ -198,6 +206,17 @@
       );
     });
     loaded = true;
+  }
+
+  function openBackground(tab: Tab) {
+    if (onbackground) onbackground(tab);
+    else dialog = { kind: 'background', tab };
+  }
+
+  /** Shows a tab background saved by the picker outside this view (#277). */
+  export function showTabBackground(tabId: string, background: string) {
+    const tab = tabs.find((x) => x.id === tabId);
+    if (tab) replaceTab({ ...tab, background });
   }
 
   function replaceTab(tab: Tab) {
@@ -356,9 +375,9 @@
 
   // A tab background overrides the global one (see base.css).
   $effect(() => {
-    const bg = active?.background ?? '';
+    const bg = backgroundCss(active?.background ?? '');
     const root = document.documentElement.style;
-    if (bg) root.setProperty('--tab-background-image', `url("${bg.replace(/["\\]/g, '')}")`);
+    if (bg) root.setProperty('--tab-background-image', bg);
     else root.removeProperty('--tab-background-image');
     return () => root.removeProperty('--tab-background-image');
   });
@@ -430,7 +449,7 @@
         onrename={(tab) => (dialog = { kind: 'rename-tab', tab })}
         ondelete={deleteTab}
         onmove={moveTab}
-        onbackground={(tab) => (dialog = { kind: 'background', tab })}
+        onbackground={(tab) => openBackground(tab)}
         onrules={(tab) => (dialog = { kind: 'rules', tab })}
         ontemplate={(tab) => (dialog = { kind: 'template', tab })}
       />
@@ -497,6 +516,12 @@
         <button class="btn btn-primary add" type="button" onclick={() => (dialog = { kind: 'add-widget' })}
           >{t('dashboard.add_widget')}</button
         >
+        {#if active}
+          {@const tab = active}
+          <button class="btn" type="button" onclick={() => openBackground(tab)}
+            >{t('dashboard.background_button')}</button
+          >
+        {/if}
         <button class="btn" type="button" disabled={!canUndo} onclick={undo} aria-keyshortcuts="Control+Z"
           >↶ {t('dashboard.undo')}</button
         >

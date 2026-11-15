@@ -1,3 +1,4 @@
+import { isValidBackground } from '../../../shared/theme/background';
 import type { WidgetCategory } from './catalog';
 import { t } from '../../../shared/i18n';
 import type { LayoutItem } from './layout';
@@ -112,10 +113,9 @@ export interface TabTemplate {
   kinds: string[];
 }
 
-/** Validates a background URL (empty is allowed) and returns an error or null. */
-export function validateBackground(url: string): string | null {
-  const v = url.trim();
-  return v === '' || /^https?:\/\/\S+$/i.test(v) ? null : t('dashboard.invalid_background');
+/** Validates a tab background (see shared/theme/background) and returns an error or null. */
+export function validateBackground(value: string): string | null {
+  return isValidBackground(value) ? null : t('dashboard.invalid_background');
 }
 
 /** Describes a widget kind that can be added to a tab. */

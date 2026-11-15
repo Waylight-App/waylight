@@ -70,7 +70,7 @@ paths:
     parameters: [{ $ref: "#/components/parameters/id" }]
     put:
       tags: [dashboard]
-      summary: Set the background image of a tab (http(s) URL; empty = global background)
+      summary: "Set the background of a tab: an http(s) image URL, an uploaded picture (/api/appearance/backgrounds/<id>) or builtin:<name>; empty = the background of all tabs"
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { background: { type: string } } } } } }
       responses: { "200": { description: OK }, "404": { $ref: "#/components/responses/NotFound" }, "422": { description: Invalid URL } }

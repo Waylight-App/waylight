@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"net/url"
 	"strings"
 	"unicode/utf8"
 
@@ -40,9 +39,6 @@ func (t Tab) WithRules(r []TabRule) Tab {
 	return t
 }
 
-// maxBackgroundLength limits the background image URL.
-const maxBackgroundLength = 2048
-
 // NewTab creates a tab after validating its name.
 func NewTab(id, name string, position int) (Tab, error) {
 	t := Tab{id: id, position: position}
@@ -60,16 +56,14 @@ func RestoreTab(id, name string, position int, background string) Tab {
 // Background returns the tab's background image URL ("" = global one).
 func (t Tab) Background() string { return t.background }
 
-// SetBackground sets an http(s) image URL; empty uses the global background.
+// SetBackground sets the tab's background (see kernel.ParseBackground);
+// empty uses the global background.
 func (t *Tab) SetBackground(raw string) error {
-	raw = strings.TrimSpace(raw)
-	if raw != "" {
-		u, err := url.Parse(raw)
-		if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" || len(raw) > maxBackgroundLength {
-			return kernel.NewValidationError("background", "The background image must be an http(s) URL.")
-		}
+	bg, err := kernel.ParseBackground("background", raw)
+	if err != nil {
+		return err
 	}
-	t.background = raw
+	t.background = bg
 	return nil
 }
 

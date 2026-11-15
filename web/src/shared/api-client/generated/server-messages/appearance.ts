@@ -2,11 +2,14 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_5d3afd2bbd181bb2: "A background picture must be at most 25 MB.",
+  srv_1d1fc935d2c877da: "At most 30 background pictures can be stored. Delete one first.",
   srv_910076e320aa7e64: "At most 50 imported themes are supported.",
   srv_23a5dd47efa15b4e: "Built-in themes cannot be deleted.",
   srv_fb18e524af59aa63: "Invalid value for {token}.",
   srv_1c9c8a99006c73fe: "The accent color must look like #3b6ef5.",
   srv_cd1893bbd9659e1f: "The author must be at most 60 characters long.",
+  srv_d972a27017a770c5: "The background picture does not exist (any more).",
   srv_b410fbcb84d6e168: "The custom CSS must be at most 64 KiB.",
   srv_68677939789f0976: "The file is not a trisse-home theme (JSON).",
   srv_d55a4312396d903f: "The language must be en, de or empty (browser).",
