@@ -51,7 +51,16 @@ example.
 
 6. **Module**, `internal/modules/quotes/module.go`. Embed `modules.Base`,
    build gateway, use cases and handlers in `New(...)` and implement `Name`,
-   `Migrations`, `RegisterRoutes`, `Jobs` and `WidgetKinds` as needed.
+   `DataKind`, and `Migrations`, `RegisterRoutes`, `Jobs` and `WidgetKinds`
+   as needed. `DataKind` is required and says who owns the module's data
+   ([ADR 0018](adr/0018-data-ownership.md)): `InstanceData` for what admins
+   manage for everyone, `PersonalSettings` for one row per account,
+   `PersonalContent` for records people create themselves. A
+   personal-content module adds `owner_id` and `visibility` to its tables and
+   filters every query with `sqlutil.VisibleTo` (reads) or `sqlutil.OwnedBy`
+   (changes); `internal/archtest` refuses a query that forgets it. Add the
+   module to the list in `cmd/server/datakind_test.go` and the table in the
+   ADR.
    Register everything that needs a session through `r.Protected`. For
    sample data, implement `modules.Seeder` with an idempotent use case.
 

@@ -40,6 +40,9 @@ func (m *Module) Alert(ctx context.Context, a kernel.Alert) { m.uc.Alert(ctx, a)
 // Name implements modules.Module.
 func (m *Module) Name() string { return "timeline" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
+
 // Migrations implements modules.Module.
 func (m *Module) Migrations() fs.FS { return gateway.Migrations() }
 

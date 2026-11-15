@@ -59,6 +59,9 @@ func New(cfg Config, db *sql.DB, sink kernel.ObservationSink, clock kernel.Clock
 // Name implements modules.Module.
 func (m *Module) Name() string { return "system" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
+
 // WidgetKinds implements modules.Module.
 func (m *Module) WidgetKinds() []string { return []string{"system"} }
 
