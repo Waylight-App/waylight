@@ -128,6 +128,15 @@ Settings → Import reads it on the other installation. To move everything
 including history, copy the database and `SECRET_KEY` as described in
 *Moving from Docker* in the [native install guide](native-install.md).
 
+## Tested so far
+
+The image and the display mode are built and checked in CI, but have not yet
+been measured on real hardware: idle memory and CPU on a Pi Zero 2 W and a
+Pi 4, and the kiosk display on a Pi 4/5 with HDMI and the official touch
+display. If you run trisse-home on a Pi, a short report in
+[#361](https://github.com/itadori26/trisse-home/issues/361) helps; the numbers
+will be added here.
+
 ## Troubleshooting
 
 | Problem | What to do |
