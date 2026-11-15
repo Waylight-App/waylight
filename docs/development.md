@@ -104,3 +104,22 @@ the navigation of the future documentation site. Preview it with
 `pip install zensical && zensical serve`; `zensical build --strict` fails on
 broken links. Write them in plain
 English, for a reader with a task in mind.
+
+## Publishing the Firefox add-on
+
+The release workflow submits the browser extension to addons.mozilla.org (AMO)
+as a listed add-on (#290), with the release version as add-on version and the
+store texts from `extension/store/amo-metadata.json`. It only runs once two
+repository secrets exist:
+
+1. Sign in at [addons.mozilla.org](https://addons.mozilla.org/developers/) with
+   the account that should own the listing and accept the developer agreement.
+2. Under *Tools → Manage API Keys* generate a key pair.
+3. Store them in the repository as `AMO_JWT_ISSUER` (the JWT issuer) and
+   `AMO_JWT_SECRET` (the JWT secret): *Settings → Secrets and variables →
+   Actions*.
+
+The next release tag then uploads the add-on for review. Mozilla reviews
+listed add-ons before they appear; the workflow does not wait for that. The
+privacy statement of the listing is [extension-privacy.md](extension-privacy.md).
+Chrome Web Store and Edge Add-ons are not set up yet.
