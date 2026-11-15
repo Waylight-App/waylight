@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"testing"
+	"time"
 
 	"trisse-home/internal/modules/gamedeals/domain"
 	"trisse-home/internal/shared/kernel"
@@ -61,5 +62,55 @@ func TestDealsPerAccount(t *testing.T) {
 	}
 	if steam.calls[annaID] != before+1 || steam.calls[adminID] < 2 {
 		t.Fatalf("the job must refresh every known wishlist: %v", steam.calls)
+	}
+}
+
+// movingClock is a clock the test can move forward.
+type movingClock struct{ t time.Time }
+
+func (c *movingClock) Now() time.Time { return c.t }
+
+// TestRefreshForgetsUnusedEntries: after an account switches its Steam ID,
+// the job stops fetching the old one once nobody asked for it for a day
+// (#391); entries still in use keep being refreshed.
+func TestRefreshForgetsUnusedEntries(t *testing.T) {
+	const adminID, oldID, newID = "76561198000000001", "76561198000000002", "76561198000000003"
+	repo := accountRepo{kernel.SystemAccountID: {SteamID: adminID, Country: "DE"}}
+	steam := &wishlistByID{calls: map[string]int{}}
+	clock := &movingClock{t: now}
+	uc := NewGameDeals(Deps{Repo: repo, Wishlist: steam, Free: &fakeEpic{}, Clock: clock})
+	anna := kernel.WithPrincipal(context.Background(), kernel.Principal{AccountID: "anna", Role: "member"})
+
+	if _, err := uc.SaveSettings(anna, domain.Settings{SteamID: oldID, Country: "DE"}); err != nil {
+		t.Fatal(err)
+	}
+	clock.t = clock.t.Add(time.Hour)
+	if _, err := uc.SaveSettings(anna, domain.Settings{SteamID: newID, Country: "DE"}); err != nil {
+		t.Fatal(err)
+	}
+
+	// Within a day the old entry is still refreshed.
+	if err := uc.Refresh(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if steam.calls[oldID] != 3 { // save check, save load, refresh
+		t.Fatalf("old Steam ID within a day: %v", steam.calls)
+	}
+
+	// Anna keeps using the new one; a day later the old one is gone.
+	clock.t = clock.t.Add(StaleAfter)
+	if _, err := uc.Overview(anna); err != nil {
+		t.Fatal(err)
+	}
+	clock.t = clock.t.Add(time.Minute)
+	before := steam.calls[newID]
+	if err := uc.Refresh(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if steam.calls[oldID] != 3 {
+		t.Fatalf("the old Steam ID is still fetched: %v", steam.calls)
+	}
+	if steam.calls[newID] != before+1 {
+		t.Fatalf("the Steam ID in use must still be refreshed: %v", steam.calls)
 	}
 }

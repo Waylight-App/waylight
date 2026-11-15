@@ -1,6 +1,6 @@
 <script lang="ts">
   import { t } from '../i18n';
-  import { groupVisibility, type ShareGroup, type Visibility } from '../sharing/sharing';
+  import { groupVisibility, isUnknownGroup, type ShareGroup, type Visibility } from '../sharing/sharing';
 
   /** Props of the "who can see this" choice of a record (ADR 0018, #301). */
   interface Props {
@@ -16,6 +16,9 @@
   ><span>{t('sharing.label')}</span>
   <select class="input" {value} {disabled} onchange={(e) => onchange(e.currentTarget.value)}>
     <option value="private">{t('sharing.private')}</option>
+    {#if isUnknownGroup(value, groups)}
+      <option {value}>{t('sharing.unknown_group')}</option>
+    {/if}
     {#each groups as g (g.id)}
       <option value={groupVisibility(g.id)}>{t('sharing.group', { name: g.name })}</option>
     {/each}

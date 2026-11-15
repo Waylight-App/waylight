@@ -6,5 +6,5 @@ export const section = defineSettingsSection({
   module: 'birthdays',
   group: 'content',
   load: () => import('../../features/birthdays').then((m) => m.BirthdaysSettings),
-  props: (c) => ({ birthdays: c.birthdays }),
+  props: (c) => ({ birthdays: c.birthdays, admin: c.auth.admin }),
 });

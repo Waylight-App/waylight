@@ -20,6 +20,9 @@
   let confirmation = $state('');
   let newPassword = $state<Record<string, string>>({});
   let groupName = $state('');
+  // The group being renamed and its draft name (#388); one at a time.
+  let renaming = $state<string | null>(null);
+  let renameDraft = $state('');
   let privateByDefault = $state(false);
 
   // Groups can hold members and guests; both lists feed the checkboxes.
@@ -76,6 +79,26 @@
     });
   }
 
+  function startRename(g: Group) {
+    renaming = g.id;
+    renameDraft = g.name;
+  }
+
+  function rename(e: SubmitEvent, g: Group) {
+    e.preventDefault();
+    run(async () => {
+      await auth.updateGroup(g, renameDraft, g.accounts);
+      renaming = null;
+    });
+  }
+
+  // Group names of a member, in the order of the group list (#389).
+  const groupNames = (ids: string[]) =>
+    groups
+      .filter((g) => ids.includes(g.id))
+      .map((g) => g.name)
+      .join(', ');
+
   const toggled = (list: string[], id: string, on: boolean) =>
     on ? [...list, id] : list.filter((x) => x !== id);
 </script>
@@ -107,6 +130,9 @@
     <li>
       <strong>{m.name}</strong>
       {#if m.disabled}<span class="muted">({t('auth.guest_disabled')})</span>{/if}
+      {#if groupNames(m.groups)}<div class="muted small">
+          {t('auth.member_groups', { groups: groupNames(m.groups) })}
+        </div>{/if}
       <div class="row">
         <button class="btn" type="button" onclick={() => run(() => auth.updateMember(m, !m.disabled))}
           >{m.disabled ? t('auth.guest_enable') : t('auth.guest_disable')}</button
@@ -181,7 +207,21 @@
 <ul class="accounts">
   {#each groups as g (g.id)}
     <li>
-      <strong>{g.name}</strong>
+      {#if renaming === g.id}
+        <form class="row" onsubmit={(e) => rename(e, g)}>
+          <input
+            class="input"
+            bind:value={renameDraft}
+            aria-label={t('auth.group_rename_label', { name: g.name })}
+            maxlength="40"
+          />
+          <button class="btn btn-primary" type="submit">{t('common.save')}</button>
+          <button class="btn" type="button" onclick={() => (renaming = null)}>{t('common.cancel')}</button>
+        </form>
+      {:else}
+        <strong>{g.name}</strong>
+        <button class="btn" type="button" onclick={() => startRename(g)}>{t('auth.group_rename')}</button>
+      {/if}
       <fieldset>
         <legend class="muted">{t('auth.group_accounts')}</legend>
         {#each accounts as a (a.id)}
@@ -248,6 +288,9 @@
   .row .input {
     flex: 1;
     min-width: 10rem;
+  }
+  .small {
+    font-size: 0.85em;
   }
   .new {
     margin-top: var(--space-3);
