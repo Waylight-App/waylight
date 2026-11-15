@@ -1,8 +1,9 @@
 <script lang="ts">
   import { errorMessage } from '../../../shared/api-client/http';
-  import { t } from '../../../shared/i18n';
-  import type { Group, Guest, Member } from '../domain/auth';
+  import { intlLocale, t } from '../../../shared/i18n';
+  import { accountLink, type Group, type Guest, type Member } from '../domain/auth';
   import type { AuthUseCases } from '../usecase/authUseCases';
+  import AccountLinkBox from './AccountLinkBox.svelte';
 
   /** Props of the member and group management section (admins, #294). */
   interface Props {
@@ -15,6 +16,22 @@
   let guests = $state<Guest[]>([]);
   let groups = $state<Group[]>([]);
   let error = $state('');
+  // A reset link that was just created, shown once (#296).
+  let resetLink = $state<{ name: string; url: string; expires: string } | null>(null);
+
+  async function createResetLink(account: { id: string; name: string }) {
+    error = '';
+    try {
+      const r = await auth.createResetLink(account.id);
+      resetLink = {
+        name: account.name,
+        url: accountLink(location.origin, r.token),
+        expires: r.expiresAt.toLocaleString(intlLocale(), { dateStyle: 'medium', timeStyle: 'short' }),
+      };
+    } catch (err) {
+      error = errorMessage(err);
+    }
+  }
   let name = $state('');
   let password = $state('');
   let confirmation = $state('');
@@ -105,6 +122,14 @@
 
 <p class="muted">{t('auth.members_hint')}</p>
 {#if !available}<p class="notice" role="status">{t('auth.members_unavailable')}</p>{/if}
+{#if resetLink}
+  <AccountLinkBox
+    title={t('auth.reset_link_for', { name: resetLink.name })}
+    url={resetLink.url}
+    expires={resetLink.expires}
+    ondone={() => (resetLink = null)}
+  />
+{/if}
 {#if error}<p class="error" role="alert">{error}</p>{/if}
 
 <!-- Asked once members exist (ADR 0018, migration step 3): until now the
@@ -154,6 +179,9 @@
               await auth.updateMember(m, m.disabled, newPassword[m.id] ?? '');
               newPassword[m.id] = '';
             })}>{t('auth.guest_set_password')}</button
+        >
+        <button class="btn" type="button" onclick={() => createResetLink(m)}
+          >{t('auth.reset_link_create')}</button
         >
         <button
           class="btn btn-danger"

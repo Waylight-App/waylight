@@ -30,6 +30,11 @@ const (
 	EventTokenUsed         EventType = "token_used"
 	EventPasskeyAdded      EventType = "passkey_added"
 	EventPasskeyRemoved    EventType = "passkey_removed"
+	EventInviteCreated     EventType = "invite_created"
+	EventInviteRevoked     EventType = "invite_revoked"
+	EventInviteAccepted    EventType = "invite_accepted"
+	EventResetLinkCreated  EventType = "reset_link_created"
+	EventPasswordReset     EventType = "password_reset"
 	EventExternal          EventType = "external"
 )
 

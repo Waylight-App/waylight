@@ -367,3 +367,54 @@ func Kiosks(list []usecase.KioskView) []KioskDTO {
 	}
 	return out
 }
+
+// InviteDTO is an open invitation in GET /api/auth/invites (#296).
+type InviteDTO struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Role      string    `json:"role"`
+	Tabs      []string  `json:"tabs"`
+	CreatedAt time.Time `json:"createdAt"`
+	ExpiresAt time.Time `json:"expiresAt"`
+}
+
+// InviteCreatedDTO answers POST /api/auth/invites; the token is shown once.
+type InviteCreatedDTO struct {
+	Invite InviteDTO `json:"invite"`
+	Token  string    `json:"token"`
+}
+
+// ResetLinkDTO answers POST /api/auth/accounts/{id}/reset-link.
+type ResetLinkDTO struct {
+	Token     string    `json:"token"`
+	ExpiresAt time.Time `json:"expiresAt"`
+}
+
+// LinkInfoDTO says what a link does: "invite" or "reset", for which name.
+type LinkInfoDTO struct {
+	Purpose string `json:"purpose"`
+	Name    string `json:"name"`
+}
+
+// Invite maps an invitation.
+func Invite(v usecase.InviteView) InviteDTO {
+	tabs := v.Tabs
+	if tabs == nil {
+		tabs = []string{}
+	}
+	return InviteDTO{ID: v.ID, Name: v.Name, Role: v.Role, Tabs: tabs, CreatedAt: v.CreatedAt, ExpiresAt: v.ExpiresAt}
+}
+
+// Invites maps the open invitations.
+func Invites(list []usecase.InviteView) []InviteDTO {
+	out := make([]InviteDTO, 0, len(list))
+	for _, v := range list {
+		out = append(out, Invite(v))
+	}
+	return out
+}
+
+// LinkInfo maps what a link does.
+func LinkInfo(i usecase.LinkInfo) LinkInfoDTO {
+	return LinkInfoDTO{Purpose: string(i.Purpose), Name: i.Name}
+}
