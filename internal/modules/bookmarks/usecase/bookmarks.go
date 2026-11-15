@@ -7,10 +7,23 @@ import (
 	"strings"
 
 	"trisse-home/internal/modules/bookmarks/domain"
+	"trisse-home/internal/shared/kernel"
 )
 
-func toView(b domain.Bookmark) BookmarkView {
-	return BookmarkView{ID: b.ID(), FolderID: b.FolderID(), Title: b.Title(), URL: b.URL(), Description: b.Description(), Tags: b.Tags(), CreatedAt: b.CreatedAt()}
+func toView(ctx context.Context, b domain.Bookmark) BookmarkView {
+	vis, mine := accessOf(ctx, b.Access())
+	return BookmarkView{ID: b.ID(), FolderID: b.FolderID(), Title: b.Title(), URL: b.URL(), Description: b.Description(), Tags: b.Tags(), CreatedAt: b.CreatedAt(),
+		Visibility: vis, Mine: mine}
+}
+
+// accessOf maps owner and visibility for a view. A record without an owner
+// was just created by the viewer and has the default visibility.
+func accessOf(ctx context.Context, a kernel.Access) (string, bool) {
+	p := kernel.PrincipalFrom(ctx)
+	if a.Owner == "" {
+		return string(kernel.DefaultVisibility(p)), true
+	}
+	return string(a.Visibility), a.Mine(p)
 }
 
 func (in Input) toDomain() domain.BookmarkInput {
@@ -66,13 +79,13 @@ func (uc *listBookmarks) Execute(ctx context.Context, f Filter) (ListResponse, e
 			perTag[t]++
 		}
 		if matches(b, f) && (!f.Broken || statuses[b.ID()].State == domain.LinkBroken) {
-			v := toView(b)
+			v := toView(ctx, b)
 			v.Link, v.HasIcon = statuses[b.ID()], icons[b.ID()]
 			res.Bookmarks = append(res.Bookmarks, v)
 		}
 	}
 	for _, fo := range folders {
-		res.Folders = append(res.Folders, FolderView{ID: fo.ID(), Name: fo.Name(), Position: fo.Position(), Count: perFolder[fo.ID()]})
+		res.Folders = append(res.Folders, withCount(folderView(ctx, fo), perFolder[fo.ID()]))
 	}
 	for name, n := range perTag {
 		res.Tags = append(res.Tags, TagView{Name: name, Count: n})
@@ -98,12 +111,12 @@ func (uc *createBookmark) Execute(ctx context.Context, in Input) (BookmarkView, 
 	if err := uc.d.Repo.SaveBookmark(ctx, b); err != nil {
 		return BookmarkView{}, fmt.Errorf("save bookmark: %w", err)
 	}
-	v := toView(b)
+	v := toView(ctx, b)
 	// Title and favicon are fetched right away when enabled (#72); a page
 	// that cannot be read leaves the bookmark as entered.
 	if s, err := uc.d.settings(ctx); err == nil && uc.d.canEnrich(s) {
 		if enriched, hasIcon, err := uc.d.enrich(ctx, b); err == nil {
-			v = toView(enriched)
+			v = toView(ctx, enriched)
 			v.HasIcon = hasIcon
 		}
 	}
@@ -130,7 +143,7 @@ func (uc *updateBookmark) Execute(ctx context.Context, id string, in Input) (Boo
 	if err := uc.d.Repo.SaveBookmark(ctx, b); err != nil {
 		return BookmarkView{}, fmt.Errorf("save bookmark: %w", err)
 	}
-	return toView(b), nil
+	return toView(ctx, b), nil
 }
 
 type deleteBookmark struct{ d Deps }

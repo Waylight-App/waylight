@@ -218,7 +218,7 @@ func (uc *getIcon) Execute(ctx context.Context, id string) (domain.Icon, error) 
 
 // viewOne returns a bookmark with its link status and icon flag.
 func (d Deps) viewOne(ctx context.Context, b domain.Bookmark) (BookmarkView, error) {
-	v := toView(b)
+	v := toView(ctx, b)
 	if d.Links != nil {
 		statuses, err := d.Links.ListLinkStatuses(ctx)
 		if err != nil {

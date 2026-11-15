@@ -19,6 +19,10 @@ type BookmarkDTO struct {
 	Link LinkDTO `json:"link"`
 	// HasIcon reports whether a favicon is stored (GET /api/bookmarks/{id}/icon).
 	HasIcon bool `json:"hasIcon"`
+	// Visibility is "private", "everyone" or "group:<id>"; Mine is false
+	// for a bookmark shared with the viewer (ADR 0018, #298).
+	Visibility string `json:"visibility"`
+	Mine       bool   `json:"mine"`
 }
 
 // LinkDTO is a link check result: state "" (not checked), "ok",
@@ -45,6 +49,10 @@ type FolderDTO struct {
 	Name     string `json:"name"`
 	Position int    `json:"position"`
 	Count    int    `json:"count"`
+	// Visibility and Mine: a folder shared with a group is its link
+	// directory; only the owner changes it (#298).
+	Visibility string `json:"visibility"`
+	Mine       bool   `json:"mine"`
 }
 
 // TagDTO is a tag with its usage count.
@@ -67,7 +75,7 @@ func Bookmark(v usecase.BookmarkView) BookmarkDTO {
 		tags = []string{}
 	}
 	dto := BookmarkDTO{ID: v.ID, FolderID: v.FolderID, Title: v.Title, URL: v.URL, Description: v.Description, Tags: tags, CreatedAt: v.CreatedAt,
-		HasIcon: v.HasIcon, Link: LinkDTO{State: string(v.Link.State), Code: v.Link.Code, Target: v.Link.Target}}
+		HasIcon: v.HasIcon, Visibility: v.Visibility, Mine: v.Mine, Link: LinkDTO{State: string(v.Link.State), Code: v.Link.Code, Target: v.Link.Target}}
 	if !v.Link.CheckedAt.IsZero() {
 		dto.Link.CheckedAt = v.Link.CheckedAt.UTC().Format(time.RFC3339)
 	}

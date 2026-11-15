@@ -15,8 +15,12 @@ import type {
   MemberDTO,
   PreferencesDTO,
   MembersDTO,
+  InviteCreatedDTO,
+  InviteDTO,
   KioskCreatedDTO,
   KioskDTO,
+  LinkInfoDTO,
+  ResetLinkDTO,
   KioskLinkDTO,
   KioskOptionsDTO,
   PasskeysDTO,
@@ -39,8 +43,11 @@ import type {
   SSOSecondFactorDTO,
   TokenRequestDTO,
   TwoFactorCodeDTO,
+  AcceptLinkDTO,
+  InviteRequestDTO,
   KioskLoginDTO,
   KioskRequestDTO,
+  LinkTokenDTO,
 } from '../../../../shared/api-client/generated/auth-requests';
 import type { ApiToken } from '../../domain/apiToken';
 import type {
@@ -54,9 +61,12 @@ import type {
   AuthStatus,
   Group,
   Guest,
+  Invite,
+  InviteInput,
   KioskDisplay,
   KioskInput,
   KioskOptions,
+  LinkInfo,
   Member,
   MemberList,
   Session,
@@ -69,6 +79,20 @@ import type { AuthGateway } from '../../usecase/ports';
 const toSession = (dto: SessionDTO): Session => ({
   csrfToken: dto.csrfToken,
   expiresAt: new Date(dto.expiresAt),
+});
+
+const toInvite = (d: InviteDTO): Invite => ({
+  id: d.id,
+  name: d.name,
+  role: d.role === 'member' ? 'member' : 'guest',
+  tabs: d.tabs ?? [],
+  createdAt: new Date(d.createdAt),
+  expiresAt: new Date(d.expiresAt),
+});
+
+const toLinkInfo = (d: LinkInfoDTO): LinkInfo => ({
+  purpose: d.purpose === 'reset' ? 'reset' : 'invite',
+  name: d.name,
 });
 
 const toKiosk = (d: KioskDTO): KioskDisplay => ({
@@ -236,6 +260,32 @@ export class AuthApi implements AuthGateway {
     await this.http.put<PreferencesDTO>('/api/auth/preferences', body);
   }
 
+  async invites(): Promise<Invite[]> {
+    return (await this.http.get<InviteDTO[]>('/api/auth/invites')).map(toInvite);
+  }
+  async createInvite(input: InviteInput): Promise<{ invite: Invite; token: string }> {
+    const body: InviteRequestDTO = { ...input };
+    const r = await this.http.post<InviteCreatedDTO>('/api/auth/invites', body);
+    return { invite: toInvite(r.invite), token: r.token };
+  }
+  revokeInvite(id: string): Promise<void> {
+    return this.http.delete(`/api/auth/invites/${encodeURIComponent(id)}`);
+  }
+  async createResetLink(accountId: string): Promise<{ token: string; expiresAt: Date }> {
+    const r = await this.http.post<ResetLinkDTO>(
+      `/api/auth/accounts/${encodeURIComponent(accountId)}/reset-link`,
+      {},
+    );
+    return { token: r.token, expiresAt: new Date(r.expiresAt) };
+  }
+  async inspectLink(token: string): Promise<LinkInfo> {
+    const body: LinkTokenDTO = { token };
+    return toLinkInfo(await this.http.post<LinkInfoDTO>('/api/auth/link/inspect', body));
+  }
+  async acceptLink(token: string, password: string): Promise<LinkInfo> {
+    const body: AcceptLinkDTO = { token, password };
+    return toLinkInfo(await this.http.post<LinkInfoDTO>('/api/auth/link/accept', body));
+  }
   async kiosks(): Promise<KioskDisplay[]> {
     return (await this.http.get<KioskDTO[]>('/api/auth/kiosks')).map(toKiosk);
   }

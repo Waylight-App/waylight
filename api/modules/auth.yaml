@@ -70,6 +70,59 @@ paths:
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/KioskOptions" } } } }
         "404": { description: Not a kiosk session }
+  /api/auth/invites:
+    get:
+      tags: [auth]
+      summary: Open invitations (admin only, #296); expired ones are dropped
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Invite" } } } } }
+    post:
+      tags: [auth]
+      summary: Invite a member or a guest; the link token is returned once and stored hashed
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [name, role, validDays], properties: { name: { type: string }, role: { type: string, enum: [member, guest] }, tabs: { type: array, items: { type: string } }, validDays: { type: integer, minimum: 1, maximum: 30 } } } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { type: object, properties: { invite: { $ref: "#/components/schemas/Invite" }, token: { type: string } } } } } }
+        "409": { description: Name taken, members unavailable or at most 20 open invitations }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/auth/invites/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+    delete:
+      tags: [auth]
+      summary: Revoke an invitation
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Revoked }
+  /api/auth/accounts/{id}/reset-link:
+    parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+    post:
+      tags: [auth]
+      summary: Create a password reset link for a member or guest (admin only); replaces earlier ones, valid 24 hours. The admin's own password is reset on the server only.
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { type: object, properties: { token: { type: string }, expiresAt: { type: string, format: date-time } } } } } }
+        "403": { description: Not an admin, or the account is the admin }
+  /api/auth/link/inspect:
+    post:
+      tags: [auth]
+      summary: What an invitation or reset link is for (public, rate limited like the login); the token comes from the URL fragment
+      security: []
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [token], properties: { token: { type: string } } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/LinkInfo" } } } }
+        "401": { description: Unknown, used or expired link }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+  /api/auth/link/accept:
+    post:
+      tags: [auth]
+      summary: Set the password of an invited or reset account and use up the link (public, rate limited); does not sign in
+      security: []
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [token, password], properties: { token: { type: string }, password: { type: string } } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/LinkInfo" } } } }
+        "401": { description: Unknown, used or expired link }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
   /api/auth/kiosks:
     get:
       tags: [auth]
@@ -152,6 +205,20 @@ schemas:
           name: { type: string, description: 2-32 lowercase letters, digits, dots, dashes or underscores }
           tabs: { type: array, items: { type: string }, minItems: 1 }
           disabled: { type: boolean }
+  Invite:
+    type: object
+    properties:
+      id: { type: string }
+      name: { type: string }
+      role: { type: string, enum: [member, guest] }
+      tabs: { type: array, items: { type: string } }
+      createdAt: { type: string, format: date-time }
+      expiresAt: { type: string, format: date-time }
+  LinkInfo:
+    type: object
+    properties:
+      purpose: { type: string, enum: [invite, reset] }
+      name: { type: string }
   KioskDisplay:
     allOf:
       - $ref: "#/components/schemas/KioskOptions"

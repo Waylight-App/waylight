@@ -1,6 +1,6 @@
 <script lang="ts">
   import { loadLanguage, t } from '../shared/i18n';
-  import type { AuthView } from '../features/auth';
+  import { accountLinkPath, type AuthView } from '../features/auth';
   import { errorMessage } from '../shared/api-client/http';
   import { canStartOffline, clearOfflineData, rememberSignedIn } from '../shared/pwa';
   import { createContainer, type Container } from './container';
@@ -14,6 +14,14 @@
   let { localContainer }: { localContainer?: Container } = $props();
 
   let view = $state<AuthView | 'loading'>('loading');
+  // An invitation or reset link (#296): like a kiosk link, the token is in
+  // the fragment; it is kept in memory and removed from the address bar, so
+  // it does not stay in the history.
+  let linkToken = $state('');
+  if (location.pathname === accountLinkPath && location.hash.length > 1) {
+    linkToken = decodeURIComponent(location.hash.slice(1));
+    history.replaceState(null, '', '/');
+  }
   let loadError = $state('');
 
   // The container is built once; a changed prop would not rebuild it.
@@ -47,6 +55,17 @@
 
 {#if loadError}
   <p class="error" role="alert">{t('app.could_not_reach_the_server', { loadError: loadError })}</p>
+{:else if linkToken && view !== 'loading'}
+  {#await import('../features/auth/ui/AccountLinkPage.svelte') then { default: AccountLinkPage }}
+    <AccountLinkPage
+      auth={container.auth}
+      token={linkToken}
+      ondone={() => {
+        linkToken = '';
+        refresh();
+      }}
+    />
+  {/await}
 {:else if view === 'setup'}
   {#await import('../features/auth/ui/SetupPage.svelte') then { default: SetupPage }}
     <SetupPage auth={container.auth} ondone={refresh} />

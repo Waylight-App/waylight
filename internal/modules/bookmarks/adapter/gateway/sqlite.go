@@ -34,6 +34,7 @@ type bookmarkRow struct {
 	id, title, url, description, createdAt string
 	folderID                               sql.NullString
 	tags                                   sql.NullString
+	ownerID, visibility                    string
 }
 
 func (r bookmarkRow) toDomain() (domain.Bookmark, error) {
@@ -45,16 +46,18 @@ func (r bookmarkRow) toDomain() (domain.Bookmark, error) {
 	if r.tags.Valid && r.tags.String != "" {
 		tags = strings.Split(r.tags.String, ",")
 	}
-	return domain.RestoreBookmark(r.id, r.folderID.String, r.title, r.url, r.description, tags, created), nil
+	return domain.RestoreBookmark(r.id, r.folderID.String, r.title, r.url, r.description, tags, created).
+		WithAccess(kernel.Access{Owner: r.ownerID, Visibility: kernel.Visibility(r.visibility)}), nil
 }
 
 const bookmarkQuery = `SELECT b.id, b.folder_id, b.title, b.url, b.description, b.created_at,
-	(SELECT group_concat(tag, ',') FROM (SELECT tag FROM bookmark_tags t WHERE t.bookmark_id = b.id ORDER BY tag))
+	(SELECT group_concat(tag, ',') FROM (SELECT tag FROM bookmark_tags t WHERE t.bookmark_id = b.id ORDER BY tag)),
+	b.owner_id, b.visibility
 	FROM bookmarks b`
 
 func scanBookmark(s interface{ Scan(...any) error }) (domain.Bookmark, error) {
 	var r bookmarkRow
-	if err := s.Scan(&r.id, &r.folderID, &r.title, &r.url, &r.description, &r.createdAt, &r.tags); err != nil {
+	if err := s.Scan(&r.id, &r.folderID, &r.title, &r.url, &r.description, &r.createdAt, &r.tags, &r.ownerID, &r.visibility); err != nil {
 		return domain.Bookmark{}, err
 	}
 	return r.toDomain()
@@ -131,6 +134,11 @@ func (r *Repository) SaveBookmark(ctx context.Context, b domain.Bookmark) error 
 		}
 		if err != nil {
 			return fmt.Errorf("check folder: %w", err)
+		}
+		// A filed bookmark is seen by whoever may see its folder (#298).
+		if _, err := tx.ExecContext(ctx, `UPDATE bookmarks SET visibility = (SELECT visibility FROM bookmark_folders WHERE id = ?) WHERE id = ?`,
+			b.FolderID(), b.ID()); err != nil {
+			return fmt.Errorf("follow folder visibility: %w", err)
 		}
 	}
 	if _, err := tx.ExecContext(ctx, `DELETE FROM bookmark_tags WHERE bookmark_id = ?`, b.ID()); err != nil {
@@ -269,36 +277,66 @@ func (r *Repository) DeleteBookmark(ctx context.Context, id string) error {
 func (r *Repository) ListFolders(ctx context.Context) ([]domain.Folder, error) {
 	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
 	//nolint:gosec // the condition comes from sqlutil with bound arguments
-	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position FROM bookmark_folders WHERE `+cond+` ORDER BY position, name`, args...)
+	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position, owner_id, visibility FROM bookmark_folders WHERE `+cond+` ORDER BY position, name`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query folders: %w", err)
 	}
 	defer rows.Close()
 	var out []domain.Folder
 	for rows.Next() {
-		var id, name string
+		var id, name, owner, vis string
 		var pos int
-		if err := rows.Scan(&id, &name, &pos); err != nil {
+		if err := rows.Scan(&id, &name, &pos, &owner, &vis); err != nil {
 			return nil, fmt.Errorf("scan folder: %w", err)
 		}
-		out = append(out, domain.RestoreFolder(id, name, pos))
+		out = append(out, domain.RestoreFolder(id, name, pos).WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(vis)}))
 	}
 	return out, rows.Err()
 }
 
 // GetFolder returns one folder.
 func (r *Repository) GetFolder(ctx context.Context, id string) (domain.Folder, error) {
-	var name string
+	var name, owner, vis string
 	var pos int
 	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
-	err := r.db.QueryRowContext(ctx, `SELECT name, position FROM bookmark_folders WHERE id = ? AND `+cond, append([]any{id}, args...)...).Scan(&name, &pos)
+	err := r.db.QueryRowContext(ctx, `SELECT name, position, owner_id, visibility FROM bookmark_folders WHERE id = ? AND `+cond, append([]any{id}, args...)...).Scan(&name, &pos, &owner, &vis)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Folder{}, domain.ErrFolderNotFound
 	}
 	if err != nil {
 		return domain.Folder{}, fmt.Errorf("select folder: %w", err)
 	}
-	return domain.RestoreFolder(id, name, pos), nil
+	return domain.RestoreFolder(id, name, pos).WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(vis)}), nil
+}
+
+// SetFolderVisibility implements usecase.Repository: the owner shares a
+// folder, and the bookmarks in it follow in the same transaction (#298).
+func (r *Repository) SetFolderVisibility(ctx context.Context, id string, v kernel.Visibility) error {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := tx.ExecContext(ctx, `UPDATE bookmark_folders SET visibility = ? WHERE id = ? AND `+owned, append([]any{string(v), id}, args...)...)
+	if err != nil {
+		return fmt.Errorf("update folder visibility: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		// End the transaction first: SQLite has one writer, and GetFolder
+		// reads on its own connection.
+		_ = tx.Rollback()
+		if _, err := r.GetFolder(ctx, id); err != nil {
+			return err
+		}
+		return kernel.ErrNotOwner
+	}
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	if _, err := tx.ExecContext(ctx, `UPDATE bookmarks SET visibility = ? WHERE folder_id = ? AND `+owned, append([]any{string(v), id}, args...)...); err != nil {
+		return fmt.Errorf("update bookmark visibility: %w", err)
+	}
+	return tx.Commit()
 }
 
 // SaveFolder inserts a folder owned by the principal or updates one it owns.

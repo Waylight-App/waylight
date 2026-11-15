@@ -37,6 +37,10 @@ type BookmarkView struct {
 	Link domain.LinkStatus
 	// HasIcon reports whether a favicon is stored.
 	HasIcon bool
+	// Visibility and Mine tell whether the bookmark is shared and whether
+	// the viewer may change it (ADR 0018, #298).
+	Visibility string
+	Mine       bool
 }
 
 // SettingsView are the outbound features of the module (#72).
@@ -51,6 +55,10 @@ type FolderView struct {
 	Name     string
 	Position int
 	Count    int
+	// Visibility is "private", "everyone" or "group:<id>"; Mine is false
+	// for a folder shared with the viewer by someone else (#298).
+	Visibility string
+	Mine       bool
 }
 
 // TagView is a tag with its usage count.
