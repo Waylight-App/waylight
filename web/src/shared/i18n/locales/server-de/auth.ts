@@ -137,7 +137,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // A group with this name already exists.
   srv_ed9c5c61fef0f9b0: 'Es gibt schon eine Gruppe mit diesem Namen.',
   // Members are not available yet: personal content is not separated per account in this version.
-  srv_381a488cb15b35ce: 'Mitglieder sind noch nicht verfügbar: Persönliche Inhalte werden in dieser Version noch nicht pro Konto getrennt.',
+  srv_381a488cb15b35ce:
+    'Mitglieder sind noch nicht verfügbar: Persönliche Inhalte werden in dieser Version noch nicht pro Konto getrennt.',
   // Members cannot change this; ask an admin.
   srv_d8f679283dba6727: 'Mitglieder können das nicht ändern; bitte einen Admin fragen.',
   // The group does not exist.
