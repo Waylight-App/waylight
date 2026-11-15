@@ -1001,6 +1001,8 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.token_name_required': 'Bitte einen Namen eingeben.',
   'auth.token_scope_required': 'Bitte für mindestens ein Modul Zugriff wählen.',
   'auth.event.guest_changed': 'Gastkonto geändert',
+  'auth.event.member_changed': 'Mitgliedskonto geändert',
+  'auth.event.group_changed': 'Gruppe geändert',
   'auth.event.token_created': 'API-Token erstellt',
   'auth.event.token_revoked': 'API-Token widerrufen',
   'auth.event.token_used': 'API-Token verwendet',

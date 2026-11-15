@@ -64,6 +64,34 @@ Two details are worth knowing:
   explicitly allowed. [ADR 0012](adr/0012-owner-and-guest-roles.md) has the
   details.
 
+## Members and groups (in preparation)
+
+Members are full accounts for a second adult in the household or a colleague
+in a small office: their own tabs and their own notes, to-dos and lists, with
+the instance settings left to the admin (today the owner). Groups name a set
+of members and guests, so a record can later be shared with "Office" or
+"Family" instead of everyone. [ADR 0018](adr/0018-data-ownership.md)
+describes the model.
+
+The accounts, groups and the server-side rules are in place, but **members
+cannot be created yet**: the modules do not separate personal content per
+account so far, and a member would see and change your notes. They are
+switched on once notes, to-dos and the other personal modules store an owner
+per record (#294). Until then the server answers a new member with an
+explanation instead of creating it.
+
+What a member may do, enforced for every request like the guest rules:
+
+- read and change modules with personal content (notes, to-dos, bookmarks,
+  lists) and their own personal settings (theme, search shortcuts);
+- read instance data such as services or the weather, but not settings pages
+  of instance modules, which can name hosts and keys;
+- nothing in account management, backups, the export, notification channels,
+  Docker or the system pages. A module without a declared kind stays closed
+  for changes by members.
+
+Account and group changes are written to the security log.
+
 ## Kiosk displays
 
 A kiosk display shows tabs on a device that hangs on the wall or stands in

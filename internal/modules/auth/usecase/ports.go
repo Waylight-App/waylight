@@ -58,7 +58,23 @@ type PurgeExpiredSessions interface {
 
 // Output ports.
 
-// AccountRepository persists the owner and guest accounts.
+// GroupRepository stores groups and who is in them (#294).
+type GroupRepository interface {
+	// List returns all groups ordered by name.
+	List(ctx context.Context) ([]domain.Group, error)
+	// Get returns domain.ErrGroupNotFound for an unknown group.
+	Get(ctx context.Context, id string) (domain.Group, error)
+	// Create and Update return domain.ErrGroupNameTaken for a duplicate name.
+	Create(ctx context.Context, g domain.Group) error
+	Update(ctx context.Context, g domain.Group) error
+	Delete(ctx context.Context, id string) error
+	// GroupsOf returns the IDs of the groups an account is in.
+	GroupsOf(ctx context.Context, accountID string) ([]string, error)
+	// RemoveAccount takes a deleted account out of every group.
+	RemoveAccount(ctx context.Context, accountID string) error
+}
+
+// AccountRepository persists the owner, guest, kiosk and member accounts.
 type AccountRepository interface {
 	// Get returns domain.ErrAccountNotFound for a missing owner and
 	// domain.ErrGuestNotFound for an unknown guest.

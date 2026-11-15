@@ -977,6 +977,8 @@ export const en = {
   'auth.token_name_required': 'Enter a name.',
   'auth.token_scope_required': 'Choose access for at least one module.',
   'auth.event.guest_changed': 'Guest account changed',
+  'auth.event.member_changed': 'Member account changed',
+  'auth.event.group_changed': 'Group changed',
   'auth.event.token_created': 'API token created',
   'auth.event.token_revoked': 'API token revoked',
   'auth.event.token_used': 'API token used',

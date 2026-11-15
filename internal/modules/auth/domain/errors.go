@@ -22,8 +22,19 @@ var (
 	ErrGuestNameTaken  = kernel.NewPublicError(kernel.ErrConflict, "A guest with this name already exists.")
 	ErrTooManyGuests   = kernel.NewPublicError(kernel.ErrInvalid, "There are already 20 guests.")
 	ErrAccountDisabled = kernel.NewPublicError(kernel.ErrForbidden, "This account is disabled.")
-	ErrOwnerOnly       = kernel.NewPublicError(kernel.ErrForbidden, "Only the owner can do this.")
+	ErrOwnerOnly       = kernel.NewPublicError(kernel.ErrForbidden, "Only an admin can do this.")
 	ErrReadOnly        = kernel.NewPublicError(kernel.ErrForbidden, "Guests can only view this dashboard.")
+)
+
+// Errors of members and groups (#294).
+var (
+	ErrMemberNotFound     = kernel.NewPublicError(kernel.ErrNotFound, "The member does not exist.")
+	ErrTooManyMembers     = kernel.NewPublicError(kernel.ErrInvalid, "There are already 50 members.")
+	ErrMembersUnavailable = kernel.NewPublicError(kernel.ErrConflict, "Members are not available yet: personal content is not separated per account in this version.")
+	ErrMemberNotAllowed   = kernel.NewPublicError(kernel.ErrForbidden, "Members cannot change this; ask an admin.")
+	ErrGroupNotFound      = kernel.NewPublicError(kernel.ErrNotFound, "The group does not exist.")
+	ErrGroupNameTaken     = kernel.NewPublicError(kernel.ErrConflict, "A group with this name already exists.")
+	ErrTooManyGroups      = kernel.NewPublicError(kernel.ErrInvalid, "There are already 50 groups.")
 )
 
 // Errors of API tokens.
