@@ -1,3 +1,4 @@
+import type { ShareGroup, Visibility } from '../../../shared/sharing/sharing';
 import {
   type DiscoveredList,
   type Reminder,
@@ -26,6 +27,10 @@ export interface TodosGateway {
   ): Promise<Todo>;
   delete(id: string): Promise<void>;
   clearCompleted(): Promise<number>;
+  /** Changes who else may see a to-do of the built-in list (#301). */
+  share(id: string, visibility: Visibility): Promise<Todo>;
+  /** Groups the signed-in account may share with. */
+  shareGroups(): Promise<ShareGroup[]>;
 }
 
 /** Application logic of the to-do feature. */
@@ -34,6 +39,14 @@ export class TodosUseCases {
 
   list(includeDone: boolean): Promise<Todo[]> {
     return this.gateway.list(includeDone);
+  }
+
+  share(id: string, visibility: Visibility): Promise<Todo> {
+    return this.gateway.share(id, visibility);
+  }
+
+  shareGroups(): Promise<ShareGroup[]> {
+    return this.gateway.shareGroups();
   }
 
   /**

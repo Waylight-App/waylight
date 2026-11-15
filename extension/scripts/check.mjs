@@ -17,6 +17,13 @@ for (const p of manifest.permissions ?? []) if (!allowed.has(p)) fail(`permissio
 for (const key of ['host_permissions', 'optional_host_permissions', 'content_scripts', 'web_accessible_resources']) {
   if (manifest[key]) fail(`${key} is not allowed: the extension only opens the configured address`);
 }
+// Firefox requires new add-ons to declare what they transmit (#290). Saving a
+// page sends its URL and title to the user's own server, so the honest
+// declaration is browsingActivity, never "none".
+const dcp = manifest.browser_specific_settings?.gecko?.data_collection_permissions;
+if (!dcp || !Array.isArray(dcp.required) || !dcp.required.includes('browsingActivity')) {
+  fail('browser_specific_settings.gecko.data_collection_permissions must declare browsingActivity');
+}
 const referenced = [
   manifest.chrome_url_overrides?.newtab,
   manifest.options_ui?.page,

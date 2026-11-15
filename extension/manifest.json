@@ -9,5 +9,11 @@
   "action": { "default_title": "Save page to trisse-home", "default_icon": { "128": "icons/icon-192.png" } },
   "background": { "service_worker": "src/background.js", "scripts": ["src/background.js"], "type": "module" },
   "permissions": ["storage", "contextMenus", "activeTab"],
-  "browser_specific_settings": { "gecko": { "id": "trisse-home@extension", "strict_min_version": "128.0" } }
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "trisse-home@extension",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": { "required": ["browsingActivity"] }
+    }
+  }
 }

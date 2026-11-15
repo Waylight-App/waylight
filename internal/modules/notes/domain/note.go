@@ -27,6 +27,9 @@ type Note struct {
 	updatedAt time.Time
 	// version counts the stored changes, starting at 1 (#80).
 	version int
+	// access is the owner and visibility (ADR 0018); zero for a note that
+	// has not been stored yet.
+	access kernel.Access
 }
 
 // ErrVersionConflict is returned when the note was changed since the
@@ -55,6 +58,15 @@ func (n Note) WithVersion(v int) Note {
 
 // Version is the number of stored changes (#80).
 func (n Note) Version() int { return n.version }
+
+// WithAccess returns n with owner and visibility.
+func (n Note) WithAccess(a kernel.Access) Note {
+	n.access = a
+	return n
+}
+
+// Access returns owner and visibility.
+func (n Note) Access() kernel.Access { return n.access }
 
 // CheckVersion fails with ErrVersionConflict when the client edited another
 // version than the stored one; 0 means no check.

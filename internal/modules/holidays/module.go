@@ -39,6 +39,9 @@ func New(db *sql.DB, client *http.Client, clock kernel.Clock, loc *time.Location
 // Name implements modules.Module.
 func (m *Module) Name() string { return "holidays" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
+
 // Migrations implements modules.Module.
 func (m *Module) Migrations() fs.FS { return gateway.Migrations() }
 

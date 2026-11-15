@@ -88,6 +88,11 @@ func (uc *saveSettings) Execute(ctx context.Context, v SettingsView) (SettingsVi
 	if uc.d.Settings == nil {
 		return SettingsView{}, errors.New("settings are not available")
 	}
+	// Fetching icons and checking links sends requests to the internet for
+	// every account's bookmarks, so it is an instance decision (ADR 0018).
+	if !kernel.PrincipalFrom(ctx).IsAdmin() {
+		return SettingsView{}, kernel.ErrAdminOnly
+	}
 	if err := uc.d.Settings.SaveSettings(ctx, domain.Settings(v)); err != nil {
 		return SettingsView{}, fmt.Errorf("save settings: %w", err)
 	}

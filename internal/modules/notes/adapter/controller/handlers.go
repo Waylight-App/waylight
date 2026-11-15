@@ -20,6 +20,8 @@ type UseCases struct {
 	Revisions usecase.ListRevisions
 	Revision  usecase.GetRevision
 	Restore   usecase.RestoreRevision
+	// Share changes the visibility (ADR 0018, #301).
+	Share usecase.ShareNote
 }
 
 // Handlers serves the notes endpoints.
@@ -120,6 +122,21 @@ func (h *Handlers) Restore(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpapi.WriteJSON(w, http.StatusOK, presenter.Note(res))
+}
+
+// Share handles PUT /api/notes/{id}/visibility.
+func (h *Handlers) Share(w http.ResponseWriter, r *http.Request) {
+	var dto VisibilityDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	v, err := h.uc.Share.Execute(r.Context(), r.PathValue("id"), dto.Visibility)
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Note(v))
 }
 
 // Delete handles DELETE /api/notes/{id}.

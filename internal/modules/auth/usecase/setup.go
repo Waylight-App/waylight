@@ -28,6 +28,14 @@ type Deps struct {
 	Passkeys   PasskeyRepository
 	WebAuthn   WebAuthnVerifier
 	Challenges *Challenges
+	// Groups enables groups (#294); nil disables them.
+	Groups GroupRepository
+	// Preferences stores per-account preferences; nil disables them.
+	Preferences PreferenceRepository
+	// MembersEnabled allows creating member accounts. It stays false until
+	// the personal-content modules filter by owner (ADR 0018), because a
+	// member could otherwise read and change everyone's notes.
+	MembersEnabled bool
 }
 
 func (d Deps) issuer() sessionIssuer {

@@ -27,6 +27,9 @@ func New(client *http.Client, apiURL string, clock kernel.Clock) *Module {
 // Name implements modules.Module.
 func (m *Module) Name() string { return "transit" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
+
 // WidgetKinds implements modules.Module.
 func (m *Module) WidgetKinds() []string { return []string{"transit"} }
 

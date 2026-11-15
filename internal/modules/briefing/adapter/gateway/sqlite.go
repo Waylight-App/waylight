@@ -17,6 +17,7 @@ import (
 
 	"trisse-home/internal/modules/briefing/domain"
 	"trisse-home/internal/modules/briefing/usecase"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -50,8 +51,12 @@ func (r *Repository) Load(ctx context.Context) (usecase.Settings, bool, error) {
 	var minute int
 	var lat, lon float64
 	var last *string
-	err := r.db.QueryRowContext(ctx, `SELECT layout, push_on, push_minute, push_days, skip_empty, lat, lon, last_sent
-		FROM briefing_settings WHERE id = 1`).Scan(&layout, &on, &minute, &days, &skip, &lat, &lon, &last)
+	var from string
+	// The own briefing, or the admin's sections and location (ADR 0018).
+	account := kernel.PrincipalFrom(ctx).SettingsAccount()
+	err := r.db.QueryRowContext(ctx, `SELECT account_id, layout, push_on, push_minute, push_days, skip_empty, lat, lon, last_sent
+		FROM briefing_settings WHERE account_id IN (?, ?) ORDER BY account_id = ? DESC LIMIT 1`, account, kernel.SystemAccountID, account).
+		Scan(&from, &layout, &on, &minute, &days, &skip, &lat, &lon, &last)
 	if errors.Is(err, sql.ErrNoRows) {
 		return usecase.Settings{}, false, nil
 	}
@@ -72,6 +77,10 @@ func (r *Repository) Load(ctx context.Context) (usecase.Settings, bool, error) {
 	if s.LastSent, err = sqlutil.ParseNullableTime(last); err != nil {
 		return usecase.Settings{}, false, err
 	}
+	if from != account {
+		// Borrowed from the admin: the push and its state stay the admin's.
+		s.Push.Enabled, s.LastSent = false, time.Time{}
+	}
 	return s, true, nil
 }
 
@@ -86,12 +95,12 @@ func (r *Repository) Save(ctx context.Context, s usecase.Settings) error {
 	for _, d := range s.Push.Days {
 		days = append(days, strconv.Itoa(int(d)))
 	}
-	_, err := r.db.ExecContext(ctx, `INSERT INTO briefing_settings (id, layout, push_on, push_minute, push_days, skip_empty, lat, lon, last_sent)
-		VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)
-		ON CONFLICT (id) DO UPDATE SET layout = excluded.layout, push_on = excluded.push_on, push_minute = excluded.push_minute,
+	_, err := r.db.ExecContext(ctx, `INSERT INTO briefing_settings (account_id, layout, push_on, push_minute, push_days, skip_empty, lat, lon, last_sent)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT (account_id) DO UPDATE SET layout = excluded.layout, push_on = excluded.push_on, push_minute = excluded.push_minute,
 			push_days = excluded.push_days, skip_empty = excluded.skip_empty, lat = excluded.lat, lon = excluded.lon,
 			last_sent = excluded.last_sent`,
-		string(layout), s.Push.Enabled, s.Push.Minute, strings.Join(days, ","), s.Push.SkipEmpty, s.Lat, s.Lon,
+		kernel.PrincipalFrom(ctx).SettingsAccount(), string(layout), s.Push.Enabled, s.Push.Minute, strings.Join(days, ","), s.Push.SkipEmpty, s.Lat, s.Lon,
 		sqlutil.FormatNullableTime(s.LastSent))
 	if err != nil {
 		return fmt.Errorf("upsert settings: %w", err)

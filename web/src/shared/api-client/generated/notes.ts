@@ -17,6 +17,14 @@ export interface NoteDTO {
    * Version counts the stored changes; send it back with an update (#80).
    */
   version: number /* int */;
+  /**
+   * Visibility is "private", "everyone" or "group:<id>" (ADR 0018).
+   */
+  visibility: string;
+  /**
+   * Mine is true when the viewer owns the note and may change it.
+   */
+  mine: boolean;
 }
 /**
  * SegmentDTO is a piece of highlighted search output; hit marks a match.

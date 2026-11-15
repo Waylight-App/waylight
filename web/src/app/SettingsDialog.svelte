@@ -43,6 +43,8 @@
   interface Props {
     container: Container;
     modules: Set<string>;
+    /** Who owns each module's data (ADR 0018); members see personal ones. */
+    dataKinds?: Record<string, string>;
     appearance: Appearance;
     onappearance: (a: Appearance) => void;
     /** Restarts the guided tour; omitted when the onboarding module is disabled. */
@@ -51,7 +53,16 @@
     section?: string;
     onclose: () => void;
   }
-  let { container, modules, appearance, onappearance, onrestarttour, section, onclose }: Props = $props();
+  let {
+    container,
+    modules,
+    dataKinds = {},
+    appearance,
+    onappearance,
+    onrestarttour,
+    section,
+    onclose,
+  }: Props = $props();
 
   type Section = { id: string; label: MessageKey; module?: string; group?: SettingsGroup; homelab?: boolean };
   // The sections built into the dialog, with their topic (#261). Features
@@ -93,6 +104,7 @@
     { id: 'account', label: 'settings.section.account', group: 'account' },
     { id: 'tokens', label: 'settings.section.tokens', group: 'account' },
     { id: 'guests', label: 'settings.section.guests', group: 'account' },
+    { id: 'members', label: 'settings.section.members', group: 'account' },
     { id: 'kiosks', label: 'settings.section.kiosks', group: 'account' },
     { id: 'security-log', label: 'settings.section.security_log', group: 'account' },
     { id: 'about', label: 'settings.section.about', module: 'system', group: 'about' },
@@ -100,11 +112,26 @@
   const sections: Section[] = [...ownSections, ...registeredSections];
   /** Guests only manage their own account (ADR 0012). */
   const guestSections = new Set(['account']);
+  /**
+   * Members (#294) manage their account and the settings of modules with
+   * personal data; instance settings stay with admins. Parcels hold the
+   * instance's carrier key and the admin's mailbox.
+   */
+  const memberSections = new Set(['account']);
+  const memberHidden = new Set(['parcels', 'transfer']);
+  const personal = (module: string) =>
+    dataKinds[module] === 'personal-content' || dataKinds[module] === 'personal-settings';
+  const allowed = (s: Section) => {
+    if (container.auth.guest) return guestSections.has(s.id);
+    if (container.auth.member)
+      return s.module ? personal(s.module) && !memberHidden.has(s.id) : memberSections.has(s.id);
+    return true;
+  };
   const visible = $derived(
     sections.filter(
       (s) =>
         (!s.module || modules.has(s.module)) &&
-        (!container.auth.guest || guestSections.has(s.id)) &&
+        allowed(s) &&
         // The "everyday" profile hides home-server and network settings (#281).
         !(s.homelab && appearance.profile === 'everyday'),
     ),
@@ -185,7 +212,7 @@
         <FeedsManager rss={container.rss} />
       {:else if current === 'folders'}
         <FoldersManager bookmarks={container.bookmarks} />
-        <BookmarkLinkSettings bookmarks={container.bookmarks} />
+        {#if container.auth.admin}<BookmarkLinkSettings bookmarks={container.bookmarks} />{/if}
       {:else if current === 'calendar'}
         <CalendarSettings calendar={container.calendar} />
       {:else if current === 'transfer'}
@@ -197,6 +224,10 @@
         <ApiTokensSettings auth={container.auth} {modules} />
       {:else if current === 'guests'}
         <GuestsSettings auth={container.auth} tabs={guestTabs} />
+      {:else if current === 'members'}
+        {#await import('../features/auth/ui/MembersSettings.svelte') then { default: MembersSettings }}
+          <MembersSettings auth={container.auth} />
+        {/await}
       {:else if current === 'kiosks'}
         {#await import('../features/auth/ui/KiosksSettings.svelte') then { default: KiosksSettings }}
           <KiosksSettings auth={container.auth} tabs={guestTabs} />
@@ -204,7 +235,10 @@
       {:else if current === 'timeline'}
         <TimelineSettings timeline={container.timeline} />
       {:else if current === 'briefing'}
-        <BriefingSettings briefing={container.briefing} canPush={modules.has('notifications')} />
+        <BriefingSettings
+          briefing={container.briefing}
+          canPush={modules.has('notifications') && container.auth.admin}
+        />
       {:else if current === 'forecast'}
         <ForecastSettings system={container.system} />
       {:else if current === 'about'}

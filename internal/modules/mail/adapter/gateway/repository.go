@@ -12,6 +12,8 @@ import (
 	"io/fs"
 
 	"trisse-home/internal/modules/mail/domain"
+	"trisse-home/internal/shared/kernel"
+	"trisse-home/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql
@@ -54,9 +56,18 @@ func (r *Repository) scan(row interface{ Scan(...any) error }) (domain.Account, 
 	return a, nil
 }
 
+// mine is the condition for the mailboxes of the account whose settings
+// apply (ADR 0018): an account's own, and the admin's for guests, kiosk
+// displays and background work. Members get no fallback to the admin's.
+func mine(ctx context.Context) (string, []any) {
+	return sqlutil.OwnedBy(kernel.PrincipalFor(kernel.PrincipalFrom(ctx).SettingsAccount()), "")
+}
+
 // List implements usecase.AccountRepository (oldest first).
 func (r *Repository) List(ctx context.Context) ([]domain.Account, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM mail_accounts ORDER BY created_at, name`)
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM mail_accounts WHERE `+cond+` ORDER BY created_at, name`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("select accounts: %w", err)
 	}
@@ -74,7 +85,8 @@ func (r *Repository) List(ctx context.Context) ([]domain.Account, error) {
 
 // Get implements usecase.AccountRepository.
 func (r *Repository) Get(ctx context.Context, id string) (domain.Account, error) {
-	a, err := r.scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM mail_accounts WHERE id = ?`, id))
+	cond, args := mine(ctx)
+	a, err := r.scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM mail_accounts WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Account{}, domain.ErrAccountNotFound
 	}
@@ -87,10 +99,14 @@ func (r *Repository) Save(ctx context.Context, a domain.Account) error {
 	if err != nil {
 		return fmt.Errorf("encrypt password: %w", err)
 	}
-	_, err = r.db.ExecContext(ctx, `INSERT INTO mail_accounts (id, name, host, port, username, password_encrypted, folder, webmail_url)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET name = excluded.name, host = excluded.host, port = excluded.port,
-		username = excluded.username, password_encrypted = excluded.password_encrypted, folder = excluded.folder, webmail_url = excluded.webmail_url`,
-		a.ID, a.Name, a.Host, a.Port, a.Username, enc, a.Folder, a.WebmailURL)
+	account := kernel.PrincipalFrom(ctx).SettingsAccount()
+	owned, ownedArgs := sqlutil.OwnedBy(kernel.PrincipalFor(account), "mail_accounts")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	_, err = r.db.ExecContext(ctx, `INSERT INTO mail_accounts (id, name, host, port, username, password_encrypted, folder, webmail_url, owner_id)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET name = excluded.name, host = excluded.host, port = excluded.port,
+		username = excluded.username, password_encrypted = excluded.password_encrypted, folder = excluded.folder, webmail_url = excluded.webmail_url
+		WHERE `+owned,
+		append([]any{a.ID, a.Name, a.Host, a.Port, a.Username, enc, a.Folder, a.WebmailURL, account}, ownedArgs...)...)
 	if err != nil {
 		return fmt.Errorf("upsert account: %w", err)
 	}
@@ -99,7 +115,9 @@ func (r *Repository) Save(ctx context.Context, a domain.Account) error {
 
 // Delete implements usecase.AccountRepository.
 func (r *Repository) Delete(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM mail_accounts WHERE id = ?`, id); err != nil {
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM mail_accounts WHERE id = ? AND `+cond, append([]any{id}, args...)...); err != nil {
 		return fmt.Errorf("delete account: %w", err)
 	}
 	return nil

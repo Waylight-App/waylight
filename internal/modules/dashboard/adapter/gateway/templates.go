@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"trisse-home/internal/modules/dashboard/domain"
+	"trisse-home/internal/shared/kernel"
 )
 
 type templateWidgetRow struct {
@@ -92,8 +93,9 @@ func (r *Repository) DeleteTemplate(ctx context.Context, id string) error {
 // CreateTabWithWidgets implements usecase.TemplateRepository atomically.
 func (r *Repository) CreateTabWithWidgets(ctx context.Context, t domain.Tab, widgets []domain.Widget) error {
 	return r.inTx(ctx, func(tx *sql.Tx) error {
-		if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background) VALUES (?, ?, ?, ?)`,
-			t.ID(), t.Name(), t.Position(), t.Background()); err != nil {
+		// The new tab is private and belongs to whoever applies the template.
+		if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?)`,
+			t.ID(), t.Name(), t.Position(), t.Background(), kernel.PrincipalFrom(ctx).AccountID, string(kernel.Private)); err != nil {
 			return fmt.Errorf("insert tab: %w", err)
 		}
 		for _, w := range widgets {

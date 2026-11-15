@@ -12,6 +12,7 @@ import (
 	"io/fs"
 
 	"trisse-home/internal/modules/parcels/domain"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -67,7 +68,11 @@ func scan(sc interface{ Scan(...any) error }) (domain.Parcel, error) {
 
 // List implements usecase.Repository.
 func (r *Repository) List(ctx context.Context) ([]domain.Parcel, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM parcels ORDER BY created_at`)
+	// Only the parcels the principal may see (ADR 0018); the tracking job
+	// runs as the system and refreshes all.
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM parcels WHERE `+cond+` ORDER BY created_at`, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query parcels: %w", err)
 	}
@@ -85,7 +90,8 @@ func (r *Repository) List(ctx context.Context) ([]domain.Parcel, error) {
 
 // Get implements usecase.Repository.
 func (r *Repository) Get(ctx context.Context, id string) (domain.Parcel, error) {
-	p, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM parcels WHERE id = ?`, id))
+	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
+	p, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM parcels WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Parcel{}, domain.ErrParcelNotFound
 	}
@@ -95,26 +101,43 @@ func (r *Repository) Get(ctx context.Context, id string) (domain.Parcel, error) 
 	return p, nil
 }
 
-// Save implements usecase.Repository (upsert).
+// Save implements usecase.Repository (upsert). New parcels belong to the
+// principal; the owner and the tracking job (the system) update one.
 func (r *Repository) Save(ctx context.Context, p domain.Parcel) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO parcels (`+columns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	owner := kernel.PrincipalFrom(ctx)
+	owned, args := sqlutil.OwnedBy(owner, "parcels")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `INSERT INTO parcels (`+columns+`, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT (id) DO UPDATE SET label = excluded.label, status_code = excluded.status_code,
 			status_description = excluded.status_description, status_location = excluded.status_location,
 			status_at = excluded.status_at, estimated_delivery = excluded.estimated_delivery,
-			checked_at = excluded.checked_at, error = excluded.error`,
-		p.ID, p.TrackingNumber, string(p.Carrier), p.Label, string(p.Status.Code), p.Status.Description, p.Status.Location,
-		sqlutil.FormatNullableTime(p.Status.At), sqlutil.FormatNullableTime(p.EstimatedDelivery), sqlutil.FormatNullableTime(p.CheckedAt),
-		p.Error, sqlutil.FormatTime(p.CreatedAt), p.Discovered)
+			checked_at = excluded.checked_at, error = excluded.error
+		WHERE `+owned,
+		append([]any{p.ID, p.TrackingNumber, string(p.Carrier), p.Label, string(p.Status.Code), p.Status.Description, p.Status.Location,
+			sqlutil.FormatNullableTime(p.Status.At), sqlutil.FormatNullableTime(p.EstimatedDelivery), sqlutil.FormatNullableTime(p.CheckedAt),
+			p.Error, sqlutil.FormatTime(p.CreatedAt), p.Discovered, owner.AccountID, string(kernel.DefaultVisibility(owner))}, args...)...)
 	if err != nil {
 		return fmt.Errorf("upsert parcel: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return kernel.ErrNotOwner
 	}
 	return nil
 }
 
-// Delete implements usecase.Repository.
+// Delete implements usecase.Repository for the parcel's owner; a visible
+// parcel of someone else returns kernel.ErrNotOwner.
 func (r *Repository) Delete(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM parcels WHERE id = ?`, id); err != nil {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `DELETE FROM parcels WHERE id = ? AND `+owned, append([]any{id}, args...)...)
+	if err != nil {
 		return fmt.Errorf("delete parcel: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		if _, err := r.Get(ctx, id); err == nil {
+			return kernel.ErrNotOwner
+		}
 	}
 	return nil
 }

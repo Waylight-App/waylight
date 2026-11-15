@@ -39,6 +39,9 @@ type Module interface {
 	Jobs() []Job
 	// WidgetKinds lists the dashboard widget kinds the module backs.
 	WidgetKinds() []string
+	// DataKind says who owns the module's data (ADR 0018). Base has no
+	// default on purpose: every module has to decide.
+	DataKind() DataKind
 }
 
 // Seeder is implemented by modules that can fill a fresh installation with
@@ -128,6 +131,10 @@ func (r *Registry) WidgetKinds() []string {
 func (r *Registry) Handler(staticKinds []string) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		kinds := append(slices.Clone(staticKinds), r.WidgetKinds()...)
-		httpapi.WriteJSON(w, http.StatusOK, InfoResponse{Modules: r.Names(), WidgetKinds: kinds})
+		dataKinds := map[string]string{}
+		for _, m := range r.modules {
+			dataKinds[m.Name()] = string(m.DataKind())
+		}
+		httpapi.WriteJSON(w, http.StatusOK, InfoResponse{Modules: r.Names(), WidgetKinds: kinds, DataKinds: dataKinds})
 	}
 }

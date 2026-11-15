@@ -1,0 +1,79 @@
+package gateway
+
+import (
+	"context"
+	"io/fs"
+	"testing"
+	"testing/fstest"
+
+	"trisse-home/internal/modules/appearance/domain"
+	"trisse-home/internal/platform/database/dbtest"
+	"trisse-home/internal/shared/kernel"
+)
+
+// TestAppearancePerAccount: each account keeps its own appearance, starts
+// from the admin's until it saves one, and guests see the admin's (ADR 0018).
+func TestAppearancePerAccount(t *testing.T) {
+	repo := NewRepository(dbtest.Open(t, "appearance", Migrations()))
+	admin := kernel.WithPrincipal(context.Background(), kernel.AdminPrincipal())
+	anna := kernel.WithPrincipal(context.Background(), kernel.Principal{AccountID: "anna", Role: "member"})
+	guest := kernel.WithPrincipal(context.Background(), kernel.Principal{AccountID: "g1", Role: "guest"})
+
+	if got, err := repo.Load(anna); err != nil || got != domain.Default() {
+		t.Fatalf("without any row: %+v %v", got, err)
+	}
+	german := domain.Default()
+	if err := german.SetLanguage("de"); err != nil {
+		t.Fatal(err)
+	}
+	if err := repo.Save(admin, german); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := repo.Load(anna); got.Language() != "de" {
+		t.Fatalf("anna starts from the admin's appearance, got %q", got.Language())
+	}
+	english := domain.Default()
+	_ = english.SetLanguage("en")
+	if err := repo.Save(anna, english); err != nil {
+		t.Fatal(err)
+	}
+	for name, c := range map[string]struct {
+		ctx  context.Context
+		want string
+	}{"admin": {admin, "de"}, "anna": {anna, "en"}, "guest": {guest, "de"}, "system": {context.Background(), "de"}} {
+		if got, _ := repo.Load(c.ctx); got.Language() != c.want {
+			t.Errorf("%s: language %q", name, got.Language())
+		}
+	}
+	// A guest who could write (it cannot, the guard refuses) would only
+	// ever touch the admin's row, never anna's.
+	if got, _ := repo.Load(anna); got.Language() != "en" {
+		t.Fatal("anna's appearance changed")
+	}
+}
+
+// Migration 0008 keeps the single row as the owner's.
+func TestAppearanceMigrationKeepsTheRow(t *testing.T) {
+	ctx := context.Background()
+	before := fstest.MapFS{}
+	entries, _ := fs.ReadDir(Migrations(), ".")
+	for _, e := range entries {
+		if e.Name() >= "0008" {
+			continue
+		}
+		data, _ := fs.ReadFile(Migrations(), e.Name())
+		before[e.Name()] = &fstest.MapFile{Data: data}
+	}
+	db := dbtest.Open(t, "appearance", before)
+	if _, err := db.ExecContext(ctx, `INSERT INTO appearance_settings (id, theme, language, greeting_name, launcher, profile) VALUES (1, 'dark', 'de', 'Alex', 'both', 'everyday')`); err != nil {
+		t.Fatal(err)
+	}
+	m, _ := fs.ReadFile(Migrations(), "0008_per_account.sql")
+	if _, err := db.ExecContext(ctx, string(m)); err != nil {
+		t.Fatal(err)
+	}
+	got, err := NewRepository(db).Load(ctx)
+	if err != nil || got.Language() != "de" || got.GreetingName() != "Alex" || got.Theme() != "dark" {
+		t.Fatalf("%+v %v", got, err)
+	}
+}

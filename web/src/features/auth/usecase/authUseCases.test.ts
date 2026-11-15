@@ -13,6 +13,9 @@ function setup(status: Partial<AuthStatus> = {}) {
       csrfToken: 'csrf-0',
       demo: false,
       guest: false,
+      kiosk: false,
+      admin: false,
+      member: false,
       sso: { oidc: false, header: false, localLogin: true },
       ...status,
     }),
@@ -36,6 +39,16 @@ function setup(status: Partial<AuthStatus> = {}) {
     createGuest: vi.fn(),
     updateGuest: vi.fn(),
     deleteGuest: vi.fn(),
+    members: vi.fn(),
+    createMember: vi.fn(),
+    updateMember: vi.fn(),
+    deleteMember: vi.fn(),
+    groups: vi.fn(),
+    createGroup: vi.fn(),
+    updateGroup: vi.fn(),
+    deleteGroup: vi.fn(),
+    privateByDefault: vi.fn(),
+    setPrivateByDefault: vi.fn(),
     kiosks: vi.fn(),
     createKiosk: vi.fn().mockResolvedValue({ kiosk: {}, token: 't' }),
     updateKiosk: vi.fn(),
@@ -140,6 +153,34 @@ describe('AuthUseCases', () => {
     expect(csrf.setCsrfToken).toHaveBeenLastCalledWith('csrf-1');
     expect(await uc.addPasskey('Key')).toEqual(['abcd-efgh']);
     expect(authenticator.create).toHaveBeenCalled();
+  });
+
+  it('validates new members and group names before calling the backend', async () => {
+    const { uc, gateway } = setup();
+    await expect(uc.createMember('owner', 'member-password-1', 'member-password-1')).rejects.toThrow(
+      ValidationError,
+    );
+    await expect(uc.createMember('ben', 'member-password-1', 'other-password-1')).rejects.toThrow(
+      ValidationError,
+    );
+    expect(gateway.createMember).not.toHaveBeenCalled();
+    await uc.createMember(' Ben ', 'member-password-1', 'member-password-1');
+    expect(gateway.createMember).toHaveBeenCalledWith('ben', 'member-password-1');
+
+    await expect(uc.createGroup('   ', [])).rejects.toThrow(ValidationError);
+    await expect(uc.createGroup('x'.repeat(41), [])).rejects.toThrow(ValidationError);
+    await uc.createGroup(' Office ', ['m1']);
+    expect(gateway.createGroup).toHaveBeenCalledWith('Office', ['m1']);
+  });
+
+  it('remembers the admin and member roles', async () => {
+    const member = setup({ member: true });
+    await member.uc.currentView();
+    expect(member.uc.member).toBe(true);
+    expect(member.uc.admin).toBe(false);
+    const admin = setup({ admin: true });
+    await admin.uc.currentView();
+    expect(admin.uc.admin).toBe(true);
   });
 
   it('remembers a guest session', async () => {

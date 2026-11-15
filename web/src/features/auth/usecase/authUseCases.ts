@@ -2,7 +2,10 @@ import { t } from '../../../shared/i18n';
 import type { ApiToken } from '../domain/apiToken';
 import {
   type AuthView,
+  type Group,
   type Guest,
+  type Member,
+  type MemberList,
   type KioskDisplay,
   type KioskInput,
   type KioskOptions,
@@ -40,6 +43,10 @@ export class AuthUseCases {
   guest = false;
   /** True when a kiosk display is signed in (#50); guest is true as well. */
   kiosk = false;
+  /** True for an admin of the instance (today the owner, ADR 0018). */
+  admin = false;
+  /** True for a member: own tabs and content, no instance settings (#294). */
+  member = false;
   /** Sign-in methods offered by the server (set by currentView). */
   sso = { oidc: false, header: false, localLogin: true };
   /** Ticket of an SSO sign-in that still needs the local code. */
@@ -51,6 +58,8 @@ export class AuthUseCases {
     this.demo = status.demo;
     this.guest = status.guest;
     this.kiosk = status.kiosk;
+    this.admin = status.admin;
+    this.member = status.member;
     this.sso = status.sso;
     // Behind a reverse proxy with forward auth the user is already known.
     if (status.sso.header && !status.authenticated && !status.setupRequired) {
@@ -172,6 +181,63 @@ export class AuthUseCases {
 
   deleteGuest(id: string): Promise<void> {
     return this.gateway.deleteGuest(id);
+  }
+
+  /** Member accounts (admin only, #294). */
+  members(): Promise<MemberList> {
+    return this.gateway.members();
+  }
+
+  /** Creates a member; names follow the guest rules and share their namespace. */
+  async createMember(name: string, password: string, confirmation: string): Promise<Member> {
+    const n = name.trim().toLowerCase();
+    if (!validGuestName(n)) throw new ValidationError(t('auth.guest_name_invalid'));
+    const problem = validateNewPassword(password, confirmation);
+    if (problem) throw new ValidationError(problem);
+    return this.gateway.createMember(n, password);
+  }
+
+  /** Enables, disables or sets a new password; an empty password keeps it. */
+  async updateMember(member: Member, disabled: boolean, password = ''): Promise<Member> {
+    if (password !== '') {
+      const problem = validateNewPassword(password, password);
+      if (problem) throw new ValidationError(problem);
+    }
+    return this.gateway.updateMember(member.id, disabled, password);
+  }
+
+  deleteMember(id: string): Promise<void> {
+    return this.gateway.deleteMember(id);
+  }
+
+  /** Groups that records can be shared with (admin only). */
+  groups(): Promise<Group[]> {
+    return this.gateway.groups();
+  }
+
+  async createGroup(name: string, accounts: string[]): Promise<Group> {
+    const n = name.trim();
+    if (!n || n.length > 40) throw new ValidationError(t('auth.group_name_invalid'));
+    return this.gateway.createGroup(n, accounts);
+  }
+
+  async updateGroup(group: Group, name: string, accounts: string[]): Promise<Group> {
+    const n = name.trim();
+    if (!n || n.length > 40) throw new ValidationError(t('auth.group_name_invalid'));
+    return this.gateway.updateGroup(group.id, n, accounts);
+  }
+
+  deleteGroup(id: string): Promise<void> {
+    return this.gateway.deleteGroup(id);
+  }
+
+  /** Whether the admin's own new entries start private (ADR 0018). */
+  privateByDefault(): Promise<boolean> {
+    return this.gateway.privateByDefault();
+  }
+
+  setPrivateByDefault(on: boolean): Promise<void> {
+    return this.gateway.setPrivateByDefault(on);
   }
 
   /** Kiosk displays (owner only, #50). */

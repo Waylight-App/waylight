@@ -15,6 +15,7 @@ import (
 
 	"trisse-home/internal/modules/readlater/domain"
 	"trisse-home/internal/modules/readlater/usecase"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -55,9 +56,22 @@ func scan(row interface{ Scan(...any) error }) (domain.Article, error) {
 	return a, err
 }
 
+// mine is the condition for the principal's reading list. The list is personal:
+// an account sees only its own, also when the admin's are visible to
+// everyone; guests and kiosk displays see what is shared (ADR 0018).
+func mine(ctx context.Context) (string, []any) {
+	p := kernel.PrincipalFrom(ctx)
+	if p.TabScoped() {
+		return sqlutil.VisibleTo(p, "")
+	}
+	return sqlutil.OwnedBy(p, "")
+}
+
 // List implements usecase.Repository.
 func (r *Repository) List(ctx context.Context) ([]domain.Article, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM readlater_articles`)
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM readlater_articles WHERE `+cond, args...)
 	if err != nil {
 		return nil, fmt.Errorf("select articles: %w", err)
 	}
@@ -75,7 +89,8 @@ func (r *Repository) List(ctx context.Context) ([]domain.Article, error) {
 
 // Get implements usecase.Repository.
 func (r *Repository) Get(ctx context.Context, id string) (domain.Article, error) {
-	a, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM readlater_articles WHERE id = ?`, id))
+	cond, args := mine(ctx)
+	a, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM readlater_articles WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Article{}, domain.ErrNotFound
 	}
@@ -96,13 +111,23 @@ func (r *Repository) Save(ctx context.Context, a domain.Article, images map[int]
 			_ = tx.Rollback()
 		}
 	}()
-	// Upsert: an imported article gets its reader copy later (#99).
-	if _, err = tx.ExecContext(ctx, `INSERT INTO readlater_articles (`+columns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	// Upsert: an imported article gets its reader copy later (#99). New
+	// articles belong to the principal; the fetch job (the system) and the
+	// owner update one (ADR 0018).
+	p := kernel.PrincipalFrom(ctx)
+	owned, ownedArgs := sqlutil.OwnedBy(p, "readlater_articles")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := tx.ExecContext(ctx, `INSERT INTO readlater_articles (`+columns+`, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT (id) DO UPDATE SET title = excluded.title, site = excluded.site, excerpt = excluded.excerpt,
-			content = excluded.content, words = excluded.words, bytes = excluded.bytes, error = excluded.error, pending = excluded.pending`,
-		a.ID, a.URL, a.Title, a.Site, a.Excerpt, a.Content, a.Words, string(a.Status), sqlutil.FormatTime(a.SavedAt), a.Bytes, a.Error,
-		a.Pending, sqlutil.FormatNullableTime(a.StatusAt)); err != nil {
+			content = excluded.content, words = excluded.words, bytes = excluded.bytes, error = excluded.error, pending = excluded.pending
+		WHERE `+owned,
+		append([]any{a.ID, a.URL, a.Title, a.Site, a.Excerpt, a.Content, a.Words, string(a.Status), sqlutil.FormatTime(a.SavedAt), a.Bytes, a.Error,
+			a.Pending, sqlutil.FormatNullableTime(a.StatusAt), p.AccountID, string(kernel.DefaultVisibility(p))}, ownedArgs...)...)
+	if err != nil {
 		return fmt.Errorf("save article: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return kernel.ErrNotOwner
 	}
 	if _, err = tx.ExecContext(ctx, `DELETE FROM readlater_images WHERE article_id = ?`, a.ID); err != nil {
 		return fmt.Errorf("replace images: %w", err)
@@ -116,20 +141,32 @@ func (r *Repository) Save(ctx context.Context, a domain.Article, images map[int]
 	return tx.Commit()
 }
 
-// SetStatus implements usecase.Repository.
+// SetStatus implements usecase.Repository for the article's owner.
 func (r *Repository) SetStatus(ctx context.Context, id string, s domain.Status, at time.Time) error {
-	if _, err := r.db.ExecContext(ctx, `UPDATE readlater_articles SET status = ?, status_at = ? WHERE id = ?`, string(s), sqlutil.FormatTime(at), id); err != nil {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `UPDATE readlater_articles SET status = ?, status_at = ? WHERE id = ? AND `+owned,
+		append([]any{string(s), sqlutil.FormatTime(at), id}, args...)...)
+	if err != nil {
 		return fmt.Errorf("update status: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return domain.ErrNotFound
 	}
 	return nil
 }
 
-// Delete implements usecase.Repository (images go with the article).
+// Delete implements usecase.Repository for the owner (images go with the
+// article).
 func (r *Repository) Delete(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM readlater_images WHERE article_id = ?`, id); err != nil {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM readlater_images WHERE article_id = ? AND article_id IN (SELECT id FROM readlater_articles WHERE `+owned+`)`,
+		append([]any{id}, args...)...); err != nil {
 		return fmt.Errorf("delete images: %w", err)
 	}
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM readlater_articles WHERE id = ?`, id); err != nil {
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM readlater_articles WHERE id = ? AND `+owned, append([]any{id}, args...)...); err != nil {
 		return fmt.Errorf("delete article: %w", err)
 	}
 	return nil
@@ -138,7 +175,9 @@ func (r *Repository) Delete(ctx context.Context, id string) error {
 // Image implements usecase.Repository.
 func (r *Repository) Image(ctx context.Context, id string, n int) (usecase.Image, error) {
 	var img usecase.Image
-	err := r.db.QueryRowContext(ctx, `SELECT content_type, data FROM readlater_images WHERE article_id = ? AND n = ?`, id, n).Scan(&img.ContentType, &img.Bytes)
+	cond, args := mine(ctx)
+	err := r.db.QueryRowContext(ctx, `SELECT content_type, data FROM readlater_images WHERE article_id = ? AND n = ?
+		AND article_id IN (SELECT id FROM readlater_articles WHERE `+cond+`)`, append([]any{id, n}, args...)...).Scan(&img.ContentType, &img.Bytes)
 	if errors.Is(err, sql.ErrNoRows) {
 		return usecase.Image{}, domain.ErrNotFound
 	}
@@ -149,6 +188,8 @@ func (r *Repository) Image(ctx context.Context, id string, n int) (usecase.Image
 }
 
 // TotalBytes implements usecase.Repository.
+//
+//archtest:all-owners the storage limit applies to the whole instance
 func (r *Repository) TotalBytes(ctx context.Context) (int64, error) {
 	var n sql.NullInt64
 	if err := r.db.QueryRowContext(ctx, `SELECT SUM(bytes) FROM readlater_articles`).Scan(&n); err != nil {
@@ -159,7 +200,9 @@ func (r *Repository) TotalBytes(ctx context.Context) (int64, error) {
 
 // Pending implements usecase.Repository.
 func (r *Repository) Pending(ctx context.Context, limit int) ([]domain.Article, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM readlater_articles WHERE pending = 1 ORDER BY saved_at LIMIT ?`, limit)
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM readlater_articles WHERE pending = 1 AND `+cond+` ORDER BY saved_at LIMIT ?`, append(args, limit)...)
 	if err != nil {
 		return nil, fmt.Errorf("select pending: %w", err)
 	}
@@ -178,7 +221,10 @@ func (r *Repository) Pending(ctx context.Context, limit int) ([]domain.Article, 
 // Settings implements usecase.Repository; defaults without a row.
 func (r *Repository) Settings(ctx context.Context) (domain.Settings, error) {
 	var s domain.Settings
-	err := r.db.QueryRowContext(ctx, `SELECT archive_days FROM readlater_settings WHERE id = 1`).Scan(&s.ArchiveDays)
+	// The own setting, or the admin's (ADR 0018).
+	account := kernel.PrincipalFrom(ctx).SettingsAccount()
+	err := r.db.QueryRowContext(ctx, `SELECT archive_days FROM readlater_settings WHERE account_id IN (?, ?) ORDER BY account_id = ? DESC LIMIT 1`,
+		account, kernel.SystemAccountID, account).Scan(&s.ArchiveDays)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Settings{}, nil
 	}
@@ -190,9 +236,30 @@ func (r *Repository) Settings(ctx context.Context) (domain.Settings, error) {
 
 // SaveSettings implements usecase.Repository.
 func (r *Repository) SaveSettings(ctx context.Context, s domain.Settings) error {
-	if _, err := r.db.ExecContext(ctx, `INSERT INTO readlater_settings (id, archive_days) VALUES (1, ?)
-		ON CONFLICT (id) DO UPDATE SET archive_days = excluded.archive_days`, s.ArchiveDays); err != nil {
+	if _, err := r.db.ExecContext(ctx, `INSERT INTO readlater_settings (account_id, archive_days) VALUES (?, ?)
+		ON CONFLICT (account_id) DO UPDATE SET archive_days = excluded.archive_days`, kernel.PrincipalFrom(ctx).SettingsAccount(), s.ArchiveDays); err != nil {
 		return fmt.Errorf("upsert settings: %w", err)
 	}
 	return nil
+}
+
+// Owners implements usecase.Repository: the accounts that have articles, so
+// the cleanup can apply each account's own setting.
+func (r *Repository) Owners(ctx context.Context) ([]string, error) {
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT DISTINCT owner_id FROM readlater_articles WHERE `+owned+` ORDER BY owner_id`, args...)
+	if err != nil {
+		return nil, fmt.Errorf("select owners: %w", err)
+	}
+	defer rows.Close()
+	var out []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, fmt.Errorf("scan owner: %w", err)
+		}
+		out = append(out, id)
+	}
+	return out, rows.Err()
 }

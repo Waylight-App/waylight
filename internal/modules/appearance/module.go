@@ -97,6 +97,9 @@ func (m *Module) ApplyConfig(ctx context.Context, section any) error {
 // Name implements modules.Module.
 func (m *Module) Name() string { return "appearance" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.PersonalSettings }
+
 // Migrations implements modules.Module.
 func (m *Module) Migrations() fs.FS { return gateway.Migrations() }
 

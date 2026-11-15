@@ -12,6 +12,7 @@ import (
 	"io/fs"
 
 	"trisse-home/internal/modules/study/domain"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
@@ -50,9 +51,22 @@ func scan(row interface{ Scan(...any) error }) (domain.Module, error) {
 
 const selectModules = `SELECT id, name, ects, semester, status, grade FROM study_modules`
 
+// mine is the condition for the modules that make up the principal's
+// transcript. Credits and grades are personal: an account counts only its
+// own modules, also when the admin's are visible to everyone. Guests and
+// kiosk displays see what is shared with them (ADR 0018).
+func mine(ctx context.Context) (string, []any) {
+	p := kernel.PrincipalFrom(ctx)
+	if p.TabScoped() {
+		return sqlutil.VisibleTo(p, "")
+	}
+	return sqlutil.OwnedBy(p, "")
+}
+
 // List implements usecase.Repository.
 func (r *Repository) List(ctx context.Context) ([]domain.Module, error) {
-	rows, err := r.db.QueryContext(ctx, selectModules)
+	cond, args := mine(ctx)
+	rows, err := r.db.QueryContext(ctx, selectModules+` WHERE `+cond, args...)
 	if err != nil {
 		return nil, fmt.Errorf("select modules: %w", err)
 	}
@@ -70,7 +84,8 @@ func (r *Repository) List(ctx context.Context) ([]domain.Module, error) {
 
 // Get implements usecase.Repository.
 func (r *Repository) Get(ctx context.Context, id string) (domain.Module, error) {
-	m, err := scan(r.db.QueryRowContext(ctx, selectModules+` WHERE id = ?`, id))
+	cond, args := mine(ctx)
+	m, err := scan(r.db.QueryRowContext(ctx, selectModules+` WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Module{}, domain.ErrNotFound
 	}
@@ -86,18 +101,27 @@ func (r *Repository) Save(ctx context.Context, m domain.Module) error {
 	if m.Grade != nil {
 		grade = sql.NullFloat64{Float64: *m.Grade, Valid: true}
 	}
-	_, err := r.db.ExecContext(ctx, `INSERT INTO study_modules (id, name, ects, semester, status, grade) VALUES (?, ?, ?, ?, ?, ?)
+	p := kernel.PrincipalFrom(ctx)
+	owned, args := sqlutil.OwnedBy(p, "study_modules")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `INSERT INTO study_modules (id, name, ects, semester, status, grade, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT (id) DO UPDATE SET name = excluded.name, ects = excluded.ects, semester = excluded.semester,
-			status = excluded.status, grade = excluded.grade`, m.ID, m.Name, m.ECTS, m.Semester, string(m.Status), grade)
+			status = excluded.status, grade = excluded.grade WHERE `+owned,
+		append([]any{m.ID, m.Name, m.ECTS, m.Semester, string(m.Status), grade, p.AccountID, string(kernel.DefaultVisibility(p))}, args...)...)
 	if err != nil {
 		return fmt.Errorf("upsert module: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return kernel.ErrNotOwner
 	}
 	return nil
 }
 
-// Delete implements usecase.Repository.
+// Delete implements usecase.Repository for the owner.
 func (r *Repository) Delete(ctx context.Context, id string) error {
-	res, err := r.db.ExecContext(ctx, `DELETE FROM study_modules WHERE id = ?`, id)
+	owned, args := sqlutil.OwnedBy(kernel.PrincipalFrom(ctx), "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `DELETE FROM study_modules WHERE id = ? AND `+owned, append([]any{id}, args...)...)
 	if err != nil {
 		return fmt.Errorf("delete module: %w", err)
 	}
@@ -110,7 +134,8 @@ func (r *Repository) Delete(ctx context.Context, id string) error {
 // TotalECTS implements usecase.Repository.
 func (r *Repository) TotalECTS(ctx context.Context) (float64, error) {
 	var v float64
-	err := r.db.QueryRowContext(ctx, `SELECT total_ects FROM study_settings WHERE id = 1`).Scan(&v)
+	// The goal is personal; without an own row it is the default.
+	err := r.db.QueryRowContext(ctx, `SELECT total_ects FROM study_settings WHERE account_id = ?`, kernel.PrincipalFrom(ctx).SettingsAccount()).Scan(&v)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.DefaultTotalECTS, nil
 	}
@@ -122,8 +147,8 @@ func (r *Repository) TotalECTS(ctx context.Context) (float64, error) {
 
 // SetTotalECTS implements usecase.Repository.
 func (r *Repository) SetTotalECTS(ctx context.Context, v float64) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO study_settings (id, total_ects) VALUES (1, ?)
-		ON CONFLICT (id) DO UPDATE SET total_ects = excluded.total_ects`, v)
+	_, err := r.db.ExecContext(ctx, `INSERT INTO study_settings (account_id, total_ects) VALUES (?, ?)
+		ON CONFLICT (account_id) DO UPDATE SET total_ects = excluded.total_ects`, kernel.PrincipalFrom(ctx).SettingsAccount(), v)
 	if err != nil {
 		return fmt.Errorf("upsert total: %w", err)
 	}

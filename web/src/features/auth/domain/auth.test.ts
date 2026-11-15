@@ -11,6 +11,8 @@ describe('viewFor', () => {
         demo: false,
         guest: false,
         kiosk: false,
+        admin: false,
+        member: false,
         sso: { oidc: false, header: false, localLogin: true },
       }),
     ).toBe('setup');
@@ -24,6 +26,8 @@ describe('viewFor', () => {
         demo: false,
         guest: false,
         kiosk: false,
+        admin: false,
+        member: false,
         sso: { oidc: false, header: false, localLogin: true },
       }),
     ).toBe('app');
@@ -37,6 +41,8 @@ describe('viewFor', () => {
         demo: false,
         guest: false,
         kiosk: false,
+        admin: false,
+        member: false,
         sso: { oidc: false, header: false, localLogin: true },
       }),
     ).toBe('login');

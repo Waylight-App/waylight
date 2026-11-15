@@ -58,6 +58,7 @@ nav:
       - Accounts, guests and kiosk displays: accounts.md
       - Appearance: appearance.md
       - Phones, offline and the extension: apps-and-offline.md
+      - Privacy of the extension: extension-privacy.md
       - Accessibility: accessibility.md
       - Modules:
           - modules/README.md
@@ -127,6 +128,10 @@ nav:
           - "ADR 0016: Cross-module read models": adr/0016-cross-module-read-models.md
           - "ADR 0017: Open core": adr/0017-open-core.md
           - "ADR 0018: Data ownership": adr/0018-data-ownership.md
+<<<<<<< HEAD
           - "ADR 0019: Extension without a server": adr/0019-extension-without-server.md
+=======
+          - "ADR 0020: ee/ stays proprietary": adr/0020-ee-stays-proprietary.md
+>>>>>>> origin/main
       - Contributing: https://github.com/itadori26/trisse-home/blob/main/CONTRIBUTING.md
       - Roadmap: https://github.com/itadori26/trisse-home/blob/main/ROADMAP.md

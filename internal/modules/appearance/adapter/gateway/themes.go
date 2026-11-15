@@ -14,6 +14,7 @@ import (
 
 	"trisse-home/internal/modules/appearance/domain"
 	"trisse-home/internal/modules/appearance/usecase"
+	"trisse-home/internal/shared/kernel"
 )
 
 // Built-in themes (#111); see themes/README.md at the repository root.
@@ -140,7 +141,9 @@ func (s *ThemeStore) DeleteImported(ctx context.Context, id string) error {
 func (s *ThemeStore) Backup(ctx context.Context) (usecase.StyleBackup, bool, error) {
 	var b usecase.StyleBackup
 	var theme string
-	err := s.db.QueryRowContext(ctx, `SELECT theme, css, accent_color FROM appearance_css_backup WHERE id = 1`).Scan(&theme, &b.CSS, &b.AccentColor)
+	// The backup belongs to the principal's own settings.
+	err := s.db.QueryRowContext(ctx, `SELECT theme, css, accent_color FROM appearance_css_backup WHERE account_id = ?`,
+		kernel.PrincipalFrom(ctx).SettingsAccount()).Scan(&theme, &b.CSS, &b.AccentColor)
 	if errors.Is(err, sql.ErrNoRows) {
 		return usecase.StyleBackup{}, false, nil
 	}
@@ -153,8 +156,9 @@ func (s *ThemeStore) Backup(ctx context.Context) (usecase.StyleBackup, bool, err
 
 // SaveBackup implements usecase.ThemeStore.
 func (s *ThemeStore) SaveBackup(ctx context.Context, b usecase.StyleBackup) error {
-	_, err := s.db.ExecContext(ctx, `INSERT INTO appearance_css_backup (id, theme, css, accent_color) VALUES (1, ?, ?, ?)
-		ON CONFLICT (id) DO UPDATE SET theme = excluded.theme, css = excluded.css, accent_color = excluded.accent_color`, string(b.Theme), b.CSS, b.AccentColor)
+	_, err := s.db.ExecContext(ctx, `INSERT INTO appearance_css_backup (account_id, theme, css, accent_color) VALUES (?, ?, ?, ?)
+		ON CONFLICT (account_id) DO UPDATE SET theme = excluded.theme, css = excluded.css, accent_color = excluded.accent_color`,
+		kernel.PrincipalFrom(ctx).SettingsAccount(), string(b.Theme), b.CSS, b.AccentColor)
 	if err != nil {
 		return fmt.Errorf("upsert backup: %w", err)
 	}

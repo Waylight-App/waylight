@@ -85,8 +85,11 @@ The [documentation](docs/index.md) is organised by what you want to do:
 
 Contributions are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) covers the
 setup, the rules for pull requests, new modules and translations. Planned
-work is on the [roadmap](ROADMAP.md), changes per version in the
-[releases](https://github.com/itadori26/trisse-home/releases). Questions and
+work is on the [roadmap](ROADMAP.md); the changelog of every version is in
+the [release notes](https://github.com/itadori26/trisse-home/releases), which
+the release pipeline writes from the merged pull requests. Issues labelled
+[good first issue](https://github.com/itadori26/trisse-home/labels/good%20first%20issue)
+name the files and tests to touch and are a good way in. Questions and
 ideas go to [Discussions](https://github.com/itadori26/trisse-home/discussions).
 Please follow the [Code of Conduct](CODE_OF_CONDUCT.md), and report security
 problems as described in [SECURITY.md](SECURITY.md).

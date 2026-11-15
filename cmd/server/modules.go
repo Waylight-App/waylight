@@ -84,6 +84,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 			Demo:             cfg.DemoMode,
 			SSO:              ssoConfig(cfg, out.client, clk),
 			WebAuthn:         relyingParty(cfg),
+			MembersEnabled:   membersEnabled,
 		},
 		auth.Deps{DB: db, Clock: clk, Hasher: crypto.NewArgon2id(crypto.DefaultArgon2idParams), Tokens: crypto.RandomTokens{}, IDs: ids, OTP: crypto.TOTP{}, Cipher: secrets, Log: log, Alerts: alerts, GuestScope: scope},
 	)
@@ -343,6 +344,12 @@ func newOutbound(cfg config.Config, clk clock.System, cipher secretStore) outbou
 	}
 }
 
+// membersEnabled switches on member accounts (#294). It stays false until
+// the personal-content modules store an owner per record (ADR 0018,
+// follow-up step 4): before that, a member would see and change the
+// owner's notes and lists. Tests switch it on to exercise the guard.
+var membersEnabled = false
+
 // alertRelay forwards security alerts of the auth module (built first) to
 // the notifications module once that exists; without it alerts are dropped.
 type alertRelay struct{ targets []kernel.AlertSink }
@@ -400,6 +407,16 @@ func (g *guestScope) ReachForTabs(ctx context.Context, tabs []string) (authdomai
 	}
 	slices.Sort(reach.Closed) // map order is random; keep it stable
 	return reach, nil
+}
+
+// DataKinds implements auth's usecase.GuestScope: the data kind of every
+// registered module, which decides what members may change (ADR 0018).
+func (g *guestScope) DataKinds() map[string]string {
+	out := map[string]string{}
+	for _, m := range g.registry.All() {
+		out[m.Name()] = string(m.DataKind())
+	}
+	return out
 }
 
 // ssoConfig builds the single sign-on settings of the auth module.

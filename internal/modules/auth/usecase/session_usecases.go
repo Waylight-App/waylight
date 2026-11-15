@@ -29,13 +29,16 @@ func (uc *logout) Execute(ctx context.Context, req LogoutRequest) error {
 type authenticate struct {
 	sessions SessionRepository
 	accounts AccountRepository
+	groups   GroupRepository
+	prefs    PreferenceRepository
 	clock    Clock
 	ttl      time.Duration
 }
 
-// NewAuthenticate returns the Authenticate use case.
-func NewAuthenticate(sessions SessionRepository, accounts AccountRepository, clock Clock, ttl SessionTTL) Authenticate {
-	return &authenticate{sessions: sessions, accounts: accounts, clock: clock, ttl: ttl.Duration()}
+// NewAuthenticate returns the Authenticate use case. groups and prefs may
+// be nil; then principals carry no groups and no preferences.
+func NewAuthenticate(sessions SessionRepository, accounts AccountRepository, groups GroupRepository, prefs PreferenceRepository, clock Clock, ttl SessionTTL) Authenticate {
+	return &authenticate{sessions: sessions, accounts: accounts, groups: groups, prefs: prefs, clock: clock, ttl: ttl.Duration()}
 }
 
 // Execute implements Authenticate and extends sliding sessions.
@@ -61,7 +64,20 @@ func (uc *authenticate) Execute(ctx context.Context, req AuthenticateRequest) (A
 			return AuthenticateResponse{}, fmt.Errorf("refresh session: %w", err)
 		}
 	}
-	return AuthenticateResponse{CSRFToken: s.CSRFToken(), ExpiresAt: s.ExpiresAt(), Refreshed: refreshed, Principal: principalOf(a)}, nil
+	p := principalOf(a)
+	// Groups are read on every request like the account, so a change takes
+	// effect at once. The admin needs none: it sees what is shared anyway.
+	if uc.groups != nil && !a.IsAdmin() {
+		if p.Groups, err = uc.groups.GroupsOf(ctx, a.ID()); err != nil {
+			return AuthenticateResponse{}, fmt.Errorf("load groups: %w", err)
+		}
+	}
+	if uc.prefs != nil && a.IsAdmin() {
+		if p.PrivateByDefault, err = uc.prefs.PrivateByDefault(ctx, a.ID()); err != nil {
+			return AuthenticateResponse{}, fmt.Errorf("load preferences: %w", err)
+		}
+	}
+	return AuthenticateResponse{CSRFToken: s.CSRFToken(), ExpiresAt: s.ExpiresAt(), Refreshed: refreshed, Principal: p}, nil
 }
 
 type changePassword struct{ deps Deps }

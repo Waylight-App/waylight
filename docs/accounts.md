@@ -64,6 +64,58 @@ Two details are worth knowing:
   explicitly allowed. [ADR 0012](adr/0012-owner-and-guest-roles.md) has the
   details.
 
+## Members and groups (in preparation)
+
+Members are full accounts for a second adult in the household or a colleague
+in a small office: their own tabs and their own notes, to-dos and lists, with
+the instance settings left to the admin (today the owner). Groups name a set
+of members and guests, so a record can later be shared with "Office" or
+"Family" instead of everyone. [ADR 0018](adr/0018-data-ownership.md)
+describes the model.
+
+The accounts, groups and the server-side rules are in place, but **members
+cannot be created yet**: the modules do not separate personal content per
+account so far, and a member would see and change your notes. They are
+switched on once notes, to-dos and the other personal modules store an owner
+per record (#294). Until then the server answers a new member with an
+explanation instead of creating it.
+
+What a member may do, enforced for every request like the guest rules:
+
+- read and change modules with personal content (notes, to-dos, bookmarks,
+  lists) and their own personal settings (theme, search shortcuts);
+- read instance data such as services or the weather, but not settings pages
+  of instance modules, which can name hosts and keys;
+- nothing in account management, backups, the export, notification channels,
+  Docker or the system pages. A module without a declared kind stays closed
+  for changes by members.
+
+Every account has its own dashboard tabs: a member sees only their own, you
+see only yours, and guests keep seeing exactly the tabs you shared with them.
+`trisse-home.yaml` describes your (the admin's) tabs, never a member's.
+
+Account and group changes are written to the security log.
+
+### Sharing notes and to-dos
+
+A note or a to-do belongs to the account that created it, and only that
+account can decide who else sees it. The note editor and the to-do dialog
+have a *Who can see this* choice:
+
+- **Only me**: nobody else sees the record.
+- **Group: …**: the members and guests of that group can read it. You can
+  pick the groups you belong to; an admin can pick any group.
+- **Everyone on this dashboard**: every account on the instance can read it.
+
+Shared records are read-only for everyone but the owner. This also applies to
+admins: an admin sees another account's notes and to-dos only when they are
+shared with the admin, a group the admin is in, or everyone.
+
+If a group is deleted, the records shared with it become private again. The
+choice then shows *A group that no longer exists* until the owner picks
+something else. To-dos from an external list (CalDAV or another provider)
+cannot be shared and have no sharing choice.
+
 ## Kiosk displays
 
 A kiosk display shows tabs on a device that hangs on the wall or stands in

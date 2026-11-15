@@ -61,7 +61,7 @@ func TestKioskLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	auth := NewAuthenticate(e.sessions, e.accounts, e.clock, e.deps.TTL)
+	auth := NewAuthenticate(e.sessions, e.accounts, nil, nil, e.clock, e.deps.TTL)
 	res, err := auth.Execute(ctx, AuthenticateRequest{SessionToken: s.SessionToken})
 	if err != nil || !res.Principal.IsKiosk() || !res.Principal.TabScoped() || !res.Principal.CanSeeTab("home") || res.Principal.CanSeeTab("server") {
 		t.Fatalf("%+v %v", res.Principal, err)

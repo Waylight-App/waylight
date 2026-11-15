@@ -27,6 +27,15 @@ export interface TodoDTO {
    * detect concurrent changes (#80).
    */
   version: number /* int */;
+  /**
+   * Visibility is "private", "everyone" or "group:<id>"; empty for
+   * to-dos of external lists (ADR 0018).
+   */
+  visibility: string;
+  /**
+   * Mine is true when the viewer owns the to-do and may share it.
+   */
+  mine: boolean;
 }
 /**
  * RepeatDTO describes a recurrence.

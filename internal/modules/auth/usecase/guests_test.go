@@ -31,7 +31,7 @@ func TestGuestLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	auth := NewAuthenticate(e.sessions, e.accounts, e.clock, e.deps.TTL)
+	auth := NewAuthenticate(e.sessions, e.accounts, nil, nil, e.clock, e.deps.TTL)
 	res, err := auth.Execute(ctx, AuthenticateRequest{SessionToken: session.SessionToken})
 	if err != nil || !res.Principal.IsGuest() || res.Principal.AccountID != g.ID || !res.Principal.CanSeeTab("home") || res.Principal.CanSeeTab("server") {
 		t.Fatalf("principal: %+v %v", res.Principal, err)
@@ -65,6 +65,8 @@ func TestGuestLifecycle(t *testing.T) {
 }
 
 type fixedScope map[string]bool
+
+func (f fixedScope) DataKinds() map[string]string { return nil }
 
 func (f fixedScope) ReachForTabs(_ context.Context, _ []string) (domain.GuestReach, error) {
 	return domain.GuestReach{Modules: f}, nil

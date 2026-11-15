@@ -107,6 +107,39 @@ export interface GuestDTO {
   createdAt: string /* RFC 3339 */;
 }
 /**
+ * MemberDTO is a member account (#294).
+ */
+export interface MemberDTO {
+  id: string;
+  name: string;
+  groups: string[];
+  disabled: boolean;
+  createdAt: string /* RFC 3339 */;
+}
+/**
+ * MembersDTO is GET /api/auth/members. Available is false while members
+ * cannot be created in this version (ADR 0018 follow-up work).
+ */
+export interface MembersDTO {
+  available: boolean;
+  members: MemberDTO[];
+}
+/**
+ * GroupDTO is a group (#294).
+ */
+export interface GroupDTO {
+  id: string;
+  name: string;
+  accounts: string[];
+  createdAt: string /* RFC 3339 */;
+}
+/**
+ * PreferencesDTO is GET /api/auth/preferences.
+ */
+export interface PreferencesDTO {
+  privateByDefault: boolean;
+}
+/**
  * TokenDTO describes an API token without its secret.
  */
 export interface TokenDTO {

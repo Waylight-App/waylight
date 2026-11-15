@@ -4,6 +4,12 @@
 // source: dto.go
 
 /**
+ * VisibilityDTO shares a to-do: "private", "everyone" or "group:<id>".
+ */
+export interface VisibilityDTO {
+  visibility: string;
+}
+/**
  * TodoInputDTO is the body of POST /api/todos and PUT /api/todos/{id}.
  * Due is a date (YYYY-MM-DD) or empty.
  */

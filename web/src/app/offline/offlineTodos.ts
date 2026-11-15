@@ -1,3 +1,4 @@
+import type { ShareGroup, Visibility } from '../../shared/sharing/sharing';
 import { newId } from '../../shared/id/uuid';
 import type { Reminder, Repeat, Todo } from '../../features/todos/domain/todo';
 import type { TodosGateway } from '../../features/todos/usecase/todosUseCases';
@@ -47,6 +48,15 @@ export class OfflineTodosGateway implements TodosGateway {
       (c) => this.send(c),
       (c) => this.currentVersion(c.itemId),
     );
+  }
+
+  /** Sharing needs the server; it is not queued offline. */
+  share(id: string, visibility: Visibility): Promise<Todo> {
+    return this.inner.share(id, visibility);
+  }
+
+  shareGroups(): Promise<ShareGroup[]> {
+    return this.inner.shareGroups();
   }
 
   async list(includeDone: boolean): Promise<Todo[]> {

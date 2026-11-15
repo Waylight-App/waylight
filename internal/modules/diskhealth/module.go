@@ -37,6 +37,9 @@ func New(cfg Config, alerter kernel.ObservationSink, clock kernel.Clock) *Module
 // Name implements modules.Module.
 func (m *Module) Name() string { return "diskhealth" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
+
 // WidgetKinds implements modules.Module.
 func (m *Module) WidgetKinds() []string { return []string{"diskhealth"} }
 

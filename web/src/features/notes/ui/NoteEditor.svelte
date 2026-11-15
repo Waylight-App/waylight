@@ -2,6 +2,8 @@
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import Markdown from '../../../shared/ui/Markdown.svelte';
+  import VisibilitySelect from '../../../shared/ui/VisibilitySelect.svelte';
+  import type { ShareGroup } from '../../../shared/sharing/sharing';
   import { countText, type Note } from '../domain/note';
   import type { NotesUseCases } from '../usecase/notesUseCases';
 
@@ -32,6 +34,27 @@
     ].join(' · '),
   );
   let error = $state('');
+  // Sharing (#301): only the owner of a stored note gets the choice.
+  // svelte-ignore state_referenced_locally
+  let visibility = $state(note?.visibility ?? '');
+  let groups = $state<ShareGroup[]>([]);
+  $effect(() => {
+    if (note?.mine && note.visibility)
+      notes
+        .shareGroups()
+        .then((g) => (groups = g))
+        .catch(() => (groups = []));
+  });
+
+  async function share(v: string) {
+    if (!note) return;
+    error = '';
+    try {
+      visibility = (await notes.share(note.id, v)).visibility ?? v;
+    } catch (err) {
+      error = errorMessage(err);
+    }
+  }
 
   async function save(e: SubmitEvent) {
     e.preventDefault();
@@ -78,6 +101,11 @@
   {/if}
   <p class="count muted">{countLine}</p>
   <label><input type="checkbox" bind:checked={form.pinned} /> {t('notes.pin_to_dashboard')}</label>
+  {#if note?.mine && visibility}
+    <VisibilitySelect value={visibility} {groups} onchange={share} />
+  {:else if note && note.mine === false}
+    <p class="muted">{t('sharing.not_yours')}</p>
+  {/if}
   {#if error}<p class="error" role="alert">{error}</p>{/if}
   <p class="actions">
     <button class="btn btn-primary" type="submit">{t('notes.save')}</button>
