@@ -32,7 +32,7 @@ Nothing on the default image. The display adds several hundred MB of storage and
 
 ## Not yet verified
 
-The root script is tested in CI only for its validation. **Installing the kiosk on real hardware (Pi 4/5 with HDMI and the touch display) and measuring RAM/storage is still to be done.** See #140.
+The root script is tested in CI only for its validation. **Installing the kiosk on real hardware (Pi 4/5 with HDMI and the touch display) and measuring RAM/storage is still to be done.** See #140; reports from real hardware are collected in #361.
 
 ## API
 
