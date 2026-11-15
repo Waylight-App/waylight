@@ -45,6 +45,9 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, dial gateway.Di
 // Name implements modules.Module.
 func (m *Module) Name() string { return "parcels" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.PersonalContent }
+
 // Migrations implements modules.Module.
 func (m *Module) Migrations() fs.FS { return gateway.Migrations() }
 

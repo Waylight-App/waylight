@@ -68,6 +68,9 @@ func New(db *sql.DB, clock kernel.Clock, cfg Config) *Module {
 // Name implements modules.Module.
 func (m *Module) Name() string { return "briefing" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.PersonalSettings }
+
 // Migrations implements modules.Module.
 func (m *Module) Migrations() fs.FS { return gateway.Migrations() }
 

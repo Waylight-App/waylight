@@ -66,6 +66,9 @@ func (m *Module) Managed() []string { return m.uc.Managed() }
 // Name implements modules.Module.
 func (m *Module) Name() string { return "transfer" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
+
 // RegisterRoutes implements modules.Module.
 func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/transfer/export", m.handlers.Export)

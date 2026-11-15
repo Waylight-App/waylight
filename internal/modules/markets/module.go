@@ -30,6 +30,9 @@ func New(client *http.Client, ecbURL, stooqURL string, clock kernel.Clock) *Modu
 // Name implements modules.Module.
 func (m *Module) Name() string { return "markets" }
 
+// DataKind declares who owns the module's data (ADR 0018).
+func (m *Module) DataKind() modules.DataKind { return modules.PersonalContent }
+
 // WidgetKinds implements modules.Module.
 func (m *Module) WidgetKinds() []string { return []string{"markets"} }
 
