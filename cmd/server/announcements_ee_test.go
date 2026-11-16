@@ -92,6 +92,15 @@ func TestAnnouncements(t *testing.T) {
 		t.Fatalf("archive: %v", list)
 	}
 
+	// Posting to Slack or Teams needs chat apps in the licence (#332).
+	var channels []obj
+	owner.json(http.MethodGet, "/api/announcements/channels", nil, http.StatusOK, &channels)
+	if len(channels) != 0 {
+		t.Fatalf("channels without chat apps: %v", channels)
+	}
+	b.do(http.MethodGet, "/api/announcements/channels", nil, http.StatusForbidden)
+	owner.do(http.MethodPost, "/api/announcements", obj{"title": "To Slack", "postTo": "c1"}, http.StatusForbidden)
+
 	// A deleted notice is gone, with its read marks.
 	owner.do(http.MethodDelete, "/api/announcements/"+closed["id"].(string), nil, http.StatusNoContent)
 	b.do(http.MethodPost, "/api/announcements/"+closed["id"].(string)+"/read", nil, http.StatusNotFound)

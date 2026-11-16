@@ -104,9 +104,10 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	sinks := observationFanOut{}
 	var maintenance maintenanceReader
 	var notifier kernel.AlertSink
+	var notificationsModule *notifications.Module
 	if cfg.ModuleEnabled("notifications") {
 		n := notifications.New(db, secrets, out.integration, clk, ids, cfg.PublicURL)
-		notifier = n
+		notifier, notificationsModule = n, n
 		registry.Register(n)
 		sinks = append(sinks, n)
 		alerts.targets = append(alerts.targets, n)
@@ -201,7 +202,8 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	}
 	// Modules from cmd/server/module_<name>.go (#193).
 	registerSelfRegistered(moduleDeps{cfg: cfg, db: db, clock: clk, ids: ids, out: out, sink: sink,
-		alerts: alerts, auth: authModule, registry: registry, wikiSources: &wiki.MemberSources{}})
+		alerts: alerts, auth: authModule, registry: registry, wikiSources: &wiki.MemberSources{},
+		notifications: notificationsModule})
 	if cfg.ModuleEnabled("backup") && !cfg.DemoMode {
 		b, err := backup.New(backup.Config{Dir: cfg.BackupDir, Interval: cfg.BackupInterval, Retention: cfg.BackupRetention,
 			Cipher: secrets, Client: out.backupRemote, Alerts: alerts, Log: log,

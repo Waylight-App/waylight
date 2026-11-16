@@ -31,6 +31,18 @@ type AnnouncementDTO struct {
 	UpdatedAt  time.Time  `json:"updatedAt"`
 	Read       bool       `json:"read"`
 	Editable   bool       `json:"editable"`
+	// PostedChannel and PostedAt: the last post to Slack or Teams (#332).
+	PostedChannel string     `json:"postedChannel,omitempty"`
+	PostedAt      *time.Time `json:"postedAt,omitempty"`
+	// PostError is set when the announcement was saved but not posted.
+	PostError string `json:"postError,omitempty"`
+}
+
+// ChannelDTO is a Slack or Teams channel to post to.
+type ChannelDTO struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Kind string `json:"kind"`
 }
 
 // InputDTO creates or changes a notice.
@@ -41,6 +53,8 @@ type InputDTO struct {
 	ExpiresAt *time.Time `json:"expiresAt"`
 	// Notify sends the notice to the notification channels.
 	Notify bool `json:"notify"`
+	// PostTo is a Slack or Teams channel ID to post the notice to once.
+	PostTo string `json:"postTo,omitempty"`
 }
 
 // SettingsDTO says who besides admins may write.
@@ -50,7 +64,12 @@ type SettingsDTO struct {
 
 func dto(v usecase.View) AnnouncementDTO {
 	out := AnnouncementDTO{ID: v.ID, Title: v.Title, Body: v.Body, Pinned: v.Pinned, AuthorID: v.AuthorID, AuthorName: v.AuthorName,
-		CreatedAt: v.CreatedAt, UpdatedAt: v.UpdatedAt, Read: v.Read, Editable: v.Editable}
+		CreatedAt: v.CreatedAt, UpdatedAt: v.UpdatedAt, Read: v.Read, Editable: v.Editable, PostedChannel: v.PostedChannel,
+		PostError: v.PostError}
+	if !v.PostedAt.IsZero() {
+		t := v.PostedAt
+		out.PostedAt = &t
+	}
 	if !v.ExpiresAt.IsZero() {
 		t := v.ExpiresAt
 		out.ExpiresAt = &t
@@ -59,7 +78,7 @@ func dto(v usecase.View) AnnouncementDTO {
 }
 
 func (in InputDTO) input() usecase.Input {
-	u := usecase.Input{Title: in.Title, Body: in.Body, Pinned: in.Pinned, Notify: in.Notify}
+	u := usecase.Input{Title: in.Title, Body: in.Body, Pinned: in.Pinned, Notify: in.Notify, PostTo: in.PostTo}
 	if in.ExpiresAt != nil {
 		u.ExpiresAt = *in.ExpiresAt
 	}
@@ -126,6 +145,21 @@ func (h *Handlers) MarkRead(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// Channels handles GET /api/announcements/channels: the Slack and Teams
+// channels a writer can post to.
+func (h *Handlers) Channels(w http.ResponseWriter, r *http.Request) {
+	list, err := h.s.Channels(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	out := make([]ChannelDTO, 0, len(list))
+	for _, c := range list {
+		out = append(out, ChannelDTO(c))
+	}
+	httpapi.WriteJSON(w, http.StatusOK, out)
 }
 
 // Settings handles GET /api/announcements/settings.

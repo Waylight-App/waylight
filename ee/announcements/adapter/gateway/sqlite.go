@@ -31,19 +31,24 @@ type Store struct{ db *sql.DB }
 // NewStore returns the store.
 func NewStore(db *sql.DB) *Store { return &Store{db: db} }
 
-const columns = `id, title, body, pinned, author_id, expires_at, created_at, updated_at`
+const columns = `id, title, body, pinned, author_id, expires_at, created_at, updated_at, posted_channel, posted_at`
 
 func scan(sc interface{ Scan(...any) error }) (domain.Announcement, error) {
 	var a domain.Announcement
 	var pinned int
-	var expires, created, updated string
-	if err := sc.Scan(&a.ID, &a.Title, &a.Body, &pinned, &a.AuthorID, &expires, &created, &updated); err != nil {
+	var expires, created, updated, posted string
+	if err := sc.Scan(&a.ID, &a.Title, &a.Body, &pinned, &a.AuthorID, &expires, &created, &updated, &a.PostedChannel, &posted); err != nil {
 		return domain.Announcement{}, err
 	}
 	a.Pinned = pinned == 1
 	var err error
 	if expires != "" {
 		if a.ExpiresAt, err = sqlutil.ParseTime(expires); err != nil {
+			return domain.Announcement{}, err
+		}
+	}
+	if posted != "" {
+		if a.PostedAt, err = sqlutil.ParseTime(posted); err != nil {
 			return domain.Announcement{}, err
 		}
 	}
@@ -92,11 +97,12 @@ func (s *Store) Get(ctx context.Context, id string) (domain.Announcement, error)
 
 // Save implements usecase.Store.
 func (s *Store) Save(ctx context.Context, a domain.Announcement) error {
-	_, err := s.db.ExecContext(ctx, `INSERT INTO announcements (`+columns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	_, err := s.db.ExecContext(ctx, `INSERT INTO announcements (`+columns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT (id) DO UPDATE SET title = excluded.title, body = excluded.body, pinned = excluded.pinned,
-		expires_at = excluded.expires_at, updated_at = excluded.updated_at`,
+		expires_at = excluded.expires_at, updated_at = excluded.updated_at,
+		posted_channel = excluded.posted_channel, posted_at = excluded.posted_at`,
 		a.ID, a.Title, a.Body, sqlutil.BoolToInt(a.Pinned), a.AuthorID, formatOptional(a.ExpiresAt),
-		sqlutil.FormatTime(a.CreatedAt), sqlutil.FormatTime(a.UpdatedAt))
+		sqlutil.FormatTime(a.CreatedAt), sqlutil.FormatTime(a.UpdatedAt), a.PostedChannel, formatOptional(a.PostedAt))
 	return err
 }
 
