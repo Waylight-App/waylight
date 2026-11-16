@@ -173,7 +173,7 @@ func (s *Service) Branding(ctx context.Context) (branding.Branding, bool) {
 		return branding.Branding{}, false
 	}
 	return branding.Branding{Name: set.Name, Accent: set.Accent, Secondary: set.Secondary, HidePoweredBy: set.HidePoweredBy,
-		Assets: assets}, true
+		DefaultTheme: set.DefaultTheme, LockTheme: set.LockTheme, Assets: assets}, true
 }
 
 // Asset implements branding.Source.

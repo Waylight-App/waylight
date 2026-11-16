@@ -19,12 +19,15 @@ type AppearanceDTO struct {
 	Launcher string `json:"launcher" tstype:"'both' | 'services' | 'bookmarks'"`
 	// Profile is what the start page shows (#281); empty on PUT keeps it.
 	Profile string `json:"profile" tstype:"'everyday' | 'homelab'"`
+	// ThemeLocked: the organisation set theme and accent colour (#305); a
+	// change to them is ignored. Never read from a PUT.
+	ThemeLocked bool `json:"themeLocked,omitempty"`
 }
 
 // Appearance maps an AppearanceResponse.
 func Appearance(r usecase.AppearanceResponse) AppearanceDTO {
 	return AppearanceDTO{Theme: r.Theme, AccentColor: r.AccentColor, BackgroundImage: r.BackgroundImage, CustomCSS: r.CustomCSS, Language: r.Language,
-		GreetingName: r.GreetingName, Launcher: r.Launcher, Profile: r.Profile}
+		GreetingName: r.GreetingName, Launcher: r.Launcher, Profile: r.Profile, ThemeLocked: r.ThemeLocked}
 }
 
 // ThemeDTO is a gallery theme.

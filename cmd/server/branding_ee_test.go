@@ -119,6 +119,25 @@ func TestBranding(t *testing.T) {
 	ben.csrf = bs["csrfToken"].(string)
 	ben.do(http.MethodPut, "/api/branding/settings", obj{"name": "Ben's"}, http.StatusForbidden)
 
+	// A locked default theme keeps members on it; admins keep their own.
+	owner.do(http.MethodPut, "/api/branding/settings", obj{"name": "Example GmbH", "accent": "#0055aa", "defaultTheme": "dark",
+		"lockTheme": true}, http.StatusOK)
+	var look obj
+	ben.json(http.MethodPut, "/api/appearance", obj{"theme": "light", "accentColor": "#ff0000", "launcher": "both", "profile": "everyday"},
+		http.StatusOK, &look)
+	if look["theme"] != "dark" || look["accentColor"] != "#0055aa" || look["themeLocked"] != true {
+		t.Fatalf("member appearance: %v", look)
+	}
+	var adminLook obj
+	owner.json(http.MethodPut, "/api/appearance", obj{"theme": "light", "launcher": "both", "profile": "everyday"}, http.StatusOK, &adminLook)
+	if adminLook["theme"] != "light" || adminLook["themeLocked"] != nil {
+		t.Fatalf("admin appearance: %v", adminLook)
+	}
+	if b := info(); b["defaultTheme"] != "dark" {
+		t.Fatalf("sign-in theme: %v", b)
+	}
+	owner.do(http.MethodPut, "/api/branding/settings", obj{"lockTheme": true}, http.StatusUnprocessableEntity)
+
 	// Without the key the product shows again; the branding is kept.
 	owner.do(http.MethodDelete, "/api/licence", nil, http.StatusNoContent)
 	if b := info(); b["name"] != "trisse-home" || b["custom"] != false {
