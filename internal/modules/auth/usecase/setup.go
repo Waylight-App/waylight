@@ -41,6 +41,8 @@ type Deps struct {
 	Directory *DirectoryLogin
 	// Policies holds the admin policies (#304); nil or empty means none.
 	Policies *Policies
+	// Hooks tell other modules about deleted accounts; nil runs none.
+	Hooks *AccountHooks
 }
 
 func (d Deps) issuer() sessionIssuer {

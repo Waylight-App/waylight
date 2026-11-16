@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"slices"
 	"testing"
@@ -153,5 +154,20 @@ func TestProvisioningForDirectories(t *testing.T) {
 	}
 	if _, err := p.Member(ctx, domain.OwnerID); !errors.Is(err, domain.ErrMemberNotFound) {
 		t.Fatalf("owner as member: %v", err)
+	}
+}
+
+func TestDeletingAnAccountRunsTheHooks(t *testing.T) {
+	e, _, _ := provisioningEnv(t)
+	var deleted []string
+	e.deps.Hooks = &AccountHooks{}
+	e.deps.Hooks.OnDeleted(func(_ context.Context, id string) { deleted = append(deleted, id) })
+	p := NewProvisioning(e.deps)
+	id, _ := p.CreateMember(ctx, "anna")
+	if err := p.DeleteMember(ctx, id); err != nil {
+		t.Fatal(err)
+	}
+	if !slices.Equal(deleted, []string{id}) {
+		t.Fatalf("hooks saw %v", deleted)
 	}
 }

@@ -294,6 +294,7 @@ func (uc provisioning) DeleteMember(ctx context.Context, accountID string) error
 	if err := uc.deps.Accounts.Delete(ctx, m.ID()); err != nil {
 		return err
 	}
+	uc.deps.Hooks.accountDeleted(ctx, m.ID())
 	uc.deps.Events.record(ctx, domain.EventMemberChanged, m.ID(), domain.Client{}, "deleted "+m.Name()+" through directory provisioning")
 	return nil
 }
