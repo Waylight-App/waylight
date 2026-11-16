@@ -89,6 +89,13 @@ func TestTeamCalendar(t *testing.T) {
 		t.Fatalf("own subscriptions: %v", own)
 	}
 
+	var accounts []obj
+	a.json(http.MethodGet, "/api/teamcalendar/accounts", nil, http.StatusOK, &accounts)
+	if len(accounts) != 0 {
+		t.Fatalf("connected accounts: %v", accounts)
+	}
+	a.do(http.MethodPut, "/api/teamcalendar/accounts/nope", obj{"visibility": "everyone"}, http.StatusNotFound)
+
 	if !hasHoliday(b) {
 		t.Fatal("ben (Office) does not see the shared calendar")
 	}

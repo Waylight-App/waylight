@@ -52,3 +52,33 @@ func (h *Handlers) Share(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// Accounts handles GET /api/teamcalendar/accounts.
+func (h *Handlers) Accounts(w http.ResponseWriter, r *http.Request) {
+	list, err := h.s.Accounts(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	out := make([]SubscriptionDTO, 0, len(list))
+	for _, a := range list {
+		out = append(out, SubscriptionDTO{ID: a.ID, Name: a.Name, Visibility: string(a.Visibility)})
+	}
+	httpapi.WriteJSON(w, http.StatusOK, out)
+}
+
+// ShareAccount handles PUT /api/teamcalendar/accounts/{id} {visibility}.
+func (h *Handlers) ShareAccount(w http.ResponseWriter, r *http.Request) {
+	var in struct {
+		Visibility string `json:"visibility"`
+	}
+	if err := httpapi.DecodeJSON(w, r, &in); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	if err := h.s.ShareAccount(r.Context(), r.PathValue("id"), in.Visibility); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
