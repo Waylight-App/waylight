@@ -23,6 +23,27 @@ type Module struct {
 	seed     usecase.SeedSampleData
 	check    usecase.CheckLinks
 	config   usecase.Config
+	list     usecase.ListBookmarks
+}
+
+// Link is a bookmark found by Find.
+type Link struct{ Title, URL string }
+
+// Find returns up to limit bookmarks matching query that the account in ctx
+// may see, for searches outside the app such as a chat command (#333).
+func (m *Module) Find(ctx context.Context, query string, limit int) ([]Link, error) {
+	res, err := m.list.Execute(ctx, usecase.Filter{Query: query})
+	if err != nil {
+		return nil, err
+	}
+	out := []Link{}
+	for _, b := range res.Bookmarks {
+		if len(out) == limit {
+			break
+		}
+		out = append(out, Link{Title: b.Title, URL: b.URL})
+	}
+	return out, nil
 }
 
 // SeedSampleData implements modules.Seeder.
@@ -50,11 +71,12 @@ func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, client *http.Cl
 		web := gateway.NewWeb(client)
 		d.Metadata, d.Checker = web, web
 	}
+	list := usecase.NewListBookmarks(d)
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d), config: config,
-		check: usecase.NewCheckLinks(d), handlers: controller.NewHandlers(controller.UseCases{
+		list: list, check: usecase.NewCheckLinks(d), handlers: controller.NewHandlers(controller.UseCases{
 			GetSettings: usecase.NewGetSettings(d), SaveSettings: usecase.NewSaveSettings(d), Enrich: usecase.NewEnrichBookmark(d),
 			CheckLink: usecase.NewCheckLink(d), Icon: usecase.NewGetIcon(d),
-			List: usecase.NewListBookmarks(d), Create: usecase.NewCreateBookmark(d), Update: usecase.NewUpdateBookmark(d),
+			List: list, Create: usecase.NewCreateBookmark(d), Update: usecase.NewUpdateBookmark(d),
 			Delete: usecase.NewDeleteBookmark(d), CreateFolder: usecase.NewCreateFolder(d),
 			RenameFolder: usecase.NewRenameFolder(d), ShareFolder: usecase.NewShareFolder(d), DeleteFolder: usecase.NewDeleteFolder(d),
 			Import: usecase.NewImportBookmarks(d),

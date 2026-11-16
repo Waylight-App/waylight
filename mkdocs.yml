@@ -63,6 +63,7 @@ nav:
       - Admin policies: admin-policies.md
       - Announcements: announcements.md
       - Absences: absences.md
+      - Slack command: slack-command.md
       - Connected accounts: connected-accounts.md
       - Appearance: appearance.md
       - Phones, offline and the extension: apps-and-offline.md
