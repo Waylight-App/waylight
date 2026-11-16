@@ -14,4 +14,9 @@ export interface InfoResponse {
    * interface can offer members only the settings they may change.
    */
   dataKinds: { [key: string]: string};
+  /**
+   * ReadOnly names modules whose data stays readable but cannot be changed
+   * right now, such as an ee/ feature whose licence key has expired (#307).
+   */
+  readOnly: string[];
 }
