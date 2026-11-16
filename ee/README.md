@@ -35,6 +35,19 @@ exists today moves here.
 4. Pull requests from outside that touch `ee/` need an agreement with the
    maintainer first, see [CONTRIBUTING.md](../CONTRIBUTING.md#licence-of-contributions).
 
+## Frontend
+
+The screens of `ee/` live in [`web/`](web/), a package of their own that the
+web app loads as a plugin ([ADR 0021](../docs/adr/0021-ee-frontend.md)):
+
+```sh
+cd ee/web && npm ci && npm run build   # writes ee/web/dist/plugin.js
+```
+
+The server embeds `ee/web/dist` in builds with the tag `ee` and offers it
+through `GET /api/plugins`. Features without a licence stay listed under
+*Settings → Features for organisations*.
+
 ## Status
 
 - `licence/`: licence keys ([#307](https://github.com/itadori26/trisse-home/issues/307)).

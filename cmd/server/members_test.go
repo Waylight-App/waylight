@@ -5,9 +5,12 @@ import (
 	"testing"
 )
 
-// TestMembersStayOff: until the personal-content modules store owners
-// (ADR 0018), the server refuses to create members.
-func TestMembersStayOff(t *testing.T) {
+// TestMembersSwitch: members are on by default (#294); with the switch off
+// the server refuses to create them, which the auth use cases still support.
+func TestMembersSwitch(t *testing.T) {
+	saved := membersEnabled
+	membersEnabled = false
+	t.Cleanup(func() { membersEnabled = saved })
 	up := fakeUpstream(t)
 	srv := newTestServer(t, up.URL)
 	owner := newClient(t, srv.URL)
@@ -17,7 +20,7 @@ func TestMembersStayOff(t *testing.T) {
 	var list obj
 	owner.json(http.MethodGet, "/api/auth/members", nil, http.StatusOK, &list)
 	if list["available"] != false {
-		t.Fatalf("members must be off: %v", list)
+		t.Fatalf("members must be off with the switch off: %v", list)
 	}
 	owner.do(http.MethodPost, "/api/auth/members", obj{"name": "ben", "password": "member-password-1"}, http.StatusConflict)
 
@@ -185,4 +188,20 @@ func TestMemberAccess(t *testing.T) {
 	m.do(http.MethodGet, "/api/notes", nil, http.StatusUnauthorized)
 	owner.do(http.MethodDelete, "/api/auth/members/"+member["id"].(string), nil, http.StatusNoContent)
 	owner.do(http.MethodDelete, "/api/auth/groups/"+group["id"].(string), nil, http.StatusNoContent)
+}
+
+// TestMembersOnByDefault: a fresh instance can create members (#294).
+func TestMembersOnByDefault(t *testing.T) {
+	up := fakeUpstream(t)
+	srv := newTestServer(t, up.URL)
+	owner := newClient(t, srv.URL)
+	var session obj
+	owner.json(http.MethodPost, "/api/auth/setup", obj{"setupToken": "e2e-setup-token-0123", "password": "e2e-password-123"}, http.StatusOK, &session)
+	owner.csrf = session["csrfToken"].(string)
+	var list obj
+	owner.json(http.MethodGet, "/api/auth/members", nil, http.StatusOK, &list)
+	if list["available"] != true {
+		t.Fatalf("members must be on: %v", list)
+	}
+	owner.do(http.MethodPost, "/api/auth/members", obj{"name": "ben", "password": "member-password-1"}, http.StatusCreated)
 }
