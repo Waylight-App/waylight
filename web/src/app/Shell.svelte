@@ -12,6 +12,7 @@
   import { branding } from './branding/branding.svelte';
   import { loadPlugins } from './plugins/loader';
   import { widgetDefinitions } from './widgets';
+  import { searchActions } from './searchActions';
   import { registeredSections } from './settingsSections';
   import { attachShortcuts } from '../shared/shortcuts';
   import Icon from '../shared/ui/icons/Icon.svelte';
@@ -246,6 +247,7 @@
         pluginsLoaded ??= loadPlugins(container.http, container.auth, {
           widgets: widgetDefinitions,
           sections: registeredSections,
+          searchActions,
         });
         await pluginsLoaded;
       }

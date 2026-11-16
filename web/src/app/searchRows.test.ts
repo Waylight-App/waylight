@@ -29,6 +29,20 @@ describe('buildRows (#222)', () => {
     const g = buildRows({ command: restart, alternative: null, groups: [bookmarks], web: true });
     expect(ids(g)).toEqual(['actions:action', 'web:web']);
   });
+  it('lists plugin actions after the results, unless a command was typed (#453)', () => {
+    const action = {
+      id: 'plugin-ee-office',
+      keywords: ['office'],
+      title: () => '',
+      detail: () => '',
+      run: () => Promise.resolve(''),
+    };
+    const rows = (command: QuickCommand | null, groups: QuickGroup[]) =>
+      ids(buildRows({ command, alternative: null, groups, web: false, actions: [action] }));
+    expect(rows(null, [bookmarks])).toEqual(['bookmark:bookmark:b1', 'actions:plugin-ee-office']);
+    expect(rows(todo, [])).toEqual(['quick:capture']);
+    expect(rows(restart, [])).toEqual(['actions:action']);
+  });
   it('leaves out the web row without the search module and empty groups', () => {
     expect(
       buildRows({ command: null, alternative: null, groups: [{ ...bookmarks, items: [] }], web: false }),

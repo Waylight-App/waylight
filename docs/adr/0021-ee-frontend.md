@@ -42,6 +42,15 @@ the ones that are switched off.
 - The core wraps plugin entries into its normal widget, settings and search
   registration, so the picker, the settings dialog and the search field show
   them without knowing about `ee/`.
+- Search contributions are commands (`searchActions`, #453): keywords, a
+  title and a `run(context)`. The core matches the typed text against the
+  keywords and lists the action under *Actions*. Guests get none, and an
+  action whose feature is not fully licensed is left out, since it could
+  only fail.
+- The contract grows by optional fields only. `apiVersion` changes only for
+  a breaking change, which the loader then refuses; a plugin built against
+  an older contract keeps loading, and an older core ignores fields it does
+  not know.
 
 ### Loading
 
