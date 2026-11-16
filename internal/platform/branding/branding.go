@@ -25,6 +25,11 @@ type Branding struct {
 	// Accent and Secondary are "#rrggbb" or empty for the theme's own.
 	Accent, Secondary string
 	HidePoweredBy     bool
+	// DefaultTheme ("system", "light", "dark" or empty) is the theme of the
+	// sign-in page and of accounts without their own; LockTheme keeps
+	// members on it (#305).
+	DefaultTheme string
+	LockTheme    bool
 	// Assets lists the kinds an organisation uploaded; the rest are the
 	// product's.
 	Assets map[string]time.Time
@@ -61,6 +66,8 @@ type InfoDTO struct {
 	Accent        string `json:"accent,omitempty"`
 	Secondary     string `json:"secondary,omitempty"`
 	HidePoweredBy bool   `json:"hidePoweredBy"`
+	// DefaultTheme is the sign-in page's theme; empty follows the browser.
+	DefaultTheme string `json:"defaultTheme,omitempty"`
 	// Logo, LogoDark and Favicon are addresses, empty for the product's.
 	Logo     string `json:"logo,omitempty"`
 	LogoDark string `json:"logoDark,omitempty"`
@@ -82,7 +89,7 @@ func assetURL(b Branding, kind string) string {
 func InfoHandler(src func() Source) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		b, custom := Current(r.Context(), src())
-		out := InfoDTO{Name: b.Name, Custom: custom, Accent: b.Accent, Secondary: b.Secondary, HidePoweredBy: b.HidePoweredBy,
+		out := InfoDTO{Name: b.Name, Custom: custom, Accent: b.Accent, Secondary: b.Secondary, HidePoweredBy: b.HidePoweredBy, DefaultTheme: b.DefaultTheme,
 			Logo: assetURL(b, Logo), LogoDark: assetURL(b, LogoDark), Favicon: assetURL(b, Favicon)}
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Cache-Control", "no-cache")

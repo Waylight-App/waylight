@@ -23,16 +23,16 @@ func (m *memRepo) Save(_ context.Context, a domain.Appearance) error { m.a = &a;
 func TestAppearanceUseCases(t *testing.T) {
 	ctx := context.Background()
 	repo := &memRepo{}
-	if got, _ := NewGetAppearance(repo).Execute(ctx); got.Theme != "system" {
+	if got, _ := NewGetAppearance(repo, nil).Execute(ctx); got.Theme != "system" {
 		t.Fatalf("default theme = %q", got.Theme)
 	}
-	if _, err := NewUpdateAppearance(repo).Execute(ctx, UpdateAppearanceRequest{Theme: "neon"}); !errors.Is(err, kernel.ErrInvalid) {
+	if _, err := NewUpdateAppearance(repo, nil).Execute(ctx, UpdateAppearanceRequest{Theme: "neon"}); !errors.Is(err, kernel.ErrInvalid) {
 		t.Fatalf("expected invalid, got %v", err)
 	}
-	if _, err := NewUpdateAppearance(repo).Execute(ctx, UpdateAppearanceRequest{Theme: "dark", AccentColor: "#112233"}); err != nil {
+	if _, err := NewUpdateAppearance(repo, nil).Execute(ctx, UpdateAppearanceRequest{Theme: "dark", AccentColor: "#112233"}); err != nil {
 		t.Fatal(err)
 	}
-	if got, _ := NewGetAppearance(repo).Execute(ctx); got.Theme != "dark" || got.AccentColor != "#112233" {
+	if got, _ := NewGetAppearance(repo, nil).Execute(ctx); got.Theme != "dark" || got.AccentColor != "#112233" {
 		t.Fatalf("not saved: %+v", got)
 	}
 }

@@ -25,6 +25,11 @@ export interface AppearanceDTO {
    * Profile is what the start page shows (#281); empty on PUT keeps it.
    */
   profile: 'everyday' | 'homelab';
+  /**
+   * ThemeLocked: the organisation set theme and accent colour (#305); a
+   * change to them is ignored. Never read from a PUT.
+   */
+  themeLocked?: boolean;
 }
 /**
  * ThemeDTO is a gallery theme.

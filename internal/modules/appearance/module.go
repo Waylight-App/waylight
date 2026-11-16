@@ -23,6 +23,7 @@ type Module struct {
 	repo        usecase.Repository
 	get         usecase.GetAppearance
 	update      usecase.UpdateAppearance
+	presets     *usecase.Presets
 }
 
 // SetProfile stores the start-page profile chosen at the first setup
@@ -43,7 +44,8 @@ func (m *Module) SetProfile(ctx context.Context, profile string) error {
 func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
 	repo := gateway.NewRepository(db)
 	themes := usecase.NewThemes(repo, gateway.NewThemeStore(db), gateway.Codec{}, gateway.BuiltinThemes())
-	get, update := usecase.NewGetAppearance(repo), usecase.NewUpdateAppearance(repo)
+	presets := usecase.NewPresets(repo.HasOwn)
+	get, update := usecase.NewGetAppearance(repo, presets), usecase.NewUpdateAppearance(repo, presets)
 	return &Module{
 		Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
 		handlers:     controller.NewHandlers(get, update),
@@ -53,8 +55,18 @@ func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
 		backgrounds: controller.NewBackgroundHandlers(usecase.NewBackgrounds(usecase.BackgroundDeps{
 			Store: gateway.NewBackgroundStore(db), Processor: gateway.ImageProcessor{}, Repo: repo, Clock: clock, IDs: ids,
 		})),
-		repo: repo,
+		repo:    repo,
+		presets: presets,
 	}
+}
+
+// Preset is an organisation's colour scheme; see usecase.Preset.
+type Preset = usecase.Preset
+
+// SetPresetSource sets where the organisation's colour scheme comes from
+// (the branding, #305); without it every account keeps its own.
+func (m *Module) SetPresetSource(src func(ctx context.Context) (Preset, bool)) {
+	m.presets.SetSource(src)
 }
 
 // ConfigSection implements modules.Configurable.

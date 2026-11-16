@@ -18,6 +18,12 @@ colours. This needs a server built with the `ee` features.
   theme; it can still be saved.
 - **Hide "Powered by trisse-home"** on the sign-in page, in the footer and
   in the about section.
+- **Default theme** (system, light or dark): the sign-in page uses it, and
+  every account that has not chosen its own appearance starts with it and
+  the accent colour. With **keep members on it**, members cannot change
+  theme and accent colour; the rest of their appearance (language,
+  background, launcher) stays theirs, and admins keep their own choice.
+  `/api/appearance` then reports `themeLocked: true`.
 
 ## Licence
 
@@ -32,7 +38,7 @@ Reading is public, because the sign-in page shows the branding:
 
 | Method | Path | |
 | --- | --- | --- |
-| GET | `/api/branding` | `{name, custom, accent, secondary, hidePoweredBy, logo, logoDark, favicon}`; image fields are addresses, empty for the product's |
+| GET | `/api/branding` | `{name, custom, accent, secondary, hidePoweredBy, defaultTheme, logo, logoDark, favicon}`; image fields are addresses, empty for the product's |
 | GET | `/api/branding/{logo,logo-dark,favicon}` | The image; 404 without one |
 | GET | `/manifest.webmanifest` | The app manifest with the organisation's name, colour and favicon |
 
@@ -40,9 +46,9 @@ Changing it is for admins:
 
 | Method | Path | |
 | --- | --- | --- |
-| GET, PUT | `/api/branding/settings` | `{name, accent, secondary, hidePoweredBy}`; the answer adds `assets`, `applied` and `warnings` |
+| GET, PUT | `/api/branding/settings` | `{name, accent, secondary, hidePoweredBy, defaultTheme, lockTheme}`; the answer adds `assets`, `applied` and `warnings` |
 | PUT | `/api/branding/assets/{logo,logo-dark,favicon}` | The image as the request body |
 | DELETE | `/api/branding/assets/{kind}` | Back to the product's image |
 
-Not yet covered here: a default theme for new accounts, and the name and
-logo in e-mails, the daily briefing and kiosk mode.
+The instance's name is also used in e-mail subjects, the password reset
+mail, security alerts and new authenticator app entries.

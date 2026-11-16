@@ -12,6 +12,7 @@ import (
 	"trisse-home/internal/modules"
 	"trisse-home/internal/modules/adguard"
 	"trisse-home/internal/modules/appearance"
+	appearancedomain "trisse-home/internal/modules/appearance/domain"
 	"trisse-home/internal/modules/auth"
 	authdomain "trisse-home/internal/modules/auth/domain"
 	"trisse-home/internal/modules/backup"
@@ -145,7 +146,11 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		build func() modules.Module
 	}{
 		{"onboarding", func() modules.Module { return onboarding.New(db, clk) }},
-		{"appearance", func() modules.Module { return appearance.New(db, clk, ids) }},
+		{"appearance", func() modules.Module {
+			m := appearance.New(db, clk, ids)
+			m.SetPresetSource(appearancePreset)
+			return m
+		}},
 		{"search", func() modules.Module { return search.New(db) }},
 		{"weather", func() modules.Module { return weather.New(client, clk) }},
 		{"services", func() modules.Module {
@@ -487,4 +492,15 @@ type maintenanceReader interface {
 func instanceName(ctx context.Context) string {
 	b, _ := branding.Current(ctx, brandingSource)
 	return b.Name
+}
+
+// appearancePreset is the organisation's colour scheme from the branding
+// (#305): its default theme and accent colour, and whether members are kept
+// on them. None while the ee branding does not apply.
+func appearancePreset(ctx context.Context) (appearance.Preset, bool) {
+	b, custom := branding.Current(ctx, brandingSource)
+	if !custom || b.DefaultTheme == "" {
+		return appearance.Preset{}, false
+	}
+	return appearance.Preset{Theme: appearancedomain.Theme(b.DefaultTheme), Accent: b.Accent, Locked: b.LockTheme}, true
 }
