@@ -127,6 +127,12 @@ Change these only to use a mirror, your own instance or a test server.
 | `TRISSE_HOME_VERSION` | `latest` | The image tag Docker Compose runs. A version such as `1.2.3` pins it. Docker Compose only. |
 | `COMPOSE_PROFILES` | empty | Optional Compose services: `wol` for the Wake-on-LAN relay, `docker-actions` for the restart proxy. Docker Compose only. |
 
+## Look
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `DEFAULT_THEME` | empty | Id of a built-in theme, such as `nord`, for the sign-in page and every account that has not chosen its own appearance. Empty keeps the built-in look; an unknown id logs a warning and keeps it too. See [appearance](appearance.md#default-theme-for-everyone). |
+
 ## Sample data and demo
 
 | Variable | Default | Description |

@@ -69,6 +69,14 @@ func (m *Module) SetPresetSource(src func(ctx context.Context) (Preset, bool)) {
 	m.presets.SetSource(src)
 }
 
+// SetDefaultTheme makes the built-in theme id the default for the sign-in
+// page and for every account without its own appearance (DEFAULT_THEME,
+// #507). An empty id keeps the built-in look; an unknown id is an error and
+// changes nothing.
+func (m *Module) SetDefaultTheme(id string) error {
+	return m.presets.SetDefaultTheme(gateway.BuiltinThemes(), id)
+}
+
 // ConfigSection implements modules.Configurable.
 func (m *Module) ConfigSection() string { return "appearance" }
 
@@ -117,6 +125,7 @@ func (m *Module) Migrations() fs.FS { return gateway.Migrations() }
 
 // RegisterRoutes implements modules.Module.
 func (m *Module) RegisterRoutes(r modules.Router) {
+	r.Public("GET /api/appearance/default-theme", controller.DefaultTheme(m.presets.DefaultTheme))
 	r.Protected("GET /api/appearance", m.handlers.Get)
 	r.Protected("PUT /api/appearance", m.handlers.Update)
 	r.Protected("GET /api/appearance/themes", m.themes.Gallery)

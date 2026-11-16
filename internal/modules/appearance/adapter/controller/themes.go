@@ -6,6 +6,7 @@ import (
 
 	"trisse-home/internal/modules/appearance/adapter/gateway"
 	"trisse-home/internal/modules/appearance/adapter/presenter"
+	"trisse-home/internal/modules/appearance/domain"
 	"trisse-home/internal/modules/appearance/usecase"
 	"trisse-home/internal/shared/httpapi"
 )
@@ -15,6 +16,15 @@ type ThemeHandlers struct{ uc usecase.Themes }
 
 // NewThemeHandlers returns the gallery handlers.
 func NewThemeHandlers(uc usecase.Themes) *ThemeHandlers { return &ThemeHandlers{uc: uc} }
+
+// DefaultTheme handles GET /api/appearance/default-theme (#507). It is
+// public: the sign-in page shows the instance's default theme. The answer
+// holds a built-in theme only, nothing about any account.
+func DefaultTheme(get func() (domain.ThemeDef, bool)) http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		httpapi.WriteJSON(w, http.StatusOK, presenter.DefaultTheme(get()))
+	}
+}
 
 // Gallery handles GET /api/appearance/themes.
 func (h *ThemeHandlers) Gallery(w http.ResponseWriter, r *http.Request) {

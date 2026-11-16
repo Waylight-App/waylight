@@ -75,6 +75,23 @@ func Theme(t domain.ThemeDef) ThemeDTO {
 	return out
 }
 
+// DefaultThemeDTO is GET /api/appearance/default-theme (#507): the theme the
+// sign-in page uses before anyone is known. CSS is empty for the built-in
+// look; Scheme is empty for a theme that has a light and a dark variant.
+type DefaultThemeDTO struct {
+	ID     string `json:"id"`
+	CSS    string `json:"css"`
+	Scheme string `json:"scheme" tstype:"'light' | 'dark' | ''"`
+}
+
+// DefaultTheme maps the instance's default theme.
+func DefaultTheme(t domain.ThemeDef, ok bool) DefaultThemeDTO {
+	if !ok {
+		return DefaultThemeDTO{}
+	}
+	return DefaultThemeDTO{ID: t.ID, CSS: t.CSS(), Scheme: string(t.Scheme)}
+}
+
 // BackgroundDTO is an uploaded background picture (#277); url is the value
 // to store as background, thumb a small preview.
 type BackgroundDTO struct {
