@@ -87,10 +87,7 @@ func writeAccount(ctx context.Context, q queryer) (string, error) {
 		SELECT ?, keyword, name, url_template FROM search_shortcuts WHERE account_id = ?`, account, kernel.SystemAccountID); err != nil {
 		return "", fmt.Errorf("copy shortcuts: %w", err)
 	}
-	if _, err := q.ExecContext(ctx, `INSERT INTO search_keywords (account_id, keyword, kind, target, label)
-		SELECT ?, keyword, kind, target, label FROM search_keywords WHERE account_id = ?`, account, kernel.SystemAccountID); err != nil {
-		return "", fmt.Errorf("copy keywords: %w", err)
-	}
+	// Own keywords are not copied: they are strictly personal (#478).
 	return account, nil
 }
 

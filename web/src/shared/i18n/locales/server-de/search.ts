@@ -42,6 +42,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Das Ziel muss ein Dienst, Lesezeichen, Widget, eine Webadresse oder eine Suche sein.',
   // The web address must start with http:// or https://.
   srv_8bd56c7034353aa9: 'Die Webadresse muss mit http:// oder https:// beginnen.',
+  // Own keywords need a signed-in account.
+  srv_2ce07ca7ab64ce07: 'Eigene Stichwörter brauchen ein angemeldetes Konto.',
   // This keyword is already in use.
   srv_315ea6f2515e5a80: 'Dieses Stichwort ist schon vergeben.',
   // “{word}” is one of your own keywords; choose another prefix or delete the keyword.

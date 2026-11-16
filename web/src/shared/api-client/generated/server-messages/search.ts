@@ -8,6 +8,7 @@ export const serverMessages = {
   srv_7751ccb712b43df6: "Each own keyword can be used only once.",
   srv_fd6c518295d812e7: "Each prefix can be used only once.",
   srv_ff5b12b63bbd2fcc: "Each shortcut keyword can be used only once.",
+  srv_2ce07ca7ab64ce07: "Own keywords need a signed-in account.",
   srv_1605df454fade766: "The URL must contain {query}.",
   srv_fb77bf30efe31cac: "The keyword does not exist.",
   srv_d6e09729bc0d1f3b: "The keyword must consist of 1 to 16 letters or digits.",

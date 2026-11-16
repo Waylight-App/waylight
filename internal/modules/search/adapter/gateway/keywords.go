@@ -6,18 +6,34 @@ import (
 
 	"trisse-home/internal/modules/search/domain"
 	"trisse-home/internal/modules/search/usecase"
+	"trisse-home/internal/shared/kernel"
 	"trisse-home/internal/shared/sqlutil"
 )
 
-// Own keywords (#478) follow the shortcuts: read from the account's own
-// settings once it has them, otherwise from the admin's, and copied into
-// the account on its first change (see writeAccount).
+// Own keywords (#478) are strictly personal, unlike the rest of the search
+// settings: their targets and labels can name private bookmarks, so a
+// member never sees the admin's keywords and nothing is copied on the
+// first change. Guests and kiosk displays have none and cannot add any.
+
+// errKeywordsNotForTabs refuses changes from guest links and kiosk displays,
+// which act on someone else's account.
+var errKeywordsNotForTabs = kernel.NewPublicError(kernel.ErrForbidden, "Own keywords need a signed-in account.")
+
+// keywordAccount is the account whose keywords apply, and false for
+// tab-scoped principals.
+func keywordAccount(ctx context.Context) (string, bool) {
+	p := kernel.PrincipalFrom(ctx)
+	if p.TabScoped() {
+		return "", false
+	}
+	return p.SettingsAccount(), true
+}
 
 // Keywords implements usecase.Repository.
 func (r *Repository) Keywords(ctx context.Context) ([]domain.Keyword, error) {
-	account, err := readAccount(ctx, r.db)
-	if err != nil {
-		return nil, err
+	account, ok := keywordAccount(ctx)
+	if !ok {
+		return nil, nil
 	}
 	rows, err := r.db.QueryContext(ctx,
 		`SELECT keyword, kind, target, label FROM search_keywords WHERE account_id = ? ORDER BY keyword`, account)
@@ -42,16 +58,11 @@ func (r *Repository) Keywords(ctx context.Context) ([]domain.Keyword, error) {
 
 // AddKeyword implements usecase.Repository.
 func (r *Repository) AddKeyword(ctx context.Context, k domain.Keyword) error {
-	tx, err := r.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
+	account, ok := keywordAccount(ctx)
+	if !ok {
+		return errKeywordsNotForTabs
 	}
-	defer func() { _ = tx.Rollback() }()
-	account, err := writeAccount(ctx, tx)
-	if err != nil {
-		return err
-	}
-	_, err = tx.ExecContext(ctx, `INSERT INTO search_keywords (account_id, keyword, kind, target, label) VALUES (?, ?, ?, ?, ?)`,
+	_, err := r.db.ExecContext(ctx, `INSERT INTO search_keywords (account_id, keyword, kind, target, label) VALUES (?, ?, ?, ?, ?)`,
 		account, k.Word(), string(k.Kind()), k.Target(), k.Label())
 	if sqlutil.IsUniqueViolation(err) {
 		return usecase.ErrKeywordExists
@@ -59,45 +70,37 @@ func (r *Repository) AddKeyword(ctx context.Context, k domain.Keyword) error {
 	if err != nil {
 		return fmt.Errorf("insert keyword: %w", err)
 	}
-	return tx.Commit()
+	return nil
 }
 
 // DeleteKeyword implements usecase.Repository.
 func (r *Repository) DeleteKeyword(ctx context.Context, word string) error {
-	tx, err := r.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
+	account, ok := keywordAccount(ctx)
+	if !ok {
+		return errKeywordsNotForTabs
 	}
-	defer func() { _ = tx.Rollback() }()
-	account, err := writeAccount(ctx, tx)
-	if err != nil {
-		return err
-	}
-	res, err := tx.ExecContext(ctx, `DELETE FROM search_keywords WHERE account_id = ? AND keyword = ?`, account, word)
+	res, err := r.db.ExecContext(ctx, `DELETE FROM search_keywords WHERE account_id = ? AND keyword = ?`, account, word)
 	if err != nil {
 		return fmt.Errorf("delete keyword: %w", err)
 	}
 	if n, _ := res.RowsAffected(); n == 0 {
 		return usecase.ErrKeywordNotFound
 	}
-	return tx.Commit()
+	return nil
 }
 
-// ReplaceKeywords implements usecase.ConfigRepository in one transaction,
-// like ReplaceShortcuts.
+// ReplaceKeywords implements usecase.ConfigRepository in one transaction.
+// Config as code runs as the system, so it replaces the admin's keywords.
 func (r *Repository) ReplaceKeywords(ctx context.Context, list []domain.Keyword) error {
+	account, ok := keywordAccount(ctx)
+	if !ok {
+		return errKeywordsNotForTabs
+	}
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	account, err := writeAccount(ctx, tx)
-	if err != nil {
-		return err
-	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO search_settings (account_id, default_provider) VALUES (?, '') ON CONFLICT (account_id) DO NOTHING`, account); err != nil {
-		return fmt.Errorf("create search settings: %w", err)
-	}
 	if _, err := tx.ExecContext(ctx, `DELETE FROM search_keywords WHERE account_id = ?`, account); err != nil {
 		return fmt.Errorf("clear keywords: %w", err)
 	}
@@ -105,6 +108,26 @@ func (r *Repository) ReplaceKeywords(ctx context.Context, list []domain.Keyword)
 		if _, err := tx.ExecContext(ctx, `INSERT INTO search_keywords (account_id, keyword, kind, target, label) VALUES (?, ?, ?, ?, ?)`,
 			account, k.Word(), string(k.Kind()), k.Target(), k.Label()); err != nil {
 			return fmt.Errorf("insert keyword: %w", err)
+		}
+	}
+	return tx.Commit()
+}
+
+// ForgetAccount removes the search settings, shortcuts and keywords of a
+// deleted account. The admin's rows (the household defaults) are kept.
+func (r *Repository) ForgetAccount(ctx context.Context, account string) error {
+	if account == "" || account == kernel.SystemAccountID {
+		return nil
+	}
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback() }()
+	for _, table := range []string{"search_keywords", "search_shortcuts", "search_settings"} {
+		// Table names are constants from the list above, not input.
+		if _, err := tx.ExecContext(ctx, `DELETE FROM `+table+` WHERE account_id = ?`, account); err != nil { //nolint:gosec // constant table names
+			return fmt.Errorf("forget account in %s: %w", table, err)
 		}
 	}
 	return tx.Commit()
