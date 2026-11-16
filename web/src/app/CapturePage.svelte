@@ -145,7 +145,7 @@
     color: var(--color-accent-contrast);
   }
   .targets label:has(:focus-visible) {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
     outline-offset: -2px;
   }
   .targets input {

@@ -179,7 +179,7 @@
     opacity: 0;
   }
   .row label:has(:focus-visible) {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
   }
   .list {
     list-style: none;

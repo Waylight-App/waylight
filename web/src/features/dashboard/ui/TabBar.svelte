@@ -266,7 +266,7 @@
     font-weight: 600;
   }
   .name:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
     outline-offset: 2px;
   }
 </style>

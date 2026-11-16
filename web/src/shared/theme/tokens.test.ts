@@ -59,7 +59,6 @@ describe('contrast of the light and dark tokens (#113)', () => {
   const pairs: [string, string[]][] = [
     ['--color-text', ['--color-bg', '--color-surface', '--color-surface-2']],
     ['--color-text-muted', ['--color-bg', '--color-surface', '--color-surface-2']],
-    ['--color-accent', ['--color-surface']],
     ['--color-accent-text', ['--color-surface', '--color-surface-2']],
     ['--color-danger', ['--color-surface', '--color-surface-2']],
     ['--color-success', ['--color-surface', '--color-surface-2']],
