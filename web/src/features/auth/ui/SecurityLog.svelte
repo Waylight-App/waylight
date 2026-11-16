@@ -1,7 +1,13 @@
 <script lang="ts">
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
-  import { type SecurityEvent, eventLabel, isWarning } from '../domain/securityEvent';
+  import {
+    type SecurityEvent,
+    eventLabel,
+    eventTypes,
+    filterByType,
+    isWarning,
+  } from '../domain/securityEvent';
   import { describeUserAgent } from '../domain/session';
   import type { AuthUseCases } from '../usecase/authUseCases';
 
@@ -13,6 +19,9 @@
 
   let events = $state<SecurityEvent[]>([]);
   let error = $state('');
+  let type = $state('');
+  const types = $derived(eventTypes(events));
+  const shown = $derived(filterByType(events, type));
 
   $effect(() => {
     auth
@@ -24,10 +33,18 @@
 
 <p class="muted">{t('auth.security_log_hint')}</p>
 {#if error}<p class="error" role="alert">{error}</p>{/if}
+{#if types.length > 1}
+  <label class="field filter"
+    ><span>{t('auth.security_log_filter')}</span><select class="input" bind:value={type}>
+      <option value="">{t('auth.security_log_all')}</option>
+      {#each types as ty (ty)}<option value={ty}>{t(eventLabel(ty))}</option>{/each}
+    </select></label
+  >
+{/if}
 <!-- Scrollable, so it must be reachable with the keyboard (WCAG 2.1.1, #113). -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <ul class="events" tabindex="0" aria-label={t('settings.section.security_log')}>
-  {#each events as e (e.id)}
+  {#each shown as e (e.id)}
     <li class:warning={isWarning(e.type)}>
       <span class="what"
         >{t(eventLabel(e.type))}{#if e.detail}
@@ -45,6 +62,9 @@
 </ul>
 
 <style>
+  .filter {
+    max-width: 20rem;
+  }
   .events {
     list-style: none;
     padding: 0;

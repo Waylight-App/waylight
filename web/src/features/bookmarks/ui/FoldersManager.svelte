@@ -3,7 +3,7 @@
   import { errorMessage } from '../../../shared/api-client/http';
   import type { Folder } from '../domain/bookmark';
   import type { BookmarksUseCases } from '../usecase/bookmarksUseCases';
-  import type { ShareGroup } from '../../../shared/sharing/sharing';
+  import { type ShareGroup, sharedVia } from '../../../shared/sharing/sharing';
   import VisibilitySelect from '../../../shared/ui/VisibilitySelect.svelte';
 
   /** Props of the bookmark folder management section. */
@@ -43,7 +43,14 @@
     <li>
       <span class="name">{f.name} <span class="muted">({f.count})</span></span>
       {#if !f.mine}
-        <span class="muted small">{t('bookmarks.shared_with_you')}</span>
+        {@const via = sharedVia(f.visibility, groups)}
+        <span class="muted small"
+          >{via === null
+            ? t('bookmarks.shared_with_you')
+            : 'group' in via
+              ? t('bookmarks.shared_with_you_via', { group: via.group })
+              : t('bookmarks.shared_with_you_everyone')}</span
+        >
       {:else}
         <VisibilitySelect
           value={f.visibility}

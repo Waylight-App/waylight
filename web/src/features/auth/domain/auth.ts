@@ -171,3 +171,15 @@ export function inNightWindow(now: Date, from: string, to: string): boolean {
   const b = minutes(to);
   return a < b ? m >= a && m < b : m >= a || m < b;
 }
+
+/** Remaining validity of an invitation (#421): whole days, hours on the last day. */
+export type Remaining = { unit: 'days' | 'hours'; n: number } | { unit: 'expired' };
+
+/** How long something expiring at `expires` is still valid at `now`. */
+export function remainingTime(expires: Date, now: Date): Remaining {
+  const ms = expires.getTime() - now.getTime();
+  if (ms <= 0) return { unit: 'expired' };
+  const hours = ms / 3_600_000;
+  if (hours < 24) return { unit: 'hours', n: Math.max(1, Math.ceil(hours)) };
+  return { unit: 'days', n: Math.floor(hours / 24) };
+}

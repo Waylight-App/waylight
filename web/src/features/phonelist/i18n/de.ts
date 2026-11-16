@@ -30,4 +30,9 @@ export const de: Record<keyof typeof en, string> = {
   'phonelist.empty_admin': 'Die Telefonliste ist leer. Füge Personen mit ＋ hinzu.',
   'phonelist.none_match': 'Niemand passt.',
   'phonelist.no_contact': 'Keine Telefonnummer oder E-Mail',
+  'phonelist.copy': '{phone} kopieren',
+  'phonelist.copied': 'Kopiert',
+  'phonelist.group_by_team': 'Nach Team gruppieren',
+  'phonelist.other_team': 'Sonstige',
+  'phonelist.download_csv': 'Als CSV herunterladen',
 };

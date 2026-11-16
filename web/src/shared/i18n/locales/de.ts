@@ -1636,4 +1636,14 @@ export const de: Record<BaseMessageKey, string> = {
   'smart.full_in': 'voll in ~{n} Tagen',
   'common.plain_http_warning':
     'Diese Adresse nutzt http://: Passwort oder Token gehen unverschlüsselt durch dein Netz. Nimm https://, wo das Gerät es unterstützt.',
+  'auth.security_log_filter': 'Anzeigen',
+  'auth.security_log_all': 'Alle Ereignisse',
+  'auth.invite_day_left': 'noch 1 Tag gültig',
+  'auth.invite_days_left': 'noch {n} Tage gültig',
+  'auth.invite_hour_left': 'noch 1 Stunde gültig',
+  'auth.invite_hours_left': 'noch {n} Stunden gültig',
+  'auth.invite_expired': 'abgelaufen',
+  'full_version.privacy': 'Was den Browser verlässt',
+  'bookmarks.shared_with_you_via': 'Mit dir geteilt · {group}',
+  'bookmarks.shared_with_you_everyone': 'Mit dir geteilt · alle',
 };

@@ -13,6 +13,12 @@ widget reads the list.
 Each entry needs a name and at least a phone number or an e-mail address.
 Role and team are optional and searchable.
 
+The ⧉ button next to a number copies it, which helps on a computer without
+a phone app. In the widget settings, *Group by team* shows a heading per
+team, with people without a team last under *Other*. Admins can download
+the list as a CSV file (⤓), with the columns name, role, team, phone and
+e-mail; it opens in spreadsheet apps with umlauts intact.
+
 The search field of the start page answers too: type `phone anna`,
 `telefon weber` or `nummer reception`, and the answer shows the number and
 the address. Press Enter to copy the number.
