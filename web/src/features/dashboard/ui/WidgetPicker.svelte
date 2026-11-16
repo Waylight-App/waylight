@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '../../../shared/i18n';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
+  import type { Snippet } from 'svelte';
   import type { IconName } from '../../../shared/ui/icons/paths';
   import Modal from '../../../shared/ui/Modal.svelte';
   import { groupByCategory, moveFocus, searchWidgetTypes } from '../domain/catalog';
@@ -12,8 +13,10 @@
     icon: (kind: string) => IconName | undefined;
     onpick: (type: WidgetType) => void;
     onclose: () => void;
+    /** Shown below the tiles, e.g. what a server adds in local mode (#291). */
+    footer?: Snippet;
   }
-  let { types, icon, onpick, onclose }: Props = $props();
+  let { types, icon, onpick, onclose, footer }: Props = $props();
 
   let query = $state('');
   let search = $state<HTMLInputElement>();
@@ -104,6 +107,7 @@
         {/each}
       </div>
     {/if}
+    {#if footer}{@render footer()}{/if}
   </div>
 </Modal>
 

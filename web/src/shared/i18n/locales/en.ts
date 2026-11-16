@@ -15,6 +15,24 @@ export const en = {
   'ai_summary.truncated': 'Only the beginning of the text was summarised.',
   'ai_summary.summarise_item': 'Summarise {title}',
   'kiosk.fullscreen': 'Full screen',
+  'settings.section.full_version': 'What you get with a server',
+  'full_version.short':
+    'This is the browser-only version. Services, Docker, parcels, notifications and sync come with a server or the Raspberry Pi image.',
+  'full_version.learn_more': 'How to install',
+  'full_version.dismiss': 'Hide this hint',
+  'full_version.intro':
+    'The extension works without a server: dashboard, bookmarks, notes, to-dos, countdowns, focus timer, habits and weather stay in this browser. Running trisse-home on a server or on a Raspberry Pi adds:',
+  'full_version.feature_services': 'service tiles with status checks for your apps and devices',
+  'full_version.feature_docker': 'Docker containers, server health and backups',
+  'full_version.feature_parcels': 'parcel tracking, calendars, feeds and the other integrations',
+  'full_version.feature_notifications': 'notifications to your phone, e-mail or chat',
+  'full_version.feature_devices':
+    'the same start page on all your devices, with accounts for the people you live or work with',
+  'full_version.feature_sync': 'your data on your own server instead of in one browser',
+  'full_version.server_guide': 'Install on a server',
+  'full_version.pi_guide': 'Raspberry Pi image',
+  'full_version.local_note':
+    'Your local data can be exported and imported into a server later. These links open only when you click them.',
   'settings.section.kiosks': 'Kiosk displays',
   'auth.kiosk_hint':
     'A wall tablet shows the chosen tabs without an account: read-only, without controls, optionally rotating through the tabs and dimmed at night. Open the link once on the device; it stays signed in.',

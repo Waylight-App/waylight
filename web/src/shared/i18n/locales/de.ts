@@ -15,6 +15,24 @@ export const de: Record<BaseMessageKey, string> = {
   'ai_summary.truncated': 'Nur der Anfang des Textes wurde zusammengefasst.',
   'ai_summary.summarise_item': '{title} zusammenfassen',
   'kiosk.fullscreen': 'Vollbild',
+  'settings.section.full_version': 'Was ein Server dazubringt',
+  'full_version.short':
+    'Das ist die Version nur im Browser. Dienste, Docker, Pakete, Benachrichtigungen und Sync gibt es mit einem Server oder dem Raspberry-Pi-Image.',
+  'full_version.learn_more': 'So installierst du es',
+  'full_version.dismiss': 'Hinweis ausblenden',
+  'full_version.intro':
+    'Die Erweiterung funktioniert ohne Server: Dashboard, Lesezeichen, Notizen, To-dos, Countdowns, Fokus-Timer, Gewohnheiten und Wetter bleiben in diesem Browser. Läuft trisse-home auf einem Server oder einem Raspberry Pi, kommt dazu:',
+  'full_version.feature_services': 'Kacheln mit Statusprüfung für deine Apps und Geräte',
+  'full_version.feature_docker': 'Docker-Container, Serverzustand und Backups',
+  'full_version.feature_parcels': 'Paketverfolgung, Kalender, Feeds und die anderen Integrationen',
+  'full_version.feature_notifications': 'Benachrichtigungen aufs Handy, per E-Mail oder in den Chat',
+  'full_version.feature_devices':
+    'dieselbe Startseite auf all deinen Geräten, mit Konten für die Menschen, mit denen du wohnst oder arbeitest',
+  'full_version.feature_sync': 'deine Daten auf deinem eigenen Server statt in einem Browser',
+  'full_version.server_guide': 'Auf einem Server installieren',
+  'full_version.pi_guide': 'Raspberry-Pi-Image',
+  'full_version.local_note':
+    'Deine lokalen Daten lassen sich exportieren und später in einen Server importieren. Die Links öffnen sich erst, wenn du sie anklickst.',
   'settings.section.kiosks': 'Kiosk-Anzeigen',
   'auth.kiosk_hint':
     'Ein Wand-Tablet zeigt die gewählten Tabs ohne Konto: nur lesend, ohne Bedienelemente, auf Wunsch mit Tab-Wechsel und nachts gedimmt. Öffne den Link einmal auf dem Gerät; es bleibt angemeldet.',
