@@ -14,6 +14,7 @@ import TeamTabsSection from './teamtabs/TeamTabsSection.svelte';
 import { texts as teamTabTexts } from './teamtabs/texts';
 import PresenceSection from './presence/PresenceSection.svelte';
 import { texts as presenceTexts } from './presence/texts';
+import { presenceSearchActions } from './presence/searchActions';
 import { lazyMountable, mountable } from './lib/mountable';
 
 export const plugin: TrissePlugin = {
@@ -107,4 +108,5 @@ export const plugin: TrissePlugin = {
       view: mountable(PresenceSection),
     },
   ],
+  searchActions: [...presenceSearchActions()],
 };

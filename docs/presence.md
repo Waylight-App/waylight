@@ -10,6 +10,10 @@ Everyone who signs in (the owner, admins and members) sets their own status
 in the widget: **Office**, **Home** or **Away**, with an optional day of
 return when away. Choosing the active status again clears it.
 
+The search field on the start page sets it too: type `office`, `home` or
+`away` (or `büro`, `homeoffice`, `weg`) and choose *Set my status* under
+*Actions*. The first letters are enough, for example `hom`.
+
 A status counts for the day it was set and lapses at midnight; statuses of
 earlier days are deleted within the next hour. Nothing is ever guessed:
 without a status, the widget shows *not set*. Presence keeps no history.
