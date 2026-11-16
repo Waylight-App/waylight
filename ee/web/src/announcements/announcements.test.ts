@@ -11,7 +11,7 @@ describe("announcements", () => {
   });
 
   it("creates or updates with a trimmed title and the expiry", async () => {
-    const http = { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() };
+    const http = { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn(), putBlob: vi.fn() };
     const api = new AnnouncementsApi(http);
     await api.save({
       title: " Closed Friday ",

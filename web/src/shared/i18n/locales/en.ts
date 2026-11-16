@@ -1074,6 +1074,7 @@ export const en = {
   'auth.event.invite_accepted': 'Invitation accepted',
   'auth.event.reset_link_created': 'Password reset link created',
   'auth.event.password_reset': 'Password reset with a link',
+  'auth.powered_by': 'Powered by trisse-home',
   'auth.forgot_password': 'Forgot your password?',
   'auth.reset_mail_hint':
     'Enter your name. If your account has an e-mail address, a link to set a new password is sent there.',
