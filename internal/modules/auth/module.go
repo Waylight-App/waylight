@@ -143,6 +143,7 @@ type Module struct {
 	provision  usecase.Provisioning
 	directory  *usecase.DirectoryLogin
 	policies   *usecase.Policies
+	hooks      *usecase.AccountHooks
 }
 
 // New builds the auth module.
@@ -168,6 +169,7 @@ func New(cfg Config, d Deps) (*Module, error) {
 		Groups: groups, Preferences: prefs, MembersEnabled: cfg.MembersEnabled, PasswordLoginDisabled: !cfg.SSO.PasswordLogin && (cfg.SSO.OIDC != nil || cfg.SSO.ProxyHeader != ""),
 		Directory: &usecase.DirectoryLogin{},
 		Policies:  &usecase.Policies{},
+		Hooks:     &usecase.AccountHooks{},
 	}
 	if cfg.WebAuthn != nil {
 		deps.WebAuthn = webauthnAdapter{*cfg.WebAuthn}
@@ -221,8 +223,13 @@ func New(cfg Config, d Deps) (*Module, error) {
 		provision:  usecase.NewProvisioning(deps),
 		directory:  deps.Directory,
 		policies:   deps.Policies,
+		hooks:      deps.Hooks,
 	}, nil
 }
+
+// OnAccountDeleted runs fn after a member or guest was deleted, so a module
+// can remove what belonged only to that account.
+func (m *Module) OnAccountDeleted(fn func(ctx context.Context, accountID string)) { m.hooks.OnDeleted(fn) }
 
 // Policy holds admin policies; see usecase.Policy.
 type Policy = usecase.Policy
