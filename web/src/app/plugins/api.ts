@@ -17,6 +17,8 @@ export interface PluginHttp {
   post<T>(path: string, body?: unknown): Promise<T>;
   put<T>(path: string, body?: unknown): Promise<T>;
   delete<T = void>(path: string): Promise<T>;
+  /** PUTs a file as the raw body (images and the like). */
+  putBlob<T>(path: string, blob: Blob): Promise<T>;
 }
 
 /** What a plugin screen gets from the core besides its own props. */

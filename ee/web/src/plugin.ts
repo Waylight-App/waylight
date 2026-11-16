@@ -8,6 +8,7 @@ import {
   type TrissePlugin,
 } from "../../../web/src/app/plugins/api";
 import { texts as announcementTexts } from "./announcements/texts";
+import { texts as brandingTexts } from "./branding/texts";
 import LicenceSection from "./licence/LicenceSection.svelte";
 import { lazyMountable, mountable } from "./lib/mountable";
 
@@ -45,6 +46,14 @@ export const plugin: TrissePlugin = {
       },
       description: { en: "", de: "" },
       view: mountable(LicenceSection),
+    },
+    {
+      id: "branding",
+      feature: "branding",
+      adminOnly: true,
+      label: brandingTexts.label ?? { en: "Branding" },
+      description: brandingTexts.description ?? { en: "" },
+      view: lazyMountable(() => import("./branding/BrandingSection.svelte")),
     },
   ],
 };

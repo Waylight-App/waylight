@@ -13,8 +13,12 @@
     auth: AuthUseCases;
     /** Called after a successful login. */
     ondone: () => void;
+    /** The organisation's name (#305); the product name by default. */
+    brandName?: string;
+    /** Shows a small "powered by" line under a custom brand. */
+    poweredBy?: boolean;
   }
-  let { auth, ondone }: Props = $props();
+  let { auth, ondone, brandName = 'trisse-home', poweredBy = false }: Props = $props();
 
   const params = new URLSearchParams(location.search);
   // The ticket is read once when the page opens; later changes come from submit().
@@ -84,7 +88,7 @@
   }
 </script>
 
-<AuthCard title="trisse-home" subtitle={needsCode ? t('auth.enter_code_hint') : t('auth.please_log_in')}>
+<AuthCard title={brandName} subtitle={needsCode ? t('auth.enter_code_hint') : t('auth.please_log_in')}>
   {#if ssoError}<p class="error" role="alert">{t(ssoError)}</p>{/if}
   {#if forgot}
     <ForgotPassword {auth} onback={() => (forgot = false)} />
@@ -169,9 +173,15 @@
       {/if}
     </form>
   {/if}
+  {#if poweredBy}<p class="powered muted">{t('auth.powered_by')}</p>{/if}
 </AuthCard>
 
 <style>
+  .powered {
+    margin: var(--space-3) 0 0;
+    text-align: center;
+    font-size: 0.8em;
+  }
   .hidden {
     display: none;
   }
