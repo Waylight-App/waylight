@@ -100,7 +100,7 @@ func (uc *members) Create(ctx context.Context, req NewMemberRequest) (MemberView
 	if len(existing) >= domain.MaxMembers {
 		return MemberView{}, domain.ErrTooManyMembers
 	}
-	hash, err := uc.guests.hash(req.Password)
+	hash, err := uc.guests.hash(ctx, req.Password)
 	if err != nil {
 		return MemberView{}, err
 	}
@@ -138,7 +138,7 @@ func (uc *members) Update(ctx context.Context, req UpdateMemberRequest) (MemberV
 		return MemberView{}, err
 	}
 	if req.Password != "" {
-		hash, err := uc.guests.hash(req.Password)
+		hash, err := uc.guests.hash(ctx, req.Password)
 		if err != nil {
 			return MemberView{}, err
 		}

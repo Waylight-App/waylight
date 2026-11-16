@@ -142,6 +142,7 @@ type Module struct {
 	sso        usecase.SSO
 	provision  usecase.Provisioning
 	directory  *usecase.DirectoryLogin
+	policies   *usecase.Policies
 }
 
 // New builds the auth module.
@@ -166,12 +167,13 @@ func New(cfg Config, d Deps) (*Module, error) {
 		Events: events, Passkeys: gateway.NewPasskeyRepository(d.DB), Challenges: usecase.NewChallenges(),
 		Groups: groups, Preferences: prefs, MembersEnabled: cfg.MembersEnabled, PasswordLoginDisabled: !cfg.SSO.PasswordLogin && (cfg.SSO.OIDC != nil || cfg.SSO.ProxyHeader != ""),
 		Directory: &usecase.DirectoryLogin{},
+		Policies:  &usecase.Policies{},
 	}
 	if cfg.WebAuthn != nil {
 		deps.WebAuthn = webauthnAdapter{*cfg.WebAuthn}
 	}
 	securityLog := usecase.NewSecurityLog(events)
-	status := usecase.NewGetStatus(accounts, sessions, d.Clock)
+	status := usecase.NewGetStatusWithPolicies(accounts, sessions, d.Clock, deps.Policies, deps.Passkeys)
 	kiosks := usecase.NewKiosks(deps, gateway.NewKioskRepository(d.DB))
 	sso := newSSO(deps, cfg.SSO)
 	uc := controller.UseCases{
@@ -179,8 +181,8 @@ func New(cfg Config, d Deps) (*Module, error) {
 		Setup:        usecase.NewSetupAccount(deps, gateway.NewSetupToken(token), observerFunc(cfg.OnAccountCreated)),
 		Login:        usecase.NewLogin(deps),
 		Logout:       usecase.NewLogout(sessions),
-		Authenticate: usecase.NewAuthenticate(sessions, accounts, groups, prefs, d.Clock, ttl),
-		Authorizer:   usecase.NewAuthorizer(d.GuestScope),
+		Authenticate: usecase.NewAuthenticateWithPolicies(sessions, accounts, groups, prefs, d.Clock, ttl, deps.Policies, deps.Passkeys),
+		Authorizer:   usecase.NewAuthorizerWithPolicies(d.GuestScope, deps.Policies),
 		Guests:       usecase.NewGuests(deps),
 		Members:      usecase.NewMembers(deps),
 		Groups:       usecase.NewGroups(deps),
@@ -218,8 +220,19 @@ func New(cfg Config, d Deps) (*Module, error) {
 		sso:        sso,
 		provision:  usecase.NewProvisioning(deps),
 		directory:  deps.Directory,
+		policies:   deps.Policies,
 	}, nil
 }
+
+// Policy holds admin policies; see usecase.Policy.
+type Policy = usecase.Policy
+
+// PolicySource provides the policy in force; see usecase.PolicySource.
+type PolicySource = usecase.PolicySource
+
+// SetPolicySource applies admin policies (#304). The ee/ policies module calls
+// it while the server is built; without it no policy applies.
+func (m *Module) SetPolicySource(src PolicySource) { m.policies.Set(src) }
 
 // DirectoryAuthenticator checks members' names and passwords against a
 // directory; see usecase.DirectoryAuthenticator.

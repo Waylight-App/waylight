@@ -24,6 +24,10 @@ type Principal struct {
 	// start private (ADR 0018, migration step 3). Members always start
 	// private.
 	PrivateByDefault bool
+	// SecondFactorMissing is set when an admin policy requires a second
+	// factor and the account has none (#304): until it sets one up, it may
+	// only reach its own account settings.
+	SecondFactorMissing bool
 }
 
 // SystemAccountID is the account that background jobs act for. It is the
