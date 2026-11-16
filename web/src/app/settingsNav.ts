@@ -1,7 +1,8 @@
 import type { MessageKey } from '../shared/i18n';
 
 /** Topics of the settings navigation (#261), in display order. */
-export type SettingsGroup = 'general' | 'content' | 'integrations' | 'data' | 'account' | 'about';
+export type SettingsGroup =
+  'general' | 'content' | 'integrations' | 'data' | 'account' | 'organisation' | 'about';
 
 export const SETTINGS_GROUPS: readonly { id: SettingsGroup; label: MessageKey }[] = [
   { id: 'general', label: 'settings.group.general' },
@@ -9,6 +10,8 @@ export const SETTINGS_GROUPS: readonly { id: SettingsGroup; label: MessageKey }[
   { id: 'integrations', label: 'settings.group.integrations' },
   { id: 'data', label: 'settings.group.data' },
   { id: 'account', label: 'settings.group.account' },
+  // Sections of the ee/ plugin (ADR 0021); empty without it, so not shown.
+  { id: 'organisation', label: 'settings.group.organisation' },
   { id: 'about', label: 'settings.group.about' },
 ];
 

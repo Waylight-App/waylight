@@ -13,8 +13,10 @@ export interface AuthStatus {
   guest: boolean;
   /** Kiosk display (#50): no controls, rotation, night dimming. */
   kiosk: boolean;
-  /** Admin of the instance (today the owner, ADR 0018). */
+  /** Admin of the instance: the owner or an admin (ADR 0022). */
   admin: boolean;
+  /** The owner: backups, export and API tokens stay with this account (ADR 0022). */
+  owner: boolean;
   /** Member: own tabs and content, no instance settings (#294). */
   member: boolean;
   /** Available sign-in methods (ADR 0013). */

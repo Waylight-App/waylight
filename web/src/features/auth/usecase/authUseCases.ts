@@ -46,8 +46,10 @@ export class AuthUseCases {
   guest = false;
   /** True when a kiosk display is signed in (#50); guest is true as well. */
   kiosk = false;
-  /** True for an admin of the instance (today the owner, ADR 0018). */
+  /** True for an admin of the instance: the owner or an admin (ADR 0022). */
   admin = false;
+  /** True for the owner, the one account that can never be removed (ADR 0022). */
+  owner = false;
   /** True for a member: own tabs and content, no instance settings (#294). */
   member = false;
   /** Sign-in methods offered by the server (set by currentView). */
@@ -64,6 +66,7 @@ export class AuthUseCases {
     this.guest = status.guest;
     this.kiosk = status.kiosk;
     this.admin = status.admin;
+    this.owner = status.owner;
     this.member = status.member;
     this.sso = status.sso;
     this.passwordReset = status.passwordReset;
