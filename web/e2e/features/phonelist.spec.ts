@@ -14,6 +14,9 @@ test('the phone list keeps people, finds them and answers in the search field (#
   await page.getByRole('button', { name: '+ Add widget' }).click();
   await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('telefon');
   await page.getByRole('button', { name: /^Phone list/ }).click();
+  // The widget has settings (#417); they open right after adding.
+  await page.getByRole('checkbox', { name: 'Group by team' }).check();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
   await account(page, 'Done');
 
   // The owner is an admin and maintains the list.
@@ -33,6 +36,10 @@ test('the phone list keeps people, finds them and answers in the search field (#
     'href',
     'mailto:anna@example.org',
   );
+
+  // Grouped by team (#417): a heading per team; the number can be copied (#416).
+  await expect(page.getByRole('heading', { name: 'Front desk', level: 4 })).toBeVisible();
+  await expect(anna.getByRole('button', { name: 'Copy +49 30 1234-56' })).toBeVisible();
 
   // The widget's own search covers name, role and team.
   const filter = page.getByRole('searchbox', { name: 'Search name, role or team' });

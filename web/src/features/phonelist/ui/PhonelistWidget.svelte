@@ -31,7 +31,8 @@
 
   const shown = $derived(filterEntries(entries, query));
   const grouped = $derived(parsePhonelistConfig(config).groupByTeam);
-  const groups = $derived(grouped ? groupByTeam(shown) : [{ team: '', entries: shown }]);
+  // An empty list keeps one group, so the empty or "nobody matches" text shows.
+  const groups = $derived(grouped && shown.length > 0 ? groupByTeam(shown) : [{ team: '', entries: shown }]);
   // ID of the entry whose number was just copied (#416).
   let copied = $state('');
 
@@ -172,7 +173,7 @@
 {/if}
 
 {#each groups as g (g.team)}
-  {#if grouped}<h4 class="team">{g.team || t('phonelist.other_team')}</h4>{/if}
+  {#if grouped && g.entries.length > 0}<h4 class="team">{g.team || t('phonelist.other_team')}</h4>{/if}
   <ul>
     {#each g.entries as e (e.id)}
       <li>
