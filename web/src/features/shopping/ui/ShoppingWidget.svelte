@@ -82,10 +82,13 @@
     e.preventDefault();
     if (!source) return;
     busy = true;
+    const text = draft;
     try {
-      const it = await source.add(draft);
+      const it = await source.add(text);
       if (it) items = [...items.filter((i) => !i.done), it, ...items.filter((i) => i.done)];
-      draft = ''; // only cleared once the server confirmed the item
+      // Cleared only once the server confirmed the item, and only if nothing
+      // new was typed meanwhile: a quick second entry must not be lost.
+      if (draft === text) draft = '';
       error = '';
     } catch (err) {
       error = errorMessage(err);
