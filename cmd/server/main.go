@@ -213,12 +213,16 @@ func newHandler(a *app) http.Handler {
 	r := router.New(a.auth.Guard)
 	managed := managedSections(a.registry)
 	for _, m := range a.registry.All() {
+		var mr modules.Router = r
+		// Gated modules (the ee/ features, #307) check their access per request.
+		if g, ok := m.(modules.Gated); ok {
+			mr = modules.GatedRouter(mr, g)
+		}
 		// Sections owned by CONFIG_FILE refuse their config routes (#88).
 		if c, ok := m.(modules.Configurable); ok && managed[c.ConfigSection()] {
-			m.RegisterRoutes(modules.ManagedRouter(r, c.ConfigRoutes()))
-			continue
+			mr = modules.ManagedRouter(mr, c.ConfigRoutes())
 		}
-		m.RegisterRoutes(r)
+		m.RegisterRoutes(mr)
 	}
 	r.Protected("GET /api/modules", a.registry.Handler(frontendOnlyWidgetKinds))
 	r.Handle("GET /healthz", router.HealthCheck(a.db.PingContext))

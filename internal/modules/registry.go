@@ -128,13 +128,28 @@ func (r *Registry) WidgetKinds() []string {
 
 // Handler returns a handler that lists the enabled modules so the frontend
 // can hide features that are switched off.
+// A gated module (#307) without access is left out with its widget kinds;
+// one with read access only is listed and named in ReadOnly.
 func (r *Registry) Handler(staticKinds []string) http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
-		kinds := append(slices.Clone(staticKinds), r.WidgetKinds()...)
-		dataKinds := map[string]string{}
-		for _, m := range r.modules {
-			dataKinds[m.Name()] = string(m.DataKind())
+	return func(w http.ResponseWriter, req *http.Request) {
+		res := InfoResponse{
+			Modules:     []string{},
+			WidgetKinds: slices.Clone(staticKinds),
+			DataKinds:   map[string]string{},
+			ReadOnly:    []string{},
 		}
-		httpapi.WriteJSON(w, http.StatusOK, InfoResponse{Modules: r.Names(), WidgetKinds: kinds, DataKinds: dataKinds})
+		for _, m := range r.modules {
+			access := accessOf(req.Context(), m)
+			if access == AccessNone {
+				continue
+			}
+			if access == AccessRead {
+				res.ReadOnly = append(res.ReadOnly, m.Name())
+			}
+			res.Modules = append(res.Modules, m.Name())
+			res.WidgetKinds = append(res.WidgetKinds, m.WidgetKinds()...)
+			res.DataKinds[m.Name()] = string(m.DataKind())
+		}
+		httpapi.WriteJSON(w, http.StatusOK, res)
 	}
 }

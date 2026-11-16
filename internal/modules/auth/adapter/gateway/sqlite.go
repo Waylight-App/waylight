@@ -112,6 +112,18 @@ func (r *AccountRepository) one(ctx context.Context, query string, arg any, notF
 	return r.withRecoveryCodes(ctx, a)
 }
 
+// CountLicensed counts the accounts a licence key covers (#307): owner,
+// members and guests that are not disabled.
+func (r *AccountRepository) CountLicensed(ctx context.Context) (int, error) {
+	var n int
+	err := r.db.QueryRowContext(ctx,
+		`SELECT COUNT(*) FROM auth_accounts WHERE role IN ('owner', 'member', 'guest') AND disabled = 0`).Scan(&n)
+	if err != nil {
+		return 0, fmt.Errorf("count accounts: %w", err)
+	}
+	return n, nil
+}
+
 // Get implements usecase.AccountRepository.
 func (r *AccountRepository) Get(ctx context.Context, id string) (domain.Account, error) {
 	notFound := domain.ErrGuestNotFound

@@ -137,6 +137,7 @@ type Module struct {
 	demo       bool
 	setupToken string
 	log        *slog.Logger
+	accounts   *gateway.AccountRepository
 }
 
 // New builds the auth module.
@@ -207,7 +208,15 @@ func New(cfg Config, d Deps) (*Module, error) {
 		demo:       cfg.Demo,
 		setupToken: token,
 		log:        d.Log,
+		accounts:   accounts,
 	}, nil
+}
+
+// CountLicensedAccounts counts the owner, members and guests that are not
+// disabled; kiosk displays are devices, not people, and do not count. The
+// licence module of ee/ compares it with the seats of a key (#307).
+func (m *Module) CountLicensedAccounts(ctx context.Context) (int, error) {
+	return m.accounts.CountLicensed(ctx)
 }
 
 // Name implements modules.Module.
