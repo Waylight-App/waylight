@@ -78,8 +78,8 @@ func (uc *guests) List(ctx context.Context) ([]GuestView, error) {
 	return out, nil
 }
 
-func (uc *guests) hash(raw string) (string, error) {
-	password, err := domain.NewPassword(raw)
+func (uc *guests) hash(ctx context.Context, raw string) (string, error) {
+	password, err := uc.deps.newPassword(ctx, raw)
 	if err != nil {
 		return "", err
 	}
@@ -99,7 +99,7 @@ func (uc *guests) Create(ctx context.Context, req NewGuestRequest) (GuestView, e
 	if len(existing) >= domain.MaxGuests {
 		return GuestView{}, domain.ErrTooManyGuests
 	}
-	hash, err := uc.hash(req.Password)
+	hash, err := uc.hash(ctx, req.Password)
 	if err != nil {
 		return GuestView{}, err
 	}
@@ -140,7 +140,7 @@ func (uc *guests) Update(ctx context.Context, req UpdateGuestRequest) (GuestView
 		return GuestView{}, err
 	}
 	if req.Password != "" {
-		hash, err := uc.hash(req.Password)
+		hash, err := uc.hash(ctx, req.Password)
 		if err != nil {
 			return GuestView{}, err
 		}
@@ -202,16 +202,31 @@ type Authorizer interface {
 	Authorize(ctx context.Context, p kernel.Principal, method, path string) error
 }
 
-type authorizer struct{ scope GuestScope }
+type authorizer struct {
+	scope    GuestScope
+	policies *Policies
+}
 
 // NewAuthorizer returns the authorization decision; scope may be nil (then
 // guests can only use the self-service endpoints).
 func NewAuthorizer(scope GuestScope) Authorizer { return &authorizer{scope: scope} }
 
+// NewAuthorizerWithPolicies also applies the admin policies (#304): the
+// required second factor and the modules members may use.
+func NewAuthorizerWithPolicies(scope GuestScope, policies *Policies) Authorizer {
+	return &authorizer{scope: scope, policies: policies}
+}
+
 // Authorize implements Authorizer: the owner may do everything, members
 // what domain.MemberMayAccess allows, guests what domain.GuestMayAccess
 // allows. An unknown role is refused.
 func (uc *authorizer) Authorize(ctx context.Context, p kernel.Principal, method, path string) error {
+	if p.SecondFactorMissing && !domain.SecondFactorSetupPath(method, path) {
+		return domain.ErrSecondFactorRequired
+	}
+	if p.Role == string(domain.RoleMember) && !uc.policies.Current(ctx).MemberMayUse(domain.ModuleOfPath(path)) {
+		return domain.ErrMemberNotAllowed
+	}
 	switch {
 	case p.IsToken():
 		if !domain.TokenMayAccess(p.Scopes, method, path) {

@@ -238,7 +238,7 @@ func (uc *accountLinks) Accept(ctx context.Context, req AcceptLinkRequest) (Link
 	}
 	// Validate the password before the link is consumed, so a weak
 	// password does not burn the link.
-	hash, err := uc.guests.hash(req.Password)
+	hash, err := uc.guests.hash(ctx, req.Password)
 	if err != nil {
 		return LinkInfo{}, err
 	}
