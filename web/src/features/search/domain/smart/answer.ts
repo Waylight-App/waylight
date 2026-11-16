@@ -1,3 +1,4 @@
+import type { WeatherIcon } from '../../../weather/domain/weather';
 import type { Action, Entity } from './intent';
 
 /**
@@ -32,6 +33,8 @@ interface Base {
 export interface MetricAnswer extends Base {
   kind: 'metric';
   value: string;
+  /** A weather icon before the value (#508). */
+  weather?: WeatherIcon;
   detail?: string;
   /** 0–100 for a meter, if the value is a share. */
   percent?: number;

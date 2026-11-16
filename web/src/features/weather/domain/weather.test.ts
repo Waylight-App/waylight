@@ -45,7 +45,10 @@ group('weather domain', () => {
   });
   it('describes WMO codes including night', () => {
     expect(describe(63).label).toBe('Rain');
-    expect(describe(0, false).icon).toBe('🌙');
+    expect(describe(0, false).icon).toBe('clear-night');
+    expect(describe(2, false).icon).toBe('partly-night');
+    expect(describe(63, false).icon).toBe('rain');
+    expect(describe(1234).icon).toBe('unknown');
     expect(describe(1234).label).toBe('Unknown');
   });
   it('builds place labels without duplicates', () => {

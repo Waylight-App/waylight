@@ -248,7 +248,8 @@ function weatherSource(c: Container, home: () => WeatherConfig | null): SearchSo
           at: f.updatedAt,
           kind: 'metric',
           title: where,
-          value: `${cond.icon} ${Math.round(f.temperature)} °C`,
+          value: `${Math.round(f.temperature)} °C`,
+          weather: cond.icon,
           detail: `${cond.label} · ${t('smart.feels', { t: Math.round(f.apparentTemperature) })}`,
         };
       }
@@ -261,7 +262,8 @@ function weatherSource(c: Container, home: () => WeatherConfig | null): SearchSo
         at: f.updatedAt,
         kind: 'metric',
         title: `${where} · ${date}`,
-        value: `${cond.icon} ${Math.round(day.max)}° / ${Math.round(day.min)}°`,
+        value: `${Math.round(day.max)}° / ${Math.round(day.min)}°`,
+        weather: cond.icon,
         detail: `${cond.label} · ${t('smart.rain_chance', { p: day.precipitationProbability })}`,
       };
     },
