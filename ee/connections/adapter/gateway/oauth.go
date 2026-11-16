@@ -53,6 +53,19 @@ var services = []service{
 				ExtraAuth: url.Values{"owner": {"user"}}, BasicAuth: true}
 		},
 	},
+	{
+		info: usecase.ServiceInfo{ID: "slack", Name: "Slack"},
+		endpoint: func(domain.Client) oauth.Endpoint {
+			// A user token (#330): Slack's search then follows the person's own
+			// access. The rights are asked as user scopes, and the token comes
+			// back under authed_user. The workspace's internal app must list the
+			// same user scopes (docs/connected-accounts.md).
+			return oauth.Endpoint{AuthURL: "https://slack.com/oauth/v2/authorize", TokenURL: "https://slack.com/api/oauth.v2.access", //nolint:gosec // endpoint URLs, no credentials
+				RevokeURL:  "https://slack.com/api/auth.revoke",
+				Scopes:     []string{"search:read.public", "search:read.private", "search:read.mpim", "search:read.im"},
+				ScopeParam: "user_scope", UserToken: true}
+		},
+	},
 }
 
 // OAuth implements usecase.OAuth with the platform's OAuth client.
