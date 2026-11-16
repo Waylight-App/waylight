@@ -20,6 +20,13 @@ interface Base {
   at: Date | null;
   /** Plain value for the clipboard; Enter copies it (calculator, #160). */
   copy?: string;
+  /** CSS colour shown as a swatch next to the answer (colour tool, #477). */
+  swatch?: string;
+  /**
+   * Makes a fresh answer for the same query, e.g. another password (#477).
+   * The card shows a "New" button for it and replaces itself with the result.
+   */
+  regenerate?: () => Promise<Answer>;
 }
 
 export interface MetricAnswer extends Base {
