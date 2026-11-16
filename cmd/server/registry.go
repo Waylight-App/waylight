@@ -8,6 +8,7 @@ import (
 
 	"trisse-home/internal/modules"
 	"trisse-home/internal/modules/auth"
+	"trisse-home/internal/modules/wiki"
 	"trisse-home/internal/platform/clock"
 	"trisse-home/internal/platform/config"
 	"trisse-home/internal/platform/idgen"
@@ -27,6 +28,9 @@ type moduleDeps struct {
 	alerts   *alertRelay
 	auth     *auth.Module
 	registry *modules.Registry
+	// wikiSources lets the ee/ team integrations add wikis searched for the
+	// signed-in person (#327); the wiki module reads it at search time.
+	wikiSources *wiki.MemberSources
 }
 
 type moduleFactory struct {
