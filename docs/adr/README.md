@@ -26,3 +26,4 @@ that supersedes the old one.
 | [0018](0018-data-ownership.md)              | Data ownership for several full accounts: owner and visibility per record for personal content | Accepted |
 | [0019](0019-extension-without-server.md)    | The browser extension without a server: local gateways per feature | Accepted |
 | [0020](0020-ee-stays-proprietary.md)        | `ee/` stays proprietary, and only organisation features go there (supersedes part of 0017) | Accepted |
+| [0021](0021-ee-frontend.md)                | Frontend code of `ee/` and the two builds | Proposed |
