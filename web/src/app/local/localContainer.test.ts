@@ -13,6 +13,10 @@ describe('createLocalContainer', () => {
     expect(enabled.widgetKinds.has('radar')).toBe(false);
   });
 
+  it('marks itself as local mode, so the UI can say what a server adds (#291)', () => {
+    expect(createLocalContainer(new MemoryDocumentStore()).localMode).toBe(true);
+  });
+
   it('signs in as the owner', async () => {
     const c = createLocalContainer(new MemoryDocumentStore());
     expect(await c.auth.currentView()).toBe('app');

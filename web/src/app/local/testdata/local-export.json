@@ -1,0 +1,75 @@
+{
+  "format": "trisse-home-export",
+  "version": 1,
+  "exportedAt": "2026-11-16T07:30:05.000Z",
+  "sections": {
+    "dashboard": {
+      "dashboard_tabs": [
+        {
+          "id": "11111111-1111-4111-8111-111111111111",
+          "name": "Home",
+          "position": 0,
+          "background": "",
+          "rules": "[{\"days\":[1,2,3,4,5],\"from\":420,\"to\":570,\"networks\":[]}]",
+          "mobile_layout": null,
+          "owner_id": "owner",
+          "visibility": "private"
+        },
+        {
+          "id": "22222222-2222-4222-8222-222222222222",
+          "name": "Evening",
+          "position": 1,
+          "background": "linear-gradient(135deg, #1e3a8a, #9333ea)",
+          "rules": "[{\"days\":[],\"from\":0,\"to\":0,\"networks\":[]}]",
+          "mobile_layout": "[{\"id\":\"44444444-4444-4444-8444-444444444444\",\"hidden\":true,\"rows\":2}]",
+          "owner_id": "owner",
+          "visibility": "private"
+        }
+      ],
+      "dashboard_widgets": [
+        {
+          "id": "33333333-3333-4333-8333-333333333333",
+          "tab_id": "11111111-1111-4111-8111-111111111111",
+          "kind": "clock",
+          "x": 0,
+          "y": 0,
+          "w": 3,
+          "h": 3,
+          "config": "{}"
+        },
+        {
+          "id": "44444444-4444-4444-8444-444444444444",
+          "tab_id": "22222222-2222-4222-8222-222222222222",
+          "kind": "notes",
+          "x": 0,
+          "y": 0,
+          "w": 4,
+          "h": 6,
+          "config": "{\"scope\":\"pinned\"}"
+        }
+      ],
+      "dashboard_templates": [
+        {
+          "id": "55555555-5555-4555-8555-555555555555",
+          "name": "Start",
+          "widgets": "[{\"kind\":\"clock\",\"x\":0,\"y\":0,\"w\":3,\"h\":3,\"config\":{}}]"
+        }
+      ]
+    },
+    "appearance": {
+      "appearance_settings": [
+        {
+          "account_id": "owner",
+          "theme": "dark",
+          "accent_color": "",
+          "background_image": "",
+          "custom_css": "",
+          "language": "",
+          "greeting_name": "Sam",
+          "launcher": "both",
+          "profile": "everyday"
+        }
+      ]
+    }
+  }
+}
