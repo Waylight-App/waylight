@@ -36,6 +36,9 @@ type Deps struct {
 	// the personal-content modules filter by owner (ADR 0018), because a
 	// member could otherwise read and change everyone's notes.
 	MembersEnabled bool
+	// Directory lets members sign in with a directory password (#396); nil or
+	// empty checks every name locally.
+	Directory *DirectoryLogin
 }
 
 func (d Deps) issuer() sessionIssuer {
