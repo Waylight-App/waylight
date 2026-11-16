@@ -1,4 +1,4 @@
-import { boost, boosted, type FrecencyEntry, record } from '../domain/frecency';
+import { boost, boosted, type FrecencyEntry, record, suggest, type Suggestion } from '../domain/frecency';
 
 /** What the usage store keeps: the switch and the recorded choices. */
 export interface UsageState {
@@ -45,6 +45,14 @@ export class SearchUsage {
   /** A match score with the boost of its result applied. */
   score(query: string, target: string, score: number): number {
     return boosted(score, this.boost(query, target));
+  }
+
+  /**
+   * Targets to offer on an empty field for this time of day (#480); empty
+   * while switched off or before anything was chosen.
+   */
+  suggestions(limit?: number): Suggestion[] {
+    return this.state.enabled ? suggest(this.state.entries, this.now(), limit) : [];
   }
 
   /** Remembers that `target` was chosen for `query`. */
