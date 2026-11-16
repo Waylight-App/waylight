@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"testing"
@@ -34,7 +35,7 @@ func TestLocalModeExportImports(t *testing.T) {
 		Failed   map[string]string `json:"failed"`
 	}
 	c.json(http.MethodPost, "/api/transfer/import", file, http.StatusOK, &res)
-	if len(res.Failed) > 0 || len(res.Skipped) > 0 || len(res.Imported) != 5 {
+	if len(res.Failed) > 0 || len(res.Skipped) > 0 || len(res.Imported) != 8 {
 		t.Fatalf("import result: %+v", res)
 	}
 
@@ -111,5 +112,32 @@ func TestLocalModeExportImports(t *testing.T) {
 	}
 	if tags, _ := marks.Bookmarks[0]["tags"].([]any); len(tags) != 2 {
 		t.Fatalf("bookmark tags after import: %v", marks.Bookmarks[0])
+	}
+
+	var habits []obj
+	c.json(http.MethodGet, "/api/habits", nil, http.StatusOK, &habits)
+	if len(habits) != 1 || habits[0]["name"] != "Read" || fmt.Sprint(habits[0]["days"]) != "[1 3 5]" {
+		t.Fatalf("habits after import: %v", habits)
+	}
+
+	// Countdowns, focus sessions and completed days are read back through the
+	// server's own export: their lists depend on today's date, the rows do not.
+	var back struct {
+		Sections map[string]map[string][]obj `json:"sections"`
+	}
+	c.json(http.MethodGet, "/api/transfer/export", nil, http.StatusOK, &back)
+	for table, want := range map[[2]string]int{
+		{"countdown", "countdown_items"}: 2,
+		{"focus", "focus_sessions"}:      1,
+		{"habits", "habit_completions"}:  2,
+	} {
+		if got := len(back.Sections[table[0]][table[1]]); got != want {
+			t.Fatalf("%s rows after import: got %d, want %d", table[1], got, want)
+		}
+	}
+	for _, row := range back.Sections["countdown"]["countdown_items"] {
+		if row["title"] == "Dentist" && row["minute"] != float64(870) {
+			t.Fatalf("timed countdown after import: %v", row)
+		}
 	}
 }
