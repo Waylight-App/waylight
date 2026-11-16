@@ -158,11 +158,11 @@ func TestProvisioningForDirectories(t *testing.T) {
 }
 
 func TestDeletingAnAccountRunsTheHooks(t *testing.T) {
-	e, _, p := provisioningEnv(t)
+	e, _, _ := provisioningEnv(t)
 	var deleted []string
 	e.deps.Hooks = &AccountHooks{}
 	e.deps.Hooks.OnDeleted(func(_ context.Context, id string) { deleted = append(deleted, id) })
-	p = NewProvisioning(e.deps)
+	p := NewProvisioning(e.deps)
 	id, _ := p.CreateMember(ctx, "anna")
 	if err := p.DeleteMember(ctx, id); err != nil {
 		t.Fatal(err)
