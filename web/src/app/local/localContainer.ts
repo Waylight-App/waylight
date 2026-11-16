@@ -24,6 +24,9 @@ import { NotesUseCases } from '../../features/notes/usecase/notesUseCases';
 import { LocalNotesGateway } from '../../features/notes/adapter/local/localNotesGateway';
 import { TodosUseCases } from '../../features/todos/usecase/todosUseCases';
 import { LocalTodosGateway } from '../../features/todos/adapter/local/localTodosGateway';
+import { LocalWeatherGateway } from '../../features/weather/adapter/local/localWeatherGateway';
+import { WeatherUseCases } from '../../features/weather/usecase/weatherUseCases';
+import { locale } from '../../shared/i18n';
 import { IndexedDbDocumentStore, type DocumentStore } from '../../shared/local/documentStore';
 import { createContainer, type Container } from '../container';
 import { localDataKinds, localModules, localWidgetKinds } from './modules';
@@ -52,6 +55,7 @@ export function createLocalContainer(store: DocumentStore = new IndexedDbDocumen
     // The browser notifier lives next to the API adapter but needs no server.
     focus: new FocusUseCases(new LocalFocusGateway(store), browserNotifier),
     habits: new HabitsUseCases(new LocalHabitsGateway(store)),
+    weather: new WeatherUseCases(new LocalWeatherGateway(locale)),
     enabledModules() {
       return Promise.resolve({
         modules: new Set(localModules),
