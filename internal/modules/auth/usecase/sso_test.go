@@ -94,3 +94,61 @@ func TestPasswordLoginCanBeDisabled(t *testing.T) {
 		t.Fatalf("password login still possible: %v", err)
 	}
 }
+
+// externalByEmail stands in for the ee/ single sign-on (#302): it maps an
+// e-mail address to an account, or refuses.
+type externalByEmail map[string]string
+
+func (m externalByEmail) Resolve(_ context.Context, id domain.ExternalIdentity) (string, error) {
+	if acc, ok := m[id.Email]; ok {
+		return acc, nil
+	}
+	return "", errors.New("not allowed")
+}
+
+func TestOIDCSignsInMembersThroughExternalAccounts(t *testing.T) {
+	e := newEnv().withAccount()
+	member, _ := domain.NewMember("m1", "anna", "hash", e.clock.now)
+	guest, _ := domain.NewGuest("g1", "kiosk-ish", "hash", nil, e.clock.now)
+	e.accounts.guests = map[string]domain.Account{"m1": member, "g1": guest}
+	provider := &fakeOIDC{}
+	uc := NewSSO(e.deps, SSOConfig{OIDC: provider, Mapping: domain.IdentityMapping{Emails: []string{"me@example.org"}}, LocalLogin: true})
+	client := domain.Client{IP: "10.0.0.3"}
+	login := func(email string) (SessionResponse, error) {
+		provider.id = domain.ExternalIdentity{Subject: email, Email: email, EmailVerified: true}
+		_, state, err := uc.BeginOIDC(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		res, _, err := uc.CompleteOIDC(ctx, state, "good", client)
+		return res, err
+	}
+
+	// Without the port (a core build) only the owner signs in.
+	if _, err := login("anna@example.org"); !errors.Is(err, domain.ErrSSONotAllowed) {
+		t.Fatalf("member without the port: %v", err)
+	}
+	uc.SetExternalAccounts(externalByEmail{"anna@example.org": "m1", "guest@example.org": "g1", "owner@example.org": domain.OwnerID})
+	if res, err := login("anna@example.org"); err != nil || res.SessionToken == "" {
+		t.Fatalf("member: %+v %v", res, err)
+	}
+	if got := e.sessions.lastAccount(); got != "m1" {
+		t.Fatalf("session belongs to %q", got)
+	}
+	// The owner's mapping still wins, and the port is never asked about it.
+	if _, err := login("me@example.org"); err != nil || e.sessions.lastAccount() != domain.OwnerID {
+		t.Fatalf("owner: %v, %q", err, e.sessions.lastAccount())
+	}
+	// The port may only hand out members.
+	for _, email := range []string{"guest@example.org", "owner@example.org", "stranger@example.org"} {
+		if _, err := login(email); !errors.Is(err, domain.ErrSSONotAllowed) {
+			t.Errorf("%s: %v", email, err)
+		}
+	}
+	// A disabled member stays out even when the provider lets them in.
+	_ = member.SetMemberAccess(true, e.clock.now)
+	e.accounts.guests["m1"] = member
+	if _, err := login("anna@example.org"); !errors.Is(err, domain.ErrSSONotAllowed) {
+		t.Fatalf("disabled member: %v", err)
+	}
+}
