@@ -64,7 +64,19 @@
     onclose,
   }: Props = $props();
 
-  type Section = { id: string; label: MessageKey; module?: string; group?: SettingsGroup; homelab?: boolean };
+  type Section = {
+    id: string;
+    label: MessageKey;
+    module?: string;
+    group?: SettingsGroup;
+    homelab?: boolean;
+    /** A plugin's own label (ADR 0021). */
+    title?: () => string;
+    adminOnly?: boolean;
+    plugin?: boolean;
+  };
+  /** Display name of a section: a plugin's own label or the translated key. */
+  const nameOf = (s: Section) => s.title?.() ?? t(s.label);
   // The sections built into the dialog, with their topic (#261). Features
   // add theirs from src/app/settings (#193) and choose the group there.
   const ownSections: Section[] = [
@@ -123,9 +135,16 @@
   const memberHidden = new Set(['parcels', 'transfer']);
   const personal = (module: string) =>
     dataKinds[module] === 'personal-content' || dataKinds[module] === 'personal-settings';
+  /** Backups, the export and API tokens stay with the owner (ADR 0022). */
+  const ownerSections = new Set(['backups', 'transfer', 'tokens']);
   const allowed = (s: Section) => {
     // What a server adds (#291) only makes sense in the extension's local mode.
     if (s.id === 'full-version') return container.localMode;
+    if (s.adminOnly && !container.auth.admin) return false;
+    // Plugin sections without adminOnly are for every member, e.g. their
+    // own connected accounts (#326); guests manage only their account.
+    if (s.plugin && !container.auth.guest) return true;
+    if (ownerSections.has(s.id) && !container.auth.owner) return false;
     if (container.auth.guest) return guestSections.has(s.id);
     if (container.auth.member)
       return s.module ? personal(s.module) && !memberHidden.has(s.id) : memberSections.has(s.id);
@@ -144,7 +163,7 @@
   $effect(() => {
     if (!container.auth.guest) container.dashboard.load().then((tabs) => (guestTabs = tabs));
   });
-  const groups = $derived(groupSections(visible, (s) => t(s.label), intlLocale()));
+  const groups = $derived(groupSections(visible, nameOf, intlLocale()));
   const ordered = $derived(groups.flatMap((g) => g.sections));
   // svelte-ignore state_referenced_locally
   let active = $state(section ?? '');
@@ -192,7 +211,7 @@
               aria-current={current === s.id ? 'true' : undefined}
               tabindex={current === s.id ? 0 : -1}
               onkeydown={navKey}
-              onclick={() => choose(s.id)}>{t(s.label)}</button
+              onclick={() => choose(s.id)}>{nameOf(s)}</button
             >
           {/each}
         </div>
@@ -201,7 +220,10 @@
     <section
       class="content"
       bind:this={content}
-      aria-label={t(visible.find((s) => s.id === current)?.label ?? 'app.settings')}
+      aria-label={(() => {
+        const s = visible.find((x) => x.id === current);
+        return s ? nameOf(s) : t('app.settings');
+      })()}
     >
       <button class="btn back" type="button" onclick={back}>← {t('settings.back')}</button>
       {#if current === 'appearance'}

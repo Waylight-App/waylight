@@ -29,13 +29,21 @@ type Module struct {
 // New builds the calendar module. Floating event times are interpreted in loc.
 // publicURL (PUBLIC_URL) enables signing in to Google and Microsoft (#282);
 // nil leaves that unavailable.
-func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator, loc *time.Location, publicURL *url.URL) *Module {
+func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator, loc *time.Location, publicURL *url.URL,
+	sharing *Sharing) *Module {
 	caldav := gateway.NewCalDAV(client, loc)
+	subs := gateway.NewSubscriptionRepository(db, cipher)
+	if sharing == nil {
+		sharing = NewSharing()
+	}
+	accounts := gateway.NewAccountRepository(db, cipher)
+	sharing.repo, sharing.accounts = subs, accounts
 	uc := usecase.NewCalendar(usecase.Deps{
+		Shared: subs, SharedAccounts: accounts, SharingOn: sharing.on,
 		Repo: gateway.NewSettingsRepository(db, cipher), Source: caldav, Writer: caldav,
-		Subscriptions: gateway.NewSubscriptionRepository(db, cipher), Feeds: gateway.NewFeed(client, loc, clock.Now),
+		Subscriptions: subs, Feeds: gateway.NewFeed(client, loc, clock.Now),
 		IDs: ids, Clock: clock,
-		Accounts: gateway.NewAccountRepository(db, cipher), API: gateway.NewAccountAPI(client), OAuth: newOAuthPort(client, publicURL, clock.Now),
+		Accounts: accounts, API: gateway.NewAccountAPI(client), OAuth: newOAuthPort(client, publicURL, clock.Now),
 	})
 	return &Module{uc: uc, handlers: controller.NewHandlers(uc), subs: controller.NewSubscriptionHandlers(uc), accounts: controller.NewAccountHandlers(uc)}
 }

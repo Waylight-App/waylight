@@ -1,0 +1,96 @@
+import { describe, expect, it, vi } from 'vitest';
+import type { HttpClient } from '../../shared/api-client/http';
+import type { AuthUseCases } from '../../features/auth';
+import type { SettingsSection } from '../settingsKit';
+import type { WidgetDefinition } from '../widgetKit';
+import { PLUGIN_API_VERSION, type TrissePlugin } from './api';
+import { loadPlugins } from './loader';
+
+const auth = { owner: true, admin: true, member: false, guest: false } as AuthUseCases;
+const mountable = { mount: vi.fn(() => () => undefined) };
+
+const plugin: TrissePlugin = {
+  apiVersion: PLUGIN_API_VERSION,
+  name: 'ee',
+  widgets: [
+    {
+      kind: 'announcements',
+      feature: 'announcements',
+      category: 'everyday',
+      title: { en: 'Announcements', de: 'Ankündigungen' },
+      description: { en: 'Notices for everyone' },
+      defaultSize: { w: 4, h: 4 },
+      icon: 'not-an-icon',
+      view: mountable,
+    },
+  ],
+  settings: [
+    {
+      id: 'branding',
+      feature: 'branding',
+      label: { en: 'Branding' },
+      description: { en: 'Own name and colours' },
+      adminOnly: true,
+      view: mountable,
+    },
+    { id: 'licence', label: { en: 'Features for organisations' }, description: { en: '' }, view: mountable },
+  ],
+};
+
+function http(routes: Record<string, unknown>): HttpClient {
+  return {
+    get: vi.fn((path: string) =>
+      path in routes ? Promise.resolve(routes[path]) : Promise.reject(new Error('404')),
+    ),
+  } as unknown as HttpClient;
+}
+
+describe('loadPlugins', () => {
+  it('loads nothing when the server offers no plugin (a build without ee/)', async () => {
+    const targets = { widgets: [] as WidgetDefinition[], sections: [] as SettingsSection[] };
+    const importPlugin = vi.fn();
+    expect(await loadPlugins(http({}), auth, targets, importPlugin)).toEqual([]);
+    expect(importPlugin).not.toHaveBeenCalled();
+    expect(targets.widgets).toEqual([]);
+  });
+
+  it('registers widgets and sections; a section without a licence shows the locked view', async () => {
+    const targets = { widgets: [] as WidgetDefinition[], sections: [] as SettingsSection[] };
+    const routes = {
+      '/api/plugins': { plugins: ['/ee/plugin.js', 'https://evil.example/x.js'] },
+      '/api/licence/features': { features: { announcements: 'full', branding: 'none' } },
+    };
+    const importPlugin = vi.fn(() => Promise.resolve({ plugin }));
+    expect(await loadPlugins(http(routes), auth, targets, importPlugin)).toEqual(['ee']);
+    expect(importPlugin).toHaveBeenCalledTimes(1);
+    expect(importPlugin).toHaveBeenCalledWith('/ee/plugin.js');
+
+    const [widget] = targets.widgets;
+    expect(widget?.type.kind).toBe('announcements');
+    expect(widget?.type.title).toBe('Announcements');
+    expect(widget?.icon).toBe('box');
+
+    const [branding, licence] = targets.sections;
+    expect(branding?.id).toBe('plugin-branding');
+    expect(branding?.title?.()).toBe('Branding');
+    expect(branding?.adminOnly).toBe(true);
+    expect(branding?.props({} as never, { modules: new Set() })).toEqual({
+      title: 'Branding',
+      description: 'Own name and colours',
+    });
+    // A section without a feature is always open.
+    expect(licence?.props({} as never, { modules: new Set() })).toMatchObject({ mountable });
+  });
+
+  it('skips a plugin built for another API version', async () => {
+    const targets = { widgets: [] as WidgetDefinition[], sections: [] as SettingsSection[] };
+    const old = { ...plugin, apiVersion: 99 };
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const routes = { '/api/plugins': { plugins: ['/ee/plugin.js'] } };
+    expect(await loadPlugins(http(routes), auth, targets, () => Promise.resolve({ plugin: old }))).toEqual(
+      [],
+    );
+    expect(targets.widgets).toEqual([]);
+    warn.mockRestore();
+  });
+});

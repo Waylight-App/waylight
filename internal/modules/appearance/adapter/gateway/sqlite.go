@@ -27,6 +27,15 @@ type Repository struct{ db *sql.DB }
 // NewRepository returns a repository backed by db.
 func NewRepository(db *sql.DB) *Repository { return &Repository{db: db} }
 
+// HasOwn reports whether the principal stored its own appearance, rather
+// than starting from the admin's or the default (#305).
+func (r *Repository) HasOwn(ctx context.Context) (bool, error) {
+	var n int
+	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM appearance_settings WHERE account_id = ?`,
+		kernel.PrincipalFrom(ctx).SettingsAccount()).Scan(&n)
+	return n > 0, err
+}
+
 // Load returns the principal's appearance (ADR 0018). An account without
 // its own row starts from the admin's, so a new member sees the household's
 // look and language; guests, kiosk displays and background work always use

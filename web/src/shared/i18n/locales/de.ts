@@ -209,6 +209,8 @@ export const de: Record<BaseMessageKey, string> = {
   'parcels.remove': '{value} entfernen',
   'dashboard.empty_tab_editing': 'Dieser Tab ist leer. Mit „Widget hinzufügen“ platzierst du eins.',
   'dashboard.empty_tab_view': 'Dieser Tab ist leer.',
+  'dashboard.team_tab': 'Team-Tab, gepflegt von einem Admin',
+  'dashboard.team_tab_read_only': 'Diesen Team-Tab pflegt ein Admin. Deine eigenen Tabs kannst du anordnen.',
   'dashboard.edit_mode_hint':
     'Bearbeitungsmodus: Titelleiste ziehen zum Verschieben, Ecke zum Vergrößern, Esc zum Beenden.',
   'dashboard.edit_actions': 'Bearbeitungsaktionen',
@@ -248,6 +250,7 @@ export const de: Record<BaseMessageKey, string> = {
   'dashboard.duplicate_widget': 'Widget duplizieren',
   'dashboard.duplicate': 'Duplizieren',
   'dashboard.remove_widget': 'Widget entfernen',
+  'appearance.theme_locked': 'Design und Akzentfarbe legt deine Organisation fest.',
   'appearance.theme': 'Farbschema',
   'appearance.system': 'System',
   'appearance.light': 'Hell',
@@ -941,6 +944,9 @@ export const de: Record<BaseMessageKey, string> = {
   'settings.group.integrations': 'Integrationen',
   'settings.group.data': 'Daten und Sicherung',
   'settings.group.account': 'Konto und Sicherheit',
+  'settings.group.organisation': 'Organisation',
+  'plugins.needs_licence':
+    'Diese Funktion für Organisationen braucht einen Lizenzschlüssel. Du trägst ihn unter Einstellungen → Funktionen für Organisationen ein.',
   'settings.group.about': 'Über',
   'settings.sections': 'Bereiche der Einstellungen',
   'settings.back': 'Alle Einstellungen',
@@ -1015,6 +1021,13 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.no_groups': 'Noch keine Gruppen.',
   'auth.group_name': 'Name der neuen Gruppe',
   'auth.create_group': 'Gruppe anlegen',
+  'auth.role_admin': 'Admin',
+  'auth.role_admin_switch': 'Admin: verwaltet Mitglieder, Gruppen und Einstellungen',
+  'auth.role_demote_confirm': '{name} wieder zum Mitglied machen? Die Person wird abgemeldet.',
+  'auth.role_from_sso':
+    'aus dem Single Sign-on; eine Änderung hier macht daraus eine von Hand gesetzte Rolle',
+  'auth.role_from_directory':
+    'aus dem Verzeichnis; eine Änderung hier macht daraus eine von Hand gesetzte Rolle',
   'auth.member_groups': 'Gruppen: {groups}',
   'auth.group_rename': 'Umbenennen',
   'auth.group_rename_label': 'Neuer Name für {name}',
@@ -1088,6 +1101,7 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.event.invite_accepted': 'Einladung angenommen',
   'auth.event.reset_link_created': 'Link zum Zurücksetzen erstellt',
   'auth.event.password_reset': 'Passwort per Link zurückgesetzt',
+  'auth.powered_by': 'Läuft mit trisse-home',
   'auth.forgot_password': 'Passwort vergessen?',
   'auth.reset_mail_hint':
     'Gib deinen Namen ein. Hat dein Konto eine E-Mail-Adresse, geht dorthin ein Link zum Festlegen eines neuen Passworts.',

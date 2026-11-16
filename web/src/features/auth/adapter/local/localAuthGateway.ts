@@ -31,6 +31,8 @@ export class LocalAuthGateway implements AuthGateway {
       guest: false,
       kiosk: false,
       admin: true,
+      owner: true,
+      username: 'owner',
       member: false,
       sso: { oidc: false, header: false, localLogin: false },
       // No accounts and no mail server, so nothing to reset.

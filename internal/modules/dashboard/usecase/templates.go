@@ -91,5 +91,5 @@ func (uc *manageTemplates) CreateTab(ctx context.Context, templateID, name strin
 	if err := uc.deps.Templates.CreateTabWithWidgets(ctx, tab, widgets); err != nil {
 		return TabResponse{}, fmt.Errorf("create tab: %w", err)
 	}
-	return toTabResponse(tab, widgets), nil
+	return toTabResponse(ctx, tab, widgets), nil
 }

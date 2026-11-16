@@ -52,9 +52,22 @@ func TestAnnouncements(t *testing.T) {
 	var closed obj
 	owner.json(http.MethodPost, "/api/announcements", obj{"title": "Office closed on Friday", "body": "**All day.**", "pinned": true},
 		http.StatusCreated, &closed)
+	var me obj
+	a.json(http.MethodGet, "/api/announcements/me", nil, http.StatusOK, &me)
+	if me["mayWrite"] != false {
+		t.Fatalf("anna before the writer group: %v", me)
+	}
+	owner.json(http.MethodGet, "/api/announcements/me", nil, http.StatusOK, &me)
+	if me["mayWrite"] != true {
+		t.Fatalf("owner: %v", me)
+	}
 	a.do(http.MethodPost, "/api/announcements", obj{"title": "Cake"}, http.StatusForbidden)
 	a.do(http.MethodGet, "/api/announcements/settings", nil, http.StatusForbidden)
 	owner.do(http.MethodPut, "/api/announcements/settings", obj{"writerGroup": office["id"]}, http.StatusOK)
+	a.json(http.MethodGet, "/api/announcements/me", nil, http.StatusOK, &me)
+	if me["mayWrite"] != true {
+		t.Fatalf("anna in the writer group: %v", me)
+	}
 	var cake obj
 	a.json(http.MethodPost, "/api/announcements", obj{"title": "Cake in the kitchen"}, http.StatusCreated, &cake)
 	b.do(http.MethodPost, "/api/announcements", obj{"title": "Not me"}, http.StatusForbidden)

@@ -62,6 +62,23 @@ type Recorder struct {
 	ids    kernel.IDGenerator
 	clock  kernel.Clock
 	log    *slog.Logger
+	// name is the instance's name in alert titles (#305).
+	name kernel.InstanceName
+}
+
+// instance is the instance's name; a nil recorder (tests) uses the product's.
+func (r *Recorder) instance(ctx context.Context) string {
+	if r == nil {
+		return kernel.ProductName
+	}
+	return r.name.Of(ctx)
+}
+
+// SetInstanceName makes alert titles use the instance's name.
+func (r *Recorder) SetInstanceName(n kernel.InstanceName) {
+	if r != nil {
+		r.name = n
+	}
 }
 
 func (r *Recorder) record(ctx context.Context, t domain.EventType, accountID string, client domain.Client, detail string) {
@@ -96,7 +113,7 @@ func (r *Recorder) loginSucceeded(ctx context.Context, accountID string, client 
 	r.record(ctx, domain.EventLoginSucceeded, accountID, client, method)
 	if err == nil && !known {
 		r.record(ctx, domain.EventNewDevice, accountID, client, "")
-		r.alert(ctx, "New sign-in to trisse-home", fmt.Sprintf("A new device signed in from %s: %s", client.IP, client.UserAgent), false)
+		r.alert(ctx, "New sign-in to "+r.instance(ctx), fmt.Sprintf("A new device signed in from %s: %s", client.IP, client.UserAgent), false)
 	}
 }
 
@@ -105,7 +122,7 @@ func (r *Recorder) loginFailed(ctx context.Context, accountID string, client dom
 	r.record(ctx, domain.EventLoginFailed, accountID, client, "")
 	if locked {
 		r.record(ctx, domain.EventLoginLocked, accountID, client, "")
-		r.alert(ctx, "trisse-home: repeated failed logins", fmt.Sprintf("Logins from %s are temporarily blocked after repeated failures.", client.IP), true)
+		r.alert(ctx, r.instance(ctx)+": repeated failed logins", fmt.Sprintf("Logins from %s are temporarily blocked after repeated failures.", client.IP), true)
 	}
 }
 

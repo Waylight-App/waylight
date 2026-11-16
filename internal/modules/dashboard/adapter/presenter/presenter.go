@@ -34,6 +34,10 @@ type TabDTO struct {
 	Mobile []MobileItemDTO `json:"mobile"`
 	// MobileCustom is false while the phone layout follows the desktop grid.
 	MobileCustom bool `json:"mobileCustom"`
+	// Mine is false for a team tab shared with the viewer (#295); its layout
+	// is read-only. Visibility is "private", "everyone" or "group:<id>".
+	Mine       bool   `json:"mine"`
+	Visibility string `json:"visibility"`
 }
 
 // MobileItemDTO places a widget in the phone layout.
@@ -66,7 +70,7 @@ func Dashboard(r usecase.DashboardResponse) DashboardDTO {
 
 // Tab maps a TabResponse.
 func Tab(t usecase.TabResponse) TabDTO {
-	dto := TabDTO{ID: t.ID, Name: t.Name, Position: t.Position, Background: t.Background, Widgets: make([]WidgetDTO, 0, len(t.Widgets)),
+	dto := TabDTO{ID: t.ID, Name: t.Name, Position: t.Position, Background: t.Background, Mine: t.Mine, Visibility: t.Visibility, Widgets: make([]WidgetDTO, 0, len(t.Widgets)),
 		Rules: make([]RuleDTO, 0, len(t.Rules))}
 	for _, r := range t.Rules {
 		dto.Rules = append(dto.Rules, RuleDTO{Days: append([]int{}, r.Days...), From: r.From, To: r.To, Networks: append([]string{}, r.Networks...)})

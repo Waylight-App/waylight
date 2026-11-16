@@ -54,6 +54,7 @@ but nothing can be written. Writes are listed in the [audit log](audit-log.md).
 | Method | Path | |
 | --- | --- | --- |
 | GET | `/api/announcements` | Current announcements; `?archive=1` the expired ones. Each has `read` (for the asking person) and `editable`. |
+| GET | `/api/announcements/me` | `{mayWrite}`: whether the signed-in account may write, to offer the button |
 | POST | `/api/announcements` | `{title, body, pinned, expiresAt, notify, postTo}`; `postTo` is a channel ID from `/api/announcements/channels` |
 | PUT | `/api/announcements/{id}` | Same fields |
 | DELETE | `/api/announcements/{id}` | |

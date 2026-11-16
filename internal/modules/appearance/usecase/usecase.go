@@ -17,6 +17,8 @@ type AppearanceResponse struct {
 	GreetingName    string
 	Launcher        string
 	Profile         string
+	// ThemeLocked: the organisation set theme and accent colour (#305).
+	ThemeLocked bool
 }
 
 // UpdateAppearanceRequest is the input of UpdateAppearance.
@@ -54,10 +56,15 @@ func toResponse(a domain.Appearance) AppearanceResponse {
 		GreetingName: a.GreetingName(), Launcher: string(a.Launcher()), Profile: string(a.Profile())}
 }
 
-type getAppearance struct{ repo Repository }
+type getAppearance struct {
+	repo    Repository
+	presets *Presets
+}
 
-// NewGetAppearance returns the GetAppearance use case.
-func NewGetAppearance(repo Repository) GetAppearance { return &getAppearance{repo: repo} }
+// NewGetAppearance returns the GetAppearance use case; presets may be nil.
+func NewGetAppearance(repo Repository, presets *Presets) GetAppearance {
+	return &getAppearance{repo: repo, presets: presets}
+}
 
 // Execute implements GetAppearance.
 func (uc *getAppearance) Execute(ctx context.Context) (AppearanceResponse, error) {
@@ -65,16 +72,34 @@ func (uc *getAppearance) Execute(ctx context.Context) (AppearanceResponse, error
 	if err != nil {
 		return AppearanceResponse{}, fmt.Errorf("load appearance: %w", err)
 	}
-	return toResponse(a), nil
+	a, locked, err := uc.presets.apply(ctx, a)
+	if err != nil {
+		return AppearanceResponse{}, fmt.Errorf("apply preset: %w", err)
+	}
+	res := toResponse(a)
+	res.ThemeLocked = locked
+	return res, nil
 }
 
-type updateAppearance struct{ repo Repository }
+type updateAppearance struct {
+	repo    Repository
+	presets *Presets
+}
 
-// NewUpdateAppearance returns the UpdateAppearance use case.
-func NewUpdateAppearance(repo Repository) UpdateAppearance { return &updateAppearance{repo: repo} }
+// NewUpdateAppearance returns the UpdateAppearance use case; presets may be
+// nil.
+func NewUpdateAppearance(repo Repository, presets *Presets) UpdateAppearance {
+	return &updateAppearance{repo: repo, presets: presets}
+}
 
 // Execute implements UpdateAppearance.
 func (uc *updateAppearance) Execute(ctx context.Context, req UpdateAppearanceRequest) (AppearanceResponse, error) {
+	// A locked preset keeps theme and accent colour; the rest is saved.
+	pr, ok := uc.presets.current(ctx)
+	locked := ok && lockedFor(ctx, pr)
+	if locked {
+		req.Theme, req.AccentColor = string(pr.Theme), pr.Accent
+	}
 	a, err := domain.NewAppearance(domain.Theme(req.Theme), req.AccentColor, req.BackgroundImage, req.CustomCSS)
 	if err == nil {
 		err = a.SetLanguage(req.Language)
@@ -102,5 +127,7 @@ func (uc *updateAppearance) Execute(ctx context.Context, req UpdateAppearanceReq
 	if err := uc.repo.Save(ctx, a); err != nil {
 		return AppearanceResponse{}, fmt.Errorf("save appearance: %w", err)
 	}
-	return toResponse(a), nil
+	res := toResponse(a)
+	res.ThemeLocked = locked
+	return res, nil
 }

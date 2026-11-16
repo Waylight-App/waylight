@@ -115,6 +115,8 @@ const toMember = (d: MemberDTO): Member => ({
   groups: d.groups,
   disabled: d.disabled,
   createdAt: new Date(d.createdAt),
+  role: d.role === 'admin' ? 'admin' : 'member',
+  roleSource: d.roleSource ?? '',
 });
 
 const toGroup = (d: GroupDTO): Group => ({ id: d.id, name: d.name, accounts: d.accounts });
@@ -132,7 +134,9 @@ export class AuthApi implements AuthGateway {
       demo: dto.demo,
       guest: dto.role === 'guest' || dto.role === 'kiosk',
       kiosk: dto.role === 'kiosk',
-      admin: dto.role === 'owner',
+      admin: dto.role === 'owner' || dto.role === 'admin',
+      owner: dto.role === 'owner',
+      username: dto.username ?? '',
       member: dto.role === 'member',
       sso: dto.sso ?? { oidc: false, header: false, localLogin: true },
       passwordReset: dto.passwordReset ?? false,
@@ -227,8 +231,13 @@ export class AuthApi implements AuthGateway {
     return toMember(await this.http.post<MemberDTO>('/api/auth/members', body));
   }
 
-  async updateMember(id: string, disabled: boolean, password: string): Promise<Member> {
-    const body: MemberRequestDTO = { disabled, ...(password ? { password } : {}) };
+  async updateMember(
+    id: string,
+    disabled: boolean,
+    password: string,
+    role?: 'member' | 'admin',
+  ): Promise<Member> {
+    const body: MemberRequestDTO = { disabled, ...(password ? { password } : {}), ...(role ? { role } : {}) };
     return toMember(await this.http.put<MemberDTO>(`/api/auth/members/${encodeURIComponent(id)}`, body));
   }
 

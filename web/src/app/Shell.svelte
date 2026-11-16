@@ -9,6 +9,10 @@
   import type { Container } from './container';
   import { provideRefresh } from '../shared/refresh';
   import DashboardPage from './DashboardPage.svelte';
+  import { branding } from './branding/branding.svelte';
+  import { loadPlugins } from './plugins/loader';
+  import { widgetDefinitions } from './widgets';
+  import { registeredSections } from './settingsSections';
   import { attachShortcuts } from '../shared/shortcuts';
   import Icon from '../shared/ui/icons/Icon.svelte';
   import AccountMenu from './AccountMenu.svelte';
@@ -231,8 +235,20 @@
     return () => style.remove();
   });
 
+  // Plugins (the ee/ frontend, ADR 0021) are loaded once per page, before
+  // the modules are read, so their widgets and settings are known when the
+  // dashboard renders. Local mode has no server to offer any.
+  let pluginsLoaded: Promise<unknown> | undefined;
+
   async function init() {
     try {
+      if (!container.localMode) {
+        pluginsLoaded ??= loadPlugins(container.http, container.auth, {
+          widgets: widgetDefinitions,
+          sections: registeredSections,
+        });
+        await pluginsLoaded;
+      }
       const info = await container.enabledModules();
       modules = info.modules;
       widgetKinds = info.widgetKinds;
@@ -306,7 +322,16 @@
 
 <!-- Top bar and hero (#189): brand · date, weather, to-dos · status, launcher, account. -->
 <header class="topbar">
-  <a class="brand" href="/"><span class="logo" aria-hidden="true">t</span>trisse-home</a>
+  <a class="brand" href="/">
+    {#if branding().logo}
+      <!-- An organisation's logo (#305); the dark variant follows the theme. -->
+      <img class="brand-logo light" src={branding().logo} alt="" height="28" />
+      <img class="brand-logo dark" src={branding().logoDark || branding().logo} alt="" height="28" />
+    {:else}
+      <span class="logo" aria-hidden="true">t</span>
+    {/if}
+    {branding().name}
+  </a>
   <div class="center">
     <TopInfo
       weather={modules?.has('weather') ? container.weather : null}
@@ -465,6 +490,19 @@
     padding: var(--space-2) var(--space-4);
     max-width: 1600px;
     margin: 0 auto;
+  }
+  .brand-logo {
+    height: 28px;
+    width: auto;
+    max-width: 10rem;
+    object-fit: contain;
+  }
+  .brand-logo.dark,
+  :global(html[data-theme='dark']) .brand-logo.light {
+    display: none;
+  }
+  :global(html[data-theme='dark']) .brand-logo.dark {
+    display: inline;
   }
   .brand {
     display: inline-flex;

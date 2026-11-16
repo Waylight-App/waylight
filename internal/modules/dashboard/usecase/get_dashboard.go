@@ -64,8 +64,14 @@ func (uc *getDashboard) ExecuteFor(ctx context.Context, client netip.Addr) (Dash
 		}
 		res.DefaultTabID = domain.DefaultTabID(tabs, uc.deps.Clock.Now().In(loc), client)
 	}
+	if res.DefaultTabID == "" && uc.deps.GroupDefaultTab != nil {
+		// Only a tab the principal can actually see.
+		if id := uc.deps.GroupDefaultTab(ctx); id != "" && slices.ContainsFunc(tabs, func(t domain.Tab) bool { return t.ID() == id }) {
+			res.DefaultTabID = id
+		}
+	}
 	for _, t := range tabs {
-		res.Tabs = append(res.Tabs, toTabResponse(t, widgets))
+		res.Tabs = append(res.Tabs, toTabResponse(ctx, t, widgets))
 	}
 	return res, nil
 }

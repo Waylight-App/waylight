@@ -23,6 +23,12 @@ export interface SettingsSection {
   group?: SettingsGroup;
   /** Home server or network integration: hidden by the "everyday" profile (#281). */
   homelab?: boolean;
+  /** A plugin's own label (ADR 0021); used instead of `label` when set. */
+  title?: () => string;
+  /** Only admins see it (plugin sections). */
+  adminOnly?: boolean;
+  /** Contributed by a plugin (ADR 0021): members see it unless adminOnly. */
+  plugin?: boolean;
   load: () => Promise<Component<Record<string, unknown>>>;
   props: (container: Container, context: SettingsContext) => Record<string, unknown>;
 }

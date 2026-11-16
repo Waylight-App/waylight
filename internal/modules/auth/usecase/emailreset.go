@@ -146,7 +146,7 @@ func (uc *passwordReset) Request(ctx context.Context, name, clientKey string) er
 	}
 	uc.deps.Events.record(ctx, domain.EventResetRequested, a.ID(), domain.NewClient("", clientKey), "")
 	link := uc.publicURL.JoinPath("account-link").String() + "#" + url.PathEscape(raw)
-	m := kernel.Mail{To: email, Subject: "Reset your password", Body: resetMailBody(a.Name(), link)}
+	m := kernel.Mail{To: email, Subject: "Reset your password", Body: resetMailBody(a.Name(), uc.deps.InstanceName.Of(ctx), link)}
 	// Delivered in the background, so the answer time does not reveal
 	// whether a mail was sent.
 	detached := context.WithoutCancel(ctx)
@@ -172,8 +172,8 @@ func (uc *passwordReset) recentlySent(ctx context.Context, accountID string, now
 	return false, nil
 }
 
-func resetMailBody(name, link string) string {
-	return "Someone asked to reset the password of the account \"" + name + "\".\n\n" +
+func resetMailBody(name, instance, link string) string {
+	return "Someone asked to reset the password of the account \"" + name + "\" on " + instance + ".\n\n" +
 		"To choose a new password, open this link within one hour:\n\n" + link + "\n\n" +
 		"If you did not ask for this, ignore this mail; your password stays as it is."
 }

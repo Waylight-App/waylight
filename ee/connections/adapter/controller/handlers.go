@@ -92,7 +92,8 @@ func (h *Handlers) Start(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) Callback(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	service, err := h.s.Finish(r.Context(), q.Get("state"), q.Get("code"), q.Get("error"))
-	back := url.Values{"settings": {"connections"}}
+	// The section lives in the ee/ plugin, whose ids carry "plugin-" (ADR 0021).
+	back := url.Values{"settings": {"plugin-connections"}}
 	if err != nil {
 		back.Set("connection_error", service)
 	} else {

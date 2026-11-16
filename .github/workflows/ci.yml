@@ -79,6 +79,31 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  # Frontend of ee/ (ADR 0021): a separate package that the web app loads as
+  # a plugin. It imports the plugin API types from web/, so both get their
+  # dependencies.
+  ee-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ee/web
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            ee/web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+        working-directory: web
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+
   # Browser extension (#65): the extension itself has no dependencies; its
   # local mode (ADR 0019) bundles the web app, built here from web/. Tests,
   # manifest lint (minimal permissions, files, syntax, no remote code), the

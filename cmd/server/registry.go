@@ -8,6 +8,8 @@ import (
 
 	"trisse-home/internal/modules"
 	"trisse-home/internal/modules/auth"
+	"trisse-home/internal/modules/calendar"
+	"trisse-home/internal/modules/dashboard"
 	"trisse-home/internal/modules/notifications"
 	"trisse-home/internal/modules/wiki"
 	"trisse-home/internal/platform/clock"
@@ -35,6 +37,12 @@ type moduleDeps struct {
 	// notifications is the notifications module, nil when it is switched
 	// off; modules post to its Slack and Teams channels (#332).
 	notifications *notifications.Module
+	// tabSharing lets the ee/ team tabs module share tabs with groups and
+	// switch shared tabs on (#295).
+	tabSharing *dashboard.Sharing
+	// calendarSharing lets the ee/ team calendar share calendar
+	// subscriptions with groups (#299).
+	calendarSharing *calendar.Sharing
 }
 
 type moduleFactory struct {

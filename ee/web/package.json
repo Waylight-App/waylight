@@ -1,0 +1,33 @@
+{
+  "name": "trisse-home-ee-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Frontend of the ee/ features, loaded by the web app as a plugin (ADR 0021). Not MIT, see ../LICENSE.md.",
+  "scripts": {
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "test": "vitest run",
+    "format": "prettier --write .",
+    "lint": "prettier --check ."
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^26.6.6",
+    "prettier": "^3.10.1",
+    "prettier-plugin-svelte": "^4.1.1",
+    "svelte": "^5.57.3",
+    "svelte-check": "^4.7.8",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.7",
+    "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.18",
+    "marked": "^18.2.0"
+  }
+}

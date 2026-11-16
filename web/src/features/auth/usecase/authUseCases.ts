@@ -46,8 +46,12 @@ export class AuthUseCases {
   guest = false;
   /** True when a kiosk display is signed in (#50); guest is true as well. */
   kiosk = false;
-  /** True for an admin of the instance (today the owner, ADR 0018). */
+  /** True for an admin of the instance: the owner or an admin (ADR 0022). */
   admin = false;
+  /** True for the owner, the one account that can never be removed (ADR 0022). */
+  owner = false;
+  /** Name of the signed-in account. */
+  username = '';
   /** True for a member: own tabs and content, no instance settings (#294). */
   member = false;
   /** Sign-in methods offered by the server (set by currentView). */
@@ -64,6 +68,8 @@ export class AuthUseCases {
     this.guest = status.guest;
     this.kiosk = status.kiosk;
     this.admin = status.admin;
+    this.owner = status.owner;
+    this.username = status.username;
     this.member = status.member;
     this.sso = status.sso;
     this.passwordReset = status.passwordReset;
@@ -210,6 +216,16 @@ export class AuthUseCases {
       if (problem) throw new ValidationError(problem);
     }
     return this.gateway.updateMember(member.id, disabled, password);
+  }
+
+  /** Makes a member an admin or back (ADR 0022); demotion signs them out. */
+  setMemberRole(member: Member, role: 'member' | 'admin'): Promise<Member> {
+    return this.gateway.updateMember(member.id, member.disabled, '', role);
+  }
+
+  /** Whether a member row is the signed-in account (admins cannot change their own role). */
+  isSelf(member: Member): boolean {
+    return member.name === this.username;
   }
 
   deleteMember(id: string): Promise<void> {
