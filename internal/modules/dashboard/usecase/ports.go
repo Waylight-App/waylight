@@ -101,4 +101,8 @@ type Deps struct {
 	// no default tab is resolved.
 	Clock    kernel.Clock
 	Location *time.Location
+	// GroupDefaultTab names the team tab an admin set as default for one of
+	// the principal's groups (#295); nil or "" when there is none. The
+	// person's own tab rules take precedence.
+	GroupDefaultTab func(ctx context.Context) string
 }

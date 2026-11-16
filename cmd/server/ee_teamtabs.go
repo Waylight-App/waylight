@@ -35,8 +35,9 @@ func (t tabSharing) Share(ctx context.Context, id string, v kernel.Visibility) e
 // admins shared only while the licence covers them.
 func init() {
 	registerModule("teamtabs", func(d moduleDeps) modules.Module {
-		m := teamtabs.New(tabSharing{d.tabSharing}, licenceModule(d).Licensing())
+		m := teamtabs.New(d.db, tabSharing{d.tabSharing}, licenceModule(d).Licensing())
 		d.tabSharing.Enable(m.SharedTabsOn)
+		d.tabSharing.SetGroupDefault(m.DefaultTab)
 		return m
 	})
 }

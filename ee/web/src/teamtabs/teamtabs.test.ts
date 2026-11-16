@@ -1,5 +1,17 @@
 import { describe, expect, it, vi } from "vitest";
-import { TeamTabsApi } from "./teamtabs";
+import { TeamTabsApi, tabsFor } from "./teamtabs";
+
+describe("tabsFor", () => {
+  it("lists the tabs a group sees", () => {
+    const tabs = [
+      { id: "a", name: "A", visibility: "group:office" },
+      { id: "b", name: "B", visibility: "everyone" },
+      { id: "c", name: "C", visibility: "private" },
+    ];
+    expect(tabsFor(tabs, "office").map((t) => t.id)).toEqual(["a", "b"]);
+    expect(tabsFor(tabs, "family").map((t) => t.id)).toEqual(["b"]);
+  });
+});
 
 describe("TeamTabsApi", () => {
   it("shares a tab by id", async () => {
