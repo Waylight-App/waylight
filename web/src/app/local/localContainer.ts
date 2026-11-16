@@ -11,6 +11,12 @@ import { AuthUseCases } from '../../features/auth/usecase/authUseCases';
 import { LocalAuthGateway, noCsrf } from '../../features/auth/adapter/local/localAuthGateway';
 import { DashboardUseCases } from '../../features/dashboard/usecase/dashboardUseCases';
 import { LocalDashboardGateway } from '../../features/dashboard/adapter/local/localDashboardGateway';
+import { BookmarksUseCases } from '../../features/bookmarks/usecase/bookmarksUseCases';
+import { LocalBookmarksGateway } from '../../features/bookmarks/adapter/local/localBookmarksGateway';
+import { NotesUseCases } from '../../features/notes/usecase/notesUseCases';
+import { LocalNotesGateway } from '../../features/notes/adapter/local/localNotesGateway';
+import { TodosUseCases } from '../../features/todos/usecase/todosUseCases';
+import { LocalTodosGateway } from '../../features/todos/adapter/local/localTodosGateway';
 import { IndexedDbDocumentStore, type DocumentStore } from '../../shared/local/documentStore';
 import { createContainer, type Container } from '../container';
 import { localDataKinds, localModules, localWidgetKinds } from './modules';
@@ -23,11 +29,17 @@ export function createLocalContainer(store: DocumentStore = new IndexedDbDocumen
   // Nothing can expire without a server; an unauthorised answer would mean
   // a hidden feature reached for the network, which the module list prevents.
   const base = createContainer(() => undefined);
+  const todos = new TodosUseCases(new LocalTodosGateway(store));
   return {
     ...base,
     auth: new AuthUseCases(new LocalAuthGateway(), noCsrf),
     dashboard: new DashboardUseCases(new LocalDashboardGateway(store)),
     appearance: new AppearanceUseCases(new LocalAppearanceGateway(store)),
+    notes: new NotesUseCases(new LocalNotesGateway(store)),
+    bookmarks: new BookmarksUseCases(new LocalBookmarksGateway(store)),
+    todos,
+    // Only the built-in list exists locally; connected lists need a server.
+    todosFor: () => todos,
     enabledModules() {
       return Promise.resolve({
         modules: new Set(localModules),
