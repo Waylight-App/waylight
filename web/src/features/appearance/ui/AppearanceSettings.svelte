@@ -75,7 +75,7 @@
   </label>
   <label class="field">
     <span>{t('appearance.theme')}</span>
-    <select class="input" bind:value={form.theme}>
+    <select class="input" bind:value={form.theme} disabled={form.themeLocked}>
       <option value="system">{t('appearance.system')}</option>
       <option value="light">{t('appearance.light')}</option>
       <option value="dark">{t('appearance.dark')}</option>
@@ -87,11 +87,18 @@
       <input
         type="color"
         value={form.accentColor || '#3365e8'}
+        disabled={form.themeLocked}
         oninput={(e) => (form.accentColor = e.currentTarget.value)}
       />
-      <input class="input" bind:value={form.accentColor} placeholder={t('appearance.default')} />
+      <input
+        class="input"
+        bind:value={form.accentColor}
+        placeholder={t('appearance.default')}
+        disabled={form.themeLocked}
+      />
     </span>
   </label>
+  {#if form.themeLocked}<p class="muted small">{t('appearance.theme_locked')}</p>{/if}
   <div class="field">
     <span>{t('appearance.background_image')}</span>
     <span class="bg-row">
@@ -153,5 +160,9 @@
   .css {
     font-family: var(--font-mono);
     font-size: 0.85rem;
+  }
+  .small {
+    font-size: 0.85em;
+    margin: 0;
   }
 </style>

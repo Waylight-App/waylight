@@ -10,6 +10,10 @@ export interface BrandingSettings {
   accent: string;
   secondary: string;
   hidePoweredBy: boolean;
+  /** Theme for the sign-in page and new members; '' = none. */
+  defaultTheme: "" | "system" | "light" | "dark";
+  /** Keeps members on defaultTheme and the accent colour. */
+  lockTheme: boolean;
   /** When each image was uploaded, by kind; missing = none. */
   assets: Partial<Record<AssetKind, string>>;
   /** False while the licence does not cover branding: stored, not shown. */
@@ -42,7 +46,12 @@ export class BrandingApi {
   save(
     s: Pick<
       BrandingSettings,
-      "name" | "accent" | "secondary" | "hidePoweredBy"
+      | "name"
+      | "accent"
+      | "secondary"
+      | "hidePoweredBy"
+      | "defaultTheme"
+      | "lockTheme"
     >,
   ): Promise<BrandingSettings> {
     return this.http.put<BrandingSettings>("/api/branding/settings", {
@@ -50,6 +59,9 @@ export class BrandingApi {
       accent: s.accent,
       secondary: s.secondary,
       hidePoweredBy: s.hidePoweredBy,
+      defaultTheme: s.defaultTheme,
+      // Locking needs a theme to lock to; the server refuses it otherwise.
+      lockTheme: s.lockTheme && s.defaultTheme !== "",
     });
   }
 

@@ -5,6 +5,7 @@
   import { canStartOffline, clearOfflineData, rememberSignedIn } from '../shared/pwa';
   import { createContainer, type Container } from './container';
   import { branding, loadBranding } from './branding/branding.svelte';
+  import { applyTheme } from '../shared/theme/theme';
   // The dashboard shell is fetched right away, in parallel with the session
   // check, but kept out of the initial bundle (#116); sign-in pages load
   // only when needed.
@@ -34,7 +35,10 @@
       // The browser language's catalogue first, so the page never flashes English.
       await loadLanguage().catch(() => undefined);
       // The organisation's name and colours (#305) show from the sign-in page on.
-      await loadBranding(container.http);
+      const brand = await loadBranding(container.http);
+      // Before sign-in nobody's own theme is known: use the organisation's.
+      // The shell applies the person's own preference after sign-in.
+      if (brand.defaultTheme) applyTheme(brand.defaultTheme);
       // A kiosk link (#50): the token is in the fragment, so it never reaches
       // the server log; it signs this browser in as the display.
       if (location.pathname === '/kiosk' && location.hash.length > 1) {

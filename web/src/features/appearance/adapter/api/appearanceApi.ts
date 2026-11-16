@@ -20,6 +20,7 @@ const toAppearance = (d: AppearanceDTO): Appearance => ({
   greetingName: d.greetingName ?? '',
   launcher: d.launcher ?? 'both',
   profile: d.profile === 'everyday' ? 'everyday' : 'homelab',
+  themeLocked: d.themeLocked ?? false,
 });
 
 /** AppearanceGateway backed by the REST API. */

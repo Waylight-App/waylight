@@ -250,6 +250,7 @@ export const de: Record<BaseMessageKey, string> = {
   'dashboard.duplicate_widget': 'Widget duplizieren',
   'dashboard.duplicate': 'Duplizieren',
   'dashboard.remove_widget': 'Widget entfernen',
+  'appearance.theme_locked': 'Design und Akzentfarbe legt deine Organisation fest.',
   'appearance.theme': 'Farbschema',
   'appearance.system': 'System',
   'appearance.light': 'Hell',

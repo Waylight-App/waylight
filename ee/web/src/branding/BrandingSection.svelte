@@ -44,6 +44,8 @@
           accent: useAccent ? s.accent || "#2563eb" : "",
           secondary: useSecondary ? s.secondary || "#64748b" : "",
           hidePoweredBy: s.hidePoweredBy,
+          defaultTheme: s.defaultTheme,
+          lockTheme: s.lockTheme,
         }),
       );
       message = tr("saved");
@@ -100,6 +102,19 @@
     </div>
     {#each s.warnings as w (w)}<p class="warning" role="note">⚠ {w}</p>{/each}
     <label class="check"><input type="checkbox" bind:checked={s.hidePoweredBy} disabled={readOnly} /> {tr("hide_powered_by")}</label>
+    <label class="field"
+      ><span>{tr("default_theme")}</span>
+      <select class="input" bind:value={s.defaultTheme} disabled={readOnly}>
+        <option value="">{tr("theme_none")}</option>
+        <option value="system">{tr("theme_system")}</option>
+        <option value="light">{tr("theme_light")}</option>
+        <option value="dark">{tr("theme_dark")}</option>
+      </select></label
+    >
+    <label class="check"
+      ><input type="checkbox" bind:checked={s.lockTheme} disabled={readOnly || !s.defaultTheme} />
+      {tr("lock_theme")}</label
+    >
     {#if !readOnly}<button class="btn btn-primary" type="submit">{tr("save")}</button>{/if}
   </form>
 
