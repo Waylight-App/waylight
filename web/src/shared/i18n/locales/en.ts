@@ -204,6 +204,8 @@ export const en = {
   'parcels.remove': 'Remove {value}',
   'dashboard.empty_tab_editing': 'This tab is empty. Use “Add widget” to place one.',
   'dashboard.empty_tab_view': 'This tab is empty.',
+  'dashboard.team_tab': 'Team tab, maintained by an admin',
+  'dashboard.team_tab_read_only': 'This team tab is maintained by an admin. You can arrange your own tabs.',
   'dashboard.edit_mode_hint': 'Edit mode: drag a title bar to move, the corner to resize, Esc to finish.',
   'dashboard.edit_actions': 'Edit actions',
   'dashboard.done': 'Done',

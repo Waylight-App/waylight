@@ -62,8 +62,10 @@ nav:
       - Audit log: audit-log.md
       - Admin policies: admin-policies.md
       - Announcements: announcements.md
+      - Team tabs: team-tabs.md
       - Absences: absences.md
       - Slack command: slack-command.md
+      - Branding: branding.md
       - Connected accounts: connected-accounts.md
       - Appearance: appearance.md
       - Phones, offline and the extension: apps-and-offline.md

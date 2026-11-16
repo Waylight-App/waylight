@@ -10,6 +10,8 @@ import {
 import { texts as announcementTexts } from "./announcements/texts";
 import { texts as brandingTexts } from "./branding/texts";
 import LicenceSection from "./licence/LicenceSection.svelte";
+import TeamTabsSection from "./teamtabs/TeamTabsSection.svelte";
+import { texts as teamTabTexts } from "./teamtabs/texts";
 import { lazyMountable, mountable } from "./lib/mountable";
 
 export const plugin: TrissePlugin = {
@@ -46,6 +48,14 @@ export const plugin: TrissePlugin = {
       },
       description: { en: "", de: "" },
       view: mountable(LicenceSection),
+    },
+    {
+      id: "team-tabs",
+      feature: "team-tabs",
+      adminOnly: true,
+      label: teamTabTexts.label ?? { en: "Team tabs" },
+      description: teamTabTexts.description ?? { en: "" },
+      view: mountable(TeamTabsSection),
     },
     {
       id: "branding",
