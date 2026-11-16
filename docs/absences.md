@@ -5,6 +5,18 @@ everyone on the instance can see who is away: on holiday, sick, working
 remotely or away for another reason. This needs a server built with the
 `ee` features.
 
+## The widget
+
+Add the *Absences* widget from the *Everyday* category. It lists who is away
+**today** and, below, who will be away **later this week**, with the kind,
+the period and the note. Someone else's private absence reads only *Away*.
+
+*＋ Enter an absence* opens a small form: first and last day, kind, an
+optional note and *Private*. Admins can choose the person; everyone else
+enters their own. ✎ appears only on absences the viewer may change. Guests
+and kiosk displays only read; with an expired licence key the form is gone
+and a hint says why.
+
 ## Who enters what
 
 - Members and admins enter their own absences: the first and last day

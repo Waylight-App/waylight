@@ -57,6 +57,10 @@ func (m *Module) Access(ctx context.Context) modules.Access {
 // Name implements modules.Module.
 func (m *Module) Name() string { return "absences" }
 
+// WidgetKinds implements modules.Module: the widget of the ee/ plugin
+// (ADR 0021, #299); it disappears from the picker with the licence.
+func (m *Module) WidgetKinds() []string { return []string{"absences"} }
+
 // DataKind implements modules.Module. Members write their own absences;
 // the use cases decide whose, so the central guard lets members' writes
 // through like personal settings.

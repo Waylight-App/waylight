@@ -1,0 +1,54 @@
+import type { Catalogue } from '../lib/texts';
+
+/** Texts of the absences widget (#299). */
+export const texts: Catalogue = {
+  title: { en: 'Absences', de: 'Abwesenheiten' },
+  description: {
+    en: 'Who is away today and this week, with your own entries.',
+    de: 'Wer heute und diese Woche nicht da ist, mit eigenen Einträgen.',
+  },
+  today: { en: 'Away today', de: 'Heute nicht da' },
+  week: { en: 'Later this week', de: 'Später diese Woche' },
+  nobody_today: { en: 'Everyone is here today.', de: 'Heute sind alle da.' },
+  nobody_week: { en: 'No other absences this week.', de: 'Diese Woche keine weiteren Abwesenheiten.' },
+  kind_holiday: { en: 'Holiday', de: 'Urlaub' },
+  kind_sick: { en: 'Sick', de: 'Krank' },
+  kind_remote: { en: 'Working remotely', de: 'Remote' },
+  kind_other: { en: 'Away', de: 'Abwesend' },
+  kind_away: { en: 'Away', de: 'Abwesend' },
+  until: { en: 'until {date}', de: 'bis {date}' },
+  range: { en: '{from} – {to}', de: '{from} – {to}' },
+  add: { en: 'Enter an absence', de: 'Abwesenheit eintragen' },
+  edit: { en: 'Edit absence of {name}', de: 'Abwesenheit von {name} bearbeiten' },
+  delete: { en: 'Delete', de: 'Löschen' },
+  delete_confirm: { en: 'Delete this absence?', de: 'Diese Abwesenheit löschen?' },
+  save: { en: 'Save', de: 'Speichern' },
+  cancel: { en: 'Cancel', de: 'Abbrechen' },
+  field_person: { en: 'Person', de: 'Person' },
+  me: { en: 'Me', de: 'Ich' },
+  field_from: { en: 'From', de: 'Von' },
+  field_to: { en: 'To (included)', de: 'Bis (einschließlich)' },
+  field_kind: { en: 'Kind', de: 'Art' },
+  field_note: { en: 'Note (optional)', de: 'Notiz (optional)' },
+  field_private: {
+    en: 'Private: others only see that I am away',
+    de: 'Privat: andere sehen nur, dass ich nicht da bin',
+  },
+  private_badge: { en: 'private', de: 'privat' },
+  error_dates: {
+    en: 'The last day must not be before the first.',
+    de: 'Der letzte Tag darf nicht vor dem ersten liegen.',
+  },
+  error_too_long: {
+    en: 'An absence can be at most a year long.',
+    de: 'Eine Abwesenheit darf höchstens ein Jahr dauern.',
+  },
+  error_note: {
+    en: 'The note can have at most 200 characters.',
+    de: 'Die Notiz darf höchstens 200 Zeichen haben.',
+  },
+  read_only: {
+    en: 'The licence has expired: absences stay readable, new ones cannot be entered.',
+    de: 'Die Lizenz ist abgelaufen: Abwesenheiten bleiben lesbar, neue lassen sich nicht eintragen.',
+  },
+};
