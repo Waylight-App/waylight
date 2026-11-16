@@ -1634,7 +1634,8 @@ export const de: Record<BaseMessageKey, string> = {
   'smart.currency_rate': 'EZB-Referenzkurs vom {date}',
   'smart.currency_stale': 'Kurs vom {date}; neuere Kurse waren nicht abrufbar',
   'smart.currency_off': 'Wechselkurse sind auf diesem Server abgeschaltet.',
-  'smart.currency_unavailable': 'Die Wechselkurse konnten nicht geladen werden; versuche es später noch einmal.',
+  'smart.currency_unavailable':
+    'Die Wechselkurse konnten nicht geladen werden; versuche es später noch einmal.',
   'smart.copy': 'Kopieren',
   'smart.copied': 'Kopiert',
   'smart.enter_copies': 'Enter kopiert das Ergebnis',
