@@ -231,8 +231,13 @@ type Provisioning = usecase.Provisioning
 
 // SetExternalAccounts lets members sign in through OpenID Connect (#302). The
 // ee/ single sign-on calls it while the server is built; without it, single
-// sign-on stays the owner's (ADR 0013).
-func (m *Module) SetExternalAccounts(e ExternalAccounts) { m.sso.SetExternalAccounts(e) }
+// sign-on stays the owner's (ADR 0013). Without OIDC there is nothing to
+// extend, and the call does nothing.
+func (m *Module) SetExternalAccounts(e ExternalAccounts) {
+	if m.sso != nil {
+		m.sso.SetExternalAccounts(e)
+	}
+}
 
 // Provisioning returns the member management for an identity provider.
 func (m *Module) Provisioning() Provisioning { return m.provision }
