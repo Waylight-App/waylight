@@ -35,6 +35,7 @@
   import { CalendarSettings } from '../features/calendar';
   import { FeedsManager } from '../features/rss';
   import { SearchHistorySettings, SearchSettings } from '../features/search';
+  import { keywordTargets } from './searchKeywords';
   import { searchUsage } from './searchUsage';
   import { ServicesManager } from '../features/services';
   import Modal from '../shared/ui/Modal.svelte';
@@ -151,7 +152,7 @@
       {#if current === 'appearance'}
         <AppearanceSettings appearance={container.appearance} current={appearance} onchange={onappearance} />
       {:else if current === 'search'}
-        <SearchSettings search={container.search} />
+        <SearchSettings search={container.search} keywordTargets={() => keywordTargets(container, modules)} />
         <CaptureBookmarklet />
         <SearchHistorySettings usage={searchUsage} />
       {:else if current === 'services'}
