@@ -23,6 +23,9 @@ type StatusDTO struct {
 	// PasswordReset is true when members and guests can ask for a reset
 	// link by e-mail (#296).
 	PasswordReset bool `json:"passwordReset"`
+	// SecondFactorRequired is true while an admin policy requires a second
+	// factor the account has not set up (#304); the interface shows the setup.
+	SecondFactorRequired bool `json:"secondFactorRequired"`
 }
 
 // SSOStatusDTO tells the login page which methods exist.
@@ -46,7 +49,8 @@ type SessionDTO struct {
 
 // Status maps a StatusResponse to its DTO.
 func Status(r usecase.StatusResponse) StatusDTO {
-	return StatusDTO{SetupRequired: r.SetupRequired, Authenticated: r.Authenticated, CSRFToken: r.CSRFToken, Role: r.Role, Username: r.Username}
+	return StatusDTO{SetupRequired: r.SetupRequired, Authenticated: r.Authenticated, CSRFToken: r.CSRFToken, Role: r.Role, Username: r.Username,
+		SecondFactorRequired: r.SecondFactorRequired}
 }
 
 // Session maps a SessionResponse to its DTO.
@@ -137,13 +141,17 @@ func Guests(list []usecase.GuestView) []GuestDTO {
 	return out
 }
 
-// MemberDTO is a member account (#294).
+// MemberDTO is a member or admin account (#294, #434).
 type MemberDTO struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Groups    []string  `json:"groups"`
-	Disabled  bool      `json:"disabled"`
-	CreatedAt time.Time `json:"createdAt"`
+	ID     string   `json:"id"`
+	Name   string   `json:"name"`
+	Groups []string `json:"groups"`
+	// Role is "member" or "admin"; RoleSource is "" (set by hand), "sso" or
+	// "directory".
+	Role       string    `json:"role"`
+	RoleSource string    `json:"roleSource"`
+	Disabled   bool      `json:"disabled"`
+	CreatedAt  time.Time `json:"createdAt"`
 }
 
 // MembersDTO is GET /api/auth/members. Available is false while members

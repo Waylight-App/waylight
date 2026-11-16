@@ -6,6 +6,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
+  // The channel is not an enabled Slack or Teams channel.
+  srv_a072d53589f4ace4: 'Der Kanal ist kein aktivierter Slack- oder Teams-Kanal.',
   // A maintenance window must end after it starts and last at most 7 days.
   srv_a912b3e2ea2b8170: 'Ein Wartungsfenster muss nach seinem Beginn enden und darf höchstens 7 Tage dauern.',
   // Choose what the maintenance applies to.

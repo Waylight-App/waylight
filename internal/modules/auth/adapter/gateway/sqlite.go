@@ -48,16 +48,16 @@ func (r *AccountRepository) encrypt(plain string) (string, error) {
 	return r.cipher.Encrypt(plain)
 }
 
-const accountColumns = `id, role, name, password_hash, created_at, updated_at, totp_secret_enc, totp_pending_enc, totp_last_step, disabled, tabs`
+const accountColumns = `id, role, name, password_hash, created_at, updated_at, totp_secret_enc, totp_pending_enc, totp_last_step, disabled, tabs, role_source`
 
 // scan reads one account row without its recovery codes; callers load
 // them with withRecoveryCodes after the row set is closed (SQLite with a
 // single connection cannot run a second query while rows are open).
 func (r *AccountRepository) scan(sc interface{ Scan(...any) error }) (domain.Account, error) {
-	var id, role, name, hash, created, updated, secretEnc, pendingEnc, tabsJSON string
+	var id, role, name, hash, created, updated, secretEnc, pendingEnc, tabsJSON, roleSource string
 	var lastStep int64
 	var disabled int
-	if err := sc.Scan(&id, &role, &name, &hash, &created, &updated, &secretEnc, &pendingEnc, &lastStep, &disabled, &tabsJSON); err != nil {
+	if err := sc.Scan(&id, &role, &name, &hash, &created, &updated, &secretEnc, &pendingEnc, &lastStep, &disabled, &tabsJSON, &roleSource); err != nil {
 		return domain.Account{}, err
 	}
 	createdAt, err := sqlutil.ParseTime(created)
@@ -73,6 +73,7 @@ func (r *AccountRepository) scan(sc interface{ Scan(...any) error }) (domain.Acc
 		return domain.Account{}, fmt.Errorf("decode tabs: %w", err)
 	}
 	a := domain.RestoreAccount(id, domain.Role(role), name, hash, createdAt, updatedAt, disabled == 1, tabs)
+	a.RestoreRoleSource(roleSource)
 	t := domain.TOTP{LastStep: lastStep}
 	if t.Secret, err = r.decrypt(secretEnc); err != nil {
 		return domain.Account{}, err
@@ -110,6 +111,18 @@ func (r *AccountRepository) one(ctx context.Context, query string, arg any, notF
 		return domain.Account{}, fmt.Errorf("select account: %w", err)
 	}
 	return r.withRecoveryCodes(ctx, a)
+}
+
+// CountLicensed counts the accounts a licence key covers (#307): owner,
+// members and guests that are not disabled.
+func (r *AccountRepository) CountLicensed(ctx context.Context) (int, error) {
+	var n int
+	err := r.db.QueryRowContext(ctx,
+		`SELECT COUNT(*) FROM auth_accounts WHERE role IN ('owner', 'admin', 'member', 'guest') AND disabled = 0`).Scan(&n)
+	if err != nil {
+		return 0, fmt.Errorf("count accounts: %w", err)
+	}
+	return n, nil
 }
 
 // Get implements usecase.AccountRepository.
@@ -216,10 +229,14 @@ func (r *AccountRepository) Update(ctx context.Context, a domain.Account) error 
 	}
 	defer func() { _ = tx.Rollback() }()
 	res, err := tx.ExecContext(ctx,
+		// The role is written only between member and admin (#434): the
+		// owner, guests and kiosks never change role, whatever the struct says.
 		`UPDATE auth_accounts SET password_hash = ?, updated_at = ?, totp_secret_enc = ?, totp_pending_enc = ?, totp_last_step = ?,
-		 disabled = ?, tabs = ? WHERE id = ?`,
+		 disabled = ?, tabs = ?,
+		 role = CASE WHEN role IN ('member', 'admin') AND ? IN ('member', 'admin') THEN ? ELSE role END, role_source = ?
+		 WHERE id = ?`,
 		a.PasswordHash(), sqlutil.FormatTime(a.UpdatedAt()), secretEnc, pendingEnc, t.LastStep,
-		sqlutil.BoolToInt(a.Disabled()), tabsJSON(a), a.ID())
+		sqlutil.BoolToInt(a.Disabled()), tabsJSON(a), string(a.Role()), string(a.Role()), a.RoleSource(), a.ID())
 	if err != nil {
 		return fmt.Errorf("update account: %w", err)
 	}

@@ -108,3 +108,36 @@ func MemberMayAccess(method, path string, kinds map[string]string) bool {
 	}
 	return personal
 }
+
+// ModuleOfPath is the module an API path belongs to: "/api/notes/1" → "notes".
+func ModuleOfPath(path string) string {
+	module, _, _ := strings.Cut(strings.TrimPrefix(path, "/api/"), "/")
+	return module
+}
+
+// SecondFactorSetupPath reports what an account may reach while an admin
+// policy requires a second factor it has not set up yet (#304): its own
+// account endpoints (status, two-factor and passkey setup, sign-out) and what
+// the interface needs to show the setup page.
+func SecondFactorSetupPath(method, path string) bool {
+	if strings.HasPrefix(path, "/api/auth/") {
+		return true
+	}
+	read := method == "GET" || method == "HEAD"
+	return read && (path == "/api/modules" || path == "/api/appearance")
+}
+
+// ownerOnlyPrefixes are the routes only the owner may use, also against
+// admins (ADR 0022): backups and the data transfer contain or replace the
+// data of everyone, including private records and the owner's account.
+var ownerOnlyPrefixes = []string{"/api/backups", "/api/transfer"}
+
+// OwnerOnlyPath reports whether path is one of the owner's alone.
+func OwnerOnlyPath(path string) bool {
+	for _, p := range ownerOnlyPrefixes {
+		if path == p || strings.HasPrefix(path, p+"/") {
+			return true
+		}
+	}
+	return false
+}

@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"maps"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -17,8 +18,9 @@ import (
 	"trisse-home/internal/platform/config"
 )
 
-// fakeIDP is a minimal OpenID provider that signs RS256 ID tokens.
-func fakeIDP(t *testing.T, email string, appURL *string) *httptest.Server {
+// fakeIDP is a minimal OpenID provider that signs RS256 ID tokens for user-1
+// with the given e-mail address; extra claims are added to the ID token.
+func fakeIDP(t *testing.T, email string, appURL *string, extra ...map[string]any) *httptest.Server {
 	t.Helper()
 	key, _ := rsa.GenerateKey(rand.Reader, 2048)
 	b64 := base64.RawURLEncoding.EncodeToString
@@ -42,8 +44,12 @@ func fakeIDP(t *testing.T, email string, appURL *string) *httptest.Server {
 	mux.HandleFunc("/token", func(w http.ResponseWriter, r *http.Request) {
 		_ = r.ParseForm()
 		h, _ := json.Marshal(map[string]string{"alg": "RS256", "kid": "k1"})
-		c, _ := json.Marshal(map[string]any{"iss": srv.URL, "sub": "user-1", "aud": "trisse", "exp": time.Now().Add(time.Hour).Unix(),
-			"iat": time.Now().Unix(), "nonce": nonces[r.Form.Get("code")], "email": email, "email_verified": true})
+		claims := map[string]any{"iss": srv.URL, "sub": "user-1", "aud": "trisse", "exp": time.Now().Add(time.Hour).Unix(),
+			"iat": time.Now().Unix(), "nonce": nonces[r.Form.Get("code")], "email": email, "email_verified": true}
+		for _, e := range extra {
+			maps.Copy(claims, e)
+		}
+		c, _ := json.Marshal(claims)
 		input := b64(h) + "." + b64(c)
 		digest := sha256.Sum256([]byte(input))
 		sig, _ := rsa.SignPKCS1v15(rand.Reader, key, crypto.SHA256, digest[:])

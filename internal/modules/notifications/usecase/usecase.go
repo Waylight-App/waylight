@@ -63,6 +63,10 @@ type Notifier interface {
 	SendTest(ctx context.Context) error
 
 	Channels(ctx context.Context) ([]ChannelView, error)
+	// ChatChannels and PostToChat let other modules post to one Slack or
+	// Teams channel (#332).
+	ChatChannels(ctx context.Context) ([]ChatChannel, error)
+	PostToChat(ctx context.Context, channelID, title, body, link string) error
 	SaveChannel(ctx context.Context, in ChannelInput) (ChannelView, error)
 	DeleteChannel(ctx context.Context, id string) error
 	TestChannel(ctx context.Context, id string) error

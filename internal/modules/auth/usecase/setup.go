@@ -36,6 +36,13 @@ type Deps struct {
 	// the personal-content modules filter by owner (ADR 0018), because a
 	// member could otherwise read and change everyone's notes.
 	MembersEnabled bool
+	// Directory lets members sign in with a directory password (#396); nil or
+	// empty checks every name locally.
+	Directory *DirectoryLogin
+	// Policies holds the admin policies (#304); nil or empty means none.
+	Policies *Policies
+	// Hooks tell other modules about deleted accounts; nil runs none.
+	Hooks *AccountHooks
 }
 
 func (d Deps) issuer() sessionIssuer {
@@ -72,7 +79,7 @@ func (uc *setupAccount) Execute(ctx context.Context, req SetupRequest) (SessionR
 		uc.deps.Limiter.RecordFailure(req.ClientKey, now)
 		return SessionResponse{}, domain.ErrInvalidSetupToken
 	}
-	password, err := domain.NewPassword(req.Password)
+	password, err := uc.deps.newPassword(ctx, req.Password)
 	if err != nil {
 		return SessionResponse{}, err
 	}

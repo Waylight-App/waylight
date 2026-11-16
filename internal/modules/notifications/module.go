@@ -58,6 +58,21 @@ func (m *Module) CanSend(ctx context.Context) bool { return m.uc.CanSend(ctx) }
 // Send implements kernel.Mailer (#296).
 func (m *Module) Send(ctx context.Context, mail kernel.Mail) error { return m.uc.Send(ctx, mail) }
 
+// ChatChannel is an enabled Slack or Teams channel (#332).
+type ChatChannel = usecase.ChatChannel
+
+// ChatChannels lists the enabled Slack and Teams channels, for modules that
+// let an author post to one of them.
+func (m *Module) ChatChannels(ctx context.Context) ([]ChatChannel, error) {
+	return m.uc.ChatChannels(ctx)
+}
+
+// PostToChat posts a message to one Slack or Teams channel, outside the
+// notification rules.
+func (m *Module) PostToChat(ctx context.Context, channelID, title, body, link string) error {
+	return m.uc.PostToChat(ctx, channelID, title, body, link)
+}
+
 // Name implements modules.Module.
 func (m *Module) Name() string { return "notifications" }
 

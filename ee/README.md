@@ -37,5 +37,10 @@ exists today moves here.
 
 ## Status
 
-Empty. The licence key check comes with
-[#307](https://github.com/itadori26/trisse-home/issues/307).
+- `licence/`: licence keys ([#307](https://github.com/itadori26/trisse-home/issues/307)).
+  Other modules here implement `modules.Gated` with `licence.Gate`, so the
+  core hides them and refuses their routes without a valid key.
+
+A server built with `go build -tags ee ./cmd/server` contains this
+directory; the published builds do not, until the licence files are final
+([#319](https://github.com/itadori26/trisse-home/issues/319)).

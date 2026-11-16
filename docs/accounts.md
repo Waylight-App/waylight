@@ -129,6 +129,31 @@ or remove links; for everyone else they are read-only, and nobody can file
 their own bookmarks into someone else's folder. Personal bookmarks outside
 shared folders stay private.
 
+## Admins
+
+The owner can share the management of the instance: under *Settings →
+Members and groups*, switch a member to **Admin**. Admins manage members,
+guests, groups, kiosk displays and the instance settings like you, and keep
+their own tabs and private notes like any member. You can have as many as
+you like; [ADR 0022](adr/0022-several-admins.md) has the full rules.
+
+What stays with you as the owner:
+
+- your own account: no admin can disable, delete or demote it, or change
+  its password or second factor;
+- backups, restoring a backup and the data export and import, because they
+  hold everyone's data;
+- API tokens, because they act as the owner.
+
+An admin cannot demote, disable or delete their own account; you or another
+admin do that, and a demoted admin is signed out. Admins get no password
+reset link by e-mail: you or another admin set a new password for them.
+
+With single sign-on or a directory, admins can also come from a group of
+the identity provider (`OIDC_ADMIN_GROUPS`, `LDAP_ADMIN_GROUPS`); see
+[single sign-on for members](single-sign-on-members.md) and
+[directory sync](directory-sync.md).
+
 ## Invitations and reset links
 
 Instead of choosing a password for someone, you can send them a link.

@@ -10,7 +10,7 @@ import (
 // only the tabs shared with it.
 type Principal struct {
 	AccountID string
-	// Role is "owner", "guest", "kiosk" (#50), "token", or "system" for
+	// Role is "owner", "admin" (#434), "member", "guest", "kiosk" (#50), "token", or "system" for
 	// work without a request (background jobs).
 	Role string
 	// Tabs are the dashboard tabs a guest may see (empty for the owner).
@@ -24,6 +24,10 @@ type Principal struct {
 	// start private (ADR 0018, migration step 3). Members always start
 	// private.
 	PrivateByDefault bool
+	// SecondFactorMissing is set when an admin policy requires a second
+	// factor and the account has none (#304): until it sets one up, it may
+	// only reach its own account settings.
+	SecondFactorMissing bool
 }
 
 // SystemAccountID is the account that background jobs act for. It is the
@@ -84,9 +88,9 @@ func (p Principal) SettingsAccount() string {
 	return p.AccountID
 }
 
-// IsAdmin reports whether p manages the instance: the owner (the first
-// admin, ADR 0018) or work without a request.
-func (p Principal) IsAdmin() bool { return p.Role == "owner" || p.IsSystem() }
+// IsAdmin reports whether p manages the instance: the owner, an admin
+// (ADR 0022) or work without a request.
+func (p Principal) IsAdmin() bool { return p.Role == "owner" || p.Role == "admin" || p.IsSystem() }
 
 // PrincipalFor is the principal a background job uses when it acts for one
 // account, for example to apply that account's settings to its records.

@@ -12,6 +12,11 @@ type ExternalIdentity struct {
 	Subject       string
 	Email         string
 	EmailVerified bool
+	// Name and Username (preferred_username) help name a new member (#302).
+	Name     string
+	Username string
+	// Groups come from the claim set in OIDC_GROUPS_CLAIM; nil without it.
+	Groups []string
 }
 
 // IdentityMapping lists who may sign in as the owner via SSO.

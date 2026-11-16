@@ -98,7 +98,7 @@ func (uc *accountLinks) newToken() (string, domain.TokenHash, error) {
 
 // Invites implements AccountLinks; expired invitations are dropped first.
 func (uc *accountLinks) Invites(ctx context.Context) ([]InviteView, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return nil, err
 	}
 	if err := uc.repo.DeleteExpired(ctx, uc.deps.Clock.Now()); err != nil {
@@ -166,7 +166,7 @@ func (uc *accountLinks) nameFree(ctx context.Context, name string, open []Invite
 
 // RevokeInvite implements AccountLinks.
 func (uc *accountLinks) RevokeInvite(ctx context.Context, id string) error {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return err
 	}
 	if _, err := uc.repo.Delete(ctx, id); err != nil {
@@ -178,7 +178,7 @@ func (uc *accountLinks) RevokeInvite(ctx context.Context, id string) error {
 
 // CreateResetLink implements AccountLinks.
 func (uc *accountLinks) CreateResetLink(ctx context.Context, accountID string) (string, time.Time, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return "", time.Time{}, err
 	}
 	a, err := uc.deps.Accounts.Get(ctx, accountID)
@@ -238,7 +238,7 @@ func (uc *accountLinks) Accept(ctx context.Context, req AcceptLinkRequest) (Link
 	}
 	// Validate the password before the link is consumed, so a weak
 	// password does not burn the link.
-	hash, err := uc.guests.hash(req.Password)
+	hash, err := uc.guests.hash(ctx, req.Password)
 	if err != nil {
 		return LinkInfo{}, err
 	}

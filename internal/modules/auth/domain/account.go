@@ -22,6 +22,10 @@ const (
 	RoleGuest Role = "guest"
 	// RoleKiosk is a wall display: reads its tabs, signs in with a link (#50).
 	RoleKiosk Role = "kiosk"
+	// RoleAdmin is a person who manages the instance with the owner (#434):
+	// members, guests, groups, settings. Admins have their own tabs and
+	// personal content like members; they cannot change the owner.
+	RoleAdmin Role = "admin"
 	// RoleMember has its own tabs and personal content and reads instance
 	// data, but manages nothing of the instance (ADR 0018, #294).
 	RoleMember Role = "member"
@@ -47,7 +51,18 @@ type Account struct {
 	disabled     bool
 	tabs         []string
 	totp         TOTP
+	// roleSource says where the admin role came from: "" by hand, or the
+	// identity provider that granted it (RoleSourceSSO, RoleSourceDirectory).
+	roleSource string
 }
+
+// Where a role came from (#434). A provider only takes back a role it gave,
+// so a role an admin set by hand is never changed by single sign-on.
+const (
+	RoleSourceHand      = ""
+	RoleSourceSSO       = "sso"
+	RoleSourceDirectory = "directory"
+)
 
 // NewAccount creates the owner account from an already computed hash.
 func NewAccount(passwordHash string, now time.Time) (Account, error) {
@@ -107,13 +122,40 @@ func (a Account) Name() string { return a.name }
 // IsOwner reports whether this is the owner account.
 func (a Account) IsOwner() bool { return a.role == RoleOwner }
 
-// IsAdmin reports whether the account manages the instance. Today the owner
-// is the only admin; ADR 0018 calls it the first admin.
-func (a Account) IsAdmin() bool { return a.role == RoleOwner }
+// IsAdmin reports whether the account manages the instance: the owner or an
+// admin (ADR 0022).
+func (a Account) IsAdmin() bool { return a.role == RoleOwner || a.role == RoleAdmin }
+
+// IsPerson reports whether the account is a person of the organisation with
+// tabs and personal content of their own: a member or an admin. The owner
+// is not one: its ID doubles as the instance's (ADR 0018).
+func (a Account) IsPerson() bool { return a.role == RoleMember || a.role == RoleAdmin }
+
+// RoleSource says where the admin role came from; see RoleSourceHand.
+func (a Account) RoleSource() string { return a.roleSource }
+
+// RestoreRoleSource sets the role source when loading from storage.
+func (a *Account) RestoreRoleSource(source string) { a.roleSource = source }
+
+// SetRole makes a member an admin or an admin a member; source records who
+// decided (#434). The owner, guests and kiosks keep their roles.
+func (a *Account) SetRole(role Role, source string, now time.Time) error {
+	if !a.IsPerson() {
+		return ErrMemberNotFound
+	}
+	if role != RoleMember && role != RoleAdmin {
+		return kernel.NewValidationError("role", "A member can be a member or an admin.")
+	}
+	if role == RoleMember {
+		source = RoleSourceHand
+	}
+	a.role, a.roleSource, a.updatedAt = role, source, now
+	return nil
+}
 
 // SetMemberAccess enables or disables a member.
 func (a *Account) SetMemberAccess(disabled bool, now time.Time) error {
-	if a.role != RoleMember {
+	if !a.IsPerson() {
 		return ErrMemberNotFound
 	}
 	a.disabled, a.updatedAt = disabled, now
@@ -157,5 +199,5 @@ func (a *Account) SetGuestAccess(tabs []string, disabled bool, now time.Time) er
 // not limited to shared tabs; which tabs are theirs is the dashboard's
 // business (ADR 0018).
 func (a Account) CanSee(tabID string) bool {
-	return a.IsOwner() || a.role == RoleMember || slices.Contains(a.tabs, tabID)
+	return a.IsOwner() || a.IsPerson() || slices.Contains(a.tabs, tabID)
 }

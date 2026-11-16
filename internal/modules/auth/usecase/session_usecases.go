@@ -33,12 +33,23 @@ type authenticate struct {
 	prefs    PreferenceRepository
 	clock    Clock
 	ttl      time.Duration
+	policies *Policies
+	passkeys PasskeyRepository
 }
 
 // NewAuthenticate returns the Authenticate use case. groups and prefs may
 // be nil; then principals carry no groups and no preferences.
 func NewAuthenticate(sessions SessionRepository, accounts AccountRepository, groups GroupRepository, prefs PreferenceRepository, clock Clock, ttl SessionTTL) Authenticate {
-	return &authenticate{sessions: sessions, accounts: accounts, groups: groups, prefs: prefs, clock: clock, ttl: ttl.Duration()}
+	return NewAuthenticateWithPolicies(sessions, accounts, groups, prefs, clock, ttl, nil, nil)
+}
+
+// NewAuthenticateWithPolicies also applies the admin policies (#304): the
+// maximum session age and the second factor every account must have.
+// passkeys may be nil when passkeys are off.
+func NewAuthenticateWithPolicies(sessions SessionRepository, accounts AccountRepository, groups GroupRepository,
+	prefs PreferenceRepository, clock Clock, ttl SessionTTL, policies *Policies, passkeys PasskeyRepository) Authenticate {
+	return &authenticate{sessions: sessions, accounts: accounts, groups: groups, prefs: prefs, clock: clock, ttl: ttl.Duration(),
+		policies: policies, passkeys: passkeys}
 }
 
 // Execute implements Authenticate and extends sliding sessions.
@@ -58,6 +69,11 @@ func (uc *authenticate) Execute(ctx context.Context, req AuthenticateRequest) (A
 	if err != nil {
 		return AuthenticateResponse{}, fmt.Errorf("load account: %w", err)
 	}
+	policy := uc.policies.Current(ctx)
+	if policy.MaxSessionAge > 0 && !now.Before(s.CreatedAt().Add(policy.MaxSessionAge)) {
+		_ = uc.sessions.Delete(ctx, s.TokenHash())
+		return AuthenticateResponse{}, domain.ErrSessionInvalid
+	}
 	refreshed := s.Refresh(now, uc.ttl)
 	if refreshed {
 		if err := uc.sessions.Update(ctx, s); err != nil {
@@ -65,14 +81,22 @@ func (uc *authenticate) Execute(ctx context.Context, req AuthenticateRequest) (A
 		}
 	}
 	p := principalOf(a)
+	if policy.RequireSecondFactor && a.Role() != domain.RoleKiosk {
+		if p.SecondFactorMissing, err = uc.secondFactorMissing(ctx, a); err != nil {
+			return AuthenticateResponse{}, err
+		}
+	}
 	// Groups are read on every request like the account, so a change takes
-	// effect at once. The admin needs none: it sees what is shared anyway.
-	if uc.groups != nil && !a.IsAdmin() {
+	// effect at once. The owner is in none (ADR 0018); admins are people and
+	// can be in groups like members (ADR 0022).
+	if uc.groups != nil && !a.IsOwner() {
 		if p.Groups, err = uc.groups.GroupsOf(ctx, a.ID()); err != nil {
 			return AuthenticateResponse{}, fmt.Errorf("load groups: %w", err)
 		}
 	}
-	if uc.prefs != nil && a.IsAdmin() {
+	// Only the owner chooses whether new records start private; members and
+	// admins always start private (kernel.DefaultVisibility).
+	if uc.prefs != nil && a.IsOwner() {
 		if p.PrivateByDefault, err = uc.prefs.PrivateByDefault(ctx, a.ID()); err != nil {
 			return AuthenticateResponse{}, fmt.Errorf("load preferences: %w", err)
 		}
@@ -104,7 +128,7 @@ func (uc *changePassword) Execute(ctx context.Context, req ChangePasswordRequest
 		uc.deps.Events.loginFailed(ctx, account.ID(), domain.NewClient(req.UserAgent, req.ClientKey), uc.deps.Limiter.RecordFailure(req.ClientKey, now))
 		return SessionResponse{}, domain.ErrInvalidCredentials
 	}
-	password, err := domain.NewPassword(req.NewPassword)
+	password, err := uc.deps.newPassword(ctx, req.NewPassword)
 	if err != nil {
 		return SessionResponse{}, err
 	}
@@ -216,4 +240,19 @@ func (uc *manageSessions) RevokeOthers(ctx context.Context, currentToken string)
 
 func principalOf(a domain.Account) kernel.Principal {
 	return kernel.Principal{AccountID: a.ID(), Role: string(a.Role()), Tabs: a.Tabs()}
+}
+
+// secondFactorMissing reports an account with neither TOTP nor a passkey.
+func (uc *authenticate) secondFactorMissing(ctx context.Context, a domain.Account) (bool, error) {
+	if a.TOTPEnabled() {
+		return false, nil
+	}
+	if uc.passkeys == nil {
+		return true, nil
+	}
+	keys, err := uc.passkeys.ListByAccount(ctx, a.ID())
+	if err != nil {
+		return false, fmt.Errorf("list passkeys: %w", err)
+	}
+	return len(keys) == 0, nil
 }

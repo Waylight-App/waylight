@@ -19,6 +19,9 @@ type StatusResponse struct {
 	// Role and Username of the signed-in account.
 	Role     string
 	Username string
+	// SecondFactorRequired: an admin policy requires a second factor and the
+	// account has none yet (#304).
+	SecondFactorRequired bool
 }
 
 // SetupRequest is the input of SetupAccount.

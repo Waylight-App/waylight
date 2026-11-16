@@ -30,6 +30,12 @@ jobs:
           version: v2.15.0
       - name: Test
         run: go test -race -count=1 ./...
+      # The ee/ wiring in cmd/server is only built with the "ee" tag (ADR 0017),
+      # so the edition with the licensed features gets its own vet and test run.
+      - name: Vet and test the ee edition
+        run: |
+          go vet -tags ee ./...
+          go test -race -count=1 -tags ee ./cmd/server/... ./ee/...
       - name: Generated TypeScript types and backend messages are up to date
         run: |
           go install github.com/gzuidhof/tygo@latest

@@ -28,6 +28,11 @@ export interface StatusDTO {
    * link by e-mail (#296).
    */
   passwordReset: boolean;
+  /**
+   * SecondFactorRequired is true while an admin policy requires a second
+   * factor the account has not set up (#304); the interface shows the setup.
+   */
+  secondFactorRequired: boolean;
 }
 /**
  * SSOStatusDTO tells the login page which methods exist.
@@ -112,12 +117,18 @@ export interface GuestDTO {
   createdAt: string /* RFC 3339 */;
 }
 /**
- * MemberDTO is a member account (#294).
+ * MemberDTO is a member or admin account (#294, #434).
  */
 export interface MemberDTO {
   id: string;
   name: string;
   groups: string[];
+  /**
+   * Role is "member" or "admin"; RoleSource is "" (set by hand), "sso" or
+   * "directory".
+   */
+  role: string;
+  roleSource: string;
   disabled: boolean;
   createdAt: string /* RFC 3339 */;
 }
