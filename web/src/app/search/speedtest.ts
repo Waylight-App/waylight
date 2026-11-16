@@ -8,6 +8,12 @@ export const search = defineSearch({
   intents: [
     {
       id: 'speedtest.latest',
+      help: {
+        group: 'home',
+        de: 'Wie schnell das Internet beim letzten Test war',
+        en: 'How fast the internet was at the last test',
+        examples: { de: ['speedtest', 'internet langsam'], en: ['speedtest', 'internet slow'] },
+      },
       source: 'speedtest',
       prefixes: ['speed', 'speedtest'],
       answer: 'metric',

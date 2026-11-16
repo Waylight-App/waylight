@@ -12,6 +12,12 @@ export const search = defineSearch({
   intents: [
     {
       id: 'timeline.recent',
+      help: {
+        group: 'home',
+        de: 'Was zuletzt auf dem Server passiert ist',
+        en: 'What happened on the server recently',
+        examples: { de: ['was ist passiert', 'timeline'], en: ['what happened', 'incidents'] },
+      },
       source: 'timeline',
       prefixes: ['timeline'],
       answer: 'list',

@@ -26,6 +26,12 @@ export const search = defineSearch({
   intents: [
     {
       id: 'calendar.agenda',
+      help: {
+        group: 'day',
+        de: 'Deine Termine heute oder an einem anderen Tag',
+        en: 'Your appointments today or on another day',
+        examples: { de: ['termine morgen', 'kalender'], en: ['calendar tomorrow', 'appointments'] },
+      },
       source: 'calendar',
       prefixes: ['termine', 'kalender', 'calendar'],
       answer: 'list',

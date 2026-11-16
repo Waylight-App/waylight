@@ -12,6 +12,12 @@ export const search = defineSearch({
   intents: [
     {
       id: 'transit.departures',
+      help: {
+        group: 'day',
+        de: 'Die nächsten Abfahrten an deiner Haltestelle',
+        en: 'The next departures at your stop',
+        examples: { de: ['abfahrten', 'nächster bus'], en: ['departures', 'next train'] },
+      },
       source: 'transit',
       prefixes: ['abfahrt', 'bus', 'departures'],
       answer: 'list',

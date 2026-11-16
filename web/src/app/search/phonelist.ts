@@ -12,6 +12,12 @@ export const search = defineSearch({
   intents: [
     {
       id: 'phonelist.person',
+      help: {
+        group: 'day',
+        de: 'Die Telefonnummer einer Person aus der Telefonliste',
+        en: 'The phone number of someone on the phone list',
+        examples: { de: ['telefon anna'], en: ['phone anna'] },
+      },
       source: 'phonelist',
       prefixes: ['phone', 'telefon', 'tel', 'nummer', 'number', 'durchwahl'],
       answer: 'text',

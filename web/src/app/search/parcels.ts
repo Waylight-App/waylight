@@ -17,6 +17,12 @@ export const search = defineSearch({
   intents: [
     {
       id: 'parcels.status',
+      help: {
+        group: 'day',
+        de: 'Wo deine Pakete gerade sind',
+        en: 'Where your parcels are',
+        examples: { de: ['pakete', 'sendung dhl'], en: ['parcels', 'package tracking'] },
+      },
       source: 'parcels',
       prefixes: ['paket', 'parcel'],
       answer: 'list',

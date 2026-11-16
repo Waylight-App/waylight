@@ -31,6 +31,18 @@ e-mail or web address or a phone or account number are never remembered.
 Without this setting, texts you send to the web search are not stored
 anywhere by trisse-home.
 
+## Help: what the search can do
+
+Type `?`, `hilfe` or `help` to see everything the search understands right
+now, grouped into everyday things, your home server, time and dates, tools,
+quick add, commands and the web. Each line has one or two examples; choose
+one and it goes into the search field. The list only shows what is enabled
+for you: without the weather module there is no weather entry, and guests do
+not see anything that changes data.
+
+Add a word to narrow the list: `? wetter` or `help disk`. The hints that
+rotate in the empty search field come from the same list.
+
 ## Web search
 
 DuckDuckGo is the default engine, so all of its
