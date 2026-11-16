@@ -28,13 +28,15 @@ var (
 
 // Errors of members and groups (#294).
 var (
-	ErrMemberNotFound     = kernel.NewPublicError(kernel.ErrNotFound, "The member does not exist.")
-	ErrTooManyMembers     = kernel.NewPublicError(kernel.ErrInvalid, "There are already 50 members.")
-	ErrMembersUnavailable = kernel.NewPublicError(kernel.ErrConflict, "Members are not available yet: personal content is not separated per account in this version.")
-	ErrMemberNotAllowed   = kernel.NewPublicError(kernel.ErrForbidden, "Members cannot change this; ask an admin.")
-	ErrGroupNotFound      = kernel.NewPublicError(kernel.ErrNotFound, "The group does not exist.")
-	ErrGroupNameTaken     = kernel.NewPublicError(kernel.ErrConflict, "A group with this name already exists.")
-	ErrTooManyGroups      = kernel.NewPublicError(kernel.ErrInvalid, "There are already 50 groups.")
+	ErrMemberNotFound = kernel.NewPublicError(kernel.ErrNotFound, "The member does not exist.")
+	// ErrSecondFactorRequired answers an account without a second factor while an admin policy requires one (#304).
+	ErrSecondFactorRequired = kernel.NewPublicError(kernel.ErrForbidden, "Set up a second factor (an authenticator app or a passkey) to continue; your administrator requires one.")
+	ErrTooManyMembers       = kernel.NewPublicError(kernel.ErrInvalid, "There are already 50 members.")
+	ErrMembersUnavailable   = kernel.NewPublicError(kernel.ErrConflict, "Members are not available yet: personal content is not separated per account in this version.")
+	ErrMemberNotAllowed     = kernel.NewPublicError(kernel.ErrForbidden, "Members cannot change this; ask an admin.")
+	ErrGroupNotFound        = kernel.NewPublicError(kernel.ErrNotFound, "The group does not exist.")
+	ErrGroupNameTaken       = kernel.NewPublicError(kernel.ErrConflict, "A group with this name already exists.")
+	ErrTooManyGroups        = kernel.NewPublicError(kernel.ErrInvalid, "There are already 50 groups.")
 )
 
 // Errors of API tokens.
