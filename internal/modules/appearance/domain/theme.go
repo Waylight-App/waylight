@@ -17,7 +17,7 @@ import (
 // ThemeTokens are the design tokens a theme may set (see web tokens.css).
 var ThemeTokens = []string{
 	"--color-bg", "--color-surface", "--color-surface-2", "--color-border", "--color-text", "--color-text-muted",
-	"--color-accent", "--color-accent-contrast", "--color-danger", "--color-success", "--color-warning",
+	"--color-accent", "--color-accent-contrast", "--color-accent-text", "--color-danger", "--color-success", "--color-warning",
 	"--radius", "--radius-small",
 }
 

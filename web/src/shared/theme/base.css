@@ -19,8 +19,13 @@ body {
     no-repeat;
 }
 
+h1,
+h2 {
+  font-family: var(--font-display);
+}
+
 a {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 button,

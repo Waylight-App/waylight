@@ -31,7 +31,7 @@
     display: block;
     width: 100%;
     height: clamp(14px, 4cqh, 32px);
-    color: var(--color-accent);
+    color: var(--color-accent-text);
     opacity: 0.8;
   }
 </style>

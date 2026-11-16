@@ -630,7 +630,7 @@
     place-items: center;
     border: 1px solid var(--color-border);
     background: var(--color-surface);
-    color: var(--color-accent);
+    color: var(--color-accent-text);
     cursor: pointer;
   }
   .round[aria-expanded='true'] {

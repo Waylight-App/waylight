@@ -119,7 +119,7 @@
     gap: var(--space-1);
   }
   .on {
-    color: var(--color-accent);
+    color: var(--color-accent-text);
     font-weight: 600;
   }
   .body {

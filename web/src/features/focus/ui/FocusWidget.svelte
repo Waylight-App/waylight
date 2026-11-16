@@ -172,7 +172,7 @@
     line-height: 1.1;
   }
   .running .clock {
-    color: var(--color-accent);
+    color: var(--color-accent-text);
   }
   [data-phase='short'] .clock,
   [data-phase='long'] .clock {

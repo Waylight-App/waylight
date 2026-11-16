@@ -1,0 +1,16 @@
+/*
+ * Typefaces a theme can choose through --font-sans and --font-display
+ * (#504). Both are SIL Open Font License fonts, bundled with the app and
+ * served from it, so no font is ever requested from a third party and the
+ * CSP keeps font-src 'self'.
+ *
+ * The @font-face rules cost a few hundred bytes. Browsers fetch a font file
+ * only when text on the page uses that family, so with the default tokens
+ * nothing is downloaded. Each family is split into Unicode ranges (Latin,
+ * Latin Extended, …) and only the ranges that occur are fetched.
+ *
+ * The browser extension does not import this file to stay within its size
+ * budget; there the stacks fall back to the system font.
+ */
+@import '@fontsource-variable/figtree/wght.css';
+@import '@fontsource-variable/fraunces/wght.css';

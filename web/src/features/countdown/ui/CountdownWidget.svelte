@@ -156,7 +156,7 @@
     white-space: nowrap;
   }
   li.soon .left {
-    color: var(--color-accent);
+    color: var(--color-accent-text);
   }
   li.past {
     opacity: 0.6;
