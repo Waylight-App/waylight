@@ -58,7 +58,7 @@ nav:
       - Accounts, guests and kiosk displays: accounts.md
       - Licence keys: licence-keys.md
       - Single sign-on for members: single-sign-on-members.md
-      - Directory sync with SCIM: directory-sync.md
+      - Directory sync (SCIM, LDAP, AD): directory-sync.md
       - Appearance: appearance.md
       - Phones, offline and the extension: apps-and-offline.md
       - Privacy of the extension: extension-privacy.md

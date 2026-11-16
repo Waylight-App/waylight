@@ -141,6 +141,7 @@ type Module struct {
 	accounts   *gateway.AccountRepository
 	sso        usecase.SSO
 	provision  usecase.Provisioning
+	directory  *usecase.DirectoryLogin
 }
 
 // New builds the auth module.
@@ -164,6 +165,7 @@ func New(cfg Config, d Deps) (*Module, error) {
 		Limiter: gateway.NewAttemptLimiter(domain.DefaultLoginThrottle), Clock: d.Clock, TTL: ttl, IDs: d.IDs, OTP: d.OTP,
 		Events: events, Passkeys: gateway.NewPasskeyRepository(d.DB), Challenges: usecase.NewChallenges(),
 		Groups: groups, Preferences: prefs, MembersEnabled: cfg.MembersEnabled, PasswordLoginDisabled: !cfg.SSO.PasswordLogin && (cfg.SSO.OIDC != nil || cfg.SSO.ProxyHeader != ""),
+		Directory: &usecase.DirectoryLogin{},
 	}
 	if cfg.WebAuthn != nil {
 		deps.WebAuthn = webauthnAdapter{*cfg.WebAuthn}
@@ -215,8 +217,20 @@ func New(cfg Config, d Deps) (*Module, error) {
 		accounts:   accounts,
 		sso:        sso,
 		provision:  usecase.NewProvisioning(deps),
+		directory:  deps.Directory,
 	}, nil
 }
+
+// DirectoryAuthenticator checks members' names and passwords against a
+// directory; see usecase.DirectoryAuthenticator.
+type DirectoryAuthenticator = usecase.DirectoryAuthenticator
+
+// ErrNotInDirectory lets the login fall back to the local check.
+var ErrNotInDirectory = usecase.ErrNotInDirectory
+
+// SetDirectoryAuthenticator lets members sign in with their directory
+// password (#396). The ee/ directory sync calls it while the server is built.
+func (m *Module) SetDirectoryAuthenticator(a DirectoryAuthenticator) { m.directory.Set(a) }
 
 // ExternalIdentity is a person confirmed by the identity provider.
 type ExternalIdentity = domain.ExternalIdentity
