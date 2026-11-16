@@ -3,10 +3,11 @@
   import { TimelineSettings } from '../features/timeline';
   import { BriefingSettings } from '../features/briefing';
   import { AboutSettings, ForecastSettings } from '../features/system';
-  import { intlLocale, type MessageKey, t } from '../shared/i18n';
+  import { intlLocale, t } from '../shared/i18n';
   import { tick } from 'svelte';
-  import { groupSections, moveFocus, type SettingsGroup } from './settingsNav';
+  import { groupSections, moveFocus } from './settingsNav';
   import { registeredSections } from './settingsSections';
+  import { type CatalogSection, OWN_SECTIONS, visibleSections } from './settingsCatalog';
   import { AdGuardSettings } from '../features/adguard';
   import { SpeedtestSettings } from '../features/speedtest';
   import { ImageUpdateSettings } from '../features/docker';
@@ -64,100 +65,21 @@
     onclose,
   }: Props = $props();
 
-  type Section = {
-    id: string;
-    label: MessageKey;
-    module?: string;
-    group?: SettingsGroup;
-    homelab?: boolean;
-    /** A plugin's own label (ADR 0021). */
-    title?: () => string;
-    adminOnly?: boolean;
-    plugin?: boolean;
-  };
+  type Section = CatalogSection;
   /** Display name of a section: a plugin's own label or the translated key. */
   const nameOf = (s: Section) => s.title?.() ?? t(s.label);
-  // The sections built into the dialog, with their topic (#261). Features
-  // add theirs from src/app/settings (#193) and choose the group there.
-  const ownSections: Section[] = [
-    { id: 'appearance', label: 'settings.section.appearance', module: 'appearance', group: 'general' },
-    { id: 'search', label: 'settings.section.search', module: 'search', group: 'general' },
-    {
-      id: 'notifications',
-      label: 'settings.section.notifications',
-      module: 'notifications',
-      group: 'general',
-    },
-    { id: 'forecast', label: 'settings.section.forecast', module: 'system', group: 'general', homelab: true },
-    { id: 'services', label: 'settings.section.services', module: 'services', group: 'content' },
-    { id: 'feeds', label: 'settings.section.feeds', module: 'rss', group: 'content' },
-    { id: 'folders', label: 'settings.section.bookmark_folders', module: 'bookmarks', group: 'content' },
-    { id: 'calendar', label: 'settings.section.calendar', module: 'calendar', group: 'content' },
-    { id: 'briefing', label: 'settings.section.briefing', module: 'briefing', group: 'content' },
-    { id: 'timeline', label: 'settings.section.timeline', module: 'timeline', group: 'content' },
-    { id: 'shopping', label: 'settings.section.shopping', module: 'shopping', group: 'content' },
-    { id: 'waste', label: 'settings.section.waste', module: 'waste', group: 'content' },
-    { id: 'parcels', label: 'settings.section.parcels', module: 'parcels', group: 'content' },
-    { id: 'transfer', label: 'settings.section.transfer', module: 'transfer', group: 'content' },
-    { id: 'adguard', label: 'settings.section.adguard', module: 'adguard', homelab: true },
-    { id: 'speedtest', label: 'settings.section.speedtest', module: 'speedtest', homelab: true },
-    { id: 'docker-updates', label: 'settings.section.docker_updates', module: 'docker', homelab: true },
-    { id: 'nextcloud', label: 'settings.section.nextcloud', module: 'nextcloud', homelab: true },
-    { id: 'fritzbox', label: 'settings.section.fritzbox', module: 'fritzbox', homelab: true },
-    { id: 'wireguard', label: 'settings.section.wireguard', module: 'wireguard', homelab: true },
-    { id: 'backups', label: 'settings.section.backups', module: 'backup', group: 'data' },
-    {
-      id: 'backupmonitor',
-      label: 'settings.section.backupmonitor',
-      module: 'backupmonitor',
-      group: 'data',
-      homelab: true,
-    },
-    { id: 'account', label: 'settings.section.account', group: 'account' },
-    { id: 'tokens', label: 'settings.section.tokens', group: 'account' },
-    { id: 'guests', label: 'settings.section.guests', group: 'account' },
-    { id: 'members', label: 'settings.section.members', group: 'account' },
-    { id: 'invites', label: 'settings.section.invites', group: 'account' },
-    { id: 'kiosks', label: 'settings.section.kiosks', group: 'account' },
-    { id: 'security-log', label: 'settings.section.security_log', group: 'account' },
-    { id: 'about', label: 'settings.section.about', module: 'system', group: 'about' },
-    { id: 'full-version', label: 'settings.section.full_version', group: 'about' },
-  ];
-  const sections: Section[] = [...ownSections, ...registeredSections];
-  /** Guests only manage their own account (ADR 0012). */
-  const guestSections = new Set(['account']);
-  /**
-   * Members (#294) manage their account and the settings of modules with
-   * personal data; instance settings stay with admins. Parcels hold the
-   * instance's carrier key and the admin's mailbox.
-   */
-  const memberSections = new Set(['account']);
-  const memberHidden = new Set(['parcels', 'transfer']);
-  const personal = (module: string) =>
-    dataKinds[module] === 'personal-content' || dataKinds[module] === 'personal-settings';
-  /** Backups, the export and API tokens stay with the owner (ADR 0022). */
-  const ownerSections = new Set(['backups', 'transfer', 'tokens']);
-  const allowed = (s: Section) => {
-    // What a server adds (#291) only makes sense in the extension's local mode.
-    if (s.id === 'full-version') return container.localMode;
-    if (s.adminOnly && !container.auth.admin) return false;
-    // Plugin sections without adminOnly are for every member, e.g. their
-    // own connected accounts (#326); guests manage only their account.
-    if (s.plugin && !container.auth.guest) return true;
-    if (ownerSections.has(s.id) && !container.auth.owner) return false;
-    if (container.auth.guest) return guestSections.has(s.id);
-    if (container.auth.member)
-      return s.module ? personal(s.module) && !memberHidden.has(s.id) : memberSections.has(s.id);
-    return true;
-  };
+  const sections: Section[] = [...OWN_SECTIONS, ...registeredSections];
   const visible = $derived(
-    sections.filter(
-      (s) =>
-        (!s.module || modules.has(s.module)) &&
-        allowed(s) &&
-        // The "everyday" profile hides home-server and network settings (#281).
-        !(s.homelab && appearance.profile === 'everyday'),
-    ),
+    visibleSections(sections, {
+      modules,
+      dataKinds,
+      profile: appearance.profile,
+      localMode: container.localMode,
+      guest: container.auth.guest,
+      member: container.auth.member,
+      admin: container.auth.admin,
+      owner: container.auth.owner,
+    }),
   );
   let guestTabs = $state<{ id: string; name: string }[]>([]);
   $effect(() => {

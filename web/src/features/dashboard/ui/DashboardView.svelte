@@ -90,7 +90,7 @@
   let error = $state('');
   let loaded = $state(false);
   let dialog = $state<
-    | { kind: 'add-widget' }
+    | { kind: 'add-widget'; query?: string }
     | { kind: 'new-tab' }
     | { kind: 'rename-tab'; tab: Tab }
     | { kind: 'delete-tab'; tab: Tab }
@@ -171,6 +171,16 @@
     } catch {
       return '';
     }
+  }
+
+  /** Opens the widget picker, e.g. from "add widget weather" in the search (#476). */
+  export function openAddWidget(query = '') {
+    dialog = { kind: 'add-widget', query };
+  }
+
+  /** Selects a tab by id, e.g. from "tab arbeit" in the search (#476). */
+  export function selectTab(id: string) {
+    if (tabs.some((tab) => tab.id === id)) select(id);
   }
 
   /** Selects the n-th tab (0-based), e.g. from the 1–9 shortcuts (#95). */
@@ -558,6 +568,7 @@
 
 {#if dialog?.kind === 'add-widget'}
   <WidgetPicker
+    initialQuery={dialog.query}
     types={widgetTypes}
     icon={widgetIcon}
     onpick={addWidget}

@@ -16,6 +16,26 @@ export interface FrecencyEntry {
   value: number;
   /** Milliseconds since the epoch. */
   at: number;
+  /**
+   * The value split by time slot (SLOTS long, see slotOf), decayed like
+   * `value` (#480). Missing in entries stored before; they count the same
+   * in every slot.
+   */
+  slots?: number[];
+}
+
+/** Six 4-hour slots on weekdays, six on weekends. */
+export const SLOTS = 12;
+/** How much a pick in the current slot outweighs one at another time. */
+export const SLOT_WEIGHT = 2;
+/** Number of suggestions on an empty field. */
+export const MAX_SUGGESTIONS = 5;
+
+/** The time slot of a moment in the browser's own time zone. */
+export function slotOf(at: Date): number {
+  const day = at.getDay(); // 0 = Sunday
+  const weekend = day === 0 || day === 6;
+  return (weekend ? 6 : 0) + Math.floor(at.getHours() / 4);
 }
 
 export const HALF_LIFE_MS = 14 * 24 * 3600 * 1000;
@@ -72,7 +92,11 @@ export function record(
   const key = normaliseQuery(query);
   if (!key || !target) return [...entries];
   const old = entries.find((e) => e.key === key && e.target === target);
-  const updated: FrecencyEntry = { key, target, value: (old ? decayed(old, now) : 0) + 1, at: now };
+  const factor = old ? decayed(old, now) / (old.value || 1) : 0;
+  const slots =
+    old?.slots?.length === SLOTS ? old.slots.map((v) => v * factor) : new Array<number>(SLOTS).fill(0);
+  slots[slotOf(new Date(now))] = (slots[slotOf(new Date(now))] ?? 0) + 1;
+  const updated: FrecencyEntry = { key, target, value: (old ? decayed(old, now) : 0) + 1, at: now, slots };
   const rest = entries.filter((e) => e !== old);
   return prune([updated, ...rest], now);
 }
@@ -90,15 +114,59 @@ export function prune(entries: readonly FrecencyEntry[], now: number): FrecencyE
 /** Validates stored entries (storage may hold anything). */
 export function parseEntries(data: unknown): FrecencyEntry[] {
   if (!Array.isArray(data)) return [];
-  return data.filter(
-    (e): e is FrecencyEntry =>
-      typeof e === 'object' &&
-      e !== null &&
-      typeof e.key === 'string' &&
-      typeof e.target === 'string' &&
-      typeof e.value === 'number' &&
-      Number.isFinite(e.value) &&
-      typeof e.at === 'number' &&
-      Number.isFinite(e.at),
+  return data
+    .filter(
+      (e): e is FrecencyEntry =>
+        typeof e === 'object' &&
+        e !== null &&
+        typeof e.key === 'string' &&
+        typeof e.target === 'string' &&
+        typeof e.value === 'number' &&
+        Number.isFinite(e.value) &&
+        typeof e.at === 'number' &&
+        Number.isFinite(e.at),
+    )
+    .map((e) => (validSlots(e.slots) ? e : { key: e.key, target: e.target, value: e.value, at: e.at }));
+}
+
+/** Slot data of the expected shape; anything else is dropped, not fixed. */
+function validSlots(slots: unknown): slots is number[] {
+  return (
+    Array.isArray(slots) &&
+    slots.length === SLOTS &&
+    slots.every((v) => typeof v === 'number' && Number.isFinite(v) && v >= 0)
   );
+}
+
+/** A suggested target for the empty search field and its weight. */
+export interface Suggestion {
+  target: string;
+  score: number;
+}
+
+/**
+ * What to suggest on an empty field (#480): every target's decayed value
+ * summed over all queries it was chosen for, weighted by how much of it
+ * falls into the current time slot. A target picked mornings on weekdays
+ * comes first on a weekday morning. Entries without slot data count as
+ * spread evenly over the day.
+ */
+export function suggest(
+  entries: readonly FrecencyEntry[],
+  now: number,
+  limit = MAX_SUGGESTIONS,
+): Suggestion[] {
+  const slot = slotOf(new Date(now));
+  const scores = new Map<string, number>();
+  for (const e of entries) {
+    const total = e.slots?.reduce((a, b) => a + b, 0) ?? 0;
+    const share = e.slots && total > 0 ? (e.slots[slot] ?? 0) / total : 1 / SLOTS;
+    const score = (decayed(e, now) * (1 + SLOT_WEIGHT * SLOTS * share)) / (1 + SLOT_WEIGHT);
+    scores.set(e.target, (scores.get(e.target) ?? 0) + score);
+  }
+  return [...scores]
+    .map(([target, score]) => ({ target, score }))
+    .filter((s) => s.score >= MIN_VALUE)
+    .sort((a, b) => b.score - a.score || a.target.localeCompare(b.target))
+    .slice(0, limit);
 }

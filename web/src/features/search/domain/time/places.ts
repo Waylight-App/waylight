@@ -1,0 +1,90 @@
+/**
+ * Places the search knows for "time in …" (#473): German and English names
+ * (folded: lower case, no diacritics) of large cities to IANA time zones.
+ * Deliberately small; an unknown place falls through to the normal search.
+ */
+const ZONES: Record<string, string[]> = {
+  'Europe/Berlin': [
+    'berlin',
+    'munchen',
+    'munich',
+    'hamburg',
+    'frankfurt',
+    'koln',
+    'cologne',
+    'deutschland',
+    'germany',
+  ],
+  'Europe/Vienna': ['wien', 'vienna', 'osterreich', 'austria'],
+  'Europe/Zurich': ['zurich', 'genf', 'geneva', 'bern', 'schweiz', 'switzerland'],
+  'Europe/London': ['london', 'edinburgh', 'manchester', 'england', 'uk'],
+  'Europe/Dublin': ['dublin', 'irland', 'ireland'],
+  'Europe/Lisbon': ['lissabon', 'lisbon', 'portugal'],
+  'Europe/Paris': ['paris', 'frankreich', 'france'],
+  'Europe/Madrid': ['madrid', 'barcelona', 'spanien', 'spain'],
+  'Europe/Rome': ['rom', 'rome', 'mailand', 'milan', 'italien', 'italy'],
+  'Europe/Amsterdam': ['amsterdam', 'niederlande', 'netherlands'],
+  'Europe/Brussels': ['brussel', 'brussels', 'belgien', 'belgium'],
+  'Europe/Copenhagen': ['kopenhagen', 'copenhagen', 'danemark', 'denmark'],
+  'Europe/Stockholm': ['stockholm', 'schweden', 'sweden'],
+  'Europe/Oslo': ['oslo', 'norwegen', 'norway'],
+  'Europe/Helsinki': ['helsinki', 'finnland', 'finland'],
+  'Europe/Warsaw': ['warschau', 'warsaw', 'polen', 'poland'],
+  'Europe/Prague': ['prag', 'prague', 'tschechien', 'czechia'],
+  'Europe/Athens': ['athen', 'athens', 'griechenland', 'greece'],
+  'Europe/Istanbul': ['istanbul', 'turkei', 'turkey'],
+  'Europe/Kyiv': ['kiew', 'kyiv', 'kiev', 'ukraine'],
+  'Europe/Moscow': ['moskau', 'moscow'],
+  'Africa/Cairo': ['kairo', 'cairo', 'agypten', 'egypt'],
+  'Africa/Johannesburg': ['johannesburg', 'kapstadt', 'cape town', 'sudafrika', 'south africa'],
+  'Africa/Lagos': ['lagos', 'nigeria'],
+  'Africa/Nairobi': ['nairobi', 'kenia', 'kenya'],
+  'Asia/Dubai': ['dubai', 'abu dhabi'],
+  'Asia/Tehran': ['teheran', 'tehran', 'iran'],
+  'Asia/Kolkata': ['mumbai', 'bombay', 'delhi', 'neu-delhi', 'new delhi', 'bangalore', 'indien', 'india'],
+  'Asia/Bangkok': ['bangkok', 'thailand'],
+  'Asia/Jakarta': ['jakarta', 'indonesien', 'indonesia'],
+  'Asia/Singapore': ['singapur', 'singapore'],
+  'Asia/Hong_Kong': ['hongkong', 'hong kong'],
+  'Asia/Shanghai': ['peking', 'beijing', 'shanghai', 'china'],
+  'Asia/Taipei': ['taipeh', 'taipei', 'taiwan'],
+  'Asia/Seoul': ['seoul', 'sudkorea', 'south korea', 'korea'],
+  'Asia/Tokyo': ['tokio', 'tokyo', 'osaka', 'kyoto', 'japan'],
+  'Australia/Perth': ['perth'],
+  'Australia/Sydney': ['sydney', 'melbourne', 'canberra'],
+  'Pacific/Auckland': ['auckland', 'wellington', 'neuseeland', 'new zealand'],
+  'Pacific/Honolulu': ['honolulu', 'hawaii'],
+  'America/Anchorage': ['anchorage', 'alaska'],
+  'America/Los_Angeles': ['los angeles', 'la', 'san francisco', 'seattle', 'las vegas', 'vancouver'],
+  'America/Denver': ['denver'],
+  'America/Phoenix': ['phoenix'],
+  'America/Chicago': ['chicago', 'dallas', 'houston', 'austin'],
+  'America/New_York': [
+    'new york',
+    'new york city',
+    'nyc',
+    'ny',
+    'boston',
+    'washington',
+    'miami',
+    'atlanta',
+    'toronto',
+    'montreal',
+  ],
+  'America/Mexico_City': ['mexiko-stadt', 'mexiko stadt', 'mexico city', 'mexiko', 'mexico'],
+  'America/Bogota': ['bogota', 'kolumbien', 'colombia'],
+  'America/Lima': ['lima', 'peru'],
+  'America/Santiago': ['santiago', 'chile'],
+  'America/Sao_Paulo': ['sao paulo', 'rio de janeiro', 'rio', 'brasilien', 'brazil'],
+  'America/Argentina/Buenos_Aires': ['buenos aires', 'argentinien', 'argentina'],
+  UTC: ['utc', 'gmt', 'zulu'],
+};
+
+const BY_NAME = new Map<string, string>(
+  Object.entries(ZONES).flatMap(([zone, names]) => names.map((n) => [n, zone] as const)),
+);
+
+/** The IANA zone of a place name (already folded), or null. */
+export function zoneOf(place: string): string | null {
+  return BY_NAME.get(place.trim().replace(/\s+/g, ' ')) ?? null;
+}

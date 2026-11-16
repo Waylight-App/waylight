@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { CommandHandlers } from './appCommands';
   import { dayPart, greetingKey } from '../features/appearance/domain/greeting';
   import { HINT_INTERVAL_MS, nextHint, SEARCH_HINTS } from '../features/search/domain/hints';
   import type { WeatherConfig } from '../features/weather/domain/weather';
@@ -19,8 +20,18 @@
     weatherLocation?: WeatherConfig | null;
     /** First widget config of a kind, e.g. the transit stop (#161). */
     widgetConfig?: (kind: string) => Record<string, unknown> | null;
+    /** Handlers of the app commands in the search (#476). */
+    commandHandlers?: CommandHandlers;
   }
-  let { name, tabsId, container, modules, weatherLocation = null, widgetConfig }: Props = $props();
+  let {
+    name,
+    tabsId,
+    container,
+    modules,
+    weatherLocation = null,
+    widgetConfig,
+    commandHandlers,
+  }: Props = $props();
 
   let now = $state(new Date());
   let hint = $state(0);
@@ -134,6 +145,7 @@
           {listboxId}
           {weatherLocation}
           {widgetConfig}
+          {commandHandlers}
           onclose={close}
           ondone={() => ((query = ''), close(), input?.blur())}
         />
