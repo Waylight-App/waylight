@@ -54,7 +54,8 @@
         auth.members(),
         auth.guests(),
         auth.groups(),
-        auth.privateByDefault(),
+        // The "private by default" preference belongs to the owner (ADR 0022).
+        auth.owner ? auth.privateByDefault() : Promise.resolve(false),
       ]);
       privateByDefault = priv;
       available = list.available;
@@ -133,28 +134,52 @@
 {#if error}<p class="error" role="alert">{error}</p>{/if}
 
 <!-- Asked once members exist (ADR 0018, migration step 3): until now the
-     admin's entries were visible to everyone on the instance. -->
-<label class="privacy" class:highlight={members.length > 0 && !privateByDefault}>
-  <input
-    type="checkbox"
-    checked={privateByDefault}
-    onchange={(e) => {
-      const on = e.currentTarget.checked;
-      run(() => auth.setPrivateByDefault(on));
-    }}
-  />
-  <span>
-    <strong>{t('auth.private_by_default')}</strong><br />
-    <span class="muted">{t('auth.private_by_default_hint')}</span>
-  </span>
-</label>
+     owner's entries were visible to everyone on the instance. -->
+{#if auth.owner}
+  <label class="privacy" class:highlight={members.length > 0 && !privateByDefault}>
+    <input
+      type="checkbox"
+      checked={privateByDefault}
+      onchange={(e) => {
+        const on = e.currentTarget.checked;
+        run(() => auth.setPrivateByDefault(on));
+      }}
+    />
+    <span>
+      <strong>{t('auth.private_by_default')}</strong><br />
+      <span class="muted">{t('auth.private_by_default_hint')}</span>
+    </span>
+  </label>
+{/if}
 
 <h3>{t('auth.members')}</h3>
 <ul class="accounts">
   {#each members as m (m.id)}
     <li>
       <strong>{m.name}</strong>
+      {#if m.role === 'admin'}<span class="badge">{t('auth.role_admin')}</span>{/if}
       {#if m.disabled}<span class="muted">({t('auth.guest_disabled')})</span>{/if}
+      <!-- Admins manage everything except backups, the export and API tokens;
+           nobody changes the own role (ADR 0022). -->
+      <label class="role">
+        <input
+          type="checkbox"
+          checked={m.role === 'admin'}
+          disabled={auth.isSelf(m)}
+          onchange={(e) => {
+            const on = e.currentTarget.checked;
+            if (!on && !confirm(t('auth.role_demote_confirm', { name: m.name }))) {
+              e.currentTarget.checked = true;
+              return;
+            }
+            run(() => auth.setMemberRole(m, on ? 'admin' : 'member'));
+          }}
+        />
+        {t('auth.role_admin_switch')}
+        {#if m.roleSource === 'sso'}<span class="muted small">{t('auth.role_from_sso')}</span>{/if}
+        {#if m.roleSource === 'directory'}<span class="muted small">{t('auth.role_from_directory')}</span
+          >{/if}
+      </label>
       {#if groupNames(m.groups)}<div class="muted small">
           {t('auth.member_groups', { groups: groupNames(m.groups) })}
         </div>{/if}
@@ -319,6 +344,19 @@
   }
   .small {
     font-size: 0.85em;
+  }
+  .badge {
+    font-size: 0.75em;
+    padding: 0 var(--space-1);
+    border-radius: var(--radius);
+    background: var(--color-surface-2, rgba(127, 127, 127, 0.12));
+    margin-left: var(--space-1);
+  }
+  .role {
+    display: flex;
+    gap: var(--space-1);
+    align-items: center;
+    margin: var(--space-1) 0;
   }
   .new {
     margin-top: var(--space-3);

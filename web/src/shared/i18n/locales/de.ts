@@ -1020,6 +1020,13 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.no_groups': 'Noch keine Gruppen.',
   'auth.group_name': 'Name der neuen Gruppe',
   'auth.create_group': 'Gruppe anlegen',
+  'auth.role_admin': 'Admin',
+  'auth.role_admin_switch': 'Admin: verwaltet Mitglieder, Gruppen und Einstellungen',
+  'auth.role_demote_confirm': '{name} wieder zum Mitglied machen? Die Person wird abgemeldet.',
+  'auth.role_from_sso':
+    'aus dem Single Sign-on; eine Änderung hier macht daraus eine von Hand gesetzte Rolle',
+  'auth.role_from_directory':
+    'aus dem Verzeichnis; eine Änderung hier macht daraus eine von Hand gesetzte Rolle',
   'auth.member_groups': 'Gruppen: {groups}',
   'auth.group_rename': 'Umbenennen',
   'auth.group_rename_label': 'Neuer Name für {name}',

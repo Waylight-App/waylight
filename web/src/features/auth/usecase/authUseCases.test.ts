@@ -16,6 +16,7 @@ function setup(status: Partial<AuthStatus> = {}) {
       kiosk: false,
       admin: false,
       owner: false,
+      username: '',
       member: false,
       sso: { oidc: false, header: false, localLogin: true },
       passwordReset: false,

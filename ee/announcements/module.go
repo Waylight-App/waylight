@@ -75,6 +75,10 @@ func (m *Module) Access(ctx context.Context) modules.Access {
 // Name implements modules.Module.
 func (m *Module) Name() string { return "announcements" }
 
+// WidgetKinds implements modules.Module: the widget of the ee/ plugin
+// (ADR 0021); it disappears from the picker with the licence.
+func (m *Module) WidgetKinds() []string { return []string{"announcements"} }
+
 // DataKind implements modules.Module. Members write their read marks and,
 // in the writer group, notices; who may write what is decided in the use
 // cases, so the central guard lets members' writes through like personal

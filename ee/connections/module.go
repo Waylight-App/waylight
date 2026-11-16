@@ -63,6 +63,11 @@ func New(d Deps) *Module {
 	return &Module{svc: svc, handlers: controller.NewHandlers(svc), licensing: d.Licensing}
 }
 
+// AccountsWith lists the accounts that connected service.
+func (m *Module) AccountsWith(ctx context.Context, service string) ([]string, error) {
+	return m.svc.AccountsWith(ctx, service)
+}
+
 // AccessToken returns a valid access token of a member at a service, for the
 // team integrations; see usecase.Service.AccessToken.
 func (m *Module) AccessToken(ctx context.Context, accountID, service string) (string, error) {
