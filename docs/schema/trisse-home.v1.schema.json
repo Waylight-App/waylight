@@ -50,6 +50,25 @@
               "url": { "type": "string", "description": "{query} is replaced by the search terms" }
             }
           }
+        },
+        "keywords": {
+          "type": "array",
+          "description": "Own keywords: typed alone in the search field, Enter opens the target",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["keyword", "kind", "target"],
+            "properties": {
+              "keyword": { "type": "string", "pattern": "^[\\p{L}\\p{N}][\\p{L}\\p{N}_-]{0,23}$" },
+              "kind": { "enum": ["service", "bookmark", "widget", "url", "query"] },
+              "target": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Service or bookmark id, widget kind, http(s) address or search text"
+              },
+              "label": { "type": "string", "maxLength": 100 }
+            }
+          }
         }
       }
     },
