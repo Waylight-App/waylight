@@ -30,6 +30,7 @@ Durations use Go syntax: `90s`, `15m`, `24h`, `720h`.
 | `SECRET_KEY` | none, required | 32 random bytes, base64 encoded (`openssl rand -base64 32`). Encrypts stored passwords and tokens of integrations with AES-256-GCM. Keep a copy: without it, stored credentials cannot be decrypted. |
 | `TZ` | `UTC` | Time zone for logs, calendar times without a zone and tab rules, as an IANA name such as `Europe/Berlin`. |
 | `MODULES_DISABLED` | empty | Comma-separated modules to switch off, for example `docker,adguard`. Module names are listed in the [feature overview](features.md). |
+| `CURRENCY_RATES` | `true` | Currency conversion in the search with the ECB's daily reference rates (fetched at most once a day). `false` for installations without internet. See [markets](modules/markets.md#currency-conversion-in-the-search). |
 | `SAMPLE_DATA` | `true` | Fill a fresh installation with example tabs, widgets and data after setup. Existing data is never touched. |
 | `CONFIG_FILE` | – | Path to a `trisse-home.yaml` that is applied at every start. The sections it contains become read-only in the UI. See [Settings as a YAML file](config-as-code.md#managed-mode). |
 

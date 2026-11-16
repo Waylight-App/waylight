@@ -26,3 +26,21 @@ paths:
                     stale: { type: boolean }
                     error: { type: string }
         "422": { $ref: "#/components/responses/Invalid" }
+  /api/markets/rates:
+    get:
+      tags: [markets]
+      summary: "Newest ECB euro reference rates for currency conversion in the search (#482); fetched at most once a day. When the ECB cannot be reached, the last rates are returned with stale = true"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  base: { type: string, example: EUR }
+                  date: { type: string, format: date }
+                  rates: { type: object, additionalProperties: { type: number }, example: { EUR: 1, USD: 1.08 } }
+                  stale: { type: boolean }
+        "404": { description: "Currency rates are switched off (CURRENCY_RATES=false)" }
+        "503": { description: "No rates fetched yet and the ECB cannot be reached" }
