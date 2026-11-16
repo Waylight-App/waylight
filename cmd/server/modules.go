@@ -137,6 +137,9 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		containers = containerLabels{docker: dockerModule}
 	}
 
+	// Team calendar (#299): the calendar adds calendars others shared only
+	// while ee/ switches it on; without ee/ nothing ever does.
+	calendarSharing := calendar.NewSharing()
 	optional := []struct {
 		name  string
 		build func() modules.Module
@@ -186,7 +189,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		}},
 		{"speedtest", func() modules.Module { return speedtest.New(db, secrets, out.integration, sink, clk) }},
 		{"calendar", func() modules.Module {
-			return calendar.New(db, secrets, out.integration, clk, ids, time.Local, cfg.PublicURL)
+			return calendar.New(db, secrets, out.integration, clk, ids, time.Local, cfg.PublicURL, calendarSharing)
 		}},
 		{"proxmox", func() modules.Module {
 			return proxmox.New(proxmox.Config{DB: db, Cipher: secrets, Client: out.integration, Pinned: out.pinned,
@@ -210,7 +213,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	// Modules from cmd/server/module_<name>.go (#193).
 	registerSelfRegistered(moduleDeps{cfg: cfg, db: db, clock: clk, ids: ids, out: out, sink: sink,
 		alerts: alerts, auth: authModule, registry: registry, wikiSources: &wiki.MemberSources{},
-		notifications: notificationsModule, tabSharing: tabSharing})
+		notifications: notificationsModule, tabSharing: tabSharing, calendarSharing: calendarSharing})
 	if cfg.ModuleEnabled("backup") && !cfg.DemoMode {
 		b, err := backup.New(backup.Config{Dir: cfg.BackupDir, Interval: cfg.BackupInterval, Retention: cfg.BackupRetention,
 			Cipher: secrets, Client: out.backupRemote, Alerts: alerts, Log: log,
