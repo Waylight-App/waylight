@@ -35,6 +35,7 @@ stored encrypted.
 | ntfy, Gotify, webhooks, SMTP, Slack (`hooks.slack.com`), Teams (the workflow's address, usually `*.logic.azure.com` or `*.powerplatform.com`) | When a notification is sent. None until you add the channel. |
 | Football results (`api.openligadb.de`) | Only while a sports widget is shown, at most every 15 minutes per league ([details](modules/sports.md)). |
 | CardDAV address book (birthdays) | When you save the address book in the settings, then every six hours. None until you connect one ([details](modules/birthdays.md)). |
+| CardDAV address book (phone list) | When an admin saves the address book in the settings, then every hour. None until one is connected ([details](modules/phonelist.md)). |
 | Electricity prices (`api.awattar.de` / `api.awattar.at`) | Only while an electricity price widget is shown, at most every 15 minutes per bidding zone ([details](modules/electricity.md)). |
 | Connected to-do lists (CalDAV) | While a to-do widget shows the list, at most once a minute: the list's CTag first, then only the to-dos whose ETag changed. None until you connect a list ([details](modules/todos.md)). |
 | Markets (`www.ecb.europa.eu`, `stooq.com`) | Only while a markets widget is shown, at most once an hour per symbol ([details](modules/markets.md)). |

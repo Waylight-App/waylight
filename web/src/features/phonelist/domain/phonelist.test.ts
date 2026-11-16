@@ -9,6 +9,7 @@ const entry = (name: string, role = '', team = ''): PhoneEntry => ({
   phone: '1',
   dial: '1',
   email: '',
+  readOnly: false,
 });
 
 describe('filterEntries', () => {
