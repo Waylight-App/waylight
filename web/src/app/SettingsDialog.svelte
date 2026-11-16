@@ -36,7 +36,8 @@
   import { FeedsManager } from '../features/rss';
   import { SearchHistorySettings, SearchSettings } from '../features/search';
   import { keywordTargets } from './searchKeywords';
-  import { searchUsage } from './searchUsage';
+  import { searchUsage, unansweredQueries } from './searchUsage';
+  import UnansweredSettings from '../features/search/ui/UnansweredSettings.svelte';
   import { ServicesManager } from '../features/services';
   import Modal from '../shared/ui/Modal.svelte';
   import type { Container } from './container';
@@ -155,6 +156,7 @@
         <SearchSettings search={container.search} keywordTargets={() => keywordTargets(container, modules)} />
         <CaptureBookmarklet />
         <SearchHistorySettings usage={searchUsage} />
+        <UnansweredSettings queries={unansweredQueries} />
       {:else if current === 'services'}
         <ServicesManager services={container.services} />
       {:else if current === 'feeds'}

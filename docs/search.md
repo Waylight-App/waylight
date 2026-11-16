@@ -16,6 +16,21 @@ The search learns which results you pick and ranks them higher next time.
 This history stays in your browser. You can switch it off or clear it under
 Settings → Search.
 
+### Questions without an answer
+
+Under Settings → Search you can also switch on *Remember queries without an
+answer*. It is off by default. While it is on, a query is remembered only if
+it ended in the web search and nothing else matched: no bookmark, note,
+command, answer or tool. The list keeps the text and how often you asked,
+for the last 200 queries, grouped by their first word, so you can see which
+source would help most. It stays in your browser and is never sent to the
+server. Bangs (`!w …`) and anything that looks like a password, a token, an
+e-mail or web address or a phone or account number are never remembered.
+*Clear the list* empties it, and switching the setting off deletes it.
+
+Without this setting, texts you send to the web search are not stored
+anywhere by trisse-home.
+
 ## Web search
 
 DuckDuckGo is the default engine, so all of its
