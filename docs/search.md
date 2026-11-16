@@ -16,6 +16,13 @@ The search learns which results you pick and ranks them higher next time.
 This history stays in your browser. You can switch it off or clear it under
 Settings → Search.
 
+The same history also remembers the time of day of each pick: weekday or
+weekend, in six four-hour slots. When you open the search and the field is
+still empty, up to five entries you usually open at this time appear under
+*Suggested for now*, below any running timers. The arrow keys and `Enter`
+work as with normal results. With the history switched off or still empty,
+nothing is suggested and the field shows its usual hints.
+
 ### Questions without an answer
 
 Under Settings → Search you can also switch on *Remember queries without an

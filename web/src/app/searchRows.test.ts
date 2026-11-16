@@ -14,6 +14,15 @@ const bookmarks: QuickGroup = {
 const ids = (g: ReturnType<typeof buildRows>) => g.map((x) => `${x.id}:${x.rows.map((r) => r.id).join(',')}`);
 
 describe('buildRows (#222)', () => {
+  it('offers suggestions for an empty field as results, but not over a command (#480)', () => {
+    const items = bookmarks.items;
+    const g = buildRows({ command: null, alternative: null, groups: [], web: false, suggested: items });
+    expect(ids(g)).toEqual(['suggested:suggested:bookmark:b1']);
+    expect(g[0]?.rows[0]).toMatchObject({ kind: 'result', item: items[0] });
+    expect(
+      ids(buildRows({ command: todo, alternative: null, groups: [], web: false, suggested: items })),
+    ).toEqual(['quick:capture']);
+  });
   it('orders a capture like the mockup: quick add with the alternative, then web', () => {
     const g = buildRows({ command: todo, alternative: note, groups: [bookmarks], web: true });
     expect(ids(g)).toEqual(['quick:capture,capture-alt', 'web:web']);

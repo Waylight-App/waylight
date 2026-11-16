@@ -63,6 +63,11 @@ export interface RowInput {
   timer?: TimerRequest | null;
   /** Running timers to list (empty field or "timer") (#474). */
   runningTimers?: Timer[];
+  /**
+   * Targets chosen often at this time of day, offered while the field is
+   * empty (#480); rendered like results, so Enter and the arrows work alike.
+   */
+  suggested?: QuickItem[];
 }
 
 const isCapture = (c: QuickCommand) => c.kind === 'todo' || c.kind === 'note' || c.kind === 'bookmark';
@@ -105,6 +110,13 @@ export function buildRows(input: RowInput): RowGroup[] {
     })),
   ];
   if (!command && timerRows.length) out.push({ id: 'timers', label: 'app.group.timers', rows: timerRows });
+  const suggested = command ? [] : (input.suggested ?? []);
+  if (suggested.length > 0)
+    out.push({
+      id: 'suggested',
+      label: 'app.group.suggested',
+      rows: suggested.map((item) => ({ kind: 'result', id: `suggested:${item.kind}:${item.id}`, item })),
+    });
   if (command && isCapture(command)) {
     const rows: Row[] = [{ kind: 'capture', id: 'capture', command, shortcut: 'Enter' }];
     if (alternative && isCapture(alternative))
