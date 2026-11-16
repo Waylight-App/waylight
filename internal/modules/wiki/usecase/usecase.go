@@ -5,6 +5,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -67,8 +68,11 @@ type Wikis interface {
 type Deps struct {
 	Repo      Repository
 	Searchers map[domain.Kind]PageSearcher
-	IDs       kernel.IDGenerator
-	Clock     kernel.Clock
+	// Members are searched for the signed-in person in addition to the
+	// connected wikis (#327); nil or empty adds none.
+	Members *MemberSources
+	IDs     kernel.IDGenerator
+	Clock   kernel.Clock
 }
 
 // Timing of the federated search.
@@ -186,7 +190,54 @@ func (uc *wikis) clearCache() {
 
 // Search asks every wiki at the same time and merges the answers in the
 // order of the wikis; a wiki that fails or is slow is only named in Failed.
+// Search asks the connected wikis (cached for everyone) and the member
+// sources (never cached: each person sees only their own results).
 func (uc *wikis) Search(ctx context.Context, query string) (SearchResult, error) {
+	res, err := uc.searchWikis(ctx, query)
+	if err != nil {
+		return SearchResult{}, err
+	}
+	q, ok := domain.NormaliseQuery(query)
+	sources := uc.d.Members.all()
+	if !ok || len(sources) == 0 {
+		return res, nil
+	}
+	// The cached result is shared; the member results go into a copy.
+	out := SearchResult{Pages: append([]domain.Page{}, res.Pages...), Failed: append([]string{}, res.Failed...)}
+	type answer struct {
+		pages []domain.Page
+		err   error
+	}
+	answers := make([]answer, len(sources))
+	var wg sync.WaitGroup
+	for i, src := range sources {
+		wg.Go(func() {
+			cctx, cancel := context.WithTimeout(ctx, searchTimeout)
+			defer cancel()
+			pages, err := src.Search(cctx, q, domain.MaxResultsPerWiki)
+			answers[i] = answer{pages: pages, err: err}
+		})
+	}
+	wg.Wait()
+	for i, a := range answers {
+		switch {
+		case errors.Is(a.err, ErrNotConnected):
+		case a.err != nil:
+			out.Failed = append(out.Failed, sources[i].Name())
+		default:
+			for j, p := range a.pages {
+				if j == domain.MaxResultsPerWiki {
+					break
+				}
+				p.Wiki = sources[i].Name()
+				out.Pages = append(out.Pages, p)
+			}
+		}
+	}
+	return out, nil
+}
+
+func (uc *wikis) searchWikis(ctx context.Context, query string) (SearchResult, error) {
 	q, ok := domain.NormaliseQuery(query)
 	if !ok {
 		return SearchResult{Pages: []domain.Page{}}, nil

@@ -45,6 +45,7 @@ import (
 	"trisse-home/internal/modules/transit"
 	"trisse-home/internal/modules/waste"
 	"trisse-home/internal/modules/weather"
+	"trisse-home/internal/modules/wiki"
 	"trisse-home/internal/modules/wireguard"
 	"trisse-home/internal/platform/clock"
 	"trisse-home/internal/platform/config"
@@ -200,7 +201,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	}
 	// Modules from cmd/server/module_<name>.go (#193).
 	registerSelfRegistered(moduleDeps{cfg: cfg, db: db, clock: clk, ids: ids, out: out, sink: sink,
-		alerts: alerts, auth: authModule, registry: registry})
+		alerts: alerts, auth: authModule, registry: registry, wikiSources: &wiki.MemberSources{}})
 	if cfg.ModuleEnabled("backup") && !cfg.DemoMode {
 		b, err := backup.New(backup.Config{Dir: cfg.BackupDir, Interval: cfg.BackupInterval, Retention: cfg.BackupRetention,
 			Cipher: secrets, Client: out.backupRemote, Alerts: alerts, Log: log,
