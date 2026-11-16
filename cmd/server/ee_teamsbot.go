@@ -31,6 +31,13 @@ func (f teamsFinder) Find(ctx context.Context, accountID, query string) ([]domai
 	return out, err
 }
 
+func publicURL(d moduleDeps) string {
+	if d.cfg.PublicURL == nil {
+		return ""
+	}
+	return d.cfg.PublicURL.String()
+}
+
 // The Teams command box search (#334), an opt-in of the chat apps in the
 // ee/ features (ADR 0023): TEAMS_BOT_APP_ID is the organisation's own bot
 // registration; without it the route does not exist.
@@ -40,7 +47,7 @@ func init() {
 			AppID: strings.TrimSpace(os.Getenv("TEAMS_BOT_APP_ID")), Client: d.out.integration,
 			MetadataURL: teamsBotMetadata, GraphAPI: teamsGraphAPI,
 			Connections: connectionsModule(d), Finder: teamsFinder{startPageFinder{d.registry}},
-			Licensing: licenceModule(d).Licensing(),
+			Licensing: licenceModule(d).Licensing(), Name: instanceName, PublicURL: publicURL(d),
 		})
 	})
 }

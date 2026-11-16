@@ -87,8 +87,9 @@ start page itself.
   instance is reachable from the internet; its security rests on the Bot
   Framework token check, which is tested against forged, expired and
   wrong-audience tokens.
-- The tab needs the start page to allow being framed by Teams
-  (`frame-ancestors` for the Teams domains) and a sign-in that works inside
-  Teams; that is part of #334.
+- The tab is a page of its own that Microsoft's hosts may frame
+  (`frame-ancestors` for that page only). It does not sign anyone in inside
+  Teams: it opens the start page in the browser (maintainer's decision on
+  #334), so the session cookie keeps `SameSite=Strict`.
 - The acceptance item "requests are verified with Slack's signing secret"
   of #333 is replaced by the authenticated outbound connection.
