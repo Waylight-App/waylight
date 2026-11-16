@@ -11,6 +11,12 @@ export const texts: Catalogue = {
     en: 'Add the subscription under Settings → Calendar first.',
     de: 'Lege das Abo zuerst unter Einstellungen → Kalender an.',
   },
+  subscriptions: { en: 'Subscriptions (ICS)', de: 'Abos (ICS)' },
+  accounts: { en: 'Connected calendar accounts', de: 'Verbundene Kalenderkonten' },
+  accounts_hint: {
+    en: 'Sharing an account shares the calendars you enabled for it.',
+    de: 'Wer ein Konto teilt, teilt die Kalender, die dafür eingeschaltet sind.',
+  },
   only_me: { en: 'Only me', de: 'Nur ich' },
   everyone: { en: 'Everyone', de: 'Alle' },
   group: { en: 'Group: {name}', de: 'Gruppe: {name}' },
