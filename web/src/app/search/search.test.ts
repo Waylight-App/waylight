@@ -23,6 +23,7 @@ describe('module search contributions (#161)', () => {
       'calendar',
       'diskhealth',
       'parcels',
+      'phonelist',
       'speedtest',
       'timeline',
       'transit',
