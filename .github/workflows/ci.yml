@@ -116,6 +116,8 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: cd web && npm ci --no-audit --no-fund && npx playwright install --with-deps chromium
       - run: make build
+      # The extension spec (#291) loads the extension with the local-mode app.
+      - run: cd web && npm run build:extension && cd ../extension && node scripts/app.mjs
       - run: cd web && npx playwright test
 
   docker:

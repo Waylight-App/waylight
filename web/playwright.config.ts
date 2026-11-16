@@ -32,6 +32,8 @@ export default defineConfig({
     { name: 'general', testMatch: 'smoke.spec.ts', dependencies: ['setup'], use: chrome },
     { name: 'features', testMatch: 'features/**/*.spec.ts', dependencies: ['general'], use: chrome },
     { name: 'twofactor', testMatch: 'twofactor.spec.ts', dependencies: ['features'], use: chrome },
+    // The browser extension in local mode (#291) starts its own Chromium and needs no account.
+    { name: 'extension', testMatch: 'extension.spec.ts' },
   ],
   webServer: {
     command: '../bin/trisse-home',
