@@ -97,4 +97,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_e5be262a5868a63b: 'Das kann nur ein Admin ändern.',
   // Share with only you, everyone or one of your groups.
   srv_cacad70ec42d516f: 'Teile nur mit dir, mit allen oder mit einer deiner Gruppen.',
+  // Please enter a valid e-mail address.
+  srv_6ddc9c2076b9e645: 'Bitte gib eine gültige E-Mail-Adresse ein.',
 };
