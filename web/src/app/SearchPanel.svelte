@@ -205,6 +205,18 @@
           (g) => wikiOnly === null || g.kind === 'wiki',
         ),
   );
+  // Empty field (#480): what this account usually opens at this time of
+  // day, from the local search history. Targets that no longer exist (a
+  // deleted tile) are skipped; with the history off the list is empty and
+  // the usual hints stay.
+  const suggested = $derived.by(() => {
+    if (query.trim() !== '' || command || commandOnly) return [];
+    const byTarget = new Map(searchable.map((it) => [itemTarget(it), it]));
+    return searchUsage
+      .suggestions()
+      .map((s) => byTarget.get(s.target))
+      .filter((it): it is QuickItem => it !== undefined);
+  });
   // Commands of plugins (#453); the loader registers none for guests.
   const pluginActions = $derived(command || commandOnly ? [] : matchActions(searchActions, query));
   const rowGroups = $derived(
@@ -220,6 +232,7 @@
       bangs,
       timer: timerRequest,
       runningTimers: showRunning ? runningTimers : [],
+      suggested,
     }),
   );
   const flat = $derived(rowGroups.flatMap((g) => g.rows));
@@ -341,7 +354,9 @@
         }),
   );
 
-  const visible = $derived(query.trim() !== '' || status !== '' || note !== null || showRunning);
+  const visible = $derived(
+    query.trim() !== '' || status !== '' || note !== null || showRunning || suggested.length > 0,
+  );
 
   // Ask the AI (#162): only for a query starting with "?", only when a local
   // Ollama is set up, never for guests; the component is loaded on demand.
