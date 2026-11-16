@@ -72,6 +72,7 @@ const healthCheckTimeout = 5 * time.Second
 func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secretStore) (*auth.Module, *modules.Registry, error) {
 	// Set again by the ee/ audit log of this server, if it has one (#303).
 	changeSink = nil
+	brandingSource = nil
 	clk := clock.System{}
 	ids := idgen.Random{}
 	out := newOutbound(cfg, clk, cipher)
