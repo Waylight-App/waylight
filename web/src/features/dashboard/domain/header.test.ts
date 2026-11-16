@@ -22,6 +22,7 @@ const tab = (id: string, widgets: Widget[]): Tab => ({
   widgets,
   mobile: [],
   mobileCustom: false,
+  mine: true,
 });
 
 describe('showTabBar', () => {

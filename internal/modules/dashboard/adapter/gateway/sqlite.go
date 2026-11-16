@@ -14,16 +14,28 @@ import (
 
 // Repository stores tabs and widgets in SQLite and implements both
 // usecase.TabRepository and usecase.WidgetRepository.
-type Repository struct{ db *sql.DB }
+type Repository struct {
+	db     *sql.DB
+	shared func(context.Context) bool
+}
 
 // NewRepository returns a repository backed by db.
 func NewRepository(db *sql.DB) *Repository { return &Repository{db: db} }
+
+// WithSharedTabs makes tabs that others shared with the principal visible
+// while on(ctx) says so (team tabs, #295). Without it every account sees only
+// its own tabs, so a build without ee/ never shows a shared tab, and neither
+// does an instance whose licence no longer covers team tabs.
+func (r *Repository) WithSharedTabs(on func(context.Context) bool) *Repository {
+	r.shared = on
+	return r
+}
 
 // visibleTabs is the condition for the tabs the principal of ctx may see
 // (ADR 0018): guests and kiosk displays see the tabs shared with them by ID,
 // everyone else their own tabs and, once team tabs exist (#295), those
 // shared with their groups. Background jobs see all.
-func visibleTabs(ctx context.Context) (string, []any) {
+func (r *Repository) visibleTabs(ctx context.Context) (string, []any) {
 	p := kernel.PrincipalFrom(ctx)
 	if p.TabScoped() {
 		if len(p.Tabs) == 0 {
@@ -34,6 +46,9 @@ func visibleTabs(ctx context.Context) (string, []any) {
 			args[i] = t
 		}
 		return "id IN (?" + strings.Repeat(", ?", len(p.Tabs)-1) + ")", args
+	}
+	if r.shared == nil || !r.shared(ctx) {
+		return sqlutil.OwnedBy(p, "")
 	}
 	return sqlutil.VisibleTo(p, "")
 }
@@ -46,40 +61,79 @@ func ownedTabs(ctx context.Context) (string, []any) {
 
 // ListTabs returns the tabs the principal may see, ordered by position.
 func (r *Repository) ListTabs(ctx context.Context) ([]domain.Tab, error) {
-	cond, args := visibleTabs(ctx)
-	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position, background, rules, mobile_layout FROM dashboard_tabs WHERE `+cond+` ORDER BY position, name`, args...) //nolint:gosec // cond comes from sqlutil with bound arguments
+	cond, args := r.visibleTabs(ctx)
+	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position, background, rules, mobile_layout, owner_id, visibility FROM dashboard_tabs WHERE `+cond+` ORDER BY position, name`, args...) //nolint:gosec // cond comes from sqlutil with bound arguments
 	if err != nil {
 		return nil, fmt.Errorf("query tabs: %w", err)
 	}
 	defer rows.Close()
 	var tabs []domain.Tab
 	for rows.Next() {
-		var id, name, bg, rules string
+		var id, name, bg, rules, owner, vis string
 		var mobile sql.NullString
 		var pos int
-		if err := rows.Scan(&id, &name, &pos, &bg, &rules, &mobile); err != nil {
+		if err := rows.Scan(&id, &name, &pos, &bg, &rules, &mobile, &owner, &vis); err != nil {
 			return nil, fmt.Errorf("scan tab: %w", err)
 		}
-		tabs = append(tabs, domain.RestoreTab(id, name, pos, bg).WithRules(decodeRules(rules)).WithMobile(decodeMobile(mobile)))
+		tabs = append(tabs, domain.RestoreTab(id, name, pos, bg).WithRules(decodeRules(rules)).WithMobile(decodeMobile(mobile)).
+			WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(vis)}))
 	}
 	return tabs, rows.Err()
 }
 
 // GetTab returns one tab or domain.ErrTabNotFound.
 func (r *Repository) GetTab(ctx context.Context, id string) (domain.Tab, error) {
-	var name, bg, rules string
+	var name, bg, rules, owner, vis string
 	var mobile sql.NullString
 	var pos int
-	cond, args := visibleTabs(ctx)
-	err := r.db.QueryRowContext(ctx, `SELECT name, position, background, rules, mobile_layout FROM dashboard_tabs WHERE id = ? AND `+cond, append([]any{id}, args...)...).
-		Scan(&name, &pos, &bg, &rules, &mobile)
+	cond, args := r.visibleTabs(ctx)
+	err := r.db.QueryRowContext(ctx, `SELECT name, position, background, rules, mobile_layout, owner_id, visibility FROM dashboard_tabs WHERE id = ? AND `+cond, append([]any{id}, args...)...).
+		Scan(&name, &pos, &bg, &rules, &mobile, &owner, &vis)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Tab{}, domain.ErrTabNotFound
 	}
 	if err != nil {
 		return domain.Tab{}, fmt.Errorf("select tab: %w", err)
 	}
-	return domain.RestoreTab(id, name, pos, bg).WithRules(decodeRules(rules)).WithMobile(decodeMobile(mobile)), nil
+	return domain.RestoreTab(id, name, pos, bg).WithRules(decodeRules(rules)).WithMobile(decodeMobile(mobile)).
+		WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(vis)}), nil
+}
+
+// OwnTabs lists the principal's own tabs with their visibility, for sharing
+// them as team tabs (#295).
+func (r *Repository) OwnTabs(ctx context.Context) ([]domain.Tab, error) {
+	cond, args := ownedTabs(ctx)
+	//nolint:gosec // cond comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position, background, owner_id, visibility FROM dashboard_tabs WHERE `+cond+` ORDER BY position, name`, args...)
+	if err != nil {
+		return nil, fmt.Errorf("query own tabs: %w", err)
+	}
+	defer rows.Close()
+	var out []domain.Tab
+	for rows.Next() {
+		var id, name, bg, owner, vis string
+		var pos int
+		if err := rows.Scan(&id, &name, &pos, &bg, &owner, &vis); err != nil {
+			return nil, fmt.Errorf("scan tab: %w", err)
+		}
+		out = append(out, domain.RestoreTab(id, name, pos, bg).WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(vis)}))
+	}
+	return out, rows.Err()
+}
+
+// SetTabVisibility shares an own tab (#295); domain.ErrTabNotFound for a tab
+// that does not exist or belongs to someone else.
+func (r *Repository) SetTabVisibility(ctx context.Context, id string, v kernel.Visibility) error {
+	cond, args := ownedTabs(ctx)
+	//nolint:gosec // cond comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `UPDATE dashboard_tabs SET visibility = ? WHERE id = ? AND `+cond, append([]any{string(v), id}, args...)...)
+	if err != nil {
+		return fmt.Errorf("update tab visibility: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return domain.ErrTabNotFound
+	}
+	return nil
 }
 
 // CreateTab inserts a private tab owned by the principal of ctx.
@@ -163,20 +217,20 @@ func (r *Repository) queryWidgets(ctx context.Context, query string, args ...any
 
 // ListWidgets returns the widgets on visible tabs ordered by position.
 func (r *Repository) ListWidgets(ctx context.Context) ([]domain.Widget, error) {
-	cond, args := visibleTabs(ctx)
+	cond, args := r.visibleTabs(ctx)
 	return r.queryWidgets(ctx, `SELECT `+widgetColumns+` FROM dashboard_widgets WHERE tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`) ORDER BY y, x`, args...)
 }
 
 // ListWidgetsByTab returns the widgets of one visible tab.
 func (r *Repository) ListWidgetsByTab(ctx context.Context, tabID string) ([]domain.Widget, error) {
-	cond, args := visibleTabs(ctx)
+	cond, args := r.visibleTabs(ctx)
 	return r.queryWidgets(ctx, `SELECT `+widgetColumns+` FROM dashboard_widgets WHERE tab_id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`) ORDER BY y, x`,
 		append([]any{tabID}, args...)...)
 }
 
 // GetWidget returns one widget on a visible tab or domain.ErrWidgetNotFound.
 func (r *Repository) GetWidget(ctx context.Context, id string) (domain.Widget, error) {
-	cond, args := visibleTabs(ctx)
+	cond, args := r.visibleTabs(ctx)
 	w, err := scanWidget(r.db.QueryRowContext(ctx, `SELECT `+widgetColumns+` FROM dashboard_widgets WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`,
 		append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {

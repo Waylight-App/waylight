@@ -25,7 +25,7 @@ func (uc *manageTabs) Create(ctx context.Context, req CreateTabRequest) (TabResp
 	if err := uc.deps.Tabs.CreateTab(ctx, tab); err != nil {
 		return TabResponse{}, fmt.Errorf("create tab: %w", err)
 	}
-	return toTabResponse(tab, nil), nil
+	return toTabResponse(ctx, tab, nil), nil
 }
 
 // Rename implements ManageTabs.
@@ -44,7 +44,7 @@ func (uc *manageTabs) Rename(ctx context.Context, req RenameTabRequest) (TabResp
 	if err != nil {
 		return TabResponse{}, fmt.Errorf("list widgets: %w", err)
 	}
-	return toTabResponse(tab, widgets), nil
+	return toTabResponse(ctx, tab, widgets), nil
 }
 
 // Delete implements ManageTabs. The last tab is kept so the dashboard is
@@ -128,7 +128,7 @@ func (uc *manageTabs) SetRules(ctx context.Context, tabID string, in []domain.Ru
 	if err != nil {
 		return TabResponse{}, fmt.Errorf("list widgets: %w", err)
 	}
-	return toTabResponse(tab, widgets), nil
+	return toTabResponse(ctx, tab, widgets), nil
 }
 
 // SaveMobileLayout implements ManageTabs.
@@ -160,7 +160,7 @@ func (uc *manageTabs) updateMobile(ctx context.Context, tabID string, build func
 	if err := uc.deps.Tabs.UpdateTab(ctx, tab); err != nil {
 		return TabResponse{}, fmt.Errorf("update tab: %w", err)
 	}
-	return toTabResponse(tab, widgets), nil
+	return toTabResponse(ctx, tab, widgets), nil
 }
 
 // SetBackground implements ManageTabs.
@@ -179,5 +179,5 @@ func (uc *manageTabs) SetBackground(ctx context.Context, tabID, background strin
 	if err != nil {
 		return TabResponse{}, fmt.Errorf("list widgets: %w", err)
 	}
-	return toTabResponse(tab, widgets), nil
+	return toTabResponse(ctx, tab, widgets), nil
 }

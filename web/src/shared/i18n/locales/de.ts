@@ -209,6 +209,8 @@ export const de: Record<BaseMessageKey, string> = {
   'parcels.remove': '{value} entfernen',
   'dashboard.empty_tab_editing': 'Dieser Tab ist leer. Mit „Widget hinzufügen“ platzierst du eins.',
   'dashboard.empty_tab_view': 'Dieser Tab ist leer.',
+  'dashboard.team_tab': 'Team-Tab, gepflegt von einem Admin',
+  'dashboard.team_tab_read_only': 'Diesen Team-Tab pflegt ein Admin. Deine eigenen Tabs kannst du anordnen.',
   'dashboard.edit_mode_hint':
     'Bearbeitungsmodus: Titelleiste ziehen zum Verschieben, Ecke zum Vergrößern, Esc zum Beenden.',
   'dashboard.edit_actions': 'Bearbeitungsaktionen',

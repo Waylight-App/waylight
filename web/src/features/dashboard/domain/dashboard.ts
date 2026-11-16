@@ -28,6 +28,8 @@ export interface Tab {
   mobile: MobileItem[];
   /** False while the phone layout follows the desktop grid. */
   mobileCustom: boolean;
+  /** False for a team tab someone shared with the viewer (#295): read-only. */
+  mine: boolean;
 }
 
 /**
