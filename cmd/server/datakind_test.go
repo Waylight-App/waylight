@@ -4,7 +4,9 @@ import (
 	"context"
 	"io"
 	"log/slog"
+	"reflect"
 	"slices"
+	"strings"
 	"testing"
 
 	"trisse-home/internal/modules"
@@ -27,6 +29,15 @@ func TestDataKinds(t *testing.T) {
 	}
 	got := map[modules.DataKind][]string{}
 	for _, m := range a.registry.All() {
+		// The table covers the core. Modules of an ee build (ADR 0020) declare
+		// their kind in their own package and are not part of it.
+		typ := reflect.TypeOf(m)
+		if typ.Kind() == reflect.Pointer {
+			typ = typ.Elem()
+		}
+		if strings.HasPrefix(typ.PkgPath(), "trisse-home/ee/") {
+			continue
+		}
 		switch k := m.DataKind(); k {
 		case modules.InstanceData, modules.PersonalSettings, modules.PersonalContent:
 			got[k] = append(got[k], m.Name())
