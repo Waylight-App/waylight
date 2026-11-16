@@ -10,6 +10,7 @@ import {
 import { texts as announcementTexts } from "./announcements/texts";
 import { texts as brandingTexts } from "./branding/texts";
 import { texts as connectionTexts } from "./connections/texts";
+import { texts as teamCalendarTexts } from "./teamcalendar/texts";
 import LicenceSection from "./licence/LicenceSection.svelte";
 import TeamTabsSection from "./teamtabs/TeamTabsSection.svelte";
 import { texts as teamTabTexts } from "./teamtabs/texts";
@@ -73,6 +74,15 @@ export const plugin: TrissePlugin = {
       description: connectionTexts.description ?? { en: "" },
       view: lazyMountable(
         () => import("./connections/ConnectionsSection.svelte"),
+      ),
+    },
+    {
+      id: "team-calendar",
+      feature: "absences",
+      label: teamCalendarTexts.label ?? { en: "Team calendar" },
+      description: teamCalendarTexts.description ?? { en: "" },
+      view: lazyMountable(
+        () => import("./teamcalendar/TeamCalendarSection.svelte"),
       ),
     },
   ],
