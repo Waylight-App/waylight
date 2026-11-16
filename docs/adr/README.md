@@ -26,4 +26,6 @@ that supersedes the old one.
 | [0018](0018-data-ownership.md)              | Data ownership for several full accounts: owner and visibility per record for personal content | Accepted |
 | [0019](0019-extension-without-server.md)    | The browser extension without a server: local gateways per feature | Accepted |
 | [0020](0020-ee-stays-proprietary.md)        | `ee/` stays proprietary, and only organisation features go there (supersedes part of 0017) | Accepted |
+| [0021](0021-ee-frontend.md)                | Frontend of `ee/` as a separate plugin package | Accepted |
 | [0022](0022-several-admins.md)              | Several admins next to the owner: by hand or from single sign-on and directory groups | Accepted |
+| [0023](0023-chat-apps-reach-private-instances.md) | How chat apps reach a private instance: Slack over Socket Mode, a Teams tab, the Teams command box search as an opt-in | Accepted |
