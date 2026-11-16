@@ -170,4 +170,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // Password reset by e-mail is not set up on this instance. Ask the admin for a reset link.
   srv_3a24b1058006ec4b:
     'Das Zurücksetzen per E-Mail ist auf dieser Instanz nicht eingerichtet. Bitte den Admin um einen Reset-Link.',
+  // Set up a second factor … your administrator requires one.
+  srv_648748a3f866984b:
+    'Richte einen zweiten Faktor ein (eine Authenticator-App oder einen Passkey), um weiterzumachen. Dein Admin verlangt das.',
+  // The password must be at least {min} characters long.
+  srv_15140a70901d43cd: 'Das Passwort muss mindestens {min} Zeichen lang sein.',
 };
