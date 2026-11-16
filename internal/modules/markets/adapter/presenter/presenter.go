@@ -43,3 +43,15 @@ func Rows(rows []usecase.Row) []RowDTO {
 	}
 	return out
 }
+
+// RatesDTO is GET /api/markets/rates: how many units of each currency one
+// euro buys on Date (#482).
+type RatesDTO struct {
+	Base string `json:"base"`
+	// Date is the day the reference rates were published (YYYY-MM-DD).
+	Date  string             `json:"date"`
+	Rates map[string]float64 `json:"rates"`
+	// Stale is true when the rates could not be fetched and older ones are
+	// shown.
+	Stale bool `json:"stale"`
+}

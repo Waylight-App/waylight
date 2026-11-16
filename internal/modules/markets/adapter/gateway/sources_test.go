@@ -55,3 +55,17 @@ func TestSources(t *testing.T) {
 		t.Fatal("no data must be empty, not an error", pts, err)
 	}
 }
+
+func TestECBLatestReadsTheNewestDay(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { _, _ = io.WriteString(w, ecbXML) }))
+	defer srv.Close()
+	day, rates, err := NewECB(srv.Client(), srv.URL).Latest(context.Background())
+	if err != nil || day.Format(time.DateOnly) != "2026-11-13" || rates["USD"] != 1.0854 || rates["CHF"] != 0.9312 || len(rates) != 2 {
+		t.Fatalf("%v %v %v", day, rates, err)
+	}
+	empty := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { _, _ = io.WriteString(w, `<Envelope/>`) }))
+	defer empty.Close()
+	if _, _, err := NewECB(empty.Client(), empty.URL).Latest(context.Background()); err == nil {
+		t.Fatal("a file without rates was accepted")
+	}
+}

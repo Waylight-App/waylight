@@ -22,6 +22,7 @@ describe('module search contributions (#161)', () => {
       'backupmonitor',
       'calendar',
       'diskhealth',
+      'markets',
       'parcels',
       'phonelist',
       'speedtest',

@@ -1632,6 +1632,12 @@ export const de: Record<BaseMessageKey, string> = {
   'smart.which_service': 'Welchen Dienst meinst du?',
   'smart.calc': 'Rechner',
   'smart.conversion': 'Umrechnung',
+  'smart.currency': 'Währung',
+  'smart.currency_rate': 'EZB-Referenzkurs vom {date}',
+  'smart.currency_stale': 'Kurs vom {date}; neuere Kurse waren nicht abrufbar',
+  'smart.currency_off': 'Wechselkurse sind auf diesem Server abgeschaltet.',
+  'smart.currency_unavailable':
+    'Die Wechselkurse konnten nicht geladen werden; versuche es später noch einmal.',
   'smart.time_now': 'Uhrzeit',
   'smart.time_today': 'Heute',
   'smart.time_week': 'Kalenderwoche',
