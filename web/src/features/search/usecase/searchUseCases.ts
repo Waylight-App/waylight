@@ -1,3 +1,4 @@
+import { normalizeKeyword, type OwnKeyword } from '../domain/keywords';
 import type { SearchBarOptions, SearchGateway, SearchSettings, Shortcut } from './ports';
 
 /** Application logic of the search feature. */
@@ -35,5 +36,19 @@ export class SearchUseCases {
 
   deleteShortcut(keyword: string): Promise<SearchSettings> {
     return this.gateway.deleteShortcut(keyword);
+  }
+
+  /** Adds an own keyword (#478); the server checks it against the capture prefixes. */
+  addKeyword(k: OwnKeyword): Promise<SearchSettings> {
+    return this.gateway.addKeyword({
+      ...k,
+      keyword: normalizeKeyword(k.keyword),
+      target: k.target.trim(),
+      label: k.label.trim(),
+    });
+  }
+
+  deleteKeyword(keyword: string): Promise<SearchSettings> {
+    return this.gateway.deleteKeyword(keyword);
   }
 }

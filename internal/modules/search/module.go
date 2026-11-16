@@ -17,6 +17,7 @@ type Module struct {
 	modules.Base
 	modules.Transferable
 	handlers *controller.Handlers
+	repo     *gateway.Repository
 	seed     usecase.SeedSampleData
 	config   usecase.Config
 }
@@ -27,9 +28,16 @@ func New(db *sql.DB) *Module {
 	return &Module{
 		Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
 		handlers:     controller.NewHandlers(usecase.NewSearcher(repo)),
+		repo:         repo,
 		seed:         usecase.NewSeedSampleData(repo),
 		config:       usecase.NewConfig(repo),
 	}
+}
+
+// ForgetAccount removes the search settings, shortcuts and own keywords of
+// a deleted account (#478).
+func (m *Module) ForgetAccount(ctx context.Context, accountID string) error {
+	return m.repo.ForgetAccount(ctx, accountID)
 }
 
 // ConfigSection implements modules.Configurable.
@@ -51,6 +59,8 @@ func (m *Module) ConfigRoutes() []string {
 		"PUT /api/search/bar",
 		"POST /api/search/shortcuts",
 		"DELETE /api/search/shortcuts/{keyword}",
+		"POST /api/search/keywords",
+		"DELETE /api/search/keywords/{keyword}",
 	}
 }
 
@@ -88,4 +98,6 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/search/bar", h.SetBarOptions)
 	r.Protected("POST /api/search/shortcuts", h.AddShortcut)
 	r.Protected("DELETE /api/search/shortcuts/{keyword}", h.DeleteShortcut)
+	r.Protected("POST /api/search/keywords", h.AddKeyword)
+	r.Protected("DELETE /api/search/keywords/{keyword}", h.DeleteKeyword)
 }

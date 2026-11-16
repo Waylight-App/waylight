@@ -41,6 +41,22 @@ describe('buildRows (#222)', () => {
     });
     expect(ids(c)).toEqual(['quick:capture']);
   });
+  it('puts an own keyword before everything else (#478)', () => {
+    const keyword = { keyword: 'nas', kind: 'url' as const, target: 'https://nas.lan', label: '' };
+    const g = buildRows({
+      command: null,
+      alternative: null,
+      groups: [bookmarks],
+      web: true,
+      keyword,
+      address: 'https://nas/',
+    });
+    expect(ids(g)).toEqual(['keyword:keyword', 'open:address', 'bookmark:bookmark:b1', 'web:web']);
+    // A capture command still wins: "t milk" stays a to-do.
+    expect(ids(buildRows({ command: todo, alternative: null, groups: [], web: false, keyword }))).toEqual([
+      'quick:capture',
+    ]);
+  });
   it('shows the results and the web row for a plain search', () => {
     const g = buildRows({ command: null, alternative: null, groups: [bookmarks], web: true });
     expect(ids(g)).toEqual(['bookmark:bookmark:b1', 'web:web']);

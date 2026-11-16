@@ -74,6 +74,23 @@ func (h *Handlers) DeleteShortcut(w http.ResponseWriter, r *http.Request) {
 	h.respond(w, r, res, err)
 }
 
+// AddKeyword handles POST /api/search/keywords (#478).
+func (h *Handlers) AddKeyword(w http.ResponseWriter, r *http.Request) {
+	var dto presenter.KeywordDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	res, err := h.uc.AddKeyword(r.Context(), usecase.KeywordView{Keyword: dto.Keyword, Kind: dto.Kind, Target: dto.Target, Label: dto.Label})
+	h.respond(w, r, res, err)
+}
+
+// DeleteKeyword handles DELETE /api/search/keywords/{keyword}.
+func (h *Handlers) DeleteKeyword(w http.ResponseWriter, r *http.Request) {
+	res, err := h.uc.DeleteKeyword(r.Context(), r.PathValue("keyword"))
+	h.respond(w, r, res, err)
+}
+
 // OpenSearch handles GET /api/search/opensearch.xml. Browsers fetch it
 // without credentials, so it is public; it contains no personal data.
 func (h *Handlers) OpenSearch(w http.ResponseWriter, r *http.Request) {

@@ -9,7 +9,7 @@ The file has five sections. Each one belongs to a module and is written in the o
 | Section | Contents |
 |---|---|
 | `appearance` | Colour scheme, accent colour, background image, language, greeting, launcher, profile and custom CSS |
-| `search` | Web search provider, whether results open in a new tab, the quick capture prefixes and your `!` shortcuts |
+| `search` | Web search provider, whether results open in a new tab, the quick capture prefixes, your `!` shortcuts and your own keywords |
 | `services` | The service tiles you created yourself, in display order |
 | `bookmarks` | Bookmarks without a folder, then each folder with its bookmarks |
 | `dashboard` | Tabs with their background, default-tab rules and widgets, including each widget's settings and its place in the phone layout |

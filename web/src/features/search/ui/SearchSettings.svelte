@@ -1,14 +1,25 @@
 <script lang="ts">
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
+  import type { KeywordTarget } from '../domain/keywords';
   import type { SearchSettings } from '../usecase/ports';
+  import OwnKeywords from './OwnKeywords.svelte';
   import type { SearchUseCases } from '../usecase/searchUseCases';
 
   /** Props of the global search settings section. */
   interface Props {
     search: SearchUseCases;
+    /** What own keywords can point to besides addresses and searches (#478). */
+    keywordTargets?: () => Promise<KeywordTarget[]>;
   }
-  let { search }: Props = $props();
+  let { search, keywordTargets }: Props = $props();
+
+  let targets = $state<KeywordTarget[]>([]);
+  $effect(() => {
+    keywordTargets?.()
+      .then((list) => (targets = list))
+      .catch(() => (targets = []));
+  });
 
   let settings = $state<SearchSettings | null>(null);
   let error = $state('');
@@ -105,6 +116,12 @@
     />
     <button class="btn" type="submit">{t('search.add')}</button>
   </form>
+  <OwnKeywords
+    keywords={settings.keywords}
+    {targets}
+    onadd={(k) => run(() => search.addKeyword(k))}
+    ondelete={(keyword) => run(() => search.deleteKeyword(keyword))}
+  />
   <form class="bar" onsubmit={saveBar}>
     <h4>{t('search.search_field')}</h4>
     <label><input type="checkbox" bind:checked={newTab} /> {t('search.open_results_in_a_new_tab')}</label>

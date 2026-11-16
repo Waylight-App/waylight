@@ -1,15 +1,21 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
-import type { SettingsDTO, ShortcutDTO } from '../../../../shared/api-client/generated/search';
+import type { KeywordDTO, SettingsDTO, ShortcutDTO } from '../../../../shared/api-client/generated/search';
+import { KEYWORD_KINDS, type KeywordKind } from '../../domain/keywords';
 import type {
   BarOptionsDTO,
   DefaultProviderDTO,
 } from '../../../../shared/api-client/generated/search-requests';
 import type { SearchBarOptions, SearchGateway, SearchSettings, Shortcut } from '../../usecase/ports';
+import type { OwnKeyword } from '../../domain/keywords';
 
 const toSettings = (dto: SettingsDTO): SearchSettings => ({
   defaultProvider: dto.defaultProvider,
   providers: dto.providers.map((p) => ({ id: p.id, name: p.name })),
   shortcuts: dto.shortcuts.map((s) => ({ keyword: s.keyword, name: s.name, urlTemplate: s.urlTemplate })),
+  // A kind this client does not know (a newer server) is left out.
+  keywords: dto.keywords
+    .filter((k) => (KEYWORD_KINDS as readonly string[]).includes(k.kind))
+    .map((k) => ({ keyword: k.keyword, kind: k.kind as KeywordKind, target: k.target, label: k.label })),
   bar: {
     openInNewTab: dto.bar.openInNewTab,
     capturePrefixes: { ...dto.bar.capturePrefixes },
@@ -45,6 +51,17 @@ export class SearchApi implements SearchGateway {
   async deleteShortcut(keyword: string): Promise<SearchSettings> {
     return toSettings(
       await this.http.delete<SettingsDTO>(`/api/search/shortcuts/${encodeURIComponent(keyword)}`),
+    );
+  }
+
+  async addKeyword(k: OwnKeyword): Promise<SearchSettings> {
+    const body: KeywordDTO = { keyword: k.keyword, kind: k.kind, target: k.target, label: k.label };
+    return toSettings(await this.http.post<SettingsDTO>('/api/search/keywords', body));
+  }
+
+  async deleteKeyword(keyword: string): Promise<SearchSettings> {
+    return toSettings(
+      await this.http.delete<SettingsDTO>(`/api/search/keywords/${encodeURIComponent(keyword)}`),
     );
   }
 

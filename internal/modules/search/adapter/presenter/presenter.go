@@ -19,6 +19,15 @@ type ShortcutDTO struct {
 	URLTemplate string `json:"urlTemplate"`
 }
 
+// KeywordDTO describes an own keyword (#478) and is the body of POST /api/search/keywords.
+type KeywordDTO struct {
+	Keyword string `json:"keyword"`
+	// Kind is service, bookmark, widget, url or query.
+	Kind   string `json:"kind"`
+	Target string `json:"target"`
+	Label  string `json:"label"`
+}
+
 // CapturePrefixesDTO are the quick capture prefixes of the search field (#221).
 type CapturePrefixesDTO struct {
 	Todo     string `json:"todo"`
@@ -37,12 +46,13 @@ type SettingsDTO struct {
 	DefaultProvider string        `json:"defaultProvider"`
 	Providers       []ProviderDTO `json:"providers"`
 	Shortcuts       []ShortcutDTO `json:"shortcuts"`
+	Keywords        []KeywordDTO  `json:"keywords"`
 	Bar             BarDTO        `json:"bar"`
 }
 
 // Settings maps a SettingsResponse.
 func Settings(r usecase.SettingsResponse) SettingsDTO {
-	dto := SettingsDTO{DefaultProvider: r.DefaultProvider, Providers: []ProviderDTO{}, Shortcuts: []ShortcutDTO{},
+	dto := SettingsDTO{DefaultProvider: r.DefaultProvider, Providers: []ProviderDTO{}, Shortcuts: []ShortcutDTO{}, Keywords: []KeywordDTO{},
 		Bar: BarDTO{OpenInNewTab: r.Bar.OpenInNewTab, CapturePrefixes: CapturePrefixesDTO{
 			Todo: r.Bar.TodoPrefix, Note: r.Bar.NotePrefix, Bookmark: r.Bar.BookmarkPrefix}}}
 	for _, p := range r.Providers {
@@ -50,6 +60,9 @@ func Settings(r usecase.SettingsResponse) SettingsDTO {
 	}
 	for _, s := range r.Shortcuts {
 		dto.Shortcuts = append(dto.Shortcuts, ShortcutDTO{Keyword: s.Keyword, Name: s.Name, URLTemplate: s.URLTemplate})
+	}
+	for _, k := range r.Keywords {
+		dto.Keywords = append(dto.Keywords, KeywordDTO{Keyword: k.Keyword, Kind: k.Kind, Target: k.Target, Label: k.Label})
 	}
 	return dto
 }
