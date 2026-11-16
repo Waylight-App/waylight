@@ -476,6 +476,12 @@ export const en = {
   'search.name': 'Name',
   'search.url_with': 'URL with {value}',
   'search.search': 'Search',
+  'search.unanswered_heading': 'Questions without an answer',
+  'search.unanswered_switch': 'Remember queries without an answer',
+  'search.unanswered_hint':
+    'Shows which questions the search could not answer, so you can see which source is missing. Only queries that ended in the web search with no match are kept: the text and how often, the last 200, only in this browser and never sent to the server. Bangs and anything that looks like a password, an address or a phone number are never kept. Switching it off deletes the list. Otherwise web search texts are never stored.',
+  'search.unanswered_empty': 'Nothing yet.',
+  'search.unanswered_clear': 'Clear the list',
   'search.history_heading': 'Search history',
   'search.history_learn': 'Learn from my choices and rank them higher',
   'search.history_hint':

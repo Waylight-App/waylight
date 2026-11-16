@@ -14,7 +14,7 @@
   import { errorMessage } from '../shared/api-client/http';
   import type { Container } from './container';
   import { itemTarget, type QuickItem, search } from './quickSearch';
-  import { answerTarget, searchUsage } from './searchUsage';
+  import { answerTarget, searchUsage, unansweredQueries } from './searchUsage';
   import { quickItemLoaders } from './quickItems';
   import {
     MIN_QUERY_LENGTH as MIN_WIKI_QUERY,
@@ -297,6 +297,10 @@
   function searchWeb() {
     const target = modules.has('search') ? container.search.targetFor(query) : null;
     if (!target) return;
+    // Remembered only when switched on (#481) and when nothing else matched:
+    // no result, command or capture row and no answer.
+    if (!command && answers.length === 0 && flat.every((r) => r.kind === 'web'))
+      unansweredQueries.record(query);
     if (bar?.openInNewTab) {
       window.open(target, '_blank', 'noopener');
       ondone();
