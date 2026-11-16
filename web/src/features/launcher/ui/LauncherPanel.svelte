@@ -189,7 +189,7 @@
     padding: var(--space-3);
     display: grid;
     gap: var(--space-3);
-    box-shadow: 0 12px 40px rgb(0 0 0 / 18%);
+    box-shadow: var(--shadow-pop);
   }
   .filter {
     display: flex;

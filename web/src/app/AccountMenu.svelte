@@ -158,7 +158,7 @@
     min-width: 12rem;
     padding: var(--space-1);
     display: grid;
-    box-shadow: 0 12px 40px rgb(0 0 0 / 18%);
+    box-shadow: var(--shadow-pop);
   }
   [role='menuitem'] {
     display: flex;

@@ -4,6 +4,8 @@ import (
 	"math"
 	"strconv"
 	"testing"
+
+	"trisse-home/internal/modules/appearance/domain"
 )
 
 // luminance is the WCAG relative luminance of #rgb or #rrggbb.
@@ -42,26 +44,33 @@ func TestBuiltinThemesMeetWCAGAA(t *testing.T) {
 		"--color-accent-contrast": {"--color-accent"},
 	}
 	for _, th := range BuiltinThemes() {
-		// A theme without its own accent text colour uses the accent (#504).
-		token := func(name string) (string, bool) {
-			if v, ok := th.Tokens[name]; ok {
-				return v, true
-			}
-			if name == "--color-accent-text" {
-				v, ok := th.Tokens["--color-accent"]
-				return v, ok
-			}
-			return "", false
+		schemes := []domain.Theme{th.Scheme}
+		if th.HasVariants() {
+			schemes = []domain.Theme{domain.ThemeLight, domain.ThemeDark}
 		}
-		for fg, bgs := range pairs {
-			for _, bg := range bgs {
-				a, okA := token(fg)
-				b, okB := token(bg)
-				if !okA || !okB {
-					continue
+		for _, scheme := range schemes {
+			tokens := th.Resolved(scheme)
+			// A theme without its own accent text colour uses the accent (#504).
+			token := func(name string) (string, bool) {
+				if v, ok := tokens[name]; ok {
+					return v, true
 				}
-				if c := contrast(a, b); c < 4.5 {
-					t.Errorf("%s: %s %s on %s %s = %.2f:1, want 4.5:1", th.ID, fg, a, bg, b, c)
+				if name == "--color-accent-text" {
+					v, ok := tokens["--color-accent"]
+					return v, ok
+				}
+				return "", false
+			}
+			for fg, bgs := range pairs {
+				for _, bg := range bgs {
+					a, okA := token(fg)
+					b, okB := token(bg)
+					if !okA || !okB {
+						continue
+					}
+					if c := contrast(a, b); c < 4.5 {
+						t.Errorf("%s (%s): %s %s on %s %s = %.2f:1, want 4.5:1", th.ID, scheme, fg, a, bg, b, c)
+					}
 				}
 			}
 		}

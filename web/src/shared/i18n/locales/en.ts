@@ -254,7 +254,8 @@ export const en = {
   'appearance.save_appearance': 'Save appearance',
   'appearance.gallery': 'Theme gallery',
   'appearance.gallery_hint':
-    'Ready-made themes. Applying one replaces your light/dark choice, custom CSS and accent color; they are kept and can be restored.',
+    'Ready-made themes. Applying one replaces your custom CSS and accent color, and a theme made for light or dark also sets that scheme; themes with both follow your choice. Your settings are kept and can be restored.',
+  'appearance.theme_light_dark': 'Light and dark',
   'appearance.apply': 'Apply',
   'appearance.applied': 'Applied',
   'appearance.apply_theme': 'Apply theme {name}',
