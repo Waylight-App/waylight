@@ -3,6 +3,7 @@ import { locale } from '../../shared/i18n';
 import type { IconName } from '../../shared/ui/icons/paths';
 import { iconPaths } from '../../shared/ui/icons/paths';
 import type { AuthUseCases } from '../../features/auth';
+import type { SearchAction } from '../searchActions';
 import type { SettingsSection } from '../settingsKit';
 import type { WidgetDefinition } from '../widgetKit';
 import {
@@ -11,6 +12,7 @@ import {
   type FeatureLevel,
   type Mountable,
   type PluginContext,
+  type PluginSearchAction,
   type PluginSection,
   type PluginWidget,
   type TrissePlugin,
@@ -22,6 +24,8 @@ import PluginHost from './PluginHost.svelte';
 export interface PluginTargets {
   widgets: WidgetDefinition[];
   sections: SettingsSection[];
+  /** Commands for the search field (#453); left out where nobody searches. */
+  searchActions?: SearchAction[];
 }
 
 /** How the loader reaches a plugin module; tests replace it. */
@@ -89,6 +93,27 @@ function toSection(s: PluginSection, context: PluginContext): SettingsSection {
   };
 }
 
+function toSearchAction(plugin: string, a: PluginSearchAction, context: PluginContext): SearchAction {
+  return {
+    id: `plugin-${plugin}-${a.id}`,
+    keywords: a.keywords.map((k) => k.trim().toLocaleLowerCase()).filter((k) => k !== ''),
+    title: () => pick(a.title, locale()),
+    detail: () => (a.detail ? pick(a.detail, locale()) : ''),
+    run: async () => {
+      await a.run(context);
+      return pick(a.done ?? a.title, locale());
+    },
+  };
+}
+
+/**
+ * Whether the account may use a search action. Unlike settings sections,
+ * an action that would only answer 403 is left out entirely: guests never
+ * act, and a feature has to be fully licensed (read-only means no changes).
+ */
+const mayRun = (a: PluginSearchAction, context: PluginContext) =>
+  !context.account.guest && (!a.feature || context.level(a.feature) === 'full');
+
 /**
  * Loads the plugins the server offers (GET /api/plugins) and registers their
  * widgets and settings sections. Without ee/ the list is empty and nothing
@@ -132,6 +157,11 @@ export async function loadPlugins(
         if (!targets.widgets.some((d) => d.type.kind === w.kind)) targets.widgets.push(toWidget(w, context));
       }
       for (const s of plugin.settings) targets.sections.push(toSection(s, context));
+      // searchActions is optional: plugins built before it existed have none.
+      for (const a of plugin.searchActions ?? []) {
+        if (targets.searchActions && mayRun(a, context))
+          targets.searchActions.push(toSearchAction(plugin.name, a, context));
+      }
       loaded.push(plugin.name);
     } catch (err) {
       console.error('plugin failed to load', url, err);

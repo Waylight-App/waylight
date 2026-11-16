@@ -78,12 +78,44 @@ export interface PluginSection {
   view: Mountable;
 }
 
-/** What a plugin module exports as `plugin`. */
+/**
+ * A command the start page search offers when the typed text matches one of
+ * its keywords (#453), e.g. "office" → "Set my status: Office". The core
+ * does the matching and hides the action from guests and while its feature
+ * is not fully licensed, so a plugin only describes it.
+ */
+export interface PluginSearchAction {
+  /** Unique within the plugin. */
+  id: string;
+  /** Licence feature it needs at level "full". */
+  feature?: string;
+  /**
+   * Words that offer the action, in every supported language. The typed
+   * text matches a keyword it equals or starts (from two letters on),
+   * ignoring case and surrounding spaces.
+   */
+  keywords: string[];
+  title: Texts;
+  /** Shown muted next to the title, e.g. the feature's name. */
+  detail?: Texts;
+  /** Shown after the action ran; the title is used without it. */
+  done?: Texts;
+  /** Runs the action; a rejection is shown as an error message. */
+  run(context: PluginContext): Promise<void>;
+}
+
+/**
+ * What a plugin module exports as `plugin`. Fields added after version 1
+ * shipped are optional, so plugins built against the first version still
+ * load and an older core ignores what it does not know.
+ */
 export interface TrissePlugin {
   apiVersion: number;
   name: string;
   widgets: PluginWidget[];
   settings: PluginSection[];
+  /** Commands for the search field (#453); optional. */
+  searchActions?: PluginSearchAction[];
 }
 
 /** Picks the text for a language, falling back to English. */

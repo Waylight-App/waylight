@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { HttpClient } from '../../shared/api-client/http';
 import type { AuthUseCases } from '../../features/auth';
+import type { SearchAction } from '../searchActions';
 import type { SettingsSection } from '../settingsKit';
 import type { WidgetDefinition } from '../widgetKit';
 import { PLUGIN_API_VERSION, type TrissePlugin } from './api';
@@ -92,5 +93,51 @@ describe('loadPlugins', () => {
     );
     expect(targets.widgets).toEqual([]);
     warn.mockRestore();
+  });
+
+  describe('search actions (#453)', () => {
+    const run = vi.fn(() => Promise.resolve());
+    const withActions: TrissePlugin = {
+      ...plugin,
+      searchActions: [
+        {
+          id: 'office',
+          feature: 'presence',
+          keywords: [' Office ', 'Büro'],
+          title: { en: 'Set office' },
+          done: { en: 'Status set' },
+          run,
+        },
+        { id: 'readonly', feature: 'branding', keywords: ['x'], title: { en: 'Read only' }, run },
+        { id: 'free', keywords: ['free'], title: { en: 'Free' }, detail: { en: 'Core' }, run },
+      ],
+    };
+    const routes = {
+      '/api/plugins': { plugins: ['/ee/plugin.js'] },
+      '/api/licence/features': { features: { presence: 'full', branding: 'read' } },
+    };
+    const load = async (account: AuthUseCases, p: TrissePlugin = withActions) => {
+      const targets = { widgets: [], sections: [], searchActions: [] as SearchAction[] };
+      await loadPlugins(http(routes), account, targets, () => Promise.resolve({ plugin: p }));
+      return targets.searchActions;
+    };
+
+    it('registers the actions of fully licensed features with normalised keywords', async () => {
+      const actions = await load(auth);
+      expect(actions.map((a) => a.id)).toEqual(['plugin-ee-office', 'plugin-ee-free']);
+      expect(actions[0]?.keywords).toEqual(['office', 'büro']);
+      expect(actions[1]?.detail()).toBe('Core');
+      expect(await actions[1]?.run()).toBe('Free');
+      expect(await actions[0]?.run()).toBe('Status set');
+      expect(run).toHaveBeenCalledWith(expect.objectContaining({ account: expect.anything() }));
+    });
+
+    it('gives guests no actions', async () => {
+      expect(await load({ ...auth, guest: true } as AuthUseCases)).toEqual([]);
+    });
+
+    it('still loads a plugin built before search actions existed', async () => {
+      expect(await load(auth, plugin)).toEqual([]);
+    });
   });
 });
