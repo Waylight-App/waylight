@@ -1,3 +1,6 @@
+import type { CountdownDoc } from '../../features/countdown/adapter/local/localCountdownGateway';
+import type { FocusDoc } from '../../features/focus/adapter/local/localFocusGateway';
+import type { HabitsDoc } from '../../features/habits/adapter/local/localHabitsGateway';
 import { describe, expect, it } from 'vitest';
 import { defaultAppearance } from '../../features/appearance/domain/appearance';
 import type { DashboardDoc } from '../../features/dashboard/adapter/local/localDashboardGateway';
@@ -145,6 +148,52 @@ async function sampleStore(): Promise<MemoryDocumentStore> {
     ],
   };
   await store.put('bookmarks', bookmarks);
+  const countdown: CountdownDoc = {
+    items: [
+      {
+        id: '66666666-6666-4666-8666-666666666666',
+        title: 'Holiday',
+        emoji: '🏖️',
+        date: '2026-12-20',
+        time: '',
+        createdAt: '2026-11-15T10:00:00.000Z',
+      },
+      {
+        id: '77777777-7777-4777-8777-777777777777',
+        title: 'Dentist',
+        emoji: '',
+        date: '2026-11-18',
+        time: '14:30',
+        createdAt: '2026-11-15T10:05:00.000Z',
+      },
+    ],
+  };
+  await store.put('countdown', countdown);
+  const focus: FocusDoc = {
+    sessions: [
+      { id: '88888888-8888-4888-8888-888888888888', minutes: 25, endedAt: '2026-11-16T07:00:00.000Z' },
+    ],
+  };
+  await store.put('focus', focus);
+  const habits: HabitsDoc = {
+    habits: [
+      {
+        id: '99999999-9999-4999-8999-999999999999',
+        name: 'Read',
+        emoji: '📚',
+        days: [5, 1, 3],
+        position: 0,
+        createdAt: '2026-11-01T08:00:00.000Z',
+      },
+    ],
+    completions: [
+      { habitId: '99999999-9999-4999-8999-999999999999', day: '2026-11-13' },
+      { habitId: '99999999-9999-4999-8999-999999999999', day: '2026-11-16' },
+      // Left over from a deleted habit: not exported.
+      { habitId: 'deleted', day: '2026-11-16' },
+    ],
+  };
+  await store.put('habits', habits);
   return store;
 }
 
