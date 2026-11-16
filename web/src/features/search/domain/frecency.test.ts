@@ -10,6 +10,9 @@ import {
   normaliseQuery,
   parseEntries,
   record,
+  SLOTS,
+  slotOf,
+  suggest,
 } from './frecency';
 
 const DAY = 24 * 3600 * 1000;
@@ -92,5 +95,53 @@ describe('frecency', () => {
         null,
       ]),
     ).toEqual([{ key: 'a', target: 't', value: 1, at: T0 }]);
+  });
+});
+
+describe('suggestions by time of day (#480)', () => {
+  // Local times, so the slot does not depend on the test machine's zone.
+  const at = (day: number, hour: number) => new Date(2026, 10, day, hour).getTime();
+  const monday9 = at(16, 9);
+  const monday20 = at(16, 20);
+  const saturday9 = at(21, 9);
+
+  it('puts weekdays and weekends into six 4-hour slots each', () => {
+    expect(slotOf(new Date(monday9))).toBe(2);
+    expect(slotOf(new Date(monday20))).toBe(5);
+    expect(slotOf(new Date(saturday9))).toBe(8);
+    expect(slotOf(new Date(2026, 10, 22, 0))).toBe(6); // Sunday midnight
+  });
+
+  it('records the slot of each pick and decays it with the value', () => {
+    let entries = record([], 'mail', 'service:mail', monday9);
+    expect(entries[0]?.slots).toHaveLength(SLOTS);
+    expect(entries[0]?.slots?.[2]).toBe(1);
+    entries = record(entries, 'mail', 'service:mail', monday9 + HALF_LIFE_MS);
+    expect(entries[0]?.slots?.[2]).toBeCloseTo(1.5);
+    expect(entries[0]?.value).toBeCloseTo(1.5);
+  });
+
+  it('ranks what is used at this time of day first', () => {
+    let entries: FrecencyEntry[] = [];
+    for (let i = 0; i < 3; i++) entries = record(entries, 'mail', 'service:mail', monday9 - i * DAY);
+    for (let i = 0; i < 4; i++) entries = record(entries, 'tv', 'service:tv', monday20 - i * DAY);
+    expect(suggest(entries, monday9 + 7 * DAY).map((s) => s.target)).toEqual(['service:mail', 'service:tv']);
+    expect(suggest(entries, monday20 + 7 * DAY).map((s) => s.target)).toEqual(['service:tv', 'service:mail']);
+  });
+
+  it('adds up the queries of one target and limits the list', () => {
+    let entries: FrecencyEntry[] = [];
+    for (let i = 0; i < 8; i++) entries = record(entries, `q${i}`, `t${i}`, monday9);
+    entries = record(entries, 'other', 't7', monday9);
+    const s = suggest(entries, monday9);
+    expect(s).toHaveLength(5);
+    expect(s[0]?.target).toBe('t7');
+  });
+
+  it('treats entries without slots as spread over the day and drops broken slot data', () => {
+    const old = { key: 'a', target: 't', value: 1, at: monday9 };
+    expect(suggest([old], monday9)[0]?.score).toBeCloseTo(1);
+    expect(parseEntries([{ ...old, slots: [1, 2] }])).toEqual([old]);
+    expect(suggest([], monday9)).toEqual([]);
   });
 });
