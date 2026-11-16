@@ -34,3 +34,8 @@ export function captureUrl(base, tab) {
   if (tab?.selection) q.set('text', String(tab.selection).slice(0, 4000));
   return `${base}/capture?${q}`;
 }
+
+/** The server's Settings → Transfer, where an export file is imported (#291). */
+export function importUrl(base) {
+  return `${base}/?settings=transfer`;
+}

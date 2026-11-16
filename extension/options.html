@@ -32,11 +32,14 @@
       </form>
       <section id="move" hidden>
         <h2>Moving to a server</h2>
-        <p>
-          Download what you created without a server, then import the file on your server under
-          <em>Settings → Transfer</em>. Importing replaces the server's dashboard and appearance with yours.
-        </p>
-        <p><a id="export" href="app/extension.html#export">Download my data</a></p>
+        <p>Take what you created without a server along. Importing replaces that data on your server.</p>
+        <ol>
+          <li><a id="export" href="app/extension.html#export">Download my data</a></li>
+          <li>
+            <a id="import" href="#" target="_blank" rel="noopener" hidden>Open the import on my server</a>
+            <span id="import-hint">Then import the file on your server under <em>Settings → Transfer</em>.</span>
+          </li>
+        </ol>
       </section>
     </main>
     <script type="module" src="src/options.js"></script>
