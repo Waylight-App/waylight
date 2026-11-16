@@ -486,6 +486,12 @@ export const de: Record<BaseMessageKey, string> = {
   'search.name': 'Name',
   'search.url_with': 'URL mit {value}',
   'search.search': 'Suchen',
+  'search.unanswered_heading': 'Fragen ohne Antwort',
+  'search.unanswered_switch': 'Suchen ohne Antwort merken',
+  'search.unanswered_hint':
+    'Zeigt, welche Fragen die Suche nicht beantworten konnte, damit du siehst, welche Quelle noch fehlt. Gemerkt werden nur Suchen, die ohne Treffer in der Websuche gelandet sind: der Text und wie oft, die letzten 200, nur in diesem Browser und nie auf dem Server. Bangs und alles, was wie ein Passwort, eine Adresse oder eine Telefonnummer aussieht, werden nie gemerkt. Ausschalten löscht die Liste. Sonst werden Texte der Websuche nie gespeichert.',
+  'search.unanswered_empty': 'Noch nichts.',
+  'search.unanswered_clear': 'Liste löschen',
   'search.history_heading': 'Suchverlauf',
   'search.history_learn': 'Aus meinen Auswahlen lernen und sie weiter oben zeigen',
   'search.history_hint':

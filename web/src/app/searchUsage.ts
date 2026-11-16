@@ -1,4 +1,6 @@
+import { LocalUnansweredStore } from '../features/search/adapter/localUnansweredStore';
 import { LocalUsageStore } from '../features/search/adapter/localUsageStore';
+import { UnansweredQueries } from '../features/search/usecase/unansweredQueries';
 import { SearchUsage } from '../features/search/usecase/searchUsage';
 
 /**
@@ -8,5 +10,11 @@ import { SearchUsage } from '../features/search/usecase/searchUsage';
  * "answer:<intent>" for smart answers.
  */
 export const searchUsage = new SearchUsage(new LocalUsageStore());
+
+/**
+ * Queries that ended in the web search without any match (#481); off
+ * unless switched on in the settings, kept only in this browser.
+ */
+export const unansweredQueries = new UnansweredQueries(new LocalUnansweredStore());
 
 export const answerTarget = (intent: string) => `answer:${intent}`;
