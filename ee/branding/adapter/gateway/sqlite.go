@@ -35,21 +35,23 @@ func NewStore(db *sql.DB) *Store { return &Store{db: db} }
 // Settings implements usecase.Store; no row means nothing set.
 func (s *Store) Settings(ctx context.Context) (domain.Settings, error) {
 	var set domain.Settings
-	var hide int
-	err := s.db.QueryRowContext(ctx, `SELECT name, accent, secondary, hide_powered_by FROM branding_settings WHERE id = 1`).
-		Scan(&set.Name, &set.Accent, &set.Secondary, &hide)
+	var hide, lock int
+	err := s.db.QueryRowContext(ctx, `SELECT name, accent, secondary, hide_powered_by, default_theme, lock_theme FROM branding_settings WHERE id = 1`).
+		Scan(&set.Name, &set.Accent, &set.Secondary, &hide, &set.DefaultTheme, &lock)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Settings{}, nil
 	}
-	set.HidePoweredBy = hide == 1
+	set.HidePoweredBy, set.LockTheme = hide == 1, lock == 1
 	return set, err
 }
 
 // SaveSettings implements usecase.Store.
 func (s *Store) SaveSettings(ctx context.Context, set domain.Settings) error {
-	_, err := s.db.ExecContext(ctx, `INSERT INTO branding_settings (id, name, accent, secondary, hide_powered_by) VALUES (1, ?, ?, ?, ?)
+	_, err := s.db.ExecContext(ctx, `INSERT INTO branding_settings (id, name, accent, secondary, hide_powered_by, default_theme, lock_theme)
+		VALUES (1, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT (id) DO UPDATE SET name = excluded.name, accent = excluded.accent, secondary = excluded.secondary,
-		hide_powered_by = excluded.hide_powered_by`, set.Name, set.Accent, set.Secondary, sqlutil.BoolToInt(set.HidePoweredBy))
+		hide_powered_by = excluded.hide_powered_by, default_theme = excluded.default_theme, lock_theme = excluded.lock_theme`,
+		set.Name, set.Accent, set.Secondary, sqlutil.BoolToInt(set.HidePoweredBy), set.DefaultTheme, sqlutil.BoolToInt(set.LockTheme))
 	return err
 }
 
