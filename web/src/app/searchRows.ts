@@ -1,6 +1,7 @@
 import type { QuickCommand } from '../features/quickactions';
 import type { MessageKey } from '../shared/i18n';
 import type { QuickGroup, QuickItem } from './quickSearch';
+import type { CommandMatch } from '../features/search/domain/commands';
 import type { SearchAction } from './searchActions';
 
 /**
@@ -14,6 +15,8 @@ export type Row =
   | { kind: 'result'; id: string; item: QuickItem }
   /** Restart a container or wake a device ("restart nextcloud"). */
   | { kind: 'action'; id: string; command: QuickCommand }
+  /** An app command: theme, settings section, tab … (#476). */
+  | { kind: 'command'; id: string; match: CommandMatch }
   /** A command a plugin offers for the typed text (#453). */
   | { kind: 'plugin'; id: string; action: SearchAction }
   | { kind: 'web'; id: string };
@@ -35,6 +38,8 @@ export interface RowInput {
   web: boolean;
   /** Plugin commands that match the text (#453). */
   actions?: SearchAction[];
+  /** App commands that match the text (#476). */
+  commands?: CommandMatch[];
 }
 
 const isCapture = (c: QuickCommand) => c.kind === 'todo' || c.kind === 'note' || c.kind === 'bookmark';
@@ -59,6 +64,13 @@ export function buildRows(input: RowInput): RowGroup[] {
       });
     }
   }
+  const commands = command ? [] : (input.commands ?? []);
+  if (commands.length > 0)
+    out.push({
+      id: 'commands',
+      label: 'app.group.commands',
+      rows: commands.map((match) => ({ kind: 'command', id: `command:${match.spec.id}`, match })),
+    });
   // A typed command wins over plugin actions; both are listed under actions.
   const actions: Row[] =
     command && !isCapture(command)
