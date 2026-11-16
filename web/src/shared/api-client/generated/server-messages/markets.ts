@@ -3,6 +3,8 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_0d35c0616158d25f: "At most 12 entries per widget.",
+  srv_1fd9959d0eaf237d: "Currency rates are switched off on this server.",
+  srv_02db4d3c7e0abaac: "The currency rates could not be fetched; try again later.",
   srv_6588144872adfafb: "Use fx:USD for currencies or stooq:aapl.us for shares, indices and crypto.",
 } as const;
 
