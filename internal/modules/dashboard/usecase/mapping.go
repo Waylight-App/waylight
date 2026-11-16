@@ -1,7 +1,9 @@
 package usecase
 
 import (
+	"context"
 	"slices"
+	"trisse-home/internal/shared/kernel"
 
 	"trisse-home/internal/modules/dashboard/domain"
 )
@@ -11,8 +13,9 @@ func toWidgetResponse(w domain.Widget) WidgetResponse {
 	return WidgetResponse{ID: w.ID(), TabID: w.TabID(), Kind: w.Kind(), X: r.X, Y: r.Y, W: r.W, H: r.H, Config: w.Config()}
 }
 
-func toTabResponse(t domain.Tab, widgets []domain.Widget) TabResponse {
-	res := TabResponse{ID: t.ID(), Name: t.Name(), Position: t.Position(), Background: t.Background(), Widgets: []WidgetResponse{}, Rules: []RuleView{}}
+func toTabResponse(ctx context.Context, t domain.Tab, widgets []domain.Widget) TabResponse {
+	res := TabResponse{ID: t.ID(), Name: t.Name(), Position: t.Position(), Background: t.Background(), Widgets: []WidgetResponse{}, Rules: []RuleView{},
+		Mine: t.Access().Owner == "" || t.Access().Mine(kernel.PrincipalFrom(ctx)), Visibility: string(t.Access().Visibility)}
 	for _, r := range t.Rules() {
 		from, to := r.Range()
 		res.Rules = append(res.Rules, RuleView{Days: r.Days(), From: from, To: to, Networks: r.Networks()})

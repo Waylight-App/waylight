@@ -65,7 +65,7 @@ func (uc *getDashboard) ExecuteFor(ctx context.Context, client netip.Addr) (Dash
 		res.DefaultTabID = domain.DefaultTabID(tabs, uc.deps.Clock.Now().In(loc), client)
 	}
 	for _, t := range tabs {
-		res.Tabs = append(res.Tabs, toTabResponse(t, widgets))
+		res.Tabs = append(res.Tabs, toTabResponse(ctx, t, widgets))
 	}
 	return res, nil
 }

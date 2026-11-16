@@ -45,6 +45,8 @@ const toTab = (dto: TabDTO): Tab => ({
   })),
   widgets: dto.widgets.map(toWidget),
   mobile: (dto.mobile ?? []).map((m) => ({ id: m.id, hidden: m.hidden, rows: m.rows })),
+  // Older servers do not send it; every tab was the viewer's own then.
+  mine: dto.mine ?? true,
   mobileCustom: dto.mobileCustom ?? false,
 });
 

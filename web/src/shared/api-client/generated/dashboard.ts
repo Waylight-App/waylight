@@ -41,6 +41,12 @@ export interface TabDTO {
    * MobileCustom is false while the phone layout follows the desktop grid.
    */
   mobileCustom: boolean;
+  /**
+   * Mine is false for a team tab shared with the viewer (#295); its layout
+   * is read-only. Visibility is "private", "everyone" or "group:<id>".
+   */
+  mine: boolean;
+  visibility: string;
 }
 /**
  * MobileItemDTO places a widget in the phone layout.
