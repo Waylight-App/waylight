@@ -21,6 +21,10 @@ type Subscription struct {
 type Sharing interface {
 	OwnSubscriptions(ctx context.Context) ([]Subscription, error)
 	Share(ctx context.Context, id string, v kernel.Visibility) error
+	// OwnAccounts and ShareAccount do the same for connected Google and
+	// Microsoft accounts: sharing one shares its enabled calendars.
+	OwnAccounts(ctx context.Context) ([]Subscription, error)
+	ShareAccount(ctx context.Context, id string, v kernel.Visibility) error
 }
 
 // Service implements the use cases.
@@ -47,6 +51,27 @@ func (s *Service) List(ctx context.Context) ([]Subscription, error) {
 		return nil, err
 	}
 	return s.sharing.OwnSubscriptions(ctx)
+}
+
+// Accounts returns the principal's own connected accounts and who sees them.
+func (s *Service) Accounts(ctx context.Context) ([]Subscription, error) {
+	if err := person(ctx); err != nil {
+		return nil, err
+	}
+	return s.sharing.OwnAccounts(ctx)
+}
+
+// ShareAccount sets who sees the calendars of one of the principal's own
+// connected accounts, with the same rules as Share.
+func (s *Service) ShareAccount(ctx context.Context, id, visibility string) error {
+	if err := person(ctx); err != nil {
+		return err
+	}
+	v, err := kernel.CheckShare(kernel.PrincipalFrom(ctx), visibility)
+	if err != nil {
+		return err
+	}
+	return s.sharing.ShareAccount(ctx, id, v)
 }
 
 // Share sets who sees one of the principal's own subscriptions: private,

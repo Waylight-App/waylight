@@ -13,8 +13,11 @@ pick any group). Everyone it is shared with sees its events in their
 calendar widget, with the calendar's name and colour. They cannot change it
 and never see its address, which may contain a private token.
 
-Calendars connected through a Google or Microsoft account cannot be shared
-yet; their tokens belong to the person who connected them.
+A calendar connected through a Google or Microsoft account can be shared
+the same way: sharing the account shares the calendars you enabled for your
+agenda. Its events are read with your connection; when its token needs
+renewing, it is renewed and stored as yours, whoever opened the calendar,
+so your connection keeps working.
 
 ## What others see
 
@@ -32,3 +35,5 @@ yet; their tokens belong to the person who connected them.
 | --- | --- | --- |
 | GET | `/api/teamcalendar/subscriptions` | Your own subscriptions with `id`, `name`, `visibility` |
 | PUT | `/api/teamcalendar/subscriptions/{id}` | `{visibility}`: `private`, `everyone` or `group:<id>` |
+| GET | `/api/teamcalendar/accounts` | Your own connected accounts with `id`, `name`, `visibility` |
+| PUT | `/api/teamcalendar/accounts/{id}` | `{visibility}`, as above |

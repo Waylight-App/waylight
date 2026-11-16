@@ -102,6 +102,19 @@ type SubscriptionRepository interface {
 	Delete(ctx context.Context, id string) error
 }
 
+// SharedAccount is a connected account another person shared, with the
+// owner whose tokens it uses.
+type SharedAccount struct {
+	Account domain.Account
+	OwnerID string
+}
+
+// SharedAccounts lists the connected accounts others shared with the
+// principal (output port, team calendar #299).
+type SharedAccounts interface {
+	ListSharedAccounts(ctx context.Context) ([]SharedAccount, error)
+}
+
 // SharedSubscriptions lists the subscriptions other accounts shared with
 // the principal (output port, team calendar #299).
 type SharedSubscriptions interface {
@@ -112,15 +125,16 @@ type SharedSubscriptions interface {
 type Deps struct {
 	// Shared and SharingOn add calendars others shared to a person's agenda
 	// while SharingOn says so (the ee/ team calendar); nil adds none.
-	Shared        SharedSubscriptions
-	SharingOn     func(ctx context.Context) bool
-	Repo          SettingsRepository
-	Source        EventSource
-	Writer        EventWriter
-	Subscriptions SubscriptionRepository
-	Feeds         FeedSource
-	IDs           kernel.IDGenerator
-	Clock         kernel.Clock
+	Shared         SharedSubscriptions
+	SharedAccounts SharedAccounts
+	SharingOn      func(ctx context.Context) bool
+	Repo           SettingsRepository
+	Source         EventSource
+	Writer         EventWriter
+	Subscriptions  SubscriptionRepository
+	Feeds          FeedSource
+	IDs            kernel.IDGenerator
+	Clock          kernel.Clock
 	// Accounts, API and OAuth connect Google and Microsoft calendars
 	// (#282); without them no account can be connected.
 	Accounts AccountRepository
@@ -154,8 +168,9 @@ type calendar struct {
 	// (kernel.Principal.SettingsAccount, ADR 0018).
 	agendas map[string]*agendaCache
 	// shared and sharingOn: see Deps.
-	shared    SharedSubscriptions
-	sharingOn func(ctx context.Context) bool
+	shared         SharedSubscriptions
+	sharedAccounts SharedAccounts
+	sharingOn      func(ctx context.Context) bool
 }
 
 // agendaCache is the cached agenda of one account and the period it covers.
@@ -191,7 +206,7 @@ func (uc *calendar) snapshot(ctx context.Context) (*AgendaResponse, time.Time, t
 func NewCalendar(d Deps) Service {
 	return &calendar{repo: d.Repo, source: d.Source, writer: d.Writer, subs: d.Subscriptions, feeds: d.Feeds, ids: d.IDs, clock: d.Clock,
 		accounts: d.Accounts, api: d.API, oauth: d.OAuth, acc: accountState{pending: map[string]*pendingSignIn{}}, agendas: map[string]*agendaCache{},
-		shared: d.Shared, sharingOn: d.SharingOn}
+		shared: d.Shared, sharedAccounts: d.SharedAccounts, sharingOn: d.SharingOn}
 }
 
 // sourceSet is everything the agenda is built from.
@@ -237,37 +252,71 @@ func (uc *calendar) sources(ctx context.Context) (sourceSet, error) {
 // part of a person's cached agenda: whether they show depends on the
 // person's groups and the licence at the time of the request, so they are
 // merged in per request (the feed itself is cached by the gateway).
-func (uc *calendar) sharedSubscriptions(ctx context.Context) ([]domain.Subscription, error) {
+func (uc *calendar) sharedSubscriptions(ctx context.Context) (sharedSet, error) {
 	p := kernel.PrincipalFrom(ctx)
-	if uc.shared == nil || uc.sharingOn == nil || p.TabScoped() || p.IsSystem() || p.IsToken() || !uc.sharingOn(ctx) {
-		return nil, nil
+	if uc.sharingOn == nil || p.TabScoped() || p.IsSystem() || p.IsToken() || !uc.sharingOn(ctx) {
+		return sharedSet{}, nil
 	}
-	list, err := uc.shared.ListShared(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("list shared subscriptions: %w", err)
+	var set sharedSet
+	if uc.shared != nil {
+		list, err := uc.shared.ListShared(ctx)
+		if err != nil {
+			return sharedSet{}, fmt.Errorf("list shared subscriptions: %w", err)
+		}
+		set.subs = list
 	}
-	return list, nil
+	if uc.sharedAccounts != nil {
+		list, err := uc.sharedAccounts.ListSharedAccounts(ctx)
+		if err != nil {
+			return sharedSet{}, fmt.Errorf("list shared accounts: %w", err)
+		}
+		set.accounts = list
+	}
+	return set, nil
 }
+
+// sharedSet is what others shared with a person.
+type sharedSet struct {
+	subs     []domain.Subscription
+	accounts []SharedAccount
+}
+
+func (s sharedSet) empty() bool { return len(s.subs) == 0 && len(s.accounts) == 0 }
 
 // withShared adds the events of shared calendars between from and to to
 // res, sorted with the rest; a shared feed that fails is named in Error.
-func (uc *calendar) withShared(ctx context.Context, res AgendaResponse, shared []domain.Subscription, from, to time.Time) AgendaResponse {
-	if len(shared) == 0 {
+func (uc *calendar) withShared(ctx context.Context, res AgendaResponse, shared sharedSet, from, to time.Time) AgendaResponse {
+	if shared.empty() {
 		return res
 	}
 	var failed []string
-	for _, sub := range shared {
+	add := func(e domain.Event, calendar, color string) {
+		if !e.Start.Before(to) || !(domain.Event{End: e.End, AllDay: e.AllDay}).EndsAfter(from) {
+			return
+		}
+		res.Events = append(res.Events, EventView{UID: e.UID, Summary: e.Summary, Location: e.Location, Description: e.Description,
+			URL: e.URL, Calendar: calendar, Color: color, Start: e.Start, End: e.End, AllDay: e.AllDay})
+	}
+	for _, sub := range shared.subs {
 		events, err := uc.feeds.Events(ctx, sub, from, to)
 		if err != nil {
 			failed = append(failed, sub.Name)
 			continue
 		}
 		for _, e := range events {
-			if !e.Start.Before(to) || !(domain.Event{End: e.End, AllDay: e.AllDay}).EndsAfter(from) {
-				continue
-			}
-			res.Events = append(res.Events, EventView{UID: e.UID, Summary: e.Summary, Location: e.Location, Description: e.Description,
-				URL: e.URL, Calendar: sub.Name, Color: sub.Color, Start: e.Start, End: e.End, AllDay: e.AllDay})
+			add(e, sub.Name, sub.Color)
+		}
+	}
+	for _, sa := range shared.accounts {
+		// The account is read as its owner: a token refresh is stored with
+		// the owner's account, and providers that rotate refresh tokens
+		// (Microsoft) keep working for the owner. accessToken serialises
+		// refreshes and re-reads the stored token first.
+		owner := kernel.WithPrincipal(ctx, kernel.PrincipalFor(sa.OwnerID))
+		events, errs, _ := uc.accountEvents(owner, []domain.Account{sa.Account}, from, to)
+		failed = append(failed, errs...)
+		for _, e := range events {
+			add(e, e.Calendar, e.Color)
 		}
 	}
 	slices.SortStableFunc(res.Events, func(a, b EventView) int { return a.Start.Compare(b.Start) })
@@ -362,7 +411,7 @@ func (uc *calendar) Upcoming(ctx context.Context, days int) (AgendaResponse, err
 	cached, _, _ := uc.snapshot(ctx)
 	if cached == nil {
 		if _, err := uc.sources(ctx); err != nil {
-			if errors.Is(err, domain.ErrNotConfigured) && len(shared) > 0 {
+			if errors.Is(err, domain.ErrNotConfigured) && !shared.empty() {
 				return uc.withShared(ctx, AgendaResponse{UpdatedAt: now, Events: []EventView{}}, shared, now, until), nil
 			}
 			return AgendaResponse{}, err
@@ -393,7 +442,7 @@ func (uc *calendar) Range(ctx context.Context, from, to time.Time) (AgendaRespon
 		return AgendaResponse{}, err
 	}
 	src, err := uc.sources(ctx)
-	if errors.Is(err, domain.ErrNotConfigured) && len(shared) > 0 {
+	if errors.Is(err, domain.ErrNotConfigured) && !shared.empty() {
 		return uc.withShared(ctx, AgendaResponse{UpdatedAt: uc.clock.Now(), Events: []EventView{}}, shared, from, to), nil
 	}
 	if err != nil {

@@ -50,4 +50,6 @@ func (m *Module) DataKind() modules.DataKind { return modules.PersonalSettings }
 func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/teamcalendar/subscriptions", m.handlers.List)
 	r.Protected("PUT /api/teamcalendar/subscriptions/{id}", m.handlers.Share)
+	r.Protected("GET /api/teamcalendar/accounts", m.handlers.Accounts)
+	r.Protected("PUT /api/teamcalendar/accounts/{id}", m.handlers.ShareAccount)
 }

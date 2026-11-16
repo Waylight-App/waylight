@@ -15,8 +15,9 @@ import (
 // shared by others on while the licence allows it. Without that, a person's
 // agenda holds only their own calendars.
 type Sharing struct {
-	enabled func(context.Context) bool
-	repo    *gateway.SubscriptionRepository
+	enabled  func(context.Context) bool
+	repo     *gateway.SubscriptionRepository
+	accounts *gateway.AccountRepository
 }
 
 // NewSharing returns a Sharing with shared calendars switched off.
@@ -42,6 +43,28 @@ func (s *Sharing) OwnSubscriptions(ctx context.Context) ([]SubscriptionInfo, err
 		return nil, ErrNotReady
 	}
 	return s.repo.Own(ctx)
+}
+
+// AccountInfo is one of the principal's own connected accounts and who else
+// sees it.
+type AccountInfo = gateway.SharedInfo
+
+// OwnAccounts lists the principal's own connected accounts (Google,
+// Microsoft) with their visibility.
+func (s *Sharing) OwnAccounts(ctx context.Context) ([]AccountInfo, error) {
+	if s == nil || s.accounts == nil {
+		return nil, ErrNotReady
+	}
+	return s.accounts.Own(ctx)
+}
+
+// ShareAccount changes who sees the enabled calendars of one of the
+// principal's own connected accounts; v is checked by the caller.
+func (s *Sharing) ShareAccount(ctx context.Context, id string, v kernel.Visibility) error {
+	if s == nil || s.accounts == nil {
+		return ErrNotReady
+	}
+	return s.accounts.SetVisibility(ctx, id, v)
 }
 
 // Share changes who sees one of the principal's own subscriptions; v is
