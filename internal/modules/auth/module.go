@@ -91,7 +91,8 @@ func (a oidcAdapter) Exchange(ctx context.Context, code, verifier, nonce string)
 	if err != nil {
 		return domain.ExternalIdentity{}, err
 	}
-	return domain.ExternalIdentity{Subject: id.Subject, Email: id.Email, EmailVerified: id.EmailVerified}, nil
+	return domain.ExternalIdentity{Subject: id.Subject, Email: id.Email, EmailVerified: id.EmailVerified,
+		Name: id.Name, Username: id.Username, Groups: id.Groups}, nil
 }
 
 // observerFunc adapts a function to usecase.SetupObserver.
@@ -138,6 +139,8 @@ type Module struct {
 	setupToken string
 	log        *slog.Logger
 	accounts   *gateway.AccountRepository
+	sso        usecase.SSO
+	provision  usecase.Provisioning
 }
 
 // New builds the auth module.
@@ -168,6 +171,7 @@ func New(cfg Config, d Deps) (*Module, error) {
 	securityLog := usecase.NewSecurityLog(events)
 	status := usecase.NewGetStatus(accounts, sessions, d.Clock)
 	kiosks := usecase.NewKiosks(deps, gateway.NewKioskRepository(d.DB))
+	sso := newSSO(deps, cfg.SSO)
 	uc := controller.UseCases{
 		Status:       status,
 		Setup:        usecase.NewSetupAccount(deps, gateway.NewSetupToken(token), observerFunc(cfg.OnAccountCreated)),
@@ -184,7 +188,7 @@ func New(cfg Config, d Deps) (*Module, error) {
 		PasswordReset: usecase.NewPasswordReset(deps, gateway.NewAccountLinkRepository(d.DB), gateway.NewEmailRepository(d.DB),
 			d.Mailer, cfg.PublicURL),
 		APITokens:      usecase.NewAPITokens(deps, gateway.NewTokenRepository(d.DB)),
-		SSO:            newSSO(deps, cfg.SSO),
+		SSO:            sso,
 		Passkeys:       usecase.NewPasskeys(deps),
 		ChangePassword: usecase.NewChangePassword(deps),
 		Sessions:       usecase.NewManageSessions(sessions, d.Clock, events),
@@ -209,8 +213,34 @@ func New(cfg Config, d Deps) (*Module, error) {
 		setupToken: token,
 		log:        d.Log,
 		accounts:   accounts,
+		sso:        sso,
+		provision:  usecase.NewProvisioning(deps),
 	}, nil
 }
+
+// ExternalIdentity is a person confirmed by the identity provider.
+type ExternalIdentity = domain.ExternalIdentity
+
+// ExternalAccounts decides who besides the owner signs in through OpenID
+// Connect; see usecase.ExternalAccounts.
+type ExternalAccounts = usecase.ExternalAccounts
+
+// Provisioning manages members for an identity provider; see
+// usecase.Provisioning.
+type Provisioning = usecase.Provisioning
+
+// SetExternalAccounts lets members sign in through OpenID Connect (#302). The
+// ee/ single sign-on calls it while the server is built; without it, single
+// sign-on stays the owner's (ADR 0013). Without OIDC there is nothing to
+// extend, and the call does nothing.
+func (m *Module) SetExternalAccounts(e ExternalAccounts) {
+	if m.sso != nil {
+		m.sso.SetExternalAccounts(e)
+	}
+}
+
+// Provisioning returns the member management for an identity provider.
+func (m *Module) Provisioning() Provisioning { return m.provision }
 
 // CountLicensedAccounts counts the owner, members and guests that are not
 // disabled; kiosk displays are devices, not people, and do not count. The

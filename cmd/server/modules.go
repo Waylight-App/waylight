@@ -446,7 +446,7 @@ func ssoConfig(cfg config.Config, client *http.Client, clk clock.System) auth.SS
 		PasswordLogin: cfg.PasswordLogin, Require2FA: cfg.SSORequire2FA}
 	if cfg.OIDCIssuer != "" {
 		sso.OIDC = oidc.New(oidc.Config{Issuer: cfg.OIDCIssuer, ClientID: cfg.OIDCClientID, ClientSecret: cfg.OIDCClientSecret,
-			RedirectURL: cfg.OIDCRedirectURL}, client, clk.Now)
+			RedirectURL: cfg.OIDCRedirectURL, GroupsClaim: cfg.OIDCGroupsClaim}, client, clk.Now)
 	}
 	return sso
 }
