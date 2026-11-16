@@ -347,11 +347,11 @@ func newOutbound(cfg config.Config, clk clock.System, cipher secretStore) outbou
 	}
 }
 
-// membersEnabled switches on member accounts (#294). It stays false until
-// the personal-content modules store an owner per record (ADR 0018,
-// follow-up step 4): before that, a member would see and change the
-// owner's notes and lists. Tests switch it on to exercise the guard.
-var membersEnabled = false
+// membersEnabled switches on member accounts (#294). It is on since every
+// personal-content module stores an owner per record and filters by it
+// (ADR 0018); the auth use cases keep the switch so tests can turn members
+// off and check the refusal.
+var membersEnabled = true
 
 // alertRelay forwards security alerts of the auth module (built first) to
 // the notifications module once that exists; without it alerts are dropped.

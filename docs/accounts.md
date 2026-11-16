@@ -64,7 +64,7 @@ Two details are worth knowing:
   explicitly allowed. [ADR 0012](adr/0012-owner-and-guest-roles.md) has the
   details.
 
-## Members and groups (in preparation)
+## Members and groups
 
 Members are full accounts for a second adult in the household or a colleague
 in a small office: their own tabs and their own notes, to-dos and lists, with
@@ -73,12 +73,18 @@ of members and guests, so a record can later be shared with "Office" or
 "Family" instead of everyone. [ADR 0018](adr/0018-data-ownership.md)
 describes the model.
 
-The accounts, groups and the server-side rules are in place, but **members
-cannot be created yet**: the modules do not separate personal content per
-account so far, and a member would see and change your notes. They are
-switched on once notes, to-dos and the other personal modules store an owner
-per record (#294). Until then the server answers a new member with an
-explanation instead of creating it.
+**Add a member** under *Settings → Members and groups*, either with a name
+and a password you hand over, or with an invitation link (see below) so the
+person picks the password. Members sign in on the sign-in page with
+*Sign in as guest or member*.
+
+Before the first member signs in, decide whether your own entries stay
+visible to everyone on the instance: the switch *My new entries are private*
+in the same section makes your new notes, to-dos and lists private by
+default; existing ones keep their visibility until you change it.
+
+Features for organisations in `ee/` are not part of this: they need a
+licence key, and without one no account, admin or member, can use them.
 
 What a member may do, enforced for every request like the guest rules:
 
