@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { PluginContext } from "../../../../web/src/app/plugins/api";
-  import { text } from "../lib/texts";
-  import { assetKinds, BrandingApi, imageProblem, type AssetKind, type BrandingSettings } from "./branding";
-  import { texts } from "./texts";
+  import type { PluginContext } from '../../../../web/src/app/plugins/api';
+  import { text } from '../lib/texts';
+  import { assetKinds, BrandingApi, imageProblem, type AssetKind, type BrandingSettings } from './branding';
+  import { texts } from './texts';
 
   /** Settings → Branding (#305): name, colours and images of the instance. */
   interface Props {
@@ -11,14 +11,15 @@
   let { context }: Props = $props();
 
   const api = $derived(new BrandingApi(context.http));
-  const tr = (key: string, params: Record<string, string | number> = {}) => text(texts, key, context.language, params);
-  const readOnly = $derived(context.level("branding") === "read");
+  const tr = (key: string, params: Record<string, string | number> = {}) =>
+    text(texts, key, context.language, params);
+  const readOnly = $derived(context.level('branding') === 'read');
 
   let s = $state<BrandingSettings | null>(null);
   let useAccent = $state(false);
   let useSecondary = $state(false);
-  let error = $state("");
-  let message = $state("");
+  let error = $state('');
+  let message = $state('');
 
   function show(v: BrandingSettings) {
     s = v;
@@ -36,19 +37,19 @@
   async function save(e: SubmitEvent) {
     e.preventDefault();
     if (!s) return;
-    error = message = "";
+    error = message = '';
     try {
       show(
         await api.save({
           name: s.name,
-          accent: useAccent ? s.accent || "#2563eb" : "",
-          secondary: useSecondary ? s.secondary || "#64748b" : "",
+          accent: useAccent ? s.accent || '#2563eb' : '',
+          secondary: useSecondary ? s.secondary || '#64748b' : '',
           hidePoweredBy: s.hidePoweredBy,
           defaultTheme: s.defaultTheme,
           lockTheme: s.lockTheme,
         }),
       );
-      message = tr("saved");
+      message = tr('saved');
     } catch (err) {
       error = context.errorMessage(err);
     }
@@ -56,9 +57,9 @@
 
   async function upload(kind: AssetKind, input: HTMLInputElement) {
     const file = input.files?.[0];
-    input.value = "";
+    input.value = '';
     if (!file) return;
-    error = message = "";
+    error = message = '';
     const problem = imageProblem(file);
     if (problem) {
       error = tr(problem);
@@ -66,14 +67,14 @@
     }
     try {
       show(await api.upload(kind, file));
-      message = tr("saved");
+      message = tr('saved');
     } catch (err) {
       error = context.errorMessage(err);
     }
   }
 
   async function remove(kind: AssetKind) {
-    error = message = "";
+    error = message = '';
     try {
       const v = await api.remove(kind);
       show(v ?? (await api.settings()));
@@ -83,43 +84,63 @@
   }
 </script>
 
-<p class="muted">{tr("description")}</p>
+<p class="muted">{tr('description')}</p>
 {#if s}
-  {#if !s.applied}<p class="notice" role="status">{tr("not_applied")}</p>{/if}
+  {#if !s.applied}<p class="notice" role="status">{tr('not_applied')}</p>{/if}
   <form onsubmit={save}>
-    <label class="field"><span>{tr("name")}</span><input class="input" bind:value={s.name} maxlength="60" disabled={readOnly} /></label>
+    <label class="field"
+      ><span>{tr('name')}</span><input
+        class="input"
+        bind:value={s.name}
+        maxlength="60"
+        disabled={readOnly}
+      /></label
+    >
     <div class="colours">
       <label class="check"
         ><input type="checkbox" bind:checked={useAccent} disabled={readOnly} />
-        {tr("accent")}
-        {#if useAccent}<input type="color" bind:value={s.accent} disabled={readOnly} aria-label={tr("accent")} />{/if}</label
+        {tr('accent')}
+        {#if useAccent}<input
+            type="color"
+            bind:value={s.accent}
+            disabled={readOnly}
+            aria-label={tr('accent')}
+          />{/if}</label
       >
       <label class="check"
         ><input type="checkbox" bind:checked={useSecondary} disabled={readOnly} />
-        {tr("secondary")}
-        {#if useSecondary}<input type="color" bind:value={s.secondary} disabled={readOnly} aria-label={tr("secondary")} />{/if}</label
+        {tr('secondary')}
+        {#if useSecondary}<input
+            type="color"
+            bind:value={s.secondary}
+            disabled={readOnly}
+            aria-label={tr('secondary')}
+          />{/if}</label
       >
     </div>
     {#each s.warnings as w (w)}<p class="warning" role="note">⚠ {w}</p>{/each}
-    <label class="check"><input type="checkbox" bind:checked={s.hidePoweredBy} disabled={readOnly} /> {tr("hide_powered_by")}</label>
+    <label class="check"
+      ><input type="checkbox" bind:checked={s.hidePoweredBy} disabled={readOnly} />
+      {tr('hide_powered_by')}</label
+    >
     <label class="field"
-      ><span>{tr("default_theme")}</span>
+      ><span>{tr('default_theme')}</span>
       <select class="input" bind:value={s.defaultTheme} disabled={readOnly}>
-        <option value="">{tr("theme_none")}</option>
-        <option value="system">{tr("theme_system")}</option>
-        <option value="light">{tr("theme_light")}</option>
-        <option value="dark">{tr("theme_dark")}</option>
+        <option value="">{tr('theme_none')}</option>
+        <option value="system">{tr('theme_system')}</option>
+        <option value="light">{tr('theme_light')}</option>
+        <option value="dark">{tr('theme_dark')}</option>
       </select></label
     >
     <label class="check"
       ><input type="checkbox" bind:checked={s.lockTheme} disabled={readOnly || !s.defaultTheme} />
-      {tr("lock_theme")}</label
+      {tr('lock_theme')}</label
     >
-    {#if !readOnly}<button class="btn btn-primary" type="submit">{tr("save")}</button>{/if}
+    {#if !readOnly}<button class="btn btn-primary" type="submit">{tr('save')}</button>{/if}
   </form>
 
-  <h3>{tr("images")}</h3>
-  <p class="muted small">{tr("image_hint")}</p>
+  <h3>{tr('images')}</h3>
+  <p class="muted small">{tr('image_hint')}</p>
   <ul>
     {#each assetKinds as kind (kind)}
       {@const at = s.assets[kind]}
@@ -127,18 +148,20 @@
         <div>
           <strong>{tr(`kind.${kind}`)}</strong>
           <span class="muted small"
-            >{at ? tr("uploaded", { date: new Date(at).toLocaleDateString(context.language) }) : tr("none_uploaded")}</span
+            >{at
+              ? tr('uploaded', { date: new Date(at).toLocaleDateString(context.language) })
+              : tr('none_uploaded')}</span
           >
         </div>
         {#if !readOnly}
           <label class="btn file"
-            >{tr("upload")}<input
+            >{tr('upload')}<input
               type="file"
               accept="image/png,image/jpeg,image/gif"
               onchange={(e) => upload(kind, e.currentTarget)}
             /></label
           >
-          {#if at}<button class="btn" type="button" onclick={() => remove(kind)}>{tr("remove")}</button>{/if}
+          {#if at}<button class="btn" type="button" onclick={() => remove(kind)}>{tr('remove')}</button>{/if}
         {/if}
       </li>
     {/each}

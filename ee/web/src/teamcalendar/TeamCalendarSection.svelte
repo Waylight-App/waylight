@@ -11,7 +11,8 @@
   let { context }: Props = $props();
 
   const api = $derived(new TeamCalendarApi(context.http));
-  const tr = (key: string, params: Record<string, string | number> = {}) => text(texts, key, context.language, params);
+  const tr = (key: string, params: Record<string, string | number> = {}) =>
+    text(texts, key, context.language, params);
   const readOnly = $derived(context.level('absences') === 'read');
 
   let list = $state<Subscription[]>([]);

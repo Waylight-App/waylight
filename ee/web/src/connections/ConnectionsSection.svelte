@@ -11,7 +11,8 @@
   let { context }: Props = $props();
 
   const api = $derived(new ConnectionsApi(context.http));
-  const tr = (key: string, params: Record<string, string | number> = {}) => text(texts, key, context.language, params);
+  const tr = (key: string, params: Record<string, string | number> = {}) =>
+    text(texts, key, context.language, params);
   const readOnly = $derived(context.level('connected-accounts') === 'read');
 
   let list = $state<Connection[]>([]);
@@ -28,7 +29,10 @@
       if (context.account.admin) {
         clients = await api.clients();
         drafts = Object.fromEntries(
-          clients.clients.map((c) => [c.service, { clientId: c.clientId, clientSecret: '', tenant: c.tenant }]),
+          clients.clients.map((c) => [
+            c.service,
+            { clientId: c.clientId, clientSecret: '', tenant: c.tenant },
+          ]),
         );
       }
     } catch (err) {
@@ -119,7 +123,13 @@
     {#if d}
       <form onsubmit={(e) => saveClient(e, c.service)}>
         <strong>{c.name}</strong>
-        <label class="field"><span>{tr('client_id')}</span><input class="input" bind:value={d.clientId} autocomplete="off" /></label>
+        <label class="field"
+          ><span>{tr('client_id')}</span><input
+            class="input"
+            bind:value={d.clientId}
+            autocomplete="off"
+          /></label
+        >
         <label class="field"
           ><span>{tr('client_secret')}</span><input
             class="input"
@@ -130,7 +140,13 @@
           /></label
         >
         {#if c.service === 'microsoft'}
-          <label class="field"><span>{tr('tenant')}</span><input class="input" bind:value={d.tenant} autocomplete="off" /></label>
+          <label class="field"
+            ><span>{tr('tenant')}</span><input
+              class="input"
+              bind:value={d.tenant}
+              autocomplete="off"
+            /></label
+          >
         {/if}
         <button class="btn" type="submit">{tr('save')}</button>
       </form>
