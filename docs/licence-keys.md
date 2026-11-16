@@ -6,7 +6,12 @@ licence key. Everything else in trisse-home needs no key. This page explains
 how a key is checked and how to enter one.
 
 Builds published so far do not contain `ee/`. A server built with
-`go build -tags ee ./cmd/server` does.
+`go build -tags ee ./cmd/server` does. Its settings pages and widgets come
+as a frontend plugin (ADR 0021): build it first
+in `ee/web` (`npm ci && npm run build`), so that `ee/web/dist` is embedded
+into the server. Without that step the `ee` features still work through
+the API, but the app shows none of their pages; `GET /api/plugins` then
+lists no plugin.
 
 ## What a key contains
 

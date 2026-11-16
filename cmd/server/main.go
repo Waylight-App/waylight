@@ -239,6 +239,12 @@ func newHandler(a *app) http.Handler {
 		httpStats = metrics.NewHTTPStats()
 		r.Handle("GET /metrics", metricsHandler(a, httpStats))
 	}
+	// Frontend plugins (ADR 0021): the list is public so even the sign-in
+	// page can load them; an ee build mounts its bundle here.
+	r.Public("GET /api/plugins", webui.PluginsHandler(pluginURLs()))
+	for _, p := range frontendPlugins {
+		r.Handle("GET "+p.prefix, webui.PluginFiles(p.prefix, p.files))
+	}
 	r.Handle("/", spa.Handler(webui.Dist()))
 
 	var h http.Handler = r
