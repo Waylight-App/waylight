@@ -7,6 +7,7 @@ import {
   PLUGIN_API_VERSION,
   type TrissePlugin,
 } from "../../../web/src/app/plugins/api";
+import { texts as absenceTexts } from "./absences/texts";
 import { texts as announcementTexts } from "./announcements/texts";
 import LicenceSection from "./licence/LicenceSection.svelte";
 import { lazyMountable, mountable } from "./lib/mountable";
@@ -34,6 +35,26 @@ export const plugin: TrissePlugin = {
       view: lazyMountable(
         () => import("./announcements/AnnouncementsWidget.svelte"),
       ),
+    },
+    {
+      kind: "absences",
+      feature: "absences",
+      category: "everyday",
+      title: absenceTexts.title ?? { en: "Absences" },
+      description: absenceTexts.description ?? { en: "" },
+      keywords: [
+        "absence",
+        "holiday",
+        "vacation",
+        "sick",
+        "abwesenheit",
+        "urlaub",
+        "krank",
+        "team calendar",
+      ],
+      defaultSize: { w: 4, h: 5 },
+      icon: "calendar",
+      view: lazyMountable(() => import("./absences/AbsencesWidget.svelte")),
     },
   ],
   settings: [

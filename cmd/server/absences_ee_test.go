@@ -6,6 +6,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"net/http"
+	"slices"
 	"testing"
 	"time"
 
@@ -31,6 +32,14 @@ func TestAbsences(t *testing.T) {
 	key := domain.Sign(domain.Licence{ID: "t", Licensee: "Example GmbH", Issued: now, Until: now.AddDate(1, 0, 0), Seats: 5,
 		Features: []string{"absences"}}, priv)
 	owner.do(http.MethodPut, "/api/licence", obj{"key": key}, http.StatusOK)
+	// The widget of the ee/ plugin (#299) can be placed once the feature is licensed.
+	var info struct {
+		WidgetKinds []string `json:"widgetKinds"`
+	}
+	owner.json(http.MethodGet, "/api/modules", nil, http.StatusOK, &info)
+	if !slices.Contains(info.WidgetKinds, "absences") {
+		t.Fatalf("widget kinds: %v", info.WidgetKinds)
+	}
 
 	var anna, ben obj
 	owner.json(http.MethodPost, "/api/auth/members", obj{"name": "anna", "password": "member-password-1"}, http.StatusCreated, &anna)
