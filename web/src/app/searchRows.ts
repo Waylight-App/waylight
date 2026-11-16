@@ -1,6 +1,7 @@
 import type { QuickCommand } from '../features/quickactions';
 import type { MessageKey } from '../shared/i18n';
 import type { QuickGroup, QuickItem } from './quickSearch';
+import type { SearchAction } from './searchActions';
 
 /**
  * Rows of the search panel below the hero field (#222), grouped like the
@@ -13,6 +14,8 @@ export type Row =
   | { kind: 'result'; id: string; item: QuickItem }
   /** Restart a container or wake a device ("restart nextcloud"). */
   | { kind: 'action'; id: string; command: QuickCommand }
+  /** A command a plugin offers for the typed text (#453). */
+  | { kind: 'plugin'; id: string; action: SearchAction }
   | { kind: 'web'; id: string };
 
 export interface RowGroup {
@@ -30,6 +33,8 @@ export interface RowInput {
   groups: QuickGroup[];
   /** Whether a web search row is offered (search module enabled, text typed). */
   web: boolean;
+  /** Plugin commands that match the text (#453). */
+  actions?: SearchAction[];
 }
 
 const isCapture = (c: QuickCommand) => c.kind === 'todo' || c.kind === 'note' || c.kind === 'bookmark';
@@ -54,13 +59,14 @@ export function buildRows(input: RowInput): RowGroup[] {
       });
     }
   }
-  if (command && !isCapture(command)) {
-    out.push({
-      id: 'actions',
-      label: 'app.group.actions',
-      rows: [{ kind: 'action', id: 'action', command }],
-    });
-  }
+  // A typed command wins over plugin actions; both are listed under actions.
+  const actions: Row[] =
+    command && !isCapture(command)
+      ? [{ kind: 'action', id: 'action', command }]
+      : command
+        ? []
+        : (input.actions ?? []).map((action) => ({ kind: 'plugin', id: action.id, action }));
+  out.push({ id: 'actions', label: 'app.group.actions', rows: actions });
   if (input.web) out.push({ id: 'web', label: 'app.group.web', rows: [{ kind: 'web', id: 'web' }] });
   return out.filter((g) => g.rows.length > 0);
 }

@@ -24,6 +24,7 @@
   import { createSmartSearch } from './searchSources';
   import { buildAiContext } from './aiContext';
   import { buildRows, keyIntent, move, type Row } from './searchRows';
+  import { matchActions, searchActions, type SearchAction } from './searchActions';
   import AnswerCard from '../features/search/ui/answers/AnswerCard.svelte';
   import type { ActionItem, Answer } from '../features/search/domain/smart/answer';
   import type { WeatherConfig } from '../features/weather/domain/weather';
@@ -131,8 +132,16 @@
           (g) => wikiOnly === null || g.kind === 'wiki',
         ),
   );
+  // Commands of plugins (#453); the loader registers none for guests.
+  const pluginActions = $derived(command ? [] : matchActions(searchActions, query));
   const rowGroups = $derived(
-    buildRows({ command, alternative, groups, web: modules.has('search') && query.trim() !== '' }),
+    buildRows({
+      command,
+      alternative,
+      groups,
+      web: modules.has('search') && query.trim() !== '',
+      actions: pluginActions,
+    }),
   );
   const flat = $derived(rowGroups.flatMap((g) => g.rows));
   const optionId = (i: number) => `${listboxId}-option-${i}`;
@@ -287,6 +296,18 @@
     }
   }
 
+  async function runAction(a: SearchAction) {
+    try {
+      const done = await a.run();
+      query = '';
+      status = done || a.title();
+      undoLast = null;
+      openLast = null;
+    } catch (err) {
+      status = errorMessage(err);
+    }
+  }
+
   async function undo() {
     const u = undoLast;
     undoLast = null;
@@ -327,6 +348,8 @@
       case 'capture':
       case 'action':
         return void runCommand(row.command);
+      case 'plugin':
+        return void runAction(row.action);
       case 'result':
         return void choose(row.item);
       case 'web':
@@ -436,6 +459,9 @@
                   {:else if row.kind === 'result'}
                     <span class="title">{row.item.title}</span>
                     {#if row.item.detail}<span class="muted detail">{row.item.detail}</span>{/if}
+                  {:else if row.kind === 'plugin'}
+                    <span class="title">{row.action.title()}</span>
+                    {#if row.action.detail()}<span class="muted detail">{row.action.detail()}</span>{/if}
                   {:else if row.kind === 'action'}
                     <span class="title">{describeCommand(row.command, container.quickActions)}</span>
                     <span class="muted detail"
