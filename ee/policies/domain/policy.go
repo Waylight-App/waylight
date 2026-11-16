@@ -13,8 +13,8 @@ import (
 // Settings are the policies as admins set them.
 type Settings struct {
 	RequireSecondFactor bool
-	// MinPasswordLength above the built-in 12; 0 keeps 12.
-	MinPasswordLength int
+	// MinLength of new passwords above the built-in 12; 0 keeps 12.
+	MinLength int
 	// MaxSessionHours ends sessions this long after sign-in; 0 = no limit.
 	MaxSessionHours int
 	// MemberModules restricts members to these modules; nil = all modules.
@@ -33,7 +33,7 @@ var ErrInvalid = errors.New("minimum password length must be 0 or 12 to 64, sess
 
 // Validate checks the limits and normalises the module list.
 func (s Settings) Validate() (Settings, error) {
-	if s.MinPasswordLength != 0 && (s.MinPasswordLength < BuiltInMinPassword || s.MinPasswordLength > MaxPasswordPolicy) {
+	if s.MinLength != 0 && (s.MinLength < BuiltInMinPassword || s.MinLength > MaxPasswordPolicy) {
 		return Settings{}, ErrInvalid
 	}
 	if s.MaxSessionHours < 0 || s.MaxSessionHours > MaxSessionHours {

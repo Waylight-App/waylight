@@ -37,7 +37,7 @@ func (s *Store) Load(ctx context.Context) (domain.Settings, error) {
 	var modules sql.NullString
 	err := s.db.QueryRowContext(ctx,
 		`SELECT require_second_factor, min_password_length, max_session_hours, member_modules FROM policies WHERE id = 1`).
-		Scan(&second, &set.MinPasswordLength, &set.MaxSessionHours, &modules)
+		Scan(&second, &set.MinLength, &set.MaxSessionHours, &modules)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Settings{}, nil
 	}
@@ -73,7 +73,7 @@ func (s *Store) Save(ctx context.Context, set domain.Settings) error {
 		 ON CONFLICT (id) DO UPDATE SET require_second_factor = excluded.require_second_factor,
 		   min_password_length = excluded.min_password_length, max_session_hours = excluded.max_session_hours,
 		   member_modules = excluded.member_modules`,
-		second, set.MinPasswordLength, set.MaxSessionHours, modules)
+		second, set.MinLength, set.MaxSessionHours, modules)
 	if err != nil {
 		return fmt.Errorf("save policies: %w", err)
 	}

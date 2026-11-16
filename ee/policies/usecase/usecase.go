@@ -82,7 +82,7 @@ func (s *Service) Save(ctx context.Context, in domain.Settings) (domain.Settings
 		}
 		s.d.Audit.Audit(ctx, kernel.AuditEvent{Type: "policies_changed", Detail: fmt.Sprintf(
 			"second factor required: %t, minimum password length: %d, session hours: %d, member modules: %s",
-			set.RequireSecondFactor, set.MinPasswordLength, set.MaxSessionHours, modules)})
+			set.RequireSecondFactor, set.MinLength, set.MaxSessionHours, modules)})
 	}
 	return set, nil
 }

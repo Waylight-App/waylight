@@ -14,8 +14,8 @@ import (
 // PoliciesDTO is GET and PUT /api/policies.
 type PoliciesDTO struct {
 	RequireSecondFactor bool `json:"requireSecondFactor"`
-	// MinPasswordLength is 0 (the built-in 12) or 12 to 64.
-	MinPasswordLength int `json:"minPasswordLength"`
+	// MinLength of new passwords is 0 (the built-in 12) or 12 to 64.
+	MinLength int `json:"minPasswordLength"`
 	// MaxSessionHours is 0 (no limit) or up to 2160.
 	MaxSessionHours int `json:"maxSessionHours"`
 	// MemberModules lists the modules members may use; null allows all.

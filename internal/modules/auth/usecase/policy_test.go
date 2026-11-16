@@ -24,7 +24,7 @@ func withPolicy(e *env, p Policy) *Policies {
 func TestPolicyRaisesTheMinimumPasswordLength(t *testing.T) {
 	e := newEnv().withAccount()
 	e.deps.MembersEnabled = true
-	withPolicy(e, Policy{MinPasswordLength: 16})
+	withPolicy(e, Policy{MinLength: 16})
 	members := NewMembers(e.deps)
 	ctxOwner := kernel.WithPrincipal(ctx, kernel.Principal{AccountID: domain.OwnerID, Role: "owner"})
 	if _, err := members.Create(ctxOwner, NewMemberRequest{Name: "anna", Password: "twelve-chars"}); !errors.Is(err, kernel.ErrInvalid) {

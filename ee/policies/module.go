@@ -40,7 +40,7 @@ func New(db *sql.DB, a *auth.Module, registry *modules.Registry, licensing licen
 // Policy implements auth.PolicySource.
 func (m *Module) Policy(ctx context.Context) auth.Policy {
 	set := m.svc.Current(ctx)
-	return auth.Policy{RequireSecondFactor: set.RequireSecondFactor, MinPasswordLength: set.MinPasswordLength,
+	return auth.Policy{RequireSecondFactor: set.RequireSecondFactor, MinLength: set.MinLength,
 		MaxSessionAge: set.MaxSessionAge(), MemberModules: set.MemberModules}
 }
 
