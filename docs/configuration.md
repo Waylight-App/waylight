@@ -55,6 +55,7 @@ Durations use Go syntax: `90s`, `15m`, `24h`, `720h`.
 | `OIDC_ALLOWED_EMAILS`, `OIDC_ALLOWED_SUBJECTS` | empty | Who may sign in through OIDC, by verified e-mail address or subject. |
 | `OIDC_GROUPS_CLAIM` | empty | ID token claim with a person's groups, e.g. `groups`. Used by [single sign-on for members](single-sign-on-members.md). |
 | `OIDC_MEMBER_EMAILS`, `OIDC_MEMBER_GROUPS`, `OIDC_SYNC_GROUPS` | empty | Licensed `ee` builds: who becomes a member through OIDC, and which provider groups are synced. See [single sign-on for members](single-sign-on-members.md). |
+| `SCIM_TOKEN` | empty | Licensed `ee` builds: bearer token for SCIM provisioning from a directory. See [directory sync](directory-sync.md). |
 | `AUTH_PROXY_HEADER`, `AUTH_PROXY_USERS` | empty | Trust a user header set by a proxy in `TRUSTED_PROXIES` (forward auth). |
 | `PASSWORD_LOGIN` | `true` | Set to `false` to turn off the owner's password sign-in once single sign-on works. |
 | `SSO_REQUIRE_2FA` | `false` | Also ask for the local two-factor code after single sign-on. |

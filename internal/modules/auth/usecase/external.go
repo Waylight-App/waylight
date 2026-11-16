@@ -28,6 +28,32 @@ type Provisioning interface {
 	SetDisabled(ctx context.Context, accountID string, disabled bool) error
 	// EndSessions signs the member out everywhere.
 	EndSessions(ctx context.Context, accountID string) error
+
+	// The operations below serve directory provisioning (SCIM, #396), where
+	// the directory owns members and groups by ID.
+
+	// Member returns a member; domain.ErrMemberNotFound for anything else.
+	Member(ctx context.Context, accountID string) (ProvisionedMember, error)
+	// Members lists all members.
+	Members(ctx context.Context) ([]ProvisionedMember, error)
+	// DeleteMember removes a member as the settings do: sessions end, the
+	// member leaves its groups, the account is deleted.
+	DeleteMember(ctx context.Context, accountID string) error
+	// Groups lists all groups.
+	Groups(ctx context.Context) ([]domain.Group, error)
+	// SaveGroup creates (empty id) or replaces a group's name and members;
+	// only members can be in a group set this way.
+	SaveGroup(ctx context.Context, id, name string, accounts []string) (domain.Group, error)
+	// DeleteGroup removes a group.
+	DeleteGroup(ctx context.Context, id string) error
+}
+
+// ProvisionedMember is a member as a directory sees it.
+type ProvisionedMember struct {
+	ID       string
+	Name     string
+	Disabled bool
+	Groups   []string // group IDs
 }
 
 type provisioning struct{ deps Deps }
@@ -203,4 +229,126 @@ func (uc provisioning) EndSessions(ctx context.Context, accountID string) error 
 		return fmt.Errorf("end sessions: %w", err)
 	}
 	return nil
+}
+
+// Member implements Provisioning.
+func (uc provisioning) Member(ctx context.Context, accountID string) (ProvisionedMember, error) {
+	a, err := uc.member(ctx, accountID)
+	if err != nil {
+		return ProvisionedMember{}, domain.ErrMemberNotFound
+	}
+	return uc.view(ctx, a)
+}
+
+func (uc provisioning) view(ctx context.Context, a domain.Account) (ProvisionedMember, error) {
+	m := ProvisionedMember{ID: a.ID(), Name: a.Name(), Disabled: a.Disabled(), Groups: []string{}}
+	if uc.deps.Groups != nil {
+		ids, err := uc.deps.Groups.GroupsOf(ctx, a.ID())
+		if err != nil {
+			return ProvisionedMember{}, fmt.Errorf("groups of member: %w", err)
+		}
+		m.Groups = append(m.Groups, ids...)
+	}
+	return m, nil
+}
+
+// Members implements Provisioning.
+func (uc provisioning) Members(ctx context.Context) ([]ProvisionedMember, error) {
+	all, err := uc.deps.Accounts.List(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list accounts: %w", err)
+	}
+	out := []ProvisionedMember{}
+	for _, a := range all {
+		if a.Role() != domain.RoleMember {
+			continue
+		}
+		m, err := uc.view(ctx, a)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, m)
+	}
+	return out, nil
+}
+
+// DeleteMember implements Provisioning.
+func (uc provisioning) DeleteMember(ctx context.Context, accountID string) error {
+	m, err := uc.member(ctx, accountID)
+	if err != nil {
+		return domain.ErrMemberNotFound
+	}
+	if err := uc.deps.Sessions.DeleteAllFor(ctx, m.ID()); err != nil {
+		return fmt.Errorf("end member sessions: %w", err)
+	}
+	if uc.deps.Passkeys != nil {
+		if err := uc.deps.Passkeys.DeleteByAccount(ctx, m.ID()); err != nil {
+			return err
+		}
+	}
+	if uc.deps.Groups != nil {
+		if err := uc.deps.Groups.RemoveAccount(ctx, m.ID()); err != nil {
+			return fmt.Errorf("leave groups: %w", err)
+		}
+	}
+	if err := uc.deps.Accounts.Delete(ctx, m.ID()); err != nil {
+		return err
+	}
+	uc.deps.Events.record(ctx, domain.EventMemberChanged, m.ID(), domain.Client{}, "deleted "+m.Name()+" through directory provisioning")
+	return nil
+}
+
+// Groups implements Provisioning.
+func (uc provisioning) Groups(ctx context.Context) ([]domain.Group, error) {
+	if uc.deps.Groups == nil {
+		return []domain.Group{}, nil
+	}
+	return uc.deps.Groups.List(ctx)
+}
+
+// SaveGroup implements Provisioning.
+func (uc provisioning) SaveGroup(ctx context.Context, id, name string, accounts []string) (domain.Group, error) {
+	if uc.deps.Groups == nil {
+		return domain.Group{}, domain.ErrMembersUnavailable
+	}
+	for _, a := range accounts {
+		if _, err := uc.member(ctx, a); err != nil {
+			return domain.Group{}, domain.ErrMemberNotFound
+		}
+	}
+	if id == "" {
+		g, err := domain.NewGroup(uc.deps.IDs.NewID(), name, accounts, uc.deps.Clock.Now())
+		if err != nil {
+			return domain.Group{}, err
+		}
+		if err := uc.deps.Groups.Create(ctx, g); err != nil {
+			return domain.Group{}, err
+		}
+		return g, nil
+	}
+	g, err := uc.deps.Groups.Get(ctx, id)
+	if err != nil {
+		return domain.Group{}, err
+	}
+	if name != g.Name() {
+		if err := g.Rename(name); err != nil {
+			return domain.Group{}, err
+		}
+	}
+	g.SetAccounts(accounts)
+	if err := uc.deps.Groups.Update(ctx, g); err != nil {
+		return domain.Group{}, err
+	}
+	return g, nil
+}
+
+// DeleteGroup implements Provisioning.
+func (uc provisioning) DeleteGroup(ctx context.Context, id string) error {
+	if uc.deps.Groups == nil {
+		return domain.ErrMembersUnavailable
+	}
+	if _, err := uc.deps.Groups.Get(ctx, id); err != nil {
+		return err
+	}
+	return uc.deps.Groups.Delete(ctx, id)
 }
