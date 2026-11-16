@@ -21,6 +21,26 @@ describe('buildRows (#222)', () => {
     expect(first).toMatchObject({ command: todo, shortcut: 'Enter' });
     expect(alt).toMatchObject({ command: note, shortcut: 'Ctrl Enter' });
   });
+  it('puts an address first and lists bang suggestions (#475)', () => {
+    const g = buildRows({
+      command: null,
+      alternative: null,
+      groups: [bookmarks],
+      web: true,
+      address: 'https://github.com/',
+      bangs: [{ bang: 'gh', name: 'GitHub' }],
+    });
+    expect(ids(g)).toEqual(['open:address', 'bangs:bang:gh', 'bookmark:bookmark:b1', 'web:web']);
+    // A capture command wins over an address.
+    const c = buildRows({
+      command: todo,
+      alternative: null,
+      groups: [],
+      web: false,
+      address: 'https://x.org/',
+    });
+    expect(ids(c)).toEqual(['quick:capture']);
+  });
   it('shows the results and the web row for a plain search', () => {
     const g = buildRows({ command: null, alternative: null, groups: [bookmarks], web: true });
     expect(ids(g)).toEqual(['bookmark:bookmark:b1', 'web:web']);

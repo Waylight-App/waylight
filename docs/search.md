@@ -25,6 +25,26 @@ engine, add your own shortcuts with a keyword and a URL containing `{query}`, an
 have results open in a new tab. The search is also registered as an
 OpenSearch provider, so most browsers offer to add it as a search engine.
 
+Typing `!` lists the most used bangs, and further letters narrow the list
+(`!g` shows `!g`, `!gh`, `!gi` and so on). Your own shortcuts from Settings →
+Search appear first, marked as your own. Pick one and the bang is completed
+in the field, ready for the search terms. The built-in list ships with
+trisse-home, so nothing is sent to DuckDuckGo while you type. It only
+appears when your engine understands bangs (DuckDuckGo and Brave Search);
+your own shortcuts always appear.
+
+## Opening addresses
+
+If what you type is clearly an address, the first row says **Open …** and
+`Enter` goes there instead of searching for it. That covers `github.com`,
+`192.168.178.1`, `nas.local:5001`, `fritz.box`, `localhost:3000` and
+anything starting with `http://` or `https://`. Names ending in `.local`,
+`.lan`, `.home.arpa`, `.fritz.box` or `.internal`, and IP addresses, open
+with `http://`; everything else with `https://`. Text such as `5.5`,
+`v1.2.3` or `node.js tutorial` stays a search. `Shift+Enter` searches the
+web even for an address, and the "open in a new tab" setting applies here
+too.
+
 ## Calculator and units
 
 Simple arithmetic and unit conversions are answered while you type, without

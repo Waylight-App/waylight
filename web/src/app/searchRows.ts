@@ -1,6 +1,7 @@
 import type { QuickCommand } from '../features/quickactions';
 import type { MessageKey } from '../shared/i18n';
 import type { QuickGroup, QuickItem } from './quickSearch';
+import type { Bang } from '../features/search/domain/bangs';
 import type { CommandMatch } from '../features/search/domain/commands';
 import type { SearchAction } from './searchActions';
 
@@ -13,6 +14,10 @@ export type Row =
   /** Add something from a capture prefix; shortcut is shown on the row. */
   | { kind: 'capture'; id: string; command: QuickCommand; shortcut: 'Enter' | 'Ctrl Enter' }
   | { kind: 'result'; id: string; item: QuickItem }
+  /** The typed text is an address: open it directly (#475). */
+  | { kind: 'address'; id: string; url: string }
+  /** A bang suggestion while typing "!" (#475); choosing it completes the bang. */
+  | { kind: 'bang'; id: string; bang: Bang }
   /** Restart a container or wake a device ("restart nextcloud"). */
   | { kind: 'action'; id: string; command: QuickCommand }
   /** An app command: theme, settings section, tab … (#476). */
@@ -40,6 +45,10 @@ export interface RowInput {
   actions?: SearchAction[];
   /** App commands that match the text (#476). */
   commands?: CommandMatch[];
+  /** URL when the text is clearly an address (#475). */
+  address?: string | null;
+  /** Bang suggestions while typing "!" (#475). */
+  bangs?: Bang[];
 }
 
 const isCapture = (c: QuickCommand) => c.kind === 'todo' || c.kind === 'note' || c.kind === 'bookmark';
@@ -48,6 +57,23 @@ const isCapture = (c: QuickCommand) => c.kind === 'todo' || c.kind === 'note' ||
 export function buildRows(input: RowInput): RowGroup[] {
   const out: RowGroup[] = [];
   const { command, alternative } = input;
+  // An address goes first, so Enter does what the row says (#475).
+  if (!command && input.address)
+    out.push({
+      id: 'open',
+      label: 'app.group.open',
+      rows: [{ kind: 'address', id: 'address', url: input.address }],
+    });
+  if (!command && input.bangs?.length)
+    out.push({
+      id: 'bangs',
+      label: 'app.group.bangs',
+      rows: input.bangs.map((bang) => ({
+        kind: 'bang',
+        id: `bang:${bang.own ? 'own:' : ''}${bang.bang}`,
+        bang,
+      })),
+    });
   if (command && isCapture(command)) {
     const rows: Row[] = [{ kind: 'capture', id: 'capture', command, shortcut: 'Enter' }];
     if (alternative && isCapture(alternative))
