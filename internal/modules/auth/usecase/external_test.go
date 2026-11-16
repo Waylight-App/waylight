@@ -115,3 +115,43 @@ func TestProvisioningLeavesTheOwnerAlone(t *testing.T) {
 		t.Fatal("owner's groups changed through the provider")
 	}
 }
+
+func TestProvisioningForDirectories(t *testing.T) {
+	e, groups, p := provisioningEnv(t)
+	anna, _ := p.CreateMember(ctx, "anna")
+	ben, _ := p.CreateMember(ctx, "ben")
+
+	g, err := p.SaveGroup(ctx, "", "Office", []string{anna})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := p.SaveGroup(ctx, g.ID(), "Front office", []string{anna, ben}); err != nil {
+		t.Fatal(err)
+	}
+	m, err := p.Member(ctx, ben)
+	if err != nil || m.Name != "ben" || !slices.Equal(m.Groups, []string{g.ID()}) {
+		t.Fatalf("member: %+v %v", m, err)
+	}
+	if list, _ := p.Members(ctx); len(list) != 2 {
+		t.Fatalf("members: %v", list)
+	}
+	// Only members can be put into a group from a directory.
+	if _, err := p.SaveGroup(ctx, g.ID(), "Front office", []string{domain.OwnerID}); !errors.Is(err, domain.ErrMemberNotFound) {
+		t.Fatalf("owner in a directory group: %v", err)
+	}
+	if err := p.DeleteMember(ctx, ben); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := e.accounts.Get(ctx, ben); err == nil {
+		t.Fatal("member still there")
+	}
+	if got := groupNamesOf(groups, ben); len(got) != 0 {
+		t.Fatalf("deleted member still in %v", got)
+	}
+	if err := p.DeleteGroup(ctx, g.ID()); err != nil || len(groups.groups) != 0 {
+		t.Fatalf("delete group: %v, %d left", err, len(groups.groups))
+	}
+	if _, err := p.Member(ctx, domain.OwnerID); !errors.Is(err, domain.ErrMemberNotFound) {
+		t.Fatalf("owner as member: %v", err)
+	}
+}
