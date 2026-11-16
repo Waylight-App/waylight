@@ -78,7 +78,7 @@
     flex: none;
     width: 5.5em;
     font-size: 0.85em;
-    color: var(--color-accent);
+    color: var(--color-accent-text);
     font-variant-numeric: tabular-nums;
     display: flex;
     flex-direction: column;

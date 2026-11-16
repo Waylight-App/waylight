@@ -79,7 +79,7 @@
     border: none;
     background: none;
     padding: 0;
-    color: var(--color-accent);
+    color: var(--color-accent-text);
     cursor: pointer;
     text-align: left;
   }

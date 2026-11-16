@@ -86,3 +86,38 @@ individual elements, whose class names can change between releases.
 
 Custom CSS is not checked for contrast. If you rely on a screen reader or
 high contrast, prefer the built-in themes.
+
+### Design tokens
+
+These are the variables themes and custom CSS can set. Components use
+nothing else, so changing a token changes every place that uses it.
+
+| Token | What it is for |
+|---|---|
+| `--color-bg` | Page background behind the widgets |
+| `--color-surface`, `--color-surface-2` | Widget cards; inputs and nested areas inside them |
+| `--color-border` | Lines and outlines |
+| `--color-text`, `--color-text-muted` | Body text; secondary text |
+| `--color-accent` | Fill of buttons, the active tab and toggles |
+| `--color-accent-contrast` | Text on the accent fill |
+| `--color-accent-text` | The accent as text or icon colour on surfaces: links, highlighted values, the current day. Follows `--color-accent` unless set. Set it when the accent is light, such as yellow or amber, which reads well as a fill but not as text on a light card |
+| `--color-danger`, `--color-success`, `--color-warning` | Status colours, also used as text |
+| `--radius`, `--radius-small` | Corner radius of cards; of buttons and inputs |
+| `--font-sans` | Body text |
+| `--font-display` | Headings and large numerals. Follows `--font-sans` unless set |
+| `--font-mono` | Code and keyboard hints |
+
+Two typefaces come with the app and can be used in these font tokens without
+any request to another server: `'Figtree Variable'`, a sans serif, and
+`'Fraunces Variable'`, a serif for display text. The browser downloads a font
+file only when text on the page uses it.
+
+```css
+:root {
+  --font-display: 'Fraunces Variable', Georgia, serif;
+}
+```
+
+Every built-in theme keeps text colours, including `--color-accent-text`, at
+a contrast of at least 4.5:1 to the surfaces they appear on (WCAG AA); a test
+checks this.

@@ -333,7 +333,7 @@
     place-items: center;
     font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
     font-weight: 600;
-    color: var(--color-accent);
+    color: var(--color-accent-text);
     background: color-mix(in srgb, var(--color-accent) 12%, transparent);
   }
   .title {
@@ -361,7 +361,7 @@
     background: none;
     padding: 0;
     font: inherit;
-    color: var(--color-accent);
+    color: var(--color-accent-text);
     text-decoration: underline;
     cursor: pointer;
   }

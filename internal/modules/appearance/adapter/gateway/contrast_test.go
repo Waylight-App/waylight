@@ -37,14 +37,26 @@ func TestBuiltinThemesMeetWCAGAA(t *testing.T) {
 		"--color-text":            {"--color-bg", "--color-surface", "--color-surface-2"},
 		"--color-text-muted":      {"--color-bg", "--color-surface", "--color-surface-2"},
 		"--color-accent":          {"--color-surface"},
+		"--color-accent-text":     {"--color-surface", "--color-surface-2"},
 		"--color-danger":          {"--color-surface"},
 		"--color-accent-contrast": {"--color-accent"},
 	}
 	for _, th := range BuiltinThemes() {
+		// A theme without its own accent text colour uses the accent (#504).
+		token := func(name string) (string, bool) {
+			if v, ok := th.Tokens[name]; ok {
+				return v, true
+			}
+			if name == "--color-accent-text" {
+				v, ok := th.Tokens["--color-accent"]
+				return v, ok
+			}
+			return "", false
+		}
 		for fg, bgs := range pairs {
 			for _, bg := range bgs {
-				a, okA := th.Tokens[fg]
-				b, okB := th.Tokens[bg]
+				a, okA := token(fg)
+				b, okB := token(bg)
 				if !okA || !okB {
 					continue
 				}

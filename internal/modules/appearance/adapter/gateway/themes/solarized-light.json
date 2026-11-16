@@ -12,6 +12,7 @@
     "--color-text-muted": "#576a71",
     "--color-accent": "#2075b0",
     "--color-accent-contrast": "#fdf6e3",
+    "--color-accent-text": "#1d6ca2",
     "--color-danger": "#d3302d",
     "--color-success": "#859900",
     "--color-warning": "#b58900"

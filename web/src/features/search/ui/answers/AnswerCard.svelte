@@ -210,6 +210,6 @@
     justify-self: start;
     font-size: 0.8rem;
     padding: 0;
-    color: var(--color-accent);
+    color: var(--color-accent-text);
   }
 </style>

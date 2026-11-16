@@ -142,7 +142,7 @@
     flex: none;
     width: 4.5em;
     font-variant-numeric: tabular-nums;
-    color: var(--color-accent);
+    color: var(--color-accent-text);
     font-size: 0.85em;
   }
   .summary {
