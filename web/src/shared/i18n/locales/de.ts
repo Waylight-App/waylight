@@ -96,12 +96,10 @@ export const de: Record<BaseMessageKey, string> = {
   'clock.show_date': 'Datum anzeigen',
   'clock.save': 'Speichern',
   'shopping.the_shopping_list_is_stored_as':
-    'Die Einkaufsliste wird als Aufgaben in einer CalDAV-Aufgabenliste gespeichert, damit alle im Haushalt sie in ihrer Aufgaben-App nutzen können (z. B. Nextcloud Tasks, Apple Erinnerungen, DAVx⁵ + Tasks.org). Lege in Nextcloud Tasks eine Liste namens „Einkauf“ an und verwende deren URL.',
+    'Oder verbinde eine CalDAV-Aufgabenliste: Ihre Einträge sind Aufgaben, so können alle im Haushalt sie auch in ihrer Aufgaben-App nutzen (z. B. Nextcloud Tasks, Apple Erinnerungen, DAVx⁵ + Tasks.org). Lege in Nextcloud Tasks eine Liste namens „Einkauf“ an und verwende deren URL.',
   'shopping.task_list_url': 'URL der Aufgabenliste',
   'shopping.username': 'Benutzername',
   'shopping.app_password': 'App-Passwort {value}',
-  'shopping.connect_a_caldav_task_list_under':
-    'Verbinde eine CalDAV-Aufgabenliste unter Einstellungen → Einkaufsliste.',
   'shopping.add': 'Hinzufügen',
   'shopping.the_list_is_empty': 'Die Liste ist leer.',
   'shopping.remove_done': '{doneCount} erledigte entfernen',
@@ -709,7 +707,7 @@ export const de: Record<BaseMessageKey, string> = {
   'widget.waste.title': 'Abfuhrkalender',
   'widget.waste.description': 'Nächste Abholtermine aus dem ICS-Kalender deiner Kommune.',
   'widget.shopping.title': 'Einkaufsliste',
-  'widget.shopping.description': 'Gemeinsame Einkaufsliste in einer CalDAV-Aufgabenliste.',
+  'widget.shopping.description': 'Gemeinsame Einkaufslisten, hier oder in einer CalDAV-Aufgabenliste.',
   'widget.transit.title': 'Abfahrten',
   'widget.transit.description': 'Nächste Abfahrten an einer Haltestelle mit Echtzeit-Verspätungen.',
   'widget.parcels.title': 'Pakete',
