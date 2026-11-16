@@ -229,7 +229,9 @@ func New(cfg Config, d Deps) (*Module, error) {
 
 // OnAccountDeleted runs fn after a member or guest was deleted, so a module
 // can remove what belonged only to that account.
-func (m *Module) OnAccountDeleted(fn func(ctx context.Context, accountID string)) { m.hooks.OnDeleted(fn) }
+func (m *Module) OnAccountDeleted(fn func(ctx context.Context, accountID string)) {
+	m.hooks.OnDeleted(fn)
+}
 
 // Policy holds admin policies; see usecase.Policy.
 type Policy = usecase.Policy
