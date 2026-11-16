@@ -59,6 +59,7 @@ nav:
       - Licence keys: licence-keys.md
       - Single sign-on for members: single-sign-on-members.md
       - Directory sync (SCIM, LDAP, AD): directory-sync.md
+      - Audit log: audit-log.md
       - Appearance: appearance.md
       - Phones, offline and the extension: apps-and-offline.md
       - Privacy of the extension: extension-privacy.md
