@@ -162,6 +162,18 @@ func (h *Handlers) Channels(w http.ResponseWriter, r *http.Request) {
 	httpapi.WriteJSON(w, http.StatusOK, out)
 }
 
+// Me handles GET /api/announcements/me: what the signed-in account may do.
+func (h *Handlers) Me(w http.ResponseWriter, r *http.Request) {
+	may, err := h.s.MayWrite(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, struct {
+		MayWrite bool `json:"mayWrite"`
+	}{may})
+}
+
 // Settings handles GET /api/announcements/settings.
 func (h *Handlers) Settings(w http.ResponseWriter, r *http.Request) {
 	set, err := h.s.Settings(r.Context())
