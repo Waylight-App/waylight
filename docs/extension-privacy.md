@@ -15,7 +15,9 @@ Only to **your own trisse-home server**, at the address you entered:
 - When a new tab opens, one request checks whether the server is reachable, so the tab can say so if it is not.
 - When you click **Save page to trisse-home** (toolbar or context menu), the **URL and title of that tab** go to your server, which adds them to your read-later list or bookmarks.
 
-Nothing is sent to the developers of trisse-home or to any third party. There is no analytics, no telemetry and no advertising.
+Without a server, the weather widget asks **Open-Meteo** (open-meteo.com) for the forecast of the place you chose, with its coordinates rounded to about one kilometre, and sends the place names you search for when you set it up. Open-Meteo is the service a trisse-home server uses as well; no other data goes there.
+
+Apart from that, nothing is sent to the developers of trisse-home or to any third party. There is no analytics, no telemetry and no advertising.
 
 ## Permissions
 
