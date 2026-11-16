@@ -44,6 +44,8 @@ export const iconPaths = {
   history: ['M4 12a8 8 0 1 0 2.3-5.7', 'M4 4v4h4', 'M12 8v4l3 2'],
   disk: ['M3 12h18v6H3z', 'M5 12l2-7h10l2 7', 'M7 15h.01M11 15h4'],
   gauge: ['M4 18a8 8 0 1 1 16 0', 'M12 18l4-6', 'M12 18h.01'],
+  // A handset, for the phone list (#300).
+  phone: ['M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2'],
 } as const;
 
 export type IconName = keyof typeof iconPaths;

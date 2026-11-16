@@ -1,0 +1,62 @@
+# OpenAPI fragment of the phone list module (#300). `make openapi` merges it
+# with api/openapi.base.yaml and checks it.
+tags:
+  - name: phonelist
+
+paths:
+  /api/phonelist/entries:
+    get:
+      tags: [phonelist]
+      summary: The phone list, sorted by name; `q` keeps entries whose name, role or team contain every word
+      parameters: [{ name: q, in: query, schema: { type: string } }]
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/PhonelistEntry" } } } } }
+    post:
+      tags: [phonelist]
+      summary: Add a person (admins only)
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/PhonelistEntryInput" } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/PhonelistEntry" } } } }
+        "403": { description: Not an admin }
+        "409": { description: At most 1000 entries }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/phonelist/entries/{id}:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    put:
+      tags: [phonelist]
+      summary: Change a person (admins only)
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/PhonelistEntryInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/PhonelistEntry" } } } }
+        "403": { description: Not an admin }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+    delete:
+      tags: [phonelist]
+      summary: Remove a person (admins only)
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Deleted }
+        "403": { description: Not an admin }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+schemas:
+  PhonelistEntryInput:
+    type: object
+    required: [name]
+    description: A name and at least a phone number or an e-mail address.
+    properties:
+      name: { type: string, maxLength: 100 }
+      role: { type: string, maxLength: 100 }
+      team: { type: string, maxLength: 60 }
+      phone: { type: string, maxLength: 40, description: Digits, spaces and + ( ) / . - }
+      email: { type: string, format: email }
+  PhonelistEntry:
+    allOf:
+      - $ref: "#/components/schemas/PhonelistEntryInput"
+      - type: object
+        properties:
+          id: { type: string }
+          dial: { type: string, description: Number for a tel link (digits and a leading +); empty without a phone number }

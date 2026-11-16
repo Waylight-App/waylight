@@ -170,6 +170,4 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // Password reset by e-mail is not set up on this instance. Ask the admin for a reset link.
   srv_3a24b1058006ec4b:
     'Das Zurücksetzen per E-Mail ist auf dieser Instanz nicht eingerichtet. Bitte den Admin um einen Reset-Link.',
-  // Please enter a valid e-mail address.
-  srv_6ddc9c2076b9e645: 'Bitte gib eine gültige E-Mail-Adresse ein.',
 };
