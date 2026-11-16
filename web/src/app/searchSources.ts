@@ -1,5 +1,7 @@
 import { canAct as dockerCanAct, indicator } from '../features/docker/domain/container';
 import { calculate } from '../features/search/domain/calc/calc';
+import { type CivilDate, toDate } from '../features/search/domain/time/dates';
+import { type NamedDay, offsetFromLocal, parseTimeQuery } from '../features/search/domain/time/time';
 import type { Answer, State } from '../features/search/domain/smart/answer';
 import type { Entity, Match } from '../features/search/domain/smart/intent';
 import { INTENTS } from '../features/search/domain/smart/intents';
@@ -8,7 +10,7 @@ import { type SearchSource, SmartSearch } from '../features/search/usecase/smart
 import type { ServiceState } from '../features/services/domain/service';
 import { daysUntilFull } from '../features/system/domain/system';
 import { describe, noHealth, type WeatherConfig } from '../features/weather/domain/weather';
-import { intlLocale, t } from '../shared/i18n';
+import { intlLocale, type MessageKey, t } from '../shared/i18n';
 import { formatBytes, formatUptime } from '../shared/ui/format';
 import type { Container } from './container';
 import { type SearchContribution, type WidgetConfig } from './searchKit';
@@ -304,6 +306,110 @@ export function calcSource(): SearchSource {
   };
 }
 
+const NAMED_DAY_KEYS: Record<NamedDay, MessageKey> = {
+  christmas_eve: 'smart.day.christmas_eve',
+  christmas: 'smart.day.christmas',
+  new_years_eve: 'smart.day.new_years_eve',
+  new_year: 'smart.day.new_year',
+  easter: 'smart.day.easter',
+};
+
+/** "+8 h", "−5:30 h" or "" for the same time (#473). */
+function formatOffset(minutes: number): string {
+  if (minutes === 0) return '';
+  const sign = minutes > 0 ? '+' : '−';
+  const abs = Math.abs(minutes);
+  const h = Math.floor(abs / 60);
+  const m = abs % 60;
+  return `${sign}${h}${m ? `:${String(m).padStart(2, '0')}` : ''} h`;
+}
+
+/**
+ * Time and date answers (#473); in the browser, no module needed. Enter
+ * copies the plain value, like the calculator.
+ */
+export function timeSource(now: () => Date = () => new Date()): SearchSource {
+  const longDate = (d: CivilDate) =>
+    toDate(d).toLocaleDateString(intlLocale(), {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  const shortDate = (d: CivilDate) => toDate(d).toLocaleDateString(intlLocale());
+  const days = (n: number) =>
+    t(Math.abs(n) === 1 ? 'smart.days_one' : 'smart.days_other', { n: Math.abs(n) });
+  return {
+    id: 'time',
+    direct(query) {
+      const at = now();
+      // German writes dates day first; English UIs follow the US order with slashes.
+      const order = intlLocale().startsWith('en-US') || intlLocale() === 'en' ? 'mdy' : 'dmy';
+      const q = parseTimeQuery(query, at, order);
+      if (!q) return null;
+      const base = { kind: 'metric' as const, intent: `time.${q.kind}`, at: null };
+      const clock = (zone?: string) =>
+        at.toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit', timeZone: zone });
+      switch (q.kind) {
+        case 'now':
+          return {
+            ...base,
+            title: t('smart.time_now'),
+            value: clock(),
+            detail: at.toLocaleDateString(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long' }),
+            copy: clock(),
+          };
+        case 'today': {
+          const value = at.toLocaleDateString(intlLocale(), {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          });
+          return { ...base, title: t('smart.time_today'), value, copy: at.toLocaleDateString(intlLocale()) };
+        }
+        case 'week':
+          return {
+            ...base,
+            title: t('smart.time_week'),
+            value: String(q.week),
+            detail: String(q.year),
+            copy: String(q.week),
+          };
+        case 'zone': {
+          const offset = formatOffset(offsetFromLocal(q.zone, at));
+          const place = (q.zone.split('/').pop() ?? q.zone).replace(/_/g, ' ');
+          const day = at.toLocaleDateString(intlLocale(), { weekday: 'long', timeZone: q.zone });
+          return {
+            ...base,
+            title: t('smart.time_in', { place }),
+            value: clock(q.zone),
+            detail: `${day} · ${offset ? t('smart.time_offset', { offset }) : t('smart.time_same')}`,
+            copy: clock(q.zone),
+          };
+        }
+        case 'until': {
+          const target = q.name ? t(NAMED_DAY_KEYS[q.name]) : shortDate(q.target);
+          return {
+            ...base,
+            title: t('smart.days_until', { target }),
+            value: q.days === 0 ? t('smart.time_today') : days(q.days),
+            detail: longDate(q.target),
+            copy: String(q.days),
+          };
+        }
+        case 'shift':
+          return {
+            ...base,
+            title: t(q.days >= 0 ? 'smart.days_ahead' : 'smart.days_ago', { days: days(q.days) }),
+            value: longDate(q.date),
+            copy: shortDate(q.date),
+          };
+      }
+    },
+  };
+}
+
 /** Answer when a required slot is missing (#158): ask back with suggestions. */
 function askBack(m: Match): Answer {
   const names = m.suggestions.map((e) => e.name);
@@ -350,7 +456,7 @@ export function createSmartSearch(
     score?: (query: string, target: string, score: number) => number;
   },
 ): SmartSearch {
-  const sources: SearchSource[] = [calcSource()];
+  const sources: SearchSource[] = [calcSource(), timeSource()];
   if (modules.has('system')) sources.push(systemSource(c));
   if (modules.has('docker')) sources.push(dockerSource(c));
   if (modules.has('services')) sources.push(servicesSource(c));
