@@ -93,6 +93,46 @@ func (e *ECB) Series(ctx context.Context, sym domain.Symbol, from, to time.Time)
 	return out, nil
 }
 
+// Latest implements usecase.RateSource: the newest day of euro reference
+// rates in the file, for converting currencies in the search (#482).
+func (e *ECB) Latest(ctx context.Context) (time.Time, map[string]float64, error) {
+	body, err := fetch(ctx, e.client, e.url)
+	if err != nil {
+		return time.Time{}, nil, err
+	}
+	defer body.Close()
+	var doc struct {
+		Days []struct {
+			Time  string `xml:"time,attr"`
+			Rates []struct {
+				Currency string  `xml:"currency,attr"`
+				Rate     float64 `xml:"rate,attr"`
+			} `xml:"Cube"`
+		} `xml:"Cube>Cube"`
+	}
+	if err := xml.NewDecoder(io.LimitReader(body, 2<<20)).Decode(&doc); err != nil {
+		return time.Time{}, nil, fmt.Errorf("parse ECB rates: %w", err)
+	}
+	var newest time.Time
+	var rates map[string]float64
+	for _, d := range doc.Days {
+		day, err := time.Parse(time.DateOnly, d.Time)
+		if err != nil || !day.After(newest) || len(d.Rates) == 0 {
+			continue
+		}
+		newest, rates = day, map[string]float64{}
+		for _, r := range d.Rates {
+			if r.Rate > 0 && len(r.Currency) == 3 {
+				rates[r.Currency] = r.Rate
+			}
+		}
+	}
+	if rates == nil {
+		return time.Time{}, nil, fmt.Errorf("the ECB file holds no rates")
+	}
+	return newest, rates, nil
+}
+
 // Stooq reads daily closes as CSV (Date,Open,High,Low,Close,Volume).
 type Stooq struct {
 	client *http.Client

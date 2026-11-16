@@ -24,6 +24,7 @@ func init() {
 		Config: func(cfg *config.Config, upstream string) {
 			cfg.MarketsECBURL = upstream + "/ecb.xml"
 			cfg.MarketsStooqURL = upstream + "/stooq/"
+			cfg.CurrencyRates = true
 		},
 		Check: func(e e2eEnv) {
 			t, c := e.t, e.c
@@ -33,6 +34,15 @@ func init() {
 				t.Fatalf("watchlist: %v", rows)
 			}
 			c.do(http.MethodGet, "/api/markets/watchlist?symbols=yahoo:aapl", nil, http.StatusUnprocessableEntity)
+			// Reference rates for currency conversion in the search (#482):
+			// the newest day of the file, with the euro itself.
+			var rates obj
+			c.json(http.MethodGet, "/api/markets/rates", nil, http.StatusOK, &rates)
+			r := rates["rates"].(map[string]any)
+			if rates["base"] != "EUR" || rates["date"] != time.Now().AddDate(0, 0, -1).Format(time.DateOnly) || r["USD"] != 1.1 || r["EUR"] != float64(1) ||
+				rates["stale"] != false {
+				t.Fatalf("rates: %v", rates)
+			}
 		},
 	})
 }

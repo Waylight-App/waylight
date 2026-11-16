@@ -16,6 +16,21 @@ The search learns which results you pick and ranks them higher next time.
 This history stays in your browser. You can switch it off or clear it under
 Settings → Search.
 
+### Questions without an answer
+
+Under Settings → Search you can also switch on *Remember queries without an
+answer*. It is off by default. While it is on, a query is remembered only if
+it ended in the web search and nothing else matched: no bookmark, note,
+command, answer or tool. The list keeps the text and how often you asked,
+for the last 200 queries, grouped by their first word, so you can see which
+source would help most. It stays in your browser and is never sent to the
+server. Bangs (`!w …`) and anything that looks like a password, a token, an
+e-mail or web address or a phone or account number are never remembered.
+*Clear the list* empties it, and switching the setting off deletes it.
+
+Without this setting, texts you send to the web search are not stored
+anywhere by trisse-home.
+
 ## Help: what the search can do
 
 Type `?`, `hilfe` or `help` to see everything the search understands right
@@ -36,6 +51,26 @@ DuckDuckGo is the default engine, so all of its
 engine, add your own shortcuts with a keyword and a URL containing `{query}`, and
 have results open in a new tab. The search is also registered as an
 OpenSearch provider, so most browsers offer to add it as a search engine.
+
+Typing `!` lists the most used bangs, and further letters narrow the list
+(`!g` shows `!g`, `!gh`, `!gi` and so on). Your own shortcuts from Settings →
+Search appear first, marked as your own. Pick one and the bang is completed
+in the field, ready for the search terms. The built-in list ships with
+trisse-home, so nothing is sent to DuckDuckGo while you type. It only
+appears when your engine understands bangs (DuckDuckGo and Brave Search);
+your own shortcuts always appear.
+
+## Opening addresses
+
+If what you type is clearly an address, the first row says **Open …** and
+`Enter` goes there instead of searching for it. That covers `github.com`,
+`192.168.178.1`, `nas.local:5001`, `fritz.box`, `localhost:3000` and
+anything starting with `http://` or `https://`. Names ending in `.local`,
+`.lan`, `.home.arpa`, `.fritz.box` or `.internal`, and IP addresses, open
+with `http://`; everything else with `https://`. Text such as `5.5`,
+`v1.2.3` or `node.js tutorial` stays a search. `Shift+Enter` searches the
+web even for an address, and the "open in a new tab" setting applies here
+too.
 
 ## Calculator and units
 
@@ -73,6 +108,25 @@ Day and Easter. A date without a year, such as `1.3.`, means the next such
 day. With slashes, German reads day first (`1/3` is 1 March) and English
 month first (`3/1`).
 
+## Tools
+
+A few small tools answer in the search field as well. Like the calculator
+they run in the browser and send nothing to the server; each one is loaded
+the first time you type something for it. `Enter` copies the main value,
+and for passwords and UUIDs *New* makes another one.
+
+| Input | Answer |
+| --- | --- |
+| `password`, `passwort 24`, `pw 32 ohne sonderzeichen`, `pin 6` | A random password: 20 characters unless you give a length (4–128), with letters, digits and symbols. "without symbols" or "ohne Sonderzeichen" leaves the symbols out, `pin` gives digits only. |
+| `uuid`, `uuid v7` | A new UUID; v7 starts with the current time, so such IDs sort by creation. |
+| `#1e90ff`, `rgb(30,144,255)`, `hsl 210 100 56` | The colour with a swatch, in hex, RGB, HSL and OKLCH. |
+| `1700000000`, `unix now`, `2026-11-16 12:00 to unix` | A Unix timestamp as date (local time and UTC), or a date as timestamp. Dates are read in local time unless they end in `UTC`. |
+| `192.168.178.0/24`, `10.0.0.5 255.255.255.0`, `2001:db8::/48` | Network, mask, broadcast, first and last host and the number of hosts; for IPv6 the first and last address of the prefix. |
+
+Passwords come from the browser's cryptographic random generator, also when
+trisse-home is opened over plain HTTP. They are not stored anywhere: the
+search history only learns which result you pick, never the values you copy.
+
 ## Answers about your home
 
 The quick search answers short questions in English or German, and it
@@ -97,6 +151,34 @@ morgen") or use a prefix with a slash for a direct answer:
 An answer only appears for modules that are enabled and set up. A restart
 from the search asks for confirmation first, exactly like the button in the
 Docker widget.
+
+## Timers and alarms
+
+Type `timer` with a duration to start a timer, and `wecker` or `alarm` with
+a time for an alarm:
+
+| Type | Starts |
+| --- | --- |
+| `timer 10 min` | a ten-minute timer |
+| `timer 1h30 pizza` | a 90-minute timer called "pizza" |
+| `timer 90` | a 90-minute timer (a bare number means minutes) |
+| `wecker 17:30` | an alarm at 17:30 |
+| `alarm 6:45 aufstehen` | an alarm at 6:45 called "aufstehen" |
+
+The row shows when the timer runs out, and `Enter` starts it. An alarm time
+that has already passed today is set for tomorrow, and the row says so.
+When a timer runs out, trisse-home shows a notice at the bottom of the page
+and plays a short sound. The first time you start a timer, the browser asks
+whether trisse-home may show notifications; if you allow it, you also get a
+notification while you are in another tab.
+
+Running timers are listed when you open the search with an empty field or
+type `timer`. Pick one and press `Enter` to cancel it. Timers are kept in
+this browser, so they survive a reload.
+
+A timer only fires while a trisse-home tab or the installed app is open.
+Closed tabs cannot ring; a timer that ran out in the meantime shows its
+notice the next time you open trisse-home. Kiosk displays have no timers.
 
 ## Commands
 

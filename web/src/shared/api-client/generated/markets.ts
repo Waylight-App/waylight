@@ -30,3 +30,20 @@ export interface RowDTO {
    */
   error?: string;
 }
+/**
+ * RatesDTO is GET /api/markets/rates: how many units of each currency one
+ * euro buys on Date (#482).
+ */
+export interface RatesDTO {
+  base: string;
+  /**
+   * Date is the day the reference rates were published (YYYY-MM-DD).
+   */
+  date: string;
+  rates: { [key: string]: number /* float64 */};
+  /**
+   * Stale is true when the rates could not be fetched and older ones are
+   * shown.
+   */
+  stale: boolean;
+}

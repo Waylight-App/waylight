@@ -31,18 +31,24 @@ test('"?" lists what the search can do, without disabled modules (#479)', async 
   ).toBeVisible();
 });
 
-test('"?" lists the weather once the weather module is enabled (#479)', async ({ page }) => {
-  // The test server runs without weather; the help only reads the module list.
-  await page.route('**/api/modules', async (route) => {
-    const response = await route.fetch();
-    const info = (await response.json()) as { modules: string[] };
-    await route.fulfill({ response, json: { ...info, modules: [...info.modules, 'weather'] } });
+test.describe('with the weather module', () => {
+  // The service worker fetches /api/modules itself, so page.route would not
+  // see the request; blocking it lets the test enable weather in the list.
+  test.use({ serviceWorkers: 'block' });
+
+  test('"?" lists the weather once the weather module is enabled (#479)', async ({ page }) => {
+    // The test server runs without weather; the help only reads the module list.
+    await page.route('**/api/modules', async (route) => {
+      const response = await route.fetch();
+      const info = (await response.json()) as { modules: string[] };
+      await route.fulfill({ response, json: { ...info, modules: [...info.modules, 'weather'] } });
+    });
+    const box = await openSearch(page);
+    await box.fill('? weather');
+    await expect(
+      page
+        .getByRole('region', { name: 'What the search can do' })
+        .getByText('The weather today or on another day'),
+    ).toBeVisible();
   });
-  const box = await openSearch(page);
-  await box.fill('? weather');
-  await expect(
-    page
-      .getByRole('region', { name: 'What the search can do' })
-      .getByText('The weather today or on another day'),
-  ).toBeVisible();
 });

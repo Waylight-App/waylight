@@ -14,7 +14,7 @@
   import { errorMessage } from '../shared/api-client/http';
   import type { Container } from './container';
   import { itemTarget, type QuickItem, search } from './quickSearch';
-  import { answerTarget, searchUsage } from './searchUsage';
+  import { answerTarget, searchUsage, unansweredQueries } from './searchUsage';
   import { quickItemLoaders } from './quickItems';
   import {
     MIN_QUERY_LENGTH as MIN_WIKI_QUERY,
@@ -30,6 +30,10 @@
   import { parseHelpQuery } from '../features/search/domain/help';
   import { buildHelp } from './searchHelp';
   import SearchHelp from './SearchHelp.svelte';
+  import { detectAddress, displayAddress } from '../features/search/domain/address';
+  import { BANG_ENGINES, suggestBangs, type Bang } from '../features/search/domain/bangs';
+  import { asksForTimers, formatRemaining, parseTimer, type Timer } from '../features/search/domain/timer';
+  import { timers, timerTitle } from './timers';
   import AnswerCard from '../features/search/ui/answers/AnswerCard.svelte';
   import type { ActionItem, Answer } from '../features/search/domain/smart/answer';
   import type { WeatherConfig } from '../features/weather/domain/weather';
@@ -102,6 +106,8 @@
   // Options of the search field (#221) and the name of the search engine.
   let bar = $state<SearchBarOptions | null>(null);
   let engine = $state('');
+  let engineId = $state('');
+  let ownBangs = $state<Bang[]>([]);
   // svelte-ignore state_referenced_locally
   if (modules.has('search'))
     container.search
@@ -109,6 +115,8 @@
       .then((s) => {
         bar = s.bar;
         engine = s.providers.find((p) => p.id === s.defaultProvider)?.name ?? '';
+        engineId = s.defaultProvider;
+        ownBangs = s.shortcuts.map((x) => ({ bang: x.keyword, name: x.name }));
       })
       .catch(() => {});
   const prefixes = $derived(mergePrefixes(palettePrefixes, prefixesFromConfig(bar?.capturePrefixes)));
@@ -153,6 +161,32 @@
           (id, s) => searchUsage.score(query, commandTarget(id), s),
         ),
   );
+  // "github.com" or "192.168.178.1" opens directly (#475).
+  const address = $derived(command || commandOnly ? null : detectAddress(query));
+  // "!g" suggests bangs: own shortcuts always, built-in ones when the engine has bangs.
+  const bangs = $derived(
+    command || !modules.has('search') ? [] : suggestBangs(query, ownBangs, BANG_ENGINES.has(engineId)),
+  );
+  // Timers and alarms (#474); kiosk displays get none.
+  // svelte-ignore state_referenced_locally
+  const timersAllowed = !container.auth.kiosk;
+  let runningTimers = $state<Timer[]>(timers.list());
+  let now = $state(Date.now());
+  $effect(() => timers.onChange((list) => (runningTimers = list)));
+  const timerRequest = $derived(
+    timersAllowed && !command && !commandOnly ? parseTimer(query, new Date()) : null,
+  );
+  const showRunning = $derived(
+    timersAllowed && runningTimers.length > 0 && (query.trim() === '' || asksForTimers(query)),
+  );
+  // The remaining time ticks while running timers are listed.
+  $effect(() => {
+    if (!showRunning) return;
+    const id = setInterval(() => (now = Date.now()), 1000);
+    return () => clearInterval(id);
+  });
+  const clock = (end: number) => new Date(end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const notificationsBlocked = timers.notifier.permission() === 'denied';
   // Results chosen before for this query rank higher (#159).
   const groups = $derived(
     command || commandOnly
@@ -171,6 +205,10 @@
       web: modules.has('search') && query.trim() !== '' && !commandOnly,
       actions: pluginActions,
       commands: commandMatches,
+      address,
+      bangs,
+      timer: timerRequest,
+      runningTimers: showRunning ? runningTimers : [],
     }),
   );
   const flat = $derived(rowGroups.flatMap((g) => g.rows));
@@ -292,7 +330,7 @@
         }),
   );
 
-  const visible = $derived(query.trim() !== '' || status !== '' || note !== null);
+  const visible = $derived(query.trim() !== '' || status !== '' || note !== null || showRunning);
 
   // Ask the AI (#162): only for a query starting with "?", only when a local
   // Ollama is set up, never for guests; the component is loaded on demand.
@@ -315,9 +353,21 @@
     expanded = visible && (flat.length > 0 || answers.length > 0 || aiQuestion !== '' || helpFilter !== null);
   });
 
+  /** Opens a typed address, in a new tab when the search is set up that way. */
+  function openAddress(url: string) {
+    if (bar?.openInNewTab) {
+      window.open(url, '_blank', 'noopener');
+      ondone();
+    } else window.location.assign(url);
+  }
+
   function searchWeb() {
     const target = modules.has('search') ? container.search.targetFor(query) : null;
     if (!target) return;
+    // Remembered only when switched on (#481) and when nothing else matched:
+    // no result, command or capture row and no answer.
+    if (!command && answers.length === 0 && flat.every((r) => r.kind === 'web'))
+      unansweredQueries.record(query);
     if (bar?.openInNewTab) {
       window.open(target, '_blank', 'noopener');
       ondone();
@@ -408,6 +458,24 @@
         return void runAction(row.action);
       case 'command':
         return runAppCommand(row.match);
+      case 'address':
+        return openAddress(row.url);
+      case 'bang':
+        // Completes the bang; the field keeps the focus for the search terms.
+        query = `!${row.bang.bang} `;
+        return;
+      case 'timer': {
+        const started = timers.start(row.request);
+        query = '';
+        status = t(started.kind === 'alarm' ? 'timers.alarm_set' : 'timers.timer_started', {
+          time: clock(started.end),
+        });
+        return;
+      }
+      case 'running':
+        timers.cancel(row.timer.id);
+        status = t('timers.cancelled', { name: timerTitle(row.timer) });
+        return;
       case 'result':
         return void choose(row.item);
       case 'web':
@@ -520,6 +588,34 @@
                   {:else if row.kind === 'result'}
                     <span class="title">{row.item.title}</span>
                     {#if row.item.detail}<span class="muted detail">{row.item.detail}</span>{/if}
+                  {:else if row.kind === 'address'}
+                    <span class="title">{t('app.open_address', { address: displayAddress(row.url) })}</span>
+                    <kbd>Enter</kbd>
+                  {:else if row.kind === 'bang'}
+                    <span class="title">!{row.bang.bang}</span>
+                    <span class="muted detail"
+                      >{row.bang.name}{row.bang.own ? ` · ${t('app.bang_own')}` : ''}</span
+                    >
+                  {:else if row.kind === 'timer'}
+                    <span class="title"
+                      >{row.request.kind === 'alarm'
+                        ? t('timers.set_alarm', { time: clock(row.request.end) })
+                        : t('timers.start_timer', {
+                            duration: formatRemaining(row.request.end - Date.now()),
+                          })}{row.request.label ? ` · ${row.request.label}` : ''}</span
+                    >
+                    <span class="muted detail"
+                      >{row.request.tomorrow
+                        ? t('timers.tomorrow')
+                        : t('timers.ends_at', { time: clock(row.request.end) })}{notificationsBlocked
+                        ? ` · ${t('timers.notifications_blocked')}`
+                        : ''}</span
+                    >
+                  {:else if row.kind === 'running'}
+                    <span class="title"
+                      >⏱ {timerTitle(row.timer)} · {formatRemaining(row.timer.end - now)}</span
+                    >
+                    <span class="muted detail">{t('timers.enter_cancels')}</span>
                   {:else if row.kind === 'command'}
                     <span class="title">{commands?.title(row.match.spec)}</span>
                     {#if row.match.spec.shortcut}<kbd>{row.match.spec.shortcut}</kbd>{/if}
