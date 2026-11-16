@@ -8,6 +8,7 @@ describe("TeamTabsApi", () => {
       post: vi.fn(),
       put: vi.fn().mockResolvedValue({}),
       delete: vi.fn(),
+      putBlob: vi.fn(),
     };
     await new TeamTabsApi(http).share("t/1", "group:office");
     expect(http.put).toHaveBeenCalledWith("/api/team-tabs/t%2F1", {
