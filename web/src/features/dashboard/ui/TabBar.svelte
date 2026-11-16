@@ -122,19 +122,24 @@
         id="tab-name-{tab.id}"
         data-tour="tab-{tab.name}"
         aria-current={tab.id === activeId ? 'page' : undefined}
-        title={editing ? t('dashboard.rename_hint') : undefined}
+        title={editing && tab.mine
+          ? t('dashboard.rename_hint')
+          : !tab.mine
+            ? t('dashboard.team_tab')
+            : undefined}
         onclick={() => onselect(tab.id)}
-        ondblclick={() => editing && onrename(tab)}
+        ondblclick={() => editing && tab.mine && onrename(tab)}
         onkeydown={(e) => {
-          if (editing && e.key === 'F2') {
+          if (editing && tab.mine && e.key === 'F2') {
             e.preventDefault();
             onrename(tab);
           }
         }}
       >
-        {tab.name}
+        {#if !tab.mine}<span class="team" aria-hidden="true">👥</span>{/if}{tab.name}
       </button>
-      {#if editing}
+      <!-- Team tabs (#295) are maintained by their owner only. -->
+      {#if editing && tab.mine}
         <button
           class="btn btn-icon more"
           type="button"

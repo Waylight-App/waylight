@@ -115,6 +115,7 @@ export class LocalDashboardGateway implements DashboardGateway {
       widgets,
       mobile: row.mobileCustom ? resolveMobile(row.mobile, widgets) : deriveMobile(widgets),
       mobileCustom: row.mobileCustom,
+      mine: true,
     };
   }
 

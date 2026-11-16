@@ -26,6 +26,10 @@ type TabResponse struct {
 	// false while it is derived from the desktop grid.
 	Mobile       []MobileView
 	MobileCustom bool
+	// Mine is false for a team tab someone shared with the viewer (#295):
+	// it is shown read-only. Visibility is private, everyone or group:<id>.
+	Mine       bool
+	Visibility string
 }
 
 // MobileView is one widget of the phone layout.

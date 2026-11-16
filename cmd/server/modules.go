@@ -201,10 +201,13 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 			registry.Register(m.build())
 		}
 	}
+	// Team tabs (#295): the dashboard reads shared tabs only while ee/
+	// switches them on; without ee/ nothing ever does.
+	tabSharing := dashboard.NewSharing()
 	// Modules from cmd/server/module_<name>.go (#193).
 	registerSelfRegistered(moduleDeps{cfg: cfg, db: db, clock: clk, ids: ids, out: out, sink: sink,
 		alerts: alerts, auth: authModule, registry: registry, wikiSources: &wiki.MemberSources{},
-		notifications: notificationsModule})
+		notifications: notificationsModule, tabSharing: tabSharing})
 	if cfg.ModuleEnabled("backup") && !cfg.DemoMode {
 		b, err := backup.New(backup.Config{Dir: cfg.BackupDir, Interval: cfg.BackupInterval, Retention: cfg.BackupRetention,
 			Cipher: secrets, Client: out.backupRemote, Alerts: alerts, Log: log,
@@ -226,7 +229,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 
 	kinds := append(append([]string{}, frontendOnlyWidgetKinds...), registry.WidgetKinds()...)
 	sample := dashboard.SampleWeather{Label: cfg.SampleWeather.Name, Lat: cfg.SampleWeather.Lat, Lon: cfg.SampleWeather.Lon}
-	dash := dashboard.New(db, ids, clk, kinds, sample)
+	dash := dashboard.New(db, ids, clk, kinds, sample, tabSharing)
 	registry.Register(dash)
 	scope.dashboard = dash
 	return authModule, registry, nil

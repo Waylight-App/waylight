@@ -102,6 +102,9 @@
   >(null);
 
   const active = $derived(tabs.find((t) => t.id === activeId) ?? tabs[0]);
+  // A team tab (#295) stays read-only in edit mode; the bar still lets the
+  // viewer arrange their own tabs.
+  const editingTab = $derived(editing && (active?.mine ?? true));
 
   $effect(() => onstate?.(tabs, active?.id ?? ''));
 
@@ -460,14 +463,15 @@
   {/if}
 
   {#if error}<p class="error" role="alert">{error}</p>{/if}
-  {#if editing}<p class="edit-hint">{t('dashboard.edit_mode_hint')}</p>{/if}
+  {#if editing && !editingTab}<p class="edit-hint">{t('dashboard.team_tab_read_only')}</p>
+  {:else if editing}<p class="edit-hint">{t('dashboard.edit_mode_hint')}</p>{/if}
 
   {#if active}
     {@const visible = active.widgets.filter((w) => available.has(w.kind))}
     {#snippet frame(widget: Widget, handle: { onpointerdown: (e: PointerEvent) => void })}
       <WidgetFrame
         title={titles.get(widget.kind) ?? widget.kind}
-        {editing}
+        editing={editingTab}
         {handle}
         chromeless={chromeless(widget.kind)}
         onsettings={hasSettings(widget.kind) ? () => (dialog = { kind: 'settings', widget }) : undefined}
@@ -482,7 +486,7 @@
       <MobileList
         layout={tab.mobileCustom ? resolveMobile(tab.mobile, visible) : deriveMobile(visible)}
         widgets={new Map(visible.map((w) => [w.id, w]))}
-        {editing}
+        editing={editingTab}
         custom={tab.mobileCustom}
         onchange={(layout) => onmobile(tab, layout)}
         onreset={() => resetMobile(tab)}
@@ -493,7 +497,7 @@
         {/snippet}
       </MobileList>
     {:else}
-      <Grid items={visible} {editing} {onlayout} label={(w) => titles.get(w.kind) ?? w.kind}>
+      <Grid items={visible} editing={editingTab} {onlayout} label={(w) => titles.get(w.kind) ?? w.kind}>
         {#snippet item(widget: Widget, handle: { onpointerdown: (e: PointerEvent) => void })}
           {@render frame(widget, handle)}
         {/snippet}
@@ -501,8 +505,8 @@
     {/if}
     {#if visible.length === 0 && loaded}
       <p class="empty muted">
-        {t(editing ? 'dashboard.empty_tab_editing' : 'dashboard.empty_tab_view')}
-        {#if !editing && onedit}
+        {t(editingTab ? 'dashboard.empty_tab_editing' : 'dashboard.empty_tab_view')}
+        {#if !editing && onedit && active.mine}
           <button
             class="btn"
             type="button"
@@ -514,7 +518,7 @@
         {/if}
       </p>
     {/if}
-    {#if editing}
+    {#if editingTab}
       <div class="edit-actions" role="toolbar" aria-label={t('dashboard.edit_actions')}>
         <button class="btn btn-primary add" type="button" onclick={() => (dialog = { kind: 'add-widget' })}
           >{t('dashboard.add_widget')}</button
