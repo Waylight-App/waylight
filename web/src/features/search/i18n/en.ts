@@ -3,7 +3,7 @@ export const en = {
   'search.own_keywords': 'Own keywords',
   'search.own_keywords_hint':
     'Type a keyword alone in the search field and press Enter to open what it points to, for example “nas” for your NAS. Keywords work on every device you sign in on.',
-  'search.own_keyword': 'Keyword',
+  'search.own_keyword': 'Own keyword',
   'search.keyword_target_kind': 'Opens',
   'search.keyword_target': 'Target',
   'search.keyword_pick': 'Choose…',
@@ -17,6 +17,7 @@ export const en = {
   'search.keyword_result': 'Your keyword',
   'search.add_keyword': 'Add keyword…',
   'search.add_keyword_prompt': 'Keyword for “{label}”',
+  'search.keyword_gone': 'The target of “{keyword}” no longer exists; change it under Settings → Search.',
   'search.keyword_added': 'Keyword “{keyword}” added',
   'tools.new': 'New',
   'tools.password': 'Password · {length} characters',

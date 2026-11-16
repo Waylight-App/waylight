@@ -5,7 +5,7 @@ export const de: Record<keyof typeof en, string> = {
   'search.own_keywords': 'Eigene Stichwörter',
   'search.own_keywords_hint':
     'Tippe ein Stichwort allein ins Suchfeld und drücke Enter, um zu öffnen, worauf es zeigt, zum Beispiel „nas“ für dein NAS. Stichwörter gelten auf jedem Gerät, auf dem du angemeldet bist.',
-  'search.own_keyword': 'Stichwort',
+  'search.own_keyword': 'Eigenes Stichwort',
   'search.keyword_target_kind': 'Öffnet',
   'search.keyword_target': 'Ziel',
   'search.keyword_pick': 'Auswählen…',
@@ -19,6 +19,8 @@ export const de: Record<keyof typeof en, string> = {
   'search.keyword_result': 'Dein Stichwort',
   'search.add_keyword': 'Stichwort hinzufügen…',
   'search.add_keyword_prompt': 'Stichwort für „{label}“',
+  'search.keyword_gone':
+    'Das Ziel von „{keyword}“ gibt es nicht mehr; ändere es unter Einstellungen → Suche.',
   'search.keyword_added': 'Stichwort „{keyword}“ hinzugefügt',
   'tools.new': 'Neu',
   'tools.password': 'Passwort · {length} Zeichen',
