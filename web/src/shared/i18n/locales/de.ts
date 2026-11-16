@@ -941,6 +941,9 @@ export const de: Record<BaseMessageKey, string> = {
   'settings.group.integrations': 'Integrationen',
   'settings.group.data': 'Daten und Sicherung',
   'settings.group.account': 'Konto und Sicherheit',
+  'settings.group.organisation': 'Organisation',
+  'plugins.needs_licence':
+    'Diese Funktion für Organisationen braucht einen Lizenzschlüssel. Du trägst ihn unter Einstellungen → Funktionen für Organisationen ein.',
   'settings.group.about': 'Über',
   'settings.sections': 'Bereiche der Einstellungen',
   'settings.back': 'Alle Einstellungen',
