@@ -1,5 +1,6 @@
 <script lang="ts">
   import PlainHttpWarning from '../../../shared/ui/PlainHttpWarning.svelte';
+  import ShoppingLists from './ShoppingLists.svelte';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import type { ShoppingSuggestion } from '../domain/shopping';
@@ -53,6 +54,9 @@
   }
 </script>
 
+<ShoppingLists {shopping} />
+
+<h3>{t('shopping.caldav_title')}</h3>
 <p class="muted">
   {t('shopping.the_shopping_list_is_stored_as')}
 </p>
