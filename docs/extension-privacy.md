@@ -4,7 +4,9 @@ This page describes what the trisse-home browser extension stores and sends. It 
 
 ## What it stores
 
-The address of your trisse-home server, which you enter in the extension's options. It is kept in the browser's extension storage on your device and is removed when you uninstall the extension.
+The address of your trisse-home server, which you enter in the extension's options, and whether you use the extension with a server or without one. Both are kept in the browser's extension storage and are removed when you uninstall the extension.
+
+Without a server, what you create (bookmarks, notes, to-dos, your dashboard and its appearance) is stored in the extension's own database in your browser profile. It never leaves the browser unless you download it yourself with *Download my data*, and it is removed when you uninstall the extension.
 
 ## What it sends, and to whom
 
@@ -21,7 +23,7 @@ Apart from that, nothing is sent to the developers of trisse-home or to any thir
 
 | Permission | Why |
 |---|---|
-| `storage` | Keeps the address of your server. |
+| `storage` | Keeps the address of your server and the chosen mode. |
 | `contextMenus` | Adds *Save page to trisse-home* to the menu. |
 | `activeTab` | Reads the URL and title of the current tab, only at the moment you click *Save page*. |
 

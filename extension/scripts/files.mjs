@@ -12,6 +12,7 @@ export const ownFiles = [
   'src/background.js',
   'src/newtab.js',
   'src/options.js',
+  'src/start.js',
   'src/storage.js',
   'src/url.js',
 ];

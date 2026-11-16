@@ -10,15 +10,34 @@
     <main>
       <h1>trisse-home</h1>
       <form id="form">
-        <label for="base">Address of your dashboard</label>
-        <input id="base" type="url" placeholder="http://homeserver:8090" required autocomplete="url" />
-        <p class="hint">
-          Every new tab opens this address. The extension sends nothing anywhere else and stores only this address
-          (synced with your browser profile).
-        </p>
+        <fieldset>
+          <legend>How should new tabs work?</legend>
+          <label><input type="radio" name="mode" value="local" /> Without a server, in this browser</label>
+          <p class="hint">
+            Bookmarks, notes, to-dos, countdowns, focus timer, habits, clock and weather. Your data stays in this
+            browser profile and is not synced to other devices.
+          </p>
+          <label><input type="radio" name="mode" value="server" /> With my trisse-home server</label>
+        </fieldset>
+        <div id="server-fields">
+          <label for="base">Address of your dashboard</label>
+          <input id="base" type="url" placeholder="http://homeserver:8090" autocomplete="url" />
+          <p class="hint">
+            Every new tab opens this address. The extension sends nothing anywhere else and stores only this address
+            (synced with your browser profile).
+          </p>
+        </div>
         <button type="submit">Save</button>
         <p id="status" role="status"></p>
       </form>
+      <section id="move" hidden>
+        <h2>Moving to a server</h2>
+        <p>
+          Download what you created without a server, then import the file on your server under
+          <em>Settings → Transfer</em>. Importing replaces the server's dashboard and appearance with yours.
+        </p>
+        <p><a id="export" href="app/extension.html#export">Download my data</a></p>
+      </section>
     </main>
     <script type="module" src="src/options.js"></script>
   </body>
