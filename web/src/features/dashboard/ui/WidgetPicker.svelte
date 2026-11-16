@@ -178,7 +178,7 @@
   .icon {
     grid-row: 1 / span 2;
     display: flex;
-    color: var(--color-accent);
+    color: var(--color-accent-text);
   }
   .desc {
     grid-column: 2;

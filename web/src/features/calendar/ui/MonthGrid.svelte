@@ -157,7 +157,7 @@
     opacity: 0.45;
   }
   .today .num {
-    color: var(--color-accent);
+    color: var(--color-accent-text);
     font-weight: 700;
   }
   .sel {

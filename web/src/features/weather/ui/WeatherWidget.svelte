@@ -229,7 +229,7 @@
     font-size: clamp(1.2rem, 8cqmin, 3rem);
   }
   .rain {
-    color: var(--color-accent);
+    color: var(--color-accent-text);
   }
   .health {
     display: grid;

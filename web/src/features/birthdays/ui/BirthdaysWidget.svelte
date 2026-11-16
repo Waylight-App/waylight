@@ -135,7 +135,7 @@
   li.today .when,
   li.today .name {
     font-weight: 600;
-    color: var(--color-accent);
+    color: var(--color-accent-text);
   }
   li.soon .when {
     font-weight: 600;

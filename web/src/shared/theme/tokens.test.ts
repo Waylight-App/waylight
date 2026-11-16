@@ -50,11 +50,17 @@ describe('contrast of the light and dark tokens (#113)', () => {
       [...block.matchAll(/(--color-[a-z0-9-]+):\s*(#[0-9a-f]{3,6})\b/gi)].map((m) => [m[1], m[2]]),
     );
   const light = read(css.slice(0, split));
-  const schemes = { light, dark: { ...light, ...read(css.slice(split)) } };
+  const dark = { ...light, ...read(css.slice(split)) };
+  // --color-accent-text is var(--color-accent) unless a theme sets it (#504).
+  const schemes = {
+    light: { ...light, '--color-accent-text': light['--color-accent'] },
+    dark: { ...dark, '--color-accent-text': dark['--color-accent'] },
+  };
   const pairs: [string, string[]][] = [
     ['--color-text', ['--color-bg', '--color-surface', '--color-surface-2']],
     ['--color-text-muted', ['--color-bg', '--color-surface', '--color-surface-2']],
     ['--color-accent', ['--color-surface']],
+    ['--color-accent-text', ['--color-surface', '--color-surface-2']],
     ['--color-danger', ['--color-surface', '--color-surface-2']],
     ['--color-success', ['--color-surface', '--color-surface-2']],
     ['--color-warning', ['--color-surface', '--color-surface-2']],

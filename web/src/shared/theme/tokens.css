@@ -11,6 +11,13 @@
   --color-text-muted: #5d6679;
   --color-accent: #3365e8; /* white text on it: 5.0:1 (WCAG AA) */
   --color-accent-contrast: #ffffff;
+  /*
+   * The accent as text or icon colour on surfaces. Separate from the fill
+   * colour because a bright accent (amber, yellow) that works as a button
+   * background is unreadable as text on a light surface. It follows the
+   * accent unless a theme sets it.
+   */
+  --color-accent-text: var(--color-accent);
   /* Status colors are also used as text: 4.5:1 on the surfaces (#113). */
   --color-danger: #c93434;
   --color-success: #18794e;
@@ -25,6 +32,8 @@
   --space-6: 24px;
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  /* Headings and large numerals; a theme may give them their own face. */
+  --font-display: var(--font-sans);
   --background-image: none;
   --widget-opacity: 1;
   color-scheme: light;
