@@ -15,7 +15,8 @@
   let { context }: Props = $props();
 
   const api = $derived(new LicenceApi(context.http));
-  const tr = (key: string, params: Record<string, string | number> = {}) => text(texts, key, context.language, params);
+  const tr = (key: string, params: Record<string, string | number> = {}) =>
+    text(texts, key, context.language, params);
   const label = (t: { en: string } & Record<string, string>) => t[context.language] ?? t.en;
 
   let levels = $state<Record<string, FeatureLevel>>({});
@@ -65,7 +66,8 @@
     }
   }
 
-  const stateLabel = (l: FeatureLevel | undefined) => (l === 'full' ? tr('on') : l === 'read' ? tr('read') : tr('off'));
+  const stateLabel = (l: FeatureLevel | undefined) =>
+    l === 'full' ? tr('on') : l === 'read' ? tr('read') : tr('off');
 </script>
 
 <p class="muted">{tr('intro')}</p>
@@ -99,13 +101,20 @@
   {#if licence.status !== 'missing' && licence.seats > 0}
     <p class="muted small">{tr('seats', { accounts: licence.accounts, seats: licence.seats })}</p>
   {/if}
-  {#if licence.unknown.length}<p class="muted small">{tr('unknown', { list: licence.unknown.join(', ') })}</p>{/if}
+  {#if licence.unknown.length}<p class="muted small">
+      {tr('unknown', { list: licence.unknown.join(', ') })}
+    </p>{/if}
   {#if licence.source === 'environment'}
     <p class="muted">{tr('from_env')}</p>
   {:else}
     <form onsubmit={install}>
-      <textarea class="input" rows="4" bind:value={key} placeholder={tr('paste')} aria-label={tr('paste')} required
-      ></textarea>
+      <textarea
+        class="input"
+        rows="4"
+        bind:value={key}
+        placeholder={tr('paste')}
+        aria-label={tr('paste')}
+        required></textarea>
       <div class="actions">
         <button class="btn btn-primary" type="submit" disabled={busy}>{tr('install')}</button>
         {#if licence.source === 'settings'}

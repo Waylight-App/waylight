@@ -104,6 +104,13 @@ func TestBranding(t *testing.T) {
 		t.Fatalf("manifest: %v", manifest)
 	}
 
+	// New authenticator entries carry the organisation's name (#305).
+	var enrollment obj
+	owner.json(http.MethodPost, "/api/auth/totp/setup", nil, http.StatusOK, &enrollment)
+	if uri, _ := enrollment["uri"].(string); !strings.Contains(uri, "issuer=Example") {
+		t.Fatalf("totp uri: %v", enrollment)
+	}
+
 	// Members cannot change it.
 	owner.do(http.MethodPost, "/api/auth/members", obj{"name": "ben", "password": "member-password-1"}, http.StatusCreated)
 	ben := newClient(t, srv.URL)
@@ -111,6 +118,25 @@ func TestBranding(t *testing.T) {
 	ben.json(http.MethodPost, "/api/auth/login", obj{"username": "ben", "password": "member-password-1"}, http.StatusOK, &bs)
 	ben.csrf = bs["csrfToken"].(string)
 	ben.do(http.MethodPut, "/api/branding/settings", obj{"name": "Ben's"}, http.StatusForbidden)
+
+	// A locked default theme keeps members on it; admins keep their own.
+	owner.do(http.MethodPut, "/api/branding/settings", obj{"name": "Example GmbH", "accent": "#0055aa", "defaultTheme": "dark",
+		"lockTheme": true}, http.StatusOK)
+	var look obj
+	ben.json(http.MethodPut, "/api/appearance", obj{"theme": "light", "accentColor": "#ff0000", "launcher": "both", "profile": "everyday"},
+		http.StatusOK, &look)
+	if look["theme"] != "dark" || look["accentColor"] != "#0055aa" || look["themeLocked"] != true {
+		t.Fatalf("member appearance: %v", look)
+	}
+	var adminLook obj
+	owner.json(http.MethodPut, "/api/appearance", obj{"theme": "light", "launcher": "both", "profile": "everyday"}, http.StatusOK, &adminLook)
+	if adminLook["theme"] != "light" || adminLook["themeLocked"] != nil {
+		t.Fatalf("admin appearance: %v", adminLook)
+	}
+	if b := info(); b["defaultTheme"] != "dark" {
+		t.Fatalf("sign-in theme: %v", b)
+	}
+	owner.do(http.MethodPut, "/api/branding/settings", obj{"lockTheme": true}, http.StatusUnprocessableEntity)
 
 	// Without the key the product shows again; the branding is kept.
 	owner.do(http.MethodDelete, "/api/licence", nil, http.StatusNoContent)

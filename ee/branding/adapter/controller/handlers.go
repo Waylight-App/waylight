@@ -27,6 +27,8 @@ type SettingsDTO struct {
 	Accent        string               `json:"accent"`
 	Secondary     string               `json:"secondary"`
 	HidePoweredBy bool                 `json:"hidePoweredBy"`
+	DefaultTheme  string               `json:"defaultTheme"`
+	LockTheme     bool                 `json:"lockTheme"`
 	Assets        map[string]time.Time `json:"assets,omitempty"`
 	Applied       bool                 `json:"applied"`
 	Warnings      []string             `json:"warnings"`
@@ -37,7 +39,8 @@ func dto(v usecase.View) SettingsDTO {
 	if w == nil {
 		w = []string{}
 	}
-	return SettingsDTO{Name: v.Name, Accent: v.Accent, Secondary: v.Secondary, HidePoweredBy: v.HidePoweredBy, Assets: v.Assets,
+	return SettingsDTO{Name: v.Name, Accent: v.Accent, Secondary: v.Secondary, HidePoweredBy: v.HidePoweredBy, DefaultTheme: v.DefaultTheme,
+		LockTheme: v.LockTheme, Assets: v.Assets,
 		Applied: v.Applied, Warnings: w}
 }
 
@@ -62,7 +65,8 @@ func (h *Handlers) Save(w http.ResponseWriter, r *http.Request) {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
-	v, err := h.s.Save(r.Context(), domain.Settings{Name: in.Name, Accent: in.Accent, Secondary: in.Secondary, HidePoweredBy: in.HidePoweredBy})
+	v, err := h.s.Save(r.Context(), domain.Settings{Name: in.Name, Accent: in.Accent, Secondary: in.Secondary, HidePoweredBy: in.HidePoweredBy,
+		DefaultTheme: in.DefaultTheme, LockTheme: in.LockTheme})
 	write(w, r, v, err)
 }
 

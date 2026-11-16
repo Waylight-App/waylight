@@ -109,7 +109,7 @@ func TestConnectedAccounts(t *testing.T) {
 		t.Fatal(err)
 	}
 	_ = res.Body.Close()
-	if loc := res.Header.Get("Location"); res.StatusCode != http.StatusSeeOther || loc != "/?connected=notion&settings=connections" {
+	if loc := res.Header.Get("Location"); res.StatusCode != http.StatusSeeOther || loc != "/?connected=notion&settings=plugin-connections" {
 		t.Fatalf("callback: %d %s", res.StatusCode, loc)
 	}
 	var list []obj

@@ -19,13 +19,22 @@
   let { context }: Props = $props();
 
   const api = $derived(new AnnouncementsApi(context.http));
-  const tr = (key: string, params: Record<string, string | number> = {}) => text(texts, key, context.language, params);
+  const tr = (key: string, params: Record<string, string | number> = {}) =>
+    text(texts, key, context.language, params);
   const date = (iso: string) => new Date(iso).toLocaleDateString(context.language);
 
-  // Writing needs an admin and a key that is not expired. Members of the
-  // writer group can write too; the server decides, the button is for admins.
+  // Writing needs the server's yes (admins and the writer group) and a key
+  // that is not expired.
   const readOnly = $derived(context.level('announcements') === 'read');
-  const mayWrite = $derived(context.account.admin && !readOnly);
+  let allowed = $state(false);
+  const mayWrite = $derived(allowed && !readOnly);
+  $effect(() => {
+    if (context.account.guest) return;
+    api
+      .mayWrite()
+      .then((ok) => (allowed = ok))
+      .catch(() => (allowed = false));
+  });
   // Guests and kiosk displays cannot keep read marks (the server answers 403).
   const mayMark = $derived(!context.account.guest);
 
@@ -100,8 +109,12 @@
   >
   {#if !archive && unreadCount(list)}<span class="count">{tr('unread', { n: unreadCount(list) })}</span>{/if}
   {#if mayWrite && !archive}
-    <button class="btn btn-icon add" type="button" aria-label={tr('write')} title={tr('write')} onclick={() => startEdit('new')}
-      >＋</button
+    <button
+      class="btn btn-icon add"
+      type="button"
+      aria-label={tr('write')}
+      title={tr('write')}
+      onclick={() => startEdit('new')}>＋</button
     >
   {/if}
 </div>
@@ -110,11 +123,27 @@
 
 {#if editing}
   <form class="edit" onsubmit={save}>
-    <input class="input" bind:value={form.title} placeholder={tr('field_title')} aria-label={tr('field_title')} required maxlength="200" />
-    <textarea class="input" rows="5" bind:value={form.body} placeholder={tr('field_body')} aria-label={tr('field_body')}></textarea>
+    <input
+      class="input"
+      bind:value={form.title}
+      placeholder={tr('field_title')}
+      aria-label={tr('field_title')}
+      required
+      maxlength="200"
+    />
+    <textarea
+      class="input"
+      rows="5"
+      bind:value={form.body}
+      placeholder={tr('field_body')}
+      aria-label={tr('field_body')}></textarea>
     <label class="check"><input type="checkbox" bind:checked={form.pinned} /> {tr('field_pinned')}</label>
     <label class="field"
-      ><span>{tr('field_expires')}</span><input class="input" type="date" bind:value={form.expiresOn} /></label
+      ><span>{tr('field_expires')}</span><input
+        class="input"
+        type="date"
+        bind:value={form.expiresOn}
+      /></label
     >
     {#if editing === 'new'}
       <label class="check"><input type="checkbox" bind:checked={form.notify} /> {tr('field_notify')}</label>
@@ -134,7 +163,8 @@
   {#each list as a (a.id)}
     <li class:unread={!a.read && !archive} class:pinned={a.pinned}>
       <button class="head" type="button" aria-expanded={open === a.id} onclick={() => toggle(a)}>
-        {#if a.pinned}<span class="pin" title={tr('pinned')} aria-label={tr('pinned')} role="img">📌</span>{/if}
+        {#if a.pinned}<span class="pin" title={tr('pinned')} aria-label={tr('pinned')} role="img">📌</span
+          >{/if}
         <span class="t">{a.title}</span>
       </button>
       <div class="meta muted">

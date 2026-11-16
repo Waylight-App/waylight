@@ -13,9 +13,14 @@
 
   const api = $derived(new PresenceApi(context.http));
   const group = $derived(parseConfig(config).group);
-  const tr = (key: string, params: Record<string, string | number> = {}) => text(texts, key, context.language, params);
+  const tr = (key: string, params: Record<string, string | number> = {}) =>
+    text(texts, key, context.language, params);
   const date = (day: string) =>
-    new Date(`${day}T12:00:00`).toLocaleDateString(context.language, { weekday: 'short', day: 'numeric', month: 'numeric' });
+    new Date(`${day}T12:00:00`).toLocaleDateString(context.language, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'numeric',
+    });
   const label = (s: Status) => tr(s || 'none');
 
   const readOnly = $derived(context.level('presence') === 'read');

@@ -138,6 +138,17 @@ func (a Appearance) Language() string { return a.language }
 // Default returns the appearance of a fresh installation.
 func Default() Appearance { return Appearance{theme: ThemeSystem} }
 
+// WithScheme returns a copy with another theme and accent colour, for an
+// organisation's preset (#305); the rest stays.
+func (a Appearance) WithScheme(theme Theme, accentColor string) (Appearance, error) {
+	b, err := NewAppearance(theme, accentColor, a.backgroundImage, a.customCSS)
+	if err != nil {
+		return Appearance{}, err
+	}
+	b.language, b.greetingName, b.launcher, b.profile = a.language, a.greetingName, a.launcher, a.profile
+	return b, nil
+}
+
 // NewAppearance validates and creates an Appearance. Empty accentColor and
 // backgroundImage mean "use the built-in default".
 func NewAppearance(theme Theme, accentColor, backgroundImage, customCSS string) (Appearance, error) {

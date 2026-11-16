@@ -250,6 +250,7 @@ export const de: Record<BaseMessageKey, string> = {
   'dashboard.duplicate_widget': 'Widget duplizieren',
   'dashboard.duplicate': 'Duplizieren',
   'dashboard.remove_widget': 'Widget entfernen',
+  'appearance.theme_locked': 'Design und Akzentfarbe legt deine Organisation fest.',
   'appearance.theme': 'Farbschema',
   'appearance.system': 'System',
   'appearance.light': 'Hell',
@@ -1100,6 +1101,7 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.event.invite_accepted': 'Einladung angenommen',
   'auth.event.reset_link_created': 'Link zum Zurücksetzen erstellt',
   'auth.event.password_reset': 'Passwort per Link zurückgesetzt',
+  'auth.powered_by': 'Läuft mit trisse-home',
   'auth.forgot_password': 'Passwort vergessen?',
   'auth.reset_mail_hint':
     'Gib deinen Namen ein. Hat dein Konto eine E-Mail-Adresse, geht dorthin ein Link zum Festlegen eines neuen Passworts.',

@@ -27,6 +27,8 @@ export interface SettingsSection {
   title?: () => string;
   /** Only admins see it (plugin sections). */
   adminOnly?: boolean;
+  /** Contributed by a plugin (ADR 0021): members see it unless adminOnly. */
+  plugin?: boolean;
   load: () => Promise<Component<Record<string, unknown>>>;
   props: (container: Container, context: SettingsContext) => Record<string, unknown>;
 }

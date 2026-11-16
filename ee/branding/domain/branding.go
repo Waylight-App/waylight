@@ -20,6 +20,11 @@ type Settings struct {
 	Name              string
 	Accent, Secondary string // "#rrggbb" or empty
 	HidePoweredBy     bool
+	// DefaultTheme ("", "system", "light", "dark") applies to the sign-in
+	// page and to accounts without their own appearance; LockTheme keeps
+	// members on it and on the accent colour.
+	DefaultTheme string
+	LockTheme    bool
 }
 
 // Limits.
@@ -44,13 +49,17 @@ func (s *Settings) Validate() error {
 		return kernel.NewValidationError("accent", "Enter the accent colour as #rrggbb.")
 	case s.Secondary != "" && !hexColour.MatchString(s.Secondary):
 		return kernel.NewValidationError("secondary", "Enter the secondary colour as #rrggbb.")
+	case s.DefaultTheme != "" && s.DefaultTheme != "system" && s.DefaultTheme != "light" && s.DefaultTheme != "dark":
+		return kernel.NewValidationError("defaultTheme", "The default theme must be system, light or dark.")
+	case s.LockTheme && s.DefaultTheme == "":
+		return kernel.NewValidationError("lockTheme", "Choose a default theme before keeping members on it.")
 	}
 	return nil
 }
 
 // Empty reports whether nothing is set, so the product's branding applies.
 func (s Settings) Empty() bool {
-	return s.Name == "" && s.Accent == "" && s.Secondary == "" && !s.HidePoweredBy
+	return s.Name == "" && s.Accent == "" && s.Secondary == "" && !s.HidePoweredBy && s.DefaultTheme == ""
 }
 
 // Backgrounds the accent colour is checked against: the light and the dark

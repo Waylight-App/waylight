@@ -11,7 +11,8 @@
   let { context }: Props = $props();
 
   const api = $derived(new TeamTabsApi(context.http));
-  const tr = (key: string, params: Record<string, string | number> = {}) => text(texts, key, context.language, params);
+  const tr = (key: string, params: Record<string, string | number> = {}) =>
+    text(texts, key, context.language, params);
   const readOnly = $derived(context.level('team-tabs') === 'read');
 
   let tabs = $state<TeamTab[]>([]);
@@ -27,11 +28,11 @@
   });
 
   async function setDefault(groupId: string, tabId: string) {
-    error = message = "";
+    error = message = '';
     try {
       await api.setDefault(groupId, tabId);
       defaults = { ...defaults, [groupId]: tabId };
-      message = tr("saved");
+      message = tr('saved');
     } catch (err) {
       error = context.errorMessage(err);
     }
@@ -72,20 +73,20 @@
   {/each}
 </ul>
 {#if groups.length}
-  <h3>{tr("defaults_title")}</h3>
-  <p class="muted small">{tr("defaults_hint")}</p>
+  <h3>{tr('defaults_title')}</h3>
+  <p class="muted small">{tr('defaults_hint')}</p>
   <ul>
     {#each groups as g (g.id)}
       <li>
         <span>{g.name}</span>
         <select
           class="input"
-          value={defaults[g.id] ?? ""}
+          value={defaults[g.id] ?? ''}
           disabled={readOnly}
-          aria-label={tr("defaults_title") + ": " + g.name}
+          aria-label={tr('defaults_title') + ': ' + g.name}
           onchange={(e) => setDefault(g.id, e.currentTarget.value)}
         >
-          <option value="">{tr("no_default")}</option>
+          <option value="">{tr('no_default')}</option>
           {#each tabsFor(tabs, g.id) as tab (tab.id)}<option value={tab.id}>{tab.name}</option>{/each}
         </select>
       </li>
