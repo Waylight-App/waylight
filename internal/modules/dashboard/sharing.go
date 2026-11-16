@@ -14,8 +14,9 @@ import (
 // to the dashboard and, in builds with ee/, to the team tabs module, which
 // switches shared tabs on while the licence allows it.
 type Sharing struct {
-	enabled func(context.Context) bool
-	repo    *gateway.Repository
+	enabled      func(context.Context) bool
+	groupDefault func(context.Context) string
+	repo         *gateway.Repository
 }
 
 // NewSharing returns a Sharing with shared tabs switched off.
@@ -25,6 +26,17 @@ func NewSharing() *Sharing { return &Sharing{} }
 func (s *Sharing) Enable(on func(context.Context) bool) { s.enabled = on }
 
 func (s *Sharing) on(ctx context.Context) bool { return s != nil && s.enabled != nil && s.enabled(ctx) }
+
+// SetGroupDefault names, per request, the team tab that opens by default
+// for the principal's groups when their own rules pick none.
+func (s *Sharing) SetGroupDefault(fn func(context.Context) string) { s.groupDefault = fn }
+
+func (s *Sharing) defaultTab(ctx context.Context) string {
+	if !s.on(ctx) || s.groupDefault == nil {
+		return ""
+	}
+	return s.groupDefault(ctx)
+}
 
 // TabInfo is an own tab and who else sees it.
 type TabInfo struct {

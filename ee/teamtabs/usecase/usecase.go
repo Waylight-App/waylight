@@ -7,6 +7,7 @@ package usecase
 
 import (
 	"context"
+	"slices"
 
 	"trisse-home/internal/shared/kernel"
 )
@@ -24,11 +25,79 @@ type Sharing interface {
 	Share(ctx context.Context, tabID string, v kernel.Visibility) error
 }
 
+// Defaults stores the default team tab per group (output port).
+type Defaults interface {
+	All(ctx context.Context) (map[string]string, error)
+	// Set stores a tab for a group; "" removes the default.
+	Set(ctx context.Context, groupID, tabID string) error
+}
+
 // Service implements the team tab use cases.
-type Service struct{ sharing Sharing }
+type Service struct {
+	sharing  Sharing
+	defaults Defaults
+}
 
 // New returns the service.
-func New(s Sharing) *Service { return &Service{sharing: s} }
+func New(s Sharing, d Defaults) *Service { return &Service{sharing: s, defaults: d} }
+
+// ErrNotATeamTab is returned when a default names a tab that is not shared
+// with the group (or everyone).
+var ErrNotATeamTab = kernel.NewValidationError("tabId", "Choose one of your tabs that is shared with this group or with everyone.")
+
+// Defaults lists the default team tab per group (admins).
+func (s *Service) Defaults(ctx context.Context) (map[string]string, error) {
+	if !kernel.PrincipalFrom(ctx).IsAdmin() {
+		return nil, kernel.ErrAdminOnly
+	}
+	return s.defaults.All(ctx)
+}
+
+// SetDefault makes one of the admin's team tabs the default for a group;
+// the tab must be shared with that group or everyone. "" removes it.
+func (s *Service) SetDefault(ctx context.Context, groupID, tabID string) error {
+	if !kernel.PrincipalFrom(ctx).IsAdmin() {
+		return kernel.ErrAdminOnly
+	}
+	if tabID != "" {
+		tabs, err := s.sharing.OwnTabs(ctx)
+		if err != nil {
+			return err
+		}
+		ok := false
+		for _, t := range tabs {
+			if t.ID == tabID && (t.Visibility == kernel.Everyone || t.Visibility == kernel.GroupVisibility(groupID)) {
+				ok = true
+			}
+		}
+		if !ok {
+			return ErrNotATeamTab
+		}
+	}
+	return s.defaults.Set(ctx, groupID, tabID)
+}
+
+// DefaultFor returns the default team tab for the principal: the one of
+// the first of its groups, in group ID order, that has one. The dashboard
+// still checks that the principal can see the tab.
+func (s *Service) DefaultFor(ctx context.Context) string {
+	groups := kernel.PrincipalFrom(ctx).Groups
+	if len(groups) == 0 {
+		return ""
+	}
+	all, err := s.defaults.All(ctx)
+	if err != nil {
+		return ""
+	}
+	sorted := slices.Clone(groups)
+	slices.Sort(sorted)
+	for _, g := range sorted {
+		if id := all[g]; id != "" {
+			return id
+		}
+	}
+	return ""
+}
 
 // Tabs lists the admin's own tabs with their visibility.
 func (s *Service) Tabs(ctx context.Context) ([]Tab, error) {
