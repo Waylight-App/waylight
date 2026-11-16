@@ -18,4 +18,16 @@ describe('TeamCalendarApi', () => {
       visibility: 'group:g1',
     });
   });
+
+  it('shares a connected account on its own route', async () => {
+    const http = {
+      get: vi.fn(),
+      post: vi.fn(),
+      put: vi.fn().mockResolvedValue({ visibility: 'everyone' }),
+      delete: vi.fn(),
+      putBlob: vi.fn(),
+    };
+    await new TeamCalendarApi(http).shareAccount('a1', 'everyone');
+    expect(http.put).toHaveBeenCalledWith('/api/teamcalendar/accounts/a1', { visibility: 'everyone' });
+  });
 });
