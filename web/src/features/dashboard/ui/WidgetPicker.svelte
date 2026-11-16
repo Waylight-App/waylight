@@ -15,10 +15,13 @@
     onclose: () => void;
     /** Shown below the tiles, e.g. what a server adds in local mode (#291). */
     footer?: Snippet;
+    /** Text the search starts with, e.g. "weather" from "add widget weather" (#476). */
+    initialQuery?: string;
   }
-  let { types, icon, onpick, onclose, footer }: Props = $props();
+  let { types, icon, onpick, onclose, footer, initialQuery = '' }: Props = $props();
 
-  let query = $state('');
+  // svelte-ignore state_referenced_locally
+  let query = $state(initialQuery);
   let search = $state<HTMLInputElement>();
   const matches = $derived(searchWidgetTypes(types, query));
   // Ranked results keep their rank inside each category column.

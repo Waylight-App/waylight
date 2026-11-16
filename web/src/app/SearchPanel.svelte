@@ -25,6 +25,8 @@
   import { buildAiContext } from './aiContext';
   import { buildRows, keyIntent, move, type Row } from './searchRows';
   import { matchActions, searchActions, type SearchAction } from './searchActions';
+  import { type CommandMatch, matchCommands, parseCommandQuery } from '../features/search/domain/commands';
+  import { buildCommands, type CommandHandlers } from './appCommands';
   import AnswerCard from '../features/search/ui/answers/AnswerCard.svelte';
   import type { ActionItem, Answer } from '../features/search/domain/smart/answer';
   import type { WeatherConfig } from '../features/weather/domain/weather';
@@ -57,6 +59,8 @@
     weatherLocation?: WeatherConfig | null;
     /** First widget config of a kind, e.g. the transit stop (#161). */
     widgetConfig?: (kind: string) => Record<string, unknown> | null;
+    /** Handlers of the app commands (#476), supplied by the shell. */
+    commandHandlers?: CommandHandlers;
   }
   let {
     container,
@@ -69,7 +73,11 @@
     ondone,
     weatherLocation = null,
     widgetConfig = () => null,
+    commandHandlers,
   }: Props = $props();
+
+  // svelte-ignore state_referenced_locally
+  const commands = commandHandlers ? buildCommands(commandHandlers) : null;
 
   // svelte-ignore state_referenced_locally
   const smart = createSmartSearch(container, modules, {
@@ -124,23 +132,42 @@
     }),
     ...wikiItems,
   ]);
+  // ">" limits the rows to app commands (#476).
+  const commandOnly = $derived(parseCommandQuery(query).only);
+  const commandTarget = (id: string) => `command:${id}`;
+  const commandMatches = $derived(
+    command || !commands
+      ? []
+      : matchCommands(
+          commands.specs(),
+          query,
+          {
+            guest: container.auth.guest,
+            kiosk: container.auth.kiosk,
+            admin: container.auth.admin,
+            owner: container.auth.owner,
+          },
+          (id, s) => searchUsage.score(query, commandTarget(id), s),
+        ),
+  );
   // Results chosen before for this query rank higher (#159).
   const groups = $derived(
-    command
+    command || commandOnly
       ? []
       : search(searchable, query, 5, (it, s) => searchUsage.score(query, itemTarget(it), s)).filter(
           (g) => wikiOnly === null || g.kind === 'wiki',
         ),
   );
   // Commands of plugins (#453); the loader registers none for guests.
-  const pluginActions = $derived(command ? [] : matchActions(searchActions, query));
+  const pluginActions = $derived(command || commandOnly ? [] : matchActions(searchActions, query));
   const rowGroups = $derived(
     buildRows({
       command,
       alternative,
       groups,
-      web: modules.has('search') && query.trim() !== '',
+      web: modules.has('search') && query.trim() !== '' && !commandOnly,
       actions: pluginActions,
+      commands: commandMatches,
     }),
   );
   const flat = $derived(rowGroups.flatMap((g) => g.rows));
@@ -218,7 +245,7 @@
   let answers = $state<Answer[]>([]);
   $effect(() => {
     const q = query;
-    if (command || wikiOnlyQuery(q) !== null || q.trim().length < 2) {
+    if (command || commandOnly || wikiOnlyQuery(q) !== null || q.trim().length < 2) {
       answers = [];
       return;
     }
@@ -308,6 +335,14 @@
     }
   }
 
+  function runAppCommand(m: CommandMatch) {
+    if (!commands) return;
+    // Remembered like a chosen result, so it ranks higher next time (#159).
+    searchUsage.record(query, commandTarget(m.spec.id));
+    ondone();
+    commands.run(m.spec, m.rest);
+  }
+
   async function undo() {
     const u = undoLast;
     undoLast = null;
@@ -350,6 +385,8 @@
         return void runCommand(row.command);
       case 'plugin':
         return void runAction(row.action);
+      case 'command':
+        return runAppCommand(row.match);
       case 'result':
         return void choose(row.item);
       case 'web':
@@ -459,6 +496,9 @@
                   {:else if row.kind === 'result'}
                     <span class="title">{row.item.title}</span>
                     {#if row.item.detail}<span class="muted detail">{row.item.detail}</span>{/if}
+                  {:else if row.kind === 'command'}
+                    <span class="title">{commands?.title(row.match.spec)}</span>
+                    {#if row.match.spec.shortcut}<kbd>{row.match.spec.shortcut}</kbd>{/if}
                   {:else if row.kind === 'plugin'}
                     <span class="title">{row.action.title()}</span>
                     {#if row.action.detail()}<span class="muted detail">{row.action.detail()}</span>{/if}

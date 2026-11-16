@@ -40,6 +40,27 @@ a request to the server. Numbers follow the format of your language, and
 | `30 °C in F` | 86 °F |
 | `2 GiB in MB` | about 2147.48 MB |
 
+## Time and dates
+
+Questions about the time and the calendar are answered in the browser too,
+in German or English, and `Enter` copies the answer. Times and dates follow
+the format of your language.
+
+| Input | Answer |
+| --- | --- |
+| `uhrzeit`, `wie spät`, `time` | The current time |
+| `datum`, `heute`, `date` | Today's date with the weekday |
+| `kw`, `week` | The ISO calendar week |
+| `zeit in tokio`, `time in new york` | The time there and how far it is from yours |
+| `tage bis weihnachten`, `days until 2027-03-01` | The number of days and the weekday of that day |
+| `in 90 tagen`, `vor 2 wochen`, `90 days ago` | The resulting date |
+
+For "time in …", the search knows large cities and many countries by their
+German and English names; other places go to the normal search. Named days are Christmas Eve, Christmas, New Year's Eve, New Year's
+Day and Easter. A date without a year, such as `1.3.`, means the next such
+day. With slashes, German reads day first (`1/3` is 1 March) and English
+month first (`3/1`).
+
 ## Tools
 
 A few small tools answer in the search field as well. Like the calculator
@@ -83,6 +104,34 @@ morgen") or use a prefix with a slash for a direct answer:
 An answer only appears for modules that are enabled and set up. A restart
 from the search asks for confirmation first, exactly like the button in the
 Docker widget.
+
+## Commands
+
+The search field also controls trisse-home itself. Type what you want to do,
+in English or German, and pick the command under **Commands**:
+
+| Type | Does |
+| --- | --- |
+| `dark mode`, `dunkel` | switches to the dark theme |
+| `light mode`, `hell` | switches to the light theme |
+| `theme`, `design` | opens Settings → Appearance with the theme gallery |
+| `add widget weather` | opens the widget picker, already searching for "weather" |
+| `edit`, `bearbeiten` | starts editing the start page |
+| `settings members`, `einstellungen wetter` | opens that settings section |
+| `tab work` | switches to the tab named "work" |
+| `shortcuts` | lists the keyboard shortcuts |
+| `start tour` | starts the guided tour again |
+| `log out`, `abmelden` | signs you out |
+
+Start with `>` to see only commands: `>` alone lists all of them, `>theme`
+narrows the list. Without `>`, commands appear from three typed characters
+on, next to the other results.
+
+Only commands you are allowed to run are offered. Guests see the settings of
+their own account, members see no admin sections, and kiosk displays get no
+commands at all. While your organisation sets the theme, the theme commands
+are not offered. Commands you use often move up the list, the same way
+results do.
 
 ## Quick capture
 
