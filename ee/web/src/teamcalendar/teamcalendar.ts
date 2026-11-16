@@ -29,4 +29,14 @@ export class TeamCalendarApi {
   share(id: string, visibility: string): Promise<{ visibility: string }> {
     return this.http.put(`/api/teamcalendar/subscriptions/${encodeURIComponent(id)}`, { visibility });
   }
+
+  /** Own connected Google or Microsoft accounts (#463); same shape as subscriptions. */
+  accounts(): Promise<Subscription[]> {
+    return this.http.get<Subscription[]>('/api/teamcalendar/accounts');
+  }
+
+  /** Sharing an account shares its enabled calendars. */
+  shareAccount(id: string, visibility: string): Promise<{ visibility: string }> {
+    return this.http.put(`/api/teamcalendar/accounts/${encodeURIComponent(id)}`, { visibility });
+  }
 }
