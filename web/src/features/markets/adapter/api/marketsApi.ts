@@ -1,5 +1,6 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
-import type { RowDTO } from '../../../../shared/api-client/generated/markets';
+import type { RatesDTO, RowDTO } from '../../../../shared/api-client/generated/markets';
+import type { Rates } from '../../../search/domain/calc/currency';
 import type { MarketRow } from '../../domain/markets';
 import type { MarketsGateway } from '../../usecase/marketsUseCases';
 
@@ -20,5 +21,10 @@ export class MarketsApi implements MarketsGateway {
       stale: r.stale,
       error: r.error ?? '',
     }));
+  }
+
+  async rates(): Promise<Rates> {
+    const r = await this.http.get<RatesDTO>('/api/markets/rates');
+    return { base: r.base, date: r.date, rates: r.rates, stale: r.stale };
   }
 }

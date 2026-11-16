@@ -29,6 +29,8 @@
   import { buildCommands, type CommandHandlers } from './appCommands';
   import { detectAddress, displayAddress } from '../features/search/domain/address';
   import { BANG_ENGINES, suggestBangs, type Bang } from '../features/search/domain/bangs';
+  import { asksForTimers, formatRemaining, parseTimer, type Timer } from '../features/search/domain/timer';
+  import { timers, timerTitle } from './timers';
   import AnswerCard from '../features/search/ui/answers/AnswerCard.svelte';
   import type { ActionItem, Answer } from '../features/search/domain/smart/answer';
   import type { WeatherConfig } from '../features/weather/domain/weather';
@@ -162,6 +164,26 @@
   const bangs = $derived(
     command || !modules.has('search') ? [] : suggestBangs(query, ownBangs, BANG_ENGINES.has(engineId)),
   );
+  // Timers and alarms (#474); kiosk displays get none.
+  // svelte-ignore state_referenced_locally
+  const timersAllowed = !container.auth.kiosk;
+  let runningTimers = $state<Timer[]>(timers.list());
+  let now = $state(Date.now());
+  $effect(() => timers.onChange((list) => (runningTimers = list)));
+  const timerRequest = $derived(
+    timersAllowed && !command && !commandOnly ? parseTimer(query, new Date()) : null,
+  );
+  const showRunning = $derived(
+    timersAllowed && runningTimers.length > 0 && (query.trim() === '' || asksForTimers(query)),
+  );
+  // The remaining time ticks while running timers are listed.
+  $effect(() => {
+    if (!showRunning) return;
+    const id = setInterval(() => (now = Date.now()), 1000);
+    return () => clearInterval(id);
+  });
+  const clock = (end: number) => new Date(end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const notificationsBlocked = timers.notifier.permission() === 'denied';
   // Results chosen before for this query rank higher (#159).
   const groups = $derived(
     command || commandOnly
@@ -182,6 +204,8 @@
       commands: commandMatches,
       address,
       bangs,
+      timer: timerRequest,
+      runningTimers: showRunning ? runningTimers : [],
     }),
   );
   const flat = $derived(rowGroups.flatMap((g) => g.rows));
@@ -285,7 +309,7 @@
     openLast = null;
   });
 
-  const visible = $derived(query.trim() !== '' || status !== '' || note !== null);
+  const visible = $derived(query.trim() !== '' || status !== '' || note !== null || showRunning);
 
   // Ask the AI (#162): only for a query starting with "?", only when a local
   // Ollama is set up, never for guests; the component is loaded on demand.
@@ -415,6 +439,18 @@
         // Completes the bang; the field keeps the focus for the search terms.
         query = `!${row.bang.bang} `;
         return;
+      case 'timer': {
+        const started = timers.start(row.request);
+        query = '';
+        status = t(started.kind === 'alarm' ? 'timers.alarm_set' : 'timers.timer_started', {
+          time: clock(started.end),
+        });
+        return;
+      }
+      case 'running':
+        timers.cancel(row.timer.id);
+        status = t('timers.cancelled', { name: timerTitle(row.timer) });
+        return;
       case 'result':
         return void choose(row.item);
       case 'web':
@@ -532,6 +568,26 @@
                     <span class="muted detail"
                       >{row.bang.name}{row.bang.own ? ` · ${t('app.bang_own')}` : ''}</span
                     >
+                  {:else if row.kind === 'timer'}
+                    <span class="title"
+                      >{row.request.kind === 'alarm'
+                        ? t('timers.set_alarm', { time: clock(row.request.end) })
+                        : t('timers.start_timer', {
+                            duration: formatRemaining(row.request.end - Date.now()),
+                          })}{row.request.label ? ` · ${row.request.label}` : ''}</span
+                    >
+                    <span class="muted detail"
+                      >{row.request.tomorrow
+                        ? t('timers.tomorrow')
+                        : t('timers.ends_at', { time: clock(row.request.end) })}{notificationsBlocked
+                        ? ` · ${t('timers.notifications_blocked')}`
+                        : ''}</span
+                    >
+                  {:else if row.kind === 'running'}
+                    <span class="title"
+                      >⏱ {timerTitle(row.timer)} · {formatRemaining(row.timer.end - now)}</span
+                    >
+                    <span class="muted detail">{t('timers.enter_cancels')}</span>
                   {:else if row.kind === 'command'}
                     <span class="title">{commands?.title(row.match.spec)}</span>
                     {#if row.match.spec.shortcut}<kbd>{row.match.spec.shortcut}</kbd>{/if}

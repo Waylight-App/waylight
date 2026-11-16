@@ -65,6 +65,9 @@ type Config struct {
 	// widget (#284): ECB reference rates and Stooq daily closes.
 	MarketsECBURL   string
 	MarketsStooqURL string
+	// CurrencyRates lets the search convert currencies with the ECB's daily
+	// reference rates (#482); off for installations without internet.
+	CurrencyRates bool
 	// SportsAPIURL is the OpenLigaDB API for football results (#285).
 	SportsAPIURL string
 	// ElectricityAPIURL is the aWATTar market data API (#288); "{tld}" is
@@ -171,6 +174,7 @@ func Load(getenv func(string) string) (Config, error) {
 		DiskHealthStaleAfter:     l.duration("DISKHEALTH_STALE_AFTER", 2*time.Hour),
 		TransitAPIURL:            l.str("TRANSIT_API_URL", "https://api.transitous.org"),
 		FuelAPIURL:               l.str("FUEL_API_URL", "https://creativecommons.tankerkoenig.de/json"),
+		CurrencyRates:            l.boolean("CURRENCY_RATES", true),
 		MarketsECBURL:            l.str("MARKETS_ECB_URL", "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml"),
 		MarketsStooqURL:          l.str("MARKETS_STOOQ_URL", "https://stooq.com/q/d/l/"),
 		SportsAPIURL:             l.str("SPORTS_API_URL", "https://api.openligadb.de"),

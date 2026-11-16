@@ -144,6 +144,34 @@ An answer only appears for modules that are enabled and set up. A restart
 from the search asks for confirmation first, exactly like the button in the
 Docker widget.
 
+## Timers and alarms
+
+Type `timer` with a duration to start a timer, and `wecker` or `alarm` with
+a time for an alarm:
+
+| Type | Starts |
+| --- | --- |
+| `timer 10 min` | a ten-minute timer |
+| `timer 1h30 pizza` | a 90-minute timer called "pizza" |
+| `timer 90` | a 90-minute timer (a bare number means minutes) |
+| `wecker 17:30` | an alarm at 17:30 |
+| `alarm 6:45 aufstehen` | an alarm at 6:45 called "aufstehen" |
+
+The row shows when the timer runs out, and `Enter` starts it. An alarm time
+that has already passed today is set for tomorrow, and the row says so.
+When a timer runs out, trisse-home shows a notice at the bottom of the page
+and plays a short sound. The first time you start a timer, the browser asks
+whether trisse-home may show notifications; if you allow it, you also get a
+notification while you are in another tab.
+
+Running timers are listed when you open the search with an empty field or
+type `timer`. Pick one and press `Enter` to cancel it. Timers are kept in
+this browser, so they survive a reload.
+
+A timer only fires while a trisse-home tab or the installed app is open.
+Closed tabs cannot ring; a timer that ran out in the meantime shows its
+notice the next time you open trisse-home. Kiosk displays have no timers.
+
 ## Commands
 
 The search field also controls trisse-home itself. Type what you want to do,
