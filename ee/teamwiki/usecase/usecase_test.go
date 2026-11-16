@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	licence "trisse-home/ee/licence/domain"
 	"trisse-home/internal/modules/wiki"
@@ -59,5 +60,25 @@ func TestSourceIsSkippedWithoutLicence(t *testing.T) {
 	src := NewSource("Notion", "notion", tokens{}, level(licence.LevelNone), &searcher{})
 	if _, err := src.Search(as("m1"), "x", 5); !errors.Is(err, wiki.ErrNotConnected) {
 		t.Fatalf("got %v", err)
+	}
+}
+
+func TestSourceLimitsSearchesPerPersonAndMinute(t *testing.T) {
+	now := time.Date(2026, 11, 16, 10, 0, 0, 0, time.UTC)
+	src := NewSource("Slack", "slack", tokens{}, level(licence.LevelFull), &searcher{}).WithLimit(2, func() time.Time { return now })
+	for i := range 2 {
+		if _, err := src.Search(as("m1"), "x", 5); err != nil {
+			t.Fatalf("search %d: %v", i, err)
+		}
+	}
+	if _, err := src.Search(as("m1"), "x", 5); !errors.Is(err, ErrBusy) {
+		t.Fatalf("third search: %v", err)
+	}
+	if _, err := src.Search(as("m2"), "x", 5); err != nil {
+		t.Fatalf("another person is limited too: %v", err)
+	}
+	now = now.Add(61 * time.Second)
+	if _, err := src.Search(as("m1"), "x", 5); err != nil {
+		t.Fatalf("after a minute: %v", err)
 	}
 }

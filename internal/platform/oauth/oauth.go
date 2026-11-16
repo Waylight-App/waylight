@@ -32,6 +32,13 @@ type Endpoint struct {
 	// PKCE adds code_challenge (S256); providers that do not know it ignore it,
 	// but some reject it, so it is per provider.
 	PKCE bool
+	// ScopeParam names the parameter that carries Scopes; "" means "scope".
+	// Slack asks for the rights of a user token in "user_scope".
+	ScopeParam string
+	// UserToken reads the token of the signed-in person from "authed_user"
+	// when the answer has none at the top level, as Slack's OAuth v2 does
+	// for an app that asks for user scopes only.
+	UserToken bool
 }
 
 // Config is an endpoint with the user's app registration.
@@ -81,7 +88,11 @@ func AuthCodeURL(cfg Config, state, verifier string) string {
 		"state":         {state},
 	}
 	if len(cfg.Scopes) > 0 {
-		q.Set("scope", strings.Join(cfg.Scopes, " "))
+		param := cfg.ScopeParam
+		if param == "" {
+			param = "scope"
+		}
+		q.Set(param, strings.Join(cfg.Scopes, " "))
 	}
 	if cfg.PKCE {
 		q.Set("code_challenge", Challenge(verifier))
@@ -141,18 +152,28 @@ func (c Client) token(ctx context.Context, cfg Config, form url.Values) (Token, 
 	if err != nil {
 		return Token{}, fmt.Errorf("read token answer: %w", err)
 	}
-	var body struct {
+	type tokens struct {
 		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`
 		ExpiresIn    int64  `json:"expires_in"`
-		Error        string `json:"error"`
+	}
+	var body struct {
+		tokens
+		Error      string `json:"error"`
+		AuthedUser tokens `json:"authed_user"`
 	}
 	_ = json.Unmarshal(raw, &body)
+	if cfg.UserToken && body.AccessToken == "" {
+		body.tokens = body.AuthedUser
+	}
 	switch {
 	case res.StatusCode == http.StatusBadRequest || res.StatusCode == http.StatusUnauthorized || body.Error == "invalid_grant" || body.Error == "invalid_client":
 		return Token{}, fmt.Errorf("%w (%s)", ErrRejected, cmpOr(body.Error, res.Status))
 	case res.StatusCode >= 300:
 		return Token{}, fmt.Errorf("token endpoint answered %s", res.Status)
+	case body.AccessToken == "" && body.Error != "":
+		// Some providers (Slack) answer 200 with {"ok": false, "error": ...}.
+		return Token{}, fmt.Errorf("%w (%s)", ErrRejected, body.Error)
 	case body.AccessToken == "":
 		return Token{}, errors.New("oauth: the token answer has no access token")
 	}
