@@ -71,8 +71,8 @@ type Deps struct {
 	// Members are searched for the signed-in person in addition to the
 	// connected wikis (#327); nil or empty adds none.
 	Members *MemberSources
-	IDs       kernel.IDGenerator
-	Clock     kernel.Clock
+	IDs     kernel.IDGenerator
+	Clock   kernel.Clock
 }
 
 // Timing of the federated search.
