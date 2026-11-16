@@ -1,4 +1,4 @@
-import type { PluginHttp } from "../../../../web/src/app/plugins/api";
+import type { PluginHttp } from '../../../../web/src/app/plugins/api';
 
 /** One service in GET /api/connections (ee/connections, #326). */
 export interface Connection {
@@ -33,8 +33,8 @@ export function outcome(search: string): {
 } {
   const q = new URLSearchParams(search);
   return {
-    connected: q.get("connected") ?? undefined,
-    failed: q.get("connection_error") ?? undefined,
+    connected: q.get('connected') ?? undefined,
+    failed: q.get('connection_error') ?? undefined,
   };
 }
 
@@ -42,16 +42,12 @@ export class ConnectionsApi {
   constructor(private readonly http: PluginHttp) {}
 
   list(): Promise<Connection[]> {
-    return this.http.get<Connection[]>("/api/connections");
+    return this.http.get<Connection[]>('/api/connections');
   }
 
   /** Starts the sign-in at the service; returns the address to open. */
   async start(service: string): Promise<string> {
-    return (
-      await this.http.post<{ url: string }>(
-        `/api/connections/${encodeURIComponent(service)}`,
-      )
-    ).url;
+    return (await this.http.post<{ url: string }>(`/api/connections/${encodeURIComponent(service)}`)).url;
   }
 
   disconnect(service: string): Promise<void> {
@@ -59,20 +55,17 @@ export class ConnectionsApi {
   }
 
   clients(): Promise<Clients> {
-    return this.http.get<Clients>("/api/connections/clients");
+    return this.http.get<Clients>('/api/connections/clients');
   }
 
   saveClient(
     service: string,
     input: { clientId: string; clientSecret: string; tenant: string },
   ): Promise<unknown> {
-    return this.http.put(
-      `/api/connections/clients/${encodeURIComponent(service)}`,
-      {
-        clientId: input.clientId.trim(),
-        clientSecret: input.clientSecret,
-        tenant: input.tenant.trim(),
-      },
-    );
+    return this.http.put(`/api/connections/clients/${encodeURIComponent(service)}`, {
+      clientId: input.clientId.trim(),
+      clientSecret: input.clientSecret,
+      tenant: input.tenant.trim(),
+    });
   }
 }

@@ -1,7 +1,7 @@
-import type { PluginHttp } from "../../../../web/src/app/plugins/api";
+import type { PluginHttp } from '../../../../web/src/app/plugins/api';
 
 /** The image kinds the server takes (ee/branding, #305). */
-export const assetKinds = ["logo", "logo-dark", "favicon"] as const;
+export const assetKinds = ['logo', 'logo-dark', 'favicon'] as const;
 export type AssetKind = (typeof assetKinds)[number];
 
 /** GET/PUT /api/branding/settings. */
@@ -11,7 +11,7 @@ export interface BrandingSettings {
   secondary: string;
   hidePoweredBy: boolean;
   /** Theme for the sign-in page and new members; '' = none. */
-  defaultTheme: "" | "system" | "light" | "dark";
+  defaultTheme: '' | 'system' | 'light' | 'dark';
   /** Keeps members on defaultTheme and the accent colour. */
   lockTheme: boolean;
   /** When each image was uploaded, by kind; missing = none. */
@@ -26,13 +26,10 @@ export interface BrandingSettings {
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 
 /** A file the server would refuse, as a message key, or null. */
-export function imageProblem(file: {
-  size: number;
-  type: string;
-}): "too_big" | "svg" | null {
-  if (file.size > MAX_IMAGE_BYTES) return "too_big";
+export function imageProblem(file: { size: number; type: string }): 'too_big' | 'svg' | null {
+  if (file.size > MAX_IMAGE_BYTES) return 'too_big';
   // SVG can carry scripts; the server refuses it, so say so before uploading.
-  if (file.type === "image/svg+xml") return "svg";
+  if (file.type === 'image/svg+xml') return 'svg';
   return null;
 }
 
@@ -40,41 +37,31 @@ export class BrandingApi {
   constructor(private readonly http: PluginHttp) {}
 
   settings(): Promise<BrandingSettings> {
-    return this.http.get<BrandingSettings>("/api/branding/settings");
+    return this.http.get<BrandingSettings>('/api/branding/settings');
   }
 
   save(
     s: Pick<
       BrandingSettings,
-      | "name"
-      | "accent"
-      | "secondary"
-      | "hidePoweredBy"
-      | "defaultTheme"
-      | "lockTheme"
+      'name' | 'accent' | 'secondary' | 'hidePoweredBy' | 'defaultTheme' | 'lockTheme'
     >,
   ): Promise<BrandingSettings> {
-    return this.http.put<BrandingSettings>("/api/branding/settings", {
+    return this.http.put<BrandingSettings>('/api/branding/settings', {
       name: s.name.trim(),
       accent: s.accent,
       secondary: s.secondary,
       hidePoweredBy: s.hidePoweredBy,
       defaultTheme: s.defaultTheme,
       // Locking needs a theme to lock to; the server refuses it otherwise.
-      lockTheme: s.lockTheme && s.defaultTheme !== "",
+      lockTheme: s.lockTheme && s.defaultTheme !== '',
     });
   }
 
   upload(kind: AssetKind, file: Blob): Promise<BrandingSettings> {
-    return this.http.putBlob<BrandingSettings>(
-      `/api/branding/assets/${kind}`,
-      file,
-    );
+    return this.http.putBlob<BrandingSettings>(`/api/branding/assets/${kind}`, file);
   }
 
   remove(kind: AssetKind): Promise<BrandingSettings | undefined> {
-    return this.http.delete<BrandingSettings | undefined>(
-      `/api/branding/assets/${kind}`,
-    );
+    return this.http.delete<BrandingSettings | undefined>(`/api/branding/assets/${kind}`);
   }
 }
