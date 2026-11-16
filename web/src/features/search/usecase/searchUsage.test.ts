@@ -36,6 +36,15 @@ describe('SearchUsage (#159)', () => {
     expect(store.saved).toEqual({ enabled: false, entries: [] });
   });
 
+  it('suggests chosen targets for an empty field, but not while switched off (#480)', () => {
+    const usage = new SearchUsage(new MemoryStore());
+    expect(usage.suggestions()).toEqual([]);
+    usage.record('plex', 'service:1');
+    expect(usage.suggestions().map((s) => s.target)).toEqual(['service:1']);
+    usage.setEnabled(false);
+    expect(usage.suggestions()).toEqual([]);
+  });
+
   it('clears the history', () => {
     const usage = new SearchUsage(new MemoryStore());
     usage.record('plex', 'service:1');
