@@ -164,7 +164,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // Only the owner can do this.
   srv_67f0ba90e3a4e5b4: 'Das kann nur der Besitzer.',
   // You cannot do this to your own account; ask the owner or another admin.
-  srv_1553d503b1d708f8: 'Das geht nicht mit deinem eigenen Konto; frag den Besitzer oder einen anderen Admin.',
+  srv_1553d503b1d708f8:
+    'Das geht nicht mit deinem eigenen Konto; frag den Besitzer oder einen anderen Admin.',
   // The admin password is reset on the server only (see docs/accounts.md).
   srv_2d855ec17092911d: 'Das Admin-Passwort wird nur auf dem Server zurückgesetzt (siehe docs/accounts.md).',
   // This account has no password.
