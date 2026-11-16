@@ -61,6 +61,7 @@ nav:
       - Directory sync (SCIM, LDAP, AD): directory-sync.md
       - Audit log: audit-log.md
       - Admin policies: admin-policies.md
+      - Connected accounts: connected-accounts.md
       - Appearance: appearance.md
       - Phones, offline and the extension: apps-and-offline.md
       - Privacy of the extension: extension-privacy.md
