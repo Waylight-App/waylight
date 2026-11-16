@@ -34,6 +34,7 @@ stored encrypted.
 | Team wikis (`ee` builds) | Only while a person searches and only the services they connected: `api.atlassian.com`, `graph.microsoft.com`, `api.notion.com`, `slack.com`, at most four seconds each ([details](modules/wiki.md#team-wikis-with-each-persons-account)). |
 | Slack command (`ee` builds) | Only with `SLACK_APP_TOKEN`: one WebSocket connection to Slack, renewed hourly, and `slack.com` to open it and to match connected accounts ([details](slack-command.md)). |
 | Teams command box search (`ee` builds) | Only with `TEAMS_BOT_APP_ID`: Microsoft's signing keys at `login.botframework.com` (daily) and `graph.microsoft.com` to match connected accounts ([details](teams.md)). |
+| Teams tab (`ee` builds) | None from the server. The browser inside Teams loads Microsoft's Teams library from `res.cdn.office.net` for the tab page only ([details](teams.md#the-tab)). |
 | Ollama | Only when you ask for a summary. |
 | WebDAV off-site backups | After each backup, and when you restore from it. |
 | ntfy, Gotify, webhooks, SMTP, Slack (`hooks.slack.com`), Teams (the workflow's address, usually `*.logic.azure.com` or `*.powerplatform.com`) | When a notification is sent, or an announcement is posted to a Slack or Teams channel. None until you add the channel. |
