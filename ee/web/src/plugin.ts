@@ -9,6 +9,7 @@ import {
 } from "../../../web/src/app/plugins/api";
 import { texts as announcementTexts } from "./announcements/texts";
 import { texts as brandingTexts } from "./branding/texts";
+import { texts as connectionTexts } from "./connections/texts";
 import LicenceSection from "./licence/LicenceSection.svelte";
 import TeamTabsSection from "./teamtabs/TeamTabsSection.svelte";
 import { texts as teamTabTexts } from "./teamtabs/texts";
@@ -64,6 +65,15 @@ export const plugin: TrissePlugin = {
       label: brandingTexts.label ?? { en: "Branding" },
       description: brandingTexts.description ?? { en: "" },
       view: lazyMountable(() => import("./branding/BrandingSection.svelte")),
+    },
+    {
+      id: "connections",
+      feature: "connected-accounts",
+      label: connectionTexts.label ?? { en: "Connected accounts" },
+      description: connectionTexts.description ?? { en: "" },
+      view: lazyMountable(
+        () => import("./connections/ConnectionsSection.svelte"),
+      ),
     },
   ],
 };
