@@ -16,6 +16,33 @@ func (c *configRepo) ReplaceShortcuts(_ context.Context, list []domain.Shortcut)
 	return nil
 }
 
+func (c *configRepo) ReplaceKeywords(_ context.Context, list []domain.Keyword) error {
+	c.keywords = list
+	return nil
+}
+
+func TestSearchConfigKeywords(t *testing.T) {
+	ctx := context.Background()
+	r := &configRepo{}
+	uc := NewConfig(r)
+	if err := uc.Apply(ctx, ConfigSection{Keywords: []KeywordView{{Keyword: "NAS", Kind: "url", Target: "https://nas.lan"}}}); err != nil {
+		t.Fatal(err)
+	}
+	got, _ := uc.Export(ctx)
+	if len(got.Keywords) != 1 || got.Keywords[0].Keyword != "nas" || got.Keywords[0].Target != "https://nas.lan" {
+		t.Fatalf("%+v", got.Keywords)
+	}
+	for name, s := range map[string]ConfigSection{
+		"prefix":    {Keywords: []KeywordView{{Keyword: "t", Kind: "query", Target: "x"}}},
+		"duplicate": {Keywords: []KeywordView{{Keyword: "a", Kind: "query", Target: "x"}, {Keyword: "A", Kind: "query", Target: "y"}}},
+		"invalid":   {Keywords: []KeywordView{{Keyword: "a", Kind: "url", Target: "nas.lan"}}},
+	} {
+		if err := uc.Apply(ctx, s); !errors.Is(err, kernel.ErrInvalid) || len(r.keywords) != 1 {
+			t.Errorf("%s: want a validation error and no change, got %v (%d keywords)", name, err, len(r.keywords))
+		}
+	}
+}
+
 func TestSearchConfig(t *testing.T) {
 	ctx := context.Background()
 	r := &configRepo{}

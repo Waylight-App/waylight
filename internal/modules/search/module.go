@@ -51,6 +51,8 @@ func (m *Module) ConfigRoutes() []string {
 		"PUT /api/search/bar",
 		"POST /api/search/shortcuts",
 		"DELETE /api/search/shortcuts/{keyword}",
+		"POST /api/search/keywords",
+		"DELETE /api/search/keywords/{keyword}",
 	}
 }
 
@@ -88,4 +90,6 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/search/bar", h.SetBarOptions)
 	r.Protected("POST /api/search/shortcuts", h.AddShortcut)
 	r.Protected("DELETE /api/search/shortcuts/{keyword}", h.DeleteShortcut)
+	r.Protected("POST /api/search/keywords", h.AddKeyword)
+	r.Protected("DELETE /api/search/keywords/{keyword}", h.DeleteKeyword)
 }

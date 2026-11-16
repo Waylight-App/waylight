@@ -12,7 +12,28 @@ import (
 type memRepo struct {
 	provider  string
 	shortcuts []domain.Shortcut
+	keywords  []domain.Keyword
 	bar       *domain.BarOptions
+}
+
+func (m *memRepo) Keywords(context.Context) ([]domain.Keyword, error) { return m.keywords, nil }
+func (m *memRepo) AddKeyword(_ context.Context, k domain.Keyword) error {
+	for _, e := range m.keywords {
+		if e.Word() == k.Word() {
+			return ErrKeywordExists
+		}
+	}
+	m.keywords = append(m.keywords, k)
+	return nil
+}
+func (m *memRepo) DeleteKeyword(_ context.Context, w string) error {
+	for i, k := range m.keywords {
+		if k.Word() == w {
+			m.keywords = append(m.keywords[:i], m.keywords[i+1:]...)
+			return nil
+		}
+	}
+	return ErrKeywordNotFound
 }
 
 func (m *memRepo) BarOptions(context.Context) (domain.BarOptions, error) {
@@ -93,5 +114,35 @@ func TestSearchFieldOptions(t *testing.T) {
 	}
 	if repo.bar.Prefixes().Todo != "a" {
 		t.Fatal("a refused request must not change the stored options")
+	}
+}
+
+func TestOwnKeywords(t *testing.T) {
+	ctx := context.Background()
+	repo := &memRepo{}
+	uc := NewSearcher(repo)
+	res, err := uc.AddKeyword(ctx, KeywordView{Keyword: " NAS ", Kind: "service", Target: "svc-1", Label: "Synology"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Keywords) != 1 || res.Keywords[0] != (KeywordView{Keyword: "nas", Kind: "service", Target: "svc-1", Label: "Synology"}) {
+		t.Fatalf("%+v", res.Keywords)
+	}
+	if _, err := uc.AddKeyword(ctx, KeywordView{Keyword: "nas", Kind: "url", Target: "https://x.example"}); !errors.Is(err, ErrKeywordExists) {
+		t.Fatalf("duplicate: %v", err)
+	}
+	// The quick capture prefixes keep working: "t" cannot become a keyword ...
+	if _, err := uc.AddKeyword(ctx, KeywordView{Keyword: "t", Kind: "query", Target: "x"}); !errors.Is(err, kernel.ErrInvalid) {
+		t.Fatalf("prefix conflict: %v", err)
+	}
+	// ... and a prefix cannot be changed to an existing keyword.
+	if _, err := uc.SetBarOptions(ctx, SetBarRequest{TodoPrefix: "nas", NotePrefix: "n", BookmarkPrefix: "b"}); !errors.Is(err, kernel.ErrInvalid) {
+		t.Fatalf("prefix onto keyword: %v", err)
+	}
+	if _, err := uc.DeleteKeyword(ctx, "nas"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := uc.DeleteKeyword(ctx, "nas"); !errors.Is(err, ErrKeywordNotFound) {
+		t.Fatalf("delete unknown: %v", err)
 	}
 }

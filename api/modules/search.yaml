@@ -60,8 +60,35 @@ paths:
       responses:
         "200": { $ref: "#/components/responses/SearchSettings" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /api/search/keywords:
+    post:
+      tags: [search]
+      summary: Add an own keyword that opens a service, bookmark, widget, web address or search
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SearchKeyword" } } } }
+      responses:
+        "200": { $ref: "#/components/responses/SearchSettings" }
+        "409": { description: Keyword already used, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/search/keywords/{keyword}:
+    delete:
+      tags: [search]
+      summary: Delete an own keyword
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ name: keyword, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { $ref: "#/components/responses/SearchSettings" }
+        "404": { $ref: "#/components/responses/NotFound" }
 
 schemas:
+  SearchKeyword:
+    type: object
+    required: [keyword, kind, target, label]
+    properties:
+      keyword: { type: string, description: 1 to 24 letters, digits, - or _; not a quick capture prefix, examples: [nas] }
+      kind: { type: string, enum: [service, bookmark, widget, url, query] }
+      target: { type: string, description: 'Id of the service, bookmark or widget; an http(s) address; or a search text' }
+      label: { type: string, description: Display name of the target, may be empty }
   DefaultProvider: { type: object, required: [defaultProvider], properties: { defaultProvider: { type: string } } }
   SearchBar:
     type: object
