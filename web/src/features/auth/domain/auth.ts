@@ -17,6 +17,8 @@ export interface AuthStatus {
   admin: boolean;
   /** The owner: backups, export and API tokens stay with this account (ADR 0022). */
   owner: boolean;
+  /** Name of the signed-in account; '' when signed out. */
+  username: string;
   /** Member: own tabs and content, no instance settings (#294). */
   member: boolean;
   /** Available sign-in methods (ADR 0013). */
@@ -52,6 +54,10 @@ export interface Member {
   groups: string[];
   disabled: boolean;
   createdAt: Date;
+  /** "member" or "admin" (ADR 0022). */
+  role: 'member' | 'admin';
+  /** Where an admin role comes from: '' (set by hand), "sso" or "directory". */
+  roleSource: string;
 }
 
 /** The members and whether new ones can be created in this version. */
