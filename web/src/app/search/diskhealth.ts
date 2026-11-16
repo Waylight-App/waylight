@@ -19,6 +19,12 @@ export const search = defineSearch({
   intents: [
     {
       id: 'diskhealth.status',
+      help: {
+        group: 'home',
+        de: 'Ob die Festplatten gesund sind (SMART)',
+        en: 'Whether the disks are healthy (SMART)',
+        examples: { de: ['festplatte defekt', 'smart'], en: ['disk health', 'smart'] },
+      },
       source: 'diskhealth',
       prefixes: ['smart'],
       answer: 'list',

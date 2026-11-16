@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { CommandHandlers } from './appCommands';
   import { dayPart, greetingKey } from '../features/appearance/domain/greeting';
-  import { HINT_INTERVAL_MS, nextHint, SEARCH_HINTS } from '../features/search/domain/hints';
+  import { hintExamples } from '../features/search/domain/help';
+  import { HINT_INTERVAL_MS, MAX_EXAMPLE_HINTS, nextHint } from '../features/search/domain/hints';
   import type { WeatherConfig } from '../features/weather/domain/weather';
   import { t } from '../shared/i18n';
   import Icon from '../shared/ui/icons/Icon.svelte';
@@ -47,9 +48,36 @@
   // The placeholder rotates every few seconds; paused on focus, off for reduced motion.
   $effect(() => {
     if (reducedMotion) return;
-    const id = setInterval(() => (hint = nextHint(hint, { focused, reducedMotion })), HINT_INTERVAL_MS);
+    const id = setInterval(
+      () => (hint = nextHint(hint, hints.length, { focused, reducedMotion })),
+      HINT_INTERVAL_MS,
+    );
     return () => clearInterval(id);
   });
+
+  // Hints after the first come from the help data (#479), so they only name
+  // what is enabled. Loaded lazily: the help pulls in every search source,
+  // which must not grow the entry chunk.
+  let examples = $state<string[]>([]);
+  $effect(() => {
+    const enabled = modules;
+    if (!enabled) return;
+    const auth = container.auth;
+    void import('./searchHelp').then(({ buildHelp }) => {
+      examples = hintExamples(
+        buildHelp({
+          modules: enabled,
+          viewer: { guest: auth.guest, kiosk: auth.kiosk, admin: auth.admin, owner: auth.owner },
+          prefixes: { todo: ['t'], note: ['n'], bookmark: ['b'] },
+        }),
+      ).slice(0, MAX_EXAMPLE_HINTS);
+    });
+  });
+  const hints = $derived([
+    t('search.hint.learn'),
+    ...examples.map((example) => t('search.hint.try', { example })),
+    t('search.hint.help'),
+  ]);
 
   const hello = $derived(t(greetingKey(dayPart(now), name !== ''), { name }));
 
@@ -123,7 +151,7 @@
         aria-controls={listboxId}
         aria-autocomplete="list"
         aria-activedescendant={activeId}
-        placeholder={t(SEARCH_HINTS[hint] ?? SEARCH_HINTS[0])}
+        placeholder={hints[hint] ?? hints[0]}
         autocomplete="off"
         onfocus={() => ((focused = true), (open = true))}
         onblur={() => (focused = false)}

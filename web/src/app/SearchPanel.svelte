@@ -27,6 +27,9 @@
   import { matchActions, searchActions, type SearchAction } from './searchActions';
   import { type CommandMatch, matchCommands, parseCommandQuery } from '../features/search/domain/commands';
   import { buildCommands, type CommandHandlers } from './appCommands';
+  import { parseHelpQuery } from '../features/search/domain/help';
+  import { buildHelp } from './searchHelp';
+  import SearchHelp from './SearchHelp.svelte';
   import { detectAddress, displayAddress } from '../features/search/domain/address';
   import { BANG_ENGINES, suggestBangs, type Bang } from '../features/search/domain/bangs';
   import { matchKeyword, type OwnKeyword } from '../features/search/domain/keywords';
@@ -320,6 +323,24 @@
     openLast = null;
   });
 
+  // "?", "hilfe" or "help" lists what the search can do (#479).
+  const helpFilter = $derived(parseHelpQuery(query));
+  const helpEntries = $derived(
+    helpFilter === null
+      ? []
+      : buildHelp({
+          modules,
+          viewer: {
+            guest: container.auth.guest,
+            kiosk: container.auth.kiosk,
+            admin: container.auth.admin,
+            owner: container.auth.owner,
+          },
+          prefixes: prefixesFromConfig(bar?.capturePrefixes),
+          commands: commands ?? undefined,
+        }),
+  );
+
   const visible = $derived(query.trim() !== '' || status !== '' || note !== null || showRunning);
 
   // Ask the AI (#162): only for a query starting with "?", only when a local
@@ -340,7 +361,7 @@
 
   $effect(() => {
     activeId = visible && flat.length ? optionId(Math.min(active, flat.length - 1)) : undefined;
-    expanded = visible && (flat.length > 0 || answers.length > 0 || aiQuestion !== '');
+    expanded = visible && (flat.length > 0 || answers.length > 0 || aiQuestion !== '' || helpFilter !== null);
   });
 
   /** Opens a typed address, in a new tab when the search is set up that way. */
@@ -590,6 +611,9 @@
         <Markdown source={note.body} />
       </div>
     {:else}
+      {#if helpFilter !== null}
+        <SearchHelp entries={helpEntries} filter={helpFilter} onpick={(example) => (query = example)} />
+      {/if}
       {#if answers.length > 0}
         <!-- Instant answers above the rows (#156). -->
         <section class="answers" aria-label={t('smart.answers')} aria-live="polite">

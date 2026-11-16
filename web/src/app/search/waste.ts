@@ -8,6 +8,12 @@ export const search = defineSearch({
   intents: [
     {
       id: 'waste.next',
+      help: {
+        group: 'day',
+        de: 'Wann welche Tonne abgeholt wird',
+        en: 'When which bin is collected',
+        examples: { de: ['müll', 'gelbe tonne'], en: ['trash', 'bin collection'] },
+      },
       source: 'waste',
       prefixes: ['muell', 'mull', 'abfall', 'waste'],
       answer: 'list',

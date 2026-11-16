@@ -37,6 +37,20 @@ export interface IntentSpec {
   widgetKind?: string;
   /** Explicit prefixes that select the intent directly, e.g. "cpu" for "/cpu". */
   prefixes?: string[];
+  /** What the search help (#479) says about the intent; every intent has one. */
+  help?: IntentHelp;
+}
+
+/**
+ * One line of the search help (#479) in plain words, with one or two
+ * queries that work, in German and English. The group decides where it is
+ * listed; intents about the home server are "home", everyday things "day".
+ */
+export interface IntentHelp {
+  group: 'day' | 'home';
+  de: string;
+  en: string;
+  examples: { de: string[]; en: string[] };
 }
 
 /** Something with a name the user can refer to (container, service …). */
