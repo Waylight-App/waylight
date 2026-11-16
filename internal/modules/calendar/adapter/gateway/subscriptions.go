@@ -107,3 +107,71 @@ func (r *SubscriptionRepository) Delete(ctx context.Context, id string) error {
 	}
 	return nil
 }
+
+// ListShared returns the subscriptions other accounts shared with the
+// principal (team calendar, #299): visible to it by ADR 0018, not its own,
+// never private ones.
+func (r *SubscriptionRepository) ListShared(ctx context.Context) ([]domain.Subscription, error) {
+	p := kernel.PrincipalFrom(ctx)
+	cond, args := sqlutil.VisibleTo(p, "")
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT `+subscriptionColumns+` FROM calendar_subscriptions
+		WHERE owner_id <> ? AND visibility <> 'private' AND `+cond+` ORDER BY name`, append([]any{p.AccountID}, args...)...)
+	if err != nil {
+		return nil, fmt.Errorf("query shared subscriptions: %w", err)
+	}
+	defer rows.Close()
+	var out []domain.Subscription
+	for rows.Next() {
+		s, err := r.scan(rows)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, s)
+	}
+	return out, rows.Err()
+}
+
+// SharedSubscription is one of the principal's own subscriptions and who
+// else sees it.
+type SharedSubscription struct {
+	ID, Name   string
+	Visibility kernel.Visibility
+}
+
+// Own lists the principal's own subscriptions with their visibility.
+func (r *SubscriptionRepository) Own(ctx context.Context) ([]SharedSubscription, error) {
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT id, name, visibility FROM calendar_subscriptions WHERE `+cond+` ORDER BY position, name`, args...)
+	if err != nil {
+		return nil, fmt.Errorf("query subscriptions: %w", err)
+	}
+	defer rows.Close()
+	var out []SharedSubscription
+	for rows.Next() {
+		var s SharedSubscription
+		var v string
+		if err := rows.Scan(&s.ID, &s.Name, &v); err != nil {
+			return nil, err
+		}
+		s.Visibility = kernel.Visibility(v)
+		out = append(out, s)
+	}
+	return out, rows.Err()
+}
+
+// SetVisibility changes who sees one of the principal's own subscriptions.
+func (r *SubscriptionRepository) SetVisibility(ctx context.Context, id string, v kernel.Visibility) error {
+	cond, args := mine(ctx)
+	//nolint:gosec // the condition comes from sqlutil with bound arguments
+	res, err := r.db.ExecContext(ctx, `UPDATE calendar_subscriptions SET visibility = ? WHERE id = ? AND `+cond,
+		append([]any{string(v), id}, args...)...)
+	if err != nil {
+		return fmt.Errorf("share subscription: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return domain.ErrSubscriptionNotFound
+	}
+	return nil
+}
