@@ -30,3 +30,5 @@ web/playwright-report/
 # Binary built in the repository root (go build ./cmd/server)
 /server
 /.claude/
+/ee/web/dist/*
+!/ee/web/dist/.gitkeep
