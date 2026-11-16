@@ -37,4 +37,6 @@ export const texts: Catalogue = {
     de: 'Alle zeigen, ob sie heute im Büro, im Homeoffice oder weg sind. Ausschalten löscht alle Status.',
   },
   enabled: { en: 'Presence is on', de: 'Anwesenheit ist an' },
+  search_set: { en: 'Set my status: {status}', de: 'Meinen Status setzen: {status}' },
+  search_done: { en: 'Status set: {status}', de: 'Status gesetzt: {status}' },
 };
