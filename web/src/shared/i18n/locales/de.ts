@@ -1691,6 +1691,7 @@ export const de: Record<BaseMessageKey, string> = {
   'commands.done_theme': 'Design geändert',
   'app.group.commands': 'Befehle',
   'app.group.timers': 'Timer',
+  'app.group.suggested': 'Vorschläge für jetzt',
   'timers.start_timer': 'Timer über {duration} starten',
   'timers.set_alarm': 'Wecker auf {time} stellen',
   'timers.ends_at': 'Läuft um {time} ab',

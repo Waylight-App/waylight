@@ -1656,6 +1656,7 @@ export const en = {
   'commands.done_theme': 'Theme changed',
   'app.group.commands': 'Commands',
   'app.group.timers': 'Timers',
+  'app.group.suggested': 'Suggested for now',
   'timers.start_timer': 'Start a {duration} timer',
   'timers.set_alarm': 'Set an alarm for {time}',
   'timers.ends_at': 'Runs out at {time}',
