@@ -1,7 +1,16 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
-import type { ClearedDTO, ItemDTO, SettingsDTO } from '../../../../shared/api-client/generated/shopping';
 import type {
+  ClearedDTO,
+  ImportedDTO,
+  ItemDTO,
+  ListDTO,
+  ListsDTO,
+  SettingsDTO,
+} from '../../../../shared/api-client/generated/shopping';
+import type {
+  CurrentRequestDTO,
   ItemStateDTO,
+  ListRequestDTO,
   NewItemDTO,
   SettingsInputDTO,
 } from '../../../../shared/api-client/generated/shopping-requests';
@@ -9,23 +18,16 @@ import { fetchShareGroups, type ShareGroup, type Visibility } from '../../../../
 import type { ShoppingItem, ShoppingList, ShoppingOverview, ShoppingSettings } from '../../domain/shopping';
 import type { ShoppingGateway } from '../../usecase/shoppingUseCases';
 
-// TODO(#471): replace with the generated DTOs once the backend lands.
-interface ListDTO {
-  id: string;
-  name: string;
-  visibility: string;
-  mine: boolean;
-  open: number;
-}
-interface ListsDTO {
-  lists: ListDTO[];
-  caldav: boolean;
-  current: string;
-}
-
 const item = (id: string) => `/api/shopping/items/${encodeURIComponent(id)}`;
 const list = (id: string) => `/api/shopping/lists/${encodeURIComponent(id)}`;
 const listItem = (listId: string, id: string) => `${list(listId)}/items/${encodeURIComponent(id)}`;
+const toList = (l: ListDTO): ShoppingList => ({
+  id: l.id,
+  name: l.name,
+  visibility: l.visibility,
+  mine: l.mine,
+  open: l.open,
+});
 
 /** ShoppingGateway backed by the REST API. */
 export class ShoppingApi implements ShoppingGateway {
@@ -58,19 +60,22 @@ export class ShoppingApi implements ShoppingGateway {
 
   async overview(): Promise<ShoppingOverview> {
     const o = await this.http.get<ListsDTO>('/api/shopping/lists');
-    return { lists: o.lists.map((l) => ({ ...l })), caldav: o.caldav, current: o.current };
+    return { lists: o.lists.map(toList), caldav: o.caldav, current: o.current };
   }
   async createList(name: string, visibility?: Visibility): Promise<ShoppingList> {
-    return { ...(await this.http.post<ListDTO>('/api/shopping/lists', { name, visibility })) };
+    const body: ListRequestDTO = { name, visibility };
+    return toList(await this.http.post<ListDTO>('/api/shopping/lists', body));
   }
   async updateList(id: string, name: string, visibility: Visibility): Promise<ShoppingList> {
-    return { ...(await this.http.put<ListDTO>(list(id), { name, visibility })) };
+    const body: ListRequestDTO = { name, visibility };
+    return toList(await this.http.put<ListDTO>(list(id), body));
   }
   deleteList(id: string): Promise<void> {
     return this.http.delete(list(id));
   }
   setCurrent(current: string): Promise<void> {
-    return this.http.put('/api/shopping/current', { list: current });
+    const body: CurrentRequestDTO = { list: current };
+    return this.http.put('/api/shopping/current', body);
   }
   async listItems(listId: string): Promise<ShoppingItem[]> {
     return (await this.http.get<ItemDTO[]>(`${list(listId)}/items`)).map((i) => ({ ...i }));
@@ -90,7 +95,7 @@ export class ShoppingApi implements ShoppingGateway {
     return (await this.http.post<ClearedDTO>(`${list(listId)}/clear-completed`)).deleted;
   }
   async importCaldav(listId: string): Promise<number> {
-    return (await this.http.post<{ imported: number }>(`${list(listId)}/import`)).imported;
+    return (await this.http.post<ImportedDTO>(`${list(listId)}/import`)).imported;
   }
   shareGroups(): Promise<ShareGroup[]> {
     return fetchShareGroups(this.http);
