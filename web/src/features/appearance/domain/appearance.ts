@@ -4,6 +4,11 @@ import type { ThemeMode } from '../../../shared/theme/theme';
 /** Visual preferences of the start page. */
 export interface Appearance {
   theme: ThemeMode;
+  /**
+   * The organisation keeps members on its theme and accent colour (#305);
+   * the server ignores both on save, so the settings show them read-only.
+   */
+  themeLocked?: boolean;
   accentColor: string;
   backgroundImage: string;
   customCss: string;

@@ -15,6 +15,18 @@ export const texts: Catalogue = {
     en: 'Hide "Powered by trisse-home" on the sign-in page',
     de: "„Läuft mit trisse-home“ auf der Anmeldeseite ausblenden",
   },
+  default_theme: {
+    en: "Theme for the sign-in page and new members",
+    de: "Design für die Anmeldeseite und neue Mitglieder",
+  },
+  theme_none: { en: "No default", de: "Keine Vorgabe" },
+  theme_system: { en: "Follow the device", de: "Wie das Gerät" },
+  theme_light: { en: "Light", de: "Hell" },
+  theme_dark: { en: "Dark", de: "Dunkel" },
+  lock_theme: {
+    en: "Keep members on this theme and the accent colour",
+    de: "Mitglieder bei diesem Design und der Akzentfarbe halten",
+  },
   save: { en: "Save", de: "Speichern" },
   saved: {
     en: "Saved. Reload the page to see the change everywhere.",

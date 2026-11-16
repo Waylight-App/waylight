@@ -16,6 +16,8 @@ export interface Branding {
   logo?: string;
   logoDark?: string;
   favicon?: string;
+  /** The organisation's theme ('' = none); the sign-in page uses it. */
+  defaultTheme?: '' | 'system' | 'light' | 'dark';
 }
 
 export const PRODUCT_NAME = 'trisse-home';

@@ -244,6 +244,7 @@ export const en = {
   'dashboard.duplicate_widget': 'Duplicate widget',
   'dashboard.duplicate': 'Duplicate',
   'dashboard.remove_widget': 'Remove widget',
+  'appearance.theme_locked': 'Your organisation sets the theme and the accent colour.',
   'appearance.theme': 'Theme',
   'appearance.system': 'System',
   'appearance.light': 'Light',
