@@ -120,8 +120,9 @@ func (uc *login) viaDirectory(ctx context.Context, req LoginRequest) (domain.Acc
 	if err != nil {
 		return domain.Account{}, false, err
 	}
-	// The directory may only sign in members, never the owner or a guest.
-	if a.Role() != domain.RoleMember {
+	// The directory may only sign in members and admins, never the owner or
+	// a guest.
+	if !a.IsPerson() {
 		return domain.Account{}, false, domain.ErrInvalidCredentials
 	}
 	return a, true, nil

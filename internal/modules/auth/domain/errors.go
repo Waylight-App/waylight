@@ -23,12 +23,17 @@ var (
 	ErrTooManyGuests   = kernel.NewPublicError(kernel.ErrInvalid, "There are already 20 guests.")
 	ErrAccountDisabled = kernel.NewPublicError(kernel.ErrForbidden, "This account is disabled.")
 	ErrOwnerOnly       = kernel.NewPublicError(kernel.ErrForbidden, "Only an admin can do this.")
-	ErrReadOnly        = kernel.NewPublicError(kernel.ErrForbidden, "Guests can only view this dashboard.")
+	// ErrOwnerAlone refuses admins what only the owner may do (ADR 0022).
+	ErrOwnerAlone = kernel.NewPublicError(kernel.ErrForbidden, "Only the owner can do this.")
+	ErrReadOnly   = kernel.NewPublicError(kernel.ErrForbidden, "Guests can only view this dashboard.")
 )
 
 // Errors of members and groups (#294).
 var (
 	ErrMemberNotFound = kernel.NewPublicError(kernel.ErrNotFound, "The member does not exist.")
+	// ErrNotOnYourself refuses an admin disabling, demoting or deleting their
+	// own account (#434).
+	ErrNotOnYourself = kernel.NewPublicError(kernel.ErrForbidden, "You cannot do this to your own account; ask the owner or another admin.")
 	// ErrSecondFactorRequired answers an account without a second factor while an admin policy requires one (#304).
 	ErrSecondFactorRequired = kernel.NewPublicError(kernel.ErrForbidden, "Set up a second factor (an authenticator app or a passkey) to continue; your administrator requires one.")
 	ErrTooManyMembers       = kernel.NewPublicError(kernel.ErrInvalid, "There are already 50 members.")

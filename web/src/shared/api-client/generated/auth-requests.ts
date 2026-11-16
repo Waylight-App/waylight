@@ -64,6 +64,10 @@ export interface MemberRequestDTO {
   name?: string;
   password?: string;
   disabled: boolean;
+  /**
+   * Role is "member" or "admin" (#434); empty keeps it.
+   */
+  role?: string;
 }
 /**
  * GroupRequestDTO creates or updates a group.

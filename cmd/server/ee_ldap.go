@@ -25,7 +25,8 @@ func init() {
 			UserAttribute: os.Getenv("LDAP_USER_ATTRIBUTE"),
 			UserClass:     os.Getenv("LDAP_USER_CLASS"),
 			TLS:           ldapTLS(os.Getenv("LDAP_CA_FILE")),
-		}, ldap.Policy{MemberGroups: envList("LDAP_MEMBER_GROUPS"), SyncGroups: envList("LDAP_SYNC_GROUPS")})
+		}, ldap.Policy{MemberGroups: envList("LDAP_MEMBER_GROUPS"), SyncGroups: envList("LDAP_SYNC_GROUPS"),
+			AdminGroups: envList("LDAP_ADMIN_GROUPS")})
 	})
 }
 

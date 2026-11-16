@@ -16,9 +16,10 @@ import (
 func init() {
 	registerModule("sso", func(d moduleDeps) modules.Module {
 		return sso.New(d.db, d.clock, d.auth, licenceModule(d).Licensing(), sso.Policy{
-			Emails:     envList("OIDC_MEMBER_EMAILS"),
-			Groups:     envList("OIDC_MEMBER_GROUPS"),
-			SyncGroups: envList("OIDC_SYNC_GROUPS"),
+			Emails:      envList("OIDC_MEMBER_EMAILS"),
+			Groups:      envList("OIDC_MEMBER_GROUPS"),
+			SyncGroups:  envList("OIDC_SYNC_GROUPS"),
+			AdminGroups: envList("OIDC_ADMIN_GROUPS"),
 		})
 	})
 }

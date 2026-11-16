@@ -70,11 +70,11 @@ func (v Visibility) VisibleTo(p Principal, ownerID string) bool {
 var ErrNotOwner = NewPublicError(ErrForbidden, "Only the person who created this can change it.")
 
 // DefaultVisibility is the visibility of a new record created by p. Members
-// start private. The admin keeps today's behaviour, everyone, so a household
+// and admins (people with a space of their own, ADR 0022) start private. The admin keeps today's behaviour, everyone, so a household
 // without members notices no change, until they choose private for their
 // new records once members exist (ADR 0018, migration step 3).
 func DefaultVisibility(p Principal) Visibility {
-	if p.Role == "member" || p.PrivateByDefault {
+	if p.Role == "member" || p.Role == "admin" || p.PrivateByDefault {
 		return Private
 	}
 	return Everyone

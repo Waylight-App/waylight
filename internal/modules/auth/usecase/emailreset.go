@@ -68,8 +68,11 @@ func self(ctx context.Context) (string, error) {
 	if p.AccountID == "" || p.IsSystem() || p.IsKiosk() {
 		return "", domain.ErrNoPassword
 	}
-	if p.Role == string(domain.RoleOwner) {
+	switch p.Role {
+	case string(domain.RoleOwner):
 		return "", domain.ErrAdminResetByShell
+	case string(domain.RoleAdmin):
+		return "", domain.ErrAdminResetByAdmin
 	}
 	return p.AccountID, nil
 }

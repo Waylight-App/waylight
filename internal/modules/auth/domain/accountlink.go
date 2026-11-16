@@ -91,6 +91,8 @@ func NewResetLink(id string, hash TokenHash, a Account, now time.Time, ttl time.
 	case RoleMember, RoleGuest:
 	case RoleOwner:
 		return AccountLink{}, ErrAdminResetByShell
+	case RoleAdmin:
+		return AccountLink{}, ErrAdminResetByAdmin
 	default:
 		return AccountLink{}, ErrNoPassword // kiosks sign in with their own link
 	}
@@ -109,6 +111,11 @@ var ErrInvalidAccountLink = kernel.NewPublicError(kernel.ErrUnauthorized, "This 
 
 // ErrAdminResetByShell is returned when a reset link is asked for the admin.
 var ErrAdminResetByShell = kernel.NewPublicError(kernel.ErrForbidden, "The admin password is reset on the server only (see docs/accounts.md).")
+
+// ErrAdminResetByAdmin is returned when a reset link is asked for an admin
+// (#434): like the owner's, their account must not be taken over by a link,
+// so the owner or another admin sets a new password.
+var ErrAdminResetByAdmin = kernel.NewPublicError(kernel.ErrForbidden, "An admin's password is set by the owner or another admin.")
 
 // ErrTooManyInvites is returned at the limit of open invitations.
 var ErrTooManyInvites = kernel.NewPublicError(kernel.ErrConflict, "At most 20 invitations can be open at the same time.")

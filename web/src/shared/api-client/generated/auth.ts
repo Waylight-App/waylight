@@ -117,12 +117,18 @@ export interface GuestDTO {
   createdAt: string /* RFC 3339 */;
 }
 /**
- * MemberDTO is a member account (#294).
+ * MemberDTO is a member or admin account (#294, #434).
  */
 export interface MemberDTO {
   id: string;
   name: string;
   groups: string[];
+  /**
+   * Role is "member" or "admin"; RoleSource is "" (set by hand), "sso" or
+   * "directory".
+   */
+  role: string;
+  roleSource: string;
   disabled: boolean;
   createdAt: string /* RFC 3339 */;
 }

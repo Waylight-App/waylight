@@ -44,6 +44,26 @@ func (m memLinks) Delete(_ context.Context, n string) error { delete(m, n); retu
 type member struct {
 	groups   []string
 	disabled bool
+	// admin is set through SetAdmin; adminSource remembers who granted it.
+	admin       bool
+	adminSource string
+}
+
+// SetAdmin mirrors the auth module: a source takes back only what it gave.
+func (f *fakeAccounts) SetAdmin(_ context.Context, id string, admin bool, source string) (bool, error) {
+	m, ok := f.members[id]
+	if !ok {
+		return false, authdomain.ErrGuestNotFound
+	}
+	switch {
+	case admin && !m.admin:
+		m.admin, m.adminSource = true, source
+	case !admin && m.admin && m.adminSource == source:
+		m.admin, m.adminSource = false, ""
+	default:
+		return false, nil
+	}
+	return true, nil
 }
 
 type fakeAccounts struct{ members map[string]*member }
@@ -196,5 +216,22 @@ func TestADeletedMemberIsCreatedAgain(t *testing.T) {
 	delete(accounts.members, id)
 	if again, err := a.Authenticate(ctx, "anna", "anna-pw"); err != nil || accounts.members[again] == nil {
 		t.Fatalf("got %q %v", again, err)
+	}
+}
+
+func TestDirectoryAdminGroupByDNOrName(t *testing.T) {
+	dir := &fakeDir{
+		users:    map[string]domain.User{"anna": {DN: annaDN, Groups: []string{"cn=IT,ou=groups,dc=example,dc=org"}}},
+		password: map[string]string{annaDN: "anna-pw"},
+	}
+	accounts, lvl := &fakeAccounts{members: map[string]*member{}}, level(licence.LevelFull)
+	a := New(Deps{Directory: dir, Links: memLinks{}, Accounts: accounts, Licensing: &lvl, Policy: domain.Policy{AdminGroups: []string{"IT"}}})
+	id, err := a.Authenticate(ctx, "anna", "anna-pw")
+	if err != nil || !accounts.members[id].admin || accounts.members[id].adminSource != "directory" {
+		t.Fatalf("%v %+v", err, accounts.members[id])
+	}
+	dir.users["anna"] = domain.User{DN: annaDN}
+	if _, err := a.Authenticate(ctx, "anna", "anna-pw"); err != nil || accounts.members[id].admin {
+		t.Fatalf("after leaving IT: %v %+v", err, accounts.members[id])
 	}
 }

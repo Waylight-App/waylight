@@ -46,11 +46,25 @@ type guests struct{ deps Deps }
 // NewGuests returns the guest management use cases.
 func NewGuests(deps Deps) Guests { return &guests{deps: deps} }
 
-// ownerOnly lets only the admin (today the owner) and the system through.
-// It is an allow-list on purpose: a new role, such as member (#294), is
-// refused until someone decides otherwise.
+// adminOnly lets the owner, admins (ADR 0022) and the system through. It is
+// an allow-list on purpose: a new role is refused until someone decides
+// otherwise.
+func adminOnly(ctx context.Context) error {
+	p := kernel.PrincipalFrom(ctx)
+	if p.Role != string(domain.RoleOwner) && p.Role != string(domain.RoleAdmin) && !p.IsSystem() {
+		return domain.ErrOwnerOnly
+	}
+	return nil
+}
+
+// ownerOnly lets only the owner and the system through, for what acts as
+// the owner: API tokens carry the owner's ID, so an admin creating one could
+// read the owner's private records with it.
 func ownerOnly(ctx context.Context) error {
 	if p := kernel.PrincipalFrom(ctx); p.Role != string(domain.RoleOwner) && !p.IsSystem() {
+		if p.Role == string(domain.RoleAdmin) {
+			return domain.ErrOwnerAlone
+		}
 		return domain.ErrOwnerOnly
 	}
 	return nil
@@ -62,7 +76,7 @@ func guestView(a domain.Account) GuestView {
 
 // List implements Guests.
 func (uc *guests) List(ctx context.Context) ([]GuestView, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return nil, err
 	}
 	all, err := uc.deps.Accounts.List(ctx)
@@ -115,7 +129,7 @@ func (uc *guests) Create(ctx context.Context, req NewGuestRequest) (GuestView, e
 }
 
 func (uc *guests) guest(ctx context.Context, id string) (domain.Account, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return domain.Account{}, err
 	}
 	if id == domain.OwnerID {
@@ -235,6 +249,11 @@ func (uc *authorizer) Authorize(ctx context.Context, p kernel.Principal, method,
 		}
 		return nil
 	case p.Role == string(domain.RoleOwner) || p.IsSystem():
+		return nil
+	case p.Role == string(domain.RoleAdmin):
+		if domain.OwnerOnlyPath(path) {
+			return domain.ErrOwnerAlone
+		}
 		return nil
 	case p.Role == string(domain.RoleMember):
 		var kinds map[string]string

@@ -89,6 +89,9 @@ LDAP_USER_ATTRIBUTE=uid
 LDAP_MEMBER_GROUPS=trisse-home-users
 # Optional: only these groups become trisse-home groups.
 LDAP_SYNC_GROUPS=Office,Sales
+# Optional: users in one of these groups (names or DNs) become admins; leaving
+# the group makes them members again at their next sign-in (ADR 0022).
+LDAP_ADMIN_GROUPS=trisse-home-admins
 # Optional: a CA certificate (PEM) for a directory with an internal CA.
 LDAP_CA_FILE=/data/ldap-ca.pem
 ```

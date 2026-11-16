@@ -75,7 +75,7 @@ func (uc *kiosks) view(a domain.Account, k domain.Kiosk) KioskView {
 }
 
 func (uc *kiosks) List(ctx context.Context) ([]KioskView, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return nil, err
 	}
 	all, err := uc.deps.Accounts.List(ctx)
@@ -138,7 +138,7 @@ func (uc *kiosks) Create(ctx context.Context, in KioskInput) (KioskView, string,
 
 // kiosk loads a display for the owner; guests and the owner are not kiosks.
 func (uc *kiosks) kiosk(ctx context.Context, id string) (domain.Account, domain.Kiosk, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return domain.Account{}, domain.Kiosk{}, err
 	}
 	a, err := uc.deps.Accounts.Get(ctx, id)
