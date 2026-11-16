@@ -17,3 +17,17 @@ type NewItemDTO struct {
 type ItemStateDTO struct {
 	Done bool `json:"done"`
 }
+
+// ListRequestDTO creates or changes a list on trisse-home (#471).
+type ListRequestDTO struct {
+	Name string `json:"name"`
+	// Visibility is "private", "everyone" or "group:<id>"; empty on create
+	// uses the default for new records.
+	Visibility string `json:"visibility,omitempty"`
+}
+
+// CurrentRequestDTO chooses what the widget shows.
+type CurrentRequestDTO struct {
+	// List is a list ID or "caldav".
+	List string `json:"list"`
+}

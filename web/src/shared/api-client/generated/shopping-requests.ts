@@ -24,3 +24,23 @@ export interface NewItemDTO {
 export interface ItemStateDTO {
   done: boolean;
 }
+/**
+ * ListRequestDTO creates or changes a list on trisse-home (#471).
+ */
+export interface ListRequestDTO {
+  name: string;
+  /**
+   * Visibility is "private", "everyone" or "group:<id>"; empty on create
+   * uses the default for new records.
+   */
+  visibility?: string;
+}
+/**
+ * CurrentRequestDTO chooses what the widget shows.
+ */
+export interface CurrentRequestDTO {
+  /**
+   * List is a list ID or "caldav".
+   */
+  list: string;
+}
