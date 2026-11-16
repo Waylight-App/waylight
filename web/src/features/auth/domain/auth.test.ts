@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateNewPassword, viewFor } from './auth';
+import { remainingTime, validateNewPassword, viewFor } from './auth';
 
 describe('viewFor', () => {
   it('prefers setup over everything else', () => {
@@ -81,5 +81,21 @@ describe('kiosk displays (#50)', () => {
     expect(inNightWindow(at(6, 30), '22:00', '06:30')).toBe(false);
     expect(inNightWindow(at(13), '12:00', '14:00')).toBe(true);
     expect(inNightWindow(at(13), '', '')).toBe(false);
+  });
+});
+
+describe('remainingTime', () => {
+  const now = new Date('2026-11-16T12:00:00Z');
+  const at = (h: number) => new Date(now.getTime() + h * 3_600_000);
+
+  it('counts whole days and hours on the last day', () => {
+    expect(remainingTime(at(3 * 24 + 5), now)).toEqual({ unit: 'days', n: 3 });
+    expect(remainingTime(at(24), now)).toEqual({ unit: 'days', n: 1 });
+    expect(remainingTime(at(5.2), now)).toEqual({ unit: 'hours', n: 6 });
+    expect(remainingTime(at(0.1), now)).toEqual({ unit: 'hours', n: 1 });
+  });
+
+  it('reports expired invitations', () => {
+    expect(remainingTime(at(-1), now)).toEqual({ unit: 'expired' });
   });
 });

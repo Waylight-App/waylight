@@ -21,6 +21,19 @@ export const isUnknownGroup = (value: Visibility, groups: ShareGroup[]): boolean
   value.startsWith('group:') && !groups.some((g) => groupVisibility(g.id) === value);
 
 /**
+ * Through what a record is shared with the viewer (#420): everyone, a
+ * named group, or null when the group is not known (or the record private).
+ */
+export function sharedVia(
+  value: Visibility,
+  groups: ShareGroup[],
+): { everyone: true } | { group: string } | null {
+  if (value === 'everyone') return { everyone: true };
+  const g = groups.find((x) => groupVisibility(x.id) === value);
+  return g ? { group: g.name } : null;
+}
+
+/**
  * Loads the groups the signed-in account may share with: its own groups, or
  * every group for an admin. Used by the gateways of shareable features.
  */

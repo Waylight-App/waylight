@@ -19,7 +19,11 @@ export const widgets: WidgetDefinition[] = [
     icon: 'phone',
     view: lazy(
       () => import('../../features/phonelist/ui/PhonelistWidget.svelte'),
-      (_config, c) => ({ phonelist: c.phonelist, admin: c.auth.admin }),
+      (config, c) => ({ config, phonelist: c.phonelist, admin: c.auth.admin }),
+    ),
+    settings: lazy(
+      () => import('../../features/phonelist/ui/PhonelistWidgetSettings.svelte'),
+      (config) => ({ config }),
     ),
   },
 ];
