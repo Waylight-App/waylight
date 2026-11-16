@@ -47,6 +47,7 @@ import (
 	"trisse-home/internal/modules/weather"
 	"trisse-home/internal/modules/wiki"
 	"trisse-home/internal/modules/wireguard"
+	"trisse-home/internal/platform/branding"
 	"trisse-home/internal/platform/clock"
 	"trisse-home/internal/platform/config"
 	"trisse-home/internal/platform/crypto"
@@ -92,7 +93,8 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 			MembersEnabled:   membersEnabled,
 			PublicURL:        cfg.PublicURL,
 		},
-		auth.Deps{DB: db, Clock: clk, Hasher: crypto.NewArgon2id(crypto.DefaultArgon2idParams), Tokens: crypto.RandomTokens{}, IDs: ids, OTP: crypto.TOTP{}, Cipher: secrets, Log: log, Alerts: alerts, GuestScope: scope, Mailer: mailer},
+		auth.Deps{DB: db, Clock: clk, Hasher: crypto.NewArgon2id(crypto.DefaultArgon2idParams), Tokens: crypto.RandomTokens{}, IDs: ids, OTP: crypto.TOTP{}, Cipher: secrets, Log: log, Alerts: alerts, GuestScope: scope, Mailer: mailer,
+			InstanceName: instanceName},
 	)
 	if err != nil {
 		return nil, nil, err
@@ -109,6 +111,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	if cfg.ModuleEnabled("notifications") {
 		n := notifications.New(db, secrets, out.integration, clk, ids, cfg.PublicURL)
 		notifier, notificationsModule = n, n
+		n.SetInstanceName(instanceName)
 		registry.Register(n)
 		sinks = append(sinks, n)
 		alerts.targets = append(alerts.targets, n)
@@ -473,4 +476,12 @@ func relyingParty(cfg config.Config) *webauthn.RelyingParty {
 // downtime from the uptime (#81).
 type maintenanceReader interface {
 	UnderMaintenance(ctx context.Context, kind, key, label string, at time.Time) bool
+}
+
+// instanceName is the instance's name from the branding (#305): the
+// organisation's while the ee branding applies, the product's otherwise.
+// brandingSource is read on every call, so it may be set later in the build.
+func instanceName(ctx context.Context) string {
+	b, _ := branding.Current(ctx, brandingSource)
+	return b.Name
 }
