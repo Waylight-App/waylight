@@ -32,6 +32,7 @@ export function createLocalContainer(store: DocumentStore = new IndexedDbDocumen
   const todos = new TodosUseCases(new LocalTodosGateway(store));
   return {
     ...base,
+    localMode: true,
     auth: new AuthUseCases(new LocalAuthGateway(), noCsrf),
     dashboard: new DashboardUseCases(new LocalDashboardGateway(store)),
     appearance: new AppearanceUseCases(new LocalAppearanceGateway(store)),
