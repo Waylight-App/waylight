@@ -26,6 +26,12 @@ export const search = defineSearch({
   intents: [
     {
       id: 'backup.overview',
+      help: {
+        group: 'home',
+        de: 'Ob die Backups zuletzt geklappt haben',
+        en: 'Whether the backups ran fine',
+        examples: { de: ['backups'], en: ['backups'] },
+      },
       source: 'backupmonitor',
       answer: 'list',
       widgetKind: 'backupmonitor',
@@ -47,6 +53,12 @@ export const search = defineSearch({
     },
     {
       id: 'backup.status',
+      help: {
+        group: 'home',
+        de: 'Wann ein bestimmtes Backup zuletzt gelaufen ist',
+        en: 'When one backup job last ran',
+        examples: { de: ['backup restic-offsite'], en: ['backup restic-offsite'] },
+      },
       source: 'backupmonitor',
       prefixes: ['backup'],
       answer: 'status',

@@ -11,6 +11,12 @@ const t = (weight: number, ...terms: string[]) => terms.map((term) => ({ term, w
 export const INTENTS: IntentSpec[] = [
   {
     id: 'system.cpu',
+    help: {
+      group: 'home',
+      de: 'Wie stark der Prozessor deines Servers gerade arbeitet',
+      en: 'How hard the processor of your server is working',
+      examples: { de: ['cpu', 'prozessor auslastung'], en: ['cpu', 'processor usage'] },
+    },
     source: 'system',
     prefixes: ['cpu'],
     answer: 'metric',
@@ -19,6 +25,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'system.memory',
+    help: {
+      group: 'home',
+      de: 'Wie viel Arbeitsspeicher belegt und frei ist',
+      en: 'How much memory is in use and free',
+      examples: { de: ['ram', 'arbeitsspeicher'], en: ['ram', 'memory free'] },
+    },
     source: 'system',
     prefixes: ['ram'],
     answer: 'metric',
@@ -27,6 +39,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'system.disk',
+    help: {
+      group: 'home',
+      de: 'Wie voll die Festplatten sind',
+      en: 'How full the disks are',
+      examples: { de: ['festplatte voll', 'speicherplatz'], en: ['disk space', 'storage full'] },
+    },
     source: 'system',
     prefixes: ['disk'],
     answer: 'list',
@@ -39,6 +57,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'system.load',
+    help: {
+      group: 'home',
+      de: 'Die Systemlast des Servers',
+      en: 'The load of the server',
+      examples: { de: ['systemlast'], en: ['load'] },
+    },
     source: 'system',
     prefixes: ['load'],
     answer: 'metric',
@@ -47,6 +71,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'system.uptime',
+    help: {
+      group: 'home',
+      de: 'Wie lange der Server schon läuft',
+      en: 'How long the server has been running',
+      examples: { de: ['laufzeit', 'uptime'], en: ['uptime', 'reboot since'] },
+    },
     source: 'system',
     prefixes: ['uptime'],
     answer: 'metric',
@@ -55,6 +85,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'system.temperature',
+    help: {
+      group: 'home',
+      de: 'Wie warm der Server ist',
+      en: 'How warm the server is',
+      examples: { de: ['temperatur server'], en: ['server temperature'] },
+    },
     source: 'system',
     answer: 'metric',
     widgetKind: 'system',
@@ -62,6 +98,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'docker.overview',
+    help: {
+      group: 'home',
+      de: 'Welche Docker-Container laufen und welche gestoppt sind',
+      en: 'Which Docker containers are running or stopped',
+      examples: { de: ['docker', 'container gestoppt'], en: ['docker', 'containers running'] },
+    },
     source: 'docker',
     answer: 'list',
     widgetKind: 'docker',
@@ -72,6 +114,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'docker.status',
+    help: {
+      group: 'home',
+      de: 'Der Zustand eines einzelnen Containers',
+      en: 'The state of one container',
+      examples: { de: ['läuft jellyfin'], en: ['jellyfin status'] },
+    },
     source: 'docker',
     prefixes: ['docker'],
     answer: 'status',
@@ -81,6 +129,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'docker.restart',
+    help: {
+      group: 'home',
+      de: 'Einen Container neu starten, stoppen oder starten (mit Rückfrage)',
+      en: 'Restart, stop or start a container (asks first)',
+      examples: { de: ['jellyfin neu starten'], en: ['restart jellyfin'] },
+    },
     source: 'docker',
     prefixes: ['docker'],
     answer: 'actions',
@@ -93,6 +147,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'services.overview',
+    help: {
+      group: 'home',
+      de: 'Welche Dienste erreichbar sind und welche nicht',
+      en: 'Which services are reachable and which are down',
+      examples: { de: ['dienste offline'], en: ['services down'] },
+    },
     source: 'services',
     answer: 'list',
     widgetKind: 'services',
@@ -103,6 +163,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'services.status',
+    help: {
+      group: 'home',
+      de: 'Ob ein bestimmter Dienst erreichbar ist',
+      en: 'Whether one service is reachable',
+      examples: { de: ['nas erreichbar'], en: ['nas online'] },
+    },
     source: 'services',
     prefixes: ['service'],
     answer: 'status',
@@ -112,6 +178,12 @@ export const INTENTS: IntentSpec[] = [
   },
   {
     id: 'weather.forecast',
+    help: {
+      group: 'day',
+      de: 'Das Wetter heute oder an einem anderen Tag',
+      en: 'The weather today or on another day',
+      examples: { de: ['wetter morgen', 'regnet es'], en: ['weather tomorrow', 'rain'] },
+    },
     source: 'weather',
     prefixes: ['wetter', 'weather'],
     answer: 'metric',
