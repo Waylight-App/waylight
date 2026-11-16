@@ -93,6 +93,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	h := m.handlers
 	r.Protected("GET /api/announcements", h.List)
 	r.Protected("POST /api/announcements", h.Create)
+	r.Protected("GET /api/announcements/me", h.Me)
 	r.Protected("GET /api/announcements/channels", h.Channels)
 	r.Protected("GET /api/announcements/settings", h.Settings)
 	r.Protected("PUT /api/announcements/settings", h.SaveSettings)
