@@ -9,6 +9,13 @@ import { AppearanceUseCases } from '../../features/appearance/usecase/appearance
 import { LocalAppearanceGateway } from '../../features/appearance/adapter/local/localAppearanceGateway';
 import { AuthUseCases } from '../../features/auth/usecase/authUseCases';
 import { LocalAuthGateway, noCsrf } from '../../features/auth/adapter/local/localAuthGateway';
+import { CountdownUseCases } from '../../features/countdown/usecase/countdownUseCases';
+import { LocalCountdownGateway } from '../../features/countdown/adapter/local/localCountdownGateway';
+import { browserNotifier } from '../../features/focus/adapter/api/focusApi';
+import { FocusUseCases } from '../../features/focus/usecase/focusUseCases';
+import { LocalFocusGateway } from '../../features/focus/adapter/local/localFocusGateway';
+import { HabitsUseCases } from '../../features/habits/usecase/habitsUseCases';
+import { LocalHabitsGateway } from '../../features/habits/adapter/local/localHabitsGateway';
 import { DashboardUseCases } from '../../features/dashboard/usecase/dashboardUseCases';
 import { LocalDashboardGateway } from '../../features/dashboard/adapter/local/localDashboardGateway';
 import { BookmarksUseCases } from '../../features/bookmarks/usecase/bookmarksUseCases';
@@ -41,6 +48,10 @@ export function createLocalContainer(store: DocumentStore = new IndexedDbDocumen
     todos,
     // Only the built-in list exists locally; connected lists need a server.
     todosFor: () => todos,
+    countdown: new CountdownUseCases(new LocalCountdownGateway(store)),
+    // The browser notifier lives next to the API adapter but needs no server.
+    focus: new FocusUseCases(new LocalFocusGateway(store), browserNotifier),
+    habits: new HabitsUseCases(new LocalHabitsGateway(store)),
     enabledModules() {
       return Promise.resolve({
         modules: new Set(localModules),
