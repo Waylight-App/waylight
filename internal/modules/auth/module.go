@@ -121,6 +121,9 @@ type Deps struct {
 	GuestScope usecase.GuestScope
 	// Mailer sends reset links by e-mail (#296); may be nil.
 	Mailer kernel.Mailer
+	// InstanceName is the instance's name from the branding (#305); nil
+	// means the product's.
+	InstanceName kernel.InstanceName
 }
 
 // Module wires the auth rings and implements modules.Module.
@@ -162,8 +165,10 @@ func New(cfg Config, d Deps) (*Module, error) {
 	prefs := gateway.NewPreferenceRepository(d.DB)
 	ttl := usecase.SessionTTL(cfg.SessionTTL)
 	events := usecase.NewRecorder(gateway.NewEventRepository(d.DB), d.Alerts, d.IDs, d.Clock, d.Log)
+	events.SetInstanceName(d.InstanceName)
 	deps := usecase.Deps{
-		Accounts: accounts, Sessions: sessions, Hasher: d.Hasher, Tokens: d.Tokens,
+		InstanceName: d.InstanceName,
+		Accounts:     accounts, Sessions: sessions, Hasher: d.Hasher, Tokens: d.Tokens,
 		Limiter: gateway.NewAttemptLimiter(domain.DefaultLoginThrottle), Clock: d.Clock, TTL: ttl, IDs: d.IDs, OTP: d.OTP,
 		Events: events, Passkeys: gateway.NewPasskeyRepository(d.DB), Challenges: usecase.NewChallenges(),
 		Groups: groups, Preferences: prefs, MembersEnabled: cfg.MembersEnabled, PasswordLoginDisabled: !cfg.SSO.PasswordLogin && (cfg.SSO.OIDC != nil || cfg.SSO.ProxyHeader != ""),

@@ -104,6 +104,13 @@ func TestBranding(t *testing.T) {
 		t.Fatalf("manifest: %v", manifest)
 	}
 
+	// New authenticator entries carry the organisation's name (#305).
+	var enrollment obj
+	owner.json(http.MethodPost, "/api/auth/totp/setup", nil, http.StatusOK, &enrollment)
+	if uri, _ := enrollment["uri"].(string); !strings.Contains(uri, "issuer=Example") {
+		t.Fatalf("totp uri: %v", enrollment)
+	}
+
 	// Members cannot change it.
 	owner.do(http.MethodPost, "/api/auth/members", obj{"name": "ben", "password": "member-password-1"}, http.StatusCreated)
 	ben := newClient(t, srv.URL)
