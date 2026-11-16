@@ -40,6 +40,27 @@ a request to the server. Numbers follow the format of your language, and
 | `30 °C in F` | 86 °F |
 | `2 GiB in MB` | about 2147.48 MB |
 
+## Time and dates
+
+Questions about the time and the calendar are answered in the browser too,
+in German or English, and `Enter` copies the answer. Times and dates follow
+the format of your language.
+
+| Input | Answer |
+| --- | --- |
+| `uhrzeit`, `wie spät`, `time` | The current time |
+| `datum`, `heute`, `date` | Today's date with the weekday |
+| `kw`, `week` | The ISO calendar week |
+| `zeit in tokio`, `time in new york` | The time there and how far it is from yours |
+| `tage bis weihnachten`, `days until 2027-03-01` | The number of days and the weekday of that day |
+| `in 90 tagen`, `vor 2 wochen`, `90 days ago` | The resulting date |
+
+For "time in …", the search knows large cities and many countries by their
+German and English names; other places go to the normal search. Named days are Christmas Eve, Christmas, New Year's Eve, New Year's
+Day and Easter. A date without a year, such as `1.3.`, means the next such
+day. With slashes, German reads day first (`1/3` is 1 March) and English
+month first (`3/1`).
+
 ## Answers about your home
 
 The quick search answers short questions in English or German, and it
