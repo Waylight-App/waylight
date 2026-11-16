@@ -91,7 +91,10 @@ func (f *fakeAccounts) Delete(_ context.Context, id string) error {
 
 type fakeSessions struct {
 	byHash map[domain.TokenHash]domain.Session
+	last   string // account of the session created last
 }
+
+func (f *fakeSessions) lastAccount() string { return f.last }
 
 func newFakeSessions() *fakeSessions {
 	return &fakeSessions{byHash: map[domain.TokenHash]domain.Session{}}
@@ -99,6 +102,7 @@ func newFakeSessions() *fakeSessions {
 
 func (f *fakeSessions) Create(_ context.Context, s domain.Session) error {
 	f.byHash[s.TokenHash()] = s
+	f.last = s.AccountID()
 	return nil
 }
 

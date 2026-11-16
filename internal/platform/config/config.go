@@ -107,10 +107,12 @@ type Config struct {
 	OIDCRedirectURL     string
 	OIDCAllowedSubjects []string
 	OIDCAllowedEmails   []string
-	AuthProxyHeader     string
-	AuthProxyUsers      []string
-	PasswordLogin       bool
-	SSORequire2FA       bool
+	// OIDCGroupsClaim names the ID token claim with a person's groups (#302).
+	OIDCGroupsClaim string
+	AuthProxyHeader string
+	AuthProxyUsers  []string
+	PasswordLogin   bool
+	SSORequire2FA   bool
 	// PublicURL is the address users open, e.g. https://home.example.org;
 	// required for passkeys (WebAuthn needs a fixed origin and HTTPS).
 	PublicURL *url.URL
@@ -194,6 +196,7 @@ func Load(getenv func(string) string) (Config, error) {
 		OIDCRedirectURL:          l.str("OIDC_REDIRECT_URL", ""),
 		OIDCAllowedSubjects:      l.rawList("OIDC_ALLOWED_SUBJECTS", ""),
 		OIDCAllowedEmails:        l.rawList("OIDC_ALLOWED_EMAILS", ""),
+		OIDCGroupsClaim:          l.str("OIDC_GROUPS_CLAIM", ""),
 		AuthProxyHeader:          l.str("AUTH_PROXY_HEADER", ""),
 		AuthProxyUsers:           l.rawList("AUTH_PROXY_USERS", ""),
 		PasswordLogin:            l.boolean("PASSWORD_LOGIN", true),
