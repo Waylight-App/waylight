@@ -1,0 +1,63 @@
+/**
+ * Export of the extension's local mode (ADR 0019, step 4): writes the local
+ * data as a trisse-home export file, so moving to a server is the server's
+ * existing import (Settings → Transfer). Each feature with a local gateway
+ * contributes one section, named like its server module; a feature without
+ * stored data is left out, so the import keeps the server's data for it.
+ */
+import { appearanceExport } from '../../features/appearance/adapter/local/appearanceExport';
+import { LocalAppearanceGateway } from '../../features/appearance/adapter/local/localAppearanceGateway';
+import { dashboardExport } from '../../features/dashboard/adapter/local/dashboardExport';
+import type { DashboardDoc } from '../../features/dashboard/adapter/local/localDashboardGateway';
+import { EXPORT_FORMAT, type ExportFile } from '../../features/transfer/domain/transfer';
+import type { DocumentStore } from '../../shared/local/documentStore';
+import type { ExportTables } from '../../shared/local/exportRows';
+
+/** Version of the export format the server reads (internal/modules/transfer/domain). */
+const EXPORT_VERSION = 1;
+
+/** One module's part of the export. */
+export interface LocalExportSection {
+  /** Module name on the server, e.g. "dashboard". */
+  name: string;
+  /** The rows of the module's tables, or undefined when nothing is stored. */
+  tables(store: DocumentStore): Promise<ExportTables | undefined>;
+}
+
+/** The sections of the features that have a local implementation. */
+export const localExportSections: LocalExportSection[] = [
+  {
+    name: 'dashboard',
+    async tables(store) {
+      const doc = await store.get<DashboardDoc>('dashboard');
+      return doc && dashboardExport(doc);
+    },
+  },
+  {
+    name: 'appearance',
+    async tables(store) {
+      if ((await store.get('appearance')) === undefined) return undefined;
+      return appearanceExport(await new LocalAppearanceGateway(store).load());
+    },
+  },
+];
+
+/** An export file with everything the local mode has stored. */
+export async function exportLocalData(
+  store: DocumentStore,
+  now: Date = new Date(),
+  sections: readonly LocalExportSection[] = localExportSections,
+): Promise<ExportFile & { exportedAt: string }> {
+  const out: Record<string, ExportTables> = {};
+  for (const s of sections) {
+    const tables = await s.tables(store);
+    if (tables) out[s.name] = tables;
+  }
+  return { format: EXPORT_FORMAT, version: EXPORT_VERSION, exportedAt: now.toISOString(), sections: out };
+}
+
+/** File name in the server's pattern (trisse-home-export-YYYYMMDD-HHMMSS.json). */
+export function exportFileName(now: Date): string {
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `trisse-home-export-${now.getFullYear()}${p(now.getMonth() + 1)}${p(now.getDate())}-${p(now.getHours())}${p(now.getMinutes())}${p(now.getSeconds())}.json`;
+}
