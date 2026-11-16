@@ -40,6 +40,25 @@ a request to the server. Numbers follow the format of your language, and
 | `30 °C in F` | 86 °F |
 | `2 GiB in MB` | about 2147.48 MB |
 
+## Tools
+
+A few small tools answer in the search field as well. Like the calculator
+they run in the browser and send nothing to the server; each one is loaded
+the first time you type something for it. `Enter` copies the main value,
+and for passwords and UUIDs *New* makes another one.
+
+| Input | Answer |
+| --- | --- |
+| `password`, `passwort 24`, `pw 32 ohne sonderzeichen`, `pin 6` | A random password: 20 characters unless you give a length (4–128), with letters, digits and symbols. "without symbols" or "ohne Sonderzeichen" leaves the symbols out, `pin` gives digits only. |
+| `uuid`, `uuid v7` | A new UUID; v7 starts with the current time, so such IDs sort by creation. |
+| `#1e90ff`, `rgb(30,144,255)`, `hsl 210 100 56` | The colour with a swatch, in hex, RGB, HSL and OKLCH. |
+| `1700000000`, `unix now`, `2026-11-16 12:00 to unix` | A Unix timestamp as date (local time and UTC), or a date as timestamp. Dates are read in local time unless they end in `UTC`. |
+| `192.168.178.0/24`, `10.0.0.5 255.255.255.0`, `2001:db8::/48` | Network, mask, broadcast, first and last host and the number of hosts; for IPv6 the first and last address of the prefix. |
+
+Passwords come from the browser's cryptographic random generator, also when
+trisse-home is opened over plain HTTP. They are not stored anywhere: the
+search history only learns which result you pick, never the values you copy.
+
 ## Answers about your home
 
 The quick search answers short questions in English or German, and it

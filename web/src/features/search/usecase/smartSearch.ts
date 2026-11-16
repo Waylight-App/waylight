@@ -26,6 +26,14 @@ export interface SearchSource {
    * mine"; direct answers come before the intent answers.
    */
   direct?(query: string): Answer | null;
+  /**
+   * Like direct, for sources whose code is loaded on demand (the tools of
+   * #477). Returns null right away when the query is not theirs, otherwise
+   * a promise that may still resolve to null for invalid input. A source
+   * that also implements direct should answer there once its result for
+   * the query is known, so Enter can copy it, and return null here then.
+   */
+  lazy?(query: string): Promise<Answer | null> | null;
   /** Runs a confirmed write action. */
   execute?(item: ActionItem): Promise<void>;
   /** How long a resolved answer is reused (default 15 s). */
@@ -94,13 +102,30 @@ export class SmartSearch {
    */
   async answer(query: string, signal: AbortSignal): Promise<Answer[]> {
     const direct = this.direct(query);
+    const lazy = this.lazy(query);
     await this.prepare();
     signal.throwIfAborted();
     const matches = this.matches(query);
     const settled = await Promise.allSettled(matches.map((m) => this.resolve(m, signal)));
+    const loaded = await lazy;
     if (signal.aborted) throw signal.reason ?? new DOMException('aborted', 'AbortError');
     const resolved = settled.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []));
-    return [...direct, ...resolved].slice(0, MAX_ANSWERS);
+    return [...direct, ...loaded, ...resolved].slice(0, MAX_ANSWERS);
+  }
+
+  /** Answers of the sources loaded on demand (#477); failures drop out. */
+  private async lazy(query: string): Promise<Answer[]> {
+    const pending: Promise<Answer | null>[] = [];
+    for (const s of this.opts.sources) {
+      try {
+        const p = s.lazy?.(query);
+        if (p) pending.push(p);
+      } catch {
+        // Same as direct: one broken source must not break the search.
+      }
+    }
+    const settled = await Promise.allSettled(pending);
+    return settled.flatMap((r) => (r.status === 'fulfilled' && r.value ? [r.value] : []));
   }
 
   /** Answers of the sources that read the raw query (synchronous, #160). */
