@@ -2,6 +2,7 @@ import type { QuickCommand } from '../features/quickactions';
 import type { MessageKey } from '../shared/i18n';
 import type { QuickGroup, QuickItem } from './quickSearch';
 import type { CommandMatch } from '../features/search/domain/commands';
+import type { Timer, TimerRequest } from '../features/search/domain/timer';
 import type { SearchAction } from './searchActions';
 
 /**
@@ -13,6 +14,10 @@ export type Row =
   /** Add something from a capture prefix; shortcut is shown on the row. */
   | { kind: 'capture'; id: string; command: QuickCommand; shortcut: 'Enter' | 'Ctrl Enter' }
   | { kind: 'result'; id: string; item: QuickItem }
+  /** Start a timer or alarm (#474). */
+  | { kind: 'timer'; id: string; request: TimerRequest }
+  /** A running timer; choosing it cancels it (#474). */
+  | { kind: 'running'; id: string; timer: Timer }
   /** Restart a container or wake a device ("restart nextcloud"). */
   | { kind: 'action'; id: string; command: QuickCommand }
   /** An app command: theme, settings section, tab … (#476). */
@@ -40,6 +45,10 @@ export interface RowInput {
   actions?: SearchAction[];
   /** App commands that match the text (#476). */
   commands?: CommandMatch[];
+  /** A timer or alarm the text asks for (#474). */
+  timer?: TimerRequest | null;
+  /** Running timers to list (empty field or "timer") (#474). */
+  runningTimers?: Timer[];
 }
 
 const isCapture = (c: QuickCommand) => c.kind === 'todo' || c.kind === 'note' || c.kind === 'bookmark';
@@ -48,6 +57,15 @@ const isCapture = (c: QuickCommand) => c.kind === 'todo' || c.kind === 'note' ||
 export function buildRows(input: RowInput): RowGroup[] {
   const out: RowGroup[] = [];
   const { command, alternative } = input;
+  const timerRows: Row[] = [
+    ...(input.timer ? [{ kind: 'timer' as const, id: 'timer', request: input.timer }] : []),
+    ...(input.runningTimers ?? []).map((timer) => ({
+      kind: 'running' as const,
+      id: `running:${timer.id}`,
+      timer,
+    })),
+  ];
+  if (!command && timerRows.length) out.push({ id: 'timers', label: 'app.group.timers', rows: timerRows });
   if (command && isCapture(command)) {
     const rows: Row[] = [{ kind: 'capture', id: 'capture', command, shortcut: 'Enter' }];
     if (alternative && isCapture(alternative))

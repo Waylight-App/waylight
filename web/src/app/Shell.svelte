@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { CommandHandlers } from './appCommands';
+  import { hasStoredTimers, timerAlerts } from './timerAlerts.svelte';
   import LiveRegion from '../shared/a11y/LiveRegion.svelte';
   import SyncStatus from './offline/SyncStatus.svelte';
   import MaintenanceBanner from '../features/notifications/ui/MaintenanceBanner.svelte';
@@ -222,6 +223,11 @@
       offs.forEach((off) => off());
     };
   });
+  // Timers started in the search survive a reload (#474): load them again,
+  // but only when some are stored, so other pages do not pay for the code.
+  // svelte-ignore state_referenced_locally
+  if (!container.auth.kiosk && hasStoredTimers()) void import('./timers');
+
   let offline = $state(!navigator.onLine);
 
   $effect(() => applyTheme(appearance.theme));
@@ -475,6 +481,9 @@
   {/await}
 {/if}
 <LiveRegion />
+{#if timerAlerts.list.length}
+  {#await import('./TimerToasts.svelte') then { default: TimerToasts }}<TimerToasts />{/await}
+{/if}
 <main class="content">
   {#if offline}<p class="offline" role="status">
       {t('app.you_are_offline_showing_the_last')}
