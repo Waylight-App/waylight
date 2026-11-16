@@ -23,6 +23,26 @@ func (m memLinks) Delete(_ context.Context, s string) error { delete(m, s); retu
 type member struct {
 	groups   []string
 	disabled bool
+	// admin is set through SetAdmin; adminSource remembers who granted it.
+	admin       bool
+	adminSource string
+}
+
+// SetAdmin mirrors the auth module: a source takes back only what it gave.
+func (f *fakeAccounts) SetAdmin(_ context.Context, id string, admin bool, source string) (bool, error) {
+	m, ok := f.members[id]
+	if !ok {
+		return false, authdomain.ErrGuestNotFound
+	}
+	switch {
+	case admin && !m.admin:
+		m.admin, m.adminSource = true, source
+	case !admin && m.admin && m.adminSource == source:
+		m.admin, m.adminSource = false, ""
+	default:
+		return false, nil
+	}
+	return true, nil
 }
 
 type fakeAccounts struct {
@@ -171,5 +191,23 @@ func TestADeletedMemberIsCreatedAgain(t *testing.T) {
 	again, err := r.Resolve(ctx, anna())
 	if err != nil || again == id {
 		t.Fatalf("got %q %v", again, err)
+	}
+}
+
+func TestAdminGroupGrantsAndTakesBackOnlyItsOwnRole(t *testing.T) {
+	accounts, lvl := &fakeAccounts{members: map[string]*member{}}, level(licence.LevelFull)
+	r := New(Deps{Links: memLinks{}, Accounts: accounts, Licensing: &lvl,
+		Policy: domain.Policy{Emails: []string{"@example.org"}, AdminGroups: []string{"trisse-admins"}}})
+	id, err := r.Resolve(ctx, anna("trisse-admins"))
+	if err != nil || !accounts.members[id].admin || accounts.members[id].adminSource != "sso" {
+		t.Fatalf("first sign-in in the admin group: %v %+v", err, accounts.members[id])
+	}
+	if _, err := r.Resolve(ctx, anna("Office")); err != nil || accounts.members[id].admin {
+		t.Fatalf("after leaving the group: %v %+v", err, accounts.members[id])
+	}
+	// An admin made by hand keeps the role whatever the provider says.
+	accounts.members[id].admin, accounts.members[id].adminSource = true, ""
+	if _, err := r.Resolve(ctx, anna()); err != nil || !accounts.members[id].admin {
+		t.Fatalf("hand-made admin demoted: %v %+v", err, accounts.members[id])
 	}
 }

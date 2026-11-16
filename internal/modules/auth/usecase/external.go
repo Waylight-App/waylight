@@ -28,6 +28,11 @@ type Provisioning interface {
 	SetDisabled(ctx context.Context, accountID string, disabled bool) error
 	// EndSessions signs the member out everywhere.
 	EndSessions(ctx context.Context, accountID string) error
+	// SetAdmin grants or takes back the admin role on behalf of a provider
+	// (#434); source is domain.RoleSourceSSO or domain.RoleSourceDirectory.
+	// A provider takes back only a role it granted: an admin made by hand
+	// stays one. It reports whether the role changed.
+	SetAdmin(ctx context.Context, accountID string, admin bool, source string) (bool, error)
 
 	// The operations below serve directory provisioning (SCIM, #396), where
 	// the directory owns members and groups by ID.
@@ -69,7 +74,7 @@ func (uc provisioning) member(ctx context.Context, id string) (domain.Account, e
 	if err != nil {
 		return domain.Account{}, err
 	}
-	if a.Role() != domain.RoleMember {
+	if !a.IsPerson() {
 		return domain.Account{}, errNotMember
 	}
 	return a, nil
@@ -87,7 +92,7 @@ func (uc provisioning) CreateMember(ctx context.Context, name string) (string, e
 	members, names := 0, map[string]bool{}
 	for _, a := range all {
 		names[strings.ToLower(a.Name())] = true
-		if a.Role() == domain.RoleMember {
+		if a.IsPerson() {
 			members++
 		}
 	}
@@ -260,7 +265,7 @@ func (uc provisioning) Members(ctx context.Context) ([]ProvisionedMember, error)
 	}
 	out := []ProvisionedMember{}
 	for _, a := range all {
-		if a.Role() != domain.RoleMember {
+		if !a.IsPerson() {
 			continue
 		}
 		m, err := uc.view(ctx, a)
@@ -352,4 +357,36 @@ func (uc provisioning) DeleteGroup(ctx context.Context, id string) error {
 		return err
 	}
 	return uc.deps.Groups.Delete(ctx, id)
+}
+
+// SetAdmin implements Provisioning.
+func (uc provisioning) SetAdmin(ctx context.Context, accountID string, admin bool, source string) (bool, error) {
+	if source != domain.RoleSourceSSO && source != domain.RoleSourceDirectory {
+		return false, fmt.Errorf("unknown role source %q", source)
+	}
+	a, err := uc.member(ctx, accountID)
+	if err != nil {
+		return false, err
+	}
+	var to domain.Role
+	switch {
+	case admin && a.Role() == domain.RoleMember:
+		to = domain.RoleAdmin
+	case !admin && a.Role() == domain.RoleAdmin && a.RoleSource() == source:
+		to = domain.RoleMember
+	default:
+		return false, nil
+	}
+	if err := a.SetRole(to, source, uc.deps.Clock.Now()); err != nil {
+		return false, err
+	}
+	if err := uc.deps.Accounts.Update(ctx, a); err != nil {
+		return false, fmt.Errorf("update role: %w", err)
+	}
+	detail := "made " + a.Name() + " an admin through " + source
+	if to == domain.RoleMember {
+		detail = "made " + a.Name() + " a member through " + source
+	}
+	uc.deps.Events.record(ctx, domain.EventMemberChanged, a.ID(), domain.Client{}, detail)
+	return true, nil
 }

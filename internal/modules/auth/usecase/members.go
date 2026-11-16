@@ -7,15 +7,20 @@ import (
 	"time"
 
 	"trisse-home/internal/modules/auth/domain"
+	"trisse-home/internal/shared/kernel"
 )
 
-// MemberView describes a member for the admin's settings.
+// MemberView describes a member or an admin for the admin's settings.
 type MemberView struct {
-	ID        string
-	Name      string
-	Groups    []string
-	Disabled  bool
-	CreatedAt time.Time
+	ID     string
+	Name   string
+	Groups []string
+	// Role is "member" or "admin" (#434); RoleSource is "" when set by hand,
+	// else the provider that granted the admin role ("sso", "directory").
+	Role       string
+	RoleSource string
+	Disabled   bool
+	CreatedAt  time.Time
 }
 
 // NewMemberRequest is the input of Members.Create.
@@ -25,11 +30,13 @@ type NewMemberRequest struct {
 }
 
 // UpdateMemberRequest is the input of Members.Update; an empty password
-// keeps it.
+// keeps it, an empty role too.
 type UpdateMemberRequest struct {
 	ID       string
 	Disabled bool
 	Password string
+	// Role is "member" or "admin" (#434).
+	Role string
 }
 
 // Members manages member accounts (input port, admin only, #294).
@@ -54,7 +61,8 @@ func NewMembers(deps Deps) Members { return &members{deps: deps, guests: &guests
 func (uc *members) Available() bool { return uc.deps.MembersEnabled }
 
 func (uc *members) view(ctx context.Context, a domain.Account) (MemberView, error) {
-	v := MemberView{ID: a.ID(), Name: a.Name(), Disabled: a.Disabled(), CreatedAt: a.CreatedAt(), Groups: []string{}}
+	v := MemberView{ID: a.ID(), Name: a.Name(), Role: string(a.Role()), RoleSource: a.RoleSource(), Disabled: a.Disabled(),
+		CreatedAt: a.CreatedAt(), Groups: []string{}}
 	if uc.deps.Groups != nil {
 		g, err := uc.deps.Groups.GroupsOf(ctx, a.ID())
 		if err != nil {
@@ -67,7 +75,7 @@ func (uc *members) view(ctx context.Context, a domain.Account) (MemberView, erro
 
 // List implements Members.
 func (uc *members) List(ctx context.Context) ([]MemberView, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return nil, err
 	}
 	all, err := uc.deps.Accounts.List(ctx)
@@ -76,7 +84,7 @@ func (uc *members) List(ctx context.Context) ([]MemberView, error) {
 	}
 	out := []MemberView{}
 	for _, a := range all {
-		if a.Role() != domain.RoleMember {
+		if !a.IsPerson() {
 			continue
 		}
 		v, err := uc.view(ctx, a)
@@ -116,11 +124,11 @@ func (uc *members) Create(ctx context.Context, req NewMemberRequest) (MemberView
 }
 
 func (uc *members) member(ctx context.Context, id string) (domain.Account, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return domain.Account{}, err
 	}
 	a, err := uc.deps.Accounts.Get(ctx, id)
-	if errors.Is(err, domain.ErrGuestNotFound) || errors.Is(err, domain.ErrAccountNotFound) || (err == nil && a.Role() != domain.RoleMember) {
+	if errors.Is(err, domain.ErrGuestNotFound) || errors.Is(err, domain.ErrAccountNotFound) || (err == nil && !a.IsPerson()) {
 		return domain.Account{}, domain.ErrMemberNotFound
 	}
 	return a, err
@@ -134,8 +142,20 @@ func (uc *members) Update(ctx context.Context, req UpdateMemberRequest) (MemberV
 		return MemberView{}, err
 	}
 	now := uc.deps.Clock.Now()
+	self := kernel.PrincipalFrom(ctx).AccountID == m.ID()
+	roleChanged := req.Role != "" && req.Role != string(m.Role())
+	// An admin cannot take their own rights away or lock themselves out;
+	// the owner or another admin does that (ADR 0022).
+	if self && (req.Disabled || roleChanged) {
+		return MemberView{}, domain.ErrNotOnYourself
+	}
 	if err := m.SetMemberAccess(req.Disabled, now); err != nil {
 		return MemberView{}, err
+	}
+	if roleChanged {
+		if err := m.SetRole(domain.Role(req.Role), domain.RoleSourceHand, now); err != nil {
+			return MemberView{}, err
+		}
 	}
 	if req.Password != "" {
 		hash, err := uc.guests.hash(ctx, req.Password)
@@ -149,14 +169,20 @@ func (uc *members) Update(ctx context.Context, req UpdateMemberRequest) (MemberV
 	if err := uc.deps.Accounts.Update(ctx, m); err != nil {
 		return MemberView{}, fmt.Errorf("update member: %w", err)
 	}
-	if req.Disabled || req.Password != "" {
+	// A demoted admin's sessions end too, so no open tab keeps admin pages.
+	if req.Disabled || req.Password != "" || (roleChanged && req.Role == string(domain.RoleMember)) {
 		if err := uc.deps.Sessions.DeleteAllFor(ctx, m.ID()); err != nil {
 			return MemberView{}, fmt.Errorf("end member sessions: %w", err)
 		}
 	}
 	detail := "updated " + m.Name()
-	if req.Disabled {
+	switch {
+	case req.Disabled:
 		detail = "disabled " + m.Name()
+	case roleChanged && req.Role == string(domain.RoleAdmin):
+		detail = "made " + m.Name() + " an admin"
+	case roleChanged:
+		detail = "made " + m.Name() + " a member"
 	}
 	uc.deps.Events.record(ctx, domain.EventMemberChanged, m.ID(), domain.Client{}, detail)
 	return uc.view(ctx, m)
@@ -169,6 +195,9 @@ func (uc *members) Delete(ctx context.Context, id string) error {
 	m, err := uc.member(ctx, id)
 	if err != nil {
 		return err
+	}
+	if kernel.PrincipalFrom(ctx).AccountID == m.ID() {
+		return domain.ErrNotOnYourself
 	}
 	if err := uc.deps.Sessions.DeleteAllFor(ctx, m.ID()); err != nil {
 		return fmt.Errorf("end member sessions: %w", err)

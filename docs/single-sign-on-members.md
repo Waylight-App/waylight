@@ -42,7 +42,14 @@ number.
 - **Licence key expired or too few seats:** existing members still sign in,
   but no new accounts are created and groups are not changed.
 
-The admin role stays with the owner. Changes at the provider take effect
+- **Admins:** with `OIDC_ADMIN_GROUPS=trisse-admins` (comma-separated),
+  everyone in one of these provider groups becomes an admin at sign-in
+  ([admins](accounts.md#admins)). Someone who left the group is a member
+  again at their next sign-in. An admin you made by hand stays one whatever
+  the provider says. The group must be in the groups claim, like the groups
+  above.
+
+The owner is never changed by the provider. Changes at the provider take effect
 when the person next signs in; to lock someone out at once, disable them
 under *Settings → Members and groups*.
 

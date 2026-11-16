@@ -29,6 +29,14 @@ type Policy struct {
 	// SyncGroups limits which provider groups become trisse-home groups;
 	// empty takes all of them.
 	SyncGroups []string
+	// AdminGroups makes everyone in one of these provider groups an admin
+	// (#434); leaving the group takes the role back at the next sign-in.
+	AdminGroups []string
+}
+
+// IsAdmin reports whether the person's provider groups make them an admin.
+func (p Policy) IsAdmin(id Identity) bool {
+	return slices.ContainsFunc(id.Groups, func(g string) bool { return containsFold(p.AdminGroups, g) })
 }
 
 // Allows reports whether the person may sign in as a member.

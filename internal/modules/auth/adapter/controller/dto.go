@@ -47,6 +47,8 @@ type MemberRequestDTO struct {
 	Name     string `json:"name,omitempty"`
 	Password string `json:"password,omitempty"`
 	Disabled bool   `json:"disabled"`
+	// Role is "member" or "admin" (#434); empty keeps it.
+	Role string `json:"role,omitempty"`
 }
 
 // GroupRequestDTO creates or updates a group.

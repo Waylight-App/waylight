@@ -157,6 +157,14 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_fb200f2e8942d8e7: 'Es können höchstens 20 Einladungen gleichzeitig offen sein.',
   // Invite a member or a guest.
   srv_c9d91e1ff5289f27: 'Lade ein Mitglied oder einen Gast ein.',
+  // A member can be a member or an admin.
+  srv_d6a9ea1bfc72e12b: 'Ein Mitglied kann Mitglied oder Admin sein.',
+  // An admin's password is set by the owner or another admin.
+  srv_44205add2ef753e0: 'Das Passwort eines Admins setzt der Besitzer oder ein anderer Admin.',
+  // Only the owner can do this.
+  srv_67f0ba90e3a4e5b4: 'Das kann nur der Besitzer.',
+  // You cannot do this to your own account; ask the owner or another admin.
+  srv_1553d503b1d708f8: 'Das geht nicht mit deinem eigenen Konto; frag den Besitzer oder einen anderen Admin.',
   // The admin password is reset on the server only (see docs/accounts.md).
   srv_2d855ec17092911d: 'Das Admin-Passwort wird nur auf dem Server zurückgesetzt (siehe docs/accounts.md).',
   // This account has no password.

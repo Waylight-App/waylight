@@ -253,7 +253,7 @@ func (uc *sso) resolveExternal(ctx context.Context, external ExternalAccounts, i
 	if err != nil {
 		return "", err
 	}
-	if a.Role() != domain.RoleMember {
+	if !a.IsPerson() {
 		return "", domain.ErrSSONotAllowed
 	}
 	return accountID, nil
