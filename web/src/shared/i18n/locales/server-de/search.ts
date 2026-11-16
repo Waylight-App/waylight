@@ -26,4 +26,36 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_fd6c518295d812e7: 'Jedes Präfix darf nur einmal vorkommen.',
   // Each shortcut keyword can be used only once.
   srv_ff5b12b63bbd2fcc: 'Jedes Kürzel darf nur einmal vorkommen.',
+  // A keyword is 1 to 24 letters, digits, - or _, starting with a letter or digit.
+  srv_7ac1113700bd84e6:
+    'Ein Stichwort besteht aus 1 bis 24 Buchstaben, Ziffern, - oder _ und beginnt mit einem Buchstaben oder einer Ziffer.',
+  // Each own keyword can be used only once.
+  srv_7751ccb712b43df6: 'Jedes eigene Stichwort darf nur einmal vorkommen.',
+  // The keyword does not exist.
+  srv_fb77bf30efe31cac: 'Das Stichwort existiert nicht.',
+  // The label can be at most 100 characters long.
+  srv_a4db379e15a68e9e: 'Die Bezeichnung darf höchstens 100 Zeichen lang sein.',
+  // The target is missing or too long.
+  srv_3d9c86149fa849ea: 'Das Ziel fehlt oder ist zu lang.',
+  // The target must be a service, bookmark, widget, web address or search.
+  srv_201b9e864fd6c6c6:
+    'Das Ziel muss ein Dienst, Lesezeichen, Widget, eine Webadresse oder eine Suche sein.',
+  // The web address must start with http:// or https://.
+  srv_8bd56c7034353aa9: 'Die Webadresse muss mit http:// oder https:// beginnen.',
+  // Own keywords need a signed-in account.
+  srv_2ce07ca7ab64ce07: 'Eigene Stichwörter brauchen ein angemeldetes Konto.',
+  // This keyword is already in use.
+  srv_315ea6f2515e5a80: 'Dieses Stichwort ist schon vergeben.',
+  // “{word}” is one of your own keywords; choose another prefix or delete the keyword.
+  srv_1f5c1d6f6e0c2771:
+    '„{word}“ ist eines deiner eigenen Stichwörter; wähle ein anderes Präfix oder lösche das Stichwort.',
+  // “{word}” is the quick capture prefix for bookmarks; choose another keyword or change the prefix.
+  srv_c79d63d26819dd1a:
+    '„{word}“ ist das Präfix zum schnellen Erfassen von Lesezeichen; wähle ein anderes Stichwort oder ändere das Präfix.',
+  // “{word}” is the quick capture prefix for notes; choose another keyword or change the prefix.
+  srv_8b4b0288428b14ce:
+    '„{word}“ ist das Präfix zum schnellen Erfassen von Notizen; wähle ein anderes Stichwort oder ändere das Präfix.',
+  // “{word}” is the quick capture prefix for to-dos; choose another keyword or change the prefix.
+  srv_284a8e8993530e8b:
+    '„{word}“ ist das Präfix zum schnellen Erfassen von Aufgaben; wähle ein anderes Stichwort oder ändere das Präfix.',
 };

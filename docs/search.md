@@ -48,6 +48,25 @@ trisse-home, so nothing is sent to DuckDuckGo while you type. It only
 appears when your engine understands bangs (DuckDuckGo and Brave Search);
 your own shortcuts always appear.
 
+## Own keywords
+
+For things you open often, give them a word of your own: `nas` for the NAS
+tile, `bank` for your bank's login page, `müll` for the waste calendar.
+Type the keyword alone and it is the first row; `Enter` opens it. Anything
+more than the keyword (`nas status`) is a normal search again.
+
+Add keywords under Settings → Search → *Own keywords*, or straight from a
+result: open its menu and choose *Add keyword…*. A keyword points to a
+service tile, a bookmark, a widget, a web address or a search that runs as
+if you had typed it. Keywords are 1 to 24 letters, digits, `-` or `_`, and
+case does not matter.
+
+Keywords belong to your account and are stored on the server, so they work
+on every device you sign in on. They are part of the data export and of the
+[YAML file](config-as-code.md). A keyword cannot be one of the quick capture
+prefixes (`t`, `n`, `b` unless you changed them), and a prefix cannot be
+changed to one of your keywords; the settings say which one is in the way.
+
 ## Opening addresses
 
 If what you type is clearly an address, the first row says **Open …** and

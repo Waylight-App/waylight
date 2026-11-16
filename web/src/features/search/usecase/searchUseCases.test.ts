@@ -9,6 +9,8 @@ function setup() {
     setBar: vi.fn(),
     addShortcut: vi.fn(),
     deleteShortcut: vi.fn(),
+    addKeyword: vi.fn(),
+    deleteKeyword: vi.fn(),
     searchUrl: (q: string) => `/api/search?q=${encodeURIComponent(q)}`,
   } satisfies SearchGateway;
   return { uc: new SearchUseCases(gateway), gateway };
@@ -29,6 +31,16 @@ describe('SearchUseCases', () => {
       urlTemplate: 'https://github.com/search?q={query}',
     });
     expect(gateway.addShortcut).toHaveBeenCalledWith(expect.objectContaining({ keyword: 'gh' }));
+  });
+  it('normalises own keywords (#478)', async () => {
+    const { uc, gateway } = setup();
+    await uc.addKeyword({ keyword: ' NAS ', kind: 'url', target: ' https://nas.lan ', label: ' NAS ' });
+    expect(gateway.addKeyword).toHaveBeenCalledWith({
+      keyword: 'nas',
+      kind: 'url',
+      target: 'https://nas.lan',
+      label: 'NAS',
+    });
   });
   it('normalises the capture prefixes of the search field (#221)', async () => {
     const { uc, gateway } = setup();

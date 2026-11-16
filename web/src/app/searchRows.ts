@@ -3,6 +3,7 @@ import type { MessageKey } from '../shared/i18n';
 import type { QuickGroup, QuickItem } from './quickSearch';
 import type { Bang } from '../features/search/domain/bangs';
 import type { CommandMatch } from '../features/search/domain/commands';
+import type { OwnKeyword } from '../features/search/domain/keywords';
 import type { Timer, TimerRequest } from '../features/search/domain/timer';
 import type { SearchAction } from './searchActions';
 
@@ -15,6 +16,8 @@ export type Row =
   /** Add something from a capture prefix; shortcut is shown on the row. */
   | { kind: 'capture'; id: string; command: QuickCommand; shortcut: 'Enter' | 'Ctrl Enter' }
   | { kind: 'result'; id: string; item: QuickItem }
+  /** The typed text is one of the account's own keywords (#478). */
+  | { kind: 'keyword'; id: string; keyword: OwnKeyword }
   /** The typed text is an address: open it directly (#475). */
   | { kind: 'address'; id: string; url: string }
   /** A bang suggestion while typing "!" (#475); choosing it completes the bang. */
@@ -50,6 +53,8 @@ export interface RowInput {
   actions?: SearchAction[];
   /** App commands that match the text (#476). */
   commands?: CommandMatch[];
+  /** The own keyword the text is exactly (#478). */
+  keyword?: OwnKeyword | null;
   /** URL when the text is clearly an address (#475). */
   address?: string | null;
   /** Bang suggestions while typing "!" (#475). */
@@ -66,7 +71,15 @@ const isCapture = (c: QuickCommand) => c.kind === 'todo' || c.kind === 'note' ||
 export function buildRows(input: RowInput): RowGroup[] {
   const out: RowGroup[] = [];
   const { command, alternative } = input;
-  // An address goes first, so Enter does what the row says (#475).
+  // An own keyword is the user's explicit choice, so it comes before
+  // everything else and Enter opens it (#478).
+  if (!command && input.keyword)
+    out.push({
+      id: 'keyword',
+      label: 'search.keyword_result',
+      rows: [{ kind: 'keyword', id: 'keyword', keyword: input.keyword }],
+    });
+  // An address goes first after that, so Enter does what the row says (#475).
   if (!command && input.address)
     out.push({
       id: 'open',

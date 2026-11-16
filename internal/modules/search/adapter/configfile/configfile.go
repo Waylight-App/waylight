@@ -15,6 +15,7 @@ type Section struct {
 	OpenInNewTab    bool       `yaml:"openInNewTab,omitempty"`
 	CapturePrefixes *Prefixes  `yaml:"capturePrefixes,omitempty"`
 	Shortcuts       []Shortcut `yaml:"shortcuts,omitempty"`
+	Keywords        []Keyword  `yaml:"keywords,omitempty"`
 }
 
 // Prefixes are the quick capture prefixes of the search field.
@@ -31,6 +32,15 @@ type Shortcut struct {
 	URL     string `yaml:"url"`
 }
 
+// Keyword is an own keyword (#478): kind is service, bookmark, widget, url
+// or query; target is the id, the web address or the search text.
+type Keyword struct {
+	Keyword string `yaml:"keyword"`
+	Kind    string `yaml:"kind"`
+	Target  string `yaml:"target"`
+	Label   string `yaml:"label,omitempty"`
+}
+
 // FromSection maps the use case section.
 func FromSection(s usecase.ConfigSection) *Section {
 	out := &Section{Provider: s.Provider, OpenInNewTab: s.OpenInNewTab}
@@ -39,6 +49,9 @@ func FromSection(s usecase.ConfigSection) *Section {
 	}
 	for _, sc := range s.Shortcuts {
 		out.Shortcuts = append(out.Shortcuts, Shortcut{Keyword: sc.Keyword, Name: sc.Name, URL: sc.URLTemplate})
+	}
+	for _, k := range s.Keywords {
+		out.Keywords = append(out.Keywords, Keyword{Keyword: k.Keyword, Kind: k.Kind, Target: k.Target, Label: k.Label})
 	}
 	return out
 }
@@ -51,6 +64,9 @@ func (s Section) Section() usecase.ConfigSection {
 	}
 	for _, sc := range s.Shortcuts {
 		out.Shortcuts = append(out.Shortcuts, usecase.ShortcutView{Keyword: sc.Keyword, Name: sc.Name, URLTemplate: sc.URL})
+	}
+	for _, k := range s.Keywords {
+		out.Keywords = append(out.Keywords, usecase.KeywordView{Keyword: k.Keyword, Kind: k.Kind, Target: k.Target, Label: k.Label})
 	}
 	return out
 }

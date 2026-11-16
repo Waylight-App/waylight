@@ -151,7 +151,15 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 			m.SetPresetSource(appearancePreset)
 			return m
 		}},
-		{"search", func() modules.Module { return search.New(db) }},
+		{"search", func() modules.Module {
+			m := search.New(db)
+			authModule.OnAccountDeleted(func(ctx context.Context, accountID string) {
+				if err := m.ForgetAccount(ctx, accountID); err != nil {
+					log.Warn("search: remove a deleted account's settings", "err", err)
+				}
+			})
+			return m
+		}},
 		{"weather", func() modules.Module { return weather.New(client, clk) }},
 		{"services", func() modules.Module {
 			return services.New(services.Deps{
