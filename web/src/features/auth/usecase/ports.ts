@@ -42,7 +42,7 @@ export interface AuthGateway {
   deleteGuest(id: string): Promise<void>;
   members(): Promise<MemberList>;
   createMember(name: string, password: string): Promise<Member>;
-  updateMember(id: string, disabled: boolean, password: string): Promise<Member>;
+  updateMember(id: string, disabled: boolean, password: string, role?: 'member' | 'admin'): Promise<Member>;
   deleteMember(id: string): Promise<void>;
   groups(): Promise<Group[]>;
   createGroup(name: string, accounts: string[]): Promise<Group>;
