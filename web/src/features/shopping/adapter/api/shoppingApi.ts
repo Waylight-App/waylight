@@ -1,14 +1,33 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
-import type { ClearedDTO, ItemDTO, SettingsDTO } from '../../../../shared/api-client/generated/shopping';
 import type {
+  ClearedDTO,
+  ImportedDTO,
+  ItemDTO,
+  ListDTO,
+  ListsDTO,
+  SettingsDTO,
+} from '../../../../shared/api-client/generated/shopping';
+import type {
+  CurrentRequestDTO,
   ItemStateDTO,
+  ListRequestDTO,
   NewItemDTO,
   SettingsInputDTO,
 } from '../../../../shared/api-client/generated/shopping-requests';
-import type { ShoppingItem, ShoppingSettings } from '../../domain/shopping';
+import { fetchShareGroups, type ShareGroup, type Visibility } from '../../../../shared/sharing/sharing';
+import type { ShoppingItem, ShoppingList, ShoppingOverview, ShoppingSettings } from '../../domain/shopping';
 import type { ShoppingGateway } from '../../usecase/shoppingUseCases';
 
 const item = (id: string) => `/api/shopping/items/${encodeURIComponent(id)}`;
+const list = (id: string) => `/api/shopping/lists/${encodeURIComponent(id)}`;
+const listItem = (listId: string, id: string) => `${list(listId)}/items/${encodeURIComponent(id)}`;
+const toList = (l: ListDTO): ShoppingList => ({
+  id: l.id,
+  name: l.name,
+  visibility: l.visibility,
+  mine: l.mine,
+  open: l.open,
+});
 
 /** ShoppingGateway backed by the REST API. */
 export class ShoppingApi implements ShoppingGateway {
@@ -37,5 +56,48 @@ export class ShoppingApi implements ShoppingGateway {
   }
   async clearCompleted(): Promise<number> {
     return (await this.http.post<ClearedDTO>('/api/shopping/clear-completed')).deleted;
+  }
+
+  async overview(): Promise<ShoppingOverview> {
+    const o = await this.http.get<ListsDTO>('/api/shopping/lists');
+    return { lists: o.lists.map(toList), caldav: o.caldav, current: o.current };
+  }
+  async createList(name: string, visibility?: Visibility): Promise<ShoppingList> {
+    const body: ListRequestDTO = { name, visibility };
+    return toList(await this.http.post<ListDTO>('/api/shopping/lists', body));
+  }
+  async updateList(id: string, name: string, visibility: Visibility): Promise<ShoppingList> {
+    const body: ListRequestDTO = { name, visibility };
+    return toList(await this.http.put<ListDTO>(list(id), body));
+  }
+  deleteList(id: string): Promise<void> {
+    return this.http.delete(list(id));
+  }
+  setCurrent(current: string): Promise<void> {
+    const body: CurrentRequestDTO = { list: current };
+    return this.http.put('/api/shopping/current', body);
+  }
+  async listItems(listId: string): Promise<ShoppingItem[]> {
+    return (await this.http.get<ItemDTO[]>(`${list(listId)}/items`)).map((i) => ({ ...i }));
+  }
+  async addToList(listId: string, summary: string): Promise<ShoppingItem> {
+    const body: NewItemDTO = { summary };
+    return { ...(await this.http.post<ItemDTO>(`${list(listId)}/items`, body)) };
+  }
+  setDoneInList(listId: string, id: string, done: boolean): Promise<void> {
+    const body: ItemStateDTO = { done };
+    return this.http.put(listItem(listId, id), body);
+  }
+  removeFromList(listId: string, id: string): Promise<void> {
+    return this.http.delete(listItem(listId, id));
+  }
+  async clearCompletedInList(listId: string): Promise<number> {
+    return (await this.http.post<ClearedDTO>(`${list(listId)}/clear-completed`)).deleted;
+  }
+  async importCaldav(listId: string): Promise<number> {
+    return (await this.http.post<ImportedDTO>(`${list(listId)}/import`)).imported;
+  }
+  shareGroups(): Promise<ShareGroup[]> {
+    return fetchShareGroups(this.http);
   }
 }
