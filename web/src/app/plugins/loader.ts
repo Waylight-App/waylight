@@ -80,6 +80,7 @@ function toSection(s: PluginSection, context: PluginContext): SettingsSection {
     title: () => pick(s.label, locale()),
     group: 'organisation',
     adminOnly: s.adminOnly,
+    plugin: true,
     load: () => Promise.resolve((locked() ? LockedFeature : PluginHost) as never),
     props: () =>
       locked()
