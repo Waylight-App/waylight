@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"net/http"
 	"os"
@@ -16,6 +17,7 @@ import (
 
 	"trisse-home/internal/modules"
 	"trisse-home/internal/modules/auth"
+	"trisse-home/internal/platform/branding"
 	"trisse-home/internal/platform/config"
 	"trisse-home/internal/platform/crypto"
 	"trisse-home/internal/platform/database"
@@ -212,6 +214,10 @@ func logNotifyError(log *slog.Logger, err error) {
 // core build; the ee/ audit log sets it while the modules are built (#303).
 var changeSink modules.ChangeSink
 
+// brandingSource supplies an organisation's branding (#305); nil in a core
+// build or without the ee branding module, which shows the product's.
+var brandingSource branding.Source
+
 // newHandler builds the router with all module routes and the middleware chain.
 func newHandler(a *app) http.Handler {
 	r := router.New(a.auth.Guard)
@@ -242,6 +248,13 @@ func newHandler(a *app) http.Handler {
 	// Frontend plugins (ADR 0021): the list is public so even the sign-in
 	// page can load them; an ee build mounts its bundle here.
 	r.Public("GET /api/plugins", webui.PluginsHandler(pluginURLs()))
+	// Branding (#305) is public: the sign-in page shows it. The source is
+	// read per request, so a module set during the build is always seen.
+	source := func() branding.Source { return brandingSource }
+	r.Public("GET /api/branding", branding.InfoHandler(source))
+	r.Public("GET /api/branding/{kind}", branding.AssetHandler(source))
+	baseManifest, _ := fs.ReadFile(webui.Dist(), "manifest.webmanifest") // empty in a build without the frontend
+	r.Public("GET /manifest.webmanifest", branding.ManifestHandler(baseManifest, source))
 	for _, p := range frontendPlugins {
 		r.Handle("GET "+p.prefix, webui.PluginFiles(p.prefix, p.files))
 	}
