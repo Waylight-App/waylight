@@ -42,3 +42,43 @@ func Items(items []domain.Item) []ItemDTO {
 	}
 	return out
 }
+
+// ListDTO is a shopping list kept on trisse-home (#471).
+type ListDTO struct {
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	Visibility string `json:"visibility"`
+	// Mine is false for a list someone else shared.
+	Mine bool `json:"mine"`
+	// Open and Done count the items.
+	Open int `json:"open"`
+	Done int `json:"done"`
+}
+
+// ListsDTO is GET /api/shopping/lists.
+type ListsDTO struct {
+	Lists []ListDTO `json:"lists"`
+	// CalDAV tells whether a CalDAV list is connected.
+	CalDAV bool `json:"caldav"`
+	// Current is what the widget shows: a list ID, "caldav", or "".
+	Current string `json:"current"`
+}
+
+// ImportedDTO answers an import.
+type ImportedDTO struct {
+	Imported int `json:"imported"`
+}
+
+// List maps a list.
+func List(v usecase.ListView) ListDTO {
+	return ListDTO{ID: v.ID, Name: v.Name, Visibility: string(v.Access.Visibility), Mine: v.Mine, Open: v.Open, Done: v.Done}
+}
+
+// Lists maps the lists.
+func Lists(v usecase.ListsView) ListsDTO {
+	out := ListsDTO{Lists: make([]ListDTO, 0, len(v.Lists)), CalDAV: v.CalDAV, Current: v.Current}
+	for _, l := range v.Lists {
+		out.Lists = append(out.Lists, List(l))
+	}
+	return out
+}

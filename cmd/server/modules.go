@@ -182,7 +182,19 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 				}})
 		}},
 		{"transit", func() modules.Module { return transit.New(client, cfg.TransitAPIURL, clk) }},
-		{"shopping", func() modules.Module { return shopping.New(db, secrets, out.integration, ids) }},
+		{"shopping", func() modules.Module {
+			host := ""
+			if cfg.PublicURL != nil {
+				host = cfg.PublicURL.Hostname()
+			}
+			m := shopping.New(db, secrets, out.integration, ids, clk, host)
+			authModule.OnAccountDeleted(func(ctx context.Context, accountID string) {
+				if err := m.ForgetAccount(ctx, accountID); err != nil {
+					log.Warn("shopping: remove a deleted account's lists", "err", err)
+				}
+			})
+			return m
+		}},
 		{"waste", func() modules.Module { return waste.New(db, client, clk, time.Local) }},
 		{"wireguard", func() modules.Module { return wireguard.New(db, cfg.WireGuardDir, clk) }},
 		{"fritzbox", func() modules.Module { return fritzbox.New(db, secrets, out.integration, clk, time.Local) }},

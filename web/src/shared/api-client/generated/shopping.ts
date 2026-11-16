@@ -31,3 +31,40 @@ export interface ItemDTO {
 export interface ClearedDTO {
   deleted: number /* int */;
 }
+/**
+ * ListDTO is a shopping list kept on trisse-home (#471).
+ */
+export interface ListDTO {
+  id: string;
+  name: string;
+  visibility: string;
+  /**
+   * Mine is false for a list someone else shared.
+   */
+  mine: boolean;
+  /**
+   * Open and Done count the items.
+   */
+  open: number /* int */;
+  done: number /* int */;
+}
+/**
+ * ListsDTO is GET /api/shopping/lists.
+ */
+export interface ListsDTO {
+  lists: ListDTO[];
+  /**
+   * CalDAV tells whether a CalDAV list is connected.
+   */
+  caldav: boolean;
+  /**
+   * Current is what the widget shows: a list ID, "caldav", or "".
+   */
+  current: string;
+}
+/**
+ * ImportedDTO answers an import.
+ */
+export interface ImportedDTO {
+  imported: number /* int */;
+}

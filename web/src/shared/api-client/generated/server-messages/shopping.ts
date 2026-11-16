@@ -2,10 +2,15 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_3d5b8bd9dba6eec1: "Choose text or ics.",
   srv_593a1c118a3d9d67: "Items must be between 1 and 200 characters long.",
+  srv_67340dd03bbd3030: "Only the person who created the list can rename, share or delete it.",
   srv_77686a482211f04a: "The item does not exist (any more).",
   srv_7faea27f96c82f5f: "The item was changed in another app at the same time. Please try again.",
+  srv_b670eb0b48710065: "The list has 500 items; clear the ticked ones first.",
+  srv_b112f7b441bebf0d: "The shopping list does not exist or is not shared with you.",
   srv_7d7ee048ea53fd65: "The shopping list is not configured yet.",
+  srv_3af5b06077e90463: "You already have 20 shopping lists; delete one first.",
 } as const;
 
 /** Key of a backend message. */
