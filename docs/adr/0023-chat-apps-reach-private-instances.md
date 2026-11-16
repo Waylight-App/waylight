@@ -63,8 +63,9 @@ start page itself.
      default** and only for organisations whose admins make their instance
      reachable from the internet on purpose. It is switched on by
      configuring the organisation's own bot registration
-     (`TEAMS_BOT_APP_ID`, `TEAMS_BOT_APP_PASSWORD`); without it the
-     endpoint does not exist.
+     (`TEAMS_BOT_APP_ID`); without it the endpoint does not exist. The
+     answer goes back in the HTTP response, so the instance needs no bot
+     password.
    - The endpoint is a single route, `/api/teams/messages`, separate from
      the normal API and outside its session handling. Every request must
      carry a valid Bot Framework token (signed by Microsoft, issued for the
