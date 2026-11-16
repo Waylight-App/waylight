@@ -21,6 +21,7 @@ import (
 type Module struct {
 	modules.Base
 	uc       usecase.Notifier
+	email    *gateway.EmailPublisher
 	handlers *controller.Handlers
 }
 
@@ -31,6 +32,7 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 	if publicURL != nil {
 		link = publicURL.String()
 	}
+	email := gateway.NewEmailPublisher(clock.Now)
 	uc := usecase.NewNotifier(usecase.Deps{
 		Repo: gateway.NewRepository(db, cipher), Sender: gateway.NewNtfySender(client),
 		Channels: gateway.NewChannelRepository(db, cipher), Maintenance: gateway.NewMaintenanceRepository(db),
@@ -38,13 +40,17 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 		Publishers: map[domain.ChannelKind]usecase.Publisher{
 			domain.ChannelGotify:  gateway.NewGotifyPublisher(client),
 			domain.ChannelWebhook: gateway.NewWebhookPublisher(client),
-			domain.ChannelEmail:   gateway.NewEmailPublisher(clock.Now),
+			domain.ChannelEmail:   email,
 			domain.ChannelSlack:   gateway.NewSlackPublisher(client, link),
 			domain.ChannelTeams:   gateway.NewTeamsPublisher(client, link),
 		},
 	})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), email: email}
 }
+
+// SetInstanceName makes e-mail subjects start with the instance's name
+// from the branding (#305) instead of the product's.
+func (m *Module) SetInstanceName(name kernel.InstanceName) { m.email.Name = name }
 
 // Alert implements kernel.AlertSink.
 func (m *Module) Alert(ctx context.Context, a kernel.Alert) { m.uc.Alert(ctx, a) }

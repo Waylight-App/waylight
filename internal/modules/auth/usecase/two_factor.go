@@ -11,9 +11,7 @@ import (
 )
 
 // Labels shown in authenticator apps.
-const (
-	totpIssuer = "trisse-home"
-)
+const ()
 
 // checkSecondFactor verifies a TOTP or recovery code and updates the replay
 // and recovery-code state of the account (the caller persists it).
@@ -72,7 +70,7 @@ func (uc *twoFactor) Start(ctx context.Context) (TwoFactorEnrollment, error) {
 	if err := uc.deps.Accounts.Update(ctx, a); err != nil {
 		return TwoFactorEnrollment{}, fmt.Errorf("update account: %w", err)
 	}
-	return TwoFactorEnrollment{Secret: secret, URI: uc.deps.OTP.ProvisioningURI(secret, a.Name(), totpIssuer)}, nil
+	return TwoFactorEnrollment{Secret: secret, URI: uc.deps.OTP.ProvisioningURI(secret, a.Name(), uc.deps.InstanceName.Of(ctx))}, nil
 }
 
 // Confirm implements TwoFactor and returns the recovery codes (shown once).
