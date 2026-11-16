@@ -102,8 +102,18 @@ type SubscriptionRepository interface {
 	Delete(ctx context.Context, id string) error
 }
 
+// SharedSubscriptions lists the subscriptions other accounts shared with
+// the principal (output port, team calendar #299).
+type SharedSubscriptions interface {
+	ListShared(ctx context.Context) ([]domain.Subscription, error)
+}
+
 // Deps bundles the output ports of the calendar module.
 type Deps struct {
+	// Shared and SharingOn add calendars others shared to a person's agenda
+	// while SharingOn says so (the ee/ team calendar); nil adds none.
+	Shared        SharedSubscriptions
+	SharingOn     func(ctx context.Context) bool
 	Repo          SettingsRepository
 	Source        EventSource
 	Writer        EventWriter
@@ -143,6 +153,9 @@ type calendar struct {
 	// agendas caches the agenda per account whose calendars apply
 	// (kernel.Principal.SettingsAccount, ADR 0018).
 	agendas map[string]*agendaCache
+	// shared and sharingOn: see Deps.
+	shared    SharedSubscriptions
+	sharingOn func(ctx context.Context) bool
 }
 
 // agendaCache is the cached agenda of one account and the period it covers.
@@ -177,7 +190,8 @@ func (uc *calendar) snapshot(ctx context.Context) (*AgendaResponse, time.Time, t
 // NewCalendar returns the calendar use cases.
 func NewCalendar(d Deps) Service {
 	return &calendar{repo: d.Repo, source: d.Source, writer: d.Writer, subs: d.Subscriptions, feeds: d.Feeds, ids: d.IDs, clock: d.Clock,
-		accounts: d.Accounts, api: d.API, oauth: d.OAuth, acc: accountState{pending: map[string]*pendingSignIn{}}, agendas: map[string]*agendaCache{}}
+		accounts: d.Accounts, api: d.API, oauth: d.OAuth, acc: accountState{pending: map[string]*pendingSignIn{}}, agendas: map[string]*agendaCache{},
+		shared: d.Shared, sharingOn: d.SharingOn}
 }
 
 // sourceSet is everything the agenda is built from.
@@ -215,6 +229,56 @@ func (uc *calendar) sources(ctx context.Context) (sourceSet, error) {
 		return sourceSet{}, err
 	}
 	return sourceSet{caldav: caldav, subs: subs, accounts: accounts}, nil
+}
+
+// sharedSubscriptions returns the calendars others shared with a person
+// while the team calendar is on. Guests, kiosk displays and background work
+// see the owner's calendars as before and nothing shared. They are never
+// part of a person's cached agenda: whether they show depends on the
+// person's groups and the licence at the time of the request, so they are
+// merged in per request (the feed itself is cached by the gateway).
+func (uc *calendar) sharedSubscriptions(ctx context.Context) ([]domain.Subscription, error) {
+	p := kernel.PrincipalFrom(ctx)
+	if uc.shared == nil || uc.sharingOn == nil || p.TabScoped() || p.IsSystem() || p.IsToken() || !uc.sharingOn(ctx) {
+		return nil, nil
+	}
+	list, err := uc.shared.ListShared(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list shared subscriptions: %w", err)
+	}
+	return list, nil
+}
+
+// withShared adds the events of shared calendars between from and to to
+// res, sorted with the rest; a shared feed that fails is named in Error.
+func (uc *calendar) withShared(ctx context.Context, res AgendaResponse, shared []domain.Subscription, from, to time.Time) AgendaResponse {
+	if len(shared) == 0 {
+		return res
+	}
+	var failed []string
+	for _, sub := range shared {
+		events, err := uc.feeds.Events(ctx, sub, from, to)
+		if err != nil {
+			failed = append(failed, sub.Name)
+			continue
+		}
+		for _, e := range events {
+			if !e.Start.Before(to) || !(domain.Event{End: e.End, AllDay: e.AllDay}).EndsAfter(from) {
+				continue
+			}
+			res.Events = append(res.Events, EventView{UID: e.UID, Summary: e.Summary, Location: e.Location, Description: e.Description,
+				URL: e.URL, Calendar: sub.Name, Color: sub.Color, Start: e.Start, End: e.End, AllDay: e.AllDay})
+		}
+	}
+	slices.SortStableFunc(res.Events, func(a, b EventView) int { return a.Start.Compare(b.Start) })
+	if len(failed) > 0 {
+		msg := "Some shared calendars could not be loaded: " + strings.Join(failed, ", ")
+		if res.Error != "" {
+			msg = res.Error + " " + msg
+		}
+		res.Error = msg
+	}
+	return res
 }
 
 // feedSources returns the CalDAV settings (nil when not configured) and the
@@ -289,9 +353,18 @@ func (uc *calendar) Upcoming(ctx context.Context, days int) (AgendaResponse, err
 		days = DefaultDays
 	}
 	days = min(days, MaxDays)
+	now := uc.clock.Now()
+	until := now.Add(time.Duration(days) * 24 * time.Hour)
+	shared, err := uc.sharedSubscriptions(ctx)
+	if err != nil {
+		return AgendaResponse{}, err
+	}
 	cached, _, _ := uc.snapshot(ctx)
 	if cached == nil {
 		if _, err := uc.sources(ctx); err != nil {
+			if errors.Is(err, domain.ErrNotConfigured) && len(shared) > 0 {
+				return uc.withShared(ctx, AgendaResponse{UpdatedAt: now, Events: []EventView{}}, shared, now, until), nil
+			}
 			return AgendaResponse{}, err
 		}
 		_ = uc.Refresh(ctx) // errors are reported through AgendaResponse.Error
@@ -300,15 +373,13 @@ func (uc *calendar) Upcoming(ctx context.Context, days int) (AgendaResponse, err
 			return AgendaResponse{}, kernel.NewPublicError(kernel.ErrUnavailable, "The calendar server is not reachable.")
 		}
 	}
-	now := uc.clock.Now()
-	until := now.Add(time.Duration(days) * 24 * time.Hour)
 	res := AgendaResponse{UpdatedAt: cached.UpdatedAt, Error: cached.Error, Events: []EventView{}}
 	for _, e := range cached.Events {
 		if e.Start.Before(until) && (domain.Event{End: e.End, AllDay: e.AllDay}).EndsAfter(now) {
 			res.Events = append(res.Events, e)
 		}
 	}
-	return res, nil
+	return uc.withShared(ctx, res, shared, now, until), nil
 }
 
 // Range implements Calendar. Periods inside the cached window are answered
@@ -317,7 +388,14 @@ func (uc *calendar) Range(ctx context.Context, from, to time.Time) (AgendaRespon
 	if err := domain.CheckRange(from, to); err != nil {
 		return AgendaResponse{}, err
 	}
+	shared, err := uc.sharedSubscriptions(ctx)
+	if err != nil {
+		return AgendaResponse{}, err
+	}
 	src, err := uc.sources(ctx)
+	if errors.Is(err, domain.ErrNotConfigured) && len(shared) > 0 {
+		return uc.withShared(ctx, AgendaResponse{UpdatedAt: uc.clock.Now(), Events: []EventView{}}, shared, from, to), nil
+	}
 	if err != nil {
 		return AgendaResponse{}, err
 	}
@@ -336,7 +414,7 @@ func (uc *calendar) Range(ctx context.Context, from, to time.Time) (AgendaRespon
 			res.Events = append(res.Events, e)
 		}
 	}
-	return res, nil
+	return uc.withShared(ctx, res, shared, from, to), nil
 }
 
 // CreateEvent implements Calendar. CalendarURL is a CalDAV collection or a
