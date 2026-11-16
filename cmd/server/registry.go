@@ -8,6 +8,7 @@ import (
 
 	"trisse-home/internal/modules"
 	"trisse-home/internal/modules/auth"
+	"trisse-home/internal/modules/notifications"
 	"trisse-home/internal/modules/wiki"
 	"trisse-home/internal/platform/clock"
 	"trisse-home/internal/platform/config"
@@ -31,6 +32,9 @@ type moduleDeps struct {
 	// wikiSources lets the ee/ team integrations add wikis searched for the
 	// signed-in person (#327); the wiki module reads it at search time.
 	wikiSources *wiki.MemberSources
+	// notifications is the notifications module, nil when it is switched
+	// off; modules post to its Slack and Teams channels (#332).
+	notifications *notifications.Module
 }
 
 type moduleFactory struct {

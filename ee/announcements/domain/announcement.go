@@ -34,6 +34,10 @@ type Announcement struct {
 	ExpiresAt time.Time
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	// PostedChannel and PostedAt record the last post to a Slack or Teams
+	// channel (#332).
+	PostedChannel string
+	PostedAt      time.Time
 }
 
 // Errors.
@@ -42,6 +46,7 @@ var (
 	ErrNotAllowed = kernel.NewPublicError(kernel.ErrForbidden, "You may not write announcements.")
 	ErrTooMany    = kernel.NewPublicError(kernel.ErrConflict, "There are already 50 current announcements; let some expire or delete them first.")
 	ErrNoReader   = kernel.NewPublicError(kernel.ErrForbidden, "Only members and admins can mark announcements as read.")
+	ErrNoChat     = kernel.NewPublicError(kernel.ErrForbidden, "Posting to Slack or Teams needs a licence key that includes chat apps.")
 )
 
 // Validate checks the fields a writer sets.

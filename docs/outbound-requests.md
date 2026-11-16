@@ -34,7 +34,7 @@ stored encrypted.
 | Team wikis (`ee` builds) | Only while a person searches and only the services they connected: `api.atlassian.com`, `graph.microsoft.com`, `api.notion.com`, `slack.com`, at most four seconds each ([details](modules/wiki.md#team-wikis-with-each-persons-account)). |
 | Ollama | Only when you ask for a summary. |
 | WebDAV off-site backups | After each backup, and when you restore from it. |
-| ntfy, Gotify, webhooks, SMTP, Slack (`hooks.slack.com`), Teams (the workflow's address, usually `*.logic.azure.com` or `*.powerplatform.com`) | When a notification is sent. None until you add the channel. |
+| ntfy, Gotify, webhooks, SMTP, Slack (`hooks.slack.com`), Teams (the workflow's address, usually `*.logic.azure.com` or `*.powerplatform.com`) | When a notification is sent, or an announcement is posted to a Slack or Teams channel. None until you add the channel. |
 | Football results (`api.openligadb.de`) | Only while a sports widget is shown, at most every 15 minutes per league ([details](modules/sports.md)). |
 | CardDAV address book (birthdays) | When you save the address book in the settings, then every six hours. None until you connect one ([details](modules/birthdays.md)). |
 | CardDAV address book (phone list) | When an admin saves the address book in the settings, then every hour. None until one is connected ([details](modules/phonelist.md)). |
