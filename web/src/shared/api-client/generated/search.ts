@@ -19,6 +19,18 @@ export interface ShortcutDTO {
   urlTemplate: string;
 }
 /**
+ * KeywordDTO describes an own keyword (#478) and is the body of POST /api/search/keywords.
+ */
+export interface KeywordDTO {
+  keyword: string;
+  /**
+   * Kind is service, bookmark, widget, url or query.
+   */
+  kind: string;
+  target: string;
+  label: string;
+}
+/**
  * CapturePrefixesDTO are the quick capture prefixes of the search field (#221).
  */
 export interface CapturePrefixesDTO {
@@ -40,5 +52,6 @@ export interface SettingsDTO {
   defaultProvider: string;
   providers: ProviderDTO[];
   shortcuts: ShortcutDTO[];
+  keywords: KeywordDTO[];
   bar: BarDTO;
 }

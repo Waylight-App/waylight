@@ -29,6 +29,7 @@
   import { buildCommands, type CommandHandlers } from './appCommands';
   import { detectAddress, displayAddress } from '../features/search/domain/address';
   import { BANG_ENGINES, suggestBangs, type Bang } from '../features/search/domain/bangs';
+  import { matchKeyword, type OwnKeyword } from '../features/search/domain/keywords';
   import { asksForTimers, formatRemaining, parseTimer, type Timer } from '../features/search/domain/timer';
   import { timers, timerTitle } from './timers';
   import AnswerCard from '../features/search/ui/answers/AnswerCard.svelte';
@@ -105,6 +106,8 @@
   let engine = $state('');
   let engineId = $state('');
   let ownBangs = $state<Bang[]>([]);
+  // Own keywords (#478); the server gives guests and kiosk displays none.
+  let ownKeywords = $state<OwnKeyword[]>([]);
   // svelte-ignore state_referenced_locally
   if (modules.has('search'))
     container.search
@@ -114,6 +117,7 @@
         engine = s.providers.find((p) => p.id === s.defaultProvider)?.name ?? '';
         engineId = s.defaultProvider;
         ownBangs = s.shortcuts.map((x) => ({ bang: x.keyword, name: x.name }));
+        ownKeywords = s.keywords;
       })
       .catch(() => {});
   const prefixes = $derived(mergePrefixes(palettePrefixes, prefixesFromConfig(bar?.capturePrefixes)));
@@ -157,6 +161,12 @@
           },
           (id, s) => searchUsage.score(query, commandTarget(id), s),
         ),
+  );
+  // The text a search keyword put into the field is not matched again, so a
+  // keyword whose search is itself a keyword cannot bounce back (#478).
+  let keywordQuery = $state<string | null>(null);
+  const keyword = $derived(
+    command || commandOnly || query === keywordQuery ? null : matchKeyword(ownKeywords, query),
   );
   // "github.com" or "192.168.178.1" opens directly (#475).
   const address = $derived(command || commandOnly ? null : detectAddress(query));
@@ -202,6 +212,7 @@
       web: modules.has('search') && query.trim() !== '' && !commandOnly,
       actions: pluginActions,
       commands: commandMatches,
+      keyword,
       address,
       bangs,
       timer: timerRequest,
@@ -340,6 +351,58 @@
     } else window.location.assign(url);
   }
 
+  /** Opens what an own keyword points to (#478). */
+  function openKeyword(k: OwnKeyword) {
+    switch (k.kind) {
+      case 'url':
+        return openAddress(k.target);
+      case 'query':
+        keywordQuery = k.target;
+        query = k.target;
+        return;
+      case 'widget':
+        requestWidgetFocus([k.target]);
+        ondone();
+        return;
+      case 'service':
+      case 'bookmark': {
+        const item = searchable.find((i) => i.kind === k.kind && i.id === k.target);
+        if (item) void choose(item);
+        else status = t('search.keyword_gone', { keyword: k.keyword });
+        return;
+      }
+    }
+  }
+
+  // "Add keyword…" for the selected tile or bookmark (#478). It sits below
+  // the list, because a button inside an option is not accessible.
+  const keywordFor = $derived.by((): QuickItem | null => {
+    const row = flat[active];
+    if (!modules.has('search') || container.auth.kiosk || row?.kind !== 'result') return null;
+    return row.item.kind === 'service' || row.item.kind === 'bookmark' ? row.item : null;
+  });
+  let keywordItem = $state<QuickItem | null>(null);
+  let keywordWord = $state('');
+  async function addKeyword(e: SubmitEvent) {
+    e.preventDefault();
+    const item = keywordItem;
+    if (!item || (item.kind !== 'service' && item.kind !== 'bookmark')) return;
+    try {
+      const s = await container.search.addKeyword({
+        keyword: keywordWord,
+        kind: item.kind,
+        target: item.id,
+        label: item.title,
+      });
+      ownKeywords = s.keywords;
+      status = t('search.keyword_added', { keyword: keywordWord.trim().toLowerCase() });
+      keywordItem = null;
+      keywordWord = '';
+    } catch (err) {
+      status = errorMessage(err);
+    }
+  }
+
   function searchWeb() {
     const target = modules.has('search') ? container.search.targetFor(query) : null;
     if (!target) return;
@@ -437,6 +500,8 @@
         return void runAction(row.action);
       case 'command':
         return runAppCommand(row.match);
+      case 'keyword':
+        return openKeyword(row.keyword);
       case 'address':
         return openAddress(row.url);
       case 'bang':
@@ -564,6 +629,11 @@
                   {:else if row.kind === 'result'}
                     <span class="title">{row.item.title}</span>
                     {#if row.item.detail}<span class="muted detail">{row.item.detail}</span>{/if}
+                  {:else if row.kind === 'keyword'}
+                    <span class="title"
+                      >{row.keyword.keyword} → {row.keyword.label || row.keyword.target}</span
+                    >
+                    <kbd>Enter</kbd>
                   {:else if row.kind === 'address'}
                     <span class="title">{t('app.open_address', { address: displayAddress(row.url) })}</span>
                     <kbd>Enter</kbd>
@@ -617,6 +687,22 @@
           {/each}
         </div>
       {/if}
+      {#if keywordItem}
+        <form class="keyword-form" onsubmit={addKeyword}>
+          <label
+            >{t('search.add_keyword_prompt', { label: keywordItem.title })}
+            <input class="input" bind:value={keywordWord} maxlength="24" required /></label
+          >
+          <button class="btn" type="submit">{t('search.add')}</button>
+          <button class="btn" type="button" onclick={() => (keywordItem = null)}>{t('common.cancel')}</button>
+        </form>
+      {:else if keywordFor}
+        <p class="hint">
+          <button class="btn link" type="button" onclick={() => (keywordItem = keywordFor)}
+            >{t('search.add_keyword')}</button
+          >
+        </p>
+      {/if}
       {#if aiQuestion}
         {#await import('./AskAi.svelte') then m}
           <m.default question={aiQuestion} ask={askAi} />
@@ -638,6 +724,13 @@
 {/if}
 
 <style>
+  .keyword-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: end;
+    padding: var(--space-2) var(--space-3);
+  }
   .panel {
     position: absolute;
     top: calc(100% + var(--space-2));

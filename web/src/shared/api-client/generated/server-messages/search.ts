@@ -2,16 +2,29 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_7ac1113700bd84e6: "A keyword is 1 to 24 letters, digits, - or _, starting with a letter or digit.",
   srv_74215ccd79a3ff66: "A prefix is 1 to 4 letters or digits.",
   srv_76a5625367cbe997: "A shortcut with this keyword already exists.",
+  srv_7751ccb712b43df6: "Each own keyword can be used only once.",
   srv_fd6c518295d812e7: "Each prefix can be used only once.",
   srv_ff5b12b63bbd2fcc: "Each shortcut keyword can be used only once.",
+  srv_2ce07ca7ab64ce07: "Own keywords need a signed-in account.",
   srv_1605df454fade766: "The URL must contain {query}.",
+  srv_fb77bf30efe31cac: "The keyword does not exist.",
   srv_d6e09729bc0d1f3b: "The keyword must consist of 1 to 16 letters or digits.",
+  srv_a4db379e15a68e9e: "The label can be at most 100 characters long.",
   srv_657058c57c5faf46: "The search query is too long.",
   srv_b828d9f84cec079a: "The search query must not be empty.",
   srv_2b29e30433c7ad15: "The shortcut does not exist.",
+  srv_3d9c86149fa849ea: "The target is missing or too long.",
+  srv_201b9e864fd6c6c6: "The target must be a service, bookmark, widget, web address or search.",
+  srv_8bd56c7034353aa9: "The web address must start with http:// or https://.",
+  srv_315ea6f2515e5a80: "This keyword is already in use.",
   srv_dea670a71d2295ca: "Unknown search provider.",
+  srv_1f5c1d6f6e0c2771: "“{word}” is one of your own keywords; choose another prefix or delete the keyword.",
+  srv_c79d63d26819dd1a: "“{word}” is the quick capture prefix for bookmarks; choose another keyword or change the prefix.",
+  srv_8b4b0288428b14ce: "“{word}” is the quick capture prefix for notes; choose another keyword or change the prefix.",
+  srv_284a8e8993530e8b: "“{word}” is the quick capture prefix for to-dos; choose another keyword or change the prefix.",
 } as const;
 
 /** Key of a backend message. */

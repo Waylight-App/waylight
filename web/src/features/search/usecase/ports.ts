@@ -1,3 +1,5 @@
+import type { OwnKeyword } from '../domain/keywords';
+
 /** A selectable search provider. */
 export interface Provider {
   id: string;
@@ -29,6 +31,8 @@ export interface SearchSettings {
   defaultProvider: string;
   providers: Provider[];
   shortcuts: Shortcut[];
+  /** Own keywords (#478). */
+  keywords: OwnKeyword[];
   bar: SearchBarOptions;
 }
 
@@ -39,6 +43,8 @@ export interface SearchGateway {
   setBar(options: SearchBarOptions): Promise<SearchSettings>;
   addShortcut(s: Shortcut): Promise<SearchSettings>;
   deleteShortcut(keyword: string): Promise<SearchSettings>;
+  addKeyword(k: OwnKeyword): Promise<SearchSettings>;
+  deleteKeyword(keyword: string): Promise<SearchSettings>;
   /** URL that resolves a query (the backend redirects to the provider). */
   searchUrl(query: string): string;
 }
