@@ -91,6 +91,10 @@
   let input = $state<HTMLInputElement>();
   let box = $state<HTMLElement>();
   let panel = $state<{ keydown: (e: KeyboardEvent) => boolean }>();
+  /** How long an early Enter waits for the panel before it searches the web. */
+  const PANEL_WAIT_MS = 3000;
+  let pendingEnter = $state<KeyboardEventInit | null>(null);
+  let pendingTimer: ReturnType<typeof setTimeout> | undefined;
 
   /** Focuses the field and opens the panel (Ctrl+K and /). */
   export function focus() {
@@ -117,12 +121,30 @@
     }
     if (!open && e.key !== 'Tab') open = true;
     if (panel?.keydown(e)) e.preventDefault();
-    else if (e.key === 'Enter' && !panel && modules?.has('search')) {
-      // Enter before the panel has loaded still searches the web.
-      const target = container.search.targetFor(query);
-      if (target) window.location.assign(target);
+    else if (e.key === 'Enter' && !panel) {
+      // Enter before the panel has loaded waits for it, so "uhrzeit" still
+      // gets its answer instead of going straight to the web search. Only
+      // if the panel does not arrive in time is the query searched on the web.
+      e.preventDefault();
+      pendingEnter = { altKey: e.altKey, shiftKey: e.shiftKey, ctrlKey: e.ctrlKey, metaKey: e.metaKey };
+      clearTimeout(pendingTimer);
+      pendingTimer = setTimeout(() => {
+        if (!pendingEnter) return;
+        pendingEnter = null;
+        const target = modules?.has('search') ? container.search.targetFor(query) : null;
+        if (target) window.location.assign(target);
+      }, PANEL_WAIT_MS);
     }
   }
+
+  // Replays an Enter pressed while the panel was still loading.
+  $effect(() => {
+    if (!panel || !pendingEnter) return;
+    const keys = pendingEnter;
+    pendingEnter = null;
+    clearTimeout(pendingTimer);
+    panel.keydown(new KeyboardEvent('keydown', { key: 'Enter', ...keys }));
+  });
 
   // A click outside the field and its panel closes the panel.
   $effect(() => {
