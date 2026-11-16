@@ -9,6 +9,9 @@
   import type { Container } from './container';
   import { provideRefresh } from '../shared/refresh';
   import DashboardPage from './DashboardPage.svelte';
+  import { loadPlugins } from './plugins/loader';
+  import { widgetDefinitions } from './widgets';
+  import { registeredSections } from './settingsSections';
   import { attachShortcuts } from '../shared/shortcuts';
   import Icon from '../shared/ui/icons/Icon.svelte';
   import AccountMenu from './AccountMenu.svelte';
@@ -231,8 +234,20 @@
     return () => style.remove();
   });
 
+  // Plugins (the ee/ frontend, ADR 0021) are loaded once per page, before
+  // the modules are read, so their widgets and settings are known when the
+  // dashboard renders. Local mode has no server to offer any.
+  let pluginsLoaded: Promise<unknown> | undefined;
+
   async function init() {
     try {
+      if (!container.localMode) {
+        pluginsLoaded ??= loadPlugins(container.http, container.auth, {
+          widgets: widgetDefinitions,
+          sections: registeredSections,
+        });
+        await pluginsLoaded;
+      }
       const info = await container.enabledModules();
       modules = info.modules;
       widgetKinds = info.widgetKinds;
