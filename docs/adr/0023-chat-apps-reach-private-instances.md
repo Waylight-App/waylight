@@ -1,6 +1,6 @@
 # ADR 0023: How chat apps reach a private instance
 
-- Status: Proposed
+- Status: Accepted (2026-11-16, by the maintainer)
 - Date: 2026-11-16
 - Issues: [#333](https://github.com/itadori26/trisse-home/issues/333), [#334](https://github.com/itadori26/trisse-home/issues/334), part of [#335](https://github.com/itadori26/trisse-home/issues/335)
 
@@ -30,14 +30,19 @@ start page itself.
 
 ## Decision
 
-1. **The instance accepts no requests from the internet for chat apps.**
-   No public endpoint, no relay run by the project, no change to the
-   default that an instance is private.
-2. **Slack uses Socket Mode** (#333). The instance connects out to Slack
+1. **Each organisation's admins run the connection to their chat
+   service.** The project runs no relay and no shared app: every instance
+   uses an app its own organisation registered at Slack or Microsoft, and
+   nothing passes through a third party. By default the instance accepts
+   no requests from the internet for chat apps.
+2. **All of it is part of the `ee/` features** ([ADR 0020](0020-ee-stays-proprietary.md))
+   and needs a licence key that includes `chat-apps`: the Slack command,
+   the Teams tab and the Teams command box search. The core offers no chat
+   app.
+3. **Slack uses Socket Mode** (#333). The instance connects out to Slack
    with an app-level token (`SLACK_APP_TOKEN`, scope `connections:write`)
    and answers slash commands over that connection. Without the token,
-   nothing connects; it is off by default and needs a licence key with
-   `workplace-search`.
+   nothing connects; it is off by default.
    - The connection is authenticated by the app-level token over TLS to
      Slack, so there is no inbound request whose signature would need
      checking; the signing secret is not used.
@@ -48,12 +53,27 @@ start page itself.
      else.
    - The answer is sent as the acknowledgement within Slack's three
      seconds, visible only to the person who asked.
-3. **Teams gets the tab, not the command box search** (#334). A Teams app
-   package with a tab that shows the start page is offered; it works for
-   private instances because the Teams client on the person's device loads
-   it. The command box search needs a public bot endpoint and is not built
-   for self-hosted instances. It can be revisited for an instance that is
-   reachable from the internet on purpose, in a new ADR.
+4. **Teams: the tab for everyone, the command box search as an opt-in**
+   (#334).
+   - A Teams app package with a tab that shows the start page is offered;
+     it works for private instances because the Teams client on the
+     person's device loads it.
+   - The command box search (a message extension) needs Microsoft to reach
+     a bot endpoint of the instance over the internet. It is **off by
+     default** and only for organisations whose admins make their instance
+     reachable from the internet on purpose. It is switched on by
+     configuring the organisation's own bot registration
+     (`TEAMS_BOT_APP_ID`, `TEAMS_BOT_APP_PASSWORD`); without it the
+     endpoint does not exist.
+   - The endpoint is a single route, `/api/teams/messages`, separate from
+     the normal API and outside its session handling. Every request must
+     carry a valid Bot Framework token (signed by Microsoft, issued for the
+     organisation's bot app ID); anything else is refused before any
+     search runs. The asking Teams user is matched to a member through the
+     Microsoft 365 account they connected (#326), as for Slack.
+   - The docs say plainly what making an instance public means and that
+     only the bot route needs to be reachable (for example through the
+     reverse proxy), not the whole instance.
 
 ## Consequences
 
@@ -62,6 +82,10 @@ start page itself.
   outbound requests page lists it.
 - One long-lived outbound connection per instance while Slack is
   configured; it reconnects when Slack asks it to.
+- With the Teams command box search switched on, one route of the
+  instance is reachable from the internet; its security rests on the Bot
+  Framework token check, which is tested against forged, expired and
+  wrong-audience tokens.
 - The tab needs the start page to allow being framed by Teams
   (`frame-ancestors` for the Teams domains) and a sign-in that works inside
   Teams; that is part of #334.
