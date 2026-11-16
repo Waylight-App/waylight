@@ -99,4 +99,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_cacad70ec42d516f: 'Teile nur mit dir, mit allen oder mit einer deiner Gruppen.',
   // Please enter a valid e-mail address.
   srv_6ddc9c2076b9e645: 'Bitte gib eine gültige E-Mail-Adresse ein.',
+  // This feature needs a valid licence key.
+  srv_b093b38e42d34fa3: 'Diese Funktion braucht einen gültigen Lizenzschlüssel.',
+  // The licence key has expired or covers fewer accounts than this instance has; …
+  srv_28cc0a1c84155db5:
+    'Der Lizenzschlüssel ist abgelaufen oder deckt weniger Konten ab, als diese Instanz hat. Die Daten bleiben lesbar, Änderungen brauchen einen gültigen Schlüssel.',
 };

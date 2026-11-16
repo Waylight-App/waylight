@@ -21,8 +21,9 @@ type Module struct {
 
 // New builds the wiki search module. client is the integration client
 // (wikis often run in the home network); cipher encrypts the API tokens.
-func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator) *Module {
-	uc := usecase.New(usecase.Deps{Repo: gateway.NewRepository(db, cipher), Searchers: gateway.Searchers(client, clock.Now), IDs: ids, Clock: clock})
+func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator, members *MemberSources) *Module {
+	uc := usecase.New(usecase.Deps{Repo: gateway.NewRepository(db, cipher), Searchers: gateway.Searchers(client, clock.Now), IDs: ids, Clock: clock,
+		Members: members})
 	return &Module{handlers: controller.NewHandlers(uc)}
 }
 
@@ -46,3 +47,14 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("DELETE /api/wiki/wikis/{id}", h.Delete)
 	r.Protected("POST /api/wiki/wikis/{id}/test", h.Test)
 }
+
+// MemberSources holds the wikis searched on behalf of the signed-in person;
+// see usecase.MemberSources.
+type MemberSources = usecase.MemberSources
+
+// MemberSource searches a wiki for the signed-in person; see
+// usecase.MemberSource.
+type MemberSource = usecase.MemberSource
+
+// ErrNotConnected skips a member source quietly.
+var ErrNotConnected = usecase.ErrNotConnected

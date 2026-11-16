@@ -56,6 +56,13 @@ nav:
       - Tabs and widgets: dashboard.md
       - Search and quick capture: search.md
       - Accounts, guests and kiosk displays: accounts.md
+      - Licence keys: licence-keys.md
+      - Single sign-on for members: single-sign-on-members.md
+      - Directory sync (SCIM, LDAP, AD): directory-sync.md
+      - Audit log: audit-log.md
+      - Admin policies: admin-policies.md
+      - Announcements: announcements.md
+      - Connected accounts: connected-accounts.md
       - Appearance: appearance.md
       - Phones, offline and the extension: apps-and-offline.md
       - Privacy of the extension: extension-privacy.md

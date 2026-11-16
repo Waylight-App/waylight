@@ -38,6 +38,9 @@ type Config struct {
 	ClientID     string
 	ClientSecret string
 	RedirectURL  string
+	// GroupsClaim names a claim with a list of groups (e.g. "groups" or
+	// "roles"); empty reads none. Used by single sign-on for members (#302).
+	GroupsClaim string
 }
 
 // Identity is the verified subject of an ID token.
@@ -46,6 +49,10 @@ type Identity struct {
 	Email         string
 	EmailVerified bool
 	Name          string
+	// Username is preferred_username, a short login name some providers send.
+	Username string
+	// Groups come from Config.GroupsClaim; nil without it.
+	Groups []string
 }
 
 // Provider talks to one OpenID provider.
@@ -192,6 +199,7 @@ type claims struct {
 	Email         string          `json:"email"`
 	EmailVerified bool            `json:"email_verified"`
 	Name          string          `json:"name"`
+	Username      string          `json:"preferred_username"`
 }
 
 func (c claims) audience() []string {
@@ -249,7 +257,28 @@ func (p *Provider) Verify(ctx context.Context, raw, nonce string) (Identity, err
 	case c.Sub == "":
 		return Identity{}, errors.New("id token: no subject")
 	}
-	return Identity{Subject: c.Sub, Email: c.Email, EmailVerified: c.EmailVerified, Name: c.Name}, nil
+	id := Identity{Subject: c.Sub, Email: c.Email, EmailVerified: c.EmailVerified, Name: c.Name, Username: c.Username}
+	if p.cfg.GroupsClaim != "" {
+		var all map[string]json.RawMessage
+		if err := decodePart(parts[1], &all); err == nil {
+			id.Groups = listClaim(all[p.cfg.GroupsClaim])
+		}
+	}
+	return id, nil
+}
+
+// listClaim reads a claim that is a list of strings or a single string;
+// anything else (missing, numbers, objects) counts as no groups.
+func listClaim(raw json.RawMessage) []string {
+	var many []string
+	if json.Unmarshal(raw, &many) == nil {
+		return many
+	}
+	var one string
+	if json.Unmarshal(raw, &one) == nil && one != "" {
+		return []string{one}
+	}
+	return []string{}
 }
 
 func contains(list []string, v string) bool {

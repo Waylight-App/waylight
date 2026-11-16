@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"trisse-home/internal/shared/httpapi"
+	"trisse-home/internal/shared/kernel"
 )
 
 // Router lets a module register its HTTP handlers. Patterns use the Go 1.22+
@@ -77,6 +78,16 @@ func (Base) WidgetKinds() []string { return nil }
 // Registry holds the enabled modules in registration order.
 type Registry struct {
 	modules []Module
+	// memberMayUse hides modules from members by admin policy (#304); nil
+	// shows all.
+	memberMayUse func(ctx context.Context, module string) bool
+}
+
+// SetMemberModules installs the admin policy that decides which modules
+// members see in /api/modules; the auth module enforces the same rule on
+// every request.
+func (r *Registry) SetMemberModules(mayUse func(ctx context.Context, module string) bool) {
+	r.memberMayUse = mayUse
 }
 
 // Register adds m to the registry.
@@ -128,13 +139,29 @@ func (r *Registry) WidgetKinds() []string {
 
 // Handler returns a handler that lists the enabled modules so the frontend
 // can hide features that are switched off.
+// A gated module (#307) without access is left out with its widget kinds;
+// one with read access only is listed and named in ReadOnly.
 func (r *Registry) Handler(staticKinds []string) http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
-		kinds := append(slices.Clone(staticKinds), r.WidgetKinds()...)
-		dataKinds := map[string]string{}
-		for _, m := range r.modules {
-			dataKinds[m.Name()] = string(m.DataKind())
+	return func(w http.ResponseWriter, req *http.Request) {
+		res := InfoResponse{
+			Modules:     []string{},
+			WidgetKinds: slices.Clone(staticKinds),
+			DataKinds:   map[string]string{},
+			ReadOnly:    []string{},
 		}
-		httpapi.WriteJSON(w, http.StatusOK, InfoResponse{Modules: r.Names(), WidgetKinds: kinds, DataKinds: dataKinds})
+		member := kernel.PrincipalFrom(req.Context()).Role == "member"
+		for _, m := range r.modules {
+			access := accessOf(req.Context(), m)
+			if access == AccessNone || (member && r.memberMayUse != nil && !r.memberMayUse(req.Context(), m.Name())) {
+				continue
+			}
+			if access == AccessRead {
+				res.ReadOnly = append(res.ReadOnly, m.Name())
+			}
+			res.Modules = append(res.Modules, m.Name())
+			res.WidgetKinds = append(res.WidgetKinds, m.WidgetKinds()...)
+			res.DataKinds[m.Name()] = string(m.DataKind())
+		}
+		httpapi.WriteJSON(w, http.StatusOK, res)
 	}
 }

@@ -170,3 +170,40 @@ func TestDiscoveryIssuerMismatch(t *testing.T) {
 		t.Fatal("issuer mismatch accepted")
 	}
 }
+
+// TestGroupsClaim: members' groups come from a configurable claim (#302); a
+// claim that is not a list of strings counts as no groups.
+func TestGroupsClaim(t *testing.T) {
+	p := newIDP(t)
+	rp := New(Config{Issuer: p.srv.URL + "/", ClientID: "client", ClientSecret: "secret", RedirectURL: "https://home.example/cb",
+		GroupsClaim: "groups"}, p.srv.Client(), func() time.Time { return now })
+	p.verifier, p.alg = "verifier-123", "RS256"
+	for name, tc := range map[string]struct {
+		value any
+		want  []string
+	}{
+		"list":    {[]string{"office", "admins"}, []string{"office", "admins"}},
+		"one":     {"office", []string{"office"}},
+		"objects": {[]map[string]string{{"id": "x"}}, []string{}},
+		"missing": {nil, []string{}},
+	} {
+		p.claims = p.goodClaims()
+		p.claims["preferred_username"] = "anna"
+		if tc.value != nil {
+			p.claims["groups"] = tc.value
+		}
+		id, err := rp.Exchange(context.Background(), "the-code", "verifier-123", "n1")
+		if err != nil {
+			t.Fatalf("%s: %v", name, err)
+		}
+		if strings.Join(id.Groups, ",") != strings.Join(tc.want, ",") || id.Username != "anna" {
+			t.Errorf("%s: groups %q, username %q", name, id.Groups, id.Username)
+		}
+	}
+	// Without GroupsClaim the claim is ignored.
+	p.claims = p.goodClaims()
+	p.claims["groups"] = []string{"office"}
+	if id, err := provider(p).Exchange(context.Background(), "the-code", "verifier-123", "n1"); err != nil || id.Groups != nil {
+		t.Errorf("groups read without a claim name: %v %v", id.Groups, err)
+	}
+}

@@ -46,11 +46,25 @@ type guests struct{ deps Deps }
 // NewGuests returns the guest management use cases.
 func NewGuests(deps Deps) Guests { return &guests{deps: deps} }
 
-// ownerOnly lets only the admin (today the owner) and the system through.
-// It is an allow-list on purpose: a new role, such as member (#294), is
-// refused until someone decides otherwise.
+// adminOnly lets the owner, admins (ADR 0022) and the system through. It is
+// an allow-list on purpose: a new role is refused until someone decides
+// otherwise.
+func adminOnly(ctx context.Context) error {
+	p := kernel.PrincipalFrom(ctx)
+	if p.Role != string(domain.RoleOwner) && p.Role != string(domain.RoleAdmin) && !p.IsSystem() {
+		return domain.ErrOwnerOnly
+	}
+	return nil
+}
+
+// ownerOnly lets only the owner and the system through, for what acts as
+// the owner: API tokens carry the owner's ID, so an admin creating one could
+// read the owner's private records with it.
 func ownerOnly(ctx context.Context) error {
 	if p := kernel.PrincipalFrom(ctx); p.Role != string(domain.RoleOwner) && !p.IsSystem() {
+		if p.Role == string(domain.RoleAdmin) {
+			return domain.ErrOwnerAlone
+		}
 		return domain.ErrOwnerOnly
 	}
 	return nil
@@ -62,7 +76,7 @@ func guestView(a domain.Account) GuestView {
 
 // List implements Guests.
 func (uc *guests) List(ctx context.Context) ([]GuestView, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return nil, err
 	}
 	all, err := uc.deps.Accounts.List(ctx)
@@ -78,8 +92,8 @@ func (uc *guests) List(ctx context.Context) ([]GuestView, error) {
 	return out, nil
 }
 
-func (uc *guests) hash(raw string) (string, error) {
-	password, err := domain.NewPassword(raw)
+func (uc *guests) hash(ctx context.Context, raw string) (string, error) {
+	password, err := uc.deps.newPassword(ctx, raw)
 	if err != nil {
 		return "", err
 	}
@@ -99,7 +113,7 @@ func (uc *guests) Create(ctx context.Context, req NewGuestRequest) (GuestView, e
 	if len(existing) >= domain.MaxGuests {
 		return GuestView{}, domain.ErrTooManyGuests
 	}
-	hash, err := uc.hash(req.Password)
+	hash, err := uc.hash(ctx, req.Password)
 	if err != nil {
 		return GuestView{}, err
 	}
@@ -115,7 +129,7 @@ func (uc *guests) Create(ctx context.Context, req NewGuestRequest) (GuestView, e
 }
 
 func (uc *guests) guest(ctx context.Context, id string) (domain.Account, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return domain.Account{}, err
 	}
 	if id == domain.OwnerID {
@@ -140,7 +154,7 @@ func (uc *guests) Update(ctx context.Context, req UpdateGuestRequest) (GuestView
 		return GuestView{}, err
 	}
 	if req.Password != "" {
-		hash, err := uc.hash(req.Password)
+		hash, err := uc.hash(ctx, req.Password)
 		if err != nil {
 			return GuestView{}, err
 		}
@@ -182,6 +196,7 @@ func (uc *guests) Delete(ctx context.Context, id string) error {
 	if err := uc.deps.Accounts.Delete(ctx, g.ID()); err != nil {
 		return err
 	}
+	uc.deps.Hooks.accountDeleted(ctx, g.ID())
 	uc.deps.Events.record(ctx, domain.EventGuestChanged, g.ID(), domain.Client{}, "deleted "+g.Name())
 	return nil
 }
@@ -202,16 +217,31 @@ type Authorizer interface {
 	Authorize(ctx context.Context, p kernel.Principal, method, path string) error
 }
 
-type authorizer struct{ scope GuestScope }
+type authorizer struct {
+	scope    GuestScope
+	policies *Policies
+}
 
 // NewAuthorizer returns the authorization decision; scope may be nil (then
 // guests can only use the self-service endpoints).
 func NewAuthorizer(scope GuestScope) Authorizer { return &authorizer{scope: scope} }
 
+// NewAuthorizerWithPolicies also applies the admin policies (#304): the
+// required second factor and the modules members may use.
+func NewAuthorizerWithPolicies(scope GuestScope, policies *Policies) Authorizer {
+	return &authorizer{scope: scope, policies: policies}
+}
+
 // Authorize implements Authorizer: the owner may do everything, members
 // what domain.MemberMayAccess allows, guests what domain.GuestMayAccess
 // allows. An unknown role is refused.
 func (uc *authorizer) Authorize(ctx context.Context, p kernel.Principal, method, path string) error {
+	if p.SecondFactorMissing && !domain.SecondFactorSetupPath(method, path) {
+		return domain.ErrSecondFactorRequired
+	}
+	if p.Role == string(domain.RoleMember) && !uc.policies.Current(ctx).MemberMayUse(domain.ModuleOfPath(path)) {
+		return domain.ErrMemberNotAllowed
+	}
 	switch {
 	case p.IsToken():
 		if !domain.TokenMayAccess(p.Scopes, method, path) {
@@ -219,6 +249,11 @@ func (uc *authorizer) Authorize(ctx context.Context, p kernel.Principal, method,
 		}
 		return nil
 	case p.Role == string(domain.RoleOwner) || p.IsSystem():
+		return nil
+	case p.Role == string(domain.RoleAdmin):
+		if domain.OwnerOnlyPath(path) {
+			return domain.ErrOwnerAlone
+		}
 		return nil
 	case p.Role == string(domain.RoleMember):
 		var kinds map[string]string

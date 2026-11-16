@@ -15,6 +15,7 @@ export const serverMessages = {
   srv_8ba7cc04f14ed353: "TLS must be starttls, tls or none.",
   srv_55663fc836edb6a7: "The certificate warning must be between 1 and 90 days.",
   srv_e97962ce6df48c04: "The channel does not exist.",
+  srv_a072d53589f4ace4: "The channel is not an enabled Slack or Teams channel.",
   srv_6b04c0c71a64ec19: "The channel type must be gotify, webhook, email, slack or teams.",
   srv_1c6e2427a40c8139: "The disk threshold must be between 50 and 99 %.",
   srv_d6a9caae13404f6e: "The maintenance window does not exist.",

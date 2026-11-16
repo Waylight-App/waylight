@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -21,6 +22,15 @@ type OIDCProvider interface {
 	AuthCodeURL(ctx context.Context, state, nonce, verifier string) (string, error)
 	// Exchange redeems the code and returns the verified identity.
 	Exchange(ctx context.Context, code, verifier, nonce string) (domain.ExternalIdentity, error)
+}
+
+// ExternalAccounts decides who besides the owner signs in through OpenID
+// Connect (output port, #302). It is set only in builds with the ee/ single
+// sign-on; without it, SSO stays the owner's (ADR 0013). Resolve returns the
+// account to sign in, creating or updating it as needed, or an error to
+// refuse the person.
+type ExternalAccounts interface {
+	Resolve(ctx context.Context, id domain.ExternalIdentity) (accountID string, err error)
 }
 
 // SSOConfig configures single sign-on for the owner.
@@ -55,6 +65,9 @@ type SSO interface {
 	// HeaderLogin trusts the user name a trusted proxy authenticated.
 	HeaderLogin(ctx context.Context, user string, client domain.Client) (SessionResponse, string, error)
 	CompleteSecondFactor(ctx context.Context, ticket, code string, client domain.Client) (SessionResponse, error)
+	// SetExternalAccounts lets other people sign in through OpenID Connect
+	// (#302). It is called once while the server is built.
+	SetExternalAccounts(e ExternalAccounts)
 }
 
 type pendingSSO struct {
@@ -62,18 +75,32 @@ type pendingSSO struct {
 	expires         time.Time
 }
 
+// pendingTicket waits for the local second factor of one account.
+type pendingTicket struct {
+	account string
+	expires time.Time
+}
+
 type sso struct {
 	deps Deps
 	cfg  SSOConfig
 
-	mu      sync.Mutex
-	pending map[string]pendingSSO // state -> flow data
-	tickets map[string]time.Time  // second-factor tickets -> expiry
+	mu       sync.Mutex
+	pending  map[string]pendingSSO    // state -> flow data
+	tickets  map[string]pendingTicket // second-factor tickets
+	external ExternalAccounts
 }
 
 // NewSSO returns the single sign-on use cases.
 func NewSSO(deps Deps, cfg SSOConfig) SSO {
-	return &sso{deps: deps, cfg: cfg, pending: map[string]pendingSSO{}, tickets: map[string]time.Time{}}
+	return &sso{deps: deps, cfg: cfg, pending: map[string]pendingSSO{}, tickets: map[string]pendingTicket{}}
+}
+
+// SetExternalAccounts implements SSO.
+func (uc *sso) SetExternalAccounts(e ExternalAccounts) {
+	uc.mu.Lock()
+	uc.external = e
+	uc.mu.Unlock()
 }
 
 // Status implements SSO.
@@ -95,8 +122,8 @@ func (uc *sso) prune(now time.Time) {
 			delete(uc.pending, k)
 		}
 	}
-	for k, exp := range uc.tickets {
-		if now.After(exp) {
+	for k, t := range uc.tickets {
+		if now.After(t.expires) {
 			delete(uc.tickets, k)
 		}
 	}
@@ -171,32 +198,65 @@ func (uc *sso) HeaderLogin(ctx context.Context, user string, client domain.Clien
 }
 
 func (uc *sso) finish(ctx context.Context, id domain.ExternalIdentity, client domain.Client) (SessionResponse, string, error) {
+	accountID := domain.OwnerID
 	if id.Provider == "oidc" && !uc.cfg.Mapping.Allows(id) {
-		uc.deps.Events.record(ctx, domain.EventLoginFailed, domain.OwnerID, client, "sso: "+id.Subject+" not allowed")
-		return SessionResponse{}, "", domain.ErrSSONotAllowed
+		uc.mu.Lock()
+		external := uc.external
+		uc.mu.Unlock()
+		resolved, err := uc.resolveExternal(ctx, external, id)
+		if err != nil {
+			uc.deps.Events.record(ctx, domain.EventLoginFailed, domain.OwnerID, client, "sso: "+id.Subject+" not allowed")
+			return SessionResponse{}, "", domain.ErrSSONotAllowed
+		}
+		accountID = resolved
 	}
-	owner, exists, err := loadAccount(ctx, uc.deps.Accounts)
+	account, err := uc.deps.Accounts.Get(ctx, accountID)
+	if errors.Is(err, domain.ErrAccountNotFound) && accountID == domain.OwnerID {
+		return SessionResponse{}, "", domain.ErrSetupRequired
+	}
 	if err != nil {
 		return SessionResponse{}, "", err
 	}
-	if !exists {
-		return SessionResponse{}, "", domain.ErrSetupRequired
+	if account.Disabled() {
+		uc.deps.Events.record(ctx, domain.EventLoginFailed, accountID, client, "sso: account disabled")
+		return SessionResponse{}, "", domain.ErrSSONotAllowed
 	}
-	if uc.cfg.Require2FA && owner.TOTPEnabled() {
+	if uc.cfg.Require2FA && account.TOTPEnabled() {
 		ticket, err := uc.token()
 		if err != nil {
 			return SessionResponse{}, "", err
 		}
 		uc.mu.Lock()
 		uc.prune(uc.deps.Clock.Now())
-		uc.tickets[ticket] = uc.deps.Clock.Now().Add(ssoStateTTL)
+		uc.tickets[ticket] = pendingTicket{account: accountID, expires: uc.deps.Clock.Now().Add(ssoStateTTL)}
 		uc.mu.Unlock()
 		return SessionResponse{}, ticket, domain.ErrSSOSecondFactorNeed
 	}
 	uc.deps.Limiter.Reset(client.IP)
-	uc.deps.Events.loginSucceeded(ctx, domain.OwnerID, client, id.Provider)
-	res, err := uc.deps.issuer().issue(ctx, domain.OwnerID, client)
+	uc.deps.Events.loginSucceeded(ctx, accountID, client, id.Provider)
+	res, err := uc.deps.issuer().issue(ctx, accountID, client)
 	return res, "", err
+}
+
+// resolveExternal asks ExternalAccounts about someone who is not the owner.
+// Only members can be signed in this way: the port must not hand out the
+// owner's or a guest's account.
+func (uc *sso) resolveExternal(ctx context.Context, external ExternalAccounts, id domain.ExternalIdentity) (string, error) {
+	if external == nil {
+		return "", domain.ErrSSONotAllowed
+	}
+	accountID, err := external.Resolve(ctx, id)
+	if err != nil {
+		return "", err
+	}
+	a, err := uc.deps.Accounts.Get(ctx, accountID)
+	if err != nil {
+		return "", err
+	}
+	if !a.IsPerson() {
+		return "", domain.ErrSSONotAllowed
+	}
+	return accountID, nil
 }
 
 // CompleteSecondFactor implements SSO.
@@ -206,26 +266,26 @@ func (uc *sso) CompleteSecondFactor(ctx context.Context, ticket, code string, cl
 		return SessionResponse{}, domain.ErrTooManyAttempts
 	}
 	uc.mu.Lock()
-	exp, ok := uc.tickets[ticket]
+	t, ok := uc.tickets[ticket]
 	uc.mu.Unlock()
-	if !ok || now.After(exp) {
+	if !ok || now.After(t.expires) {
 		return SessionResponse{}, domain.ErrSSOStateInvalid
 	}
-	owner, err := uc.deps.Accounts.Get(ctx, domain.OwnerID)
+	account, err := uc.deps.Accounts.Get(ctx, t.account)
 	if err != nil {
 		return SessionResponse{}, err
 	}
-	if err := uc.deps.checkSecondFactor(ctx, &owner, code, now); err != nil {
-		uc.deps.Events.loginFailed(ctx, domain.OwnerID, client, uc.deps.Limiter.RecordFailure(client.IP, now))
+	if err := uc.deps.checkSecondFactor(ctx, &account, code, now); err != nil {
+		uc.deps.Events.loginFailed(ctx, t.account, client, uc.deps.Limiter.RecordFailure(client.IP, now))
 		return SessionResponse{}, err
 	}
-	if err := uc.deps.Accounts.Update(ctx, owner); err != nil {
+	if err := uc.deps.Accounts.Update(ctx, account); err != nil {
 		return SessionResponse{}, fmt.Errorf("update account: %w", err)
 	}
 	uc.mu.Lock()
 	delete(uc.tickets, ticket)
 	uc.mu.Unlock()
 	uc.deps.Limiter.Reset(client.IP)
-	uc.deps.Events.loginSucceeded(ctx, domain.OwnerID, client, "sso+totp")
-	return uc.deps.issuer().issue(ctx, domain.OwnerID, client)
+	uc.deps.Events.loginSucceeded(ctx, t.account, client, "sso+totp")
+	return uc.deps.issuer().issue(ctx, t.account, client)
 }

@@ -91,7 +91,8 @@ func (a oidcAdapter) Exchange(ctx context.Context, code, verifier, nonce string)
 	if err != nil {
 		return domain.ExternalIdentity{}, err
 	}
-	return domain.ExternalIdentity{Subject: id.Subject, Email: id.Email, EmailVerified: id.EmailVerified}, nil
+	return domain.ExternalIdentity{Subject: id.Subject, Email: id.Email, EmailVerified: id.EmailVerified,
+		Name: id.Name, Username: id.Username, Groups: id.Groups}, nil
 }
 
 // observerFunc adapts a function to usecase.SetupObserver.
@@ -137,6 +138,12 @@ type Module struct {
 	demo       bool
 	setupToken string
 	log        *slog.Logger
+	accounts   *gateway.AccountRepository
+	sso        usecase.SSO
+	provision  usecase.Provisioning
+	directory  *usecase.DirectoryLogin
+	policies   *usecase.Policies
+	hooks      *usecase.AccountHooks
 }
 
 // New builds the auth module.
@@ -160,20 +167,24 @@ func New(cfg Config, d Deps) (*Module, error) {
 		Limiter: gateway.NewAttemptLimiter(domain.DefaultLoginThrottle), Clock: d.Clock, TTL: ttl, IDs: d.IDs, OTP: d.OTP,
 		Events: events, Passkeys: gateway.NewPasskeyRepository(d.DB), Challenges: usecase.NewChallenges(),
 		Groups: groups, Preferences: prefs, MembersEnabled: cfg.MembersEnabled, PasswordLoginDisabled: !cfg.SSO.PasswordLogin && (cfg.SSO.OIDC != nil || cfg.SSO.ProxyHeader != ""),
+		Directory: &usecase.DirectoryLogin{},
+		Policies:  &usecase.Policies{},
+		Hooks:     &usecase.AccountHooks{},
 	}
 	if cfg.WebAuthn != nil {
 		deps.WebAuthn = webauthnAdapter{*cfg.WebAuthn}
 	}
 	securityLog := usecase.NewSecurityLog(events)
-	status := usecase.NewGetStatus(accounts, sessions, d.Clock)
+	status := usecase.NewGetStatusWithPolicies(accounts, sessions, d.Clock, deps.Policies, deps.Passkeys)
 	kiosks := usecase.NewKiosks(deps, gateway.NewKioskRepository(d.DB))
+	sso := newSSO(deps, cfg.SSO)
 	uc := controller.UseCases{
 		Status:       status,
 		Setup:        usecase.NewSetupAccount(deps, gateway.NewSetupToken(token), observerFunc(cfg.OnAccountCreated)),
 		Login:        usecase.NewLogin(deps),
 		Logout:       usecase.NewLogout(sessions),
-		Authenticate: usecase.NewAuthenticate(sessions, accounts, groups, prefs, d.Clock, ttl),
-		Authorizer:   usecase.NewAuthorizer(d.GuestScope),
+		Authenticate: usecase.NewAuthenticateWithPolicies(sessions, accounts, groups, prefs, d.Clock, ttl, deps.Policies, deps.Passkeys),
+		Authorizer:   usecase.NewAuthorizerWithPolicies(d.GuestScope, deps.Policies),
 		Guests:       usecase.NewGuests(deps),
 		Members:      usecase.NewMembers(deps),
 		Groups:       usecase.NewGroups(deps),
@@ -183,7 +194,7 @@ func New(cfg Config, d Deps) (*Module, error) {
 		PasswordReset: usecase.NewPasswordReset(deps, gateway.NewAccountLinkRepository(d.DB), gateway.NewEmailRepository(d.DB),
 			d.Mailer, cfg.PublicURL),
 		APITokens:      usecase.NewAPITokens(deps, gateway.NewTokenRepository(d.DB)),
-		SSO:            newSSO(deps, cfg.SSO),
+		SSO:            sso,
 		Passkeys:       usecase.NewPasskeys(deps),
 		ChangePassword: usecase.NewChangePassword(deps),
 		Sessions:       usecase.NewManageSessions(sessions, d.Clock, events),
@@ -207,7 +218,71 @@ func New(cfg Config, d Deps) (*Module, error) {
 		demo:       cfg.Demo,
 		setupToken: token,
 		log:        d.Log,
+		accounts:   accounts,
+		sso:        sso,
+		provision:  usecase.NewProvisioning(deps),
+		directory:  deps.Directory,
+		policies:   deps.Policies,
+		hooks:      deps.Hooks,
 	}, nil
+}
+
+// OnAccountDeleted runs fn after a member or guest was deleted, so a module
+// can remove what belonged only to that account.
+func (m *Module) OnAccountDeleted(fn func(ctx context.Context, accountID string)) {
+	m.hooks.OnDeleted(fn)
+}
+
+// Policy holds admin policies; see usecase.Policy.
+type Policy = usecase.Policy
+
+// PolicySource provides the policy in force; see usecase.PolicySource.
+type PolicySource = usecase.PolicySource
+
+// SetPolicySource applies admin policies (#304). The ee/ policies module calls
+// it while the server is built; without it no policy applies.
+func (m *Module) SetPolicySource(src PolicySource) { m.policies.Set(src) }
+
+// DirectoryAuthenticator checks members' names and passwords against a
+// directory; see usecase.DirectoryAuthenticator.
+type DirectoryAuthenticator = usecase.DirectoryAuthenticator
+
+// ErrNotInDirectory lets the login fall back to the local check.
+var ErrNotInDirectory = usecase.ErrNotInDirectory
+
+// SetDirectoryAuthenticator lets members sign in with their directory
+// password (#396). The ee/ directory sync calls it while the server is built.
+func (m *Module) SetDirectoryAuthenticator(a DirectoryAuthenticator) { m.directory.Set(a) }
+
+// ExternalIdentity is a person confirmed by the identity provider.
+type ExternalIdentity = domain.ExternalIdentity
+
+// ExternalAccounts decides who besides the owner signs in through OpenID
+// Connect; see usecase.ExternalAccounts.
+type ExternalAccounts = usecase.ExternalAccounts
+
+// Provisioning manages members for an identity provider; see
+// usecase.Provisioning.
+type Provisioning = usecase.Provisioning
+
+// SetExternalAccounts lets members sign in through OpenID Connect (#302). The
+// ee/ single sign-on calls it while the server is built; without it, single
+// sign-on stays the owner's (ADR 0013). Without OIDC there is nothing to
+// extend, and the call does nothing.
+func (m *Module) SetExternalAccounts(e ExternalAccounts) {
+	if m.sso != nil {
+		m.sso.SetExternalAccounts(e)
+	}
+}
+
+// Provisioning returns the member management for an identity provider.
+func (m *Module) Provisioning() Provisioning { return m.provision }
+
+// CountLicensedAccounts counts the owner, members and guests that are not
+// disabled; kiosk displays are devices, not people, and do not count. The
+// licence module of ee/ compares it with the seats of a key (#307).
+func (m *Module) CountLicensedAccounts(ctx context.Context) (int, error) {
+	return m.accounts.CountLicensed(ctx)
 }
 
 // Name implements modules.Module.
