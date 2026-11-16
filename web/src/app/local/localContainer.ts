@@ -17,6 +17,9 @@ import { NotesUseCases } from '../../features/notes/usecase/notesUseCases';
 import { LocalNotesGateway } from '../../features/notes/adapter/local/localNotesGateway';
 import { TodosUseCases } from '../../features/todos/usecase/todosUseCases';
 import { LocalTodosGateway } from '../../features/todos/adapter/local/localTodosGateway';
+import { LocalWeatherGateway } from '../../features/weather/adapter/local/localWeatherGateway';
+import { WeatherUseCases } from '../../features/weather/usecase/weatherUseCases';
+import { locale } from '../../shared/i18n';
 import { IndexedDbDocumentStore, type DocumentStore } from '../../shared/local/documentStore';
 import { createContainer, type Container } from '../container';
 import { localDataKinds, localModules, localWidgetKinds } from './modules';
@@ -41,6 +44,7 @@ export function createLocalContainer(store: DocumentStore = new IndexedDbDocumen
     todos,
     // Only the built-in list exists locally; connected lists need a server.
     todosFor: () => todos,
+    weather: new WeatherUseCases(new LocalWeatherGateway(locale)),
     enabledModules() {
       return Promise.resolve({
         modules: new Set(localModules),
