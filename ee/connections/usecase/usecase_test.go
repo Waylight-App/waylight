@@ -21,6 +21,15 @@ func (m memTokens) Get(_ context.Context, a, s string) (domain.Connection, bool,
 	c, ok := m[key(a, s)]
 	return c, ok, nil
 }
+func (m memTokens) AccountsWith(_ context.Context, service string) ([]string, error) {
+	var out []string
+	for _, c := range m {
+		if c.Service == service {
+			out = append(out, c.AccountID)
+		}
+	}
+	return out, nil
+}
 func (m memTokens) ListFor(_ context.Context, a string) ([]domain.Connection, error) {
 	var out []domain.Connection
 	for _, c := range m {

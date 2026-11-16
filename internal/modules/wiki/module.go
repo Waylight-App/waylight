@@ -1,6 +1,7 @@
 package wiki
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"trisse-home/internal/modules"
 	"trisse-home/internal/modules/wiki/adapter/controller"
 	"trisse-home/internal/modules/wiki/adapter/gateway"
+	"trisse-home/internal/modules/wiki/domain"
 	"trisse-home/internal/modules/wiki/usecase"
 	"trisse-home/internal/shared/kernel"
 )
@@ -17,6 +19,20 @@ import (
 type Module struct {
 	modules.Base
 	handlers *controller.Handlers
+	uc       usecase.Wikis
+}
+
+// Page is a wiki page found by Find.
+type Page = domain.Page
+
+// Find searches the connected wikis and the member sources for the account
+// in ctx, for searches outside the app such as a chat command (#333).
+func (m *Module) Find(ctx context.Context, query string) ([]Page, error) {
+	res, err := m.uc.Search(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	return res.Pages, nil
 }
 
 // New builds the wiki search module. client is the integration client
@@ -24,7 +40,7 @@ type Module struct {
 func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator, members *MemberSources) *Module {
 	uc := usecase.New(usecase.Deps{Repo: gateway.NewRepository(db, cipher), Searchers: gateway.Searchers(client, clock.Now), IDs: ids, Clock: clock,
 		Members: members})
-	return &Module{handlers: controller.NewHandlers(uc)}
+	return &Module{handlers: controller.NewHandlers(uc), uc: uc}
 }
 
 // Name implements modules.Module.
