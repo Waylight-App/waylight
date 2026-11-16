@@ -186,6 +186,7 @@ func (uc *members) Delete(ctx context.Context, id string) error {
 	if err := uc.deps.Accounts.Delete(ctx, m.ID()); err != nil {
 		return err
 	}
+	uc.deps.Hooks.accountDeleted(ctx, m.ID())
 	uc.deps.Events.record(ctx, domain.EventMemberChanged, m.ID(), domain.Client{}, "deleted "+m.Name())
 	return nil
 }
