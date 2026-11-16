@@ -36,13 +36,14 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 	if sharing == nil {
 		sharing = NewSharing()
 	}
-	sharing.repo = subs
+	accounts := gateway.NewAccountRepository(db, cipher)
+	sharing.repo, sharing.accounts = subs, accounts
 	uc := usecase.NewCalendar(usecase.Deps{
-		Shared: subs, SharingOn: sharing.on,
+		Shared: subs, SharedAccounts: accounts, SharingOn: sharing.on,
 		Repo: gateway.NewSettingsRepository(db, cipher), Source: caldav, Writer: caldav,
 		Subscriptions: subs, Feeds: gateway.NewFeed(client, loc, clock.Now),
 		IDs: ids, Clock: clock,
-		Accounts: gateway.NewAccountRepository(db, cipher), API: gateway.NewAccountAPI(client), OAuth: newOAuthPort(client, publicURL, clock.Now),
+		Accounts: accounts, API: gateway.NewAccountAPI(client), OAuth: newOAuthPort(client, publicURL, clock.Now),
 	})
 	return &Module{uc: uc, handlers: controller.NewHandlers(uc), subs: controller.NewSubscriptionHandlers(uc), accounts: controller.NewAccountHandlers(uc)}
 }
