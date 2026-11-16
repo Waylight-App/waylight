@@ -1,4 +1,4 @@
-# Directory sync with SCIM
+# Directory sync: SCIM, LDAP and Active Directory
 
 With a licence key that includes `directory-sync` ([licence keys](licence-keys.md)),
 an identity provider can create, change and remove members and groups in
@@ -69,3 +69,71 @@ has not been run against a real tenant yet; please report what you find.
 
 Okta, Authentik and Keycloak (with a SCIM plugin) work the same way: base
 URL `https://home.example.org/scim/v2`, bearer token `SCIM_TOKEN`.
+
+## Sign in with LDAP or Active Directory
+
+Members can also sign in with their directory password on the normal sign-in
+page (*Sign in as guest or member*). The first sign-in creates the member;
+their groups follow `memberOf` at every sign-in, as with single sign-on.
+
+```sh
+# ldaps:// or ldap:// with StartTLS; unencrypted LDAP is never used.
+LDAP_URL=ldaps://dc1.example.org
+# A service account that may search users.
+LDAP_BIND_DN=cn=trisse-home,ou=services,dc=example,dc=org
+LDAP_BIND_PASSWORD=<password>
+LDAP_BASE_DN=ou=people,dc=example,dc=org
+# The attribute with the login name: uid (OpenLDAP) or sAMAccountName (AD).
+LDAP_USER_ATTRIBUTE=uid
+# Optional: only users in one of these groups (names or DNs) get in.
+LDAP_MEMBER_GROUPS=trisse-home-users
+# Optional: only these groups become trisse-home groups.
+LDAP_SYNC_GROUPS=Office,Sales
+# Optional: a CA certificate (PEM) for a directory with an internal CA.
+LDAP_CA_FILE=/data/ldap-ca.pem
+```
+
+How names are checked:
+
+- The owner always signs in with their local password. A directory that is
+  down never locks the owner out.
+- A name the directory knows is checked with a bind as that user. A name it
+  does not know, such as a local guest, is checked locally as before.
+- While the directory cannot be reached, local accounts still sign in;
+  members created from the directory cannot, because only the directory knows
+  their password.
+- Someone removed from the directory, disabled in Active Directory or no
+  longer in `LDAP_MEMBER_GROUPS` is refused and their member account is
+  disabled; their data stays. When they are back, the account is enabled
+  again, unless an admin disabled it.
+
+### OpenLDAP
+
+```sh
+LDAP_URL=ldap://ldap.example.org        # StartTLS
+LDAP_BIND_DN=cn=readonly,dc=example,dc=org
+LDAP_BASE_DN=ou=people,dc=example,dc=org
+LDAP_USER_ATTRIBUTE=uid
+```
+
+`memberOf` needs the memberof overlay; without it users sign in, but no
+groups are synced.
+
+### Active Directory
+
+```sh
+LDAP_URL=ldaps://dc1.example.org
+LDAP_BIND_DN=CN=trisse-home,OU=Service Accounts,DC=example,DC=org
+LDAP_BASE_DN=OU=Staff,DC=example,DC=org
+LDAP_USER_ATTRIBUTE=sAMAccountName
+LDAP_USER_CLASS=user
+LDAP_CA_FILE=/data/ad-ca.pem             # the domain's root CA
+```
+
+Group names are taken from the first part of each group's DN
+(`CN=Sales,OU=Groups,…` becomes *Sales*). Nested groups are not resolved:
+only groups the user is a direct member of count.
+
+The LDAP client is part of trisse-home (standard library only) and has been
+tested against a test server, not yet against a production directory;
+please report what you find.
