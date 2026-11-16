@@ -69,6 +69,8 @@ const healthCheckTimeout = 5 * time.Second
 // always enabled: everything else depends on the session guard, and the
 // dashboard is the page that hosts all widgets.
 func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secretStore) (*auth.Module, *modules.Registry, error) {
+	// Set again by the ee/ audit log of this server, if it has one (#303).
+	changeSink = nil
 	clk := clock.System{}
 	ids := idgen.Random{}
 	out := newOutbound(cfg, clk, cipher)
