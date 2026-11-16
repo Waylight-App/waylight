@@ -54,10 +54,25 @@ It works in Chrome, Edge and Firefox:
      open `about:debugging#/runtime/this-firefox`, choose *Load Temporary
      Add-on* and select `manifest.json`; Firefox removes temporary add-ons on
      restart.
-3. In the extension's options, enter the address of your dashboard, for
+3. Open a new tab and choose *Use without a server* or *Connect my server*.
+   For a server, enter the address of your dashboard in the options, for
    example `http://homeserver:8090`.
 
-The extension asks for three permissions: `storage` for the address,
+### Without a server
+
+Without a server the extension runs trisse-home itself, in the browser:
+bookmarks, notes, to-dos, countdowns, the focus timer, habits, the clock and
+the weather. Everything that needs a machine running in the background stays
+out, such as service checks, Docker, parcels and notifications. Your data is
+stored in this browser profile only; it is not synced to other devices and
+is lost when you remove the extension.
+
+To move to a server later, open the extension's options, choose *Download my
+data*, and import the file on the server under *Settings → Transfer*. The
+import replaces the server's dashboard and appearance with what you made in
+the browser. Then switch the options to *With my trisse-home server*.
+
+The extension asks for three permissions: `storage` for the address and the mode,
 `contextMenus` for the menu entry and `activeTab` to read the URL and title
 of the tab you save, only at the moment you click. It has no access to other
 sites, injects no scripts into pages and sends nothing to anyone but your own
