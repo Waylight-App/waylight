@@ -1,5 +1,8 @@
-import { mount, unmount, type Component } from 'svelte';
-import type { Mountable, PluginContext } from '../../../../web/src/app/plugins/api';
+import { mount, unmount, type Component } from "svelte";
+import type {
+  Mountable,
+  PluginContext,
+} from "../../../../web/src/app/plugins/api";
 
 /**
  * Turns a Svelte component of the plugin into a Mountable (ADR 0021): the
@@ -11,7 +14,10 @@ export function mountable<P extends Record<string, unknown>>(
 ): Mountable {
   return {
     mount(host, props, context) {
-      const app = mount(component, { target: host, props: { ...(props as P), context } });
+      const app = mount(component, {
+        target: host,
+        props: { ...(props as P), context },
+      });
       return () => void unmount(app);
     },
   };
