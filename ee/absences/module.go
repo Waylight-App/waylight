@@ -43,6 +43,12 @@ func New(d Deps) *Module {
 	return &Module{svc: svc, handlers: controller.NewHandlers(svc), licensing: d.Licensing}
 }
 
+// AwayOn is a read model for the presence module (#346), wired in
+// cmd/server: who is away on a day, without kind or note.
+func (m *Module) AwayOn(ctx context.Context, day string) ([]usecase.Away, error) {
+	return m.svc.AwayOn(ctx, day)
+}
+
 // ForgetAccount removes a deleted account's absences.
 func (m *Module) ForgetAccount(ctx context.Context, accountID string) error {
 	return m.svc.ForgetAccount(ctx, accountID)

@@ -172,3 +172,43 @@ func (s *Service) audit(ctx context.Context, action, id string) {
 		s.d.Audit(ctx, action, id)
 	}
 }
+
+// Away is someone away on a day, as other modules may know it: no kind, no
+// note, only whether they work remotely (a private absence never says so).
+type Away struct {
+	AccountID string
+	// Until is the last day of the absence (DateLayout).
+	Until  string
+	Remote bool
+}
+
+// AwayOn lists who is away on a day (#346); several absences of one
+// person are merged into the one ending last.
+func (s *Service) AwayOn(ctx context.Context, day string) ([]Away, error) {
+	d, err := domain.ParseDay(day)
+	if err != nil {
+		return nil, kernel.NewValidationError("day", "Enter the day as YYYY-MM-DD.")
+	}
+	key := d.Format(domain.DateLayout)
+	list, err := s.d.Store.Between(ctx, key, key)
+	if err != nil {
+		return nil, fmt.Errorf("list absences: %w", err)
+	}
+	byAccount := map[string]Away{}
+	var order []string
+	for _, a := range list {
+		w := Away{AccountID: a.AccountID, Until: a.To, Remote: a.Kind == domain.KindRemote && !a.Private}
+		old, seen := byAccount[a.AccountID]
+		if !seen {
+			order = append(order, a.AccountID)
+		}
+		if !seen || w.Until > old.Until || (w.Until == old.Until && !w.Remote) {
+			byAccount[a.AccountID] = w
+		}
+	}
+	out := make([]Away, 0, len(order))
+	for _, id := range order {
+		out = append(out, byAccount[id])
+	}
+	return out, nil
+}

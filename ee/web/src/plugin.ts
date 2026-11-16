@@ -11,6 +11,8 @@ import { texts as announcementTexts } from "./announcements/texts";
 import LicenceSection from "./licence/LicenceSection.svelte";
 import TeamTabsSection from "./teamtabs/TeamTabsSection.svelte";
 import { texts as teamTabTexts } from "./teamtabs/texts";
+import PresenceSection from "./presence/PresenceSection.svelte";
+import { texts as presenceTexts } from "./presence/texts";
 import { lazyMountable, mountable } from "./lib/mountable";
 
 export const plugin: TrissePlugin = {
@@ -37,6 +39,29 @@ export const plugin: TrissePlugin = {
         () => import("./announcements/AnnouncementsWidget.svelte"),
       ),
     },
+    {
+      kind: "presence",
+      feature: "presence",
+      category: "everyday",
+      title: presenceTexts.title ?? { en: "Presence" },
+      description: presenceTexts.description ?? { en: "" },
+      keywords: [
+        "presence",
+        "office",
+        "home office",
+        "who is in",
+        "anwesenheit",
+        "büro",
+        "homeoffice",
+      ],
+      defaultSize: { w: 4, h: 5 },
+      icon: "activity",
+      view: lazyMountable(() => import("./presence/PresenceWidget.svelte")),
+      settings: lazyMountable<{
+        config?: Record<string, unknown>;
+        onsave: (config: Record<string, unknown>) => void;
+      }>(() => import("./presence/PresenceWidgetSettings.svelte")),
+    },
   ],
   settings: [
     {
@@ -55,6 +80,14 @@ export const plugin: TrissePlugin = {
       label: teamTabTexts.label ?? { en: "Team tabs" },
       description: teamTabTexts.description ?? { en: "" },
       view: mountable(TeamTabsSection),
+    },
+    {
+      id: "presence",
+      feature: "presence",
+      adminOnly: true,
+      label: presenceTexts.section ?? { en: "Presence" },
+      description: presenceTexts.section_hint ?? { en: "" },
+      view: mountable(PresenceSection),
     },
   ],
 };
