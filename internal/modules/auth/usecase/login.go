@@ -32,14 +32,25 @@ func (uc *login) Execute(ctx context.Context, req LoginRequest) (SessionResponse
 	if err != nil {
 		return SessionResponse{}, err
 	}
+	directory, checked, err := uc.viaDirectory(ctx, req)
+	if err != nil {
+		uc.deps.Events.loginFailed(ctx, account.ID(), client, uc.deps.Limiter.RecordFailure(req.ClientKey, now))
+		return SessionResponse{}, domain.ErrInvalidCredentials
+	}
+	if checked {
+		account = directory
+	}
 	if account.IsOwner() && req.Username == "" && uc.deps.PasswordLoginDisabled {
 		return SessionResponse{}, domain.ErrLocalLoginDisabled
 	}
 	// Unknown and disabled guests are checked against the owner's hash so
 	// the response time does not reveal which names exist.
-	ok, err := uc.deps.Hasher.Verify(req.Password, account.PasswordHash())
-	if err != nil {
-		return SessionResponse{}, fmt.Errorf("verify password: %w", err)
+	ok := checked
+	if !checked {
+		ok, err = uc.deps.Hasher.Verify(req.Password, account.PasswordHash())
+		if err != nil {
+			return SessionResponse{}, fmt.Errorf("verify password: %w", err)
+		}
 	}
 	if !ok || account.Disabled() || (req.Username != "" && account.IsOwner()) {
 		uc.deps.Events.loginFailed(ctx, account.ID(), client, uc.deps.Limiter.RecordFailure(req.ClientKey, now))
@@ -65,7 +76,11 @@ func (uc *login) Execute(ctx context.Context, req LoginRequest) (SessionResponse
 		}
 	}
 	uc.deps.Limiter.Reset(req.ClientKey)
-	uc.deps.Events.loginSucceeded(ctx, account.ID(), client, "password")
+	method := "password"
+	if checked {
+		method = "directory"
+	}
+	uc.deps.Events.loginSucceeded(ctx, account.ID(), client, method)
 	return uc.deps.issuer().issue(ctx, account.ID(), client)
 }
 
@@ -82,4 +97,32 @@ func (uc *login) account(ctx context.Context, owner domain.Account, name string)
 		return owner, nil
 	}
 	return a, err
+}
+
+// viaDirectory asks the directory about a named login. checked is true when
+// the directory confirmed the password and named a member; false (with no
+// error) means the name is checked locally as before. The owner (empty name)
+// never goes to the directory.
+func (uc *login) viaDirectory(ctx context.Context, req LoginRequest) (domain.Account, bool, error) {
+	dir := uc.deps.Directory.get()
+	name := strings.ToLower(strings.TrimSpace(req.Username))
+	if dir == nil || name == "" {
+		return domain.Account{}, false, nil
+	}
+	id, err := dir.Authenticate(ctx, name, req.Password)
+	if errors.Is(err, ErrNotInDirectory) {
+		return domain.Account{}, false, nil
+	}
+	if err != nil {
+		return domain.Account{}, false, err
+	}
+	a, err := uc.deps.Accounts.Get(ctx, id)
+	if err != nil {
+		return domain.Account{}, false, err
+	}
+	// The directory may only sign in members, never the owner or a guest.
+	if a.Role() != domain.RoleMember {
+		return domain.Account{}, false, domain.ErrInvalidCredentials
+	}
+	return a, true, nil
 }
