@@ -22,6 +22,8 @@ import (
 type Tokens interface {
 	Get(ctx context.Context, accountID, service string) (domain.Connection, bool, error)
 	ListFor(ctx context.Context, accountID string) ([]domain.Connection, error)
+	// AccountsWith lists the accounts that connected service.
+	AccountsWith(ctx context.Context, service string) ([]string, error)
 	Save(ctx context.Context, c domain.Connection) error
 	Delete(ctx context.Context, accountID, service string) error
 	DeleteAccount(ctx context.Context, accountID string) error
@@ -245,6 +247,12 @@ func (s *Service) Disconnect(ctx context.Context, service string) error {
 	}
 	s.audit(ctx, "disconnected", service)
 	return nil
+}
+
+// AccountsWith lists the accounts that connected service, for integrations
+// that must find the member behind a request from that service (#333).
+func (s *Service) AccountsWith(ctx context.Context, service string) ([]string, error) {
+	return s.d.Tokens.AccountsWith(ctx, service)
 }
 
 // AccessToken is what integrations ask: a valid access token of a member at

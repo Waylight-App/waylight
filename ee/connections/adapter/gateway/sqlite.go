@@ -111,6 +111,24 @@ func (s *Store) ListFor(ctx context.Context, accountID string) ([]domain.Connect
 	return out, rows.Err()
 }
 
+// AccountsWith implements usecase.Tokens.
+func (s *Store) AccountsWith(ctx context.Context, service string) ([]string, error) {
+	rows, err := s.db.QueryContext(ctx, `SELECT account_id FROM connection_tokens WHERE service = ? ORDER BY account_id`, service)
+	if err != nil {
+		return nil, fmt.Errorf("list connected accounts: %w", err)
+	}
+	defer rows.Close()
+	var out []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		out = append(out, id)
+	}
+	return out, rows.Err()
+}
+
 // Save implements usecase.Tokens.
 func (s *Store) Save(ctx context.Context, c domain.Connection) error {
 	access, err := s.enc(c.Token.Access)
