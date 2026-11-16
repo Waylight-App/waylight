@@ -35,3 +35,23 @@ Only to the wikis you connect, and only while you search (plus one test request 
 ## API
 
 `GET /api/wiki/search?q=…`, `GET`/`POST /api/wiki/wikis`, `PUT`/`DELETE /api/wiki/wikis/{id}`, `POST /api/wiki/wikis/{id}/test` – see `api/modules/wiki.yaml`.
+
+## Team wikis with each person's account
+
+In a server built with the `ee` features and a licence key that includes
+`workplace-search` ([licence keys](../licence-keys.md)), the search also asks
+Confluence (Atlassian Cloud), SharePoint and OneDrive (Microsoft 365) and
+Notion, each with the account the searching person connected under
+*Settings → Connected accounts* ([connected accounts](../connected-accounts.md)).
+The services answer with what that person may see, so two people searching
+the same words can get different results.
+
+- Results of these services are never cached and never shared between
+  accounts; the wikis an admin connected above are cached as before.
+- A service the person has not connected is skipped without a message; an
+  expired connection is skipped too, and the connected accounts page offers
+  to reconnect.
+- Confluence searches every site the Atlassian account can reach (pages and
+  blog posts). Microsoft Graph searches files and list items. Notion's search
+  matches page titles only, not their text.
+- Background jobs and API tokens never search these services.
