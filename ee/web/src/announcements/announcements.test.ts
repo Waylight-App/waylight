@@ -50,4 +50,16 @@ describe('announcements', () => {
     await api.list(true);
     expect(http.get).toHaveBeenCalledWith('/api/announcements?archive=1');
   });
+
+  it('asks the server whether the account may write', async () => {
+    const http = {
+      get: vi.fn().mockResolvedValue({ mayWrite: true }),
+      post: vi.fn(),
+      put: vi.fn(),
+      delete: vi.fn(),
+      putBlob: vi.fn(),
+    };
+    expect(await new AnnouncementsApi(http).mayWrite()).toBe(true);
+    expect(http.get).toHaveBeenCalledWith('/api/announcements/me');
+  });
 });

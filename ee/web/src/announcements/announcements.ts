@@ -72,4 +72,9 @@ export class AnnouncementsApi {
   markRead(id: string): Promise<void> {
     return this.http.post(`/api/announcements/${encodeURIComponent(id)}/read`);
   }
+
+  /** Whether the signed-in account may write: admins and the writer group. */
+  async mayWrite(): Promise<boolean> {
+    return (await this.http.get<{ mayWrite: boolean }>('/api/announcements/me')).mayWrite;
+  }
 }

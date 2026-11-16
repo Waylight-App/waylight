@@ -23,10 +23,18 @@
     text(texts, key, context.language, params);
   const date = (iso: string) => new Date(iso).toLocaleDateString(context.language);
 
-  // Writing needs an admin and a key that is not expired. Members of the
-  // writer group can write too; the server decides, the button is for admins.
+  // Writing needs the server's yes (admins and the writer group) and a key
+  // that is not expired.
   const readOnly = $derived(context.level('announcements') === 'read');
-  const mayWrite = $derived(context.account.admin && !readOnly);
+  let allowed = $state(false);
+  const mayWrite = $derived(allowed && !readOnly);
+  $effect(() => {
+    if (context.account.guest) return;
+    api
+      .mayWrite()
+      .then((ok) => (allowed = ok))
+      .catch(() => (allowed = false));
+  });
   // Guests and kiosk displays cannot keep read marks (the server answers 403).
   const mayMark = $derived(!context.account.guest);
 
