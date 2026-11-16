@@ -306,6 +306,23 @@
     void smart.prepare();
   });
 
+  /**
+   * Reads the items again after something was saved from the field, so a
+   * bookmark, note or to-do captured here is found right away (#499). The
+   * list is replaced in one step: no duplicates, no flicker.
+   */
+  async function reloadItems() {
+    const results = await Promise.allSettled(quickItemLoaders(container, modules));
+    const next: QuickItem[] = [];
+    for (const r of results) {
+      if (r.status !== 'fulfilled') continue;
+      next.push(...r.value.items);
+      if (r.value.notes) notes = r.value.notes;
+      if (r.value.todos) todos = r.value.todos;
+    }
+    items = next;
+  }
+
   // Smart answers (#156): debounced, the newest query wins.
   let answers = $state<Answer[]>([]);
   $effect(() => {
@@ -452,6 +469,9 @@
     } else window.location.assign(target);
   }
 
+  const isCaptureKind = (kind: QuickCommand['kind']) =>
+    kind === 'todo' || kind === 'note' || kind === 'bookmark';
+
   async function runCommand(c: QuickCommand) {
     if (
       (c.kind === 'restart' || c.kind === 'wake') &&
@@ -464,6 +484,7 @@
       status = describeCommand(res.command, container.quickActions, true);
       undoLast = res.undo ?? null;
       openLast = res.openUrl ?? null;
+      if (isCaptureKind(res.command.kind)) void reloadItems();
     } catch (err) {
       status =
         err instanceof QuickActionError
@@ -500,6 +521,7 @@
     try {
       await u();
       status = t('quick.undone');
+      void reloadItems();
     } catch (err) {
       status = errorMessage(err);
     }
