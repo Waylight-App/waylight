@@ -9,6 +9,24 @@ export interface PhoneEntry {
   email: string;
   /** Department or group shown next to the name. */
   team: string;
+  /** From the address book: changed there, not here. */
+  readOnly: boolean;
+}
+
+/** The address book the list reads people from (#300). */
+export interface PhonelistSettings {
+  cardDavUrl: string;
+  username: string;
+  hasPassword: boolean;
+  lastSync: Date | null;
+  lastError: string;
+}
+
+/** Input of the address book settings; an empty password keeps the stored one. */
+export interface PhonelistSettingsInput {
+  cardDavUrl: string;
+  username: string;
+  password: string;
 }
 
 /** Editable fields of an entry. */

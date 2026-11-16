@@ -74,3 +74,28 @@ func (h *Handlers) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// Settings handles GET /api/phonelist/settings (admins).
+func (h *Handlers) Settings(w http.ResponseWriter, r *http.Request) {
+	s, err := h.uc.Settings(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Settings(s))
+}
+
+// SaveSettings handles PUT /api/phonelist/settings (admins).
+func (h *Handlers) SaveSettings(w http.ResponseWriter, r *http.Request) {
+	var dto SettingsInputDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	s, err := h.uc.SaveSettings(r.Context(), usecase.SettingsInput{CardDAVURL: dto.CardDAVURL, Username: dto.Username, Password: dto.Password})
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Settings(s))
+}

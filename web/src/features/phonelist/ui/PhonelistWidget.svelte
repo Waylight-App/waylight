@@ -135,7 +135,11 @@
         {#if e.dial}<a href="tel:{e.dial}">{e.phone}</a>{/if}
         {#if e.email}<a href="mailto:{e.email}">{e.email}</a>{/if}
       </div>
-      {#if admin}
+      {#if e.readOnly}
+        <span class="book" title={t('phonelist.from_book')} aria-label={t('phonelist.from_book')} role="img"
+          >📇</span
+        >
+      {:else if admin}
         <button
           class="btn btn-icon edit-btn"
           type="button"
@@ -200,6 +204,10 @@
   }
   .edit-btn {
     opacity: 0;
+  }
+  .book {
+    font-size: 0.8em;
+    opacity: 0.6;
   }
   li:hover .edit-btn,
   .edit-btn:focus {

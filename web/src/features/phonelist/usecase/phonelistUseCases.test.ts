@@ -8,6 +8,8 @@ describe('PhonelistUseCases', () => {
       add: vi.fn(),
       update: vi.fn(),
       remove: vi.fn(),
+      settings: vi.fn(),
+      saveSettings: vi.fn(),
     };
     const uc = new PhonelistUseCases(gateway);
     await uc.save({ name: ' Anna ', role: '', phone: ' 1 ', email: '', team: '' });
