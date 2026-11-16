@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { CommandHandlers } from './appCommands';
   import LiveRegion from '../shared/a11y/LiveRegion.svelte';
   import SyncStatus from './offline/SyncStatus.svelte';
   import MaintenanceBanner from '../features/notifications/ui/MaintenanceBanner.svelte';
@@ -51,7 +52,13 @@
   let dataKinds = $state<Record<string, string>>({});
   let touring = $state(false);
   let shortcutHelp = $state(false);
-  let dashboard = $state<{ selectTabAt: (index: number) => void; undo: () => void; redo: () => void }>();
+  let dashboard = $state<{
+    selectTabAt: (index: number) => void;
+    selectTab: (id: string) => void;
+    openAddWidget: (query?: string) => void;
+    undo: () => void;
+    redo: () => void;
+  }>();
   let hero = $state<{ focus: () => void }>();
 
   // ?focus=search (the browser extension's new tab, #65): put the cursor into
@@ -288,6 +295,52 @@
     }
   }
 
+  /** Changes the theme from the search (#476); undone by the opposite command. */
+  async function setTheme(mode: 'light' | 'dark' | 'system') {
+    try {
+      appearance = await container.appearance.save({ ...appearance, theme: mode });
+    } catch (err) {
+      error = errorMessage(err);
+    }
+  }
+
+  // App commands of the search (#476): the handlers live here, in the
+  // composition root, so the search imports no other feature. A missing
+  // handler means the command is not offered.
+  const commandHandlers: CommandHandlers = {
+    get theme() {
+      return modules?.has('appearance') && !container.auth.guest && !appearance.themeLocked
+        ? setTheme
+        : undefined;
+    },
+    settings: (section) => ((settingsSection = section), (settingsOpen = true)),
+    get addWidget() {
+      return container.auth.guest || dashboardManaged
+        ? undefined
+        : (query: string) => ((editing = true), dashboard?.openAddWidget(query));
+    },
+    get edit() {
+      return container.auth.guest || dashboardManaged ? undefined : () => (editing = true);
+    },
+    shortcuts: () => (shortcutHelp = true),
+    get tour() {
+      return modules?.has('onboarding') && !container.auth.guest ? restartTour : undefined;
+    },
+    logout: () => void logout(),
+    tab: (id) => dashboard?.selectTab(id),
+    tabs: () => dashboardState.tabs,
+    sectionViewer: () => ({
+      modules: modules ?? new Set(),
+      dataKinds,
+      profile: appearance.profile,
+      localMode: container.localMode,
+      guest: container.auth.guest,
+      member: container.auth.member,
+      admin: container.auth.admin,
+      owner: container.auth.owner,
+    }),
+  };
+
   async function logout() {
     // Waiting offline changes are only on this device (#80).
     if (
@@ -399,6 +452,7 @@
   {modules}
   {weatherLocation}
   widgetConfig={(kind) => firstWidgetConfig(dashboardState.tabs, dashboardState.activeId, kind)}
+  {commandHandlers}
 />
 
 {#if deviceSetup}

@@ -65,6 +65,34 @@ An answer only appears for modules that are enabled and set up. A restart
 from the search asks for confirmation first, exactly like the button in the
 Docker widget.
 
+## Commands
+
+The search field also controls trisse-home itself. Type what you want to do,
+in English or German, and pick the command under **Commands**:
+
+| Type | Does |
+| --- | --- |
+| `dark mode`, `dunkel` | switches to the dark theme |
+| `light mode`, `hell` | switches to the light theme |
+| `theme`, `design` | opens Settings → Appearance with the theme gallery |
+| `add widget weather` | opens the widget picker, already searching for "weather" |
+| `edit`, `bearbeiten` | starts editing the start page |
+| `settings members`, `einstellungen wetter` | opens that settings section |
+| `tab work` | switches to the tab named "work" |
+| `shortcuts` | lists the keyboard shortcuts |
+| `start tour` | starts the guided tour again |
+| `log out`, `abmelden` | signs you out |
+
+Start with `>` to see only commands: `>` alone lists all of them, `>theme`
+narrows the list. Without `>`, commands appear from three typed characters
+on, next to the other results.
+
+Only commands you are allowed to run are offered. Guests see the settings of
+their own account, members see no admin sections, and kiosk displays get no
+commands at all. While your organisation sets the theme, the theme commands
+are not offered. Commands you use often move up the list, the same way
+results do.
+
 ## Quick capture
 
 A short prefix turns the search field into an inbox:

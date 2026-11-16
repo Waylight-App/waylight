@@ -46,6 +46,8 @@
     undo: () => void;
     redo: () => void;
     showTabBackground: (tabId: string, background: string) => void;
+    selectTab: (id: string) => void;
+    openAddWidget: (query?: string) => void;
   }>();
   // The picker is loaded only when someone opens it (#116).
   let pickerTab = $state<Tab | null>(null);
@@ -67,6 +69,14 @@
   /** Selects the n-th tab (0-based). */
   export function selectTabAt(index: number) {
     view?.selectTabAt(index);
+  }
+
+  /** Selects a tab by id and opens the widget picker, from the search (#476). */
+  export function selectTab(id: string) {
+    view?.selectTab(id);
+  }
+  export function openAddWidget(query = '') {
+    view?.openAddWidget(query);
   }
 
   /** Undo/redo in edit mode (#93). */
