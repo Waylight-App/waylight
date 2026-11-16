@@ -8,7 +8,40 @@ server built with the `ee` features.
 
 - **Search from the command box** (opt-in, below): type in the Teams
   message box and pick a service, bookmark or wiki page from trisse-home.
-- **The start page as a tab**: follows.
+- **The start page as a tab**: a tab with your instance's name and a
+  button that opens the start page in the browser (below).
+
+## The tab
+
+The tab shows your instance's name and a button that opens the start page
+in the browser, where people are signed in as usual. Signing in inside
+Teams is deliberately not offered: the session cookie stays strict, so no
+other site can make the browser send it along.
+
+It works for an instance inside your network: the Teams client on each
+person's device loads the page, so it only has to be reachable from there
+over HTTPS with a certificate the device trusts. It needs `PUBLIC_URL` and
+a licence key with `chat-apps`; without them `/teams/tab` answers 404.
+
+Add a static tab to your Teams app package (the same package as the command
+box search, or one of its own):
+
+```json
+"staticTabs": [{
+  "entityId": "start",
+  "name": "Start page",
+  "contentUrl": "https://home.example.org/teams/tab",
+  "websiteUrl": "https://home.example.org/",
+  "scopes": ["personal"]
+}],
+"validDomains": ["home.example.org"]
+```
+
+Only this page may be shown inside Teams, Outlook and the Microsoft 365
+app; the rest of the instance still refuses to be framed. The page loads
+Microsoft's Teams library (version 2.58.0) from `res.cdn.office.net`, pinned
+with a Subresource Integrity hash, because Teams shows a tab only after that
+library has started.
 
 ## Search from the command box
 

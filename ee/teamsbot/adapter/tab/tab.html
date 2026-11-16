@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Name}}</title>
+<link rel="stylesheet" href="/teams/tab.css">
+<script src="{{.TeamsJS}}" integrity="{{.Integrity}}" crossorigin="anonymous"></script>
+<script src="/teams/tab.js"></script>
+</head>
+<body>
+<main>
+  <h1>{{.Name}}</h1>
+  <p>Your start page opens in the browser, where you are signed in.</p>
+  <a id="open" class="button" href="{{.StartURL}}" target="_blank" rel="noopener noreferrer">Open in browser</a>
+</main>
+</body>
+</html>

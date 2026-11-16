@@ -4,6 +4,7 @@ package main
 
 import (
 	"crypto"
+	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
@@ -13,9 +14,12 @@ import (
 	"math/big"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
+	"trisse-home/ee/licence/domain"
+	"trisse-home/internal/platform/config"
 )
 
 // TestTeamsRouteIsOptIn checks ADR 0023: without TEAMS_BOT_APP_ID the route
@@ -80,5 +84,44 @@ func TestTeamsRouteIsOptIn(t *testing.T) {
 	_ = res.Body.Close()
 	if res.StatusCode != http.StatusOK || !strings.Contains(string(body), `"composeExtension"`) {
 		t.Fatalf("signed request: %d %s", res.StatusCode, body)
+	}
+}
+
+// TestTeamsTabPage checks that the tab page can be framed by Teams through
+// the whole server (the security middleware denies framing everywhere
+// else) and only with the licence.
+func TestTeamsTabPage(t *testing.T) {
+	pub, priv, _ := ed25519.GenerateKey(rand.Reader)
+	saved := licencePublicKey
+	licencePublicKey = pub
+	t.Cleanup(func() { licencePublicKey = saved })
+	up := fakeUpstream(t)
+	srv := newTestServer(t, up.URL, func(c *config.Config) { c.PublicURL, _ = url.Parse("https://home.example") })
+	get := func(path string) *http.Response {
+		res, err := http.Get(srv.URL + path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_ = res.Body.Close()
+		return res
+	}
+	if res := get("/teams/tab"); res.StatusCode != http.StatusNotFound {
+		t.Fatalf("without licence: %d", res.StatusCode)
+	}
+	owner := newClient(t, srv.URL)
+	var session obj
+	owner.json(http.MethodPost, "/api/auth/setup", obj{"setupToken": "e2e-setup-token-0123", "password": "e2e-password-123"}, http.StatusOK, &session)
+	owner.csrf = session["csrfToken"].(string)
+	now := time.Now().UTC()
+	key := domain.Sign(domain.Licence{ID: "t", Licensee: "Example GmbH", Issued: now, Until: now.AddDate(1, 0, 0), Seats: 5,
+		Features: []string{"chat-apps"}}, priv)
+	owner.do(http.MethodPut, "/api/licence", obj{"key": key}, http.StatusOK)
+	res := get("/teams/tab")
+	if res.StatusCode != http.StatusOK || res.Header.Get("X-Frame-Options") != "" ||
+		!strings.Contains(res.Header.Get("Content-Security-Policy"), "frame-ancestors https://*.cloud.microsoft") {
+		t.Fatalf("tab: %d %v", res.StatusCode, res.Header)
+	}
+	if res := get("/"); res.Header.Get("X-Frame-Options") != "DENY" {
+		t.Fatal("the app itself became frameable")
 	}
 }

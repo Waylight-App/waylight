@@ -11,10 +11,12 @@ import (
 	"context"
 	"net/http"
 	"time"
+	licence "trisse-home/ee/licence/domain"
 
 	"trisse-home/ee/teamsbot/adapter/botauth"
 	"trisse-home/ee/teamsbot/adapter/controller"
 	"trisse-home/ee/teamsbot/adapter/graph"
+	"trisse-home/ee/teamsbot/adapter/tab"
 	"trisse-home/ee/teamsbot/usecase"
 	"trisse-home/internal/modules"
 )
@@ -24,6 +26,7 @@ type Module struct {
 	modules.Base
 	svc      *usecase.Service
 	handlers *controller.Handlers
+	tab      tab.Handlers
 	enabled  bool
 }
 
@@ -38,6 +41,10 @@ type Deps struct {
 	Connections usecase.Connections
 	Finder      usecase.Finder
 	Licensing   usecase.Licensing
+	// Name is the instance's name for the tab page; PublicURL is what its
+	// button opens (empty: no tab).
+	Name      func(ctx context.Context) string
+	PublicURL string
 }
 
 // New builds the module.
@@ -45,7 +52,13 @@ func New(d Deps) *Module {
 	svc := usecase.New(usecase.Deps{Connections: d.Connections, Directory: graph.Client{HTTP: d.Client, API: d.GraphAPI},
 		Finder: d.Finder, Licensing: d.Licensing, Now: time.Now})
 	v := &botauth.Verifier{HTTP: d.Client, MetadataURL: d.MetadataURL, AppID: d.AppID, Now: time.Now}
-	return &Module{svc: svc, handlers: controller.NewHandlers(v, svc), enabled: d.AppID != ""}
+	t := tab.Handlers{Name: d.Name, Allowed: func(ctx context.Context) bool {
+		return d.Licensing.Level(ctx, licence.FeatureChatApps) != licence.LevelNone
+	}}
+	if d.PublicURL != "" {
+		t.StartURL = tab.StartURL(d.PublicURL)
+	}
+	return &Module{svc: svc, handlers: controller.NewHandlers(v, svc), tab: t, enabled: d.AppID != ""}
 }
 
 // Name implements modules.Module.
@@ -54,9 +67,14 @@ func (m *Module) Name() string { return "teamsbot" }
 // DataKind implements modules.Module: nothing is stored.
 func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
 
-// RegisterRoutes implements modules.Module. The route is public: Microsoft
-// signs in with its own token, which the handler checks first.
+// RegisterRoutes implements modules.Module. The tab page is public: Teams
+// shows it before anyone signs in, and it only links to the start page. The
+// bot route is public too: Microsoft signs in with its own token, which the
+// handler checks first.
 func (m *Module) RegisterRoutes(r modules.Router) {
+	r.Public("GET /teams/tab", m.tab.Page)
+	r.Public("GET /teams/tab.js", m.tab.Script)
+	r.Public("GET /teams/tab.css", m.tab.Style)
 	if m.enabled {
 		r.Public("POST /api/teams/messages", m.handlers.Messages)
 	}
