@@ -4,6 +4,7 @@
  * settings; their widgets are hidden by the server's module list.
  */
 import { PLUGIN_API_VERSION, type TrissePlugin } from '../../../web/src/app/plugins/api';
+import { texts as absenceTexts } from './absences/texts';
 import { texts as announcementTexts } from './announcements/texts';
 import { texts as brandingTexts } from './branding/texts';
 import { texts as connectionTexts } from './connections/texts';
@@ -29,6 +30,17 @@ export const plugin: TrissePlugin = {
       defaultSize: { w: 4, h: 5 },
       icon: 'rss',
       view: lazyMountable(() => import('./announcements/AnnouncementsWidget.svelte')),
+    },
+    {
+      kind: 'absences',
+      feature: 'absences',
+      category: 'everyday',
+      title: absenceTexts.title ?? { en: 'Absences' },
+      description: absenceTexts.description ?? { en: '' },
+      keywords: ['absence', 'holiday', 'vacation', 'sick', 'abwesenheit', 'urlaub', 'krank', 'team calendar'],
+      defaultSize: { w: 4, h: 5 },
+      icon: 'calendar',
+      view: lazyMountable(() => import('./absences/AbsencesWidget.svelte')),
     },
     {
       kind: 'presence',

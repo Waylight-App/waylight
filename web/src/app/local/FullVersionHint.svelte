@@ -16,6 +16,7 @@
   const docs = 'https://github.com/itadori26/trisse-home/blob/main/docs/';
   const serverGuide = `${docs}getting-started.md`;
   const piGuide = `${docs}raspberry-pi.md`;
+  const privacy = `${docs}extension-privacy.md`;
 
   // Storage can be unavailable (private windows, blocked site data); the
   // hint then simply shows again next time.
@@ -56,6 +57,8 @@
     <a href={serverGuide} target="_blank" rel="noopener noreferrer">{t('full_version.server_guide')}</a>
     ·
     <a href={piGuide} target="_blank" rel="noopener noreferrer">{t('full_version.pi_guide')}</a>
+    ·
+    <a href={privacy} target="_blank" rel="noopener noreferrer">{t('full_version.privacy')}</a>
   </p>
   <p class="muted">{t('full_version.local_note')}</p>
 {:else if !dismissed}

@@ -1615,6 +1615,16 @@ export const en = {
   'smart.full_in': 'full in ~{n} days',
   'common.plain_http_warning':
     'This address uses http://: the password or token travels unencrypted through your network. Prefer https:// where the device supports it.',
+  'auth.security_log_filter': 'Show',
+  'auth.security_log_all': 'All events',
+  'auth.invite_day_left': 'valid for 1 more day',
+  'auth.invite_days_left': 'valid for {n} more days',
+  'auth.invite_hour_left': 'valid for 1 more hour',
+  'auth.invite_hours_left': 'valid for {n} more hours',
+  'auth.invite_expired': 'expired',
+  'full_version.privacy': 'What leaves the browser',
+  'bookmarks.shared_with_you_via': 'Shared with you · {group}',
+  'bookmarks.shared_with_you_everyone': 'Shared with you · everyone',
 } as const;
 
 /** Keys of the shared catalogue below. */

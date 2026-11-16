@@ -1,7 +1,16 @@
 <script lang="ts">
   import { errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
-  import { emptyInput, filterEntries, type PhoneEntry, type PhoneEntryInput } from '../domain/phonelist';
+  import { copyToClipboard } from '../../../shared/ui/clipboard';
+  import {
+    emptyInput,
+    filterEntries,
+    groupByTeam,
+    parsePhonelistConfig,
+    type PhoneEntry,
+    type PhoneEntryInput,
+    toCsv,
+  } from '../domain/phonelist';
   import type { PhonelistUseCases } from '../usecase/phonelistUseCases';
 
   /** Props of the phone list widget (#300). */
@@ -9,8 +18,9 @@
     phonelist: PhonelistUseCases;
     /** Admins maintain the list; everyone else reads it. */
     admin: boolean;
+    config?: Record<string, unknown>;
   }
-  let { phonelist, admin }: Props = $props();
+  let { phonelist, admin, config = {} }: Props = $props();
 
   let entries = $state<PhoneEntry[]>([]);
   let query = $state('');
@@ -20,6 +30,36 @@
   let form = $state<PhoneEntryInput>(emptyInput());
 
   const shown = $derived(filterEntries(entries, query));
+  const grouped = $derived(parsePhonelistConfig(config).groupByTeam);
+  // An empty list keeps one group, so the empty or "nobody matches" text shows.
+  const groups = $derived(grouped && shown.length > 0 ? groupByTeam(shown) : [{ team: '', entries: shown }]);
+  // ID of the entry whose number was just copied (#416).
+  let copied = $state('');
+
+  async function copy(e: PhoneEntry) {
+    if (await copyToClipboard(e.phone)) {
+      copied = e.id;
+      setTimeout(() => {
+        if (copied === e.id) copied = '';
+      }, 1500);
+    }
+  }
+
+  function downloadCsv() {
+    const header = [
+      t('phonelist.name'),
+      t('phonelist.role'),
+      t('phonelist.team'),
+      t('phonelist.phone'),
+      t('phonelist.email'),
+    ];
+    const blob = new Blob([toCsv(entries, header)], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'phone-list.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
 
   const load = () =>
     phonelist
@@ -71,6 +111,14 @@
   {#if admin}
     <button class="btn btn-icon" type="button" aria-label={t('phonelist.add')} onclick={() => edit('new')}
       >＋</button
+    >
+    <button
+      class="btn btn-icon"
+      type="button"
+      aria-label={t('phonelist.download_csv')}
+      title={t('phonelist.download_csv')}
+      disabled={entries.length === 0}
+      onclick={downloadCsv}>⤓</button
     >
   {/if}
 </div>
@@ -124,36 +172,52 @@
   </form>
 {/if}
 
-<ul>
-  {#each shown as e (e.id)}
-    <li>
-      <div class="who">
-        <strong>{e.name}</strong>
-        {#if e.role || e.team}<span class="muted">{[e.role, e.team].filter(Boolean).join(' · ')}</span>{/if}
-      </div>
-      <div class="how">
-        {#if e.dial}<a href="tel:{e.dial}">{e.phone}</a>{/if}
-        {#if e.email}<a href="mailto:{e.email}">{e.email}</a>{/if}
-      </div>
-      {#if e.readOnly}
-        <span class="book" title={t('phonelist.from_book')} aria-label={t('phonelist.from_book')} role="img"
-          >📇</span
-        >
-      {:else if admin}
-        <button
-          class="btn btn-icon edit-btn"
-          type="button"
-          aria-label={t('phonelist.edit', { name: e.name })}
-          onclick={() => edit(e)}>✎</button
-        >
-      {/if}
-    </li>
-  {:else}
-    <li class="muted">
-      {query ? t('phonelist.none_match') : admin ? t('phonelist.empty_admin') : t('phonelist.empty')}
-    </li>
-  {/each}
-</ul>
+{#each groups as g (g.team)}
+  {#if grouped && g.entries.length > 0}<h4 class="team">{g.team || t('phonelist.other_team')}</h4>{/if}
+  <ul>
+    {#each g.entries as e (e.id)}
+      <li>
+        <div class="who">
+          <strong>{e.name}</strong>
+          {#if e.role || (!grouped && e.team)}<span class="muted"
+              >{[e.role, grouped ? '' : e.team].filter(Boolean).join(' · ')}</span
+            >{/if}
+        </div>
+        <div class="how">
+          {#if e.dial}
+            <span class="number">
+              <a href="tel:{e.dial}">{e.phone}</a>
+              <button
+                class="btn btn-icon copy"
+                type="button"
+                aria-label={copied === e.id ? t('phonelist.copied') : t('phonelist.copy', { phone: e.phone })}
+                title={copied === e.id ? t('phonelist.copied') : t('phonelist.copy', { phone: e.phone })}
+                onclick={() => copy(e)}>{copied === e.id ? '✓' : '⧉'}</button
+              >
+            </span>
+          {/if}
+          {#if e.email}<a href="mailto:{e.email}">{e.email}</a>{/if}
+        </div>
+        {#if e.readOnly}
+          <span class="book" title={t('phonelist.from_book')} aria-label={t('phonelist.from_book')} role="img"
+            >📇</span
+          >
+        {:else if admin}
+          <button
+            class="btn btn-icon edit-btn"
+            type="button"
+            aria-label={t('phonelist.edit', { name: e.name })}
+            onclick={() => edit(e)}>✎</button
+          >
+        {/if}
+      </li>
+    {:else}
+      <li class="muted">
+        {query ? t('phonelist.none_match') : admin ? t('phonelist.empty_admin') : t('phonelist.empty')}
+      </li>
+    {/each}
+  </ul>
+{/each}
 
 <style>
   .bar {
@@ -204,6 +268,19 @@
   }
   .edit-btn {
     opacity: 0;
+  }
+  .number {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .copy {
+    font-size: 0.85em;
+    padding: 0 var(--space-1);
+  }
+  .team {
+    margin: var(--space-2) 0 0;
+    font-size: 0.85em;
   }
   .book {
     font-size: 0.8em;

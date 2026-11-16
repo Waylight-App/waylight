@@ -28,6 +28,11 @@ export const en = {
   'phonelist.empty_admin': 'The phone list is empty. Add people with ＋.',
   'phonelist.none_match': 'Nobody matches.',
   'phonelist.no_contact': 'No phone number or e-mail',
+  'phonelist.copy': 'Copy {phone}',
+  'phonelist.copied': 'Copied',
+  'phonelist.group_by_team': 'Group by team',
+  'phonelist.other_team': 'Other',
+  'phonelist.download_csv': 'Download as CSV',
 } as const;
 
 declare module '../../../shared/i18n/registry' {
