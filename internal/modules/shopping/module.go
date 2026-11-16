@@ -1,6 +1,7 @@
 package shopping
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
@@ -15,13 +16,32 @@ import (
 // Module wires the shopping list rings and implements modules.Module.
 type Module struct {
 	modules.Base
+	modules.Transferable
 	handlers *controller.Handlers
+	lists    *controller.ListHandlers
+	repo     *gateway.ListRepository
 }
 
 // New builds the shopping list module; cipher encrypts the app password.
-func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, ids kernel.IDGenerator) *Module {
-	uc := usecase.NewShopping(gateway.NewSettingsRepository(db, cipher), gateway.NewCalDAVStore(client), ids)
-	return &Module{handlers: controller.NewHandlers(uc)}
+// host (from PUBLIC_URL) makes the UIDs of exported items unique.
+func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, ids kernel.IDGenerator, clock kernel.Clock, host string) *Module {
+	settings, store := gateway.NewSettingsRepository(db, cipher), gateway.NewCalDAVStore(client)
+	uc := usecase.NewShopping(settings, store, ids)
+	repo := gateway.NewListRepository(db)
+	if host == "" {
+		host = "trisse-home.local"
+	}
+	return &Module{
+		Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
+		handlers:     controller.NewHandlers(uc),
+		lists:        controller.NewListHandlers(usecase.NewLists(repo, settings, store, ids, clock, host)),
+		repo:         repo,
+	}
+}
+
+// ForgetAccount removes a deleted account's lists and their items (#471).
+func (m *Module) ForgetAccount(ctx context.Context, accountID string) error {
+	return m.repo.DeleteOwnedBy(ctx, accountID)
 }
 
 // Name implements modules.Module.
@@ -46,4 +66,18 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/shopping/items/{id}", h.SetDone)
 	r.Protected("DELETE /api/shopping/items/{id}", h.Delete)
 	r.Protected("POST /api/shopping/clear-completed", h.ClearCompleted)
+	// Lists kept on trisse-home (#471).
+	l := m.lists
+	r.Protected("GET /api/shopping/lists", l.All)
+	r.Protected("POST /api/shopping/lists", l.Create)
+	r.Protected("PUT /api/shopping/lists/{id}", l.Update)
+	r.Protected("DELETE /api/shopping/lists/{id}", l.Delete)
+	r.Protected("PUT /api/shopping/current", l.SetCurrent)
+	r.Protected("GET /api/shopping/lists/{id}/items", l.Items)
+	r.Protected("POST /api/shopping/lists/{id}/items", l.Add)
+	r.Protected("PUT /api/shopping/lists/{id}/items/{itemId}", l.SetDone)
+	r.Protected("DELETE /api/shopping/lists/{id}/items/{itemId}", l.DeleteItem)
+	r.Protected("POST /api/shopping/lists/{id}/clear-completed", l.ClearCompleted)
+	r.Protected("POST /api/shopping/lists/{id}/import", l.Import)
+	r.Protected("GET /api/shopping/lists/{id}/export", l.Export)
 }
