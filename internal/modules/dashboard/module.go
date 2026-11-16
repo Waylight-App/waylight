@@ -42,6 +42,9 @@ func New(db *sql.DB, ids kernel.IDGenerator, clock kernel.Clock, widgetKinds []s
 	}
 	deps := usecase.Deps{Tabs: repo, Widgets: repo, Templates: repo, Kinds: gateway.NewKindCatalog(widgetKinds), IDs: ids,
 		Clock: clock, Location: time.Local}
+	if sharing != nil {
+		deps.GroupDefaultTab = sharing.defaultTab
+	}
 	weatherConfig, _ := json.Marshal(map[string]any{"lat": weather.Lat, "lon": weather.Lon, "label": weather.Label, "days": 4}) // plain map, cannot fail
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
 		handlers: controller.NewHandlers(usecase.NewGetDashboard(deps), usecase.NewManageTabs(deps), usecase.NewManageWidgets(deps),

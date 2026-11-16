@@ -56,3 +56,33 @@ func (h *Handlers) Share(w http.ResponseWriter, r *http.Request) {
 	}
 	httpapi.WriteJSON(w, http.StatusOK, ShareDTO{Visibility: string(v)})
 }
+
+// DefaultDTO is the body of PUT /api/team-tabs/defaults/{groupId}; an empty
+// tabId removes the group's default.
+type DefaultDTO struct {
+	TabID string `json:"tabId"`
+}
+
+// Defaults handles GET /api/team-tabs/defaults (admins): group ID → tab ID.
+func (h *Handlers) Defaults(w http.ResponseWriter, r *http.Request) {
+	all, err := h.svc.Defaults(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, all)
+}
+
+// SetDefault handles PUT /api/team-tabs/defaults/{groupId} (admins).
+func (h *Handlers) SetDefault(w http.ResponseWriter, r *http.Request) {
+	var dto DefaultDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	if err := h.svc.SetDefault(r.Context(), r.PathValue("groupId"), dto.TabID); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
