@@ -7,6 +7,12 @@
  */
 import { appearanceExport } from '../../features/appearance/adapter/local/appearanceExport';
 import { LocalAppearanceGateway } from '../../features/appearance/adapter/local/localAppearanceGateway';
+import { countdownExport } from '../../features/countdown/adapter/local/countdownExport';
+import type { CountdownDoc } from '../../features/countdown/adapter/local/localCountdownGateway';
+import { focusExport } from '../../features/focus/adapter/local/focusExport';
+import type { FocusDoc } from '../../features/focus/adapter/local/localFocusGateway';
+import { habitsExport } from '../../features/habits/adapter/local/habitsExport';
+import type { HabitsDoc } from '../../features/habits/adapter/local/localHabitsGateway';
 import { dashboardExport } from '../../features/dashboard/adapter/local/dashboardExport';
 import type { DashboardDoc } from '../../features/dashboard/adapter/local/localDashboardGateway';
 import { bookmarksExport } from '../../features/bookmarks/adapter/local/bookmarksExport';
@@ -65,6 +71,27 @@ export const localExportSections: LocalExportSection[] = [
     async tables(store) {
       const doc = await store.get<BookmarksDoc>('bookmarks');
       return doc && bookmarksExport(doc);
+    },
+  },
+  {
+    name: 'countdown',
+    async tables(store) {
+      const doc = await store.get<CountdownDoc>('countdown');
+      return doc && countdownExport(doc);
+    },
+  },
+  {
+    name: 'focus',
+    async tables(store) {
+      const doc = await store.get<FocusDoc>('focus');
+      return doc && focusExport(doc);
+    },
+  },
+  {
+    name: 'habits',
+    async tables(store) {
+      const doc = await store.get<HabitsDoc>('habits');
+      return doc && habitsExport(doc);
     },
   },
 ];
