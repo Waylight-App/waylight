@@ -1,1 +1,4 @@
 node_modules/
+# Build output; only .gitkeep is kept so the Go embed finds the directory.
+dist/*
+!dist/.gitkeep
