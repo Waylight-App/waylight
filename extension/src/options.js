@@ -1,4 +1,4 @@
-import { normaliseBase } from './url.js';
+import { importUrl, normaliseBase } from './url.js';
 import { loadBase, loadMode, saveBase, saveMode } from './storage.js';
 
 const form = document.getElementById('form');
@@ -6,6 +6,15 @@ const input = document.getElementById('base');
 const status = document.getElementById('status');
 const serverFields = document.getElementById('server-fields');
 const move = document.getElementById('move');
+const importLink = document.getElementById('import');
+const importHint = document.getElementById('import-hint');
+
+// With a server address, the second step links straight to its Transfer settings.
+function showImport(base) {
+  importLink.hidden = !base;
+  importHint.hidden = Boolean(base);
+  if (base) importLink.href = importUrl(base);
+}
 
 const chosen = () => form.elements.namedItem('mode').value;
 
@@ -22,6 +31,7 @@ async function init() {
   form.elements.namedItem('mode').value = mode || (base ? 'server' : 'local');
   // Someone who used the local mode may want to take their data along.
   move.hidden = mode !== 'local';
+  showImport(base);
   update();
 }
 
@@ -39,9 +49,13 @@ form.addEventListener('submit', async (e) => {
     status.textContent = 'Enter an http(s) address such as http://homeserver:8090 (no user name, query or #).';
     return;
   }
+  const wasLocal = (await loadMode()) === 'local';
   await Promise.all([saveBase(base), saveMode('server')]);
   input.value = base;
-  status.textContent = 'Saved. New tabs now open your dashboard.';
+  showImport(base);
+  status.textContent = wasLocal
+    ? 'Saved. New tabs now open your dashboard. Take your data along with the two steps below.'
+    : 'Saved. New tabs now open your dashboard.';
 });
 
 init();

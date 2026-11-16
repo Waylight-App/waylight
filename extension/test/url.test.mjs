@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { captureUrl, dashboardUrl, healthUrl, normaliseBase } from '../src/url.js';
+import { captureUrl, dashboardUrl, healthUrl, importUrl, normaliseBase } from '../src/url.js';
 
 test('normalises the dashboard address', () => {
   assert.equal(normaliseBase(' http://homeserver:8090/ '), 'http://homeserver:8090');
@@ -24,4 +24,9 @@ test('does not hand over browser-internal pages', () => {
   const u = new URL(captureUrl('http://h', { url: 'chrome://settings', title: 'Settings' }));
   assert.equal(u.searchParams.has('url'), false);
   assert.equal(u.searchParams.get('title'), 'Settings');
+});
+
+test('links to the import on the server', () => {
+  assert.equal(importUrl('http://h:8090'), 'http://h:8090/?settings=transfer');
+  assert.equal(importUrl('https://home.example/start'), 'https://home.example/start/?settings=transfer');
 });

@@ -60,6 +60,20 @@
     url.searchParams.delete('focus');
     history.replaceState(history.state, '', url.pathname + url.search + url.hash);
   });
+
+  // ?settings=<section> (#291): the browser extension sends someone who moves
+  // from its local mode to their server straight to Settings → Transfer. The
+  // dialog falls back to its first section for an unknown or hidden one.
+  let settingsRequested = new URLSearchParams(location.search).get('settings');
+  $effect(() => {
+    if (!settingsRequested || !modules) return;
+    settingsSection = settingsRequested;
+    settingsOpen = true;
+    settingsRequested = null;
+    const url = new URL(location.href);
+    url.searchParams.delete('settings');
+    history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+  });
   let launcherOpen = $state<Segment | null>(null);
   let launcherTrigger = $state<HTMLButtonElement>();
   let serviceStatus = $state<ReturnType<typeof statusSummary>>({ kind: 'none', offline: 0 });
