@@ -11,6 +11,7 @@ import (
 	"context"
 	"net/http"
 	"time"
+
 	licence "trisse-home/ee/licence/domain"
 
 	"trisse-home/ee/teamsbot/adapter/botauth"

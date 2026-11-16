@@ -18,6 +18,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+
 	"trisse-home/ee/licence/domain"
 	"trisse-home/internal/platform/config"
 )
