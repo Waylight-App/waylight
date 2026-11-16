@@ -1,7 +1,7 @@
 <script lang="ts">
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
-  import { accountLink, type Invite } from '../domain/auth';
+  import { accountLink, type Invite, remainingTime } from '../domain/auth';
   import type { AuthUseCases } from '../usecase/authUseCases';
   import AccountLinkBox from './AccountLinkBox.svelte';
 
@@ -22,6 +22,12 @@
   let validDays = $state(7);
   let link = $state<{ name: string; url: string; expires: string } | null>(null);
 
+  const remainingLabel = (d: Date) => {
+    const r = remainingTime(d, new Date());
+    if (r.unit === 'expired') return t('auth.invite_expired');
+    if (r.unit === 'days') return t(r.n === 1 ? 'auth.invite_day_left' : 'auth.invite_days_left', { n: r.n });
+    return t(r.n === 1 ? 'auth.invite_hour_left' : 'auth.invite_hours_left', { n: r.n });
+  };
   const when = (d: Date) => d.toLocaleString(intlLocale(), { dateStyle: 'medium', timeStyle: 'short' });
 
   async function load() {
@@ -88,7 +94,9 @@
       <span class="muted"
         >({i.role === 'member' ? t('auth.invite_role_member') : t('auth.member_guest')})</span
       >
-      <span class="muted small">{t('auth.invite_expires', { time: when(i.expiresAt) })}</span>
+      <span class="muted small" title={t('auth.invite_expires', { time: when(i.expiresAt) })}
+        >{remainingLabel(i.expiresAt)}</span
+      >
       <button class="btn" type="button" onclick={() => revoke(i)}>{t('auth.invite_revoke')}</button>
     </li>
   {:else}

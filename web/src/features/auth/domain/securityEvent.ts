@@ -53,3 +53,13 @@ export function isWarning(type: string): boolean {
     type === 'recovery_code_used'
   );
 }
+
+/** Event types that occur in the list, in order of first appearance (#419). */
+export function eventTypes(events: readonly Pick<SecurityEvent, 'type'>[]): string[] {
+  return [...new Set(events.map((e) => e.type))];
+}
+
+/** Events of one type; an empty type keeps all of them. */
+export function filterByType<T extends Pick<SecurityEvent, 'type'>>(events: readonly T[], type: string): T[] {
+  return type === '' ? [...events] : events.filter((e) => e.type === type);
+}
