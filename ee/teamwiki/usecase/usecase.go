@@ -7,6 +7,8 @@ package usecase
 import (
 	"context"
 	"errors"
+	"sync"
+	"time"
 
 	licence "trisse-home/ee/licence/domain"
 	"trisse-home/internal/modules/wiki"
@@ -37,6 +39,46 @@ type Source struct {
 	tokens        Tokens
 	licensing     Licensing
 	searcher      Searcher
+
+	// perMinute, when set, bounds the searches per person and minute, below
+	// the service's own limit (Slack allows about ten), so typing never gets
+	// the person's account throttled at the service.
+	perMinute int
+	now       func() time.Time
+	mu        sync.Mutex
+	recent    map[string][]time.Time
+}
+
+// ErrBusy is returned when a person searched a source too often in the last
+// minute; the search lists the source as failed, a visible hint.
+var ErrBusy = errors.New("too many searches in the last minute")
+
+// WithLimit bounds the searches per person and minute.
+func (s *Source) WithLimit(perMinute int, now func() time.Time) *Source {
+	s.perMinute, s.now, s.recent = perMinute, now, map[string][]time.Time{}
+	return s
+}
+
+// allow records a search by who and reports whether it is within the limit.
+func (s *Source) allow(who string) bool {
+	if s.perMinute == 0 {
+		return true
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	now := s.now()
+	kept := s.recent[who][:0]
+	for _, t := range s.recent[who] {
+		if now.Sub(t) < time.Minute {
+			kept = append(kept, t)
+		}
+	}
+	if len(kept) >= s.perMinute {
+		s.recent[who] = kept
+		return false
+	}
+	s.recent[who] = append(kept, now)
+	return true
 }
 
 // NewSource returns a source named name (shown with the results) for a
@@ -71,6 +113,9 @@ func (s *Source) Search(ctx context.Context, query string, limit int) ([]domain.
 			return nil, wiki.ErrNotConnected
 		}
 		return nil, err
+	}
+	if !s.allow(who) {
+		return nil, ErrBusy
 	}
 	return s.searcher.Search(ctx, token, query, limit)
 }

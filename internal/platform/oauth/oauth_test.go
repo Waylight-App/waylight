@@ -83,3 +83,29 @@ func TestTokenFlow(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestSlackStyleUserToken(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = r.ParseForm()
+		if r.Form.Get("code") == "bad" {
+			_, _ = w.Write([]byte(`{"ok":false,"error":"invalid_code"}`))
+			return
+		}
+		_, _ = w.Write([]byte(`{"ok":true,"authed_user":{"id":"U1","access_token":"xoxp-user","token_type":"user"}}`))
+	}))
+	defer srv.Close()
+	cfg := Config{Endpoint: Endpoint{AuthURL: "https://slack.example/oauth/v2/authorize", TokenURL: srv.URL,
+		Scopes: []string{"search:read.public", "search:read.im"}, ScopeParam: "user_scope", UserToken: true}, ClientID: "c"}
+	u, _ := url.Parse(AuthCodeURL(cfg, "s", "v"))
+	if u.Query().Get("user_scope") != "search:read.public search:read.im" || u.Query().Has("scope") {
+		t.Fatalf("auth url %s", u)
+	}
+	c := Client{HTTP: srv.Client()}
+	tok, err := c.Exchange(context.Background(), cfg, "good", "")
+	if err != nil || tok.Access != "xoxp-user" {
+		t.Fatalf("%+v %v", tok, err)
+	}
+	if _, err := c.Exchange(context.Background(), cfg, "bad", ""); !errors.Is(err, ErrRejected) {
+		t.Fatalf("ok:false not rejected: %v", err)
+	}
+}
