@@ -18,7 +18,19 @@ type Tab struct {
 	background string
 	rules      []TabRule
 	mobile     []MobileEntry
+	// access is the owner and visibility (ADR 0018). A tab an admin shares
+	// with a group is a team tab (#295): the group sees it read-only.
+	access kernel.Access
 }
+
+// WithAccess returns the tab with owner and visibility.
+func (t Tab) WithAccess(a kernel.Access) Tab {
+	t.access = a
+	return t
+}
+
+// Access returns owner and visibility; empty for a tab not stored yet.
+func (t Tab) Access() kernel.Access { return t.access }
 
 // Mobile returns the stored phone layout (nil = derived from the desktop grid, #92).
 func (t Tab) Mobile() []MobileEntry { return t.mobile }

@@ -21,9 +21,14 @@
   let { context }: Props = $props();
 
   const api = $derived(new AbsencesApi(context.http));
-  const tr = (key: string, params: Record<string, string | number> = {}) => text(texts, key, context.language, params);
+  const tr = (key: string, params: Record<string, string | number> = {}) =>
+    text(texts, key, context.language, params);
   const date = (day: string) =>
-    new Date(`${day}T00:00:00`).toLocaleDateString(context.language, { weekday: 'short', day: 'numeric', month: 'short' });
+    new Date(`${day}T00:00:00`).toLocaleDateString(context.language, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    });
 
   // Entering needs a key that is not expired; guests and kiosk displays only read.
   const readOnly = $derived(context.level('absences') === 'read');
@@ -117,12 +122,21 @@
       <span class="muted small">
         {tr(`kind_${a.kind}`)}{#if a.private && a.kind !== 'away'}
           · {tr('private_badge')}{/if}
-        · {showStart && a.from !== a.to ? tr('range', { from: date(a.from), to: date(a.to) }) : showStart ? date(a.from) : tr('until', { date: date(a.to) })}
+        · {showStart && a.from !== a.to
+          ? tr('range', { from: date(a.from), to: date(a.to) })
+          : showStart
+            ? date(a.from)
+            : tr('until', { date: date(a.to) })}
       </span>
       {#if a.note}<span class="small note">{a.note}</span>{/if}
     </span>
     {#if a.editable && mayEnter}
-      <button class="btn btn-icon" type="button" aria-label={tr('edit', { name: a.name })} onclick={() => startEdit(a)}>✎</button>
+      <button
+        class="btn btn-icon"
+        type="button"
+        aria-label={tr('edit', { name: a.name })}
+        onclick={() => startEdit(a)}>✎</button
+      >
     {/if}
   </li>
 {/snippet}
@@ -146,15 +160,32 @@
       >
     {/if}
     <div class="row">
-      <label class="field"><span>{tr('field_from')}</span><input class="input" type="date" bind:value={form.from} required /></label>
-      <label class="field"><span>{tr('field_to')}</span><input class="input" type="date" bind:value={form.to} min={form.from} required /></label>
+      <label class="field"
+        ><span>{tr('field_from')}</span><input
+          class="input"
+          type="date"
+          bind:value={form.from}
+          required
+        /></label
+      >
+      <label class="field"
+        ><span>{tr('field_to')}</span><input
+          class="input"
+          type="date"
+          bind:value={form.to}
+          min={form.from}
+          required
+        /></label
+      >
     </div>
     <label class="field"
       ><span>{tr('field_kind')}</span><select class="input" bind:value={form.kind}>
         {#each enterableKinds as k (k)}<option value={k}>{tr(`kind_${k}`)}</option>{/each}
       </select></label
     >
-    <label class="field"><span>{tr('field_note')}</span><input class="input" bind:value={form.note} maxlength="200" /></label>
+    <label class="field"
+      ><span>{tr('field_note')}</span><input class="input" bind:value={form.note} maxlength="200" /></label
+    >
     <label class="check"><input type="checkbox" bind:checked={form.private} /> {tr('field_private')}</label>
     <div class="actions">
       <button class="btn btn-primary" type="submit">{tr('save')}</button>
@@ -169,7 +200,9 @@
 
 <h4>{tr('today')}</h4>
 <ul>
-  {#each parts.today as a (a.id)}{@render row(a, false)}{:else}<li class="muted">{tr('nobody_today')}</li>{/each}
+  {#each parts.today as a (a.id)}{@render row(a, false)}{:else}<li class="muted">
+      {tr('nobody_today')}
+    </li>{/each}
 </ul>
 <h4>{tr('week')}</h4>
 <ul>

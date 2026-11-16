@@ -39,6 +39,8 @@ export interface HttpClient {
    * password re-entered in the form, so it does not end the session.
    */
   postForm<T>(path: string, form: FormData): Promise<T>;
+  /** PUTs a file as the raw body, e.g. an uploaded image (#305). */
+  putBlob<T>(path: string, blob: Blob): Promise<T>;
   /**
    * POSTs JSON and returns the response body as a stream of text chunks,
    * e.g. an AI answer (#162); aborting the signal cancels the request.
@@ -90,6 +92,9 @@ export class FetchHttpClient implements HttpClient {
   postForm<T>(path: string, form: FormData): Promise<T> {
     return this.request<T>('POST', path, form);
   }
+  putBlob<T>(path: string, blob: Blob): Promise<T> {
+    return this.request<T>('PUT', path, blob, blob.type || 'application/octet-stream');
+  }
   async postStream(path: string, body: unknown, signal: AbortSignal): Promise<AsyncIterable<string>> {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (this.csrfToken) headers[CSRF_HEADER] = this.csrfToken;
@@ -136,7 +141,14 @@ export class FetchHttpClient implements HttpClient {
       method,
       headers,
       credentials: 'same-origin',
-      body: body === undefined ? undefined : isForm ? body : rawType ? String(body) : JSON.stringify(body),
+      body:
+        body === undefined
+          ? undefined
+          : isForm || (typeof Blob !== 'undefined' && body instanceof Blob)
+            ? body
+            : rawType
+              ? String(body)
+              : JSON.stringify(body),
     });
     if (res.status === 204) return undefined as T;
     const payload: unknown = await res.json().catch(() => undefined);

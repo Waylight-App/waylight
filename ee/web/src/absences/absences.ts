@@ -1,10 +1,10 @@
-import type { PluginHttp } from "../../../../web/src/app/plugins/api";
+import type { PluginHttp } from '../../../../web/src/app/plugins/api';
 
 /** Kinds of absence; "away" is someone else's private absence (#299). */
-export type AbsenceKind = "holiday" | "sick" | "remote" | "other" | "away";
+export type AbsenceKind = 'holiday' | 'sick' | 'remote' | 'other' | 'away';
 
 /** Kinds a person can choose when entering an absence. */
-export const enterableKinds = ["holiday", "sick", "remote", "other"] as const;
+export const enterableKinds = ['holiday', 'sick', 'remote', 'other'] as const;
 
 /** An absence as GET /api/absences returns it (ee/absences). */
 export interface Absence {
@@ -33,18 +33,18 @@ export interface AbsenceInput {
 
 /** A day as "YYYY-MM-DD" in local time. */
 export function dayKey(d: Date): string {
-  const p = (n: number) => String(n).padStart(2, "0");
+  const p = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 /** The day `n` days after `day` (local calendar). */
 export function addDays(day: string, n: number): string {
-  const [y, m, d] = day.split("-").map(Number);
+  const [y, m, d] = day.split('-').map(Number);
   return dayKey(new Date(y ?? 0, (m ?? 1) - 1, (d ?? 1) + n));
 }
 
 /** Whether an absence covers a day (string compare works for ISO days). */
-export const covers = (a: Pick<Absence, "from" | "to">, day: string) => a.from <= day && day <= a.to;
+export const covers = (a: Pick<Absence, 'from' | 'to'>, day: string) => a.from <= day && day <= a.to;
 
 /** The widget's two sections: away today, and away later this week. */
 export interface AbsenceSections {
@@ -67,11 +67,17 @@ export function sections(list: readonly Absence[], today: string, days = 7): Abs
 }
 
 /** Problem with the form, or null: the period must be valid and at most a year. */
-export function validate(input: Pick<AbsenceInput, "from" | "to" | "note">): "dates" | "too_long" | "note" | null {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.from) || !/^\d{4}-\d{2}-\d{2}$/.test(input.to) || input.to < input.from)
-    return "dates";
-  if (input.to > addDays(input.from, 365)) return "too_long";
-  if ([...input.note].length > 200) return "note";
+export function validate(
+  input: Pick<AbsenceInput, 'from' | 'to' | 'note'>,
+): 'dates' | 'too_long' | 'note' | null {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(input.from) ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(input.to) ||
+    input.to < input.from
+  )
+    return 'dates';
+  if (input.to > addDays(input.from, 365)) return 'too_long';
+  if ([...input.note].length > 200) return 'note';
   return null;
 }
 
@@ -85,9 +91,18 @@ export class AbsencesApi {
   }
 
   save(input: AbsenceInput, id?: string): Promise<Absence> {
-    const body = { from: input.from, to: input.to, kind: input.kind, note: input.note.trim(), private: input.private };
+    const body = {
+      from: input.from,
+      to: input.to,
+      kind: input.kind,
+      note: input.note.trim(),
+      private: input.private,
+    };
     if (id) return this.http.put<Absence>(`/api/absences/${encodeURIComponent(id)}`, body);
-    return this.http.post<Absence>("/api/absences", input.accountId ? { ...body, accountId: input.accountId } : body);
+    return this.http.post<Absence>(
+      '/api/absences',
+      input.accountId ? { ...body, accountId: input.accountId } : body,
+    );
   }
 
   remove(id: string): Promise<void> {
@@ -96,7 +111,9 @@ export class AbsencesApi {
 
   /** Members an admin can enter absences for; empty for everyone else. */
   async members(): Promise<{ id: string; name: string }[]> {
-    const r = await this.http.get<{ members: { id: string; name: string; disabled: boolean }[] }>("/api/auth/members");
+    const r = await this.http.get<{ members: { id: string; name: string; disabled: boolean }[] }>(
+      '/api/auth/members',
+    );
     return r.members.filter((m) => !m.disabled).map((m) => ({ id: m.id, name: m.name }));
   }
 }

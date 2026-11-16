@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"trisse-home/internal/modules/notifications/domain"
+	"trisse-home/internal/shared/kernel"
 )
 
 func post(ctx context.Context, client *http.Client, url string, body []byte, headers map[string]string) error {
@@ -114,6 +115,8 @@ type EmailPublisher struct {
 	// Dial is replaceable in tests.
 	Dial func(ctx context.Context, addr string) (net.Conn, error)
 	now  func() time.Time
+	// Name is what the subject starts with: the instance's name (#305).
+	Name kernel.InstanceName
 }
 
 // NewEmailPublisher returns an SMTP publisher.
@@ -146,11 +149,12 @@ func bodyText(s string) string {
 	return strings.ReplaceAll(s, "\n", "\r\n")
 }
 
-// BuildEmail renders the message as an RFC 5322 mail with a UTF-8 subject.
-func BuildEmail(c domain.Channel, m domain.Message, date time.Time) []byte {
+// BuildEmail renders the message as an RFC 5322 mail with a UTF-8 subject
+// that starts with the instance's name in brackets.
+func BuildEmail(c domain.Channel, m domain.Message, date time.Time, name string) []byte {
 	var b strings.Builder
 	fmt.Fprintf(&b, "From: %s\r\nTo: %s\r\n", headerValue(c.From), headerValue(c.To))
-	fmt.Fprintf(&b, "Subject: %s\r\n", mime.QEncoding.Encode("utf-8", headerValue("[trisse-home] "+m.Title)))
+	fmt.Fprintf(&b, "Subject: %s\r\n", mime.QEncoding.Encode("utf-8", headerValue("["+name+"] "+m.Title)))
 	fmt.Fprintf(&b, "Date: %s\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n", date.Format(time.RFC1123Z))
 	fmt.Fprintf(&b, "%s\r\n", bodyText(m.Body))
 	// Account mail (#296) has no severity; alerts keep the line.
@@ -203,7 +207,7 @@ func (e *EmailPublisher) Publish(ctx context.Context, c domain.Channel, m domain
 	if err != nil {
 		return fmt.Errorf("smtp data: %w", err)
 	}
-	if _, err := w.Write(BuildEmail(c, m, e.now())); err != nil {
+	if _, err := w.Write(BuildEmail(c, m, e.now(), e.Name.Of(ctx))); err != nil {
 		return fmt.Errorf("smtp write: %w", err)
 	}
 	if err := w.Close(); err != nil {

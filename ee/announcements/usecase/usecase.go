@@ -241,6 +241,16 @@ func (s *Service) MarkRead(ctx context.Context, id string) error {
 	return s.d.Store.MarkRead(ctx, p.AccountID, id, s.d.Clock.Now())
 }
 
+// MayWrite reports whether the signed-in account may write announcements,
+// so the widget offers it: admins, and members of the writer group.
+func (s *Service) MayWrite(ctx context.Context) (bool, error) {
+	set, err := s.d.Store.Settings(ctx)
+	if err != nil {
+		return false, err
+	}
+	return set.MayWrite(kernel.PrincipalFrom(ctx)), nil
+}
+
 // Settings returns who may write; admins only.
 func (s *Service) Settings(ctx context.Context) (domain.Settings, error) {
 	if !kernel.PrincipalFrom(ctx).IsAdmin() {

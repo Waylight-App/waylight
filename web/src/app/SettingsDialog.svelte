@@ -73,6 +73,7 @@
     /** A plugin's own label (ADR 0021). */
     title?: () => string;
     adminOnly?: boolean;
+    plugin?: boolean;
   };
   /** Display name of a section: a plugin's own label or the translated key. */
   const nameOf = (s: Section) => s.title?.() ?? t(s.label);
@@ -140,6 +141,9 @@
     // What a server adds (#291) only makes sense in the extension's local mode.
     if (s.id === 'full-version') return container.localMode;
     if (s.adminOnly && !container.auth.admin) return false;
+    // Plugin sections without adminOnly are for every member, e.g. their
+    // own connected accounts (#326); guests manage only their account.
+    if (s.plugin && !container.auth.guest) return true;
     if (ownerSections.has(s.id) && !container.auth.owner) return false;
     if (container.auth.guest) return guestSections.has(s.id);
     if (container.auth.member)

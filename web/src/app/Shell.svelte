@@ -9,6 +9,7 @@
   import type { Container } from './container';
   import { provideRefresh } from '../shared/refresh';
   import DashboardPage from './DashboardPage.svelte';
+  import { branding } from './branding/branding.svelte';
   import { loadPlugins } from './plugins/loader';
   import { widgetDefinitions } from './widgets';
   import { registeredSections } from './settingsSections';
@@ -321,7 +322,16 @@
 
 <!-- Top bar and hero (#189): brand · date, weather, to-dos · status, launcher, account. -->
 <header class="topbar">
-  <a class="brand" href="/"><span class="logo" aria-hidden="true">t</span>trisse-home</a>
+  <a class="brand" href="/">
+    {#if branding().logo}
+      <!-- An organisation's logo (#305); the dark variant follows the theme. -->
+      <img class="brand-logo light" src={branding().logo} alt="" height="28" />
+      <img class="brand-logo dark" src={branding().logoDark || branding().logo} alt="" height="28" />
+    {:else}
+      <span class="logo" aria-hidden="true">t</span>
+    {/if}
+    {branding().name}
+  </a>
   <div class="center">
     <TopInfo
       weather={modules?.has('weather') ? container.weather : null}
@@ -480,6 +490,19 @@
     padding: var(--space-2) var(--space-4);
     max-width: 1600px;
     margin: 0 auto;
+  }
+  .brand-logo {
+    height: 28px;
+    width: auto;
+    max-width: 10rem;
+    object-fit: contain;
+  }
+  .brand-logo.dark,
+  :global(html[data-theme='dark']) .brand-logo.light {
+    display: none;
+  }
+  :global(html[data-theme='dark']) .brand-logo.dark {
+    display: inline;
   }
   .brand {
     display: inline-flex;

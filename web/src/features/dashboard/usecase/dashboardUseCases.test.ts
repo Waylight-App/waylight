@@ -12,6 +12,7 @@ const tab = (id: string, position: number, widgets: Tab['widgets'] = []): Tab =>
   widgets,
   mobile: [],
   mobileCustom: false,
+  mine: true,
 });
 
 function setup() {
