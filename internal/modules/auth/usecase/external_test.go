@@ -171,3 +171,38 @@ func TestDeletingAnAccountRunsTheHooks(t *testing.T) {
 		t.Fatalf("hooks saw %v", deleted)
 	}
 }
+
+func TestProvisioningTakesBackOnlyTheAdminRoleItGave(t *testing.T) {
+	e, _, p := provisioningEnv(t)
+	id, _ := p.CreateMember(ctx, "anna")
+	role := func() (domain.Role, string) {
+		a, _ := e.accounts.Get(ctx, id)
+		return a.Role(), a.RoleSource()
+	}
+	if changed, err := p.SetAdmin(ctx, id, true, domain.RoleSourceSSO); err != nil || !changed {
+		t.Fatalf("grant: %v %v", changed, err)
+	}
+	if r, src := role(); r != domain.RoleAdmin || src != domain.RoleSourceSSO {
+		t.Fatalf("after grant: %s %q", r, src)
+	}
+	// The directory did not grant it, so it cannot take it back.
+	if changed, _ := p.SetAdmin(ctx, id, false, domain.RoleSourceDirectory); changed {
+		t.Fatal("another source took the role back")
+	}
+	if changed, _ := p.SetAdmin(ctx, id, false, domain.RoleSourceSSO); !changed {
+		t.Fatal("single sign-on could not take back its own grant")
+	}
+	// Made admin by hand: no provider takes it back.
+	a, _ := e.accounts.Get(ctx, id)
+	_ = a.SetRole(domain.RoleAdmin, domain.RoleSourceHand, e.clock.Now())
+	_ = e.accounts.Update(ctx, a)
+	if changed, _ := p.SetAdmin(ctx, id, false, domain.RoleSourceSSO); changed {
+		t.Fatal("a hand-made admin was demoted")
+	}
+	if _, err := p.SetAdmin(ctx, domain.OwnerID, false, domain.RoleSourceSSO); err == nil {
+		t.Fatal("the owner's role was touched")
+	}
+	if _, err := p.SetAdmin(ctx, id, true, "elsewhere"); err == nil {
+		t.Fatal("unknown source accepted")
+	}
+}

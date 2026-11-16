@@ -348,7 +348,8 @@ func (h *Handlers) UpdateMember(w http.ResponseWriter, r *http.Request) {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
-	m, err := h.uc.Members.Update(r.Context(), usecase.UpdateMemberRequest{ID: r.PathValue("id"), Disabled: dto.Disabled, Password: dto.Password})
+	m, err := h.uc.Members.Update(r.Context(), usecase.UpdateMemberRequest{ID: r.PathValue("id"), Disabled: dto.Disabled, Password: dto.Password,
+		Role: dto.Role})
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return

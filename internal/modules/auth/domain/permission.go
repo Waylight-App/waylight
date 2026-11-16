@@ -126,3 +126,18 @@ func SecondFactorSetupPath(method, path string) bool {
 	read := method == "GET" || method == "HEAD"
 	return read && (path == "/api/modules" || path == "/api/appearance")
 }
+
+// ownerOnlyPrefixes are the routes only the owner may use, also against
+// admins (ADR 0022): backups and the data transfer contain or replace the
+// data of everyone, including private records and the owner's account.
+var ownerOnlyPrefixes = []string{"/api/backups", "/api/transfer"}
+
+// OwnerOnlyPath reports whether path is one of the owner's alone.
+func OwnerOnlyPath(path string) bool {
+	for _, p := range ownerOnlyPrefixes {
+		if path == p || strings.HasPrefix(path, p+"/") {
+			return true
+		}
+	}
+	return false
+}

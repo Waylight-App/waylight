@@ -27,6 +27,14 @@ type Policy struct {
 	// SyncGroups limits which directory groups become trisse-home groups;
 	// empty takes all of them.
 	SyncGroups []string
+	// AdminGroups makes everyone in one of these groups (names or DNs) an
+	// admin (#434); leaving the group takes the role back at the next sign-in.
+	AdminGroups []string
+}
+
+// IsAdmin reports whether the user's groups make them an admin.
+func (p Policy) IsAdmin(u User) bool {
+	return slices.ContainsFunc(u.Groups, func(g string) bool { return matches(p.AdminGroups, g) })
 }
 
 // GroupName is the first value of a DN: "cn=Office,ou=groups,dc=x" → "Office".

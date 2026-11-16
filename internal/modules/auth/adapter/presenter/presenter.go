@@ -141,13 +141,17 @@ func Guests(list []usecase.GuestView) []GuestDTO {
 	return out
 }
 
-// MemberDTO is a member account (#294).
+// MemberDTO is a member or admin account (#294, #434).
 type MemberDTO struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Groups    []string  `json:"groups"`
-	Disabled  bool      `json:"disabled"`
-	CreatedAt time.Time `json:"createdAt"`
+	ID     string   `json:"id"`
+	Name   string   `json:"name"`
+	Groups []string `json:"groups"`
+	// Role is "member" or "admin"; RoleSource is "" (set by hand), "sso" or
+	// "directory".
+	Role       string    `json:"role"`
+	RoleSource string    `json:"roleSource"`
+	Disabled   bool      `json:"disabled"`
+	CreatedAt  time.Time `json:"createdAt"`
 }
 
 // MembersDTO is GET /api/auth/members. Available is false while members

@@ -33,12 +33,18 @@ type Links interface {
 	Delete(ctx context.Context, subject string) error
 }
 
+// roleSource marks an admin role as granted by single sign-on, so it is taken back
+// only by single sign-on (auth's domain.RoleSourceSSO).
+const roleSource = "sso"
+
 // Accounts manages members in the auth module (output port, implemented by
 // auth.Provisioning).
 type Accounts interface {
 	CreateMember(ctx context.Context, name string) (string, error)
 	UpdateGroups(ctx context.Context, accountID string, join, leave []string) error
 	SetDisabled(ctx context.Context, accountID string, disabled bool) error
+	// SetAdmin grants or takes back the admin role the provider gave (#434).
+	SetAdmin(ctx context.Context, accountID string, admin bool, source string) (bool, error)
 }
 
 // Licensing tells how far single sign-on may be used (output port).
@@ -138,6 +144,9 @@ func (r *Resolver) existing(ctx context.Context, link Link, id domain.Identity, 
 func (r *Resolver) sync(ctx context.Context, link *Link, id domain.Identity) error {
 	now := r.d.Policy.GroupsToSync(id)
 	if err := r.d.Accounts.UpdateGroups(ctx, link.AccountID, now, domain.Leave(link.Groups, now)); err != nil {
+		return err
+	}
+	if _, err := r.d.Accounts.SetAdmin(ctx, link.AccountID, r.d.Policy.IsAdmin(id), roleSource); err != nil {
 		return err
 	}
 	link.Groups = now

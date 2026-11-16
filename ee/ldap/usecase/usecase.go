@@ -38,11 +38,17 @@ type Links interface {
 	Delete(ctx context.Context, name string) error
 }
 
+// roleSource marks an admin role as granted by the directory, so it is taken back
+// only by the directory (auth's domain.RoleSourceDirectory).
+const roleSource = "directory"
+
 // Accounts manages members in the auth module (output port).
 type Accounts interface {
 	CreateMember(ctx context.Context, name string) (string, error)
 	UpdateGroups(ctx context.Context, accountID string, join, leave []string) error
 	SetDisabled(ctx context.Context, accountID string, disabled bool) error
+	// SetAdmin grants or takes back the admin role the provider gave (#434).
+	SetAdmin(ctx context.Context, accountID string, admin bool, source string) (bool, error)
 }
 
 // Licensing tells how far directory sync may be used (output port).
@@ -170,6 +176,9 @@ func (a *Authenticator) sync(ctx context.Context, link *Link, user domain.User) 
 		}
 	}
 	if err := a.d.Accounts.UpdateGroups(ctx, link.AccountID, now, leave); err != nil {
+		return err
+	}
+	if _, err := a.d.Accounts.SetAdmin(ctx, link.AccountID, a.d.Policy.IsAdmin(user), roleSource); err != nil {
 		return err
 	}
 	link.Groups = now

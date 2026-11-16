@@ -49,7 +49,7 @@ func groupView(g domain.Group) GroupView {
 
 // List implements Groups.
 func (uc *groups) List(ctx context.Context) ([]GroupView, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return nil, err
 	}
 	all, err := uc.deps.Groups.List(ctx)
@@ -75,7 +75,7 @@ func (uc *groups) checkAccounts(ctx context.Context, ids []string) error {
 			continue // dropped by Group.SetAccounts
 		}
 		ok := slices.ContainsFunc(all, func(a domain.Account) bool {
-			return a.ID() == id && (a.Role() == domain.RoleMember || a.Role() == domain.RoleGuest)
+			return a.ID() == id && (a.IsPerson() || a.Role() == domain.RoleGuest)
 		})
 		if !ok {
 			return domain.ErrMemberNotFound
@@ -109,7 +109,7 @@ func (uc *groups) Create(ctx context.Context, req GroupRequest) (GroupView, erro
 
 // Update implements Groups.
 func (uc *groups) Update(ctx context.Context, req GroupRequest) (GroupView, error) {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return GroupView{}, err
 	}
 	g, err := uc.deps.Groups.Get(ctx, req.ID)
@@ -133,7 +133,7 @@ func (uc *groups) Update(ctx context.Context, req GroupRequest) (GroupView, erro
 // Delete implements Groups. Records shared with the group become visible to
 // their owners only; the modules handle that once they store visibility.
 func (uc *groups) Delete(ctx context.Context, id string) error {
-	if err := ownerOnly(ctx); err != nil {
+	if err := adminOnly(ctx); err != nil {
 		return err
 	}
 	g, err := uc.deps.Groups.Get(ctx, id)

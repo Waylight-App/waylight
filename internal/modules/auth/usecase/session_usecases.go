@@ -87,13 +87,16 @@ func (uc *authenticate) Execute(ctx context.Context, req AuthenticateRequest) (A
 		}
 	}
 	// Groups are read on every request like the account, so a change takes
-	// effect at once. The admin needs none: it sees what is shared anyway.
-	if uc.groups != nil && !a.IsAdmin() {
+	// effect at once. The owner is in none (ADR 0018); admins are people and
+	// can be in groups like members (ADR 0022).
+	if uc.groups != nil && !a.IsOwner() {
 		if p.Groups, err = uc.groups.GroupsOf(ctx, a.ID()); err != nil {
 			return AuthenticateResponse{}, fmt.Errorf("load groups: %w", err)
 		}
 	}
-	if uc.prefs != nil && a.IsAdmin() {
+	// Only the owner chooses whether new records start private; members and
+	// admins always start private (kernel.DefaultVisibility).
+	if uc.prefs != nil && a.IsOwner() {
 		if p.PrivateByDefault, err = uc.prefs.PrivateByDefault(ctx, a.ID()); err != nil {
 			return AuthenticateResponse{}, fmt.Errorf("load preferences: %w", err)
 		}
