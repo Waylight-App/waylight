@@ -14,7 +14,12 @@
     /** Puts a suggestion into the search field (#158). */
     onpick?: (text: string) => void;
   }
-  let { answer, onopen, onexecute, onpick }: Props = $props();
+  let { answer: given, onopen, onexecute, onpick }: Props = $props();
+
+  // A regenerated answer (#477) replaces the given one until the search
+  // hands in a different answer, e.g. after the next keystroke.
+  let renewed = $state<{ from: Answer; answer: Answer } | null>(null);
+  const answer = $derived(renewed?.from === given ? renewed.answer : given);
 
   const age = $derived(dataAge(answer.at, new Date()));
 
@@ -25,6 +30,13 @@
     copied = await copyToClipboard(answer.copy);
     if (copied) setTimeout(() => (copied = false), 1500);
   }
+
+  async function regenerate() {
+    const from = given;
+    const next = await answer.regenerate?.();
+    if (next) renewed = { from, answer: next };
+    copied = false;
+  }
 </script>
 
 <article class="answer" data-kind={answer.kind} aria-label={answer.title}>
@@ -34,7 +46,10 @@
   </header>
 
   {#if answer.kind === 'metric'}
-    <p class="value" data-severity={answer.severity}>{answer.value}</p>
+    <p class="value" data-severity={answer.severity}>
+      {#if answer.swatch}<span class="swatch" style:background={answer.swatch} aria-hidden="true"
+        ></span>{/if}<span>{answer.value}</span>
+    </p>
     {#if answer.percent !== undefined}<Meter percent={answer.percent} label={answer.title} />{/if}
     {#if answer.detail}<p class="detail">{answer.detail}</p>{/if}
   {:else if answer.kind === 'status'}
@@ -79,6 +94,9 @@
       <button type="button" class="btn chip" onclick={copy}
         >{t(copied ? 'smart.copied' : 'smart.copy')}</button
       >
+      {#if answer.regenerate}
+        <button type="button" class="btn chip" onclick={regenerate}>{t('tools.new')}</button>
+      {/if}
       <span class="detail">{t('smart.enter_copies')}</span>
     </p>
   {/if}
@@ -123,6 +141,15 @@
     font-size: 1.5rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
+  }
+  .swatch {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: var(--space-1);
+    vertical-align: -0.1em;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
   }
   .value[data-severity='warning'] {
     color: var(--color-warning);

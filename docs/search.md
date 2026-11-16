@@ -25,6 +25,26 @@ engine, add your own shortcuts with a keyword and a URL containing `{query}`, an
 have results open in a new tab. The search is also registered as an
 OpenSearch provider, so most browsers offer to add it as a search engine.
 
+Typing `!` lists the most used bangs, and further letters narrow the list
+(`!g` shows `!g`, `!gh`, `!gi` and so on). Your own shortcuts from Settings →
+Search appear first, marked as your own. Pick one and the bang is completed
+in the field, ready for the search terms. The built-in list ships with
+trisse-home, so nothing is sent to DuckDuckGo while you type. It only
+appears when your engine understands bangs (DuckDuckGo and Brave Search);
+your own shortcuts always appear.
+
+## Opening addresses
+
+If what you type is clearly an address, the first row says **Open …** and
+`Enter` goes there instead of searching for it. That covers `github.com`,
+`192.168.178.1`, `nas.local:5001`, `fritz.box`, `localhost:3000` and
+anything starting with `http://` or `https://`. Names ending in `.local`,
+`.lan`, `.home.arpa`, `.fritz.box` or `.internal`, and IP addresses, open
+with `http://`; everything else with `https://`. Text such as `5.5`,
+`v1.2.3` or `node.js tutorial` stays a search. `Shift+Enter` searches the
+web even for an address, and the "open in a new tab" setting applies here
+too.
+
 ## Calculator and units
 
 Simple arithmetic and unit conversions are answered while you type, without
@@ -60,6 +80,25 @@ German and English names; other places go to the normal search. Named days are C
 Day and Easter. A date without a year, such as `1.3.`, means the next such
 day. With slashes, German reads day first (`1/3` is 1 March) and English
 month first (`3/1`).
+
+## Tools
+
+A few small tools answer in the search field as well. Like the calculator
+they run in the browser and send nothing to the server; each one is loaded
+the first time you type something for it. `Enter` copies the main value,
+and for passwords and UUIDs *New* makes another one.
+
+| Input | Answer |
+| --- | --- |
+| `password`, `passwort 24`, `pw 32 ohne sonderzeichen`, `pin 6` | A random password: 20 characters unless you give a length (4–128), with letters, digits and symbols. "without symbols" or "ohne Sonderzeichen" leaves the symbols out, `pin` gives digits only. |
+| `uuid`, `uuid v7` | A new UUID; v7 starts with the current time, so such IDs sort by creation. |
+| `#1e90ff`, `rgb(30,144,255)`, `hsl 210 100 56` | The colour with a swatch, in hex, RGB, HSL and OKLCH. |
+| `1700000000`, `unix now`, `2026-11-16 12:00 to unix` | A Unix timestamp as date (local time and UTC), or a date as timestamp. Dates are read in local time unless they end in `UTC`. |
+| `192.168.178.0/24`, `10.0.0.5 255.255.255.0`, `2001:db8::/48` | Network, mask, broadcast, first and last host and the number of hosts; for IPv6 the first and last address of the prefix. |
+
+Passwords come from the browser's cryptographic random generator, also when
+trisse-home is opened over plain HTTP. They are not stored anywhere: the
+search history only learns which result you pick, never the values you copy.
 
 ## Answers about your home
 

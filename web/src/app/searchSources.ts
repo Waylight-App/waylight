@@ -14,6 +14,7 @@ import { intlLocale, type MessageKey, t } from '../shared/i18n';
 import { formatBytes, formatUptime } from '../shared/ui/format';
 import type { Container } from './container';
 import { type SearchContribution, type WidgetConfig } from './searchKit';
+import { toolsSource } from './searchTools';
 
 /**
  * Answer sources of the smart search (#156): small adapters on top of the
@@ -456,7 +457,7 @@ export function createSmartSearch(
     score?: (query: string, target: string, score: number) => number;
   },
 ): SmartSearch {
-  const sources: SearchSource[] = [calcSource(), timeSource()];
+  const sources: SearchSource[] = [calcSource(), timeSource(), toolsSource()];
   if (modules.has('system')) sources.push(systemSource(c));
   if (modules.has('docker')) sources.push(dockerSource(c));
   if (modules.has('services')) sources.push(servicesSource(c));

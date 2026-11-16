@@ -27,6 +27,8 @@
   import { matchActions, searchActions, type SearchAction } from './searchActions';
   import { type CommandMatch, matchCommands, parseCommandQuery } from '../features/search/domain/commands';
   import { buildCommands, type CommandHandlers } from './appCommands';
+  import { detectAddress, displayAddress } from '../features/search/domain/address';
+  import { BANG_ENGINES, suggestBangs, type Bang } from '../features/search/domain/bangs';
   import AnswerCard from '../features/search/ui/answers/AnswerCard.svelte';
   import type { ActionItem, Answer } from '../features/search/domain/smart/answer';
   import type { WeatherConfig } from '../features/weather/domain/weather';
@@ -99,6 +101,8 @@
   // Options of the search field (#221) and the name of the search engine.
   let bar = $state<SearchBarOptions | null>(null);
   let engine = $state('');
+  let engineId = $state('');
+  let ownBangs = $state<Bang[]>([]);
   // svelte-ignore state_referenced_locally
   if (modules.has('search'))
     container.search
@@ -106,6 +110,8 @@
       .then((s) => {
         bar = s.bar;
         engine = s.providers.find((p) => p.id === s.defaultProvider)?.name ?? '';
+        engineId = s.defaultProvider;
+        ownBangs = s.shortcuts.map((x) => ({ bang: x.keyword, name: x.name }));
       })
       .catch(() => {});
   const prefixes = $derived(mergePrefixes(palettePrefixes, prefixesFromConfig(bar?.capturePrefixes)));
@@ -150,6 +156,12 @@
           (id, s) => searchUsage.score(query, commandTarget(id), s),
         ),
   );
+  // "github.com" or "192.168.178.1" opens directly (#475).
+  const address = $derived(command || commandOnly ? null : detectAddress(query));
+  // "!g" suggests bangs: own shortcuts always, built-in ones when the engine has bangs.
+  const bangs = $derived(
+    command || !modules.has('search') ? [] : suggestBangs(query, ownBangs, BANG_ENGINES.has(engineId)),
+  );
   // Results chosen before for this query rank higher (#159).
   const groups = $derived(
     command || commandOnly
@@ -168,6 +180,8 @@
       web: modules.has('search') && query.trim() !== '' && !commandOnly,
       actions: pluginActions,
       commands: commandMatches,
+      address,
+      bangs,
     }),
   );
   const flat = $derived(rowGroups.flatMap((g) => g.rows));
@@ -294,6 +308,14 @@
     expanded = visible && (flat.length > 0 || answers.length > 0 || aiQuestion !== '');
   });
 
+  /** Opens a typed address, in a new tab when the search is set up that way. */
+  function openAddress(url: string) {
+    if (bar?.openInNewTab) {
+      window.open(url, '_blank', 'noopener');
+      ondone();
+    } else window.location.assign(url);
+  }
+
   function searchWeb() {
     const target = modules.has('search') ? container.search.targetFor(query) : null;
     if (!target) return;
@@ -387,6 +409,12 @@
         return void runAction(row.action);
       case 'command':
         return runAppCommand(row.match);
+      case 'address':
+        return openAddress(row.url);
+      case 'bang':
+        // Completes the bang; the field keeps the focus for the search terms.
+        query = `!${row.bang.bang} `;
+        return;
       case 'result':
         return void choose(row.item);
       case 'web':
@@ -496,6 +524,14 @@
                   {:else if row.kind === 'result'}
                     <span class="title">{row.item.title}</span>
                     {#if row.item.detail}<span class="muted detail">{row.item.detail}</span>{/if}
+                  {:else if row.kind === 'address'}
+                    <span class="title">{t('app.open_address', { address: displayAddress(row.url) })}</span>
+                    <kbd>Enter</kbd>
+                  {:else if row.kind === 'bang'}
+                    <span class="title">!{row.bang.bang}</span>
+                    <span class="muted detail"
+                      >{row.bang.name}{row.bang.own ? ` · ${t('app.bang_own')}` : ''}</span
+                    >
                   {:else if row.kind === 'command'}
                     <span class="title">{commands?.title(row.match.spec)}</span>
                     {#if row.match.spec.shortcut}<kbd>{row.match.spec.shortcut}</kbd>{/if}
