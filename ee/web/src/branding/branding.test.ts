@@ -30,12 +30,17 @@ describe("branding", () => {
       accent: "#112233",
       secondary: "",
       hidePoweredBy: true,
+      defaultTheme: "",
+      lockTheme: true,
     });
     expect(http.put).toHaveBeenCalledWith("/api/branding/settings", {
       name: "Acme",
       accent: "#112233",
       secondary: "",
       hidePoweredBy: true,
+      defaultTheme: "",
+      // No theme to lock to, so the lock is not sent.
+      lockTheme: false,
     });
   });
 });
