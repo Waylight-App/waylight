@@ -8,9 +8,12 @@ package teamtabs
 
 import (
 	"context"
+	"database/sql"
+	"io/fs"
 
 	"trisse-home/ee/licence"
 	"trisse-home/ee/teamtabs/adapter/controller"
+	"trisse-home/ee/teamtabs/adapter/gateway"
 	"trisse-home/ee/teamtabs/usecase"
 	"trisse-home/internal/modules"
 )
@@ -18,14 +21,23 @@ import (
 // Module wires the rings.
 type Module struct {
 	modules.Base
+	svc       *usecase.Service
 	handlers  *controller.Handlers
 	licensing licence.Licensing
 }
 
 // New builds the module.
-func New(sharing usecase.Sharing, l licence.Licensing) *Module {
-	return &Module{handlers: controller.NewHandlers(usecase.New(sharing)), licensing: l}
+func New(db *sql.DB, sharing usecase.Sharing, l licence.Licensing) *Module {
+	svc := usecase.New(sharing, gateway.NewRepository(db))
+	return &Module{svc: svc, handlers: controller.NewHandlers(svc), licensing: l}
 }
+
+// DefaultTab is the team tab that opens by default for the principal's
+// groups ("" for none); the dashboard asks it while team tabs are on.
+func (m *Module) DefaultTab(ctx context.Context) string { return m.svc.DefaultFor(ctx) }
+
+// Migrations implements modules.Module.
+func (m *Module) Migrations() fs.FS { return gateway.Migrations() }
 
 // Access implements modules.Gated: with an expired key team tabs stay
 // visible, but nothing can be shared or unshared.
@@ -46,5 +58,7 @@ func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
 // RegisterRoutes implements modules.Module.
 func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/team-tabs", m.handlers.List)
+	r.Protected("GET /api/team-tabs/defaults", m.handlers.Defaults)
+	r.Protected("PUT /api/team-tabs/defaults/{groupId}", m.handlers.SetDefault)
 	r.Protected("PUT /api/team-tabs/{id}", m.handlers.Share)
 }

@@ -14,6 +14,13 @@ This needs a server built with the `ee` features.
 Change the tab like any of your own; everyone who sees it gets the change
 right away. Choosing *Only me* makes it private again.
 
+## A default tab for a group
+
+Under *Default tab per group* in the same section, pick the team tab that
+opens first for each group. It only applies when the person's own tab rules
+(time of day, network) pick no tab. Someone in several groups gets the
+default of the first group, in a fixed order, that has one.
+
 ## What the others can do
 
 - They see the tab and use its widgets as usual: notes, to-dos and other
@@ -32,7 +39,9 @@ an expired key shared tabs stay visible, but their sharing cannot be changed.
 
 ## API
 
-`GET /api/team-tabs` (admins: own tabs with their visibility) and
+`GET /api/team-tabs` (admins: own tabs with their visibility),
 `PUT /api/team-tabs/{id}` with `{"visibility": "private" | "everyone" |
-"group:<id>"}`. The dashboard (`GET /api/dashboard`) marks tabs shared with
+"group:<id>"}`, `GET /api/team-tabs/defaults` (group ID → tab ID) and
+`PUT /api/team-tabs/defaults/{groupId}` with `{"tabId": "…"}` (empty removes
+it). The dashboard (`GET /api/dashboard`) marks tabs shared with
 the viewer with `"mine": false`.

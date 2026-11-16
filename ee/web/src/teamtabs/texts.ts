@@ -14,6 +14,15 @@ export const texts: Catalogue = {
   only_me: { en: "Only me", de: "Nur ich" },
   everyone: { en: "Everyone", de: "Alle" },
   group: { en: "Group: {name}", de: "Gruppe: {name}" },
+  defaults_title: {
+    en: "Default tab per group",
+    de: "Standard-Tab pro Gruppe",
+  },
+  defaults_hint: {
+    en: "Opens first for members of the group, unless their own tab rules pick another one.",
+    de: "Öffnet sich für Mitglieder der Gruppe zuerst, sofern ihre eigenen Tab-Regeln keinen anderen wählen.",
+  },
+  no_default: { en: "No default", de: "Kein Standard" },
   saved: { en: "Saved.", de: "Gespeichert." },
   no_tabs: { en: "You have no tabs yet.", de: "Du hast noch keine Tabs." },
   read_only: {

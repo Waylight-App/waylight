@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PluginContext } from '../../../../web/src/app/plugins/api';
   import { text } from '../lib/texts';
-  import { TeamTabsApi, type Group, type TeamTab } from './teamtabs';
+  import { TeamTabsApi, tabsFor, type Group, type TeamTab } from './teamtabs';
   import { texts } from './texts';
 
   /** Settings → Team tabs (#295): share own tabs with a group or everyone. */
@@ -16,14 +16,26 @@
 
   let tabs = $state<TeamTab[]>([]);
   let groups = $state<Group[]>([]);
+  let defaults = $state<Record<string, string>>({});
   let error = $state('');
   let message = $state('');
 
   $effect(() => {
-    Promise.all([api.tabs(), api.groups()])
-      .then(([t, g]) => ((tabs = t), (groups = g)))
+    Promise.all([api.tabs(), api.groups(), api.defaults()])
+      .then(([t, g, d]) => ((tabs = t), (groups = g), (defaults = d)))
       .catch((err) => (error = context.errorMessage(err)));
   });
+
+  async function setDefault(groupId: string, tabId: string) {
+    error = message = "";
+    try {
+      await api.setDefault(groupId, tabId);
+      defaults = { ...defaults, [groupId]: tabId };
+      message = tr("saved");
+    } catch (err) {
+      error = context.errorMessage(err);
+    }
+  }
 
   async function share(tab: TeamTab, visibility: string) {
     error = message = '';
@@ -59,6 +71,27 @@
     <li class="muted">{tr('no_tabs')}</li>
   {/each}
 </ul>
+{#if groups.length}
+  <h3>{tr("defaults_title")}</h3>
+  <p class="muted small">{tr("defaults_hint")}</p>
+  <ul>
+    {#each groups as g (g.id)}
+      <li>
+        <span>{g.name}</span>
+        <select
+          class="input"
+          value={defaults[g.id] ?? ""}
+          disabled={readOnly}
+          aria-label={tr("defaults_title") + ": " + g.name}
+          onchange={(e) => setDefault(g.id, e.currentTarget.value)}
+        >
+          <option value="">{tr("no_default")}</option>
+          {#each tabsFor(tabs, g.id) as tab (tab.id)}<option value={tab.id}>{tab.name}</option>{/each}
+        </select>
+      </li>
+    {/each}
+  </ul>
+{/if}
 {#if error}<p class="error" role="alert">{error}</p>{/if}
 {#if message}<p class="muted" role="status">{message}</p>{/if}
 
@@ -76,6 +109,10 @@
   }
   select {
     max-width: 16rem;
+  }
+  h3 {
+    font-size: 1rem;
+    margin: var(--space-3) 0 var(--space-1);
   }
   .small {
     font-size: 0.85em;

@@ -374,3 +374,22 @@ func TestMobileLayout(t *testing.T) {
 		t.Fatalf("reset %+v %v", res, err)
 	}
 }
+
+// TestGroupDefaultTab: with no rule matching, the team tab an admin set as
+// a group's default opens; it must be one of the visible tabs (#295).
+func TestGroupDefaultTab(t *testing.T) {
+	deps, _ := newDeps("clock")
+	first, err := NewGetDashboard(deps).Execute(ctx)
+	if err != nil || len(first.Tabs) != 1 {
+		t.Fatal(first, err)
+	}
+	home := first.Tabs[0].ID
+	deps.GroupDefaultTab = func(context.Context) string { return home }
+	if got, _ := NewGetDashboard(deps).Execute(ctx); got.DefaultTabID != home {
+		t.Fatalf("group default: %q", got.DefaultTabID)
+	}
+	deps.GroupDefaultTab = func(context.Context) string { return "not-visible" }
+	if got, _ := NewGetDashboard(deps).Execute(ctx); got.DefaultTabID != "" {
+		t.Fatalf("an invisible tab is never the default: %q", got.DefaultTabID)
+	}
+}
