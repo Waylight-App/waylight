@@ -37,6 +37,7 @@ describe("licence section", () => {
       post: vi.fn(),
       put: vi.fn().mockResolvedValue(base),
       delete: vi.fn(),
+      putBlob: vi.fn(),
     };
     await new LicenceApi(http).install("  KEY  \n");
     expect(http.put).toHaveBeenCalledWith("/api/licence", { key: "KEY" });

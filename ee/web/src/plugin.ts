@@ -8,6 +8,7 @@ import {
   type TrissePlugin,
 } from "../../../web/src/app/plugins/api";
 import { texts as announcementTexts } from "./announcements/texts";
+import { texts as brandingTexts } from "./branding/texts";
 import LicenceSection from "./licence/LicenceSection.svelte";
 import TeamTabsSection from "./teamtabs/TeamTabsSection.svelte";
 import { texts as teamTabTexts } from "./teamtabs/texts";
@@ -55,6 +56,14 @@ export const plugin: TrissePlugin = {
       label: teamTabTexts.label ?? { en: "Team tabs" },
       description: teamTabTexts.description ?? { en: "" },
       view: mountable(TeamTabsSection),
+    },
+    {
+      id: "branding",
+      feature: "branding",
+      adminOnly: true,
+      label: brandingTexts.label ?? { en: "Branding" },
+      description: brandingTexts.description ?? { en: "" },
+      view: lazyMountable(() => import("./branding/BrandingSection.svelte")),
     },
   ],
 };
