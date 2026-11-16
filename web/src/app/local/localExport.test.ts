@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { defaultAppearance } from '../../features/appearance/domain/appearance';
 import type { DashboardDoc } from '../../features/dashboard/adapter/local/localDashboardGateway';
 import { parseExportFile } from '../../features/transfer/domain/transfer';
+import type { BookmarksDoc } from '../../features/bookmarks/adapter/local/localBookmarksGateway';
+import type { NotesDoc } from '../../features/notes/adapter/local/localNotesGateway';
+import type { TodosDoc } from '../../features/todos/adapter/local/localTodosGateway';
 import { MemoryDocumentStore } from '../../shared/local/documentStore';
 import { exportFileName, exportLocalData } from './localExport';
 
@@ -68,6 +71,80 @@ async function sampleStore(): Promise<MemoryDocumentStore> {
     greetingName: 'Sam',
     profile: 'everyday',
   });
+  const notes: NotesDoc = {
+    notes: [
+      {
+        id: '66666666-6666-4666-8666-666666666666',
+        title: 'Shopping',
+        body: 'milk, bread',
+        pinned: true,
+        createdAt: '2026-11-15T09:00:00.000Z',
+        updatedAt: '2026-11-15T10:00:00.000Z',
+        version: 2,
+      },
+    ],
+    revisions: [
+      {
+        id: '77777777-7777-4777-8777-777777777777',
+        noteId: '66666666-6666-4666-8666-666666666666',
+        title: 'Shopping',
+        body: 'milk',
+        createdAt: '2026-11-15T09:00:00.000Z',
+      },
+    ],
+  };
+  await store.put('notes', notes);
+  const todos: TodosDoc = {
+    todos: [
+      {
+        id: '88888888-8888-4888-8888-888888888888',
+        title: 'Water plants',
+        due: '2026-11-18',
+        position: 0,
+        createdAt: '2026-11-15T09:00:00.000Z',
+        completedAt: '',
+        repeat: { kind: 'weekly', every: 1, days: [1, 4] },
+        reminder: { at: '08:00', daysBefore: 0 },
+        version: 1,
+      },
+      {
+        id: '99999999-9999-4999-8999-999999999999',
+        title: 'Call mum',
+        due: '',
+        position: 1,
+        createdAt: '2026-11-15T09:05:00.000Z',
+        completedAt: '2026-11-15T18:00:00.000Z',
+        repeat: { kind: '', every: 1, days: [] },
+        reminder: { at: '', daysBefore: 0 },
+        version: 2,
+      },
+    ],
+  };
+  await store.put('todos', todos);
+  const bookmarks: BookmarksDoc = {
+    folders: [{ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', name: 'Work', position: 0 }],
+    bookmarks: [
+      {
+        id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+        folderId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+        title: 'Docs',
+        url: 'https://example.org/docs',
+        description: 'Handbook',
+        tags: ['docs', 'work'],
+        createdAt: '2026-11-15T09:00:00.000Z',
+      },
+      {
+        id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+        folderId: '',
+        title: 'News',
+        url: 'https://news.example',
+        description: '',
+        tags: [],
+        createdAt: '2026-11-15T09:10:00.000Z',
+      },
+    ],
+  };
+  await store.put('bookmarks', bookmarks);
   return store;
 }
 

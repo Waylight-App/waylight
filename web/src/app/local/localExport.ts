@@ -9,6 +9,12 @@ import { appearanceExport } from '../../features/appearance/adapter/local/appear
 import { LocalAppearanceGateway } from '../../features/appearance/adapter/local/localAppearanceGateway';
 import { dashboardExport } from '../../features/dashboard/adapter/local/dashboardExport';
 import type { DashboardDoc } from '../../features/dashboard/adapter/local/localDashboardGateway';
+import { bookmarksExport } from '../../features/bookmarks/adapter/local/bookmarksExport';
+import type { BookmarksDoc } from '../../features/bookmarks/adapter/local/localBookmarksGateway';
+import type { NotesDoc } from '../../features/notes/adapter/local/localNotesGateway';
+import { notesExport } from '../../features/notes/adapter/local/notesExport';
+import type { TodosDoc } from '../../features/todos/adapter/local/localTodosGateway';
+import { todosExport } from '../../features/todos/adapter/local/todosExport';
 import { EXPORT_FORMAT, type ExportFile } from '../../features/transfer/domain/transfer';
 import type { DocumentStore } from '../../shared/local/documentStore';
 import type { ExportTables } from '../../shared/local/exportRows';
@@ -38,6 +44,27 @@ export const localExportSections: LocalExportSection[] = [
     async tables(store) {
       if ((await store.get('appearance')) === undefined) return undefined;
       return appearanceExport(await new LocalAppearanceGateway(store).load());
+    },
+  },
+  {
+    name: 'notes',
+    async tables(store) {
+      const doc = await store.get<NotesDoc>('notes');
+      return doc && notesExport(doc);
+    },
+  },
+  {
+    name: 'todos',
+    async tables(store) {
+      const doc = await store.get<TodosDoc>('todos');
+      return doc && todosExport(doc);
+    },
+  },
+  {
+    name: 'bookmarks',
+    async tables(store) {
+      const doc = await store.get<BookmarksDoc>('bookmarks');
+      return doc && bookmarksExport(doc);
     },
   },
 ];

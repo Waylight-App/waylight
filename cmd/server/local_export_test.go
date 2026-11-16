@@ -34,7 +34,7 @@ func TestLocalModeExportImports(t *testing.T) {
 		Failed   map[string]string `json:"failed"`
 	}
 	c.json(http.MethodPost, "/api/transfer/import", file, http.StatusOK, &res)
-	if len(res.Failed) > 0 || len(res.Skipped) > 0 || len(res.Imported) != 2 {
+	if len(res.Failed) > 0 || len(res.Skipped) > 0 || len(res.Imported) != 5 {
 		t.Fatalf("import result: %+v", res)
 	}
 
@@ -75,5 +75,41 @@ func TestLocalModeExportImports(t *testing.T) {
 	c.json(http.MethodGet, "/api/appearance", nil, http.StatusOK, &look)
 	if look["theme"] != "dark" || look["greetingName"] != "Sam" || look["profile"] != "everyday" {
 		t.Fatalf("appearance after import: %v", look)
+	}
+
+	var notes []obj
+	c.json(http.MethodGet, "/api/notes", nil, http.StatusOK, &notes)
+	if len(notes) != 1 || notes[0]["title"] != "Shopping" || notes[0]["pinned"] != true {
+		t.Fatalf("notes after import: %v", notes)
+	}
+	var revs []obj
+	c.json(http.MethodGet, "/api/notes/"+notes[0]["id"].(string)+"/revisions", nil, http.StatusOK, &revs)
+	if len(revs) != 1 {
+		t.Fatalf("note revisions after import: %v", revs)
+	}
+
+	var todos []obj
+	c.json(http.MethodGet, "/api/todos?done=true", nil, http.StatusOK, &todos)
+	if len(todos) != 2 {
+		t.Fatalf("to-dos after import: %v", todos)
+	}
+	water := todos[0]
+	if water["title"] != "Water plants" || water["due"] != "2026-11-18" {
+		t.Fatalf("recurring to-do after import: %v", water)
+	}
+	if rep, _ := water["repeat"].(map[string]any); rep["kind"] != "weekly" {
+		t.Fatalf("recurrence after import: %v", water["repeat"])
+	}
+
+	var marks struct {
+		Bookmarks []obj `json:"bookmarks"`
+		Folders   []obj `json:"folders"`
+	}
+	c.json(http.MethodGet, "/api/bookmarks", nil, http.StatusOK, &marks)
+	if len(marks.Bookmarks) != 2 || len(marks.Folders) != 1 || marks.Folders[0]["count"] != float64(1) {
+		t.Fatalf("bookmarks after import: %+v", marks)
+	}
+	if tags, _ := marks.Bookmarks[0]["tags"].([]any); len(tags) != 2 {
+		t.Fatalf("bookmark tags after import: %v", marks.Bookmarks[0])
 	}
 }
