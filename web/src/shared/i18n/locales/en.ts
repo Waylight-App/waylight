@@ -920,6 +920,9 @@ export const en = {
   'settings.group.integrations': 'Integrations',
   'settings.group.data': 'Data and backup',
   'settings.group.account': 'Account and security',
+  'settings.group.organisation': 'Organisation',
+  'plugins.needs_licence':
+    'This feature for organisations needs a licence key. Add one under Settings → Features for organisations.',
   'settings.group.about': 'About',
   'settings.sections': 'Settings sections',
   'settings.back': 'All settings',
