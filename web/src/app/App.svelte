@@ -1,6 +1,9 @@
 <script lang="ts">
   import { loadLanguage, t } from '../shared/i18n';
-  import { accountLinkPath, type AuthView } from '../features/auth';
+  // Imported from the domain module, not the feature's index: the index also
+  // re-exports every auth settings component (and the QR code library behind
+  // two-factor setup), which would otherwise land in the initial bundle.
+  import { accountLinkPath, type AuthView } from '../features/auth/domain/auth';
   import { errorMessage } from '../shared/api-client/http';
   import { canStartOffline, clearOfflineData, rememberSignedIn } from '../shared/pwa';
   import { createContainer, type Container } from './container';
