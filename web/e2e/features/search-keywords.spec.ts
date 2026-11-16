@@ -41,9 +41,7 @@ test('own keywords are made in the settings or from a result and open first (#47
   await field.fill('b example.org Beispielseite');
   await field.press('Enter');
   await expect(page.getByText('Bookmark “Beispielseite” saved')).toBeVisible();
-  // The panel reads bookmarks when it loads; a reload brings in the new one.
-  await page.reload();
-  await page.keyboard.press('Control+k');
+  // Saved from the field, the bookmark is found right away (#499).
   await field.fill('Beispielseite');
   await expect(page.getByRole('option', { name: /Beispielseite/ }).first()).toHaveAttribute(
     'aria-selected',
