@@ -5,6 +5,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,10 +33,29 @@ type Names interface {
 	Name(ctx context.Context, accountID string) string
 }
 
+// Chat posts to the Slack and Teams channels of the notification settings
+// (output port, #332); nil when notifications are switched off.
+type Chat interface {
+	ChatChannels(ctx context.Context) ([]ChatChannel, error)
+	PostToChat(ctx context.Context, channelID, title, body, link string) error
+}
+
+// ChatChannel is a channel an author can post to.
+type ChatChannel struct{ ID, Name, Kind string }
+
+// ChatAllowed tells whether posting is licensed (output port).
+type ChatAllowed func(ctx context.Context) bool
+
 // Deps are the use cases' collaborators.
 type Deps struct {
-	Store  Store
-	Names  Names
+	Store Store
+	Names Names
+	Chat  Chat
+	// MayPost tells whether the licence includes chat apps; nil allows none.
+	MayPost ChatAllowed
+	// Link returns the address of an announcement on the start page, or ""
+	// without PUBLIC_URL.
+	Link   func(id string) string
 	Alerts kernel.AlertSink
 	IDs    kernel.IDGenerator
 	Clock  kernel.Clock
@@ -52,6 +72,9 @@ type View struct {
 	Read bool
 	// Editable tells the client to offer editing.
 	Editable bool
+	// PostError is set when saving worked but posting to the chosen channel
+	// did not; the announcement is not posted twice by a retry of the save.
+	PostError string
 }
 
 // Input is what a writer sends.
@@ -63,7 +86,13 @@ type Input struct {
 	// Notify sends the notice to the notification channels once, on
 	// publishing (or on an edit only when asked again).
 	Notify bool
+	// PostTo is a Slack or Teams channel ID to post the notice to, once
+	// (#332); on an edit it posts again only when set again.
+	PostTo string
 }
+
+// errPostFailed is shown when the channel did not take the post.
+const errPostFailed = "Slack or Teams did not accept the post; check the channel under notifications."
 
 // Service implements the use cases.
 type Service struct{ d Deps }
@@ -148,6 +177,9 @@ func (s *Service) Create(ctx context.Context, in Input) (View, error) {
 	if err := a.Validate(); err != nil {
 		return View{}, err
 	}
+	if err := s.checkPost(ctx, in.PostTo); err != nil {
+		return View{}, err
+	}
 	if err := s.d.Store.Save(ctx, a); err != nil {
 		return View{}, fmt.Errorf("save announcement: %w", err)
 	}
@@ -155,7 +187,9 @@ func (s *Service) Create(ctx context.Context, in Input) (View, error) {
 	if in.Notify {
 		s.notify(ctx, a)
 	}
-	return View{Announcement: a, Editable: true}, nil
+	v := View{Announcement: a, Editable: true}
+	s.post(ctx, &v, in.PostTo)
+	return v, nil
 }
 
 // Update changes a notice. It notifies again only when in.Notify asks for it.
@@ -168,6 +202,9 @@ func (s *Service) Update(ctx context.Context, id string, in Input) (View, error)
 	if err := a.Validate(); err != nil {
 		return View{}, err
 	}
+	if err := s.checkPost(ctx, in.PostTo); err != nil {
+		return View{}, err
+	}
 	if err := s.d.Store.Save(ctx, a); err != nil {
 		return View{}, fmt.Errorf("save announcement: %w", err)
 	}
@@ -175,7 +212,9 @@ func (s *Service) Update(ctx context.Context, id string, in Input) (View, error)
 	if in.Notify {
 		s.notify(ctx, a)
 	}
-	return View{Announcement: a, Editable: set.MayChange(kernel.PrincipalFrom(ctx), a)}, nil
+	v := View{Announcement: a, Editable: set.MayChange(kernel.PrincipalFrom(ctx), a)}
+	s.post(ctx, &v, in.PostTo)
+	return v, nil
 }
 
 // Delete removes a notice and its read marks.
@@ -240,6 +279,62 @@ func (s *Service) changeable(ctx context.Context, id string) (domain.Announcemen
 		return domain.Announcement{}, domain.Settings{}, domain.ErrNotAllowed
 	}
 	return a, set, nil
+}
+
+// Channels lists the Slack and Teams channels a writer can post to; empty
+// without notifications or without the chat apps licence.
+func (s *Service) Channels(ctx context.Context) ([]ChatChannel, error) {
+	set, err := s.d.Store.Settings(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if !set.MayWrite(kernel.PrincipalFrom(ctx)) {
+		return nil, domain.ErrNotAllowed
+	}
+	if s.d.Chat == nil || s.d.MayPost == nil || !s.d.MayPost(ctx) {
+		return []ChatChannel{}, nil
+	}
+	return s.d.Chat.ChatChannels(ctx)
+}
+
+// checkPost refuses a post the licence does not cover before anything is
+// saved.
+func (s *Service) checkPost(ctx context.Context, channel string) error {
+	if channel == "" {
+		return nil
+	}
+	if s.d.Chat == nil || s.d.MayPost == nil || !s.d.MayPost(ctx) {
+		return domain.ErrNoChat
+	}
+	return nil
+}
+
+// post sends the saved notice to the channel and records it; a failure is
+// reported in the view, the notice stays saved.
+func (s *Service) post(ctx context.Context, v *View, channel string) {
+	if channel == "" {
+		return
+	}
+	link := ""
+	if s.d.Link != nil {
+		link = s.d.Link(v.ID)
+	}
+	if err := s.d.Chat.PostToChat(ctx, channel, v.Title, v.Body, link); err != nil {
+		// Only public messages reach the client: the error of a webhook call
+		// can contain its URL, which is the credential for Slack and Teams.
+		v.PostError = errPostFailed
+		var pe *kernel.PublicError
+		if errors.As(err, &pe) && !errors.Is(pe.Kind, kernel.ErrUnavailable) {
+			v.PostError = pe.Message
+		}
+		return
+	}
+	v.PostedChannel, v.PostedAt = channel, s.d.Clock.Now()
+	if err := s.d.Store.Save(ctx, v.Announcement); err != nil {
+		v.PostError = "The announcement was posted, but that could not be recorded."
+		return
+	}
+	s.audit(ctx, "post", v.ID)
 }
 
 func (s *Service) notify(ctx context.Context, a domain.Announcement) {

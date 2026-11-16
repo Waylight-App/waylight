@@ -29,6 +29,23 @@ is closed on Friday". This needs a server built with the `ee` features.
 
 At most 50 announcements can be current at the same time.
 
+## Post to Slack or Teams
+
+With a licence key that also includes `chat-apps`, the author can post an
+announcement to one of the Slack or Teams channels set up under
+*Settings → Notifications* ([notifications](notifications.md)). The
+post carries the title, the text and, with `PUBLIC_URL` set, a link back to
+the announcement on the start page.
+
+- It is posted once, when the announcement is published. Editing does not
+  post again unless the author chooses the channel again.
+- The channel's own rules (severity, types, quiet hours) do not apply: the
+  author chose it.
+- If Slack or Teams does not take the post, the announcement is still saved
+  and the answer says so in `postError`; saving again does not post twice.
+- No additional access to Slack or Teams is needed: it uses the channel's
+  webhook.
+
 With an expired licence key or too few seats, announcements stay readable,
 but nothing can be written. Writes are listed in the [audit log](audit-log.md).
 
@@ -37,8 +54,9 @@ but nothing can be written. Writes are listed in the [audit log](audit-log.md).
 | Method | Path | |
 | --- | --- | --- |
 | GET | `/api/announcements` | Current announcements; `?archive=1` the expired ones. Each has `read` (for the asking person) and `editable`. |
-| POST | `/api/announcements` | `{title, body, pinned, expiresAt, notify}` |
+| POST | `/api/announcements` | `{title, body, pinned, expiresAt, notify, postTo}`; `postTo` is a channel ID from `/api/announcements/channels` |
 | PUT | `/api/announcements/{id}` | Same fields |
 | DELETE | `/api/announcements/{id}` | |
 | POST | `/api/announcements/{id}/read` | Marks it read for the signed-in member or admin |
+| GET | `/api/announcements/channels` | The Slack and Teams channels a writer can post to; empty without `chat-apps` |
 | GET, PUT | `/api/announcements/settings` | `{writerGroup}`, a group ID or empty; admins only |
