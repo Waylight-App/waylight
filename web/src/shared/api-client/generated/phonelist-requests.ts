@@ -13,3 +13,12 @@ export interface EntryInputDTO {
   email: string;
   team: string;
 }
+/**
+ * SettingsInputDTO is the body of PUT /api/phonelist/settings; an empty
+ * password keeps the stored one, an empty URL switches the address book off.
+ */
+export interface SettingsInputDTO {
+  cardDavUrl: string;
+  username: string;
+  password: string;
+}

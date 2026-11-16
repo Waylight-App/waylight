@@ -40,6 +40,9 @@ type Entry struct {
 	// "Accounting"; free text, not an account group.
 	Team      string
 	CreatedAt time.Time
+	// Source is manual (typed in by an admin) or carddav (read-only, from
+	// the address book).
+	Source Source
 }
 
 // EntryInput carries the editable fields.
@@ -49,7 +52,7 @@ type EntryInput struct {
 
 // NewEntry validates the input and creates an entry.
 func NewEntry(id string, in EntryInput, now time.Time) (Entry, error) {
-	e := Entry{ID: id, CreatedAt: now}
+	e := Entry{ID: id, CreatedAt: now, Source: SourceManual}
 	if err := e.Update(in); err != nil {
 		return Entry{}, err
 	}

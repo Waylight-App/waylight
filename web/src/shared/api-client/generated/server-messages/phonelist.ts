@@ -9,6 +9,7 @@ export const serverMessages = {
   srv_7941287f892c92ab: "The phone list holds at most 1000 entries.",
   srv_02bc94c990121a7f: "The role must be at most 100 characters long.",
   srv_06810649bd9e2525: "The team must be at most 60 characters long.",
+  srv_a10984d27954a094: "This entry comes from the address book; change it there.",
 } as const;
 
 /** Key of a backend message. */

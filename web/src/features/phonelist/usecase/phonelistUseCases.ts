@@ -1,4 +1,9 @@
-import type { PhoneEntry, PhoneEntryInput } from '../domain/phonelist';
+import type {
+  PhoneEntry,
+  PhoneEntryInput,
+  PhonelistSettings,
+  PhonelistSettingsInput,
+} from '../domain/phonelist';
 
 /** Output port: phone list backend. */
 export interface PhonelistGateway {
@@ -6,6 +11,8 @@ export interface PhonelistGateway {
   add(input: PhoneEntryInput): Promise<PhoneEntry>;
   update(id: string, input: PhoneEntryInput): Promise<PhoneEntry>;
   remove(id: string): Promise<void>;
+  settings(): Promise<PhonelistSettings>;
+  saveSettings(input: PhonelistSettingsInput): Promise<PhonelistSettings>;
 }
 
 /** Application logic of the phone list (#300); the server validates the entries. */
@@ -30,5 +37,18 @@ export class PhonelistUseCases {
 
   remove(id: string): Promise<void> {
     return this.gateway.remove(id);
+  }
+
+  /** The address book (admins). */
+  settings(): Promise<PhonelistSettings> {
+    return this.gateway.settings();
+  }
+
+  saveSettings(input: PhonelistSettingsInput): Promise<PhonelistSettings> {
+    return this.gateway.saveSettings({
+      ...input,
+      cardDavUrl: input.cardDavUrl.trim(),
+      username: input.username.trim(),
+    });
   }
 }

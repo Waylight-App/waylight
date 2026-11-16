@@ -20,4 +20,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_02bc94c990121a7f: 'Die Rolle darf höchstens 100 Zeichen lang sein.',
   // The team must be at most 60 characters long.
   srv_06810649bd9e2525: 'Das Team darf höchstens 60 Zeichen lang sein.',
+  // This entry comes from the address book; change it there.
+  srv_a10984d27954a094: 'Dieser Eintrag stammt aus dem Adressbuch; ändere ihn dort.',
 };

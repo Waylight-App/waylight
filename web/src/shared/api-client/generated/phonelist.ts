@@ -23,4 +23,18 @@ export interface EntryDTO {
   dial: string;
   email: string;
   team: string;
+  /**
+   * ReadOnly entries come from the address book and are changed there.
+   */
+  readOnly: boolean;
+}
+/**
+ * SettingsDTO is the address book configuration, without the password.
+ */
+export interface SettingsDTO {
+  cardDavUrl: string;
+  username: string;
+  hasPassword: boolean;
+  lastSync?: string /* RFC 3339 */;
+  lastError: string;
 }

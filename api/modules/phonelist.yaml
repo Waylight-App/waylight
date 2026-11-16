@@ -42,7 +42,33 @@ paths:
         "403": { description: Not an admin }
         "404": { $ref: "#/components/responses/NotFound" }
 
+  /api/phonelist/settings:
+    get:
+      tags: [phonelist]
+      summary: The CardDAV address book of the list, without the password (admins only)
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/PhonelistSettings" } } } }
+        "403": { description: Not an admin }
+    put:
+      tags: [phonelist]
+      summary: Set the address book (admins only); it is read once to check it, then every hour. An empty URL switches it off and removes its people; an empty password keeps the stored one.
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { cardDavUrl: { type: string }, username: { type: string }, password: { type: string } } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/PhonelistSettings" } } } }
+        "403": { description: Not an admin }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "502": { description: The address book could not be read }
+
 schemas:
+  PhonelistSettings:
+    type: object
+    properties:
+      cardDavUrl: { type: string }
+      username: { type: string }
+      hasPassword: { type: boolean }
+      lastSync: { type: string, format: date-time, nullable: true }
+      lastError: { type: string }
   PhonelistEntryInput:
     type: object
     required: [name]
@@ -60,3 +86,4 @@ schemas:
         properties:
           id: { type: string }
           dial: { type: string, description: Number for a tel link (digits and a leading +); empty without a phone number }
+          readOnly: { type: boolean, description: From the address book; PUT and DELETE answer 409 }

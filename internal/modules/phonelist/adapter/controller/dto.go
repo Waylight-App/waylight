@@ -8,3 +8,11 @@ type EntryInputDTO struct {
 	Email string `json:"email"`
 	Team  string `json:"team"`
 }
+
+// SettingsInputDTO is the body of PUT /api/phonelist/settings; an empty
+// password keeps the stored one, an empty URL switches the address book off.
+type SettingsInputDTO struct {
+	CardDAVURL string `json:"cardDavUrl"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+}

@@ -5,6 +5,17 @@ export const de: Record<keyof typeof en, string> = {
   'widget.phonelist.title': 'Telefonliste',
   'widget.phonelist.description':
     'Wen du anrufen kannst: Namen, Rollen, Telefonnummern und E-Mail-Adressen, durchsuchbar.',
+  'settings.section.phonelist': 'Telefonliste',
+  'phonelist.from_book': 'Aus dem Adressbuch; dort ändern',
+  'phonelist.book_title': 'Adressbuch',
+  'phonelist.book_hint':
+    'Personen aus einem CardDAV-Adressbuch lesen, zum Beispiel einem geteilten in Nextcloud. Sie erscheinen neben den hier eingetragenen, werden stündlich gelesen und lassen sich nur im Adressbuch ändern.',
+  'phonelist.book_url': 'CardDAV-Adressbuch',
+  'phonelist.book_username': 'Benutzername',
+  'phonelist.book_password': 'App-Passwort',
+  'phonelist.book_password_stored': 'Gespeichert; leer lassen, um es zu behalten',
+  'phonelist.book_last_sync': 'Zuletzt gelesen: {time}',
+  'phonelist.book_error': 'Der letzte Versuch ist fehlgeschlagen: {error}',
   'phonelist.search': 'Name, Rolle oder Team suchen',
   'phonelist.add': 'Person hinzufügen',
   'phonelist.edit': '{name} bearbeiten',

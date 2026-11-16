@@ -3,6 +3,8 @@ package phonelist
 import (
 	"database/sql"
 	"io/fs"
+	"net/http"
+	"time"
 
 	"trisse-home/internal/modules"
 	"trisse-home/internal/modules/phonelist/adapter/controller"
@@ -15,13 +17,19 @@ import (
 type Module struct {
 	modules.Base
 	modules.Transferable
+	uc       usecase.Phonelist
 	handlers *controller.Handlers
 }
 
 // New builds the phone list module.
-func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
-	uc := usecase.NewPhonelist(usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids})
-	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, handlers: controller.NewHandlers(uc)}
+func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator) *Module {
+	uc := usecase.NewPhonelist(usecase.Deps{Repo: gateway.NewRepository(db, cipher), Book: gateway.NewCardDAV(client), Clock: clock, IDs: ids})
+	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, uc: uc, handlers: controller.NewHandlers(uc)}
+}
+
+// Jobs implements modules.Module: the address book is read every hour.
+func (m *Module) Jobs() []modules.Job {
+	return []modules.Job{{Name: "phonelist.sync", Interval: time.Hour, Run: m.uc.Sync}}
 }
 
 // Name implements modules.Module.
@@ -43,4 +51,8 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/phonelist/entries", m.handlers.Add)
 	r.Protected("PUT /api/phonelist/entries/{id}", m.handlers.Update)
 	r.Protected("DELETE /api/phonelist/entries/{id}", m.handlers.Delete)
+	// Under /settings, which guests and members cannot reach (it holds the
+	// address book password).
+	r.Protected("GET /api/phonelist/settings", m.handlers.Settings)
+	r.Protected("PUT /api/phonelist/settings", m.handlers.SaveSettings)
 }

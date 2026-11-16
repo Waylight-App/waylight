@@ -11,7 +11,34 @@ import (
 	"trisse-home/internal/shared/kernel"
 )
 
-type memRepo struct{ m map[string]domain.Entry }
+type memRepo struct {
+	m        map[string]domain.Entry
+	settings Settings
+}
+
+func (r *memRepo) ReplaceSource(_ context.Context, src domain.Source, list []domain.Entry) error {
+	for id, e := range r.m {
+		if e.Source == src {
+			delete(r.m, id)
+		}
+	}
+	for _, e := range list {
+		e.Source = src
+		r.m[e.ID] = e
+	}
+	return nil
+}
+func (r *memRepo) Settings(context.Context) (Settings, error)       { return r.settings, nil }
+func (r *memRepo) SaveSettings(_ context.Context, s Settings) error { r.settings = s; return nil }
+
+type fakeBook struct {
+	cards []domain.Card
+	err   error
+}
+
+func (b *fakeBook) Cards(context.Context, string, string, string) ([]domain.Card, error) {
+	return b.cards, b.err
+}
 
 func (r *memRepo) List(context.Context) ([]domain.Entry, error) {
 	out := make([]domain.Entry, 0, len(r.m))
@@ -80,5 +107,53 @@ func TestPhonelist(t *testing.T) {
 	}
 	if err := p.Delete(admin, anna.ID); !errors.Is(err, domain.ErrEntryNotFound) {
 		t.Fatal(err)
+	}
+}
+
+func TestAddressBook(t *testing.T) {
+	ctx := context.Background()
+	admin := kernel.WithPrincipal(ctx, kernel.Principal{AccountID: "owner", Role: "owner"})
+	member := kernel.WithPrincipal(ctx, kernel.Principal{AccountID: "m1", Role: "member"})
+	book := &fakeBook{cards: []domain.Card{{ID: "cd-1", EntryInput: domain.EntryInput{Name: "Anna", Phone: "1"}}}}
+	repo := &memRepo{m: map[string]domain.Entry{}}
+	p := NewPhonelist(Deps{Repo: repo, Book: book, Clock: clk{}, IDs: &seq{}})
+
+	if _, err := p.SaveSettings(member, SettingsInput{CardDAVURL: "https://dav.example/book"}); !errors.Is(err, kernel.ErrAdminOnly) {
+		t.Fatal(err)
+	}
+	if _, err := p.SaveSettings(admin, SettingsInput{CardDAVURL: "https://dav.example/book", Username: "u"}); !errors.Is(err, kernel.ErrInvalid) {
+		t.Fatal("a password is needed", err)
+	}
+	v, err := p.SaveSettings(admin, SettingsInput{CardDAVURL: "https://dav.example/book", Username: "u", Password: "pw"})
+	if err != nil || v.CardDAVURL != "https://dav.example/book/" || !v.HasPassword {
+		t.Fatal(v, err)
+	}
+	list, _ := p.List(member)
+	if len(list) != 1 || list[0].Source != domain.SourceCardDAV {
+		t.Fatalf("%+v", list)
+	}
+	if _, err := p.Update(admin, "cd-1", domain.EntryInput{Name: "x", Phone: "1"}); !errors.Is(err, domain.ErrReadOnlyEntry) {
+		t.Fatal("address book entries are changed in the book", err)
+	}
+	if err := p.Delete(admin, "cd-1"); !errors.Is(err, domain.ErrReadOnlyEntry) {
+		t.Fatal(err)
+	}
+
+	// A failing sync keeps the entries and records the error.
+	book.err = errors.New("401 Unauthorized")
+	if err := p.Sync(ctx); err == nil {
+		t.Fatal("sync error must be reported")
+	}
+	if list, _ := p.List(member); len(list) != 1 || repo.settings.LastError == "" {
+		t.Fatalf("%+v %q", list, repo.settings.LastError)
+	}
+
+	// Switching the book off removes its people; manual entries stay.
+	_, _ = p.Add(admin, domain.EntryInput{Name: "Desk", Phone: "2"})
+	if _, err := p.SaveSettings(admin, SettingsInput{}); err != nil {
+		t.Fatal(err)
+	}
+	if list, _ := p.List(member); len(list) != 1 || list[0].Name != "Desk" {
+		t.Fatalf("%+v", list)
 	}
 }
