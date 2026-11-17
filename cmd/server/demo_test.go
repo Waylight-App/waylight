@@ -53,6 +53,13 @@ func TestDemoMode(t *testing.T) {
 	c.json(http.MethodPost, "/api/auth/login", obj{"password": demo.Password}, http.StatusOK, &session)
 	c.csrf = session["csrfToken"].(string)
 
+	// Visitors share the account, so nothing about them is logged for others.
+	var events []obj
+	c.json(http.MethodGet, "/api/auth/events", nil, http.StatusOK, &events)
+	if len(events) != 0 {
+		t.Fatalf("the demo keeps a security log: %v", events)
+	}
+
 	var dash struct {
 		Tabs []obj `json:"tabs"`
 	}

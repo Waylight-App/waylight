@@ -24,7 +24,7 @@ func prepareDemo(ctx context.Context, a *app) (scheduler.Task, error) {
 		}
 		snapshot[name] = data
 	}
-	a.log.Warn("DEMO_MODE: public demo without login; data is reset regularly", "reset_interval", a.cfg.DemoResetInterval)
+	a.log.Warn("DEMO_MODE: public demo, visitors sign in with the password shown on the sign-in page; data is reset regularly", "reset_interval", a.cfg.DemoResetInterval)
 	// The scheduler runs every task once at start; the data is fresh then,
 	// and resetting would race with the first feed and weather refresh.
 	var started atomic.Bool
