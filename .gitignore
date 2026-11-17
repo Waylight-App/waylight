@@ -19,6 +19,7 @@ coverage.out
 # Frontend tooling
 /node_modules/
 /web/node_modules
+/ee/web/node_modules
 /web/dist-extension/
 web/test-results/
 web/playwright-report/
@@ -30,6 +31,5 @@ web/playwright-report/
 
 # Binary built in the repository root (go build ./cmd/server)
 /server
-/.claude/
 /ee/web/dist/*
 !/ee/web/dist/.gitkeep
