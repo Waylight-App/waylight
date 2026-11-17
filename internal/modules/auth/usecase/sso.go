@@ -288,14 +288,15 @@ func (uc *sso) finish(ctx context.Context, id domain.ExternalIdentity, client do
 			return SessionResponse{}, "", domain.ErrSSONotAllowed
 		}
 	}
-	if linked != "" {
+	switch {
+	case linked != "":
 		accountID = linked
-	} else if id.Provider == "microsoft" {
+	case id.Provider == "microsoft":
 		// Microsoft accounts only sign in once linked (#535): the address of a
 		// personal account is not verified, so no list can let it in.
 		uc.deps.Events.record(ctx, domain.EventLoginFailed, domain.OwnerID, client, "microsoft: not linked")
 		return SessionResponse{}, "", domain.ErrDeviceNotLinked
-	} else if id.Provider == "oidc" && !uc.cfg.Mapping.Allows(id) {
+	case id.Provider == "oidc" && !uc.cfg.Mapping.Allows(id):
 		uc.mu.Lock()
 		external := uc.external
 		uc.mu.Unlock()
