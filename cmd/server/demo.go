@@ -54,8 +54,9 @@ func prepareDemo(ctx context.Context, a *app) (scheduler.Task, error) {
 	}}, nil
 }
 
-// seedDemo runs the demo seeders of all modules. Each one only adds data
-// where its module is empty, so running it again is harmless.
+// seedDemo runs the demo seeders of all modules and sets up the example
+// integrations. Each step only adds what is missing, so running it again is
+// harmless.
 func seedDemo(ctx context.Context, a *app) error {
 	return demo.Seed(func() error {
 		for name, s := range a.registry.DemoSeeders() {
@@ -63,6 +64,6 @@ func seedDemo(ctx context.Context, a *app) error {
 				return fmt.Errorf("demo data of %s: %w", name, err)
 			}
 		}
-		return nil
+		return seedDemoIntegrations(ctx, newHandler(a))
 	})
 }
