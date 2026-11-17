@@ -123,6 +123,17 @@ paths:
         "401": { description: Unknown, used or expired link }
         "422": { $ref: "#/components/responses/Invalid" }
         "429": { $ref: "#/components/responses/TooManyRequests" }
+  /api/auth/link/sso:
+    post:
+      tags: [auth]
+      summary: Accept an invitation through the OpenID provider instead of a password (#528; public, rate limited, needs a licence key with sso). Sets the state cookie and returns the provider URL; the callback creates the account, links the sign-in and signs in
+      security: []
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [token], properties: { token: { type: string } } } } } }
+      responses:
+        "200": { description: "{redirect}" }
+        "401": { description: Unknown, used or expired invitation }
+        "404": { description: Not available (no OIDC or no licence) }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
   /api/auth/password-reset:
     post:
       tags: [auth]
@@ -245,6 +256,7 @@ schemas:
     properties:
       purpose: { type: string, enum: [invite, reset] }
       name: { type: string }
+      sso: { type: boolean, description: "The invitation can be accepted through the OpenID provider (#528)" }
   KioskDisplay:
     allOf:
       - $ref: "#/components/schemas/KioskOptions"

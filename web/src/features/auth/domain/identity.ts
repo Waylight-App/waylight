@@ -5,6 +5,8 @@ export interface LinkedSignIn {
   /** Shown so people recognise the account; it decides nothing. */
   email: string;
   linkedAt: Date;
+  /** The account has no known password yet (#528): it cannot be disconnected. */
+  onlySignIn: boolean;
 }
 
 /** Result of returning from the provider after linking, from ?link=… */

@@ -411,6 +411,8 @@ type ResetLinkDTO struct {
 type LinkInfoDTO struct {
 	Purpose string `json:"purpose"`
 	Name    string `json:"name"`
+	// SSO: the invitation can be accepted through the provider (#528).
+	SSO bool `json:"sso,omitempty"`
 }
 
 // Invite maps an invitation.
@@ -433,7 +435,7 @@ func Invites(list []usecase.InviteView) []InviteDTO {
 
 // LinkInfo maps what a link does.
 func LinkInfo(i usecase.LinkInfo) LinkInfoDTO {
-	return LinkInfoDTO{Purpose: string(i.Purpose), Name: i.Name}
+	return LinkInfoDTO{Purpose: string(i.Purpose), Name: i.Name, SSO: i.SSO}
 }
 
 // EmailDTO is the own address for reset links (GET/PUT /api/auth/email).
@@ -449,13 +451,16 @@ type IdentityDTO struct {
 	// Email helps people recognise the account; it decides nothing.
 	Email    string    `json:"email"`
 	LinkedAt time.Time `json:"linkedAt"`
+	// OnlySignIn: the account has no known password yet (#528), so this
+	// sign-in cannot be disconnected.
+	OnlySignIn bool `json:"onlySignIn,omitempty"`
 }
 
 // Identities maps the linked sign-ins; never null.
 func Identities(list []domain.IdentityLink) []IdentityDTO {
 	out := make([]IdentityDTO, 0, len(list))
 	for _, l := range list {
-		out = append(out, IdentityDTO{Subject: l.Subject, Email: l.Email, LinkedAt: l.CreatedAt})
+		out = append(out, IdentityDTO{Subject: l.Subject, Email: l.Email, LinkedAt: l.CreatedAt, OnlySignIn: l.OnlySignIn})
 	}
 	return out
 }

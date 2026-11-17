@@ -301,6 +301,10 @@ export interface ResetLinkDTO {
 export interface LinkInfoDTO {
   purpose: string;
   name: string;
+  /**
+   * SSO: the invitation can be accepted through the provider (#528).
+   */
+  sso?: boolean;
 }
 /**
  * EmailDTO is the own address for reset links (GET/PUT /api/auth/email).
@@ -322,6 +326,11 @@ export interface IdentityDTO {
    */
   email: string;
   linkedAt: string /* RFC 3339 */;
+  /**
+   * OnlySignIn: the account has no known password yet (#528), so this
+   * sign-in cannot be disconnected.
+   */
+  onlySignIn?: boolean;
 }
 /**
  * LinkStartDTO is returned by POST /api/auth/identities/link: the page opens

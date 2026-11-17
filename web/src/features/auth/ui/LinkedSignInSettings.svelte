@@ -84,7 +84,13 @@
             >{t('auth.linked_since', { date: l.linkedAt.toLocaleDateString(intlLocale()) })}</span
           ></span
         >
-        <button class="btn" type="button" onclick={() => disconnect(l)}>{t('auth.linked_disconnect')}</button>
+        {#if l.onlySignIn}
+          <span class="muted small">{t('auth.linked_only_sign_in')}</span>
+        {:else}
+          <button class="btn" type="button" onclick={() => disconnect(l)}
+            >{t('auth.linked_disconnect')}</button
+          >
+        {/if}
       </li>
     {/each}
   </ul>

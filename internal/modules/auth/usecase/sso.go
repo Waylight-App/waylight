@@ -52,8 +52,6 @@ type SSOConfig struct {
 	// Issuer is the provider's issuer URL; linked sign-ins are stored per
 	// issuer, so a different provider never matches an old link (#527).
 	Issuer string
-	// Identities stores linked sign-ins (#527); nil disables linking.
-	Identities IdentityRepository
 }
 
 // SSOButton is how the sign-in page labels the single sign-on button.
@@ -92,6 +90,14 @@ type SSO interface {
 	Links(ctx context.Context, accountID string) ([]domain.IdentityLink, error)
 	// Unlink removes one of the account's linked sign-ins.
 	Unlink(ctx context.Context, accountID, subject string, client domain.Client) error
+	// CanSignUp tells whether invitations may be accepted through the
+	// provider (#528).
+	CanSignUp(ctx context.Context) bool
+	// BeginSignUp starts the provider's sign-in to accept an invitation;
+	// CompleteOIDC then creates the account, links the sign-in and signs in.
+	BeginSignUp(ctx context.Context, token, clientKey string) (redirect, state string, err error)
+	// SetInviteSignUp connects the invitations; called once while built.
+	SetInviteSignUp(s InviteSignUp)
 	// SetExternalAccounts lets other people sign in through OpenID Connect
 	// (#302). It is called once while the server is built.
 	SetExternalAccounts(e ExternalAccounts)
@@ -103,6 +109,9 @@ type pendingSSO struct {
 	// link is the account that started linking a sign-in (#527), "" for a
 	// sign-in.
 	link string
+	// invite and inviteClient are the invitation accepted through the
+	// provider and the client key it was checked for (#528).
+	invite, inviteClient string
 }
 
 // pendingTicket waits for the local second factor of one account.
@@ -113,7 +122,9 @@ type pendingTicket struct {
 
 type sso struct {
 	deps Deps
-	cfg  SSOConfig
+	// invites accepts invitations through the provider (#528); set once.
+	invites InviteSignUp
+	cfg     SSOConfig
 
 	mu       sync.Mutex
 	pending  map[string]pendingSSO    // state -> flow data
@@ -176,6 +187,11 @@ func (uc *sso) BeginOIDC(ctx context.Context) (string, string, error) {
 // begin starts the code flow; link is the account that links the sign-in,
 // or "" to sign in.
 func (uc *sso) begin(ctx context.Context, link string) (string, string, error) {
+	return uc.beginWith(ctx, pendingSSO{link: link})
+}
+
+// beginWith starts the code flow for what p says (sign in, link, sign up).
+func (uc *sso) beginWith(ctx context.Context, p pendingSSO) (string, string, error) {
 	state, err := uc.token()
 	if err != nil {
 		return "", "", err
@@ -199,7 +215,8 @@ func (uc *sso) begin(ctx context.Context, link string) (string, string, error) {
 	if len(uc.pending) >= maxPendingSSO {
 		return "", "", domain.ErrTooManyAttempts
 	}
-	uc.pending[state] = pendingSSO{nonce: nonce, verifier: verifier, expires: now.Add(ssoStateTTL), link: link}
+	p.nonce, p.verifier, p.expires = nonce, verifier, now.Add(ssoStateTTL)
+	uc.pending[state] = p
 	return url, state, nil
 }
 
@@ -224,6 +241,10 @@ func (uc *sso) CompleteOIDC(ctx context.Context, state, code string, client doma
 	id.Provider = "oidc"
 	if p.link != "" {
 		return uc.completeLink(ctx, p.link, id, client)
+	}
+	if p.invite != "" {
+		res, err := uc.completeSignUp(ctx, p.invite, p.inviteClient, id, client)
+		return res, "", err
 	}
 	return uc.finish(ctx, id, client)
 }

@@ -188,13 +188,19 @@ func New(cfg Config, d Deps) (*Module, error) {
 	status := usecase.NewGetStatusWithPolicies(accounts, sessions, d.Clock, deps.Policies, deps.Passkeys)
 	kiosks := usecase.NewKiosks(deps, gateway.NewKioskRepository(d.DB))
 	identities := gateway.NewIdentityRepository(d.DB)
+	deps.Identities = identities
 	// A deleted account's linked sign-ins go with it (#527).
 	deps.Hooks.OnDeleted(func(ctx context.Context, accountID string) {
 		if err := identities.RemoveAccount(ctx, accountID); err != nil && d.Log != nil {
 			d.Log.Warn("auth: remove the linked sign-ins of a deleted account", "err", err)
 		}
 	})
-	sso := newSSO(deps, cfg.SSO, identities)
+	sso := newSSO(deps, cfg.SSO)
+	accountLinks := usecase.NewAccountLinks(deps, gateway.NewAccountLinkRepository(d.DB))
+	if sso != nil {
+		// Invitations can be accepted through the provider (#528).
+		sso.SetInviteSignUp(accountLinks)
+	}
 	uc := controller.UseCases{
 		Status:       status,
 		Setup:        usecase.NewSetupAccount(deps, gateway.NewSetupToken(token), observerFunc(cfg.OnAccountCreated)),
@@ -207,7 +213,7 @@ func New(cfg Config, d Deps) (*Module, error) {
 		Groups:       usecase.NewGroups(deps),
 		Preferences:  usecase.NewPreferences(deps),
 		Kiosks:       kiosks,
-		AccountLinks: usecase.NewAccountLinks(deps, gateway.NewAccountLinkRepository(d.DB)),
+		AccountLinks: accountLinks,
 		PasswordReset: usecase.NewPasswordReset(deps, gateway.NewAccountLinkRepository(d.DB), gateway.NewEmailRepository(d.DB),
 			d.Mailer, cfg.PublicURL),
 		APITokens:      usecase.NewAPITokens(deps, gateway.NewTokenRepository(d.DB)),
@@ -355,6 +361,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/auth/accounts/{id}/reset-link", m.handlers.CreateResetLink)
 	r.Public("POST /api/auth/link/inspect", m.handlers.InspectLink)
 	r.Public("POST /api/auth/link/accept", m.handlers.AcceptLink)
+	r.Public("POST /api/auth/link/sso", m.handlers.SignUpWithSSO)
 	r.Public("POST /api/auth/password-reset", m.handlers.RequestPasswordReset)
 	r.Protected("GET /api/auth/email", m.handlers.MyEmail)
 	r.Protected("PUT /api/auth/email", m.handlers.SetMyEmail)
@@ -441,7 +448,7 @@ func (m *Module) ConfirmIdentity(ctx context.Context, password, code, clientKey 
 func (m *Module) Audit(ctx context.Context, e kernel.AuditEvent) { m.security.Audit(ctx, e) }
 
 // newSSO returns nil when no SSO method is configured.
-func newSSO(deps usecase.Deps, c SSOConfig, identities usecase.IdentityRepository) usecase.SSO {
+func newSSO(deps usecase.Deps, c SSOConfig) usecase.SSO {
 	if c.OIDC == nil && c.ProxyHeader == "" {
 		return nil
 	}
@@ -451,7 +458,6 @@ func newSSO(deps usecase.Deps, c SSOConfig, identities usecase.IdentityRepositor
 	if c.OIDC != nil {
 		cfg.OIDC = oidcAdapter{c.OIDC}
 		cfg.Issuer = c.OIDC.Issuer()
-		cfg.Identities = identities
 	}
 	if c.ProxyHeader != "" {
 		cfg.HeaderUsers = c.ProxyUsers

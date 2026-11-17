@@ -63,6 +63,18 @@ you are already signed in at Microsoft in that browser, it takes one click.
 your password again. One Microsoft account can be linked to one account
 here only.
 
+## Invite someone who signs up with Microsoft
+
+With a licence key that includes `sso`, the invitation page offers
+**Create account with Microsoft** next to the password form
+([accounts](accounts.md)). The invited person signs in at Microsoft and comes
+back signed in, with the name, role and tabs of the invitation and their
+Microsoft account linked. The invitation is used up as with a password.
+
+Such an account has no password at first, so Microsoft is its only way in:
+*Disconnect* stays unavailable until a password is set, for example with a
+reset link from an admin or *Forgot password* on the sign-in page.
+
 ## Without a password
 
 Once the link works, you can turn the password sign-in off with

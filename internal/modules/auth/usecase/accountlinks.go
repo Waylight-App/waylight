@@ -44,6 +44,9 @@ type InviteView struct {
 type LinkInfo struct {
 	Purpose domain.LinkPurpose
 	Name    string
+	// SSO: the invitation can be accepted through the provider (#528); set
+	// by the controller, which knows single sign-on.
+	SSO bool
 }
 
 // AcceptLinkRequest is the input of AccountLinks.Accept.
@@ -71,6 +74,8 @@ type AccountLinks interface {
 	// consumes the link. It does not sign in: the person signs in with the
 	// new password, which also asks for a second factor if one is set up.
 	Accept(ctx context.Context, req AcceptLinkRequest) (LinkInfo, error)
+	// InviteSignUp creates invited accounts through the provider (#528).
+	InviteSignUp
 }
 
 type accountLinks struct {
@@ -271,34 +276,45 @@ func (uc *accountLinks) consume(ctx context.Context, l domain.AccountLink) error
 }
 
 func (uc *accountLinks) acceptInvite(ctx context.Context, l domain.AccountLink, hash string, client domain.Client) error {
+	a, err := uc.inviteAccount(ctx, l, hash)
+	if err != nil {
+		return err
+	}
+	uc.deps.Events.record(ctx, domain.EventInviteAccepted, a.ID(), client, fmt.Sprintf("%s %s", a.Role(), a.Name()))
+	return nil
+}
+
+// inviteAccount creates the invited account with the role, name and tabs of
+// the invitation and consumes it; shared by the password and the provider
+// way in (#528).
+func (uc *accountLinks) inviteAccount(ctx context.Context, l domain.AccountLink, hash string) (domain.Account, error) {
 	now := uc.deps.Clock.Now()
 	var a domain.Account
 	var err error
 	switch l.Role {
 	case domain.RoleMember:
 		if !uc.deps.MembersEnabled {
-			return domain.ErrMembersUnavailable
+			return domain.Account{}, domain.ErrMembersUnavailable
 		}
 		a, err = domain.NewMember(uc.deps.IDs.NewID(), l.Name, hash, now)
 	case domain.RoleGuest:
 		a, err = domain.NewGuest(uc.deps.IDs.NewID(), l.Name, hash, l.Tabs, now)
 	default:
-		return domain.ErrInvalidAccountLink
+		return domain.Account{}, domain.ErrInvalidAccountLink
 	}
 	if err != nil {
-		return err
+		return domain.Account{}, err
 	}
 	if err := uc.withinLimits(ctx, l.Role); err != nil {
-		return err
+		return domain.Account{}, err
 	}
 	if err := uc.consume(ctx, l); err != nil {
-		return err
+		return domain.Account{}, err
 	}
 	if err := uc.deps.Accounts.Create(ctx, a); err != nil {
-		return err
+		return domain.Account{}, err
 	}
-	uc.deps.Events.record(ctx, domain.EventInviteAccepted, a.ID(), client, fmt.Sprintf("%s %s", a.Role(), a.Name()))
-	return nil
+	return a, nil
 }
 
 // withinLimits applies the same account limits as creating by hand.
@@ -343,6 +359,7 @@ func (uc *accountLinks) acceptReset(ctx context.Context, l domain.AccountLink, h
 	if err := uc.deps.Accounts.Update(ctx, a); err != nil {
 		return fmt.Errorf("update account: %w", err)
 	}
+	uc.deps.passwordSet(ctx, a.ID())
 	// Whoever knew the old password is signed out everywhere.
 	if err := uc.deps.Sessions.DeleteAllFor(ctx, a.ID()); err != nil {
 		return fmt.Errorf("end sessions: %w", err)
