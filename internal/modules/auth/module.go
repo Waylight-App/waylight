@@ -173,7 +173,12 @@ func New(cfg Config, d Deps) (*Module, error) {
 	groups := gateway.NewGroupRepository(d.DB)
 	prefs := gateway.NewPreferenceRepository(d.DB)
 	ttl := usecase.SessionTTL(cfg.SessionTTL)
-	events := usecase.NewRecorder(gateway.NewEventRepository(d.DB), d.Alerts, d.IDs, d.Clock, d.Log)
+	var eventStore usecase.SecurityEventRepository = gateway.NewEventRepository(d.DB)
+	if cfg.DemoPassword != "" {
+		// Visitors share the demo account; their addresses stay private.
+		eventStore = gateway.DiscardedEvents{}
+	}
+	events := usecase.NewRecorder(eventStore, d.Alerts, d.IDs, d.Clock, d.Log)
 	events.SetInstanceName(d.InstanceName)
 	deps := usecase.Deps{
 		InstanceName: d.InstanceName,
