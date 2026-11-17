@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { previewStyle } from './themes';
+import { FONT_STACKS, previewStyle, resolvedTokens, themeSides } from './themes';
 
 describe('theme preview (#111)', () => {
   it('only lets colors and radii through', () => {
@@ -13,6 +13,33 @@ describe('theme preview (#111)', () => {
         },
       }),
     ).toBe('--color-bg: #2e3440; --radius: 6px');
+  });
+
+  it('turns font keywords into their stack and drops unknown fonts (#505)', () => {
+    expect(previewStyle({ tokens: { '--font-display': 'fraunces', '--font-sans': "url(x.woff2)'" } })).toBe(
+      `--font-display: ${FONT_STACKS['fraunces']}`,
+    );
+  });
+});
+
+describe('themes with light and dark variants (#505)', () => {
+  const theme = {
+    scheme: '' as const,
+    tokens: { '--radius': '14px' },
+    variants: {
+      light: { '--color-bg': '#fff3d6' },
+      dark: { '--color-bg': '#131829' },
+    },
+  };
+
+  it('previews both sides', () => {
+    expect(themeSides(theme)).toEqual(['light', 'dark']);
+    expect(themeSides({ scheme: 'dark' })).toEqual(['dark']);
+  });
+
+  it('resolves the shared tokens with the variant on top', () => {
+    expect(resolvedTokens(theme, 'dark')).toEqual({ '--radius': '14px', '--color-bg': '#131829' });
+    expect(previewStyle(theme, 'light')).toBe('--radius: 14px; --color-bg: #fff3d6');
   });
 });
 

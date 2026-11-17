@@ -38,9 +38,23 @@ export interface ThemeDTO {
   id: string;
   name: string;
   author: string;
-  scheme: 'light' | 'dark';
+  /**
+   * Scheme is empty for a theme with variants.
+   */
+  scheme: 'light' | 'dark' | '';
   tokens: { [key: string]: string};
+  /**
+   * Variants are the light and dark tokens of a theme that has both (#505).
+   */
+  variants?: ThemeVariantsDTO;
   builtIn: boolean;
+}
+/**
+ * ThemeVariantsDTO holds the tokens of the light and the dark variant.
+ */
+export interface ThemeVariantsDTO {
+  light: { [key: string]: string};
+  dark: { [key: string]: string};
 }
 /**
  * GalleryDTO is the theme gallery (#111).

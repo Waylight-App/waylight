@@ -34,7 +34,13 @@
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   /* Headings and large numerals; a theme may give them their own face. */
   --font-display: var(--font-sans);
-  --background-image: none;
+  /* Menus and panels that float above the page (search, launcher, account). */
+  --shadow-pop: 0 12px 40px rgb(0 0 0 / 18%);
+  /* A soft light around the widget area; themes may set one (#505). */
+  --glow: none;
+  /* A gradient behind the page when no background picture is chosen. */
+  --page-gradient: none;
+  --background-image: var(--page-gradient);
   --widget-opacity: 1;
   color-scheme: light;
 }

@@ -28,6 +28,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_68677939789f0976: 'Die Datei ist kein trisse-home-Design (JSON).',
   // The scheme must be light or dark.
   srv_a285cd5903e89e3c: 'Das Farbschema muss light oder dark sein.',
+  // A theme with variants has no scheme of its own.
+  srv_3a610d18cd76b0ea: 'Ein Design mit Varianten hat kein eigenes Farbschema.',
+  // A theme with variants needs exactly a light and a dark variant.
+  srv_36fa577b5dc82cc6: 'Ein Design mit Varianten braucht genau eine helle und eine dunkle Variante.',
   // The theme does not exist.
   srv_911cd2bd497af69e: 'Das Design gibt es nicht.',
   // The theme id must be 2–40 lowercase letters, digits or '-'.

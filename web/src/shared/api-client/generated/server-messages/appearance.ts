@@ -3,6 +3,8 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_5d3afd2bbd181bb2: "A background picture must be at most 25 MB.",
+  srv_3a610d18cd76b0ea: "A theme with variants has no scheme of its own.",
+  srv_36fa577b5dc82cc6: "A theme with variants needs exactly a light and a dark variant.",
   srv_1d1fc935d2c877da: "At most 30 background pictures can be stored. Delete one first.",
   srv_910076e320aa7e64: "At most 50 imported themes are supported.",
   srv_23a5dd47efa15b4e: "Built-in themes cannot be deleted.",

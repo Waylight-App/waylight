@@ -2,7 +2,7 @@
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import type { Appearance } from '../domain/appearance';
-  import { previewStyle, type ThemeGallery } from '../domain/themes';
+  import { previewStyle, themeSides, type ThemeGallery } from '../domain/themes';
   import type { AppearanceUseCases } from '../usecase/appearanceUseCases';
 
   /** Theme gallery (#111): ready-made themes to apply, import and share. */
@@ -49,13 +49,20 @@
   <p class="muted small">{t('appearance.gallery_hint')}</p>
   <ul class="grid">
     {#each gallery.themes as theme (theme.id)}
-      <li class="card" class:active={gallery.applied === theme.id} style={previewStyle(theme)}>
-        <div class="preview" aria-hidden="true">
-          <span class="bar"></span>
-          <span class="tile"
-            ><span class="line"></span><span class="line short"></span><span class="dot"></span></span
-          >
+      {@const sides = themeSides(theme)}
+      <li class="card" class:active={gallery.applied === theme.id} style={previewStyle(theme, sides[0])}>
+        <!-- One preview per side: light and dark next to each other for a theme with variants. -->
+        <div class="previews" aria-hidden="true">
+          {#each sides as side (side)}
+            <div class="preview" style={previewStyle(theme, side)}>
+              <span class="bar"></span>
+              <span class="tile"
+                ><span class="line"></span><span class="line short"></span><span class="dot"></span></span
+              >
+            </div>
+          {/each}
         </div>
+        {#if theme.variants}<span class="muted small">{t('appearance.theme_light_dark')}</span>{/if}
         <span class="name">{theme.name}</span>
         {#if theme.author}<span class="muted small">{theme.author}</span>{/if}
         <span class="actions">
@@ -139,13 +146,19 @@
   .card .muted {
     color: var(--color-text-muted);
   }
+  .previews {
+    display: flex;
+    gap: 4px;
+    margin-bottom: var(--space-1);
+  }
   .preview {
+    flex: 1;
+    min-width: 0;
     display: grid;
     gap: 4px;
     padding: 6px;
     border-radius: var(--radius-small);
     background: var(--color-bg);
-    margin-bottom: var(--space-1);
   }
   .bar {
     height: 6px;
@@ -177,6 +190,7 @@
     background: var(--color-accent);
   }
   .name {
+    font-family: var(--font-display);
     font-weight: 600;
   }
   .small {

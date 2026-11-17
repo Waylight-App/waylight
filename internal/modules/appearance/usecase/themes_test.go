@@ -59,7 +59,7 @@ func (fakeCodec) Encode(t domain.ThemeDef) ([]byte, error) { return []byte(t.ID)
 
 func theme(t *testing.T, id string, scheme domain.Theme) domain.ThemeDef {
 	t.Helper()
-	th, err := domain.NewThemeDef(id, id, "", scheme, map[string]string{"--color-bg": "#000", "--color-surface": "#111", "--color-text": "#fff", "--color-accent": "#f0f"})
+	th, err := domain.NewThemeDef(id, id, "", scheme, map[string]string{"--color-bg": "#000", "--color-surface": "#111", "--color-text": "#fff", "--color-accent": "#f0f"}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
