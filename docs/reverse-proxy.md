@@ -63,8 +63,24 @@ OIDC_ALLOWED_EMAILS=me@example.org        # or OIDC_ALLOWED_SUBJECTS=<sub>
 # SSO_REQUIRE_2FA=true                    # also ask for the local TOTP code
 ```
 
-The login page then shows **Sign in with single sign-on**. Authelia example
-(`configuration.yml`):
+The login page then shows **Sign in with single sign-on**. To name the
+provider on the button and to skip the page when there is nothing else on
+it:
+
+```sh
+OIDC_BUTTON_LABEL=Microsoft     # the button says "Sign in with Microsoft"
+OIDC_BUTTON_ICON=microsoft      # microsoft or key; empty for none
+OIDC_AUTO_REDIRECT=true         # with PASSWORD_LOGIN=false only
+```
+
+With `OIDC_AUTO_REDIRECT=true` and the password sign-in turned off, opening
+trisse-home goes straight to the provider; someone already signed in there
+(for example with their Microsoft account in the browser) is back on the
+dashboard without typing anything. After an error from the provider the page
+stays, so nothing loops. `https://home.example.org/?local=1` always shows the
+sign-in page, for guests or when the provider is down.
+
+Authelia example (`configuration.yml`):
 
 ```yaml
 identity_providers:

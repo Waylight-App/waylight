@@ -44,13 +44,28 @@ type SSOConfig struct {
 	LocalLogin bool
 	// Require2FA asks for the local TOTP code after SSO when it is enabled.
 	Require2FA bool
+	// Button names the provider on the sign-in page (#514).
+	Button SSOButton
+	// AutoRedirect sends the sign-in page straight to the provider when no
+	// password form is offered (#514).
+	AutoRedirect bool
+}
+
+// SSOButton is how the sign-in page labels the single sign-on button.
+type SSOButton struct {
+	// Label is the provider's name ("Microsoft"); empty for the generic text.
+	Label string
+	// Icon is one of the bundled icons ("microsoft", "key") or empty.
+	Icon string
 }
 
 // SSOStatus tells the login page which methods exist.
 type SSOStatus struct {
-	OIDC       bool
-	Header     bool
-	LocalLogin bool
+	OIDC         bool
+	Header       bool
+	LocalLogin   bool
+	Button       SSOButton
+	AutoRedirect bool
 }
 
 // SSO signs the owner in through an identity provider or a trusted proxy
@@ -105,7 +120,13 @@ func (uc *sso) SetExternalAccounts(e ExternalAccounts) {
 
 // Status implements SSO.
 func (uc *sso) Status() SSOStatus {
-	return SSOStatus{OIDC: uc.cfg.OIDC != nil, Header: len(uc.cfg.HeaderUsers) > 0, LocalLogin: uc.cfg.LocalLogin}
+	st := SSOStatus{OIDC: uc.cfg.OIDC != nil, Header: len(uc.cfg.HeaderUsers) > 0, LocalLogin: uc.cfg.LocalLogin}
+	if st.OIDC {
+		st.Button = uc.cfg.Button
+		// Only without a password form: otherwise people could never reach it.
+		st.AutoRedirect = uc.cfg.AutoRedirect && !uc.cfg.LocalLogin
+	}
+	return st
 }
 
 func (uc *sso) token() (string, error) {

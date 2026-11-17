@@ -12,6 +12,7 @@ import {
   type KioskDisplay,
   type KioskInput,
   type KioskOptions,
+  type SSOStatus,
   validGuestName,
   validateNewPassword,
   viewFor,
@@ -55,7 +56,7 @@ export class AuthUseCases {
   /** True for a member: own tabs and content, no instance settings (#294). */
   member = false;
   /** Sign-in methods offered by the server (set by currentView). */
-  sso = { oidc: false, header: false, localLogin: true };
+  sso: SSOStatus = { oidc: false, header: false, localLogin: true };
   /** Reset links by e-mail are available (#296). */
   passwordReset = false;
   /** Ticket of an SSO sign-in that still needs the local code. */

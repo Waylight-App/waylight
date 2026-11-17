@@ -33,6 +33,12 @@ type SSOStatusDTO struct {
 	OIDC       bool `json:"oidc"`
 	Header     bool `json:"header"`
 	LocalLogin bool `json:"localLogin"`
+	// ButtonLabel names the provider ("Microsoft"); empty for the generic text (#514).
+	ButtonLabel string `json:"buttonLabel,omitempty"`
+	// ButtonIcon is a bundled icon for the button, or empty.
+	ButtonIcon string `json:"buttonIcon,omitempty" tstype:"'' | 'microsoft' | 'key'"`
+	// AutoRedirect: go to the provider at once; ?local=1 shows the page.
+	AutoRedirect bool `json:"autoRedirect,omitempty"`
 }
 
 // SSOTicketDTO is returned when an SSO sign-in still needs the local code.

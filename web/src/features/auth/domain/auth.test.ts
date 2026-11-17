@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { remainingTime, validateNewPassword, viewFor } from './auth';
+import { redirectToProvider, remainingTime, validateNewPassword, viewFor } from './auth';
 
 describe('viewFor', () => {
   it('prefers setup over everything else', () => {
@@ -97,5 +97,23 @@ describe('remainingTime', () => {
 
   it('reports expired invitations', () => {
     expect(remainingTime(at(-1), now)).toEqual({ unit: 'expired' });
+  });
+});
+
+describe('redirect to the provider (#514)', () => {
+  const sso = { oidc: true, header: false, localLogin: false, autoRedirect: true };
+  const q = (s = '') => new URLSearchParams(s);
+
+  it('hands over only without a password form', () => {
+    expect(redirectToProvider(sso, q())).toBe(true);
+    expect(redirectToProvider({ ...sso, localLogin: true }, q())).toBe(false);
+    expect(redirectToProvider({ ...sso, autoRedirect: false }, q())).toBe(false);
+    expect(redirectToProvider({ ...sso, oidc: false }, q())).toBe(false);
+  });
+
+  it('never loops after the provider answered, and ?local=1 keeps the page', () => {
+    expect(redirectToProvider(sso, q('sso_error=denied'))).toBe(false);
+    expect(redirectToProvider(sso, q('sso_ticket=t'))).toBe(false);
+    expect(redirectToProvider(sso, q('local=1'))).toBe(false);
   });
 });
