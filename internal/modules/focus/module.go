@@ -1,6 +1,7 @@
 package focus
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"time"
@@ -14,6 +15,7 @@ import (
 
 // Module wires the focus timer rings and implements modules.Module (#58).
 type Module struct {
+	seedDemo func(ctx context.Context) error
 	modules.Base
 	modules.Transferable
 	handlers *controller.Handlers
@@ -22,8 +24,9 @@ type Module struct {
 
 // New builds the focus timer module.
 func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
-	uc := usecase.NewFocus(usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids})
-	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, handlers: controller.NewHandlers(uc), uc: uc}
+	deps := usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids}
+	uc := usecase.NewFocus(deps)
+	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, deps) }, Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, handlers: controller.NewHandlers(uc), uc: uc}
 }
 
 // Name implements modules.Module.

@@ -1,6 +1,7 @@
 package study
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 
@@ -13,6 +14,7 @@ import (
 
 // Module wires the study rings and implements modules.Module.
 type Module struct {
+	seedDemo func(ctx context.Context) error
 	modules.Base
 	modules.Transferable
 	handlers *controller.Handlers
@@ -20,8 +22,9 @@ type Module struct {
 
 // New builds the module (#57); it makes no outbound requests.
 func New(db *sql.DB, ids kernel.IDGenerator) *Module {
-	uc := usecase.New(gateway.NewRepository(db), ids)
-	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, handlers: controller.NewHandlers(uc)}
+	repo := gateway.NewRepository(db)
+	uc := usecase.New(repo, ids)
+	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, repo, ids) }, Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, handlers: controller.NewHandlers(uc)}
 }
 
 // Name implements modules.Module.

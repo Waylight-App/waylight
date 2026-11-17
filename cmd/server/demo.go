@@ -19,15 +19,7 @@ func prepareDemo(ctx context.Context, a *app) (scheduler.Task, error) {
 	}
 	// Showcase data of the modules; the snapshot below includes it, so every
 	// reset brings it back.
-	err := demo.Seed(func() error {
-		for name, s := range a.registry.DemoSeeders() {
-			if err := s.SeedDemo(ctx); err != nil {
-				return fmt.Errorf("demo data of %s: %w", name, err)
-			}
-		}
-		return nil
-	})
-	if err != nil {
+	if err := seedDemo(ctx, a); err != nil {
 		return scheduler.Task{}, err
 	}
 	snapshot := map[string]map[string]sqlutil.Rows{}
@@ -51,7 +43,26 @@ func prepareDemo(ctx context.Context, a *app) (scheduler.Task, error) {
 				return fmt.Errorf("reset %s: %w", name, err)
 			}
 		}
+		// Modules without an export (drop zone, backup monitor) are not in the
+		// snapshot; their seeders fill them again when a visitor emptied them
+		// or the entries expired.
+		if err := seedDemo(ctx, a); err != nil {
+			return err
+		}
 		a.log.InfoContext(ctx, "demo data reset")
 		return nil
 	}}, nil
+}
+
+// seedDemo runs the demo seeders of all modules. Each one only adds data
+// where its module is empty, so running it again is harmless.
+func seedDemo(ctx context.Context, a *app) error {
+	return demo.Seed(func() error {
+		for name, s := range a.registry.DemoSeeders() {
+			if err := s.SeedDemo(ctx); err != nil {
+				return fmt.Errorf("demo data of %s: %w", name, err)
+			}
+		}
+		return nil
+	})
 }

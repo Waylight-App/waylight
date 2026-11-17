@@ -27,6 +27,7 @@ type Deps struct {
 
 // Module wires the backup monitor rings and implements modules.Module.
 type Module struct {
+	seedDemo func(ctx context.Context) error
 	modules.Base
 	uc       usecase.Monitor
 	handlers *controller.Handlers
@@ -34,8 +35,9 @@ type Module struct {
 
 // New builds the backup monitor module.
 func New(d Deps) *Module {
-	uc := usecase.NewMonitor(usecase.Deps{Repo: gateway.NewRepository(d.DB), Tokens: d.Tokens, Clock: d.Clock, IDs: d.IDs, Observations: d.Observations})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	deps := usecase.Deps{Repo: gateway.NewRepository(d.DB), Tokens: d.Tokens, Clock: d.Clock, IDs: d.IDs, Observations: d.Observations}
+	uc := usecase.NewMonitor(deps)
+	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, deps) }, uc: uc, handlers: controller.NewHandlers(uc)}
 }
 
 // Name implements modules.Module.

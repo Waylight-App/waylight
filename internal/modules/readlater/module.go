@@ -1,6 +1,7 @@
 package readlater
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 
 // Module wires the read-later rings and implements modules.Module.
 type Module struct {
+	seedDemo func(ctx context.Context) error
 	modules.Base
 	modules.Transferable
 	uc       usecase.ReadLater
@@ -25,8 +27,9 @@ type Module struct {
 // user saves an article; client must guard against internal addresses.
 func New(db *sql.DB, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator) *Module {
 	f := gateway.NewFetcher(client)
-	uc := usecase.New(gateway.NewRepository(db), f, f, gateway.Codec{}, clock, ids)
-	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, uc: uc, handlers: controller.NewHandlers(uc)}
+	repo := gateway.NewRepository(db)
+	uc := usecase.New(repo, f, f, gateway.Codec{}, clock, ids)
+	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, repo, clock, ids) }, Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, uc: uc, handlers: controller.NewHandlers(uc)}
 }
 
 // Jobs implements modules.Module: reader copies of imported links are made
