@@ -137,16 +137,25 @@
     font-size: 0.8rem;
     color: var(--color-text-muted);
   }
+  /*
+   * The answer itself reads as the result (#511): large, in the display
+   * face and the accent text colour; warnings keep their status colour.
+   */
   .value {
-    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-size: 1.6rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    color: var(--color-accent-text);
   }
   .swatch {
     display: inline-block;
     width: 1em;
     height: 1em;
-    margin-right: var(--space-1);
     vertical-align: -0.1em;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-small);
