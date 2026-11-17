@@ -22,7 +22,7 @@ func TestBuiltinThemes(t *testing.T) {
 		t.Fatalf("%d files, %d valid themes", len(files), len(ts))
 	}
 	for _, th := range ts {
-		if !th.BuiltIn || len(th.Tokens) < 11 {
+		if !th.BuiltIn || len(th.Resolved(domain.ThemeLight)) < 11 || len(th.Resolved(domain.ThemeDark)) < 11 {
 			t.Errorf("%s: %+v", th.ID, th)
 		}
 	}
@@ -45,6 +45,27 @@ func TestDecodeTheme(t *testing.T) {
 	}
 	out, _ := EncodeTheme(th)
 	if back, err := DecodeTheme(out); err != nil || back.Tokens["--color-accent"] != "#f0f" {
+		t.Fatalf("round trip: %s %v", out, err)
+	}
+}
+
+// A theme file with a light and a dark variant (#505).
+func TestDecodeThemeVariants(t *testing.T) {
+	const colors = `{"--color-bg":"#000","--color-surface":"#111","--color-text":"#fff","--color-accent":"#f0f"}`
+	ok := `{"id":"both","name":"Both","tokens":{"--font-display":"fraunces"},"variants":{"light":` + colors + `,"dark":` + colors + `}}`
+	th, err := DecodeTheme([]byte(ok))
+	if err != nil || !th.HasVariants() || th.Scheme != "" {
+		t.Fatalf("%+v %v", th, err)
+	}
+	if _, err := DecodeTheme([]byte(strings.Replace(ok, `"dark":`, `"dim":`, 1))); err == nil {
+		t.Fatal("a variant other than light and dark must be refused")
+	}
+	out, _ := EncodeTheme(th)
+	if strings.Contains(string(out), `"scheme"`) {
+		t.Errorf("a theme with variants has no scheme: %s", out)
+	}
+	back, err := DecodeTheme(out)
+	if err != nil || back.Variants[domain.ThemeDark]["--color-accent"] != "#f0f" || back.Tokens["--font-display"] != "fraunces" {
 		t.Fatalf("round trip: %s %v", out, err)
 	}
 }

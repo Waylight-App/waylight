@@ -199,7 +199,7 @@
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
-    box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+    box-shadow: var(--shadow-pop);
   }
   .menu button {
     text-align: left;

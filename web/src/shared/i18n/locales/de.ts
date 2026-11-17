@@ -259,7 +259,8 @@ export const de: Record<BaseMessageKey, string> = {
   'appearance.save_appearance': 'Darstellung speichern',
   'appearance.gallery': 'Design-Galerie',
   'appearance.gallery_hint':
-    'Fertige Designs. Beim Anwenden werden Hell/Dunkel, dein eigenes CSS und deine Akzentfarbe ersetzt; alles wird gesichert und kann wiederhergestellt werden.',
+    'Fertige Designs. Beim Anwenden werden dein eigenes CSS und deine Akzentfarbe ersetzt, ein Design nur für Hell oder Dunkel stellt auch das Farbschema um; Designs mit beiden folgen deiner Wahl. Alles wird gesichert und kann wiederhergestellt werden.',
+  'appearance.theme_light_dark': 'Hell und dunkel',
   'appearance.apply': 'Anwenden',
   'appearance.applied': 'Angewendet',
   'appearance.apply_theme': 'Design {name} anwenden',

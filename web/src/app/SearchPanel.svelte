@@ -804,7 +804,7 @@
     border: 1px solid var(--color-border);
     border-radius: 14px;
     background: var(--color-surface);
-    box-shadow: 0 12px 36px color-mix(in srgb, #000 16%, transparent);
+    box-shadow: var(--shadow-pop);
     text-align: left;
   }
   .answers {

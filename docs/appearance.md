@@ -25,14 +25,16 @@ The gallery offers ready-made themes: Nord, Catppuccin Latte and Mocha,
 Gruvbox Dark, Solarized Light and Dark, Dracula, Tokyo Night, One Dark, a
 high-contrast theme and a classic portal look. *Apply* switches to a theme at once.
 
-Applying a theme replaces your light or dark choice, accent colour and custom
-CSS. Your own settings are kept, and **Restore my own style** brings them
-back.
+Applying a theme replaces your accent colour and custom CSS. A theme made
+for light or for dark also switches to that scheme; a theme marked *Light and
+dark* brings both and follows your choice, including *System*. Your own
+settings are kept, and **Restore my own style** brings them back.
 
 Every theme can be downloaded as a small JSON file, and **Import theme…**
-adds one somebody shared with you. Themes contain colours and corner radii
-only. They cannot load fonts, images or scripts, so a theme file from a
-stranger cannot track you or hide parts of the page. The
+adds one somebody shared with you. Themes set colours, corner radii, shadows
+and one of the fonts that come with the app, each in a fixed format. They
+cannot load fonts, images or scripts, so a theme file from a stranger cannot
+track you or hide parts of the page. The
 [theme format](https://github.com/itadori26/trisse-home/blob/main/themes/README.md)
 explains how to write one and how to contribute it.
 
@@ -103,6 +105,9 @@ nothing else, so changing a token changes every place that uses it.
 | `--color-accent-text` | The accent as text or icon colour on surfaces: links, highlighted values, the current day. Follows `--color-accent` unless set. Set it when the accent is light, such as yellow or amber, which reads well as a fill but not as text on a light card |
 | `--color-danger`, `--color-success`, `--color-warning` | Status colours, also used as text |
 | `--radius`, `--radius-small` | Corner radius of cards; of buttons and inputs |
+| `--shadow`, `--shadow-pop` | Shadow of cards; of menus and panels that float above the page |
+| `--glow` | A soft light around the widget area, `none` by default |
+| `--page-gradient` | A gradient behind the page when no background picture is chosen, `none` by default |
 | `--font-sans` | Body text |
 | `--font-display` | Headings and large numerals. Follows `--font-sans` unless set |
 | `--font-mono` | Code and keyboard hints |

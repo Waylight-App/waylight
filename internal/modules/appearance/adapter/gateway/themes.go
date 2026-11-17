@@ -24,11 +24,35 @@ var builtinFiles embed.FS
 
 // themeFile is the shareable theme format (JSON).
 type themeFile struct {
-	ID     string            `json:"id"`
-	Name   string            `json:"name"`
-	Author string            `json:"author,omitempty"`
-	Scheme string            `json:"scheme"`
-	Tokens map[string]string `json:"tokens"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Author string `json:"author,omitempty"`
+	// Scheme is set for a theme made for one scheme and left out for a
+	// theme with variants.
+	Scheme   string            `json:"scheme,omitempty"`
+	Tokens   map[string]string `json:"tokens,omitempty"`
+	Variants *themeVariants    `json:"variants,omitempty"`
+}
+
+// themeVariants are the light and dark tokens of a theme (#505). A struct
+// rather than a map, so the strict decoder refuses any other key.
+type themeVariants struct {
+	Light map[string]string `json:"light"`
+	Dark  map[string]string `json:"dark"`
+}
+
+func (v *themeVariants) domain() map[domain.Theme]map[string]string {
+	if v == nil {
+		return nil
+	}
+	return map[domain.Theme]map[string]string{domain.ThemeLight: v.Light, domain.ThemeDark: v.Dark}
+}
+
+func fileVariants(t domain.ThemeDef) *themeVariants {
+	if !t.HasVariants() {
+		return nil
+	}
+	return &themeVariants{Light: t.Variants[domain.ThemeLight], Dark: t.Variants[domain.ThemeDark]}
 }
 
 // MaxThemeBytes bounds an imported theme file.
@@ -45,12 +69,13 @@ func DecodeTheme(data []byte) (domain.ThemeDef, error) {
 	if err := dec.Decode(&f); err != nil {
 		return domain.ThemeDef{}, fmt.Errorf("decode theme: %w", err)
 	}
-	return domain.NewThemeDef(f.ID, f.Name, f.Author, domain.Theme(f.Scheme), f.Tokens)
+	return domain.NewThemeDef(f.ID, f.Name, f.Author, domain.Theme(f.Scheme), f.Tokens, f.Variants.domain())
 }
 
 // EncodeTheme writes the shareable form of a theme.
 func EncodeTheme(t domain.ThemeDef) ([]byte, error) {
-	out, err := json.MarshalIndent(themeFile{ID: t.ID, Name: t.Name, Author: t.Author, Scheme: string(t.Scheme), Tokens: t.Tokens}, "", "  ")
+	f := themeFile{ID: t.ID, Name: t.Name, Author: t.Author, Scheme: string(t.Scheme), Tokens: t.Tokens, Variants: fileVariants(t)}
+	out, err := json.MarshalIndent(f, "", "  ")
 	if err != nil {
 		return nil, fmt.Errorf("encode theme: %w", err)
 	}

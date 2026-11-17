@@ -32,12 +32,21 @@ func Appearance(r usecase.AppearanceResponse) AppearanceDTO {
 
 // ThemeDTO is a gallery theme.
 type ThemeDTO struct {
-	ID      string            `json:"id"`
-	Name    string            `json:"name"`
-	Author  string            `json:"author"`
-	Scheme  string            `json:"scheme" tstype:"'light' | 'dark'"`
-	Tokens  map[string]string `json:"tokens"`
-	BuiltIn bool              `json:"builtIn"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Author string `json:"author"`
+	// Scheme is empty for a theme with variants.
+	Scheme string            `json:"scheme" tstype:"'light' | 'dark' | ''"`
+	Tokens map[string]string `json:"tokens"`
+	// Variants are the light and dark tokens of a theme that has both (#505).
+	Variants *ThemeVariantsDTO `json:"variants,omitempty"`
+	BuiltIn  bool              `json:"builtIn"`
+}
+
+// ThemeVariantsDTO holds the tokens of the light and the dark variant.
+type ThemeVariantsDTO struct {
+	Light map[string]string `json:"light"`
+	Dark  map[string]string `json:"dark"`
 }
 
 // GalleryDTO is the theme gallery (#111).
@@ -59,7 +68,11 @@ func Gallery(g usecase.Gallery) GalleryDTO {
 
 // Theme maps a theme.
 func Theme(t domain.ThemeDef) ThemeDTO {
-	return ThemeDTO{ID: t.ID, Name: t.Name, Author: t.Author, Scheme: string(t.Scheme), Tokens: t.Tokens, BuiltIn: t.BuiltIn}
+	out := ThemeDTO{ID: t.ID, Name: t.Name, Author: t.Author, Scheme: string(t.Scheme), Tokens: t.Tokens, BuiltIn: t.BuiltIn}
+	if t.HasVariants() {
+		out.Variants = &ThemeVariantsDTO{Light: t.Variants[domain.ThemeLight], Dark: t.Variants[domain.ThemeDark]}
+	}
+	return out
 }
 
 // BackgroundDTO is an uploaded background picture (#277); url is the value
