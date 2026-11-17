@@ -37,10 +37,14 @@ test('the sign-in page shows the theme of the last account on this browser (#526
     await post(page, '/api/appearance/themes/restore');
   }
 
-  // Without a gallery theme the kept look is gone again.
+  // Without a gallery theme of its own the kept look is gone again, and the
+  // sign-in page falls back to the instance's default theme (Amber).
   await page.reload();
   await expect(page.getByTestId('dashboard')).toBeVisible();
   await account(page, 'Log out');
   await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible();
-  await expect(look).toHaveCount(0);
+  await expect(look).toHaveCount(1);
+  const fallback = (await look.textContent()) ?? '';
+  expect(fallback).toContain('/* waylight theme: amber */');
+  expect(fallback).not.toContain('nord');
 });
