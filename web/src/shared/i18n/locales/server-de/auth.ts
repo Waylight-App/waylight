@@ -7,7 +7,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  */
 export const serverDe: Record<ServerMessageKey, string> = {
   // Single sign-on for this account needs a licence key with sso.
-  srv_b4096594b09b5ea3: 'Die Anmeldung per Single Sign-on braucht für dieses Konto einen Lizenzschlüssel mit sso.',
+  srv_b4096594b09b5ea3:
+    'Die Anmeldung per Single Sign-on braucht für dieses Konto einen Lizenzschlüssel mit sso.',
   // This sign-in is already linked to another account.
   srv_6e04252984abe6fe: 'Diese Anmeldung ist schon mit einem anderen Konto verknüpft.',
   // This sign-in is not linked.
