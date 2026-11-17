@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import WaylightMark from '../../../shared/ui/WaylightMark.svelte';
+  import { PRODUCT_NAME } from '../../../shared/product';
 
   /** Name and logos shown above the card; the logos are versioned URLs. */
   export interface Brand {
@@ -29,7 +30,7 @@
       {:else}
         <span class="mark"><WaylightMark size={28} /></span>
       {/if}
-      <span>{brand.name}</span>
+      <span class:wordmark={brand.name === PRODUCT_NAME}>{brand.name}</span>
     </p>
   {/if}
   <!-- The frame carries the theme's glow (#505), apart from the card's own
@@ -75,6 +76,10 @@
     margin: 0;
     font-weight: 600;
     font-size: 1.1rem;
+  }
+  .wordmark {
+    font-family: var(--font-wordmark);
+    font-weight: 700;
   }
   .mark {
     display: inline-grid;

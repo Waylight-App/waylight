@@ -32,6 +32,8 @@
   --space-6: 24px;
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  /* The product wordmark; fixed, so it reads the same in every theme. */
+  --font-wordmark: 'Fraunces Variable', Fraunces, Georgia, serif;
   /* Headings and large numerals; a theme may give them their own face. */
   --font-display: var(--font-sans);
   /* Menus and panels that float above the page (search, launcher, account). */
