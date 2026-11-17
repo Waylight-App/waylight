@@ -20,6 +20,7 @@ type Module struct {
 	modules.Base
 	modules.Transferable
 	handlers *controller.Handlers
+	deps     usecase.Deps
 	seed     usecase.SeedSampleData
 	everyday usecase.SeedSampleData
 	scope    usecase.TabScope
@@ -49,11 +50,19 @@ func New(db *sql.DB, ids kernel.IDGenerator, clock kernel.Clock, widgetKinds []s
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
 		handlers: controller.NewHandlers(usecase.NewGetDashboard(deps), usecase.NewManageTabs(deps), usecase.NewManageWidgets(deps),
 			usecase.NewManageTemplates(deps)),
+		deps:     deps,
 		seed:     usecase.NewSeedSampleData(deps, usecase.SampleLayout(string(weatherConfig))),
 		everyday: usecase.NewSeedSampleData(deps, usecase.EverydayLayout(string(weatherConfig))),
 		scope:    usecase.NewTabScope(deps),
 		config:   usecase.NewConfig(repo, deps.Kinds, ids),
 	}
+}
+
+// UseShowcase seeds the layout of the public demo instead of the regular
+// sample layout; weather is the location of the weather widget.
+func (m *Module) UseShowcase(weather SampleWeather) {
+	weatherConfig, _ := json.Marshal(map[string]any{"lat": weather.Lat, "lon": weather.Lon, "label": weather.Label, "days": 4}) // plain map, cannot fail
+	m.seed = usecase.NewSeedSampleData(m.deps, usecase.ShowcaseLayout(string(weatherConfig)))
 }
 
 // ConfigSection implements modules.Configurable.

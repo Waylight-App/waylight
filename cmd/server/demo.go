@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync/atomic"
 
+	"waylight/internal/platform/demo"
 	"waylight/internal/platform/scheduler"
 	"waylight/internal/shared/sqlutil"
 )
@@ -14,6 +15,19 @@ import (
 // every DEMO_RESET_INTERVAL.
 func prepareDemo(ctx context.Context, a *app) (scheduler.Task, error) {
 	if err := a.auth.PrepareDemo(ctx); err != nil {
+		return scheduler.Task{}, err
+	}
+	// Showcase data of the modules; the snapshot below includes it, so every
+	// reset brings it back.
+	err := demo.Seed(func() error {
+		for name, s := range a.registry.DemoSeeders() {
+			if err := s.SeedDemo(ctx); err != nil {
+				return fmt.Errorf("demo data of %s: %w", name, err)
+			}
+		}
+		return nil
+	})
+	if err != nil {
 		return scheduler.Task{}, err
 	}
 	snapshot := map[string]map[string]sqlutil.Rows{}

@@ -264,6 +264,9 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	kinds := append(append([]string{}, frontendOnlyWidgetKinds...), registry.WidgetKinds()...)
 	sample := dashboard.SampleWeather{Label: cfg.SampleWeather.Name, Lat: cfg.SampleWeather.Lat, Lon: cfg.SampleWeather.Lon}
 	dash := dashboard.New(db, ids, clk, kinds, sample, tabSharing)
+	if cfg.DemoMode {
+		dash.UseShowcase(sample)
+	}
 	registry.Register(dash)
 	scope.dashboard = dash
 	return authModule, registry, nil
