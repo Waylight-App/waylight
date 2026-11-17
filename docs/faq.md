@@ -70,8 +70,8 @@ takes an afternoon.
 
 trisse-home is maintained by one person in their spare time and published
 under the MIT licence. Features for teams are planned in a separate directory,
-`ee/`, under the Fair Core License: the source stays readable, using them
-needs a licence key, and each version becomes MIT after two years
-([ADR 0017](adr/0017-open-core.md)). Nothing that exists today moves there.
+`ee/`, under the Elastic License 2.0: it is not open source, using them
+needs a licence key, and the code never becomes MIT
+([ADR 0020](adr/0020-ee-stays-proprietary.md)). Nothing that exists today moves there.
 Planned work is on the
 [roadmap](https://github.com/itadori26/trisse-home/blob/main/ROADMAP.md).

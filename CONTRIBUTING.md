@@ -51,7 +51,7 @@ once and then `make smoke`.
 
 - Contributions to everything outside `ee/` are made under the MIT licence,
   the same licence the code is published under. There is nothing to sign.
-- The directory `ee/` is under the [Fair Core License](ee/LICENSE.md) and is
+- The directory `ee/` is under the [Elastic License 2.0](ee/LICENSE.md) and is
   also sold under commercial terms, which only works while one party holds
   the rights to it. Please open an issue before working on `ee/`; such a pull
   request needs a written agreement with the maintainer first.

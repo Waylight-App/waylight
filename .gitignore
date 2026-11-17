@@ -17,6 +17,7 @@ internal/platform/webui/dist/*
 coverage.out
 
 # Frontend tooling
+/node_modules/
 /web/node_modules
 /web/dist-extension/
 web/test-results/
