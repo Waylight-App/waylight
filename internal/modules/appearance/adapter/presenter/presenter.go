@@ -15,6 +15,8 @@ type AppearanceDTO struct {
 	Language        string `json:"language" tstype:"'' | 'en' | 'de'"`
 	// GreetingName is the name in the greeting (#189); may be empty.
 	GreetingName string `json:"greetingName"`
+	// GreetingMoment adds a line by time of day to the greeting (#512).
+	GreetingMoment bool `json:"greetingMoment"`
 	// Launcher is what the launcher lists (#189).
 	Launcher string `json:"launcher" tstype:"'both' | 'services' | 'bookmarks'"`
 	// Profile is what the start page shows (#281); empty on PUT keeps it.
@@ -27,7 +29,7 @@ type AppearanceDTO struct {
 // Appearance maps an AppearanceResponse.
 func Appearance(r usecase.AppearanceResponse) AppearanceDTO {
 	return AppearanceDTO{Theme: r.Theme, AccentColor: r.AccentColor, BackgroundImage: r.BackgroundImage, CustomCSS: r.CustomCSS, Language: r.Language,
-		GreetingName: r.GreetingName, Launcher: r.Launcher, Profile: r.Profile, ThemeLocked: r.ThemeLocked}
+		GreetingName: r.GreetingName, GreetingMoment: r.GreetingMoment, Launcher: r.Launcher, Profile: r.Profile, ThemeLocked: r.ThemeLocked}
 }
 
 // ThemeDTO is a gallery theme.

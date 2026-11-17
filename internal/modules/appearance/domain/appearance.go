@@ -36,8 +36,10 @@ type Appearance struct {
 	customCSS       string
 	language        string
 	greetingName    string
-	launcher        Launcher
-	profile         Profile
+	// greetingMoment adds a short line by time of day to the greeting (#512).
+	greetingMoment bool
+	launcher       Launcher
+	profile        Profile
 }
 
 // Profile says what the start page is about (#281): everyday topics only,
@@ -119,6 +121,12 @@ func (a *Appearance) SetGreetingName(name string) error {
 // GreetingName is the name used in the greeting.
 func (a Appearance) GreetingName() string { return a.greetingName }
 
+// SetGreetingMoment switches the line by time of day after the greeting.
+func (a *Appearance) SetGreetingMoment(on bool) { a.greetingMoment = on }
+
+// GreetingMoment reports whether the greeting has a line by time of day.
+func (a Appearance) GreetingMoment() bool { return a.greetingMoment }
+
 // Languages lists the supported UI languages; "" follows the browser.
 var Languages = []string{"", "en", "de"}
 
@@ -145,7 +153,7 @@ func (a Appearance) WithScheme(theme Theme, accentColor string) (Appearance, err
 	if err != nil {
 		return Appearance{}, err
 	}
-	b.language, b.greetingName, b.launcher, b.profile = a.language, a.greetingName, a.launcher, a.profile
+	b.language, b.greetingName, b.greetingMoment, b.launcher, b.profile = a.language, a.greetingName, a.greetingMoment, a.launcher, a.profile
 	return b, nil
 }
 

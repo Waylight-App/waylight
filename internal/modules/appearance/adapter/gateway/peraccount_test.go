@@ -68,9 +68,15 @@ func TestAppearanceMigrationKeepsTheRow(t *testing.T) {
 	if _, err := db.ExecContext(ctx, `INSERT INTO appearance_settings (id, theme, language, greeting_name, launcher, profile) VALUES (1, 'dark', 'de', 'Alex', 'both', 'everyday')`); err != nil {
 		t.Fatal(err)
 	}
-	m, _ := fs.ReadFile(Migrations(), "0008_per_account.sql")
-	if _, err := db.ExecContext(ctx, string(m)); err != nil {
-		t.Fatal(err)
+	// 0008 and every later migration, as an update would run them.
+	for _, e := range entries {
+		if e.Name() < "0008" {
+			continue
+		}
+		m, _ := fs.ReadFile(Migrations(), e.Name())
+		if _, err := db.ExecContext(ctx, string(m)); err != nil {
+			t.Fatalf("%s: %v", e.Name(), err)
+		}
 	}
 	got, err := NewRepository(db).Load(ctx)
 	if err != nil || got.Language() != "de" || got.GreetingName() != "Alex" || got.Theme() != "dark" {

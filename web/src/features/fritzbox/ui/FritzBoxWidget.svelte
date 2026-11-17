@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from '../../../shared/ui/EmptyState.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -36,7 +37,7 @@
 </script>
 
 {#if unconfigured}
-  <p class="muted">{t('fritzbox.connect_your_fritz_box_under_settings')}</p>
+  <EmptyState text={t('fritzbox.connect_your_fritz_box_under_settings')} section="fritzbox" />
 {:else if error && !status}
   <p class="error">{error}</p>
 {:else if status}

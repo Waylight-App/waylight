@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from '../../../shared/ui/EmptyState.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -61,7 +62,7 @@
 </script>
 
 {#if unconfigured}
-  <p class="muted">{t('calendar.connect_a_caldav_calendar_under_settings')}</p>
+  <EmptyState text={t('calendar.connect_a_caldav_calendar_under_settings')} section="calendar" />
 {:else if error && !loaded}
   <p class="error">{error}</p>
 {:else if cfg.view === 'split'}

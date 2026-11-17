@@ -256,6 +256,6 @@ func (a Appearance) WithStyle(css string, scheme Theme, accentColor string) (App
 	if err != nil {
 		return Appearance{}, err
 	}
-	next.language, next.greetingName, next.launcher = a.language, a.greetingName, a.launcher
+	next.language, next.greetingName, next.greetingMoment, next.launcher, next.profile = a.language, a.greetingName, a.greetingMoment, a.launcher, a.profile
 	return next, nil
 }

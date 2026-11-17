@@ -18,6 +18,7 @@ const toAppearance = (d: AppearanceDTO): Appearance => ({
   customCss: d.customCss,
   language: d.language ?? '',
   greetingName: d.greetingName ?? '',
+  greetingMoment: d.greetingMoment ?? false,
   launcher: d.launcher ?? 'both',
   profile: d.profile === 'everyday' ? 'everyday' : 'homelab',
   themeLocked: d.themeLocked ?? false,
