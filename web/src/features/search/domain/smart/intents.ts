@@ -21,7 +21,10 @@ export const INTENTS: IntentSpec[] = [
     prefixes: ['cpu'],
     answer: 'metric',
     widgetKind: 'system',
-    terms: [...t(3, 'cpu', 'prozessor', 'processor'), ...t(1, 'auslastung', 'usage', 'utilization')],
+    terms: [
+      ...t(3, 'cpu', 'prozessor', 'processor'),
+      ...t(2, 'auslastung', 'ausgelastet', 'usage', 'utilization', 'busy'),
+    ],
   },
   {
     id: 'system.memory',
@@ -81,7 +84,11 @@ export const INTENTS: IntentSpec[] = [
     prefixes: ['uptime'],
     answer: 'metric',
     widgetKind: 'system',
-    terms: [...t(3, 'uptime', 'laufzeit', 'betriebszeit'), ...t(1.5, 'neustart', 'reboot', 'seit', 'since')],
+    terms: [
+      ...t(3, 'uptime', 'laufzeit', 'betriebszeit'),
+      ...t(1.5, 'neustart', 'reboot', 'seit', 'since', 'lange', 'long'),
+      ...t(1, 'lauft', 'laeuft', 'running', 'server'),
+    ],
   },
   {
     id: 'system.temperature',
@@ -94,7 +101,12 @@ export const INTENTS: IntentSpec[] = [
     source: 'system',
     answer: 'metric',
     widgetKind: 'system',
-    terms: [...t(1.5, 'temperatur', 'temperature', 'temp'), ...t(1, 'heiss', 'hot', 'cpu', 'server')],
+    terms: [
+      ...t(1.5, 'temperatur', 'temperature', 'temp'),
+      ...t(1, 'heiss', 'hot', 'server'),
+      // "cpu temperatur" asks for the temperature, not the load.
+      ...t(2, 'cpu'),
+    ],
   },
   {
     id: 'docker.overview',
@@ -109,7 +121,7 @@ export const INTENTS: IntentSpec[] = [
     widgetKind: 'docker',
     terms: [
       ...t(3, 'docker', 'container', 'containers'),
-      ...t(1, 'laufen', 'running', 'gestoppt', 'stopped'),
+      ...t(1, 'laufen', 'laufende', 'running', 'gestoppt', 'stopped', 'down', 'kaputt'),
     ],
   },
   {
@@ -158,7 +170,8 @@ export const INTENTS: IntentSpec[] = [
     widgetKind: 'services',
     terms: [
       ...t(3, 'dienste', 'services', 'dienst'),
-      ...t(2, 'offline', 'down', 'erreichbar', 'reachable', 'ausgefallen'),
+      ...t(2, 'offline', 'down', 'erreichbar', 'reachable', 'ausgefallen', 'alles', 'everything'),
+      ...t(1, 'online', 'up', 'ok'),
     ],
   },
   {
@@ -194,9 +207,24 @@ export const INTENTS: IntentSpec[] = [
     ],
     terms: [
       ...t(3, 'wetter', 'weather', 'vorhersage', 'forecast'),
-      ...t(2, 'regen', 'regnet', 'rain', 'schnee', 'snow', 'sonne', 'sunny'),
+      ...t(
+        2,
+        'regen',
+        'regnet',
+        'rain',
+        'raining',
+        'schnee',
+        'schneit',
+        'snow',
+        'snowing',
+        'sonne',
+        'sonnig',
+        'sunny',
+      ),
+      ...t(2, 'gewitter', 'thunderstorm', 'sturm', 'storm', 'wind', 'windig', 'windy', 'nebel', 'fog'),
       ...t(1.5, 'temperatur', 'temperature', 'draussen', 'outside'),
-      ...t(1, 'schirm', 'umbrella', 'kalt', 'cold', 'warm', 'jacke'),
+      ...t(2, 'schirm', 'regenschirm', 'umbrella'),
+      ...t(1, 'kalt', 'cold', 'warm', 'jacke', 'jacket', 'mantel', 'coat', 'sonnencreme', 'sunscreen'),
     ],
   },
 ];

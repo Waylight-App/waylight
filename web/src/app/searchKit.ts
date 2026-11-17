@@ -5,6 +5,7 @@
  */
 import type { IntentSpec } from '../features/search/domain/smart/intent';
 import type { SearchSource } from '../features/search/usecase/smartSearch';
+import { t } from '../shared/i18n';
 import type { Container } from './container';
 
 /** First widget config of a kind on the dashboard (e.g. the transit stop). */
@@ -34,3 +35,10 @@ export const terms = (weight: number, ...words: string[]) => words.map((term) =>
 
 /** Longest list in an answer. */
 export const MAX_ITEMS = 6;
+
+/** "Today", "Tomorrow" or "in 3 days" for the value of a list row. */
+export function inDays(days: number): string {
+  if (days <= 0) return t('time.today');
+  if (days === 1) return t('time.tomorrow');
+  return t('time.in_days', { n: days });
+}

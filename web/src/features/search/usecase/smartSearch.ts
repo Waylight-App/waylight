@@ -49,6 +49,12 @@ export interface SmartSearchOptions {
   /** Guests and kiosk mode get no write actions. */
   canAct: boolean;
   askBack: AskBack;
+  /**
+   * Answer when a source fails, e.g. the departure service is down. Without
+   * it the failed answer is left out and only the web search remains, which
+   * reads as if the question was not understood.
+   */
+  unavailable?: (match: Match, error: unknown) => Answer;
   now?: () => Date;
   /** Applies the learned boost to a match score (#159); target "answer:<intent>". */
   score?: (query: string, target: string, score: number) => number;
@@ -151,12 +157,19 @@ export class SmartSearch {
     const now = this.now().getTime();
     const hit = this.cache.get(key);
     if (hit && now - hit.at < ttl) return hit.answer;
-    const answer = source.resolve(match, signal);
+    const raw = source.resolve(match, signal);
+    const unavailable = this.opts.unavailable;
+    const answer = unavailable
+      ? raw.catch((e: unknown) => {
+          if (signal.aborted) throw e;
+          return unavailable(match, e);
+        })
+      : raw;
     const entry = { at: now, answer };
     this.cache.set(key, entry);
     // Failures and aborted requests are not shared with the next query.
     const forget = () => this.cache.get(key) === entry && this.cache.delete(key);
-    answer.catch(forget);
+    raw.catch(forget);
     signal.addEventListener('abort', forget, { once: true });
     return answer;
   }

@@ -18,8 +18,13 @@ const STOP_WORDS = new Set(
     'der die das den dem des ein eine einen einem einer ist sind wie was wo wann wer welche welcher welches ' +
     'mein meine meinen meiner mir mich ich du es im in am an auf zu zum zur mit von vom fur bei noch gerade ' +
     'jetzt aktuell bitte mal denn doch ja und oder ' +
+    // Auxiliary verbs carry no topic; as two-letter prefixes ("do") they
+    // would otherwise match terms like "docker".
+    'habe hast hat haben muss musst soll sollte kann gibt schon ' +
+    // Verbs around a weather question would otherwise be read as a place.
+    'brauche brauchst brauchen anziehen mitnehmen ' +
     'the a an is are how what where when who which my me i you it in on at to of for with please now current ' +
-    'currently show tell and or'
+    'currently show tell and or do does did will would can could should need there be'
   ).split(' '),
 );
 
@@ -85,6 +90,8 @@ export function matchToken(token: string, term: string): MatchQuality | null {
   if (token === term) return 'exact';
   if (token.length >= MIN_PREFIX && term.startsWith(token)) return 'prefix';
   if (token.length <= 3) return null;
+  // Typos rarely hit the first letter; without this "serien" would be "ferien".
+  if (token[0] !== term[0]) return null;
   const limit = maxDistance(term.length);
   if (limit === 0) return null;
   return boundedDistance(token, term, limit) <= limit ? 'fuzzy' : null;

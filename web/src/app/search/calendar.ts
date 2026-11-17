@@ -40,7 +40,8 @@ export const search = defineSearch({
       slots: [{ name: 'day', type: 'day', alone: 1.5 }],
       terms: [
         ...terms(3, 'termin', 'termine', 'kalender', 'calendar', 'agenda', 'appointments', 'meetings'),
-        ...terms(1, 'vor', 'geplant', 'planned', 'schedule'),
+        ...terms(2, 'vor', 'vorhaben', 'steht', 'schedule', 'plans'),
+        ...terms(1, 'geplant', 'planned', 'naechster', 'nachster', 'next'),
       ],
     },
   ],

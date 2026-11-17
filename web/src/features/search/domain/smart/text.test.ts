@@ -44,7 +44,9 @@ describe('matchToken', () => {
     ['cpu', 'cup', null], // short tokens: exact or prefix only
     ['ram', 'rom', null],
     ['disk', 'dash', null], // two edits on a short term
-    ['docker', 'locker', 'fuzzy'], // one substitution is allowed from 4 characters …
+    ['docker', 'dokcer', 'fuzzy'], // a swap of neighbours counts as one edit
+    ['docker', 'dockor', 'fuzzy'], // one substitution is allowed from 4 characters …
+    ['serien', 'ferien', null], // … but not in the first letter, where typos are rare
     ['dockerx', 'nginx', null], // … but not a different word
     ['wetter', 'weather', null], // distance 2 on 7 characters is too far
   ];

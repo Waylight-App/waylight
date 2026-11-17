@@ -20,12 +20,18 @@ describe('module search contributions (#161)', () => {
   it('are collected, with unique intent ids that point at their own source', () => {
     expect(contributions.map((c) => c.module)).toEqual([
       'backupmonitor',
+      'birthdays',
       'calendar',
       'diskhealth',
+      'electricity',
+      'fuel',
+      'holidays',
       'markets',
       'parcels',
       'phonelist',
+      'shopping',
       'speedtest',
+      'sports',
       'timeline',
       'transit',
       'waste',
@@ -111,6 +117,189 @@ describe('regression table of module intents (#161)', () => {
 
   it('fills the stop of a departure query', () => {
     expect(top('abfahrten hauptbahnhof')?.slots['place']).toEqual({ type: 'place', text: 'hauptbahnhof' });
+  });
+});
+
+// --- natural questions ------------------------------------------------------
+
+const people: Entity[] = [...entities, { kind: 'person', id: 'p1', name: 'Anna Schmidt' }];
+
+/** Questions people ask, German and English, and the intent they reach. */
+const questions: [string, string | null][] = [
+  // transit
+  ['wann fährt der nächste bus', 'transit.departures'],
+  ['nächster bus', 'transit.departures'],
+  ['Abfahrt Oldenburg Hbf', 'transit.departures'],
+  ['Bus Oldenburg Hbf', 'transit.departures'],
+  ['bus nach lappan', 'transit.departures'],
+  ['wann kommt die bahn', 'transit.departures'],
+  ['nächste straßenbahn', 'transit.departures'],
+  ['zug nach bremen', 'transit.departures'],
+  ['haltestelle lappan', 'transit.departures'],
+  ['departures central station', 'transit.departures'],
+  ['next bus', 'transit.departures'],
+  ['when is the next train', 'transit.departures'],
+  // weather
+  ['wie wird das wetter morgen', 'weather.forecast'],
+  ['wetter', 'weather.forecast'],
+  ['regnet es heute', 'weather.forecast'],
+  ['brauche ich einen schirm', 'weather.forecast'],
+  ['brauche ich eine jacke', 'weather.forecast'],
+  ['wird es heute warm', 'weather.forecast'],
+  ['wie warm ist es draußen', 'weather.forecast'],
+  ['schneit es morgen', 'weather.forecast'],
+  ['wetter berlin', 'weather.forecast'],
+  ['is it raining', 'weather.forecast'],
+  ['do i need an umbrella', 'weather.forecast'],
+  ['weather tomorrow', 'weather.forecast'],
+  ['how cold is it outside', 'weather.forecast'],
+  ['will it rain on friday', 'weather.forecast'],
+  // calendar
+  ['was steht heute an', 'calendar.agenda'],
+  ['habe ich morgen termine', 'calendar.agenda'],
+  ['termine heute', 'calendar.agenda'],
+  ['was habe ich am freitag vor', 'calendar.agenda'],
+  ['kalender', 'calendar.agenda'],
+  ['nächster termin', 'calendar.agenda'],
+  ['meetings today', 'calendar.agenda'],
+  ['what is on tomorrow', 'calendar.agenda'],
+  ['my schedule', 'calendar.agenda'],
+  ['agenda', 'calendar.agenda'],
+  // waste
+  ['wann kommt der müll', 'waste.next'],
+  ['wann wird die gelbe tonne abgeholt', 'waste.next'],
+  ['müllabfuhr', 'waste.next'],
+  ['welche tonne muss raus', 'waste.next'],
+  ['papiertonne', 'waste.next'],
+  ['when is trash day', 'waste.next'],
+  ['bin day', 'waste.next'],
+  // parcels
+  ['wo ist mein paket', 'parcels.status'],
+  ['wann kommt mein paket', 'parcels.status'],
+  ['sendungsverfolgung', 'parcels.status'],
+  ['dhl paket', 'parcels.status'],
+  ['where is my package', 'parcels.status'],
+  ['track parcel', 'parcels.status'],
+  // system
+  ['wie voll ist die festplatte', 'system.disk'],
+  ['speicherplatz', 'system.disk'],
+  ['freier speicher', 'system.disk'],
+  ['disk space', 'system.disk'],
+  ['is the disk full', 'system.disk'],
+  ['cpu auslastung', 'system.cpu'],
+  ['wie ausgelastet ist der server', 'system.cpu'],
+  ['cpu usage', 'system.cpu'],
+  ['wie viel ram ist frei', 'system.memory'],
+  ['arbeitsspeicher', 'system.memory'],
+  ['memory usage', 'system.memory'],
+  ['wie lange läuft der server schon', 'system.uptime'],
+  ['seit wann läuft der server', 'system.uptime'],
+  ['uptime', 'system.uptime'],
+  ['wie heiß ist der server', 'system.temperature'],
+  ['cpu temperatur', 'system.temperature'],
+  ['server temperature', 'system.temperature'],
+  // docker and services
+  ['läuft jellyfin', 'docker.status'],
+  ['jellyfin status', 'docker.status'],
+  ['is jellyfin running', 'docker.status'],
+  ['welche container sind gestoppt', 'docker.overview'],
+  ['docker', 'docker.overview'],
+  ['laufende container', 'docker.overview'],
+  ['which containers are down', 'docker.overview'],
+  ['jellyfin neu starten', 'docker.restart'],
+  ['starte jellyfin neu', 'docker.restart'],
+  ['restart jellyfin', 'docker.restart'],
+  ['welche dienste sind offline', 'services.overview'],
+  ['ist alles online', 'services.overview'],
+  ['services down', 'services.overview'],
+  ['is everything up', 'services.overview'],
+  ['ist das nas erreichbar', 'services.status'],
+  ['nas online', 'services.status'],
+  // backups, disks, speedtest
+  ['backups', 'backup.overview'],
+  ['ist das backup gelaufen', 'backup.overview'],
+  ['backup status', 'backup.overview'],
+  ['did the backup run', 'backup.overview'],
+  ['festplatten gesundheit', 'diskhealth.status'],
+  ['smart werte', 'diskhealth.status'],
+  ['disk health', 'diskhealth.status'],
+  ['wie schnell ist mein internet', 'speedtest.latest'],
+  ['speedtest', 'speedtest.latest'],
+  ['internet geschwindigkeit', 'speedtest.latest'],
+  ['how fast is my internet', 'speedtest.latest'],
+  // timeline, phone list
+  ['was ist passiert', 'timeline.recent'],
+  ['letzte ereignisse', 'timeline.recent'],
+  ['telefonnummer von anna', 'phonelist.person'],
+  ['nummer anna schmidt', 'phonelist.person'],
+  // holidays
+  ['wann ist der nächste feiertag', 'holidays.next'],
+  ['feiertage', 'holidays.next'],
+  ['nächste ferien', 'holidays.next'],
+  ['wann sind schulferien', 'holidays.next'],
+  ['next public holiday', 'holidays.next'],
+  ['school holidays', 'holidays.next'],
+  // birthdays
+  ['wer hat geburtstag', 'birthdays.upcoming'],
+  ['wer hat heute geburtstag', 'birthdays.upcoming'],
+  ['nächste geburtstage', 'birthdays.upcoming'],
+  ['birthdays', 'birthdays.upcoming'],
+  ['whose birthday is it', 'birthdays.upcoming'],
+  // shopping
+  ['was ist auf meiner einkaufsliste', 'shopping.list'],
+  ['einkaufsliste', 'shopping.list'],
+  ['was muss ich einkaufen', 'shopping.list'],
+  ['shopping list', 'shopping.list'],
+  ['what do i need to buy', 'shopping.list'],
+  // electricity
+  ['was kostet strom gerade', 'electricity.price'],
+  ['strompreis', 'electricity.price'],
+  ['wann ist strom am günstigsten', 'electricity.price'],
+  ['electricity price', 'electricity.price'],
+  ['when is power cheapest', 'electricity.price'],
+  // sports
+  ['spielt werder heute', 'sports.team'],
+  ['wann spielt werder', 'sports.team'],
+  ['bundesliga tabelle', 'sports.team'],
+  ['wie hat werder gespielt', 'sports.team'],
+  ['next match', 'sports.team'],
+  ['football results', 'sports.team'],
+  // fuel
+  ['wo ist sprit günstig', 'fuel.prices'],
+  ['spritpreise', 'fuel.prices'],
+  ['diesel preis', 'fuel.prices'],
+  ['fuel prices', 'fuel.prices'],
+  // ordinary web searches stay web searches
+  ['rezept lasagne', null],
+  ['beste pizza oldenburg', null],
+  ['python tutorial', null],
+  ['how to bake bread', null],
+  ['netflix serien', null],
+  ['einstein relativitätstheorie', null],
+  ['kino heute', null],
+  ['ikea öffnungszeiten', null],
+];
+
+describe('natural questions reach the right intent', () => {
+  it.each(questions)('%s → %s', (query, want) => {
+    expect(rank(interpret(query, INTENTS, people, today))[0]?.intent.id ?? null).toBe(want);
+  });
+
+  it.each([
+    'brauche ich einen schirm',
+    'soll ich eine jacke anziehen',
+    'wird es morgen sonnig',
+    'brauche ich heute sonnencreme',
+    'do i need an umbrella',
+  ])('reads no place into "%s"', (query) => {
+    const m = top(query);
+    expect(m?.intent.id).toBe('weather.forecast');
+    expect(m?.slots['place']).toBeUndefined();
+  });
+
+  it('keeps a named place for the weather and the stop for departures', () => {
+    expect(top('weather in new york')?.slots['place']).toEqual({ type: 'place', text: 'new york' });
+    expect(top('abfahrt oldenburg hbf')?.slots['place']).toEqual({ type: 'place', text: 'oldenburg hbf' });
   });
 });
 

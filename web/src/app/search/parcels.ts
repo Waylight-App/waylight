@@ -29,7 +29,8 @@ export const search = defineSearch({
       widgetKind: 'parcels',
       terms: [
         ...terms(3, 'paket', 'pakete', 'sendung', 'sendungen', 'parcel', 'parcels', 'package', 'packages'),
-        ...terms(2, 'lieferung', 'delivery', 'dhl', 'tracking'),
+        ...terms(3, 'sendungsverfolgung', 'paketverfolgung'),
+        ...terms(2, 'lieferung', 'delivery', 'dhl', 'hermes', 'dpd', 'ups', 'gls', 'tracking', 'track'),
         ...terms(1, 'kommt', 'coming', 'zugestellt', 'delivered'),
       ],
     },

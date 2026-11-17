@@ -10,6 +10,7 @@ import { type SearchSource, SmartSearch } from '../features/search/usecase/smart
 import type { ServiceState } from '../features/services/domain/service';
 import { daysUntilFull } from '../features/system/domain/system';
 import { describe, noHealth, type WeatherConfig } from '../features/weather/domain/weather';
+import { ApiError, errorMessage } from '../shared/api-client/http';
 import { intlLocale, type MessageKey, t } from '../shared/i18n';
 import { formatBytes, formatUptime } from '../shared/ui/format';
 import type { Container } from './container';
@@ -432,6 +433,22 @@ function askBack(m: Match): Answer {
   };
 }
 
+/**
+ * Answer when a source fails: the server's own message (e.g. "The departure
+ * information is not available right now"), so the user sees why instead of
+ * only the web search.
+ */
+function unavailable(m: Match, error: unknown): Answer {
+  return {
+    kind: 'text',
+    intent: m.intent.id,
+    widgetKind: m.intent.widgetKind,
+    title: t('smart.unavailable_title'),
+    text: error instanceof ApiError ? errorMessage(error) : t('smart.unavailable'),
+    at: null,
+  };
+}
+
 // Intents and sources of modules from src/app/search/<name>.ts (#161, #193).
 const found = import.meta.glob<{ search: SearchContribution }>(['./search/*.ts', '!./search/*.test.ts'], {
   eager: true,
@@ -466,5 +483,12 @@ export function createSmartSearch(
   if (modules.has('weather')) sources.push(weatherSource(c, opts.weatherLocation));
   const context = { widgetConfig: opts.widgetConfig ?? (() => null) };
   for (const m of contributions) if (modules.has(m.module)) sources.push(m.source(c, context));
-  return new SmartSearch({ intents: allIntents(), sources, canAct: opts.canAct, askBack, score: opts.score });
+  return new SmartSearch({
+    intents: allIntents(),
+    sources,
+    canAct: opts.canAct,
+    askBack,
+    unavailable,
+    score: opts.score,
+  });
 }
