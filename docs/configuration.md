@@ -63,6 +63,9 @@ Durations use Go syntax: `90s`, `15m`, `24h`, `720h`.
 | `AUTH_PROXY_HEADER`, `AUTH_PROXY_USERS` | empty | Trust a user header set by a proxy in `TRUSTED_PROXIES` (forward auth). |
 | `PASSWORD_LOGIN` | `true` | Set to `false` to turn off the owner's password sign-in once single sign-on works. |
 | `SSO_REQUIRE_2FA` | `false` | Also ask for the local two-factor code after single sign-on. |
+| `OIDC_BUTTON_LABEL` | empty | The provider's name on the sign-in button, such as `Microsoft` ("Sign in with Microsoft"), at most 40 characters. Empty keeps "Sign in with single sign-on". |
+| `OIDC_BUTTON_ICON` | empty | An icon on that button: `microsoft` or `key`. |
+| `OIDC_AUTO_REDIRECT` | `false` | With `PASSWORD_LOGIN=false`, the sign-in page goes straight to the provider. `/?local=1` still shows it. See [single sign-on](reverse-proxy.md#single-sign-on-optional). |
 
 ## Actions that change other systems
 

@@ -2,7 +2,8 @@
   import { untrack } from 'svelte';
   import { t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
-  import { ssoErrorKey } from '../domain/auth';
+  import { redirectToProvider, ssoErrorKey } from '../domain/auth';
+  import SsoIcon from './SsoIcon.svelte';
   import type { SecondFactorChallenge } from '../domain/passkey';
   import type { AuthUseCases } from '../usecase/authUseCases';
   import AuthCard from './AuthCard.svelte';
@@ -21,6 +22,15 @@
   let { auth, ondone, brandName = 'trisse-home', poweredBy = false }: Props = $props();
 
   const params = new URLSearchParams(location.search);
+  // OIDC_AUTO_REDIRECT (#514): without a password form the page has nothing
+  // to offer but the provider; ?local=1 keeps it for recovery.
+  if (
+    redirectToProvider(
+      untrack(() => auth.sso),
+      params,
+    )
+  )
+    location.assign('/api/auth/oidc/start');
   // The ticket is read once when the page opens; later changes come from submit().
   let ticket = $state(params.get('sso_ticket') ?? untrack(() => auth.ssoTicket));
   const ssoError = ssoErrorKey(params.get('sso_error'));
@@ -94,7 +104,11 @@
     <ForgotPassword {auth} onback={() => (forgot = false)} />
   {:else}
     {#if auth.sso.oidc && !ticket && !needsCode}
-      <a class="btn btn-primary sso" href="/api/auth/oidc/start">{t('auth.sign_in_with_sso')}</a>
+      <a class="btn btn-primary sso" href="/api/auth/oidc/start"
+        >{#if auth.sso.buttonIcon}<SsoIcon icon={auth.sso.buttonIcon} />{/if}{auth.sso.buttonLabel
+          ? t('auth.sign_in_with_provider', { name: auth.sso.buttonLabel })
+          : t('auth.sign_in_with_sso')}</a
+      >
     {/if}
     <form onsubmit={submit}>
       {#if asGuest}

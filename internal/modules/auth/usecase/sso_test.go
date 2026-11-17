@@ -152,3 +152,20 @@ func TestOIDCSignsInMembersThroughExternalAccounts(t *testing.T) {
 		t.Fatalf("disabled member: %v", err)
 	}
 }
+
+// The sign-in page learns the provider's name, and is skipped only when it
+// offers no password form (#514).
+func TestSSOStatusButtonAndRedirect(t *testing.T) {
+	e := newEnv()
+	button := SSOButton{Label: "Microsoft", Icon: "microsoft"}
+	st := NewSSO(e.deps, SSOConfig{OIDC: &fakeOIDC{}, Button: button, AutoRedirect: true, LocalLogin: true}).Status()
+	if st.Button != button || st.AutoRedirect {
+		t.Fatalf("with a password form: %+v", st)
+	}
+	if st := NewSSO(e.deps, SSOConfig{OIDC: &fakeOIDC{}, AutoRedirect: true}).Status(); !st.AutoRedirect {
+		t.Fatalf("without a password form: %+v", st)
+	}
+	if st := NewSSO(e.deps, SSOConfig{HeaderUsers: []string{"me"}, Button: button, AutoRedirect: true}).Status(); st.AutoRedirect || st.Button.Label != "" {
+		t.Fatalf("without OIDC: %+v", st)
+	}
+}

@@ -158,6 +158,10 @@ func TestSSOValidation(t *testing.T) {
 		with("OIDC_ISSUER", "https://id.example", "OIDC_CLIENT_ID", "c", "OIDC_REDIRECT_URL", "https://h/cb"),
 		with("AUTH_PROXY_HEADER", "Remote-User", "AUTH_PROXY_USERS", "me"),
 		with("PASSWORD_LOGIN", "false"),
+		// #514: the button and the redirect need OIDC and sane values.
+		with("OIDC_AUTO_REDIRECT", "true"),
+		with("OIDC_BUTTON_ICON", "https://evil.example/logo.svg"),
+		with("OIDC_BUTTON_LABEL", "A provider whose name is far too long to fit"),
 	}
 	for _, vars := range bad {
 		if _, err := Load(env(vars)); err == nil {
@@ -168,6 +172,11 @@ func TestSSOValidation(t *testing.T) {
 		"OIDC_ALLOWED_EMAILS", "me@example.org", "PASSWORD_LOGIN", "false")
 	if cfg, err := Load(env(ok)); err != nil || cfg.PasswordLogin {
 		t.Fatalf("%v %v", cfg.PasswordLogin, err)
+	}
+	button := with(append([]string{"OIDC_BUTTON_LABEL", " Microsoft ", "OIDC_BUTTON_ICON", "Microsoft", "OIDC_AUTO_REDIRECT", "true"},
+		"OIDC_ISSUER", "https://id.example", "OIDC_CLIENT_ID", "c", "OIDC_REDIRECT_URL", "https://h/cb", "OIDC_ALLOWED_EMAILS", "me@example.org")...)
+	if cfg, err := Load(env(button)); err != nil || cfg.OIDCButtonLabel != "Microsoft" || cfg.OIDCButtonIcon != "microsoft" || !cfg.OIDCAutoRedirect {
+		t.Fatalf("%+v %v", cfg, err)
 	}
 }
 

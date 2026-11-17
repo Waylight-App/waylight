@@ -486,7 +486,8 @@ func (g *guestScope) DataKinds() map[string]string {
 func ssoConfig(cfg config.Config, client *http.Client, clk clock.System) auth.SSOConfig {
 	sso := auth.SSOConfig{AllowedSubjects: cfg.OIDCAllowedSubjects, AllowedEmails: cfg.OIDCAllowedEmails,
 		ProxyHeader: cfg.AuthProxyHeader, ProxyUsers: cfg.AuthProxyUsers, TrustedProxies: cfg.TrustedProxies,
-		PasswordLogin: cfg.PasswordLogin, Require2FA: cfg.SSORequire2FA}
+		PasswordLogin: cfg.PasswordLogin, Require2FA: cfg.SSORequire2FA,
+		ButtonLabel: cfg.OIDCButtonLabel, ButtonIcon: cfg.OIDCButtonIcon, AutoRedirect: cfg.OIDCAutoRedirect}
 	if cfg.OIDCIssuer != "" {
 		sso.OIDC = oidc.New(oidc.Config{Issuer: cfg.OIDCIssuer, ClientID: cfg.OIDCClientID, ClientSecret: cfg.OIDCClientSecret,
 			RedirectURL: cfg.OIDCRedirectURL, GroupsClaim: cfg.OIDCGroupsClaim}, client, clk.Now)
