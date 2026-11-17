@@ -31,6 +31,10 @@ anything else. `MICROSOFT_CLIENT_ID` replaces the built-in registration with
 your own, and an empty value turns signing in by code off
 ([configuration](configuration.md)).
 
+Signing in by code takes personal accounts only. For work or school
+accounts, see [With a work or school account](#with-a-work-or-school-account)
+below.
+
 The rest of this page sets up the other way, a sign-in that sends you to
 Microsoft and back. It needs your own registration and an HTTPS address.
 
@@ -100,6 +104,28 @@ Microsoft account linked. The invitation is used up as with a password.
 Such an account has no password at first, so Microsoft is its only way in:
 *Disconnect* stays unavailable until a password is set, for example with a
 reset link from an admin or *Forgot password* on the sign-in page.
+
+## With a work or school account
+
+Accounts of an organisation (Microsoft Entra ID) sign in through the
+organisation's own registration, so its administrators keep control of who
+may sign in, multi-factor rules and conditional access. Follow the steps
+above with two changes:
+
+- *Supported account types*: **Accounts in this organizational directory
+  only**.
+- `OIDC_ISSUER` names the organisation's directory instead of personal
+  accounts:
+
+  ```sh
+  OIDC_ISSUER=https://login.microsoftonline.com/<directory (tenant) id>/v2.0
+  ```
+
+  The *Directory (tenant) ID* is on the overview page of the registration.
+
+Microsoft does not mark addresses as verified for work accounts either, so
+here too people get in through the link they make while signed in, as for
+a personal account, not through `OIDC_ALLOWED_EMAILS`.
 
 ## Without a password
 
