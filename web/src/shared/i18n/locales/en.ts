@@ -876,6 +876,8 @@ export const en = {
   'common.testing': 'Testing…',
   'common.test_save': 'Test & save',
   'auth.enter_code_hint': 'Enter the code from your authenticator app.',
+  'auth.welcome_back': 'Welcome back',
+  'auth.or_with_password': 'or with password',
   'auth.please_log_in': 'Please log in.',
   'auth.unknown_ip': 'unknown IP',
   'backup.creating': 'Creating…',
