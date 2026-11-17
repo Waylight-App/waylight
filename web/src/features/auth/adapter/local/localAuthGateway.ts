@@ -55,6 +55,8 @@ export class LocalAuthGateway implements AuthGateway {
   linkedSignIns = () => Promise.resolve([]);
   beginLinkSignIn = unavailable;
   unlinkSignIn = unavailable;
+  startMicrosoft = unavailable;
+  pollMicrosoft = unavailable;
   signUpWithSSO = unavailable;
   guests = unavailable;
   createGuest = unavailable;

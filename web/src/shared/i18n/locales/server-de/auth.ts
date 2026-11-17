@@ -6,6 +6,11 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
+  // The code is no longer valid. Start again.
+  srv_48b65f2a0b803859: 'Der Code ist nicht mehr gültig. Bitte neu starten.',
+  // This Microsoft account is not linked to an account here. Sign in with your password and connect it under Settings → Account.
+  srv_d0088f948a0bcde7:
+    'Dieses Microsoft-Konto ist hier mit keinem Konto verknüpft. Melde dich mit deinem Passwort an und verbinde es unter Einstellungen → Konto.',
   // This sign-in already belongs to an account here. Sign in with it instead.
   srv_cfe702755e13d3ac: 'Diese Anmeldung gehört hier schon zu einem Konto. Melde dich damit an.',
   // This sign-in is the only way into the account. Set a password first, for example with a reset link.

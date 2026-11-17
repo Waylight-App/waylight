@@ -247,7 +247,7 @@
         <h3>{t('app.two_factor_authentication')}</h3>
         <TwoFactorSettings auth={container.auth} />
         <PasskeySettings auth={container.auth} />
-        {#if container.auth.sso.oidc && !container.auth.kiosk}
+        {#if !container.auth.kiosk && !container.localMode}
           {#await import('../features/auth/ui/LinkedSignInSettings.svelte') then { default: LinkedSignInSettings }}
             <LinkedSignInSettings auth={container.auth} />
           {/await}

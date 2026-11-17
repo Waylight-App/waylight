@@ -92,3 +92,67 @@ func (h *Handlers) SignUpWithSSO(w http.ResponseWriter, r *http.Request) {
 		Secure: h.cookies.Secure, SameSite: http.SameSiteLaxMode, MaxAge: 600})
 	httpapi.WriteJSON(w, http.StatusOK, presenter.LinkStartDTO{Redirect: url})
 }
+
+// DeviceFlowRequestDTO is the body of POST /api/auth/microsoft/poll.
+type DeviceFlowRequestDTO struct {
+	Flow string `json:"flow"`
+}
+
+// StartMicrosoftLink handles POST /api/auth/microsoft/link: link a Microsoft
+// account to the signed-in account by code (#535).
+func (h *Handlers) StartMicrosoftLink(w http.ResponseWriter, r *http.Request) {
+	account, ok := linkingAccount(r)
+	if !ok {
+		httpapi.WriteDomainError(w, r, kernel.ErrForbidden)
+		return
+	}
+	h.startDevice(w, r, account)
+}
+
+// StartMicrosoftSignIn handles POST /api/auth/microsoft/start (public):
+// sign in with a linked Microsoft account by code (#535).
+func (h *Handlers) StartMicrosoftSignIn(w http.ResponseWriter, r *http.Request) {
+	h.startDevice(w, r, "")
+}
+
+func (h *Handlers) startDevice(w http.ResponseWriter, r *http.Request, account string) {
+	if h.uc.SSO == nil {
+		httpapi.WriteDomainError(w, r, domain.ErrSSOUnavailable)
+		return
+	}
+	f, err := h.uc.SSO.BeginDevice(r.Context(), account)
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.DeviceFlow(f))
+}
+
+// PollMicrosoft handles POST /api/auth/microsoft/poll (public): 202 while
+// the code is not confirmed, then the result: linked, a session (sets the
+// cookie, as the password login) or a ticket for the local second factor.
+func (h *Handlers) PollMicrosoft(w http.ResponseWriter, r *http.Request) {
+	var dto DeviceFlowRequestDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	if h.uc.SSO == nil {
+		httpapi.WriteDomainError(w, r, domain.ErrSSOUnavailable)
+		return
+	}
+	client := domain.NewClient(r.UserAgent(), clientKey(r))
+	res, err := h.uc.SSO.PollDevice(r.Context(), dto.Flow, client)
+	switch {
+	case err != nil:
+		httpapi.WriteDomainError(w, r, err)
+	case res.Pending:
+		httpapi.WriteJSON(w, http.StatusAccepted, presenter.DevicePollDTO{Pending: true})
+	case res.Linked:
+		httpapi.WriteJSON(w, http.StatusOK, presenter.DevicePollDTO{Linked: true})
+	case res.Ticket != "":
+		httpapi.WriteJSON(w, http.StatusOK, presenter.DevicePollDTO{Ticket: res.Ticket})
+	default:
+		h.respondWithSession(w, r, res.Session, nil)
+	}
+}

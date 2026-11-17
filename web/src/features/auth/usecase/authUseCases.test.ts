@@ -40,6 +40,8 @@ function setup(status: Partial<AuthStatus> = {}) {
     linkedSignIns: vi.fn(),
     beginLinkSignIn: vi.fn(),
     unlinkSignIn: vi.fn(),
+    startMicrosoft: vi.fn(),
+    pollMicrosoft: vi.fn(),
     signUpWithSSO: vi.fn(),
     ssoSecondFactor: vi.fn().mockResolvedValue(session),
     guests: vi.fn().mockResolvedValue([]),

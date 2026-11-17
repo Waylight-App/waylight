@@ -492,6 +492,11 @@ func ssoConfig(cfg config.Config, client *http.Client, clk clock.System) auth.SS
 		sso.OIDC = oidc.New(oidc.Config{Issuer: cfg.OIDCIssuer, ClientID: cfg.OIDCClientID, ClientSecret: cfg.OIDCClientSecret,
 			RedirectURL: cfg.OIDCRedirectURL, GroupsClaim: cfg.OIDCGroupsClaim}, client, clk.Now)
 	}
+	// Sign in with a Microsoft account by code (#535): a public client, no
+	// secret, no redirect address.
+	if cfg.MicrosoftClientID != "" {
+		sso.Microsoft = oidc.New(oidc.Config{Issuer: cfg.MicrosoftIssuer, ClientID: cfg.MicrosoftClientID}, client, clk.Now)
+	}
 	return sso
 }
 
