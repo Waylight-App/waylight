@@ -77,6 +77,11 @@ type SSOConfig struct {
 	// PasswordLogin keeps the owner's password login available.
 	PasswordLogin bool
 	Require2FA    bool
+	// ButtonLabel and ButtonIcon name the provider on the sign-in page,
+	// AutoRedirect skips that page when no password form is offered (#514).
+	ButtonLabel  string
+	ButtonIcon   string
+	AutoRedirect bool
 }
 
 // oidcAdapter maps the platform relying party to the use case port.
@@ -431,7 +436,8 @@ func newSSO(deps usecase.Deps, c SSOConfig) usecase.SSO {
 		return nil
 	}
 	cfg := usecase.SSOConfig{Mapping: domain.IdentityMapping{Subjects: c.AllowedSubjects, Emails: c.AllowedEmails},
-		LocalLogin: c.PasswordLogin, Require2FA: c.Require2FA}
+		LocalLogin: c.PasswordLogin, Require2FA: c.Require2FA,
+		Button: usecase.SSOButton{Label: c.ButtonLabel, Icon: c.ButtonIcon}, AutoRedirect: c.AutoRedirect}
 	if c.OIDC != nil {
 		cfg.OIDC = oidcAdapter{c.OIDC}
 	}

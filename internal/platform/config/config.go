@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 // SecretKeyBytes is the required length of the decoded SECRET_KEY (AES-256).
@@ -116,6 +117,11 @@ type Config struct {
 	AuthProxyUsers  []string
 	PasswordLogin   bool
 	SSORequire2FA   bool
+	// OIDCButtonLabel, OIDCButtonIcon and OIDCAutoRedirect shape the
+	// sign-in page for single sign-on (#514).
+	OIDCButtonLabel  string
+	OIDCButtonIcon   string
+	OIDCAutoRedirect bool
 	// DefaultTheme is the id of a built-in theme for the sign-in page and
 	// every account without its own appearance (#507); empty keeps the
 	// built-in look.
@@ -209,6 +215,9 @@ func Load(getenv func(string) string) (Config, error) {
 		AuthProxyUsers:           l.rawList("AUTH_PROXY_USERS", ""),
 		PasswordLogin:            l.boolean("PASSWORD_LOGIN", true),
 		SSORequire2FA:            l.boolean("SSO_REQUIRE_2FA", false),
+		OIDCButtonLabel:          strings.TrimSpace(l.str("OIDC_BUTTON_LABEL", "")),
+		OIDCButtonIcon:           strings.ToLower(strings.TrimSpace(l.str("OIDC_BUTTON_ICON", ""))),
+		OIDCAutoRedirect:         l.boolean("OIDC_AUTO_REDIRECT", false),
 		DefaultTheme:             strings.ToLower(l.str("DEFAULT_THEME", "")),
 	}
 	if raw := l.getenv("PUBLIC_URL"); raw != "" {
@@ -265,6 +274,15 @@ func Load(getenv func(string) string) (Config, error) {
 	}
 	if cfg.AuthProxyHeader != "" && (len(cfg.TrustedProxies) == 0 || len(cfg.AuthProxyUsers) == 0) {
 		l.fail("AUTH_PROXY_HEADER", "needs TRUSTED_PROXIES (the proxy that sets the header) and AUTH_PROXY_USERS")
+	}
+	if utf8.RuneCountInString(cfg.OIDCButtonLabel) > 40 {
+		l.fail("OIDC_BUTTON_LABEL", "must be at most 40 characters")
+	}
+	if cfg.OIDCButtonIcon != "" && cfg.OIDCButtonIcon != "microsoft" && cfg.OIDCButtonIcon != "key" {
+		l.fail("OIDC_BUTTON_ICON", "must be microsoft, key or empty")
+	}
+	if cfg.OIDCAutoRedirect && cfg.OIDCIssuer == "" {
+		l.fail("OIDC_AUTO_REDIRECT", "needs OpenID Connect (OIDC_ISSUER)")
 	}
 	if !cfg.PasswordLogin && cfg.OIDCIssuer == "" && cfg.AuthProxyHeader == "" {
 		l.fail("PASSWORD_LOGIN", "can only be false when OIDC or the proxy header login is configured")

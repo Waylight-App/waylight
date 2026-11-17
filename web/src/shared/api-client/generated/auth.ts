@@ -41,6 +41,18 @@ export interface SSOStatusDTO {
   oidc: boolean;
   header: boolean;
   localLogin: boolean;
+  /**
+   * ButtonLabel names the provider ("Microsoft"); empty for the generic text (#514).
+   */
+  buttonLabel?: string;
+  /**
+   * ButtonIcon is a bundled icon for the button, or empty.
+   */
+  buttonIcon?: '' | 'microsoft' | 'key';
+  /**
+   * AutoRedirect: go to the provider at once; ?local=1 shows the page.
+   */
+  autoRedirect?: boolean;
 }
 /**
  * SSOTicketDTO is returned when an SSO sign-in still needs the local code.

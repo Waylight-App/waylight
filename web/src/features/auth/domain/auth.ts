@@ -22,9 +22,29 @@ export interface AuthStatus {
   /** Member: own tabs and content, no instance settings (#294). */
   member: boolean;
   /** Available sign-in methods (ADR 0013). */
-  sso: { oidc: boolean; header: boolean; localLogin: boolean };
+  sso: SSOStatus;
   /** Members and guests can ask for a reset link by e-mail (#296). */
   passwordReset: boolean;
+}
+
+/** The sign-in methods the server offers (ADR 0013, #514). */
+export interface SSOStatus {
+  oidc: boolean;
+  header: boolean;
+  localLogin: boolean;
+  /** The provider's name for the button ("Microsoft"); '' for the generic text. */
+  buttonLabel?: string;
+  /** A bundled icon for the button. */
+  buttonIcon?: '' | 'microsoft' | 'key';
+  /** Go to the provider at once; ?local=1 shows the page anyway. */
+  autoRedirect?: boolean;
+}
+
+/** Whether the sign-in page should hand over to the provider right away. */
+export function redirectToProvider(sso: SSOStatus, search: URLSearchParams): boolean {
+  // Never after a provider error or with a ticket from it: that could loop.
+  if (search.has('sso_error') || search.has('sso_ticket') || search.has('local')) return false;
+  return !!sso.autoRedirect && sso.oidc && !sso.localLogin;
 }
 
 /** Result of a single sign-on attempt. */
