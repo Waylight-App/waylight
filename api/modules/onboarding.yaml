@@ -58,9 +58,25 @@ paths:
   /api/auth/oidc/callback:
     get:
       tags: [auth]
-      summary: Return from the provider; sets the session cookie and redirects to / (or /?sso_error=… / /?sso_ticket=…)
+      summary: Return from the provider; sets the session cookie and redirects to / (or /?sso_error=… / /?sso_ticket=…). After linking a sign-in it redirects to /?settings=account&link=ok|taken|licence instead
       security: []
       responses: { "302": { description: Redirect into the app } }
+  /api/auth/identities:
+    get:
+      tags: [auth]
+      summary: Sign-ins at the OpenID provider linked to the signed-in account (#527)
+      responses: { "200": { description: "[{subject, email, linkedAt}]" } }
+  /api/auth/identities/link:
+    post:
+      tags: [auth]
+      summary: Start linking a sign-in at the OpenID provider to the signed-in account; sets the state cookie and returns the provider URL to open
+      responses: { "200": { description: "{redirect}" }, "403": { description: Needs a licence key with sso (accounts other than the owner) }, "404": { description: OIDC is not configured } }
+  /api/auth/identities/{subject}:
+    delete:
+      tags: [auth]
+      summary: Remove a linked sign-in of the signed-in account
+      parameters: [{ name: subject, in: path, required: true, schema: { type: string } }]
+      responses: { "204": { description: Removed }, "404": { description: Not linked } }
   /api/auth/sso/header:
     post:
       tags: [auth]

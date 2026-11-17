@@ -187,7 +187,14 @@ func New(cfg Config, d Deps) (*Module, error) {
 	securityLog := usecase.NewSecurityLog(events)
 	status := usecase.NewGetStatusWithPolicies(accounts, sessions, d.Clock, deps.Policies, deps.Passkeys)
 	kiosks := usecase.NewKiosks(deps, gateway.NewKioskRepository(d.DB))
-	sso := newSSO(deps, cfg.SSO)
+	identities := gateway.NewIdentityRepository(d.DB)
+	// A deleted account's linked sign-ins go with it (#527).
+	deps.Hooks.OnDeleted(func(ctx context.Context, accountID string) {
+		if err := identities.RemoveAccount(ctx, accountID); err != nil && d.Log != nil {
+			d.Log.Warn("auth: remove the linked sign-ins of a deleted account", "err", err)
+		}
+	})
+	sso := newSSO(deps, cfg.SSO, identities)
 	uc := controller.UseCases{
 		Status:       status,
 		Setup:        usecase.NewSetupAccount(deps, gateway.NewSetupToken(token), observerFunc(cfg.OnAccountCreated)),
@@ -311,6 +318,9 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Public("POST /api/auth/login", m.handlers.Login)
 	r.Public("GET /api/auth/oidc/start", m.handlers.OIDCStart)
 	r.Public("GET /api/auth/oidc/callback", m.handlers.OIDCCallback)
+	r.Protected("GET /api/auth/identities", m.handlers.ListIdentities)
+	r.Protected("POST /api/auth/identities/link", m.handlers.BeginIdentityLink)
+	r.Protected("DELETE /api/auth/identities/{subject}", m.handlers.DeleteIdentity)
 	r.Public("POST /api/auth/sso/header", m.handlers.HeaderLogin)
 	r.Public("POST /api/auth/sso/2fa", m.handlers.SSOSecondFactor)
 	r.Public("POST /api/auth/passkeys/login", m.handlers.PasskeyLogin)
@@ -431,7 +441,7 @@ func (m *Module) ConfirmIdentity(ctx context.Context, password, code, clientKey 
 func (m *Module) Audit(ctx context.Context, e kernel.AuditEvent) { m.security.Audit(ctx, e) }
 
 // newSSO returns nil when no SSO method is configured.
-func newSSO(deps usecase.Deps, c SSOConfig) usecase.SSO {
+func newSSO(deps usecase.Deps, c SSOConfig, identities usecase.IdentityRepository) usecase.SSO {
 	if c.OIDC == nil && c.ProxyHeader == "" {
 		return nil
 	}
@@ -440,6 +450,8 @@ func newSSO(deps usecase.Deps, c SSOConfig) usecase.SSO {
 		Button: usecase.SSOButton{Label: c.ButtonLabel, Icon: c.ButtonIcon}, AutoRedirect: c.AutoRedirect}
 	if c.OIDC != nil {
 		cfg.OIDC = oidcAdapter{c.OIDC}
+		cfg.Issuer = c.OIDC.Issuer()
+		cfg.Identities = identities
 	}
 	if c.ProxyHeader != "" {
 		cfg.HeaderUsers = c.ProxyUsers

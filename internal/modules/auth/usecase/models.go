@@ -109,4 +109,7 @@ type SessionResponse struct {
 	SessionToken string
 	CSRFToken    string
 	ExpiresAt    time.Time
+	// Linked is set instead of a session when the provider's sign-in was
+	// linked to an account (#527).
+	Linked bool
 }

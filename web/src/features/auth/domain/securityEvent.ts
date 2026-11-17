@@ -31,6 +31,8 @@ const labels: Record<string, MessageKey> = {
   password_reset: 'auth.event.password_reset',
   reset_requested: 'auth.event.reset_requested',
   email_changed: 'auth.event.email_changed',
+  identity_linked: 'auth.event.identity_linked',
+  identity_unlinked: 'auth.event.identity_unlinked',
   group_changed: 'auth.event.group_changed',
   token_created: 'auth.event.token_created',
   token_revoked: 'auth.event.token_revoked',

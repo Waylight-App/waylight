@@ -57,6 +57,7 @@ nav:
       - Search and quick capture: search.md
       - Accounts, guests and kiosk displays: accounts.md
       - Licence keys: licence-keys.md
+      - Sign in with a personal Microsoft account: sign-in-with-microsoft.md
       - Single sign-on for members: single-sign-on-members.md
       - Directory sync (SCIM, LDAP, AD): directory-sync.md
       - Audit log: audit-log.md
