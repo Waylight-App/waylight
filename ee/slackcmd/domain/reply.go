@@ -72,7 +72,7 @@ func Help(command string) string {
 // NotConnected is the reply to someone whose Slack account is not linked to
 // an account of the instance.
 func NotConnected(connectURL string) string {
-	msg := "Connect your Slack account in waylight first, under Settings → Connected accounts."
+	msg := "Connect your Slack account in Waylight first, under Settings → Connected accounts."
 	if connectURL != "" {
 		msg += " <" + connectURL + "|Open the settings>"
 	}
@@ -80,4 +80,4 @@ func NotConnected(connectURL string) string {
 }
 
 // Unlicensed is the reply when the licence does not cover chat apps.
-const Unlicensed = "The Slack command is not available: the licence key of this waylight does not include chat apps."
+const Unlicensed = "The Slack command is not available: the licence key of this Waylight does not include chat apps."

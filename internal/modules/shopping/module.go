@@ -66,7 +66,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/shopping/items/{id}", h.SetDone)
 	r.Protected("DELETE /api/shopping/items/{id}", h.Delete)
 	r.Protected("POST /api/shopping/clear-completed", h.ClearCompleted)
-	// Lists kept on waylight (#471).
+	// Lists kept on Waylight (#471).
 	l := m.lists
 	r.Protected("GET /api/shopping/lists", l.All)
 	r.Protected("POST /api/shopping/lists", l.Create)

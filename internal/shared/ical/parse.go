@@ -1,5 +1,5 @@
 // Package ical parses and writes the subset of iCalendar (RFC 5545) that
-// waylight needs: VEVENTs with dates, times, durations, simple recurrence
+// Waylight needs: VEVENTs with dates, times, durations, simple recurrence
 // rules and text escaping. It is shared by the adapter rings of the calendar,
 // waste and shopping modules.
 package ical

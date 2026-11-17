@@ -159,7 +159,7 @@ func serve() error {
 		return err
 	}
 	defer a.db.Close()
-	a.log.Info("starting waylight", "version", version, "modules", a.registry.Names())
+	a.log.Info("starting Waylight", "version", version, "modules", a.registry.Names())
 	sched := newScheduler(a)
 	if a.cfg.DemoMode {
 		reset, err := prepareDemo(ctx, a)

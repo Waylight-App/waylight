@@ -32,7 +32,7 @@ func TestSlackMessage(t *testing.T) {
 	if p.Blocks[1].Text.Text != "&lt;!channel&gt; &amp; friends" || strings.Contains(p.Text, "<!channel>") {
 		t.Fatalf("not escaped: %+v", p)
 	}
-	if f := p.Blocks[2].Elements[0].Text; !strings.Contains(f, "Critical") || !strings.Contains(f, "<https://home.example.org|waylight>") {
+	if f := p.Blocks[2].Elements[0].Text; !strings.Contains(f, "Critical") || !strings.Contains(f, "<https://home.example.org|Waylight>") {
 		t.Fatalf("footer %q", f)
 	}
 	_ = json.Unmarshal(SlackMessage(domain.Message{Title: strings.Repeat("x", 300)}, ""), &p)

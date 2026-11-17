@@ -1,4 +1,4 @@
-// Command server is the composition root of waylight. It reads the
+// Command server is the composition root of Waylight. It reads the
 // configuration, builds the platform services, wires every enabled module via
 // constructor injection and starts the HTTP server and background jobs. It
 // contains no business logic.

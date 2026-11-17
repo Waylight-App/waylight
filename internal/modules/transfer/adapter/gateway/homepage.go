@@ -80,7 +80,7 @@ func (Homepage) Parse(files map[string][]byte) (domain.ImportPlan, error) {
 }
 
 // homepageServices walks the groups; nested groups (Homepage layouts) are
-// flattened, since waylight tiles have no groups.
+// flattened, since Waylight tiles have no groups.
 func homepageServices(root *yaml.Node, plan *domain.ImportPlan) {
 	var walk func(n *yaml.Node)
 	walk = func(n *yaml.Node) {
@@ -152,9 +152,9 @@ func homepageWidgets(root *yaml.Node, plan *domain.ImportPlan) {
 			}
 			plan.Widgets = append(plan.Widgets, weather(o.Label, o.Latitude, o.Longitude))
 		case "search":
-			plan.Warnings = append(plan.Warnings, "Widget search skipped: the search field is always at the top of waylight.")
+			plan.Warnings = append(plan.Warnings, "Widget search skipped: the search field is always at the top of Waylight.")
 		default:
-			plan.Warnings = append(plan.Warnings, fmt.Sprintf("Widget %s skipped: waylight has no counterpart.", w.name))
+			plan.Warnings = append(plan.Warnings, fmt.Sprintf("Widget %s skipped: Waylight has no counterpart.", w.name))
 		}
 	}
 }
@@ -178,7 +178,7 @@ func isHTTP(raw string) bool {
 
 // iconURL keeps icons given as http(s) URLs. Icon names ("sonarr.png",
 // "mdi-…", "si-…") would make the browser load images from a public CDN,
-// which waylight avoids by default, so they are reported instead.
+// which Waylight avoids by default, so they are reported instead.
 func iconURL(icon, service string, plan *domain.ImportPlan) string {
 	if icon == "" {
 		return ""

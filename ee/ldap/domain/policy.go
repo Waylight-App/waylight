@@ -24,7 +24,7 @@ type Policy struct {
 	// MemberGroups lets in only users in one of these groups (names or DNs);
 	// empty lets in every user found below the base DN.
 	MemberGroups []string
-	// SyncGroups limits which directory groups become waylight groups;
+	// SyncGroups limits which directory groups become Waylight groups;
 	// empty takes all of them.
 	SyncGroups []string
 	// AdminGroups makes everyone in one of these groups (names or DNs) an
@@ -67,7 +67,7 @@ func (p Policy) Allows(u User) bool {
 }
 
 // GroupsToSync returns the names of the user's groups that become
-// waylight groups, without duplicates.
+// Waylight groups, without duplicates.
 func (p Policy) GroupsToSync(u User) []string {
 	var out []string
 	for _, dn := range u.Groups {

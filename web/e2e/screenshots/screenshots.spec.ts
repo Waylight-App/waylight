@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { account } from '../support';
 
 /** Where the images go; referenced from the README. */
 const outDir = '../docs/screenshots';
@@ -43,12 +44,12 @@ for (const v of variants) {
       await settle(page);
       await page.screenshot({ path: `${outDir}/server-${v.name}.png`, fullPage: true });
       // Widget picker (#104).
-      await page.getByRole('button', { name: 'Edit', exact: true }).click();
+      await account(page, 'Edit');
       await page.getByRole('button', { name: '+ Add widget' }).click();
       await expect(page.getByRole('searchbox', { name: 'Search widgets…' })).toBeFocused();
       await page.screenshot({ path: `${outDir}/picker-${v.name}.png` });
       await page.keyboard.press('Escape');
-      await page.getByRole('button', { name: 'Done', exact: true }).click();
+      await account(page, 'Done');
     }
   });
 }
@@ -62,20 +63,18 @@ async function post(page: Page, path: string) {
   }, path);
 }
 
-// The built-in Amber theme (#506) has a light and a dark variant and follows
-// the scheme, so one apply covers both pictures.
-for (const scheme of ['light', 'dark'] as const) {
-  test(`dashboard amber ${scheme}`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
-    await page.setViewportSize({ width: 1440, height: 900 });
+// Amber is the default theme, so the pictures above already show it. Dark
+// Amber is the second Waylight theme; it is always dark.
+test('dashboard dark amber', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openDashboard(page);
+  await post(page, '/api/appearance/themes/amber-dark/apply');
+  try {
     await openDashboard(page);
-    await post(page, '/api/appearance/themes/amber/apply');
-    try {
-      await openDashboard(page);
-      await page.screenshot({ path: `${outDir}/home-amber-desktop-${scheme}.png`, fullPage: true });
-    } finally {
-      // Back to the built-in look, so the order of the tests does not matter.
-      await post(page, '/api/appearance/themes/restore');
-    }
-  });
-}
+    await page.screenshot({ path: `${outDir}/home-amber-dark-desktop.png`, fullPage: true });
+  } finally {
+    // Back to the default look, so the order of the tests does not matter.
+    await post(page, '/api/appearance/themes/restore');
+  }
+});

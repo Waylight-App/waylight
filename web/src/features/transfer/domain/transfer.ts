@@ -1,5 +1,5 @@
 import { t } from '../../../shared/i18n';
-/** Identifier of waylight export files. */
+/** Identifier of Waylight export files. */
 export const EXPORT_FORMAT = 'waylight-export';
 
 /** Result of an import. */

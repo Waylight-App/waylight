@@ -27,7 +27,7 @@ export interface TimerScheduler {
  * Timers and alarms of the search field (#474). Running timers are stored
  * with their end time, scheduled again after a reload, and fire the
  * listener (the in-app toast) and a browser notification when they run out.
- * They only fire while a waylight tab or the installed app is open.
+ * They only fire while a Waylight tab or the installed app is open.
  */
 export class Timers {
   private timers: Timer[];

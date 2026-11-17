@@ -7,7 +7,7 @@ test('quick capture saves a shared page only after confirming (#66)', async ({ p
   await page.goto(`/capture?${shared}`);
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
-  await expect(page.getByRole('heading', { name: 'Save to waylight' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Save to Waylight' })).toBeVisible();
   await expect(page.getByRole('radio', { name: 'Bookmark' })).toBeChecked();
   await expect(page.getByLabel('Title')).toHaveValue('An article');
   await expect(page.getByLabel('Link')).toHaveValue('https://example.org/article');
@@ -29,7 +29,7 @@ test('quick capture saves a shared page only after confirming (#66)', async ({ p
   await page.goto('/');
   await account(page, 'Settings');
   await page.getByRole('button', { name: 'Search', exact: true }).click();
-  await expect(page.getByRole('link', { name: '＋ waylight' })).toHaveAttribute(
+  await expect(page.getByRole('link', { name: '＋ Waylight' })).toHaveAttribute(
     'href',
     /^javascript:.*\/capture\?url=/,
   );

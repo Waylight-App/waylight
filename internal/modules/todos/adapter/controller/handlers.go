@@ -222,7 +222,7 @@ func (h *Handlers) StartOAuth(w http.ResponseWriter, r *http.Request) {
 // callbackPage is shown in the sign-in window; the settings dialog notices
 // the result by itself, so the page needs no script.
 const callbackPage = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>waylight</title><style>body{font:16px system-ui,sans-serif;margin:3rem auto;max-width:32rem;padding:0 1rem}</style></head>
+<title>Waylight</title><style>body{font:16px system-ui,sans-serif;margin:3rem auto;max-width:32rem;padding:0 1rem}</style></head>
 <body><h1>%s</h1><p>%s</p></body></html>`
 
 // OAuthCallback handles GET /api/todos/settings/oauth/callback, where the
@@ -240,7 +240,7 @@ func (h *Handlers) OAuthCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, _ = fmt.Fprintf(w, callbackPage, "Signed in / Angemeldet",
-		"You can close this window and choose the list in waylight. / Du kannst dieses Fenster schließen und in waylight die Liste wählen.")
+		"You can close this window and choose the list in Waylight. / Du kannst dieses Fenster schließen und in Waylight die Liste wählen.")
 }
 
 // OAuthStatus handles GET /api/todos/settings/oauth/state/{state}.

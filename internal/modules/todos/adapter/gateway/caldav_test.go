@@ -14,7 +14,7 @@ import (
 )
 
 // A to-do as Nextcloud Tasks stores it (anonymised recording), with
-// properties waylight does not know.
+// properties Waylight does not know.
 const nextcloudTodo = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Nextcloud Tasks v0.16.1\r\nBEGIN:VTODO\r\n" +
 	"UID:b6f1c2d0-1111-4a5b-9c1d-2e3f4a5b6c7d\r\nCREATED:20261101T080000Z\r\nLAST-MODIFIED:20261101T080000Z\r\nDTSTAMP:20261101T080000Z\r\n" +
 	"SUMMARY:Steuererklärung\r\nPRIORITY:5\r\nX-APPLE-SORT-ORDER:12\r\nDUE;VALUE=DATE:20261130\r\nSTATUS:NEEDS-ACTION\r\n" +

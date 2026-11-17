@@ -87,7 +87,7 @@ func decode(w http.ResponseWriter, r *http.Request, dst any) bool {
 	return true
 }
 
-// userDTO is the SCIM user resource, with the attributes waylight keeps.
+// userDTO is the SCIM user resource, with the attributes Waylight keeps.
 type userDTO struct {
 	Schemas     []string `json:"schemas"`
 	ID          string   `json:"id,omitempty"`

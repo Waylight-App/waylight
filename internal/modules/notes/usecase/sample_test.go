@@ -21,7 +21,7 @@ func TestSeedSampleData(t *testing.T) {
 		t.Fatalf("expected exactly one welcome note, got %d", len(repo.m))
 	}
 	for _, n := range repo.m {
-		if n.Title() != "Welcome to waylight 👋" || !n.Pinned() {
+		if n.Title() != "Welcome to Waylight 👋" || !n.Pinned() {
 			t.Fatalf("unexpected note %q", n.Title())
 		}
 	}

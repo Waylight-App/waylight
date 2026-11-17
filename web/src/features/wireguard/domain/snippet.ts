@@ -1,6 +1,6 @@
 /** Input of the cron snippet for the WireGuard export script. */
 export interface ExportSnippetInput {
-  /** Directory of the waylight checkout on the host. */
+  /** Directory of the Waylight checkout on the host. */
   stackDir: string;
   /** Container running WireGuard; empty when wg runs on the host. */
   container: string;

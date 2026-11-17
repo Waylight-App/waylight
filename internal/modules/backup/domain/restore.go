@@ -22,7 +22,7 @@ var (
 )
 
 // ValidateRestore checks a backup before it may replace the database: it
-// must be sound, come from waylight (auth schema present) and must not
+// must be sound, come from Waylight (auth schema present) and must not
 // contain migrations unknown to the running version. Older backups are
 // fine; the missing migrations run on the next start.
 func ValidateRestore(b BackupInfo, current []Migration) error {

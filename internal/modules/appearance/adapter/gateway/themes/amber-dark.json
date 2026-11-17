@@ -23,6 +23,6 @@
     "--shadow": "0 1px 2px #00000059, 0 6px 20px #0000004d",
     "--shadow-pop": "0 16px 48px #00000080",
     "--glow": "0 0 120px #f2b44138",
-    "--page-gradient": "linear-gradient(180deg, #131829, #0b0e1a)"
+    "--page-gradient": "linear-gradient(180deg, #131829, #0f1322)"
   }
 }
