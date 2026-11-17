@@ -27,7 +27,7 @@ const DefaultAllowedCIDRs = "127.0.0.0/8,::1/128,10.0.0.0/8,172.16.0.0/12,192.16
 // Microsoft for personal accounts (#535). It is not a secret: the device
 // flow uses no secret, and the id only names the app on Microsoft's consent
 // page. MICROSOFT_CLIENT_ID replaces it; an empty value turns the feature off.
-const DefaultMicrosoftClientID = ""
+const DefaultMicrosoftClientID = "967b34c1-d6bd-4e2c-a4ae-b34c6d1d277d"
 
 // MicrosoftConsumersIssuer is the issuer of personal Microsoft accounts.
 const MicrosoftConsumersIssuer = "https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0"
