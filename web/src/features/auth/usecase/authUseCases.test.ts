@@ -12,6 +12,7 @@ function setup(status: Partial<AuthStatus> = {}) {
       authenticated: true,
       csrfToken: 'csrf-0',
       demo: false,
+      demoPassword: '',
       guest: false,
       kiosk: false,
       admin: false,
@@ -24,7 +25,6 @@ function setup(status: Partial<AuthStatus> = {}) {
     }),
     setup: vi.fn().mockResolvedValue(session),
     login: vi.fn().mockResolvedValue(session),
-    demoLogin: vi.fn().mockResolvedValue(session),
     headerLogin: vi.fn().mockResolvedValue(session),
     passkeyLogin: vi.fn().mockResolvedValue(session),
     passkeys: vi.fn().mockResolvedValue({ available: true, passkeys: [] }),
@@ -110,12 +110,16 @@ function setup(status: Partial<AuthStatus> = {}) {
 }
 
 describe('AuthUseCases', () => {
-  it('signs in automatically on a demo instance', async () => {
-    const { uc, gateway, csrf } = setup({ authenticated: false, csrfToken: null, demo: true });
-    expect(await uc.currentView()).toBe('app');
-    expect(gateway.demoLogin).toHaveBeenCalled();
-    expect(csrf.setCsrfToken).toHaveBeenCalledWith('csrf-1');
+  it('shows the sign-in page with the password on a demo instance', async () => {
+    const { uc } = setup({
+      authenticated: false,
+      csrfToken: null,
+      demo: true,
+      demoPassword: 'waylight-demo',
+    });
+    expect(await uc.currentView()).toBe('login');
     expect(uc.demo).toBe(true);
+    expect(uc.demoPassword).toBe('waylight-demo');
   });
 
   it('validates new guests before calling the backend', async () => {

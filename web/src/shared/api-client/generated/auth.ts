@@ -11,9 +11,11 @@ export interface StatusDTO {
   authenticated: boolean;
   csrfToken?: string;
   /**
-   * Demo is true on a public demo instance (POST /api/auth/demo logs in).
+   * Demo is true on a public demo instance; DemoPassword is the public
+   * password the sign-in page shows there.
    */
   demo: boolean;
+  demoPassword?: string;
   /**
    * Role ("owner" or "guest") and Username of the signed-in account.
    */

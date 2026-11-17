@@ -896,6 +896,10 @@ export const de: Record<BaseMessageKey, string> = {
   'common.test_save': 'Prüfen & speichern',
   'auth.enter_code_hint': 'Gib den Code aus deiner Authenticator-App ein.',
   'auth.welcome_back': 'Willkommen zurück',
+  'auth.demo_access': 'Demo-Zugang',
+  'auth.demo_access_hint':
+    'Das ist eine öffentliche Demo. Melde dich mit diesem Passwort an und probiere alles aus; Änderungen werden regelmäßig zurückgesetzt.',
+  'auth.demo_fill_in': 'Passwort eintragen',
   'auth.or_with_password': 'oder mit Passwort',
   'auth.link_sign_up_with': 'Konto mit {name} erstellen',
   'auth.linked_only_sign_in': 'Vorerst dein einziger Zugang; setze ein Passwort, um zu trennen.',
@@ -911,6 +915,9 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.ms_starting': 'Hole einen Code von Microsoft …',
   'auth.ms_try_again': 'Erneut versuchen',
   'auth.ms_sign_in': 'Mit Microsoft anmelden',
+  'auth.ms_demo_title': 'Mit Microsoft anmelden',
+  'auth.ms_demo_text':
+    'Die Anmeldung mit einem Microsoft-Konto gibt es in der Demo nicht. In deinem eigenen Waylight meldest du dich und dein Team mit dem Arbeits-, Schul- oder privaten Microsoft-Konto an, indem ihr einen kurzen Code eingebt.',
   'auth.ms_connect': 'Mit Microsoft verbinden',
   'auth.linked_unavailable': 'Die Anmeldung mit Microsoft ist auf diesem Server nicht verfügbar.',
   'auth.please_log_in': 'Bitte melde dich an.',

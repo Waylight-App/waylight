@@ -138,6 +138,7 @@ export class AuthApi implements AuthGateway {
       authenticated: dto.authenticated,
       csrfToken: dto.csrfToken ?? null,
       demo: dto.demo,
+      demoPassword: dto.demoPassword ?? '',
       guest: dto.role === 'guest' || dto.role === 'kiosk',
       kiosk: dto.role === 'kiosk',
       admin: dto.role === 'owner' || dto.role === 'admin',
@@ -147,10 +148,6 @@ export class AuthApi implements AuthGateway {
       sso: dto.sso ?? { oidc: false, header: false, localLogin: true },
       passwordReset: dto.passwordReset ?? false,
     };
-  }
-
-  async demoLogin(): Promise<Session> {
-    return toSession(await this.http.post<SessionDTO>('/api/auth/demo'));
   }
 
   async setup(setupToken: string, password: string, profile?: 'everyday' | 'homelab'): Promise<Session> {

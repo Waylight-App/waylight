@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"waylight/internal/platform/config"
+	"waylight/internal/platform/demo"
 )
 
 func demoConfig(t *testing.T, dbPath string) config.Config {
@@ -44,11 +45,12 @@ func TestDemoMode(t *testing.T) {
 
 	var status obj
 	c.json(http.MethodGet, "/api/auth/status", nil, http.StatusOK, &status)
-	if status["demo"] != true || status["setupRequired"] != false {
+	if status["demo"] != true || status["setupRequired"] != false || status["demoPassword"] != demo.Password {
 		t.Fatalf("status: %v", status)
 	}
+	// Visitors sign in on the sign-in page with the password it shows.
 	var session obj
-	c.json(http.MethodPost, "/api/auth/demo", nil, http.StatusOK, &session)
+	c.json(http.MethodPost, "/api/auth/login", obj{"password": demo.Password}, http.StatusOK, &session)
 	c.csrf = session["csrfToken"].(string)
 
 	var dash struct {
@@ -79,6 +81,9 @@ func TestDemoMode(t *testing.T) {
 	if len(after.Tabs) != len(dash.Tabs) {
 		t.Fatalf("reset did not restore the tabs: %d -> %d", len(dash.Tabs), len(after.Tabs))
 	}
+
+	// Signing out hands the demo to the next visitor.
+	c.do(http.MethodPost, "/api/auth/logout", nil, http.StatusNoContent)
 }
 
 func TestDemoModeRefusesProductionDatabase(t *testing.T) {

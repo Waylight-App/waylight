@@ -876,6 +876,10 @@ export const en = {
   'common.test_save': 'Test & save',
   'auth.enter_code_hint': 'Enter the code from your authenticator app.',
   'auth.welcome_back': 'Welcome back',
+  'auth.demo_access': 'Demo access',
+  'auth.demo_access_hint':
+    'This is a public demo. Sign in with this password and try everything; changes are reset regularly.',
+  'auth.demo_fill_in': 'Fill in password',
   'auth.or_with_password': 'or with password',
   'auth.link_sign_up_with': 'Create account with {name}',
   'auth.linked_only_sign_in': 'Your only way in for now; set a password to disconnect.',
@@ -890,6 +894,9 @@ export const en = {
   'auth.ms_starting': 'Asking Microsoft for a code …',
   'auth.ms_try_again': 'Try again',
   'auth.ms_sign_in': 'Sign in with Microsoft',
+  'auth.ms_demo_title': 'Sign in with Microsoft',
+  'auth.ms_demo_text':
+    'Signing in with a Microsoft account is not available in the demo. In your own Waylight, you and your team sign in with your work, school or personal Microsoft account by entering a short code.',
   'auth.ms_connect': 'Connect Microsoft',
   'auth.linked_unavailable': 'Signing in with Microsoft is not available on this server.',
   'auth.please_log_in': 'Please log in.',

@@ -37,8 +37,9 @@ type Config struct {
 	// OnAccountCreated runs after the first-run setup with the chosen
 	// start-page profile (#281); may be nil.
 	OnAccountCreated func(ctx context.Context, profile string)
-	// Demo enables the password-less demo login (DEMO_MODE).
-	Demo bool
+	// DemoPassword is the public password of the demo account (DEMO_MODE);
+	// empty on every other instance.
+	DemoPassword string
 	// SSO configures single sign-on for the owner (ADR 0013).
 	SSO SSOConfig
 	// WebAuthn enables passkeys; nil when PUBLIC_URL is not set (ADR 0014).
@@ -138,24 +139,23 @@ type Deps struct {
 // Module wires the auth rings and implements modules.Module.
 type Module struct {
 	modules.Base
-	handlers   *controller.Handlers
-	status     usecase.GetStatus
-	purge      usecase.PurgeExpiredSessions
-	reset      usecase.ResetAccount
-	security   usecase.SecurityLog
-	kiosks     usecase.Kiosks
-	confirm    usecase.ConfirmIdentity
-	setup      usecase.SetupAccount
-	tokens     usecase.TokenGenerator
-	demo       bool
-	setupToken string
-	log        *slog.Logger
-	accounts   *gateway.AccountRepository
-	sso        usecase.SSO
-	provision  usecase.Provisioning
-	directory  *usecase.DirectoryLogin
-	policies   *usecase.Policies
-	hooks      *usecase.AccountHooks
+	handlers     *controller.Handlers
+	status       usecase.GetStatus
+	purge        usecase.PurgeExpiredSessions
+	reset        usecase.ResetAccount
+	security     usecase.SecurityLog
+	kiosks       usecase.Kiosks
+	confirm      usecase.ConfirmIdentity
+	setup        usecase.SetupAccount
+	demoPassword string
+	setupToken   string
+	log          *slog.Logger
+	accounts     *gateway.AccountRepository
+	sso          usecase.SSO
+	provision    usecase.Provisioning
+	directory    *usecase.DirectoryLogin
+	policies     *usecase.Policies
+	hooks        *usecase.AccountHooks
 }
 
 // New builds the auth module.
@@ -228,29 +228,26 @@ func New(cfg Config, d Deps) (*Module, error) {
 		SecurityLog:    securityLog,
 		TwoFactor:      usecase.NewTwoFactor(deps),
 	}
-	if cfg.Demo {
-		uc.DemoLogin = usecase.NewDemoLogin(deps)
-	}
 	return &Module{
 		handlers: controller.NewHandlers(uc, controller.CookieConfig{Secure: cfg.CookieSecure}).
+			WithDemoPassword(cfg.DemoPassword).
 			WithProxyAuth(controller.ProxyAuth{Header: cfg.SSO.ProxyHeader, Proxies: cfg.SSO.TrustedProxies}),
-		status:     status,
-		purge:      usecase.NewPurgeExpiredSessions(sessions, d.Clock),
-		reset:      usecase.NewResetAccount(accounts, sessions),
-		security:   securityLog,
-		kiosks:     kiosks,
-		confirm:    usecase.NewConfirmIdentity(deps),
-		setup:      uc.Setup,
-		tokens:     d.Tokens,
-		demo:       cfg.Demo,
-		setupToken: token,
-		log:        d.Log,
-		accounts:   accounts,
-		sso:        sso,
-		provision:  usecase.NewProvisioning(deps),
-		directory:  deps.Directory,
-		policies:   deps.Policies,
-		hooks:      deps.Hooks,
+		status:       status,
+		purge:        usecase.NewPurgeExpiredSessions(sessions, d.Clock),
+		reset:        usecase.NewResetAccount(accounts, sessions),
+		security:     securityLog,
+		kiosks:       kiosks,
+		confirm:      usecase.NewConfirmIdentity(deps),
+		setup:        uc.Setup,
+		demoPassword: cfg.DemoPassword,
+		setupToken:   token,
+		log:          d.Log,
+		accounts:     accounts,
+		sso:          sso,
+		provision:    usecase.NewProvisioning(deps),
+		directory:    deps.Directory,
+		policies:     deps.Policies,
+		hooks:        deps.Hooks,
 	}, nil
 }
 
@@ -341,9 +338,6 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/auth/passkeys/register/begin", m.handlers.BeginPasskeyRegistration)
 	r.Protected("POST /api/auth/passkeys/register/finish", m.handlers.FinishPasskeyRegistration)
 	r.Protected("DELETE /api/auth/passkeys/{id}", m.handlers.DeletePasskey)
-	if m.demo {
-		r.Public("POST /api/auth/demo", m.handlers.DemoLogin)
-	}
 	r.Protected("POST /api/auth/logout", m.handlers.Logout)
 	r.Protected("PUT /api/auth/password", m.handlers.ChangePassword)
 	r.Protected("GET /api/auth/totp", m.handlers.TwoFactorStatus)
@@ -428,18 +422,14 @@ func (m *Module) AnnounceSetup(ctx context.Context) error {
 // ResetAccount deletes the account and all sessions (CLI recovery).
 func (m *Module) ResetAccount(ctx context.Context) error { return m.reset.Execute(ctx) }
 
-// PrepareDemo creates the demo account with a random, never revealed
-// password if none exists yet (which also seeds the sample data).
+// PrepareDemo creates the demo account with the public demo password if
+// none exists yet (which also seeds the sample data).
 func (m *Module) PrepareDemo(ctx context.Context) error {
 	st, err := m.status.Execute(ctx, usecase.StatusRequest{})
 	if err != nil || !st.SetupRequired {
 		return err
 	}
-	password, err := m.tokens.NewToken()
-	if err != nil {
-		return fmt.Errorf("generate demo password: %w", err)
-	}
-	if _, err := m.setup.Execute(ctx, usecase.SetupRequest{SetupToken: m.setupToken, Password: password, ClientKey: "demo-setup"}); err != nil {
+	if _, err := m.setup.Execute(ctx, usecase.SetupRequest{SetupToken: m.setupToken, Password: m.demoPassword, ClientKey: "demo-setup"}); err != nil {
 		return fmt.Errorf("create demo account: %w", err)
 	}
 	return nil

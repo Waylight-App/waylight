@@ -7,11 +7,11 @@ expose to strangers.
 
 | Concern | Behaviour |
 | --- | --- |
-| Login | No password. The browser signs in automatically through `POST /api/auth/demo`; a banner explains the demo. |
+| Login | The demo opens on the sign-in page. A box there shows the public demo password (`waylight-demo`) and fills it in; `GET /api/auth/status` reports it as `demoPassword`. Signing out works, so the next visitor starts on the sign-in page again. A banner explains the demo. |
 | Data | A fresh demo account is created at start and filled with the sample data. A snapshot of all exportable data is restored every `DEMO_RESET_INTERVAL` (default 3 h). |
 | Outbound requests | None. Every module's HTTP client is replaced by fixture adapters (`internal/platform/demo`): weather, news feeds and Docker answer with made-up sample data, everything else is refused. Service status checks report "up" without probing. Wake-on-LAN is disabled. |
 | Credentials | Never stored: the secret store refuses to encrypt, so integration settings cannot be saved. |
-| Account changes | Password, two-factor setup, session revocation, logout, manual backups, data import and the update check are answered with 403. Automatic backups are off. |
+| Account changes | Password, two-factor setup, session revocation, manual backups, data import and the update check are answered with 403, so nobody can lock the next visitor out. Automatic backups are off. |
 
 The use cases do not know about demo mode: `cmd/server` swaps the adapters
 when it wires the modules, exactly like it would for any other gateway.

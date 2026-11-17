@@ -7,8 +7,10 @@ export interface AuthStatus {
   setupRequired: boolean;
   authenticated: boolean;
   csrfToken: string | null;
-  /** Public demo instance: signs in without a password. */
+  /** Public demo instance; the sign-in page shows its password. */
   demo: boolean;
+  /** The public password of the demo account; '' on other instances. */
+  demoPassword: string;
   /** Read-only guest account (ADR 0012); also true for kiosk displays. */
   guest: boolean;
   /** Kiosk display (#50): no controls, rotation, night dimming. */

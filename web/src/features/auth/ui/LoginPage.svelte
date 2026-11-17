@@ -9,6 +9,7 @@
   import type { AuthUseCases } from '../usecase/authUseCases';
   import AuthCard from './AuthCard.svelte';
   import ForgotPassword from './ForgotPassword.svelte';
+  import Modal from '../../../shared/ui/Modal.svelte';
 
   /** Props of the login screen. */
   interface Props {
@@ -57,6 +58,8 @@
   let forgot = $state(false);
   /** The Microsoft code dialog is open (#535). */
   let microsoftDialog = $state(false);
+  /** The demo's note that Microsoft sign-in needs a real instance (#539). */
+  let microsoftDemoNote = $state(false);
 
   async function usePasskey() {
     if (!challenge) return;
@@ -129,12 +132,27 @@
       {/if}
     {/if}
     {#if auth.sso.microsoft && !ticket && !needsCode}
-      <button class="btn btn-primary wide" type="button" onclick={() => (microsoftDialog = true)}
+      <!-- Light button: the Microsoft logo needs a neutral background to stay readable. -->
+      <button
+        class="btn wide"
+        type="button"
+        onclick={() => (auth.demo ? (microsoftDemoNote = true) : (microsoftDialog = true))}
         ><SsoIcon icon="microsoft" />{t('auth.ms_sign_in')}</button
       >
       {#if !passwordHidden && !auth.sso.oidc}
         <p class="divider"><span>{t('auth.or_with_password')}</span></p>
       {/if}
+    {/if}
+    {#if auth.demoPassword && !needsCode && !asGuest}
+      <!-- Public demo (#539): the password is meant to be seen and used. -->
+      <section class="demo" aria-labelledby="demo-access">
+        <h2 id="demo-access">{t('auth.demo_access')}</h2>
+        <p>{t('auth.demo_access_hint')}</p>
+        <p class="demo-password"><code>{auth.demoPassword}</code></p>
+        <button class="btn" type="button" onclick={() => (password = auth.demoPassword)}
+          >{t('auth.demo_fill_in')}</button
+        >
+      </section>
     {/if}
     <form onsubmit={submit}>
       {#if asGuest}
@@ -190,7 +208,7 @@
           >{needsCode || ticket ? t('auth.verify') : t('auth.log_in')}</button
         >
       {/if}
-      {#if !needsCode}
+      {#if !needsCode && !auth.demo}
         <!-- A real second button, as large as the first: guests are people too (#513). -->
         <button class="btn wide" type="button" onclick={() => ((asGuest = !asGuest), (error = ''))}
           >{asGuest ? t('auth.sign_in_as_owner') : t('auth.sign_in_as_guest')}</button
@@ -225,6 +243,11 @@
         else ondone();
       }}
     />
+  {/if}
+  {#if microsoftDemoNote}
+    <Modal title={t('auth.ms_demo_title')} onclose={() => (microsoftDemoNote = false)}>
+      <p>{t('auth.ms_demo_text')}</p>
+    </Modal>
   {/if}
   {#if poweredBy}<p class="powered muted">{t('auth.powered_by')}</p>{/if}
 </AuthCard>
@@ -263,6 +286,30 @@
   }
   .error:focus {
     outline: none;
+  }
+  .demo {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-small);
+    background: var(--color-surface-2);
+  }
+  .demo h2 {
+    margin: 0;
+    font-size: 1rem;
+  }
+  .demo p {
+    margin: 0;
+  }
+  .demo-password code {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    user-select: all;
+  }
+  .demo .btn {
+    justify-self: start;
   }
   .code {
     font-family: var(--font-mono);
