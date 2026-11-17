@@ -9,6 +9,7 @@
   import { createContainer, type Container } from './container';
   import { branding, loadBranding } from './branding/branding.svelte';
   import { loadDefaultTheme, showDefaultTheme } from './branding/defaultTheme';
+  import { lastLook } from './branding/lastLook';
   import type { DefaultThemeDTO } from '../shared/api-client/generated/appearance';
   import { applyTheme } from '../shared/theme/theme';
   // The dashboard shell is fetched right away, in parallel with the session
@@ -46,11 +47,14 @@
       await loadLanguage().catch(() => undefined);
       // The organisation's name and colours (#305) show from the sign-in page on.
       const brand = await loadBranding(container.http);
-      // Before sign-in nobody's own theme is known: use the instance's default
-      // theme (#507) and the organisation's scheme, which wins. The shell
-      // applies the person's own preference after sign-in.
-      if (!container.localMode) defaultTheme = await loadDefaultTheme(container.http);
-      const scheme = brand.defaultTheme || defaultTheme.scheme;
+      // Before sign-in the account is not known yet. The look of the account
+      // that last signed in on this browser comes first (#526), else the
+      // instance's default theme (#507) with the organisation's scheme. The
+      // shell applies the person's own preference after sign-in.
+      const look = container.localMode ? null : lastLook();
+      if (look) defaultTheme = { id: '', css: look.css, scheme: '' };
+      else if (!container.localMode) defaultTheme = await loadDefaultTheme(container.http);
+      const scheme = look?.theme || brand.defaultTheme || defaultTheme.scheme;
       if (scheme) applyTheme(scheme);
       // A kiosk link (#50): the token is in the fragment, so it never reaches
       // the server log; it signs this browser in as the display.

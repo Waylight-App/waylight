@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { rememberLook } from './branding/lastLook';
   import type { CommandHandlers } from './appCommands';
   import { hasStoredTimers, timerAlerts } from './timerAlerts.svelte';
   import LiveRegion from '../shared/a11y/LiveRegion.svelte';
@@ -54,6 +55,13 @@
   let editing = $state(false);
   let error = $state('');
   let appearance = $state<Appearance>(defaultAppearance);
+  // True once the account's own appearance has loaded, not the placeholder.
+  let appearanceLoaded = $state(false);
+  // The sign-in page shows this look next time on this browser (#526).
+  $effect(() => {
+    if (appearanceLoaded && !container.localMode)
+      rememberLook({ css: appearance.customCss, theme: appearance.theme });
+  });
   let modules = $state<Set<string> | null>(null);
   let widgetKinds = $state<Set<string>>(new Set());
   let dataKinds = $state<Record<string, string>>({});
@@ -274,7 +282,10 @@
       modules = info.modules;
       widgetKinds = info.widgetKinds;
       dataKinds = info.dataKinds;
-      if (info.modules.has('appearance')) appearance = await container.appearance.load();
+      if (info.modules.has('appearance')) {
+        appearance = await container.appearance.load();
+        appearanceLoaded = true;
+      }
       // Wait a moment so the dashboard is rendered before the tour measures it.
       if (
         !container.auth.guest &&
