@@ -12,7 +12,7 @@ version: ${PKG_VERSION}
 version_schema: none
 section: web
 priority: optional
-maintainer: Tristan Leoluca Farinella <32554080+itadori26@users.noreply.github.com>
+maintainer: Tristan L. Farinella <32554080+itadori26@users.noreply.github.com>
 vendor: waylight contributors
 homepage: https://github.com/itadori26/waylight
 license: MIT
