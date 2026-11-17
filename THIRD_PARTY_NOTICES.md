@@ -6,9 +6,9 @@ or bundled as code are listed in `go.mod` and `web/package.json`.
 
 ## Icons
 
-The weather icons (`web/src/features/weather/ui/WeatherIcon.svelte`) are
-drawn after icons of [Lucide](https://lucide.dev), licensed under the ISC
-licence:
+The weather icons (`web/src/features/weather/ui/WeatherIcon.svelte`) and the
+icon of empty widgets (`web/src/shared/ui/EmptyState.svelte`) are drawn
+after icons of [Lucide](https://lucide.dev), licensed under the ISC licence:
 
 ```text
 ISC License

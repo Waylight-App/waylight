@@ -17,6 +17,7 @@
 </script>
 
 <div class="empty">
+  <!-- The "inbox" icon of Lucide (ISC, THIRD_PARTY_NOTICES.md). -->
   <svg
     width="28"
     height="28"
