@@ -37,6 +37,8 @@ const (
 	EventPasswordReset     EventType = "password_reset"
 	EventResetRequested    EventType = "reset_requested"
 	EventEmailChanged      EventType = "email_changed"
+	EventIdentityLinked    EventType = "identity_linked"
+	EventIdentityUnlinked  EventType = "identity_unlinked"
 	EventExternal          EventType = "external"
 )
 

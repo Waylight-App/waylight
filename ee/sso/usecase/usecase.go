@@ -73,6 +73,13 @@ type Resolver struct{ d Deps }
 // New returns the resolver.
 func New(d Deps) *Resolver { return &Resolver{d: d} }
 
+// Licensed tells whether linked sign-ins of members and guests count (any
+// licence level) and whether new ones may be linked (full use only, #527).
+func (r *Resolver) Licensed(ctx context.Context) (signIn, link bool) {
+	level := r.d.Licensing.Level(ctx, licence.FeatureSSO)
+	return level != licence.LevelNone, level == licence.LevelFull
+}
+
 // Resolve creates, updates or locks out the member of an identity. With a
 // read-only licence (expired, or more accounts than seats) existing members
 // still sign in, but no account is created and nothing is changed.

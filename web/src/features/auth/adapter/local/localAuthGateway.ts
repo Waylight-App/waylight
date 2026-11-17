@@ -52,6 +52,9 @@ export class LocalAuthGateway implements AuthGateway {
   beginPasskeyRegistration = unavailable;
   finishPasskeyRegistration = unavailable;
   deletePasskey = unavailable;
+  linkedSignIns = () => Promise.resolve([]);
+  beginLinkSignIn = unavailable;
+  unlinkSignIn = unavailable;
   guests = unavailable;
   createGuest = unavailable;
   updateGuest = unavailable;

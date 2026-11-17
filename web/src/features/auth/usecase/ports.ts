@@ -1,3 +1,4 @@
+import type { LinkedSignIn } from '../domain/identity';
 import type { ApiToken } from '../domain/apiToken';
 import type {
   Passkey,
@@ -36,6 +37,11 @@ export interface AuthGateway {
   beginPasskeyRegistration(): Promise<PasskeyRegistrationOptions>;
   finishPasskeyRegistration(name: string, attestation: PasskeyAttestation): Promise<string[]>;
   deletePasskey(id: string): Promise<void>;
+  /** Sign-ins at the OpenID provider linked to this account (#527). */
+  linkedSignIns(): Promise<LinkedSignIn[]>;
+  /** Starts linking; returns the provider URL to open. */
+  beginLinkSignIn(): Promise<string>;
+  unlinkSignIn(subject: string): Promise<void>;
   guests(): Promise<Guest[]>;
   createGuest(name: string, password: string, tabs: string[]): Promise<Guest>;
   updateGuest(id: string, tabs: string[], disabled: boolean, password: string): Promise<Guest>;

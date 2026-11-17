@@ -80,6 +80,9 @@ func New(cfg Config, client *http.Client, now func() time.Time) *Provider {
 	return &Provider{cfg: cfg, client: client, now: now}
 }
 
+// Issuer is the provider's issuer URL as configured, without a trailing slash.
+func (p *Provider) Issuer() string { return p.cfg.Issuer }
+
 func (p *Provider) getJSON(ctx context.Context, u string, v any) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
