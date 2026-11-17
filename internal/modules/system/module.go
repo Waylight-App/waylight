@@ -29,6 +29,9 @@ type Config struct {
 	Client  *http.Client
 	// InstallMethod (INSTALL_METHOD) selects the update hint.
 	InstallMethod string
+	// Demo shows a made-up home server instead of the machine the public
+	// demo runs on (DEMO_MODE).
+	Demo bool
 }
 
 // forecastInterval: how often today's disk aggregate is updated.
@@ -49,7 +52,10 @@ type Module struct {
 
 // New builds the system module.
 func New(cfg Config, db *sql.DB, sink kernel.ObservationSink, clock kernel.Clock) *Module {
-	host := gateway.NewHost(cfg.ProcPath, cfg.SysPath, gateway.ParseDiskMounts(cfg.DiskPaths))
+	var host usecase.HostReader = gateway.NewHost(cfg.ProcPath, cfg.SysPath, gateway.ParseDiskMounts(cfg.DiskPaths))
+	if cfg.Demo {
+		host = gateway.DemoHost{Now: clock.Now}
+	}
 	uc := usecase.NewMonitor(host, gateway.NewHistoryStore(db), sink, clock)
 	versions := usecase.NewVersions(cfg.Version, domain.ParseInstallMethod(cfg.InstallMethod), gateway.NewGitHubReleases(cfg.Client, gateway.DefaultReleasesURL), gateway.NewUpdateSettings(db), clock)
 	forecasts := usecase.NewDiskForecasts(uc, gateway.NewAggregateStore(db), sink, clock, time.Local)
