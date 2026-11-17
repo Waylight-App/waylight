@@ -6,8 +6,14 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
+  // This sign-in already belongs to an account here. Sign in with it instead.
+  srv_cfe702755e13d3ac: 'Diese Anmeldung gehört hier schon zu einem Konto. Melde dich damit an.',
+  // This sign-in is the only way into the account. Set a password first, for example with a reset link.
+  srv_f70a5614e4b6564d:
+    'Diese Anmeldung ist der einzige Zugang zum Konto. Setze zuerst ein Passwort, zum Beispiel mit einem Reset-Link.',
   // Single sign-on for this account needs a licence key with sso.
-  srv_b4096594b09b5ea3: 'Die Anmeldung per Single Sign-on braucht für dieses Konto einen Lizenzschlüssel mit sso.',
+  srv_b4096594b09b5ea3:
+    'Die Anmeldung per Single Sign-on braucht für dieses Konto einen Lizenzschlüssel mit sso.',
   // This sign-in is already linked to another account.
   srv_6e04252984abe6fe: 'Diese Anmeldung ist schon mit einem anderen Konto verknüpft.',
   // This sign-in is not linked.

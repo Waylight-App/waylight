@@ -18,15 +18,18 @@
   let error = $state('');
   let busy = $state(false);
 
-  // The server sends people back here with the result of linking.
-  let result = $state<LinkResult | null>(null);
-  const params = new URLSearchParams(location.search);
-  result = linkResult(params);
-  if (params.has('link')) {
-    params.delete('link');
-    const q = params.toString();
-    history.replaceState(history.state, '', location.pathname + (q ? `?${q}` : '') + location.hash);
+  // The server sends people back here with the result of linking; it is
+  // shown once and removed from the address.
+  function takeLinkResult(): LinkResult | null {
+    const url = new URL(location.href);
+    const found = linkResult(url.searchParams);
+    if (url.searchParams.has('link')) {
+      url.searchParams.delete('link');
+      history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+    }
+    return found;
   }
+  let result = $state<LinkResult | null>(takeLinkResult());
   const resultKey = {
     ok: 'auth.linked_ok',
     taken: 'auth.linked_taken',
@@ -81,7 +84,13 @@
             >{t('auth.linked_since', { date: l.linkedAt.toLocaleDateString(intlLocale()) })}</span
           ></span
         >
-        <button class="btn" type="button" onclick={() => disconnect(l)}>{t('auth.linked_disconnect')}</button>
+        {#if l.onlySignIn}
+          <span class="muted small">{t('auth.linked_only_sign_in')}</span>
+        {:else}
+          <button class="btn" type="button" onclick={() => disconnect(l)}
+            >{t('auth.linked_disconnect')}</button
+          >
+        {/if}
       </li>
     {/each}
   </ul>

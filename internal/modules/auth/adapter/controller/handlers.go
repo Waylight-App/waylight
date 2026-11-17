@@ -537,6 +537,12 @@ func (h *Handlers) redirectAfterSSO(w http.ResponseWriter, r *http.Request, res 
 		http.Redirect(w, r, linkResult+"taken", http.StatusFound)
 	case errors.Is(err, domain.ErrLinkNeedsLicence):
 		http.Redirect(w, r, linkResult+"licence", http.StatusFound)
+	// Accepting an invitation through the provider (#528).
+	case errors.Is(err, domain.ErrSignUpIdentityTaken):
+		http.Redirect(w, r, "/?sso_error=taken", http.StatusFound)
+	case errors.Is(err, domain.ErrInvalidAccountLink), errors.Is(err, domain.ErrTooManyGuests), errors.Is(err, domain.ErrTooManyMembers),
+		errors.Is(err, domain.ErrMembersUnavailable):
+		http.Redirect(w, r, "/?sso_error=invite", http.StatusFound)
 	case errors.Is(err, domain.ErrSSOSecondFactorNeed):
 		http.Redirect(w, r, "/?sso_ticket="+url.QueryEscape(ticket), http.StatusFound)
 	case errors.Is(err, domain.ErrSSONotAllowed):
@@ -802,6 +808,7 @@ func (h *Handlers) InspectLink(w http.ResponseWriter, r *http.Request) {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
+	info.SSO = info.Purpose == domain.LinkInvite && h.uc.SSO != nil && h.uc.SSO.CanSignUp(r.Context())
 	httpapi.WriteJSON(w, http.StatusOK, presenter.LinkInfo(info))
 }
 

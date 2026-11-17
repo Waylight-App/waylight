@@ -46,6 +46,9 @@ type Deps struct {
 	Policies *Policies
 	// Hooks tell other modules about deleted accounts; nil runs none.
 	Hooks *AccountHooks
+	// Identities stores sign-ins at the provider linked to accounts (#527);
+	// nil disables linking.
+	Identities IdentityRepository
 }
 
 func (d Deps) issuer() sessionIssuer {

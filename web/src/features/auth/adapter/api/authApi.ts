@@ -98,6 +98,7 @@ const toInvite = (d: InviteDTO): Invite => ({
 const toLinkInfo = (d: LinkInfoDTO): LinkInfo => ({
   purpose: d.purpose === 'reset' ? 'reset' : 'invite',
   name: d.name,
+  sso: d.sso ?? false,
 });
 
 const toKiosk = (d: KioskDTO): KioskDisplay => ({
@@ -199,11 +200,20 @@ export class AuthApi implements AuthGateway {
 
   async linkedSignIns(): Promise<LinkedSignIn[]> {
     const list = await this.http.get<IdentityDTO[]>('/api/auth/identities');
-    return (list ?? []).map((l) => ({ subject: l.subject, email: l.email, linkedAt: new Date(l.linkedAt) }));
+    return (list ?? []).map((l) => ({
+      subject: l.subject,
+      email: l.email,
+      linkedAt: new Date(l.linkedAt),
+      onlySignIn: l.onlySignIn ?? false,
+    }));
   }
 
   async beginLinkSignIn(): Promise<string> {
     return (await this.http.post<LinkStartDTO>('/api/auth/identities/link')).redirect;
+  }
+
+  async signUpWithSSO(token: string): Promise<string> {
+    return (await this.http.post<LinkStartDTO>('/api/auth/link/sso', { token })).redirect;
   }
 
   unlinkSignIn(subject: string): Promise<void> {

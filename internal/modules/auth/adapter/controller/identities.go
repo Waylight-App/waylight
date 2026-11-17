@@ -68,3 +68,27 @@ func (h *Handlers) DeleteIdentity(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// SignUpWithSSO handles POST /api/auth/link/sso: accept an invitation
+// through the provider instead of a password (#528). Like BeginIdentityLink
+// it binds the state to this browser and returns the provider URL; the
+// callback creates the account and signs in.
+func (h *Handlers) SignUpWithSSO(w http.ResponseWriter, r *http.Request) {
+	var dto LinkTokenDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	if h.uc.SSO == nil {
+		httpapi.WriteDomainError(w, r, domain.ErrSSOUnavailable)
+		return
+	}
+	url, state, err := h.uc.SSO.BeginSignUp(r.Context(), dto.Token, clientKey(r))
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	http.SetCookie(w, &http.Cookie{Name: oidcStateCookie, Value: state, Path: "/api/auth/oidc/", HttpOnly: true, //nolint:gosec // Secure follows COOKIE_SECURE, as in OIDCStart
+		Secure: h.cookies.Secure, SameSite: http.SameSiteLaxMode, MaxAge: 600})
+	httpapi.WriteJSON(w, http.StatusOK, presenter.LinkStartDTO{Redirect: url})
+}

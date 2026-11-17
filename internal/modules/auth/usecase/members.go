@@ -165,6 +165,7 @@ func (uc *members) Update(ctx context.Context, req UpdateMemberRequest) (MemberV
 		if err := m.ChangePasswordHash(hash, now); err != nil {
 			return MemberView{}, err
 		}
+		uc.deps.passwordSet(ctx, m.ID())
 	}
 	if err := uc.deps.Accounts.Update(ctx, m); err != nil {
 		return MemberView{}, fmt.Errorf("update member: %w", err)
