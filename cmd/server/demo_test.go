@@ -89,6 +89,18 @@ func TestDemoMode(t *testing.T) {
 		t.Fatalf("reset did not restore the tabs: %d -> %d", len(dash.Tabs), len(after.Tabs))
 	}
 
+	// The example integrations are set up once; resets add no duplicates.
+	for path, want := range map[string]int{"/api/arr/instances": 2, "/api/releases/artists": len(demo.DemoArtists),
+		"/api/apiwidget/endpoints": 1, "/api/calendar/subscriptions": 1} {
+		var list []obj
+		c.json(http.MethodGet, path, nil, http.StatusOK, &list)
+		if len(list) != want {
+			t.Errorf("%s: %d entries after the resets, want %d", path, len(list), want)
+		}
+	}
+	// Visitors still cannot store credentials of their own.
+	c.do(http.MethodPut, "/api/immich/settings", obj{"url": demo.ImmichURL, "apiKey": "visitor-key"}, http.StatusForbidden)
+
 	// Signing out hands the demo to the next visitor.
 	c.do(http.MethodPost, "/api/auth/logout", nil, http.StatusNoContent)
 }

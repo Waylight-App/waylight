@@ -76,3 +76,59 @@ func aurora(w, h int) string {
 	_ = png.Encode(&buf, img) // in-memory buffer, cannot fail
 	return buf.String()
 }
+
+// Pictures are the photo frame's example photos: simple drawn landscapes,
+// so the demo ships no third-party images.
+func Pictures() [][]byte {
+	return [][]byte{[]byte(sunset(960, 640)), []byte(aurora(960, 640)), []byte(meadow(960, 640))}
+}
+
+// sunset: an amber sky over a dark sea with the sun on the horizon.
+func sunset(w, h int) string {
+	img := image.NewRGBA(image.Rect(0, 0, w, h))
+	horizon := h * 2 / 3
+	sunX, sunR := float64(w)*0.62, float64(h)/9
+	for y := range h {
+		for x := range w {
+			var c color.RGBA
+			if y < horizon {
+				t := float64(y) / float64(horizon)
+				c = color.RGBA{uint8(40 + 200*t), uint8(30 + 150*t), uint8(80 - 20*t), 0xff}
+				if math.Hypot(float64(x)-sunX, float64(y)-float64(horizon)) < sunR {
+					c = color.RGBA{0xff, 0xd2, 0x7a, 0xff}
+				}
+			} else {
+				t := float64(y-horizon) / float64(h-horizon)
+				c = color.RGBA{uint8(60 - 40*t), uint8(45 - 30*t), uint8(70 - 30*t), 0xff}
+				// The sun's reflection on the water.
+				if math.Abs(float64(x)-sunX) < sunR*(1-t)*0.8 && (y/6)%2 == 0 {
+					c = color.RGBA{0xf2, 0xb4, 0x41, 0xff}
+				}
+			}
+			img.Set(x, y, c)
+		}
+	}
+	var buf bytes.Buffer
+	_ = png.Encode(&buf, img) // in-memory buffer, cannot fail
+	return buf.String()
+}
+
+// meadow: dusk over green hills.
+func meadow(w, h int) string {
+	img := image.NewRGBA(image.Rect(0, 0, w, h))
+	for y := range h {
+		for x := range w {
+			t := float64(y) / float64(h)
+			c := color.RGBA{uint8(90 + 120*t), uint8(110 + 80*t), uint8(170 - 40*t), 0xff}
+			hill := float64(h)*0.62 + 40*math.Sin(float64(x)/140) + 25*math.Sin(float64(x)/53)
+			if float64(y) > hill {
+				d := (float64(y) - hill) / float64(h)
+				c = color.RGBA{uint8(40 + 30*d), uint8(110 - 60*d), uint8(50 - 20*d), 0xff}
+			}
+			img.Set(x, y, c)
+		}
+	}
+	var buf bytes.Buffer
+	_ = png.Encode(&buf, img) // in-memory buffer, cannot fail
+	return buf.String()
+}
