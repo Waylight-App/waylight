@@ -915,6 +915,9 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.ms_starting': 'Hole einen Code von Microsoft …',
   'auth.ms_try_again': 'Erneut versuchen',
   'auth.ms_sign_in': 'Mit Microsoft anmelden',
+  'auth.ms_demo_title': 'Mit Microsoft anmelden',
+  'auth.ms_demo_text':
+    'Die Anmeldung mit einem Microsoft-Konto gibt es in der Demo nicht. In deinem eigenen Waylight meldest du dich und dein Team mit dem Arbeits-, Schul- oder privaten Microsoft-Konto an, indem ihr einen kurzen Code eingebt.',
   'auth.ms_connect': 'Mit Microsoft verbinden',
   'auth.linked_unavailable': 'Die Anmeldung mit Microsoft ist auf diesem Server nicht verfügbar.',
   'auth.please_log_in': 'Bitte melde dich an.',

@@ -9,6 +9,7 @@
   import type { AuthUseCases } from '../usecase/authUseCases';
   import AuthCard from './AuthCard.svelte';
   import ForgotPassword from './ForgotPassword.svelte';
+  import Modal from '../../../shared/ui/Modal.svelte';
 
   /** Props of the login screen. */
   interface Props {
@@ -57,6 +58,8 @@
   let forgot = $state(false);
   /** The Microsoft code dialog is open (#535). */
   let microsoftDialog = $state(false);
+  /** The demo's note that Microsoft sign-in needs a real instance (#539). */
+  let microsoftDemoNote = $state(false);
 
   async function usePasskey() {
     if (!challenge) return;
@@ -129,7 +132,11 @@
       {/if}
     {/if}
     {#if auth.sso.microsoft && !ticket && !needsCode}
-      <button class="btn btn-primary wide" type="button" onclick={() => (microsoftDialog = true)}
+      <!-- Light button: the Microsoft logo needs a neutral background to stay readable. -->
+      <button
+        class="btn wide"
+        type="button"
+        onclick={() => (auth.demo ? (microsoftDemoNote = true) : (microsoftDialog = true))}
         ><SsoIcon icon="microsoft" />{t('auth.ms_sign_in')}</button
       >
       {#if !passwordHidden && !auth.sso.oidc}
@@ -236,6 +243,11 @@
         else ondone();
       }}
     />
+  {/if}
+  {#if microsoftDemoNote}
+    <Modal title={t('auth.ms_demo_title')} onclose={() => (microsoftDemoNote = false)}>
+      <p>{t('auth.ms_demo_text')}</p>
+    </Modal>
   {/if}
   {#if poweredBy}<p class="powered muted">{t('auth.powered_by')}</p>{/if}
 </AuthCard>

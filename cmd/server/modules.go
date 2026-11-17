@@ -503,8 +503,9 @@ func ssoConfig(cfg config.Config, client *http.Client, clk clock.System) auth.SS
 	}
 	// Sign in with a Microsoft account by code (#535): a public client, no
 	// secret, no redirect address.
-	// A demo never talks to Microsoft, so it does not offer the button.
-	if cfg.MicrosoftClientID != "" && !cfg.DemoMode {
+	// The demo keeps the button to show the feature; the sign-in page answers
+	// it with a note instead of contacting Microsoft.
+	if cfg.MicrosoftClientID != "" {
 		sso.Microsoft = oidc.New(oidc.Config{Issuer: cfg.MicrosoftIssuer, ClientID: cfg.MicrosoftClientID}, client, clk.Now)
 	}
 	return sso
