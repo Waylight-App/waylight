@@ -84,8 +84,6 @@ export interface AuthGateway {
   /** Only accepted from a trusted reverse proxy that sets the user header. */
   headerLogin(): Promise<Session | { ticket: string }>;
   ssoSecondFactor(ticket: string, code: string): Promise<Session>;
-  /** Only available on a demo instance. */
-  demoLogin(): Promise<Session>;
   logout(): Promise<void>;
   changePassword(currentPassword: string, newPassword: string): Promise<Session>;
   sessions(): Promise<SessionInfo[]>;

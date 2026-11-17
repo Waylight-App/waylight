@@ -44,6 +44,8 @@ export class AuthUseCases {
 
   /** True on a public demo instance (set by currentView). */
   demo = false;
+  /** Public password of the demo account, shown on the sign-in page. */
+  demoPassword = '';
   /** True when a read-only guest is signed in (set by currentView). */
   guest = false;
   /** True when a kiosk display is signed in (#50); guest is true as well. */
@@ -63,10 +65,11 @@ export class AuthUseCases {
   /** Ticket of an SSO sign-in that still needs the local code. */
   ssoTicket = '';
 
-  /** Loads the status and returns the screen to show; a demo signs in automatically. */
+  /** Loads the status and returns the screen to show. */
   async currentView(): Promise<AuthView> {
     const status = await this.gateway.status();
     this.demo = status.demo;
+    this.demoPassword = status.demoPassword;
     this.guest = status.guest;
     this.kiosk = status.kiosk;
     this.admin = status.admin;
@@ -89,11 +92,6 @@ export class AuthUseCases {
       }
     }
     if (status.csrfToken) this.csrf.setCsrfToken(status.csrfToken);
-    if (status.demo && !status.authenticated && !status.setupRequired) {
-      const session = await this.gateway.demoLogin();
-      this.csrf.setCsrfToken(session.csrfToken);
-      return 'app';
-    }
     return viewFor(status);
   }
 

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import WaylightMark from '../../../shared/ui/WaylightMark.svelte';
 
   /** Name and logos shown above the card; the logos are versioned URLs. */
   export interface Brand {
@@ -26,7 +27,7 @@
         <img class="brand-logo light" src={brand.logo} alt="" height="32" />
         <img class="brand-logo dark" src={brand.logoDark || brand.logo} alt="" height="32" />
       {:else}
-        <span class="mark" aria-hidden="true">{brand.name.charAt(0).toLowerCase()}</span>
+        <span class="mark"><WaylightMark size={28} /></span>
       {/if}
       <span>{brand.name}</span>
     </p>
@@ -78,12 +79,7 @@
   .mark {
     display: inline-grid;
     place-items: center;
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-small);
-    background: var(--color-accent);
-    color: var(--color-accent-contrast);
-    font-weight: 700;
+    color: var(--color-accent-text);
   }
   .brand-logo {
     width: auto;

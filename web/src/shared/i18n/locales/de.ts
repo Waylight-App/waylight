@@ -896,6 +896,10 @@ export const de: Record<BaseMessageKey, string> = {
   'common.test_save': 'Prüfen & speichern',
   'auth.enter_code_hint': 'Gib den Code aus deiner Authenticator-App ein.',
   'auth.welcome_back': 'Willkommen zurück',
+  'auth.demo_access': 'Demo-Zugang',
+  'auth.demo_access_hint':
+    'Das ist eine öffentliche Demo. Melde dich mit diesem Passwort an und probiere alles aus; Änderungen werden regelmäßig zurückgesetzt.',
+  'auth.demo_fill_in': 'Passwort eintragen',
   'auth.or_with_password': 'oder mit Passwort',
   'auth.link_sign_up_with': 'Konto mit {name} erstellen',
   'auth.linked_only_sign_in': 'Vorerst dein einziger Zugang; setze ein Passwort, um zu trennen.',

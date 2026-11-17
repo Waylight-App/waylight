@@ -39,15 +39,14 @@ type UseCases struct {
 	// SSO is nil when no single sign-on method is configured.
 	SSO      usecase.SSO
 	Passkeys usecase.Passkeys
-	// DemoLogin is nil unless the instance runs in demo mode.
-	DemoLogin usecase.DemoLogin
 }
 
 // Handlers serves the auth endpoints.
 type Handlers struct {
-	uc      UseCases
-	cookies CookieConfig
-	proxy   ProxyAuth
+	uc           UseCases
+	cookies      CookieConfig
+	proxy        ProxyAuth
+	demoPassword string
 }
 
 // ProxyAuth configures login via a header set by a trusted reverse proxy.
@@ -57,6 +56,10 @@ type ProxyAuth struct {
 	// Proxies are the only peers whose header is believed.
 	Proxies []netip.Prefix
 }
+
+// WithDemoPassword marks a public demo; the status response then carries
+// the password so the sign-in page can show it.
+func (h *Handlers) WithDemoPassword(password string) *Handlers { h.demoPassword = password; return h }
 
 // WithProxyAuth enables the trusted header login.
 func (h *Handlers) WithProxyAuth(p ProxyAuth) *Handlers { h.proxy = p; return h }
@@ -94,7 +97,8 @@ func (h *Handlers) Status(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	dto := presenter.Status(res)
-	dto.Demo = h.uc.DemoLogin != nil
+	dto.Demo = h.demoPassword != ""
+	dto.DemoPassword = h.demoPassword
 	if h.uc.SSO != nil {
 		st := h.uc.SSO.Status()
 		dto.SSO = presenter.SSOStatusDTO{OIDC: st.OIDC, Header: st.Header && h.proxy.Header != "" && h.fromTrustedProxy(r), LocalLogin: st.LocalLogin,
@@ -104,12 +108,6 @@ func (h *Handlers) Status(w http.ResponseWriter, r *http.Request) {
 	}
 	dto.PasswordReset = h.uc.PasswordReset != nil && h.uc.PasswordReset.Available(r.Context())
 	httpapi.WriteJSON(w, http.StatusOK, dto)
-}
-
-// DemoLogin handles POST /api/auth/demo (only routed in demo mode).
-func (h *Handlers) DemoLogin(w http.ResponseWriter, r *http.Request) {
-	res, err := h.uc.DemoLogin.Execute(r.Context(), usecase.DemoLoginRequest{ClientKey: clientKey(r), UserAgent: r.UserAgent()})
-	h.respondWithSession(w, r, res, err)
 }
 
 // Setup handles POST /api/auth/setup.

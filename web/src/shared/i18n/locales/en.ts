@@ -876,6 +876,10 @@ export const en = {
   'common.test_save': 'Test & save',
   'auth.enter_code_hint': 'Enter the code from your authenticator app.',
   'auth.welcome_back': 'Welcome back',
+  'auth.demo_access': 'Demo access',
+  'auth.demo_access_hint':
+    'This is a public demo. Sign in with this password and try everything; changes are reset regularly.',
+  'auth.demo_fill_in': 'Fill in password',
   'auth.or_with_password': 'or with password',
   'auth.link_sign_up_with': 'Create account with {name}',
   'auth.linked_only_sign_in': 'Your only way in for now; set a password to disconnect.',

@@ -88,7 +88,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		auth.Config{
 			CookieSecure: cfg.CookieSecure, SessionTTL: cfg.SessionTTL, SetupToken: cfg.SetupToken,
 			OnAccountCreated: func(ctx context.Context, profile string) { onAccountCreated(ctx, cfg, log, registry, profile) },
-			Demo:             cfg.DemoMode,
+			DemoPassword:     demoPassword(cfg),
 			SSO:              ssoConfig(cfg, out.client, clk),
 			WebAuthn:         relyingParty(cfg),
 			MembersEnabled:   membersEnabled,
@@ -337,6 +337,15 @@ type secretStore interface {
 	Decrypt(ciphertext string) (string, error)
 }
 
+// demoPassword is the public password of the demo account, or empty when
+// the instance is not a demo.
+func demoPassword(cfg config.Config) string {
+	if cfg.DemoMode {
+		return demo.Password
+	}
+	return ""
+}
+
 // outbound bundles the adapters that reach other systems. In demo mode they
 // are replaced by fixtures, so no module ever contacts a real system.
 type outbound struct {
@@ -494,7 +503,8 @@ func ssoConfig(cfg config.Config, client *http.Client, clk clock.System) auth.SS
 	}
 	// Sign in with a Microsoft account by code (#535): a public client, no
 	// secret, no redirect address.
-	if cfg.MicrosoftClientID != "" {
+	// A demo never talks to Microsoft, so it does not offer the button.
+	if cfg.MicrosoftClientID != "" && !cfg.DemoMode {
 		sso.Microsoft = oidc.New(oidc.Config{Issuer: cfg.MicrosoftIssuer, ClientID: cfg.MicrosoftClientID}, client, clk.Now)
 	}
 	return sso

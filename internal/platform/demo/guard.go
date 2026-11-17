@@ -11,6 +11,11 @@ import (
 	"waylight/internal/shared/kernel"
 )
 
+// Password signs in to the demo account. It is public on purpose: the
+// sign-in page shows it, and the account cannot change it or anything else
+// that would lock the next visitor out.
+const Password = "waylight-demo"
+
 // ErrSecretsDisabled is returned when something tries to store a secret.
 var ErrSecretsDisabled = kernel.NewPublicError(kernel.ErrForbidden, "Storing credentials is disabled in the demo.")
 
@@ -72,7 +77,6 @@ var blockedRoutes = []struct{ method, prefix string }{
 	{http.MethodPost, "/api/auth/totp/"},
 	{http.MethodPost, "/api/auth/sessions/"},
 	{http.MethodDelete, "/api/auth/sessions/"},
-	{http.MethodPost, "/api/auth/logout"},
 	{http.MethodPost, "/api/backups"},
 	{http.MethodPost, "/api/transfer/import"},
 	{http.MethodPut, "/api/system/update-check"},

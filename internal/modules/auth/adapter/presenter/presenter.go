@@ -13,8 +13,10 @@ type StatusDTO struct {
 	SetupRequired bool   `json:"setupRequired"`
 	Authenticated bool   `json:"authenticated"`
 	CSRFToken     string `json:"csrfToken,omitempty"`
-	// Demo is true on a public demo instance (POST /api/auth/demo logs in).
-	Demo bool `json:"demo"`
+	// Demo is true on a public demo instance; DemoPassword is the public
+	// password the sign-in page shows there.
+	Demo         bool   `json:"demo"`
+	DemoPassword string `json:"demoPassword,omitempty"`
 	// Role ("owner" or "guest") and Username of the signed-in account.
 	Role     string `json:"role,omitempty"`
 	Username string `json:"username,omitempty"`

@@ -28,6 +28,7 @@ export class LocalAuthGateway implements AuthGateway {
       // No server, so nothing to protect against cross-site requests.
       csrfToken: null,
       demo: false,
+      demoPassword: '',
       guest: false,
       kiosk: false,
       admin: true,
@@ -93,7 +94,6 @@ export class LocalAuthGateway implements AuthGateway {
   revokeApiToken = unavailable;
   headerLogin = unavailable;
   ssoSecondFactor = unavailable;
-  demoLogin = unavailable;
   changePassword = unavailable;
   sessions = unavailable;
   securityEvents = unavailable;

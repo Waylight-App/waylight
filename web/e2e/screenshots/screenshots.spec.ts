@@ -13,6 +13,12 @@ const variants = [
 
 async function openDashboard(page: Page) {
   await page.goto('/');
+  // The demo opens on the sign-in page with its password shown (#539).
+  const fill = page.getByRole('button', { name: 'Fill in password' });
+  if (await fill.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    await fill.click();
+    await page.getByRole('button', { name: 'Log in' }).click();
+  }
   // The guided tour starts for the demo account: skip it once (it is stored).
   const skip = page.getByRole('button', { name: 'Skip tour' });
   await skip.click({ timeout: 10_000 }).catch(() => undefined);
