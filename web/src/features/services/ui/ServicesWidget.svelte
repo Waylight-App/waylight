@@ -86,7 +86,7 @@
             })}>🔒 {days}d</span
           >
         {/if}
-        <span class="dot {s.state}" aria-label={s.state}></span>
+        <span class="dot {s.state}" role="img" aria-label={statusText(s)}></span>
       </a>
       {#if canWake(s)}
         <button
