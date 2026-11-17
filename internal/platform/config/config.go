@@ -116,6 +116,10 @@ type Config struct {
 	AuthProxyUsers  []string
 	PasswordLogin   bool
 	SSORequire2FA   bool
+	// DefaultTheme is the id of a built-in theme for the sign-in page and
+	// every account without its own appearance (#507); empty keeps the
+	// built-in look.
+	DefaultTheme string
 	// PublicURL is the address users open, e.g. https://home.example.org;
 	// required for passkeys (WebAuthn needs a fixed origin and HTTPS).
 	PublicURL *url.URL
@@ -205,6 +209,7 @@ func Load(getenv func(string) string) (Config, error) {
 		AuthProxyUsers:           l.rawList("AUTH_PROXY_USERS", ""),
 		PasswordLogin:            l.boolean("PASSWORD_LOGIN", true),
 		SSORequire2FA:            l.boolean("SSO_REQUIRE_2FA", false),
+		DefaultTheme:             strings.ToLower(l.str("DEFAULT_THEME", "")),
 	}
 	if raw := l.getenv("PUBLIC_URL"); raw != "" {
 		u, err := url.Parse(strings.TrimRight(raw, "/"))
