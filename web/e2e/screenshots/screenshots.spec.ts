@@ -16,7 +16,7 @@ async function openDashboard(page: Page) {
   const skip = page.getByRole('button', { name: 'Skip tour' });
   await skip.click({ timeout: 10_000 }).catch(() => undefined);
   await expect(page.locator('.tour')).toHaveCount(0);
-  await expect(page.getByRole('search')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole('combobox', { name: /Quick search/ })).toBeVisible({ timeout: 15_000 });
   // The demo banner is not part of the product screenshots.
   await page.addStyleTag({ content: '.demo-banner { display: none !important; }' });
   await settle(page);
@@ -49,6 +49,33 @@ for (const v of variants) {
       await page.screenshot({ path: `${outDir}/picker-${v.name}.png` });
       await page.keyboard.press('Escape');
       await page.getByRole('button', { name: 'Done', exact: true }).click();
+    }
+  });
+}
+
+/** Calls a state-changing appearance endpoint with the session's CSRF token. */
+async function post(page: Page, path: string) {
+  await page.evaluate(async (p) => {
+    const status = (await (await fetch('/api/auth/status')).json()) as { csrfToken?: string };
+    const res = await fetch(p, { method: 'POST', headers: { 'X-CSRF-Token': status.csrfToken ?? '' } });
+    if (!res.ok) throw new Error(`${p}: ${res.status}`);
+  }, path);
+}
+
+// The built-in Amber theme (#506) has a light and a dark variant and follows
+// the scheme, so one apply covers both pictures.
+for (const scheme of ['light', 'dark'] as const) {
+  test(`dashboard amber ${scheme}`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openDashboard(page);
+    await post(page, '/api/appearance/themes/amber/apply');
+    try {
+      await openDashboard(page);
+      await page.screenshot({ path: `${outDir}/home-amber-desktop-${scheme}.png`, fullPage: true });
+    } finally {
+      // Back to the built-in look, so the order of the tests does not matter.
+      await post(page, '/api/appearance/themes/restore');
     }
   });
 }

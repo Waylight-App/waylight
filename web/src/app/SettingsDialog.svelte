@@ -316,7 +316,7 @@
     font-weight: 600;
   }
   .sections button:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
     outline-offset: -2px;
   }
   .back {

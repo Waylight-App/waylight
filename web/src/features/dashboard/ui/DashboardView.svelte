@@ -718,7 +718,7 @@
     z-index: 20;
   }
   :global(.flash) {
-    outline: 3px solid var(--color-accent);
+    outline: 3px solid var(--color-accent-text);
     outline-offset: 2px;
     border-radius: var(--radius);
     transition: outline-color 1.5s;

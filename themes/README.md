@@ -27,7 +27,7 @@ They are embedded in the binary, so adding a theme is one JSON file.
   - colors as `#rgb` or `#rrggbb`: `--color-bg`, `--color-surface`, `--color-surface-2`, `--color-border`, `--color-text`, `--color-text-muted`, `--color-accent`, `--color-accent-contrast`, `--color-accent-text`, `--color-danger`, `--color-success`, `--color-warning`;
   - radii as `0px`–`32px`: `--radius`, `--radius-small`;
   - fonts by keyword, never by file or URL: `--font-sans`, `--font-display` take `system`, `figtree`, `fraunces` or `serif`. Figtree and Fraunces ship with the app;
-  - shadows: `--shadow` (cards) and `--shadow-pop` (menus and panels) take `none` or up to three layers of `x y blur [spread] #rrggbb[aa]`, for example `0 1px 2px #1b22381a`;
+  - shadows: `--shadow` (cards) and `--shadow-pop` (menus and panels) take one to three layers of `x y blur [spread] #rrggbb[aa]`, for example `0 1px 2px #1b22381a`. `none` is not allowed because focus rings add to these shadows; `0 0 0 #00000000` draws nothing;
   - `--glow`: `none` or `0 0 <blur>px #rrggbb[aa]`, a soft light around the widget area;
   - `--page-gradient`: `none` or `linear-gradient(180deg, #rrggbb, #rrggbb)`, shown behind the page when no background picture is chosen.
 

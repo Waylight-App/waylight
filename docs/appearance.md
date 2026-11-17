@@ -21,7 +21,7 @@ that text on buttons stays readable.
 
 ## Theme gallery
 
-The gallery offers ready-made themes: Nord, Catppuccin Latte and Mocha,
+The gallery offers ready-made themes: Amber (light and dark), Nord, Catppuccin Latte and Mocha,
 Gruvbox Dark, Solarized Light and Dark, Dracula, Tokyo Night, One Dark, a
 high-contrast theme and a classic portal look. *Apply* switches to a theme at once.
 

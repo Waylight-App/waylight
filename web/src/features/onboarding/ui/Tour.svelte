@@ -119,7 +119,7 @@
     position: fixed;
     border-radius: var(--radius);
     box-shadow: 0 0 0 9999px rgb(0 0 0 / 55%);
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
     transition: all 200ms ease;
     pointer-events: none;
   }

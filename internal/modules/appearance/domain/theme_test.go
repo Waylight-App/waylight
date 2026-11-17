@@ -68,7 +68,7 @@ func TestThemeTokenValues(t *testing.T) {
 	bad := map[string]string{
 		"--font-sans":     "url(https://evil.example/font.woff2)",
 		"--font-display":  "'comic sans ms'",
-		"--shadow":        "0 1px 2px red",
+		"--shadow":        "none",
 		"--shadow-pop":    "0 0 1px #000000, 0 0 1px #000000, 0 0 1px #000000, 0 0 1px #000000",
 		"--glow":          "0 0 80px #f2b441; } body { display:none",
 		"--page-gradient": "linear-gradient(180deg, #ffffff, url(x))",
