@@ -1,16 +1,29 @@
 :root {
+  /* The Amber palette of the Waylight app: warm paper by day, navy by night. */
   color-scheme: light dark;
-  --bg: #f4f6fb;
-  --fg: #1c2333;
-  --muted: #5b6475;
-  --accent: #3b6ef5;
+  --bg: #fff3d6;
+  --fg: #1b2238;
+  --muted: #6b5f45;
+  /* Amber as link text needs the darker shade on paper (4.5:1). */
+  --accent: #9c5d00;
+  --lamp: #e9a41f;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f172a;
-    --fg: #e6e9f2;
-    --muted: #9aa3b5;
+    --bg: #131829;
+    --fg: #f2efe8;
+    --muted: #a7aebb;
+    --accent: #f2b441;
+    --lamp: #f2b441;
   }
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.brand svg {
+  color: var(--lamp);
 }
 body {
   margin: 0;

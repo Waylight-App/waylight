@@ -2,7 +2,7 @@
   "name": "waylight-extension",
   "private": true,
   "version": "0.1.0",
-  "description": "Browser extension: waylight as the new tab page (#65)",
+  "description": "Browser extension: Waylight as the new tab page (#65)",
   "type": "module",
   "scripts": {
     "test": "node --test test/",

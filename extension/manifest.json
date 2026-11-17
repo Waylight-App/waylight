@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "waylight",
+  "name": "Waylight",
   "version": "0.1.0",
-  "description": "Opens your self-hosted waylight dashboard on every new tab and saves pages to it.",
+  "description": "Opens your self-hosted Waylight dashboard on every new tab and saves pages to it.",
   "icons": { "128": "icons/icon-192.png" },
   "chrome_url_overrides": { "newtab": "newtab.html" },
   "options_ui": { "page": "options.html", "open_in_tab": true },
-  "action": { "default_title": "Save page to waylight", "default_icon": { "128": "icons/icon-192.png" } },
+  "action": { "default_title": "Save page to Waylight", "default_icon": { "128": "icons/icon-192.png" } },
   "background": { "service_worker": "src/background.js", "scripts": ["src/background.js"], "type": "module" },
   "permissions": ["storage", "contextMenus", "activeTab"],
   "browser_specific_settings": {

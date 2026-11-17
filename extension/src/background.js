@@ -1,13 +1,13 @@
 import { captureUrl } from './url.js';
 import { api, loadBase } from './storage.js';
 
-// "Save page to waylight": toolbar button and context menu open the quick
+// "Save page to Waylight": toolbar button and context menu open the quick
 // capture page (#66) with the page in a small window. activeTab grants the
 // URL and title of the clicked tab only, so no host permissions are needed.
 const MENU = 'save-to-waylight';
 
 api.runtime.onInstalled.addListener(() => {
-  api.contextMenus.create({ id: MENU, title: 'Save page to waylight', contexts: ['page', 'link', 'selection'] });
+  api.contextMenus.create({ id: MENU, title: 'Save page to Waylight', contexts: ['page', 'link', 'selection'] });
 });
 
 async function save(tab, info = {}) {

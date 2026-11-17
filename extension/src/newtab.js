@@ -23,7 +23,7 @@ async function go() {
     return;
   }
   if (target === 'choose') {
-    show('Use waylight right here in your browser, or connect it to your own server.');
+    show('Use Waylight right here in your browser, or connect it to your own server.');
     choose.hidden = false;
     return;
   }

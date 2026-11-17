@@ -41,7 +41,7 @@ form.addEventListener('submit', async (e) => {
   if (chosen() === 'local') {
     await saveMode('local');
     move.hidden = false;
-    status.textContent = 'Saved. New tabs now open waylight without a server.';
+    status.textContent = 'Saved. New tabs now open Waylight without a server.';
     return;
   }
   const base = normaliseBase(input.value);
