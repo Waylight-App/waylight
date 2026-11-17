@@ -94,7 +94,7 @@ agreement with the maintainer.
 
 - The MIT core is unchanged. Features in `ee/` stay under their licence
   without an end date.
-- `ee/LICENSE.md` holds the ELv2 text with Tristan Leoluca Farinella as
+- `ee/LICENSE.md` holds the ELv2 text with Tristan L. Farinella as
   licensor; `LICENSE`, `ee/README.md`, `CONTRIBUTING.md`, `README.md` and
   `docs/faq.md` name ELv2.
 - Whether published images are built with the `ee` tag is decided with the

@@ -1,9 +1,9 @@
 # Licence of the `ee/` directory
 
-Copyright 2026 Tristan Leoluca Farinella.
+Copyright 2026 Tristan L. Farinella.
 
 The code in this directory is licensed under the Elastic License 2.0 (ELv2),
-reproduced below. The licensor is Tristan Leoluca Farinella. There is no
+reproduced below. The licensor is Tristan L. Farinella. There is no
 future licence: the code does not become available under the MIT licence or
 any other open-source licence at a later date.
 

@@ -7,7 +7,7 @@ open-source licence over time. The rest of the repository stays under the
 MIT licence. The decision is [ADR 0020](../docs/adr/0020-ee-stays-proprietary.md),
 which replaces the licence part of [ADR 0017](../docs/adr/0017-open-core.md).
 
-The licensor is Tristan Leoluca Farinella; the full text is in
+The licensor is Tristan L. Farinella; the full text is in
 [`LICENSE.md`](LICENSE.md).
 
 ## What the licence means
