@@ -30,6 +30,8 @@ type StatusDTO struct {
 
 // SSOStatusDTO tells the login page which methods exist.
 type SSOStatusDTO struct {
+	// Microsoft: sign in with a Microsoft account by code (#535).
+	Microsoft  bool `json:"microsoft,omitempty"`
 	OIDC       bool `json:"oidc"`
 	Header     bool `json:"header"`
 	LocalLogin bool `json:"localLogin"`
@@ -469,4 +471,28 @@ func Identities(list []domain.IdentityLink) []IdentityDTO {
 // the provider's sign-in at Redirect.
 type LinkStartDTO struct {
 	Redirect string `json:"redirect"`
+}
+
+// DeviceFlowDTO is a started sign-in with a Microsoft account by code (#535):
+// the page opens VerificationURI, shows UserCode and polls with Flow.
+type DeviceFlowDTO struct {
+	Flow            string    `json:"flow"`
+	UserCode        string    `json:"userCode"`
+	VerificationURI string    `json:"verificationUri"`
+	ExpiresAt       time.Time `json:"expiresAt"`
+	// Interval is the number of seconds to wait between two polls.
+	Interval int `json:"interval"`
+}
+
+// DeviceFlow maps a started flow.
+func DeviceFlow(f usecase.DeviceFlow) DeviceFlowDTO {
+	return DeviceFlowDTO{Flow: f.ID, UserCode: f.UserCode, VerificationURI: f.VerificationURI, ExpiresAt: f.ExpiresAt,
+		Interval: int(f.Interval.Seconds())}
+}
+
+// DevicePollDTO answers POST /api/auth/microsoft/poll unless a session starts.
+type DevicePollDTO struct {
+	Pending bool   `json:"pending,omitempty"`
+	Linked  bool   `json:"linked,omitempty"`
+	Ticket  string `json:"ticket,omitempty"`
 }

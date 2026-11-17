@@ -17,3 +17,16 @@ export function linkResult(search: URLSearchParams): LinkResult | null {
   const v = search.get('link');
   return v === 'ok' || v === 'taken' || v === 'licence' ? v : null;
 }
+
+/** A started sign-in with a Microsoft account by code (#535). */
+export interface MicrosoftFlow {
+  flow: string;
+  userCode: string;
+  verificationUri: string;
+  expiresAt: Date;
+  /** Seconds to wait between two polls. */
+  interval: number;
+}
+
+/** The answer to one poll of a Microsoft code. */
+export type MicrosoftPoll = { pending: true } | { linked: true } | { ticket: string } | { signedIn: true };

@@ -52,6 +52,10 @@ type SSOConfig struct {
 	// Issuer is the provider's issuer URL; linked sign-ins are stored per
 	// issuer, so a different provider never matches an old link (#527).
 	Issuer string
+	// Device signs in with a Microsoft account by code (#535); nil when not
+	// available. DeviceIssuer is its issuer URL.
+	Device       DeviceProvider
+	DeviceIssuer string
 }
 
 // SSOButton is how the sign-in page labels the single sign-on button.
@@ -64,6 +68,8 @@ type SSOButton struct {
 
 // SSOStatus tells the login page which methods exist.
 type SSOStatus struct {
+	// Microsoft: sign in with a Microsoft account by code (#535).
+	Microsoft    bool
 	OIDC         bool
 	Header       bool
 	LocalLogin   bool
@@ -98,6 +104,11 @@ type SSO interface {
 	BeginSignUp(ctx context.Context, token, clientKey string) (redirect, state string, err error)
 	// SetInviteSignUp connects the invitations; called once while built.
 	SetInviteSignUp(s InviteSignUp)
+	// BeginDevice starts signing in with Microsoft by code (#535): to link
+	// the sign-in to linkAccount, or to sign in when it is "".
+	BeginDevice(ctx context.Context, linkAccount string) (DeviceFlow, error)
+	// PollDevice tells whether the code was confirmed and finishes the flow.
+	PollDevice(ctx context.Context, flowID string, client domain.Client) (DeviceResult, error)
 	// SetExternalAccounts lets other people sign in through OpenID Connect
 	// (#302). It is called once while the server is built.
 	SetExternalAccounts(e ExternalAccounts)
@@ -129,12 +140,13 @@ type sso struct {
 	mu       sync.Mutex
 	pending  map[string]pendingSSO    // state -> flow data
 	tickets  map[string]pendingTicket // second-factor tickets
+	devices  map[string]deviceFlow    // device flows by id (#535)
 	external ExternalAccounts
 }
 
 // NewSSO returns the single sign-on use cases.
 func NewSSO(deps Deps, cfg SSOConfig) SSO {
-	return &sso{deps: deps, cfg: cfg, pending: map[string]pendingSSO{}, tickets: map[string]pendingTicket{}}
+	return &sso{deps: deps, cfg: cfg, pending: map[string]pendingSSO{}, tickets: map[string]pendingTicket{}, devices: map[string]deviceFlow{}}
 }
 
 // SetExternalAccounts implements SSO.
@@ -146,7 +158,8 @@ func (uc *sso) SetExternalAccounts(e ExternalAccounts) {
 
 // Status implements SSO.
 func (uc *sso) Status() SSOStatus {
-	st := SSOStatus{OIDC: uc.cfg.OIDC != nil, Header: len(uc.cfg.HeaderUsers) > 0, LocalLogin: uc.cfg.LocalLogin}
+	st := SSOStatus{OIDC: uc.cfg.OIDC != nil, Header: len(uc.cfg.HeaderUsers) > 0, LocalLogin: uc.cfg.LocalLogin,
+		Microsoft: uc.cfg.Device != nil && uc.deps.Identities != nil}
 	if st.OIDC {
 		st.Button = uc.cfg.Button
 		// Only without a password form: otherwise people could never reach it.
@@ -206,7 +219,7 @@ func (uc *sso) beginWith(ctx context.Context, p pendingSSO) (string, string, err
 	}
 	url, err := uc.cfg.OIDC.AuthCodeURL(ctx, state, nonce, verifier)
 	if err != nil {
-		return "", "", kernel.NewPublicErrorf(kernel.ErrUnavailable, "The identity provider could not be reached: {detail}", "detail", err.Error())
+		return "", "", errProviderUnreachable(err)
 	}
 	now := uc.deps.Clock.Now()
 	uc.mu.Lock()
@@ -238,7 +251,7 @@ func (uc *sso) CompleteOIDC(ctx context.Context, state, code string, client doma
 		uc.deps.Events.loginFailed(ctx, domain.OwnerID, client, uc.deps.Limiter.RecordFailure(client.IP, now))
 		return SessionResponse{}, "", kernel.NewPublicErrorf(kernel.ErrUnauthorized, "The identity provider did not confirm the sign-in: {detail}", "detail", err.Error())
 	}
-	id.Provider = "oidc"
+	id.Provider, id.Issuer = "oidc", uc.cfg.Issuer
 	if p.link != "" {
 		return uc.completeLink(ctx, p.link, id, client)
 	}
@@ -268,7 +281,7 @@ func (uc *sso) finish(ctx context.Context, id domain.ExternalIdentity, client do
 	// A sign-in linked to an account (#527) wins over the lists of the
 	// configuration: the person proved both sides while signed in.
 	linked := ""
-	if id.Provider == "oidc" {
+	if id.Provider != "header" {
 		var err error
 		if linked, err = uc.linkedAccount(ctx, id); err != nil {
 			uc.deps.Events.record(ctx, domain.EventLoginFailed, domain.OwnerID, client, "sso: linked account not allowed")
@@ -277,6 +290,11 @@ func (uc *sso) finish(ctx context.Context, id domain.ExternalIdentity, client do
 	}
 	if linked != "" {
 		accountID = linked
+	} else if id.Provider == "microsoft" {
+		// Microsoft accounts only sign in once linked (#535): the address of a
+		// personal account is not verified, so no list can let it in.
+		uc.deps.Events.record(ctx, domain.EventLoginFailed, domain.OwnerID, client, "microsoft: not linked")
+		return SessionResponse{}, "", domain.ErrDeviceNotLinked
 	} else if id.Provider == "oidc" && !uc.cfg.Mapping.Allows(id) {
 		uc.mu.Lock()
 		external := uc.external
@@ -366,4 +384,10 @@ func (uc *sso) CompleteSecondFactor(ctx context.Context, ticket, code string, cl
 	uc.deps.Limiter.Reset(client.IP)
 	uc.deps.Events.loginSucceeded(ctx, t.account, client, "sso+totp")
 	return uc.deps.issuer().issue(ctx, t.account, client)
+}
+
+// errProviderUnreachable is the public error for a provider that did not
+// answer as expected.
+func errProviderUnreachable(err error) error {
+	return kernel.NewPublicErrorf(kernel.ErrUnavailable, "The identity provider could not be reached: {detail}", "detail", err.Error())
 }

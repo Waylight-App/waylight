@@ -36,6 +36,11 @@ var (
 	// ErrSignUpIdentityTaken is returned when someone accepts an invitation
 	// with a sign-in that already belongs to an account here.
 	ErrSignUpIdentityTaken = kernel.NewPublicError(kernel.ErrConflict, "This sign-in already belongs to an account here. Sign in with it instead.")
+	// ErrDeviceNotLinked is returned when a Microsoft account signs in that
+	// is linked to no account here (#535).
+	ErrDeviceNotLinked = kernel.NewPublicError(kernel.ErrUnauthorized, "This Microsoft account is not linked to an account here. Sign in with your password and connect it under Settings → Account.")
+	// ErrDeviceExpired is returned when the code ran out or was declined.
+	ErrDeviceExpired = kernel.NewPublicError(kernel.ErrConflict, "The code is no longer valid. Start again.")
 	// ErrLinkNeedsLicence is returned when someone other than the owner links
 	// a sign-in without a licence key that includes single sign-on.
 	ErrLinkNeedsLicence = kernel.NewPublicError(kernel.ErrForbidden, "Single sign-on for this account needs a licence key with sso.")

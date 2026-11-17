@@ -1,4 +1,4 @@
-import type { LinkedSignIn } from '../domain/identity';
+import type { LinkedSignIn, MicrosoftFlow } from '../domain/identity';
 import type { ApiToken } from '../domain/apiToken';
 import type {
   Passkey,
@@ -42,6 +42,10 @@ export interface AuthGateway {
   /** Starts linking; returns the provider URL to open. */
   beginLinkSignIn(): Promise<string>;
   unlinkSignIn(subject: string): Promise<void>;
+  /** Starts a Microsoft code flow: to link (signed in) or to sign in (#535). */
+  startMicrosoft(link: boolean): Promise<MicrosoftFlow>;
+  /** Polls it; a sign-in answers with the session. */
+  pollMicrosoft(flow: string): Promise<{ pending: true } | { linked: true } | { ticket: string } | Session>;
   /** Accepts an invitation through the provider (#528); returns its URL. */
   signUpWithSSO(token: string): Promise<string>;
   guests(): Promise<Guest[]>;

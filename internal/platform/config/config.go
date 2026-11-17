@@ -23,6 +23,15 @@ const SecretKeyBytes = 32
 // is a safe default for a service that must not be reachable from the internet.
 const DefaultAllowedCIDRs = "127.0.0.0/8,::1/128,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fc00::/7"
 
+// DefaultMicrosoftClientID is trisse-home's public app registration at
+// Microsoft for personal accounts (#535). It is not a secret: the device
+// flow uses no secret, and the id only names the app on Microsoft's consent
+// page. MICROSOFT_CLIENT_ID replaces it; an empty value turns the feature off.
+const DefaultMicrosoftClientID = ""
+
+// MicrosoftConsumersIssuer is the issuer of personal Microsoft accounts.
+const MicrosoftConsumersIssuer = "https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0"
+
 // Config is the validated runtime configuration.
 type Config struct {
 	ListenAddr      string
@@ -117,6 +126,12 @@ type Config struct {
 	AuthProxyUsers  []string
 	PasswordLogin   bool
 	SSORequire2FA   bool
+	// MicrosoftClientID is the public app registration used to sign in with
+	// a Microsoft account by code (#535); empty turns that off.
+	MicrosoftClientID string
+	// MicrosoftIssuer is the Microsoft identity platform for personal
+	// accounts; tests point it at a fake.
+	MicrosoftIssuer string
 	// OIDCButtonLabel, OIDCButtonIcon and OIDCAutoRedirect shape the
 	// sign-in page for single sign-on (#514).
 	OIDCButtonLabel  string
@@ -218,6 +233,8 @@ func Load(getenv func(string) string) (Config, error) {
 		OIDCButtonLabel:          strings.TrimSpace(l.str("OIDC_BUTTON_LABEL", "")),
 		OIDCButtonIcon:           strings.ToLower(strings.TrimSpace(l.str("OIDC_BUTTON_ICON", ""))),
 		OIDCAutoRedirect:         l.boolean("OIDC_AUTO_REDIRECT", false),
+		MicrosoftClientID:        strings.TrimSpace(l.str("MICROSOFT_CLIENT_ID", DefaultMicrosoftClientID)),
+		MicrosoftIssuer:          MicrosoftConsumersIssuer,
 		DefaultTheme:             strings.ToLower(l.str("DEFAULT_THEME", "")),
 	}
 	if raw := l.getenv("PUBLIC_URL"); raw != "" {

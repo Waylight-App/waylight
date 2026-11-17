@@ -1,4 +1,4 @@
-import type { LinkedSignIn } from '../../domain/identity';
+import type { LinkedSignIn, MicrosoftFlow } from '../../domain/identity';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type {
   EnrollmentDTO,
@@ -25,6 +25,8 @@ import type {
   ResetLinkDTO,
   KioskLinkDTO,
   KioskOptionsDTO,
+  DeviceFlowDTO,
+  DevicePollDTO,
   IdentityDTO,
   LinkStartDTO,
   PasskeysDTO,
@@ -214,6 +216,23 @@ export class AuthApi implements AuthGateway {
 
   async signUpWithSSO(token: string): Promise<string> {
     return (await this.http.post<LinkStartDTO>('/api/auth/link/sso', { token })).redirect;
+  }
+
+  async startMicrosoft(link: boolean): Promise<MicrosoftFlow> {
+    const f = await this.http.post<DeviceFlowDTO>(
+      link ? '/api/auth/microsoft/link' : '/api/auth/microsoft/start',
+    );
+    return { ...f, expiresAt: new Date(f.expiresAt) };
+  }
+
+  async pollMicrosoft(
+    flow: string,
+  ): Promise<{ pending: true } | { linked: true } | { ticket: string } | Session> {
+    const res = await this.http.post<DevicePollDTO | SessionDTO>('/api/auth/microsoft/poll', { flow });
+    if ('csrfToken' in res) return toSession(res);
+    if (res.linked) return { linked: true };
+    if (res.ticket) return { ticket: res.ticket };
+    return { pending: true };
   }
 
   unlinkSignIn(subject: string): Promise<void> {

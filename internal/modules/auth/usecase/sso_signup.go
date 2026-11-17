@@ -47,14 +47,14 @@ func (uc *sso) completeSignUp(ctx context.Context, token, clientKey string, id d
 		return SessionResponse{}, domain.ErrSSONotAllowed
 	}
 	// Someone who has an account here already signs in instead.
-	if _, err := uc.deps.Identities.Find(ctx, uc.cfg.Issuer, id.Subject); err == nil {
+	if _, err := uc.deps.Identities.Find(ctx, id.Issuer, id.Subject); err == nil {
 		return SessionResponse{}, domain.ErrSignUpIdentityTaken
 	}
 	a, err := uc.inviteSignUp().CreateFromInvite(ctx, token, clientKey, client)
 	if err != nil {
 		return SessionResponse{}, err
 	}
-	link := domain.IdentityLink{AccountID: a.ID(), Issuer: uc.cfg.Issuer, Subject: id.Subject, Email: id.Email,
+	link := domain.IdentityLink{AccountID: a.ID(), Issuer: id.Issuer, Subject: id.Subject, Email: id.Email,
 		CreatedAt: uc.deps.Clock.Now(), OnlySignIn: true}
 	if err := uc.deps.Identities.Add(ctx, link); err != nil {
 		return SessionResponse{}, err
