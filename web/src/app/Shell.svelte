@@ -1,5 +1,6 @@
 <script lang="ts">
   import WaylightMark from '../shared/ui/WaylightMark.svelte';
+  import { PRODUCT_NAME } from '../shared/product';
   import { rememberLook } from './branding/lastLook';
   import type { CommandHandlers } from './appCommands';
   import { hasStoredTimers, timerAlerts } from './timerAlerts.svelte';
@@ -409,7 +410,7 @@
     {:else}
       <span class="logo"><WaylightMark size={22} /></span>
     {/if}
-    {branding().name}
+    <span class:wordmark={branding().name === PRODUCT_NAME}>{branding().name}</span>
   </a>
   <div class="center">
     <TopInfo
@@ -596,6 +597,10 @@
     color: inherit;
     text-decoration: none;
     white-space: nowrap;
+  }
+  .wordmark {
+    font-family: var(--font-wordmark);
+    font-weight: 700;
   }
   .logo {
     display: inline-grid;

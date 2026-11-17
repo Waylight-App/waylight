@@ -20,7 +20,9 @@ export interface Branding {
   defaultTheme?: '' | 'system' | 'light' | 'dark';
 }
 
-export const PRODUCT_NAME = 'Waylight';
+import { PRODUCT_NAME } from '../../shared/product';
+
+export { PRODUCT_NAME };
 const defaultBranding: Branding = { name: PRODUCT_NAME, custom: false, hidePoweredBy: false };
 
 const state = $state<{ current: Branding }>({ current: defaultBranding });
