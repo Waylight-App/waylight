@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/smarthome/domain"
-	"trisse-home/internal/modules/smarthome/usecase"
+	"waylight/internal/modules/smarthome/domain"
+	"waylight/internal/modules/smarthome/usecase"
 )
 
 type fakeSmartHome struct {

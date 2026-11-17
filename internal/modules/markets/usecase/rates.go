@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // RateSource returns the newest euro reference rates (output port, the ECB).

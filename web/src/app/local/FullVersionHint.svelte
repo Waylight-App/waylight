@@ -12,8 +12,8 @@
   }
   let { variant }: Props = $props();
 
-  const DISMISSED_KEY = 'trisse-home.fullVersionHintDismissed';
-  const docs = 'https://github.com/itadori26/trisse-home/blob/main/docs/';
+  const DISMISSED_KEY = 'waylight.fullVersionHintDismissed';
+  const docs = 'https://github.com/itadori26/waylight/blob/main/docs/';
   const serverGuide = `${docs}getting-started.md`;
   const piGuide = `${docs}raspberry-pi.md`;
   const privacy = `${docs}extension-privacy.md`;

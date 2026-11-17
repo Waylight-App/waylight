@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/system/domain"
-	"trisse-home/internal/modules/system/usecase"
+	"waylight/internal/modules/system/domain"
+	"waylight/internal/modules/system/usecase"
 )
 
 type fakeMonitor struct{ usecase.Monitor }

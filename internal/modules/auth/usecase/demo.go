@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 // DemoLogin starts a session without a password. It is only wired when the

@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/shared/ical"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/shared/ical"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 // FormatEvent serialises e as a VCALENDAR with one VEVENT.
 func FormatEvent(e domain.Event, stamp time.Time) string {
 	lines := []string{
-		"BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//trisse-home//calendar//EN", "CALSCALE:GREGORIAN",
+		"BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//waylight//calendar//EN", "CALSCALE:GREGORIAN",
 		"BEGIN:VEVENT",
 		"UID:" + e.UID,
 		"DTSTAMP:" + stamp.UTC().Format(icalDateTimeLayout),

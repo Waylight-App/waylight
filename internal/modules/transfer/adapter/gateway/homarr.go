@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"trisse-home/internal/modules/transfer/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transfer/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Homarr reads a board configuration of Homarr 0.x (#77), the JSON file in
@@ -68,7 +68,7 @@ func (Homarr) Parse(files map[string][]byte) (domain.ImportPlan, error) {
 		plan.Tiles = append(plan.Tiles, domain.ImportTile{Name: a.Name, URL: link, Icon: iconURL(a.Appearance.IconURL, a.Name, &plan)})
 	}
 	if len(c.Categories) > 0 {
-		plan.Warnings = append(plan.Warnings, "Categories are not carried over: service tiles in trisse-home have no groups.")
+		plan.Warnings = append(plan.Warnings, "Categories are not carried over: service tiles in waylight have no groups.")
 	}
 	for _, w := range c.Widgets {
 		switch w.Type {
@@ -81,7 +81,7 @@ func (Homarr) Parse(files map[string][]byte) (domain.ImportPlan, error) {
 			}
 			plan.Warnings = append(plan.Warnings, "Widget weather skipped: it has no location.")
 		default:
-			plan.Warnings = append(plan.Warnings, fmt.Sprintf("Widget %s skipped: trisse-home has no counterpart.", w.Type))
+			plan.Warnings = append(plan.Warnings, fmt.Sprintf("Widget %s skipped: waylight has no counterpart.", w.Type))
 		}
 	}
 	return plan, nil

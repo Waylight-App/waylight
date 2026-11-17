@@ -11,7 +11,7 @@ describe('TransferUseCases', () => {
       managedSections: vi.fn(),
       importForeign: vi.fn(),
     } satisfies TransferGateway;
-    await expect(new TransferUseCases(gateway).importFile('{"a":1}')).rejects.toThrow(/not a trisse-home/);
+    await expect(new TransferUseCases(gateway).importFile('{"a":1}')).rejects.toThrow(/not a Waylight/);
     expect(gateway.import).not.toHaveBeenCalled();
   });
 });

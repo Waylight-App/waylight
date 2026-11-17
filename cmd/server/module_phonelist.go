@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/phonelist"
+	"waylight/internal/modules"
+	"waylight/internal/modules/phonelist"
 )
 
 // The phone list module registers itself; no shared file lists it (#193).

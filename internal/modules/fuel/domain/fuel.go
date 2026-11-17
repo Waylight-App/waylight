@@ -7,7 +7,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // FuelType is a fuel sold at German stations.

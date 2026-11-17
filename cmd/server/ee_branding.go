@@ -5,9 +5,9 @@ package main
 import (
 	"context"
 
-	"trisse-home/ee/branding"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/branding"
+	"waylight/internal/modules"
+	"waylight/internal/shared/kernel"
 )
 
 // Branding (#305), part of the ee/ features: the module becomes the core's

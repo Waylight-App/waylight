@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memTokens struct{ list []domain.APIToken }

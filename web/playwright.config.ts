@@ -9,7 +9,7 @@ const port = Number(process.env.E2E_PORT ?? 18091);
 /** Fixed setup token so the test can complete the first-run setup. */
 export const setupToken = 'e2e-setup-token-0123456789';
 
-const dataDir = mkdtempSync(join(tmpdir(), 'trisse-home-e2e-'));
+const dataDir = mkdtempSync(join(tmpdir(), 'waylight-e2e-'));
 
 const chrome = { ...devices['Desktop Chrome'] };
 
@@ -36,7 +36,7 @@ export default defineConfig({
     { name: 'extension', testMatch: 'extension.spec.ts' },
   ],
   webServer: {
-    command: '../bin/trisse-home',
+    command: '../bin/waylight',
     url: `http://127.0.0.1:${port}/healthz`,
     reuseExistingServer: false,
     env: {

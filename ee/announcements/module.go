@@ -13,13 +13,13 @@ import (
 	"net/url"
 	"strings"
 
-	"trisse-home/ee/announcements/adapter/controller"
-	"trisse-home/ee/announcements/adapter/gateway"
-	"trisse-home/ee/announcements/usecase"
-	"trisse-home/ee/licence"
-	licencedomain "trisse-home/ee/licence/domain"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/announcements/adapter/controller"
+	"waylight/ee/announcements/adapter/gateway"
+	"waylight/ee/announcements/usecase"
+	"waylight/ee/licence"
+	licencedomain "waylight/ee/licence/domain"
+	"waylight/internal/modules"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the rings.

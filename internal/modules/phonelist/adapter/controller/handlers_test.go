@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/phonelist/domain"
-	"trisse-home/internal/modules/phonelist/usecase"
+	"waylight/internal/modules/phonelist/domain"
+	"waylight/internal/modules/phonelist/usecase"
 )
 
 type fakeUC struct{ usecase.Phonelist }

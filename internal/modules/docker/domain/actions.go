@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"slices"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // MaxLogLines is how many log lines are shown for a container.

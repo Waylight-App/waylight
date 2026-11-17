@@ -3,7 +3,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/rss/usecase"
+	"waylight/internal/modules/rss/usecase"
 )
 
 // FeedDTO is a subscribed feed.

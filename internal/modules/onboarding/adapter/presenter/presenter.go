@@ -3,7 +3,7 @@
 // Ring: Interface Adapters.
 package presenter
 
-import "trisse-home/internal/modules/onboarding/usecase"
+import "waylight/internal/modules/onboarding/usecase"
 
 // StatusDTO is returned by the onboarding endpoints.
 type StatusDTO struct {

@@ -6,12 +6,12 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/wiki/adapter/controller"
-	"trisse-home/internal/modules/wiki/adapter/gateway"
-	"trisse-home/internal/modules/wiki/domain"
-	"trisse-home/internal/modules/wiki/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/wiki/adapter/controller"
+	"waylight/internal/modules/wiki/adapter/gateway"
+	"waylight/internal/modules/wiki/domain"
+	"waylight/internal/modules/wiki/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the wiki search rings and implements modules.Module. It has

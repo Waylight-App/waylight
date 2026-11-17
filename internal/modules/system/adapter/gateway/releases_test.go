@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestGitHubReleases(t *testing.T) {

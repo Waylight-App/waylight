@@ -1,7 +1,7 @@
 import { parseUnanswered } from '../domain/unanswered';
 import type { UnansweredState, UnansweredStore } from '../usecase/unansweredQueries';
 
-const KEY = 'trisse-home.search-unanswered';
+const KEY = 'waylight.search-unanswered';
 
 /**
  * Keeps the queries without an answer in localStorage (#481), never on the

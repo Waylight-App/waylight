@@ -9,8 +9,8 @@ import (
 	"sort"
 	"time"
 
-	"trisse-home/internal/modules/diskhealth/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/diskhealth/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // DiskHealth is the input port.

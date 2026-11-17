@@ -5,7 +5,7 @@ package gateway
 import (
 	"errors"
 
-	"trisse-home/internal/modules/system/domain"
+	"waylight/internal/modules/system/domain"
 )
 
 func statfs(string) (domain.Usage, error) {

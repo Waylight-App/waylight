@@ -5,11 +5,11 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/space/adapter/controller"
-	"trisse-home/internal/modules/space/adapter/gateway"
-	"trisse-home/internal/modules/space/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/space/adapter/controller"
+	"waylight/internal/modules/space/adapter/gateway"
+	"waylight/internal/modules/space/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the space rings and implements modules.Module.

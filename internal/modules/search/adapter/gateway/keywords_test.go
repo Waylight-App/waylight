@@ -5,10 +5,10 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/modules/search/domain"
-	"trisse-home/internal/modules/search/usecase"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/search/domain"
+	"waylight/internal/modules/search/usecase"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestKeywordsArePersonal: own keywords (#478) can name private bookmarks,

@@ -22,11 +22,11 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_0fd566747f1cd503: 'Das Backup-Intervall muss mindestens eine Stunde betragen.',
   // The backup is damaged (integrity check failed).
   srv_678e4dc426de200a: 'Das Backup ist beschädigt (Integritätsprüfung fehlgeschlagen).',
-  // The backup was made by a newer version of trisse-home. Update first, then restore it.
-  srv_5b20a69f346d31d3:
-    'Das Backup stammt von einer neueren trisse-home-Version. Bitte zuerst aktualisieren und dann wiederherstellen.',
-  // The file is not a trisse-home backup.
-  srv_2dd869ff96b4bc7a: 'Die Datei ist kein trisse-home-Backup.',
+  // The backup was made by a newer version of Waylight. Update first, then restore it.
+  srv_c8745160757d198c:
+    'Das Backup stammt von einer neueren Waylight-Version. Bitte zuerst aktualisieren und dann wiederherstellen.',
+  // The file is not a Waylight backup.
+  srv_cc68528bcc0907b5: 'Die Datei ist kein Waylight-Backup.',
   // The source must be local, remote or upload.
   srv_7054f9e52efbae1e: 'Die Quelle muss local, remote oder upload sein.',
   // User name and password (or app password) are required.

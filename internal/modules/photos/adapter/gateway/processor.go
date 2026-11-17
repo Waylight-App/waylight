@@ -3,9 +3,9 @@ package gateway
 import (
 	"errors"
 
-	"trisse-home/internal/modules/photos/domain"
-	"trisse-home/internal/modules/photos/usecase"
-	"trisse-home/internal/shared/imaging"
+	"waylight/internal/modules/photos/domain"
+	"waylight/internal/modules/photos/usecase"
+	"waylight/internal/shared/imaging"
 )
 
 // Processor implements usecase.Processor with the standard library.

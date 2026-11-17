@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/auth/adapter/presenter"
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/modules/auth/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/auth/adapter/presenter"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 type fakeLogin struct{ err error }

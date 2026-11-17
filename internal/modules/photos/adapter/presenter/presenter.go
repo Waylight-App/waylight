@@ -4,8 +4,8 @@
 package presenter
 
 import (
-	"trisse-home/internal/modules/photos/domain"
-	"trisse-home/internal/modules/photos/usecase"
+	"waylight/internal/modules/photos/domain"
+	"waylight/internal/modules/photos/usecase"
 )
 
 // PhotoDTO is one picture; the image itself is at /api/photos/{id}/image.

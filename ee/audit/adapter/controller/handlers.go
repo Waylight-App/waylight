@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"time"
 
-	"trisse-home/ee/audit/domain"
-	"trisse-home/ee/audit/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/audit/domain"
+	"waylight/ee/audit/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // EntryDTO is one entry of GET /api/audit.
@@ -101,7 +101,7 @@ func (h *Handlers) Export(w http.ResponseWriter, r *http.Request) {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
-	name := "trisse-home-audit-" + time.Now().UTC().Format("20060102-150405")
+	name := "waylight-audit-" + time.Now().UTC().Format("20060102-150405")
 	if r.URL.Query().Get("format") == "csv" {
 		w.Header().Set("Content-Type", "text/csv; charset=utf-8")
 		w.Header().Set("Content-Disposition", `attachment; filename="`+name+`.csv"`)

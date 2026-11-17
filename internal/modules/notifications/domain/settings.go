@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Rule limits and defaults.

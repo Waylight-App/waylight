@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"trisse-home/internal/platform/database"
+	"waylight/internal/platform/database"
 )
 
 // Open creates a temporary database with the given module migrations applied.

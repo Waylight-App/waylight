@@ -1,7 +1,7 @@
 {
   "id": "classic-portal",
   "name": "Classic Portal",
-  "author": "trisse-home",
+  "author": "waylight",
   "scheme": "light",
   "tokens": {
     "--color-bg": "#e8eef7",

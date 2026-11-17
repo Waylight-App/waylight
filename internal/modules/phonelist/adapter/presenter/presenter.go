@@ -6,8 +6,8 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/phonelist/domain"
-	"trisse-home/internal/modules/phonelist/usecase"
+	"waylight/internal/modules/phonelist/domain"
+	"waylight/internal/modules/phonelist/usecase"
 )
 
 // EntryDTO is one person of the phone list.

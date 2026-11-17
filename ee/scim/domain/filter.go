@@ -1,5 +1,5 @@
 // Package domain holds the parts of SCIM 2.0 (RFC 7643, RFC 7644) that
-// trisse-home implements for directory provisioning (#396).
+// waylight implements for directory provisioning (#396).
 //
 // Ring: Entities.
 package domain

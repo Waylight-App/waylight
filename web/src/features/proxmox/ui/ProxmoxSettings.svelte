@@ -23,7 +23,7 @@
   /** Shell commands for a read-only token (PVEAuditor). */
   const tokenSnippet = `pveum user add monitor@pve
 pveum aclmod / -user monitor@pve -role PVEAuditor
-pveum user token add monitor@pve trisse-home --privsep 0`;
+pveum user token add monitor@pve waylight --privsep 0`;
 
   $effect(() => {
     proxmox
@@ -74,7 +74,7 @@ pveum user token add monitor@pve trisse-home --privsep 0`;
     ><span>{t('proxmox.token_id')}</span><input
       class="input"
       bind:value={tokenId}
-      placeholder="monitor@pve!trisse-home"
+      placeholder="monitor@pve!waylight"
       autocomplete="off"
       required
     /></label

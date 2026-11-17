@@ -1,6 +1,6 @@
 package presenter
 
-import "trisse-home/internal/modules/backup/usecase"
+import "waylight/internal/modules/backup/usecase"
 
 // RemoteSettingsDTO is the off-site target; the password is never returned.
 type RemoteSettingsDTO struct {

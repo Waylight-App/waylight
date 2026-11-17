@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"testing"
 
-	"trisse-home/internal/modules/study/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/study/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRepo struct {

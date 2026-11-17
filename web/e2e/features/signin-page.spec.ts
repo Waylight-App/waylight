@@ -14,7 +14,7 @@ for (const v of [
     await page.goto('/');
 
     await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible();
-    await expect(page.getByText('trisse-home', { exact: true })).toBeVisible();
+    await expect(page.getByText('waylight', { exact: true })).toBeVisible();
     const login = page.getByRole('button', { name: 'Log in' });
     const guest = page.getByRole('button', { name: 'Sign in as guest' });
     await expect(login).toBeVisible();

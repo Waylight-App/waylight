@@ -23,7 +23,7 @@ by anyone else in the network after the first start.
   Origin) for all state-changing requests, including login.
 - Failed logins are rate-limited per client IP (5 per 15 minutes).
 - An IP allowlist runs before everything else.
-- `trisse-home reset-account` removes the account for recovery.
+- `waylight reset-account` removes the account for recovery.
 
 ## Consequences
 

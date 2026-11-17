@@ -13,8 +13,8 @@ import (
 	"regexp"
 	"strings"
 
-	"trisse-home/internal/modules/parcels/domain"
-	"trisse-home/internal/shared/imap"
+	"waylight/internal/modules/parcels/domain"
+	"waylight/internal/shared/imap"
 )
 
 var (

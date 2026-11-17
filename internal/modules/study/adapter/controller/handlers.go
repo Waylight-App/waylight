@@ -6,10 +6,10 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/study/adapter/presenter"
-	"trisse-home/internal/modules/study/domain"
-	"trisse-home/internal/modules/study/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/study/adapter/presenter"
+	"waylight/internal/modules/study/domain"
+	"waylight/internal/modules/study/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // ModuleInputDTO is the body of POST/PUT /api/study/modules.

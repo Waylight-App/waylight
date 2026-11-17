@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"trisse-home/internal/modules/search/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/search/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // ErrShortcutNotFound is returned when deleting an unknown shortcut.

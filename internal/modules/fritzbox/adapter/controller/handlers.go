@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/fritzbox/adapter/presenter"
-	"trisse-home/internal/modules/fritzbox/domain"
-	"trisse-home/internal/modules/fritzbox/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/fritzbox/adapter/presenter"
+	"waylight/internal/modules/fritzbox/domain"
+	"waylight/internal/modules/fritzbox/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // Handlers serves the FRITZ!Box endpoints.

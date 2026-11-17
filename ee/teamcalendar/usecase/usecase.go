@@ -8,7 +8,7 @@ package usecase
 import (
 	"context"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Subscription is an own calendar subscription and who else sees it.

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
+	"waylight/internal/modules/todos/domain"
 )
 
 func TestSeedSampleData(t *testing.T) {

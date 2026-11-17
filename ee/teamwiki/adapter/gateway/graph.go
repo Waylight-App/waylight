@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"trisse-home/internal/modules/wiki/domain"
+	"waylight/internal/modules/wiki/domain"
 )
 
 // Graph searches SharePoint and OneDrive through Microsoft Graph with the

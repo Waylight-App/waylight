@@ -1,9 +1,9 @@
 {
-  "name": "trisse-home-web",
+  "name": "waylight-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Frontend of trisse-home, a self-hosted personal start page.",
+  "description": "Frontend of waylight, a self-hosted personal start page.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

@@ -5,7 +5,7 @@ import (
 	"math"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // coordinatePrecision rounds coordinates to ~1 km so nearby widgets share a

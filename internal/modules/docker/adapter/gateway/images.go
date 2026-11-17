@@ -10,7 +10,7 @@ import (
 	"sort"
 	"strings"
 
-	"trisse-home/internal/modules/docker/usecase"
+	"waylight/internal/modules/docker/usecase"
 )
 
 // RunningImages implements usecase.LocalImageReader. It needs IMAGES=1 on

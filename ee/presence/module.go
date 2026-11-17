@@ -12,12 +12,12 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/ee/licence"
-	"trisse-home/ee/presence/adapter/controller"
-	"trisse-home/ee/presence/adapter/gateway"
-	"trisse-home/ee/presence/usecase"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/licence"
+	"waylight/ee/presence/adapter/controller"
+	"waylight/ee/presence/adapter/gateway"
+	"waylight/ee/presence/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/shared/kernel"
 )
 
 // pruneInterval: statuses of earlier days go within an hour after midnight.

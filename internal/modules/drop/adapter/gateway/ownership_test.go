@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/drop/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/drop/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestDropIsPersonal: drop items move between an account's own devices, so

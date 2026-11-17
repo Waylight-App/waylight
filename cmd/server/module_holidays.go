@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/holidays"
+	"waylight/internal/modules"
+	"waylight/internal/modules/holidays"
 )
 
 // The holidays module registers itself; no shared file lists it (#193).

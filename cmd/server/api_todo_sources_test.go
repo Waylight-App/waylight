@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/shared/caldav/caldavtest"
+	"waylight/internal/shared/caldav/caldavtest"
 )
 
 // External to-do lists (#169): connect a CalDAV task list, use it from a

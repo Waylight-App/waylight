@@ -53,7 +53,7 @@
   /** Opens the provider's sign-in in a new window and waits for it (#171). */
   function signIn() {
     // Opened synchronously in the click, so pop-up blockers allow it.
-    const win = window.open('about:blank', 'trisse-oauth', 'width=520,height=700');
+    const win = window.open('about:blank', 'waylight-oauth', 'width=520,height=700');
     if (!win) {
       error = t('todos.sources.popup_blocked');
       return;

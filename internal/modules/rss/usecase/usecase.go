@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/rss/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/rss/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Item list limits.

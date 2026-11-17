@@ -5,11 +5,11 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/fuel/adapter/controller"
-	"trisse-home/internal/modules/fuel/adapter/gateway"
-	"trisse-home/internal/modules/fuel/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/fuel/adapter/controller"
+	"waylight/internal/modules/fuel/adapter/gateway"
+	"waylight/internal/modules/fuel/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the fuel price rings and implements modules.Module.

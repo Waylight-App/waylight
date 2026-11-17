@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"time"
 
-	"trisse-home/internal/modules/calendar/adapter/presenter"
-	"trisse-home/internal/modules/calendar/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/calendar/adapter/presenter"
+	"waylight/internal/modules/calendar/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // Handlers serves the calendar endpoints.

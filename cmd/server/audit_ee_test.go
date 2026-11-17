@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
+	"waylight/ee/licence/domain"
 )
 
 // TestAuditLog checks #303 in the ee build: changes to instance data and

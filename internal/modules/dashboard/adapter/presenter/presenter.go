@@ -3,7 +3,7 @@ package presenter
 import (
 	"encoding/json"
 
-	"trisse-home/internal/modules/dashboard/usecase"
+	"waylight/internal/modules/dashboard/usecase"
 )
 
 // DashboardDTO is returned by GET /api/dashboard.

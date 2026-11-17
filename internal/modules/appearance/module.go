@@ -5,12 +5,12 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/appearance/adapter/configfile"
-	"trisse-home/internal/modules/appearance/adapter/controller"
-	"trisse-home/internal/modules/appearance/adapter/gateway"
-	"trisse-home/internal/modules/appearance/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/appearance/adapter/configfile"
+	"waylight/internal/modules/appearance/adapter/controller"
+	"waylight/internal/modules/appearance/adapter/gateway"
+	"waylight/internal/modules/appearance/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the appearance rings and implements modules.Module.

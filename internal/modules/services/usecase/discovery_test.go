@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/services/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/services/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type fakeContainers struct {
@@ -42,7 +42,7 @@ type movingClock struct{ now time.Time }
 func (c *movingClock) Now() time.Time { return c.now }
 
 func labelled(name, url string) domain.Container {
-	return domain.Container{Name: name, Labels: map[string]string{"trisse-home.url": url}}
+	return domain.Container{Name: name, Labels: map[string]string{"waylight.url": url}}
 }
 
 func newDiscoveryFixture(source ContainerSource) (Discovery, *memRepo, *memDiscovery, *movingClock) {

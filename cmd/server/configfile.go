@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"os"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/platform/config"
+	"waylight/internal/modules"
+	"waylight/internal/platform/config"
 )
 
 // configFileApplier is implemented by the transfer module (#88); the

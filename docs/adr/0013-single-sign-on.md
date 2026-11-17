@@ -29,7 +29,7 @@ session overview stay unchanged:
 The local second factor is skipped for SSO by default (the identity
 provider is responsible); `SSO_REQUIRE_2FA=true` asks for it anyway.
 `PASSWORD_LOGIN=false` disables the owner's password login once SSO works;
-`trisse-home reset-account` still recovers. Guests keep their passwords.
+`waylight reset-account` still recovers. Guests keep their passwords.
 
 **Own implementation instead of a library.** `internal/platform/oidc`
 implements discovery, PKCE, the token request and ID token validation with

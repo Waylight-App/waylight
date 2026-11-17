@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/electricity/adapter/controller"
-	"trisse-home/internal/modules/electricity/adapter/gateway"
-	"trisse-home/internal/modules/electricity/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/electricity/adapter/controller"
+	"waylight/internal/modules/electricity/adapter/gateway"
+	"waylight/internal/modules/electricity/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the electricity price rings and implements modules.Module.

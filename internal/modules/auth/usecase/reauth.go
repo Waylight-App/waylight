@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 // ConfirmIdentity re-checks the signed-in account's password and, when

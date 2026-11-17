@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/dashboard/domain"
+	"waylight/internal/modules/dashboard/domain"
 )
 
 type memRepo struct {

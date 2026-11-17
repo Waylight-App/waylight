@@ -7,7 +7,7 @@ import (
 	"slices"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // League is a competition a provider serves.

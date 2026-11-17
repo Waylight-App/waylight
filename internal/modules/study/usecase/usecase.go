@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/study/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/study/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Study is the input port of the module.

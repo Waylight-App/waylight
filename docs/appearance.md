@@ -6,7 +6,7 @@ with looks the same.
 
 ## Language
 
-trisse-home speaks English and German. By default it follows the language of
+Waylight speaks English and German. By default it follows the language of
 your browser; you can fix one under *Language*. Dates, times and numbers
 follow the chosen language. Messages from the server, such as validation
 errors, are translated too.
@@ -32,8 +32,9 @@ settings are kept, and **Restore my own style** brings them back.
 
 ### Default theme for everyone
 
-The server operator can make a built-in theme the default with
-`DEFAULT_THEME` ([configuration](configuration.md#look)). The sign-in page
+Amber is the default theme. The server operator can choose another
+built-in theme, such as Dark Amber, with `DEFAULT_THEME`
+([configuration](configuration.md#look)), or `none` for the plain look. The sign-in page
 uses it, and so does every account until it chooses its own appearance.
 Changing one setting, such as the accent colour, keeps the theme as it was
 shown; from then on the account's own choice counts. An organisation's
@@ -50,7 +51,7 @@ adds one somebody shared with you. Themes set colours, corner radii, shadows
 and one of the fonts that come with the app, each in a fixed format. They
 cannot load fonts, images or scripts, so a theme file from a stranger cannot
 track you or hide parts of the page. The
-[theme format](https://github.com/itadori26/trisse-home/blob/main/themes/README.md)
+[theme format](https://github.com/itadori26/waylight/blob/main/themes/README.md)
 explains how to write one and how to contribute it.
 
 ## Background image
@@ -62,7 +63,7 @@ you save:
 
 - **Built in:** a few gradients and plain colours. They are drawn with CSS,
   so they cost nothing and work offline.
-- **Your pictures:** upload a JPEG, PNG or GIF of up to 25 MB. trisse-home
+- **Your pictures:** upload a JPEG, PNG or GIF of up to 25 MB. Waylight
   turns it upright, scales it to at most 2560 pixels and stores it as JPEG
   without EXIF data, so the location where a photo was taken is not kept.
   Up to 30 pictures are stored in the database, which means backups contain

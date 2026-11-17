@@ -5,11 +5,11 @@ package main
 import (
 	"context"
 
-	"trisse-home/ee/teamtabs"
-	"trisse-home/ee/teamtabs/usecase"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/dashboard"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/teamtabs"
+	"waylight/ee/teamtabs/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/modules/dashboard"
+	"waylight/internal/shared/kernel"
 )
 
 // tabSharing adapts the dashboard's Sharing to the team tabs port.

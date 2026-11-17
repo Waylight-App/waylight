@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"io/fs"
 
-	"trisse-home/ee/connections/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/ee/connections/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

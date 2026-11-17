@@ -71,7 +71,7 @@ describe('bang suggestions (#475)', () => {
 
   it('stops suggesting once the search terms start', () => {
     expect(typedBang('!gh')).toBe('gh');
-    expect(typedBang('!gh trisse')).toBeNull();
+    expect(typedBang('!gh waylight')).toBeNull();
     expect(typedBang('hello')).toBeNull();
     expect(suggestBangs('!w Berlin', [], true)).toEqual([]);
   });

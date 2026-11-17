@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/modules/todos/usecase"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/modules/todos/usecase"
 )
 
 // GoogleTasksAPI is the base URL of the Google Tasks API.

@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/notes/adapter/controller"
-	"trisse-home/internal/modules/notes/adapter/gateway"
-	"trisse-home/internal/modules/notes/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/notes/adapter/controller"
+	"waylight/internal/modules/notes/adapter/gateway"
+	"waylight/internal/modules/notes/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the notes rings and implements modules.Module.

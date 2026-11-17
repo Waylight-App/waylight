@@ -21,7 +21,7 @@ func TestCollect(t *testing.T) {
 	dir := t.TempDir()
 	src := `package x
 
-import "trisse-home/internal/shared/kernel"
+import "waylight/internal/shared/kernel"
 
 var A = kernel.NewPublicError(kernel.ErrInvalid, "Plain " +
 	"message.")
@@ -45,7 +45,7 @@ func bad(s string) error { return kernel.NewPublicError(kernel.ErrInvalid, "Bad 
 
 func TestMessagesAreSplitByOwner(t *testing.T) {
 	dir := t.TempDir()
-	const head = "package x\n\nimport \"trisse-home/internal/shared/kernel\"\n\n"
+	const head = "package x\n\nimport \"waylight/internal/shared/kernel\"\n\n"
 	writeFile(t, filepath.Join(dir, "internal/modules/media/a.go"),
 		head+`var A = kernel.NewPublicError(kernel.ErrInvalid, "Only media.")
 var C = kernel.NewPublicError(kernel.ErrInvalid, "Media and arr.")

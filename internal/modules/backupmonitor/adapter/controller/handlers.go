@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules/backupmonitor/adapter/presenter"
-	"trisse-home/internal/modules/backupmonitor/domain"
-	"trisse-home/internal/modules/backupmonitor/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/backupmonitor/adapter/presenter"
+	"waylight/internal/modules/backupmonitor/domain"
+	"waylight/internal/modules/backupmonitor/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the backup monitor endpoints.

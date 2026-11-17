@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"trisse-home/internal/modules/bookmarks/domain"
+	"waylight/internal/modules/bookmarks/domain"
 )
 
 // token matches the parts of the Netscape bookmark file format that matter:

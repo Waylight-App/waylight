@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/parcels/domain"
-	"trisse-home/internal/modules/parcels/usecase"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/parcels/domain"
+	"waylight/internal/modules/parcels/usecase"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestMailStore(t *testing.T) {

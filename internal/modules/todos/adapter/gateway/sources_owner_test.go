@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestSourcesPerAccount: connected to-do lists belong to one account;

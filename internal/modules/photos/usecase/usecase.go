@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"trisse-home/internal/modules/photos/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/photos/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Repository stores pictures (output port).

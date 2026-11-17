@@ -6,9 +6,9 @@ import (
 	"slices"
 	"testing"
 
-	"trisse-home/ee/ldap/domain"
-	licence "trisse-home/ee/licence/domain"
-	authdomain "trisse-home/internal/modules/auth/domain"
+	"waylight/ee/ldap/domain"
+	licence "waylight/ee/licence/domain"
+	authdomain "waylight/internal/modules/auth/domain"
 )
 
 type fakeDir struct {
@@ -186,7 +186,7 @@ func TestRemovedOrDisabledInTheDirectoryLosesAccess(t *testing.T) {
 
 func TestMemberGroupsRestrictWhoGetsIn(t *testing.T) {
 	a, _, accounts, _, _ := setup()
-	a.d.Policy = domain.Policy{MemberGroups: []string{"trisse-users"}}
+	a.d.Policy = domain.Policy{MemberGroups: []string{"waylight-users"}}
 	if _, err := a.Authenticate(ctx, "anna", "anna-pw"); !errors.Is(err, ErrRefused) || len(accounts.members) != 0 {
 		t.Fatalf("not in a member group: %v", err)
 	}

@@ -2,7 +2,7 @@
 
 package main
 
-import eeweb "trisse-home/ee/web"
+import eeweb "waylight/ee/web"
 
 // The ee/ frontend plugin (ADR 0021) is served under /ee/ and listed by
 // /api/plugins, but only when the bundle was built: a Go-only build of the

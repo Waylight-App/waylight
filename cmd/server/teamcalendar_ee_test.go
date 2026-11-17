@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
+	"waylight/ee/licence/domain"
 )
 
 // TestTeamCalendar checks the team calendar of #299: a member shares a

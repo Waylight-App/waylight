@@ -6,8 +6,8 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/ee/teamtabs/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/ee/teamtabs/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // TabDTO is an own tab and who else sees it.

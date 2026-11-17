@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/search/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/search/domain"
+	"waylight/internal/shared/kernel"
 )
 
-// ConfigSection is the search part of trisse-home.yaml (#88).
+// ConfigSection is the search part of waylight.yaml (#88).
 type ConfigSection struct {
 	Provider     string
 	OpenInNewTab bool

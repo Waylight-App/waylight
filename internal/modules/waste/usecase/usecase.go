@@ -9,8 +9,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"trisse-home/internal/modules/waste/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/waste/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Overview is returned by Upcoming.

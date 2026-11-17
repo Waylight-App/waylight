@@ -1,6 +1,6 @@
 {
-  "title": "trisse-home",
-  "uid": "trisse-home",
+  "title": "waylight",
+  "uid": "waylight",
   "schemaVersion": 39,
   "version": 1,
   "editable": true,
@@ -10,7 +10,7 @@
   },
   "refresh": "1m",
   "tags": [
-    "trisse-home"
+    "waylight"
   ],
   "templating": {
     "list": [
@@ -46,7 +46,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(trisse_service_up) / count(trisse_service_up)"
+          "expr": "sum(waylight_service_up) / count(waylight_service_up)"
         }
       ]
     },
@@ -73,7 +73,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "trisse_containers{state=\"running\"}"
+          "expr": "waylight_containers{state=\"running\"}"
         }
       ]
     },
@@ -100,7 +100,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "count(trisse_backup_ok == 0) or vector(0)"
+          "expr": "count(waylight_backup_ok == 0) or vector(0)"
         }
       ]
     },
@@ -127,7 +127,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "trisse_host_uptime_seconds"
+          "expr": "waylight_host_uptime_seconds"
         }
       ]
     },
@@ -154,7 +154,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "trisse_service_up",
+          "expr": "waylight_service_up",
           "legendFormat": "{{service}}"
         }
       ]
@@ -182,7 +182,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "trisse_service_response_seconds",
+          "expr": "waylight_service_response_seconds",
           "legendFormat": "{{service}}"
         }
       ]
@@ -210,12 +210,12 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "trisse_host_cpu_ratio",
+          "expr": "waylight_host_cpu_ratio",
           "legendFormat": "CPU"
         },
         {
           "refId": "B",
-          "expr": "trisse_host_memory_used_bytes / trisse_host_memory_total_bytes",
+          "expr": "waylight_host_memory_used_bytes / waylight_host_memory_total_bytes",
           "legendFormat": "Memory"
         }
       ]
@@ -243,7 +243,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "trisse_host_disk_used_bytes / trisse_host_disk_total_bytes",
+          "expr": "waylight_host_disk_used_bytes / waylight_host_disk_total_bytes",
           "legendFormat": "{{disk}}"
         }
       ]
@@ -271,7 +271,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(trisse_service_cert_expiry_timestamp_seconds - time()) / 86400",
+          "expr": "(waylight_service_cert_expiry_timestamp_seconds - time()) / 86400",
           "legendFormat": "{{service}}"
         }
       ]
@@ -299,7 +299,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(time() - trisse_backup_last_success_timestamp_seconds) / 3600",
+          "expr": "(time() - waylight_backup_last_success_timestamp_seconds) / 3600",
           "legendFormat": "{{name}}"
         }
       ]
@@ -327,7 +327,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (code) (rate(trisse_http_requests_total[5m]))",
+          "expr": "sum by (code) (rate(waylight_http_requests_total[5m]))",
           "legendFormat": "{{code}}"
         }
       ]

@@ -15,7 +15,7 @@ tokens (#96) and kiosk displays (#50) need the same kind of limited access.
 ## Decision
 
 - There is still exactly **one owner** with full rights. The setup, the
-  password reset via `trisse-home reset-account` and all settings stay
+  password reset via `waylight reset-account` and all settings stay
   owner-only.
 - The owner can create up to 20 **guests**: own name and password, own
   sessions and optional two-factor authentication, a list of **shared tabs**,

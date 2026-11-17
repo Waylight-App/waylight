@@ -28,7 +28,7 @@ export const browserNotifier: Notifier = {
     typeof Notification === 'undefined' ? 'unsupported' : Notification.requestPermission(),
   show: (title, body) => {
     try {
-      new Notification(title, { body, tag: 'trisse-focus' });
+      new Notification(title, { body, tag: 'waylight-focus' });
     } catch {
       // Some browsers only allow notifications from a service worker.
     }

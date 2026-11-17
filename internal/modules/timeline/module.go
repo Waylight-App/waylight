@@ -6,12 +6,12 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/timeline/adapter/controller"
-	"trisse-home/internal/modules/timeline/adapter/gateway"
-	"trisse-home/internal/modules/timeline/domain"
-	"trisse-home/internal/modules/timeline/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/timeline/adapter/controller"
+	"waylight/internal/modules/timeline/adapter/gateway"
+	"waylight/internal/modules/timeline/domain"
+	"waylight/internal/modules/timeline/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // pruneInterval: old events are removed once a day.

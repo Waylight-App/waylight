@@ -1,7 +1,7 @@
 import type { Timer } from '../domain/timer';
 import type { TimerNotifier, TimerScheduler, TimerStore } from '../usecase/timers';
 
-const KEY = 'trisse.timers';
+const KEY = 'waylight.timers';
 
 /** Running timers in localStorage, so they survive a reload (#474). */
 export const localTimerStore: TimerStore = {
@@ -61,7 +61,7 @@ export const timerNotifier: TimerNotifier = {
     typeof Notification === 'undefined' ? 'unsupported' : Notification.requestPermission(),
   show: (title, body) => {
     try {
-      new Notification(title, { body, tag: 'trisse-timer' });
+      new Notification(title, { body, tag: 'waylight-timer' });
     } catch {
       // Some browsers only allow notifications from a service worker.
     }

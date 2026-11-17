@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"testing"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 // TestBackgroundPicker covers #277 end to end: upload, global background,

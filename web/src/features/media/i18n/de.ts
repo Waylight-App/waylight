@@ -14,7 +14,7 @@ export const de: Record<keyof typeof en, string> = {
   'media.jellyfin_key': 'API-Schlüssel {value}',
   'media.plex_token': 'Plex-Token {value}',
   'media.jellyfin_hint':
-    'Lege einen API-Schlüssel in Jellyfin unter Dashboard → API-Schlüssel an. Er wird verschlüsselt gespeichert; Cover lädt trisse-home selbst.',
+    'Lege einen API-Schlüssel in Jellyfin unter Dashboard → API-Schlüssel an. Er wird verschlüsselt gespeichert; Cover lädt Waylight selbst.',
   'media.plex_hint':
-    'Nutze das X-Plex-Token deines Kontos (Plex-Hilfeartikel „Finding an authentication token“). Es wird verschlüsselt gespeichert; Cover lädt trisse-home selbst.',
+    'Nutze das X-Plex-Token deines Kontos (Plex-Hilfeartikel „Finding an authentication token“). Es wird verschlüsselt gespeichert; Cover lädt Waylight selbst.',
 };

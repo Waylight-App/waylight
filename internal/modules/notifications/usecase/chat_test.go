@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/notifications/domain"
+	"waylight/internal/modules/notifications/domain"
 )
 
 func TestPostToChatOnlyToEnabledSlackOrTeams(t *testing.T) {

@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/adguard/adapter/controller"
-	"trisse-home/internal/modules/adguard/adapter/gateway"
-	"trisse-home/internal/modules/adguard/domain"
-	"trisse-home/internal/modules/adguard/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/adguard/adapter/controller"
+	"waylight/internal/modules/adguard/adapter/gateway"
+	"waylight/internal/modules/adguard/domain"
+	"waylight/internal/modules/adguard/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 const refreshInterval = time.Minute

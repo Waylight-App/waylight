@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/space"
+	"waylight/internal/modules"
+	"waylight/internal/modules/space"
 )
 
 // The space module registers itself; no shared file lists it (#193).

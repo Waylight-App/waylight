@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/gamedeals/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/gamedeals/domain"
+	"waylight/internal/shared/kernel"
 )
 
 var now = time.Date(2026, 11, 12, 16, 0, 0, 0, time.UTC)

@@ -6,8 +6,8 @@ import (
 	"slices"
 	"time"
 
-	"trisse-home/internal/modules/drop/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/drop/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Repository stores items and file contents (output port).

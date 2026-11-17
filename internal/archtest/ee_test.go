@@ -89,10 +89,10 @@ func TestCoreDoesNotDependOnEE(t *testing.T) {
 }
 
 func TestEEImportRules(t *testing.T) {
-	if !importsEE("trisse-home/ee/teams") || !importsEE("trisse-home/ee") {
+	if !importsEE("waylight/ee/teams") || !importsEE("waylight/ee") {
 		t.Error("imports below ee/ must be recognised")
 	}
-	if importsEE("trisse-home/eex") || importsEE("trisse-home/internal/modules/notes") {
+	if importsEE("waylight/eex") || importsEE("waylight/internal/modules/notes") {
 		t.Error("imports outside ee/ must not be recognised")
 	}
 	cases := []struct {

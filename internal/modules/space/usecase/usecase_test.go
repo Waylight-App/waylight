@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/space/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/space/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRepo struct{ s domain.Settings }

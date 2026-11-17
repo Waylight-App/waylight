@@ -18,6 +18,6 @@ module and records them in `schema_migrations`. Only
 
 ## Consequences
 
-- Backups are a single file (`/data/trisse-home.db`, plus WAL while running).
+- Backups are a single file (`/data/waylight.db`, plus WAL while running).
 - Write throughput is limited, which is irrelevant for a single user.
 - Times are stored as UTC text in a sortable format (`sqlutil.FormatTime`).

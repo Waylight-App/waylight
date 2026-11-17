@@ -1,6 +1,6 @@
 # Security policy
 
-trisse-home is meant to run in a trusted network (LAN or VPN) and should not
+Waylight is meant to run in a trusted network (LAN or VPN) and should not
 be exposed to the internet without a reverse proxy, HTTPS and a strict
 `ALLOWED_CIDRS` list.
 

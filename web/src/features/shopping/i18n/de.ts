@@ -1,6 +1,6 @@
 import type { en } from './en';
 
-/** German UI texts of the shopping lists on trisse-home (#471). */
+/** German UI texts of the shopping lists on Waylight (#471). */
 export const de: Record<keyof typeof en, string> = {
   'shopping.list': 'Liste',
   'shopping.caldav_list': 'CalDAV-Aufgabenliste',
@@ -10,7 +10,7 @@ export const de: Record<keyof typeof en, string> = {
   'shopping.default_list_name': 'Einkaufen',
   'shopping.create_list': 'Liste anlegen',
   'shopping.remove_item': '„{name}“ entfernen',
-  'shopping.lists_title': 'Listen in trisse-home',
+  'shopping.lists_title': 'Listen in Waylight',
   'shopping.lists_hint':
     'Diese Listen brauchen keinen anderen Dienst. Teile eine Liste mit einer Gruppe oder mit allen, dann können auch sie Einträge hinzufügen, abhaken und entfernen. Das Widget zeigt eine Liste; wähle sie im Widget aus.',
   'shopping.list_name': 'Name',

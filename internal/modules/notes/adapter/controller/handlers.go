@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/notes/adapter/presenter"
-	"trisse-home/internal/modules/notes/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/notes/adapter/presenter"
+	"waylight/internal/modules/notes/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // UseCases bundles the notes input ports.

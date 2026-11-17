@@ -16,7 +16,7 @@
   let names = $state<Record<string, string>>({});
   let error = $state('');
   let saved = $state('');
-  let stackDir = $state('/opt/stacks/trisse-home');
+  let stackDir = $state('/opt/stacks/waylight');
   let container = $state('wireguard');
   const snippet = $derived(exportCronSnippet({ stackDir, container }));
 
@@ -69,7 +69,7 @@
   {/if}
   <p class="muted">
     <a
-      href="https://github.com/itadori26/trisse-home/blob/main/docs/security-model.md#wireguard-export"
+      href="https://github.com/itadori26/waylight/blob/main/docs/security-model.md#wireguard-export"
       target="_blank"
       rel="noopener noreferrer">{t('common.why_extra_step')}</a
     >

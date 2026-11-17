@@ -6,8 +6,8 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/sports/domain"
-	"trisse-home/internal/modules/sports/usecase"
+	"waylight/internal/modules/sports/domain"
+	"waylight/internal/modules/sports/usecase"
 )
 
 // TeamDTO is a club.

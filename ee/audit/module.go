@@ -12,13 +12,13 @@ import (
 	"log/slog"
 	"time"
 
-	"trisse-home/ee/audit/adapter/controller"
-	"trisse-home/ee/audit/adapter/gateway"
-	"trisse-home/ee/audit/domain"
-	"trisse-home/ee/audit/usecase"
-	"trisse-home/ee/licence"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/audit/adapter/controller"
+	"waylight/ee/audit/adapter/gateway"
+	"waylight/ee/audit/domain"
+	"waylight/ee/audit/usecase"
+	"waylight/ee/licence"
+	"waylight/internal/modules"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the rings.

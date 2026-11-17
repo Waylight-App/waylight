@@ -6,19 +6,19 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
-  // Export version {version} is not supported by this version of trisse-home.
-  srv_43fe335aacf98b3c: 'Exportversion {version} wird von dieser trisse-home-Version nicht unterstützt.',
+  // Export version {version} is not supported by this version of Waylight.
+  srv_bd71cd404612d6ad: 'Exportversion {version} wird von dieser Waylight-Version nicht unterstützt.',
   // The data could not be imported: {detail}
   srv_5715790273b7248a: 'Die Daten konnten nicht importiert werden: {detail}',
   // The file is larger than 16 MB.
   srv_e7cb725c138134cc: 'Die Datei ist größer als 16 MB.',
   // The file is not valid JSON.
   srv_b8c878135ee917b1: 'Die Datei ist kein gültiges JSON.',
-  // This is not a trisse-home export file.
-  srv_d9a79f89c625afc7: 'Das ist keine trisse-home-Exportdatei.',
-  // Config version {version} is not supported by this version of trisse-home.
-  srv_44877fa04a91ddb0:
-    'Die Konfigurationsversion {version} wird von dieser trisse-home-Version nicht unterstützt.',
+  // This is not a Waylight export file.
+  srv_e021fe26bd2e22b4: 'Das ist keine Waylight-Exportdatei.',
+  // Config version {version} is not supported by this version of Waylight.
+  srv_53c783044abd4d09:
+    'Die Konfigurationsversion {version} wird von dieser Waylight-Version nicht unterstützt.',
   // Section {name}: {reason}
   srv_a8a0f7eee6c42ca3: 'Abschnitt {name}: {reason}',
   // The environment variable {name} is not set.

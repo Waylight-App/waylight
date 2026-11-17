@@ -3,12 +3,12 @@ package markets
 import (
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/markets/adapter/controller"
-	"trisse-home/internal/modules/markets/adapter/gateway"
-	"trisse-home/internal/modules/markets/domain"
-	"trisse-home/internal/modules/markets/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/markets/adapter/controller"
+	"waylight/internal/modules/markets/adapter/gateway"
+	"waylight/internal/modules/markets/domain"
+	"waylight/internal/modules/markets/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the markets rings and implements modules.Module.

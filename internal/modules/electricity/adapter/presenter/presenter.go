@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/electricity/usecase"
+	"waylight/internal/modules/electricity/usecase"
 )
 
 // HourDTO is one hour; start is RFC 3339 in the server's time zone.

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 func TestSortPinnedFirstThenNewest(t *testing.T) {

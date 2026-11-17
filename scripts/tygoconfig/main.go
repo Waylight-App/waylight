@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	modulePath = "trisse-home/internal/modules/"
+	modulePath = "waylight/internal/modules/"
 	outputDir  = "web/src/shared/api-client/generated/"
 )
 

@@ -7,8 +7,8 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/internal/modules/dashboard/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // ConfigPhone places a widget in the phone layout of its tab (#92).
@@ -18,7 +18,7 @@ type ConfigPhone struct {
 	Hidden bool
 }
 
-// ConfigWidget is a widget in trisse-home.yaml (#88). Config is the opaque
+// ConfigWidget is a widget in waylight.yaml (#88). Config is the opaque
 // JSON document owned by the widget's module.
 type ConfigWidget struct {
 	Kind   string

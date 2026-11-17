@@ -14,13 +14,13 @@ import (
 	"net/http"
 	"net/url"
 
-	"trisse-home/ee/connections/adapter/controller"
-	"trisse-home/ee/connections/adapter/gateway"
-	"trisse-home/ee/connections/usecase"
-	"trisse-home/ee/licence"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/auth"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/connections/adapter/controller"
+	"waylight/ee/connections/adapter/gateway"
+	"waylight/ee/connections/usecase"
+	"waylight/ee/licence"
+	"waylight/internal/modules"
+	"waylight/internal/modules/auth"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the rings.

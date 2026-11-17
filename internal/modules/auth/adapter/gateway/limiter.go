@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 // maxTrackedClients bounds memory if many distinct clients fail to log in.

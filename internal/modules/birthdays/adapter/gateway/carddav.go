@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"trisse-home/internal/modules/birthdays/domain"
-	"trisse-home/internal/shared/caldav"
+	"waylight/internal/modules/birthdays/domain"
+	"waylight/internal/shared/caldav"
 )
 
 // CardDAV implements usecase.AddressBook.

@@ -3,8 +3,8 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_d4e32079da1f8a6c: "Choose at least one file.",
-  srv_44877fa04a91ddb0: "Config version {version} is not supported by this version of trisse-home.",
-  srv_43fe335aacf98b3c: "Export version {version} is not supported by this version of trisse-home.",
+  srv_53c783044abd4d09: "Config version {version} is not supported by this version of Waylight.",
+  srv_bd71cd404612d6ad: "Export version {version} is not supported by this version of Waylight.",
   srv_a8a0f7eee6c42ca3: "Section {name}: {reason}",
   srv_5715790273b7248a: "The data could not be imported: {detail}",
   srv_79e20ea037a8c0dd: "The environment variable {name} is not set.",
@@ -17,7 +17,7 @@ export const serverMessages = {
   srv_5df61e32f2bec534: "The section {name} appears twice.",
   srv_1a0dd18b884c11a8: "The version must be a number.",
   srv_d39ee18784bab42a: "This is not a Homarr board file. Homarr 1.x exports cannot be read; use the board JSON of Homarr 0.x.",
-  srv_d9a79f89c625afc7: "This is not a trisse-home export file.",
+  srv_e021fe26bd2e22b4: "This is not a Waylight export file.",
   srv_91da20f0a1aee001: "Unknown import format.",
   srv_40b2f70963afe6eb: "Unknown section {name} (or its module is disabled).",
   srv_bf8a861f5dbe0e42: "Upload one Homarr board file (JSON).",

@@ -10,7 +10,7 @@ export const timerAlerts = $state<{ list: Timer[] }>({ list: [] });
 /** Whether this browser has stored timers, so the shell loads them after a reload. */
 export function hasStoredTimers(): boolean {
   try {
-    const raw = localStorage.getItem('trisse.timers');
+    const raw = localStorage.getItem('waylight.timers');
     return raw !== null && raw !== '[]';
   } catch {
     return false;

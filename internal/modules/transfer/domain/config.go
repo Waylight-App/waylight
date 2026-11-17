@@ -4,10 +4,10 @@ import (
 	"regexp"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
-// ConfigVersion is the version of trisse-home.yaml (#88). Like exports,
+// ConfigVersion is the version of Waylight.yaml (#88). Like exports,
 // files of a newer version are rejected.
 const ConfigVersion = 1
 
@@ -21,7 +21,7 @@ var SectionOrder = []string{"appearance", "search", "services", "bookmarks", "da
 // CheckConfigVersion validates the version of a config file.
 func CheckConfigVersion(v int) error {
 	if v < 1 || v > ConfigVersion {
-		return kernel.NewValidationErrorf("version", "Config version {version} is not supported by this version of trisse-home.", "version", v)
+		return kernel.NewValidationErrorf("version", "Config version {version} is not supported by this version of Waylight.", "version", v)
 	}
 	return nil
 }

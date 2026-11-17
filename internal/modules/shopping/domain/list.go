@@ -6,10 +6,10 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
-// Limits of lists kept on trisse-home (#471).
+// Limits of lists kept on waylight (#471).
 const (
 	maxListName = 60
 	// MaxLists bounds the lists one account owns.
@@ -20,7 +20,7 @@ const (
 	CurrentCalDAV = "caldav"
 )
 
-// Errors of lists on trisse-home.
+// Errors of lists on waylight.
 var (
 	ErrListNotFound = kernel.NewPublicError(kernel.ErrNotFound, "The shopping list does not exist or is not shared with you.")
 	ErrNotYourList  = kernel.NewPublicError(kernel.ErrForbidden, "Only the person who created the list can rename, share or delete it.")
@@ -28,7 +28,7 @@ var (
 	ErrListFull     = kernel.NewPublicError(kernel.ErrConflict, "The list has 500 items; clear the ticked ones first.")
 )
 
-// List is a shopping list kept on trisse-home (#471): an alternative to a
+// List is a shopping list kept on waylight (#471): an alternative to a
 // CalDAV task list that needs no server and can be shared like a note.
 type List struct {
 	ID         string
@@ -108,7 +108,7 @@ func ExportICS(list List, items []Item, host string, now time.Time) string {
 	line := func(s string) { b.WriteString(fold(s)) }
 	line("BEGIN:VCALENDAR")
 	line("VERSION:2.0")
-	line("PRODID:-//trisse-home//shopping//EN")
+	line("PRODID:-//waylight//shopping//EN")
 	line("X-WR-CALNAME:" + icsText(list.Name))
 	for _, it := range ForExport(items) {
 		line("BEGIN:VTODO")

@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/speedtest/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/speedtest/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 type rot struct{}

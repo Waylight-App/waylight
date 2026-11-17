@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/search/adapter/presenter"
-	"trisse-home/internal/modules/search/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/search/adapter/presenter"
+	"waylight/internal/modules/search/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the search endpoints.

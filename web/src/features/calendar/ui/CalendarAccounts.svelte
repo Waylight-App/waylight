@@ -44,7 +44,7 @@
   function signIn(e: SubmitEvent) {
     e.preventDefault();
     // Opened synchronously in the submit, so pop-up blockers allow it.
-    const win = window.open('about:blank', 'trisse-calendar-oauth', 'width=520,height=700');
+    const win = window.open('about:blank', 'waylight-calendar-oauth', 'width=520,height=700');
     if (!win) {
       error = t('calendar.accounts.popup_blocked');
       return;

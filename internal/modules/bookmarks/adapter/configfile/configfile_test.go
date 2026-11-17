@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/modules/bookmarks/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/bookmarks/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 func TestSectionRoundTrip(t *testing.T) {

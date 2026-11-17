@@ -19,8 +19,8 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/wireguard/domain"
-	"trisse-home/internal/modules/wireguard/usecase"
+	"waylight/internal/modules/wireguard/domain"
+	"waylight/internal/modules/wireguard/usecase"
 )
 
 //go:embed migrations/*.sql

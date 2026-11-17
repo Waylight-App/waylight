@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 const sample = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\n" +

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"slices"
 
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Preset is an organisation's colour scheme (#305): the theme and accent

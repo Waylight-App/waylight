@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/weather/domain"
+	"waylight/internal/modules/weather/domain"
 )
 
 // MemoryCache is a concurrency-safe in-memory usecase.ForecastCache.

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"trisse-home/internal/modules/apiwidget/domain"
+	"waylight/internal/modules/apiwidget/domain"
 )
 
 // JSONPath implements usecase.PathEvaluator with a small, dependency-free

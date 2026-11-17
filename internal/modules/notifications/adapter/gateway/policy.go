@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/notifications/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/notifications/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 // policyRow is the persisted JSON form of domain.Policy.

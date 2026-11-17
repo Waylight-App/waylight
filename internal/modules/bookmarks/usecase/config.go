@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"trisse-home/internal/modules/bookmarks/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/bookmarks/domain"
+	"waylight/internal/shared/kernel"
 )
 
-// ConfigBookmark is one bookmark in trisse-home.yaml (#88).
+// ConfigBookmark is one bookmark in waylight.yaml (#88).
 type ConfigBookmark struct {
 	Title       string
 	URL         string

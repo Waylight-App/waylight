@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
-	"trisse-home/internal/modules/timeline/adapter/presenter"
-	"trisse-home/internal/modules/timeline/domain"
-	"trisse-home/internal/modules/timeline/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/timeline/adapter/presenter"
+	"waylight/internal/modules/timeline/domain"
+	"waylight/internal/modules/timeline/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the timeline endpoints.

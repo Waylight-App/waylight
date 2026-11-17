@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/waste/domain"
-	"trisse-home/internal/modules/waste/usecase"
+	"waylight/internal/modules/waste/domain"
+	"waylight/internal/modules/waste/usecase"
 )
 
 type fakeUC struct {

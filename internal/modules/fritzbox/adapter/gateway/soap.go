@@ -14,7 +14,7 @@ import (
 	"regexp"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 const maxResponseBytes = 2 << 20

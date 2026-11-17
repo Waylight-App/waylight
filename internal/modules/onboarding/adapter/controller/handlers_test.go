@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/onboarding/usecase"
+	"waylight/internal/modules/onboarding/usecase"
 )
 
 type fakeUC struct{ completed, restarted bool }

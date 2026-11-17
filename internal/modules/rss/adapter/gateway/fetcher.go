@@ -6,8 +6,8 @@ import (
 	"io"
 	"net/http"
 
-	"trisse-home/internal/modules/rss/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/rss/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // maxFeedBytes bounds the size of a downloaded feed.

@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/appearance/adapter/presenter"
-	"trisse-home/internal/modules/appearance/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/appearance/adapter/presenter"
+	"waylight/internal/modules/appearance/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves /api/appearance.

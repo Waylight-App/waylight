@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/nextcloud/adapter/presenter"
-	"trisse-home/internal/modules/nextcloud/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/nextcloud/adapter/presenter"
+	"waylight/internal/modules/nextcloud/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the Nextcloud endpoints.

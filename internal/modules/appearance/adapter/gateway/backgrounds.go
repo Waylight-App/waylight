@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/modules/appearance/usecase"
-	"trisse-home/internal/shared/imaging"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/modules/appearance/usecase"
+	"waylight/internal/shared/imaging"
 )
 
 // BackgroundStore implements usecase.BackgroundStore on SQLite (#277).

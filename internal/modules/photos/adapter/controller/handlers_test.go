@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/photos/domain"
-	"trisse-home/internal/modules/photos/usecase"
+	"waylight/internal/modules/photos/domain"
+	"waylight/internal/modules/photos/usecase"
 )
 
 type fakeUC struct {

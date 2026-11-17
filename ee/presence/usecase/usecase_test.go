@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/presence/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/presence/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type clock struct{ t time.Time }

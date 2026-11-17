@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 func TestKiosk(t *testing.T) {

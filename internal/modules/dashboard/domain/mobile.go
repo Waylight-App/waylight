@@ -3,7 +3,7 @@ package domain
 import (
 	"slices"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // MobileEntry places one widget in the single-column phone layout (#92).

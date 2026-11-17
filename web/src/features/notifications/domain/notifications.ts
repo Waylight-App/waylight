@@ -25,7 +25,7 @@ export interface NotificationSettings {
 /** Suggests a hard-to-guess topic name; topics on public ntfy servers are public. */
 export function suggestTopic(random: () => number = Math.random): string {
   const chars = 'abcdefghijkmnpqrstuvwxyz23456789';
-  let s = 'trisse-home-';
+  let s = 'waylight-';
   for (let i = 0; i < 12; i++) s += chars[Math.floor(random() * chars.length)];
   return s;
 }

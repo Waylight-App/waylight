@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/wireguard/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/wireguard/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 var keyA, keyB = strings.Repeat("A", 43) + "=", strings.Repeat("B", 42) + "A="

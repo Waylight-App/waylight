@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/notes/domain"
+	"waylight/internal/modules/notes/domain"
 )
 
 type memRevisions struct{ revs []domain.Revision }

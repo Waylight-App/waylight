@@ -5,11 +5,11 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/summary/adapter/controller"
-	"trisse-home/internal/modules/summary/adapter/gateway"
-	"trisse-home/internal/modules/summary/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/summary/adapter/controller"
+	"waylight/internal/modules/summary/adapter/gateway"
+	"waylight/internal/modules/summary/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Config are the dependencies of the module.

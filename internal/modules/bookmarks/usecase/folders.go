@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/bookmarks/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/bookmarks/domain"
+	"waylight/internal/shared/kernel"
 )
 
 func folderView(ctx context.Context, f domain.Folder) FolderView {

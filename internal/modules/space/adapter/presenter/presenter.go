@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/space/domain"
+	"waylight/internal/modules/space/domain"
 )
 
 // LaunchDTO is one upcoming launch.

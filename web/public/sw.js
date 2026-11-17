@@ -1,4 +1,4 @@
-/* trisse-home service worker: app shell and last-known widget data offline.
+/* waylight service worker: app shell and last-known widget data offline.
  *
  * Security rules (see README "Progressive Web App"):
  * - only GET requests of the same origin are ever cached;
@@ -6,8 +6,8 @@
  *   the allow-list below is never cached (they may carry tokens or secrets);
  * - the page asks the worker to delete the data cache on logout.
  */
-const SHELL = 'trisse-shell-v1';
-const DATA = 'trisse-data-v1';
+const SHELL = 'waylight-shell-v1';
+const DATA = 'waylight-data-v1';
 
 /** Read-only widget data that may be shown offline. */
 const DATA_ALLOW = [

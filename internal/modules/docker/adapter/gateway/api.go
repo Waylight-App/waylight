@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/docker/domain"
+	"waylight/internal/modules/docker/domain"
 )
 
 const maxResponseBytes = 4 << 20

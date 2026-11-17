@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
+	"waylight/ee/licence/domain"
 )
 
 // TestAbsences checks #299 in the ee build: own and admin-entered absences,

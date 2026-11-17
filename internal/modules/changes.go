@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Change is one successful change made through a module's API: who, what

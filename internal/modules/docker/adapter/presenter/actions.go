@@ -1,6 +1,6 @@
 package presenter
 
-import "trisse-home/internal/modules/docker/usecase"
+import "waylight/internal/modules/docker/usecase"
 
 // CapabilitiesDTO is returned by GET /api/docker/actions.
 type CapabilitiesDTO struct {

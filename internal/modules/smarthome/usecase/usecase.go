@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/smarthome/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/smarthome/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // statesTTL is how long fetched states are reused. States are fetched on

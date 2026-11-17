@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/focus/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/focus/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Focus is the input port of the module; every method is one use case

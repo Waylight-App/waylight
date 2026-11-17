@@ -5,7 +5,7 @@
 ## Setup
 
 1. Run Ollama in your network and pull a small model, e.g. `ollama pull llama3.2:3b` or `qwen2.5:7b`.
-2. In trisse-home open **Settings → AI summaries**, enter the address (e.g. `http://192.168.1.10:11434`) and pick a model from the list. The connection is tested before saving.
+2. In Waylight open **Settings → AI summaries**, enter the address (e.g. `http://192.168.1.10:11434`) and pick a model from the list. The connection is tested before saving.
 3. A **Summarise** button then appears on notes and feed items. Until then the feature stays completely hidden.
 
 ## How it works

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Provider is a DNS filter the module can read statistics from (#83).

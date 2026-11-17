@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/ee/licence/domain"
-	"trisse-home/ee/licence/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/ee/licence/domain"
+	"waylight/ee/licence/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves /api/licence.

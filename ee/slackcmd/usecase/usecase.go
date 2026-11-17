@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/ee/slackcmd/domain"
+	licence "waylight/ee/licence/domain"
+	"waylight/ee/slackcmd/domain"
 )
 
 // Command is a slash command as Slack delivers it.

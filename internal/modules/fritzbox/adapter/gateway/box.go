@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/fritzbox/domain"
+	"waylight/internal/modules/fritzbox/domain"
 )
 
 // UPnP/IGD (no login) and TR-064 (login) services.

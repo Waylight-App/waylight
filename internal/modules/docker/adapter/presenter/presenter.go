@@ -3,7 +3,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/docker/usecase"
+	"waylight/internal/modules/docker/usecase"
 )
 
 // ContainerDTO is one container.

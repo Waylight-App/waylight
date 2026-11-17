@@ -2,7 +2,7 @@
 
 - Status: Accepted (2026-11-15, by the maintainer)
 - Date: 2026-11-15
-- Issue: [#293](https://github.com/itadori26/trisse-home/issues/293), part of [#292](https://github.com/itadori26/trisse-home/issues/292)
+- Issue: [#293](https://github.com/itadori26/waylight/issues/293), part of [#292](https://github.com/itadori26/waylight/issues/292)
 - Extends: [ADR 0012](0012-owner-and-guest-roles.md)
 
 ## Context
@@ -168,7 +168,7 @@ back by SQLite's transaction like any other.
 - The JSON export (`transfer`) exports what the requesting account owns;
   admins can additionally export the instance (all accounts).
 - Config as code (#88) stays instance-level: team tabs, services and the
-  other instance sections. Personal tabs are not part of `trisse-home.yaml`.
+  other instance sections. Personal tabs are not part of `waylight.yaml`.
 
 ### Core or `ee/`
 

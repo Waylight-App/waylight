@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // SourceRepository stores the connected external lists with encrypted

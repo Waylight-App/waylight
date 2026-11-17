@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 // IdentityRepository stores sign-ins at the OpenID Connect provider linked to

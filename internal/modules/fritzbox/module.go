@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/fritzbox/adapter/controller"
-	"trisse-home/internal/modules/fritzbox/adapter/gateway"
-	"trisse-home/internal/modules/fritzbox/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/fritzbox/adapter/controller"
+	"waylight/internal/modules/fritzbox/adapter/gateway"
+	"waylight/internal/modules/fritzbox/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // refreshInterval keeps the throughput reasonably current. The call list is

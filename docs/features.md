@@ -1,6 +1,6 @@
 # Feature overview
 
-Every feature of trisse-home is a module. Modules you do not need can be
+Every feature of Waylight is a module. Modules you do not need can be
 switched off with `MODULES_DISABLED` (see [configuration](configuration.md));
 their widgets, settings and background jobs then disappear completely. The
 module name is given in brackets.
@@ -16,14 +16,14 @@ modules in detail.
 | To-dos (`todos`) | Due dates with overdue highlighting, recurring to-dos (daily, on chosen weekdays, monthly, or N days after completion) and reminders through your notification channels. Works offline. A widget can show a connected CalDAV task list (Nextcloud Tasks, Synology, Radicale, …) a Todoist project or a list in Microsoft To Do, Google Tasks or TickTick instead ([details](modules/todos.md)). |
 | Notes (`notes`) | Markdown notes that can be pinned to the dashboard, with full-text search, `[[wiki links]]` and backlinks, and a version history with diff and restore. |
 | Calendar (`calendar`) | CalDAV calendars such as Nextcloud, including recurring events, Google Calendar and Microsoft 365 accounts, plus read-only ICS subscriptions. Agenda, month or split view with event details; new events can be added from the widget. [Details](modules/calendar.md) |
-| Shopping list (`shopping`) | Lists kept on trisse-home, shareable with a group or everyone and exportable as text or `.ics`, or a CalDAV task list the household already uses in its task app. See [shopping](modules/shopping.md). |
+| Shopping list (`shopping`) | Lists kept on Waylight, shareable with a group or everyone and exportable as text or `.ics`, or a CalDAV task list the household already uses in its task app. See [shopping](modules/shopping.md). |
 | Phone list (`phonelist`) | A searchable directory of names, roles, teams, phone numbers and e-mail addresses, maintained by admins; the search field answers "phone <name>". [Details](modules/phonelist.md) |
 | Countdowns (`countdown`) | Days left until exams, holidays or deadlines, highlighted when the date is close. |
 | Focus timer (`focus`) | Pomodoro timer that keeps running in background tabs, with an optional browser notification and a count of finished sessions per day. |
 | Habits (`habits`) | Daily habits or habits on chosen weekdays, checked off with one tap, with current and best streak and a four-week heatmap. |
 | Read later (`readlater`) | Saves a clean reader copy of a page with its images, so it stays readable when the original disappears. [Details](modules/readlater.md) |
 | Drop zone (`drop`) | Moves text, links and files up to 25 MB between your devices; items expire after one hour, a day or a week. [Details](modules/drop.md) |
-| Photo frame (`photos`) | Your own pictures one after another, uploaded to trisse-home and scaled down there; albums per widget, interval and fit. In backups, not in data exports. [Details](modules/photos.md) |
+| Photo frame (`photos`) | Your own pictures one after another, uploaded to Waylight and scaled down there; albums per widget, interval and fit. In backups, not in data exports. [Details](modules/photos.md) |
 | Study progress (`study`) | Modules with credits, semester and grade, progress towards the degree and a weighted average. [Details](modules/study.md) |
 | Bookmarks (`bookmarks`) | Links in folders with tags. Opt-in: fetch title and icon when adding, and a weekly check for broken links. Browser bookmarks can be imported. |
 
@@ -34,7 +34,7 @@ modules in detail.
 | Weather (`weather`) | Forecast from Open-Meteo, no API key needed. In Germany also official DWD warnings, pollen forecast, UV index and a rain radar widget. |
 | Clock (`clock`) | Time and date, optionally in another time zone. |
 | Daily briefing (`briefing`) | Weather warnings, failures since last evening, offline services, due to-dos, appointments and waste collection in one widget, optionally pushed at a set time each morning. |
-| Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export, and a built-in catalogue of news sources by topic and language (Settings → Feeds → Browse catalogue; no outside request until you subscribe; [format](https://github.com/itadori26/trisse-home/blob/main/web/src/features/rss/catalogue/README.md)). |
+| Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export, and a built-in catalogue of news sources by topic and language (Settings → Feeds → Browse catalogue; no outside request until you subscribe; [format](https://github.com/itadori26/waylight/blob/main/web/src/features/rss/catalogue/README.md)). |
 | Public transport (`transit`) | Next departures of a stop with real-time delays, via [Transitous](https://transitous.org). |
 | Waste collection (`waste`) | Collection dates from your municipality's ICS calendar, by link or uploaded file; tomorrow's bin is highlighted. |
 | Holidays (`holidays`) | Public holidays of a German state, computed locally, and school holidays from an ICS link. [Details](modules/holidays.md) |
@@ -91,6 +91,6 @@ cannot be switched off.
 | Notifications (`notifications`) | ntfy, Gotify, webhooks, e-mail, Slack and Microsoft Teams with importance levels, quiet hours and maintenance windows. See [notifications](notifications.md). |
 | Wiki search (`wiki`) | Pages of BookStack, Outline and Wiki.js in the search field, asked while you type; nothing is stored. [Details](modules/wiki.md) |
 | Backups (`backup`) | Automatic database backups, off-site copies over WebDAV and a guided restore. See [backups](backups.md). |
-| Import and export (`transfer`) | All your data as one JSON file, without secrets. See [backups](backups.md#export-and-import). Settings (appearance, search, services, bookmarks, dashboard) also as a readable `trisse-home.yaml` for Git, with `${ENV}` references and a JSON Schema, and an import from Homepage and Homarr 0.x ([details](config-as-code.md)). |
+| Import and export (`transfer`) | All your data as one JSON file, without secrets. See [backups](backups.md#export-and-import). Settings (appearance, search, services, bookmarks, dashboard) also as a readable `waylight.yaml` for Git, with `${ENV}` references and a JSON Schema, and an import from Homepage and Homarr 0.x ([details](config-as-code.md)). |
 | Guided tour (`onboarding`) | A short tour after the first sign-in. |
 | Device (`device`) | Raspberry Pi image only: run the Pi as a server or also show the dashboard full-screen on a connected display. [Details](modules/device.md) |

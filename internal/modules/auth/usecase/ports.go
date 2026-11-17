@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 // Input ports.

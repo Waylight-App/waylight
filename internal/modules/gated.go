@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // Access is how far a module may be used right now (#307).

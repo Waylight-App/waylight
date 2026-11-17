@@ -1,6 +1,6 @@
 # Running behind a reverse proxy
 
-By default trisse-home is reached directly via `http://<server-ip>:8090` and
+By default Waylight is reached directly via `http://<server-ip>:8090` and
 protected by the IP allowlist. To serve it under a domain with HTTPS, put it
 behind a reverse proxy. The example uses
 [nginx-proxy](https://github.com/nginx-proxy/nginx-proxy) with
@@ -9,7 +9,7 @@ proxy that sets `X-Forwarded-For` works.
 
 ## 1. Join the proxy network
 
-Copy [`compose.proxy.example.yaml`](https://github.com/itadori26/trisse-home/blob/main/compose.proxy.example.yaml) to
+Copy [`compose.proxy.example.yaml`](https://github.com/itadori26/waylight/blob/main/compose.proxy.example.yaml) to
 `compose.override.yaml`, set your domain and the name of the network the
 proxy container is attached to. Compose merges the override automatically.
 
@@ -55,7 +55,7 @@ Register a confidential client with the redirect URI
 
 ```sh
 OIDC_ISSUER=https://auth.example.org
-OIDC_CLIENT_ID=trisse-home
+OIDC_CLIENT_ID=waylight
 OIDC_CLIENT_SECRET=…
 OIDC_REDIRECT_URL=https://home.example.org/api/auth/oidc/callback
 OIDC_ALLOWED_EMAILS=me@example.org        # or OIDC_ALLOWED_SUBJECTS=<sub>
@@ -74,7 +74,7 @@ OIDC_AUTO_REDIRECT=true         # with PASSWORD_LOGIN=false only
 ```
 
 With `OIDC_AUTO_REDIRECT=true` and the password sign-in turned off, opening
-trisse-home goes straight to the provider; someone already signed in there
+Waylight goes straight to the provider; someone already signed in there
 (for example with their Microsoft account in the browser) is back on the
 dashboard without typing anything. After an error from the provider the page
 stays, so nothing loops. `https://home.example.org/?local=1` always shows the
@@ -92,7 +92,7 @@ Authelia example (`configuration.yml`):
 identity_providers:
   oidc:
     clients:
-      - client_id: trisse-home
+      - client_id: waylight
         client_secret: '$pbkdf2-sha512$…'   # hashed secret
         authorization_policy: two_factor
         redirect_uris: [https://home.example.org/api/auth/oidc/callback]
@@ -102,12 +102,12 @@ identity_providers:
 
 In Authentik create an *OAuth2/OpenID Provider* (confidential, the same
 redirect URI, signing key RS256) and an application; the issuer is
-`https://auth.example.org/application/o/trisse-home/`.
+`https://auth.example.org/application/o/waylight/`.
 
 ### Forward auth with a trusted header
 
 If the proxy already authenticates every request (Authelia/Authentik
-forward auth), trisse-home can trust the user name it passes on:
+forward auth), Waylight can trust the user name it passes on:
 
 ```sh
 TRUSTED_PROXIES=172.20.0.0/16     # the proxy network - required
@@ -129,7 +129,7 @@ http:
 ```
 
 Recovery: if the identity provider is down and the password login is
-disabled, run `docker compose exec trisse-home /trisse-home reset-account`
+disabled, run `docker compose exec waylight /waylight reset-account`
 and set a new password with the setup token from the log.
 
 ## Passkeys

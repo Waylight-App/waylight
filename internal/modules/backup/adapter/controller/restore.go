@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/modules/backup/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/backup/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // maxFieldBytes limits the text fields of the restore form.

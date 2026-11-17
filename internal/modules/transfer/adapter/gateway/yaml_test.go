@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/transfer/domain"
-	"trisse-home/internal/modules/transfer/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transfer/domain"
+	"waylight/internal/modules/transfer/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 type sample struct {
@@ -76,7 +76,7 @@ func TestDecodeRejects(t *testing.T) {
 // TestSchemaMatchesSections keeps the published JSON Schema in step with
 // the sections the code reads and writes.
 func TestSchemaMatchesSections(t *testing.T) {
-	data, err := os.ReadFile("../../../../../docs/schema/trisse-home.v1.schema.json")
+	data, err := os.ReadFile("../../../../../docs/schema/waylight.v1.schema.json")
 	if err != nil {
 		t.Fatal(err)
 	}

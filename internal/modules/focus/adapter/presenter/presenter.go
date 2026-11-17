@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/focus/domain"
+	"waylight/internal/modules/focus/domain"
 )
 
 // DayDTO is the statistic of one day.

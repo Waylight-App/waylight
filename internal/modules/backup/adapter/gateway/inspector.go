@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"trisse-home/internal/modules/backup/domain"
+	"waylight/internal/modules/backup/domain"
 )
 
 // Inspector implements usecase.BackupInspector. It attaches the candidate

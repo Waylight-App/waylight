@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"slices"
 
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // Configurable is implemented by modules whose settings can be written down
-// as code in trisse-home.yaml (#88). Unlike Portable, which dumps tables for
+// as code in waylight.yaml (#88). Unlike Portable, which dumps tables for
 // backups, a config section is semantic: names instead of IDs, order given
 // by list order, no secrets and no runtime state.
 //

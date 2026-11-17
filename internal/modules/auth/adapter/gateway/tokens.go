@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 // TokenRepository implements usecase.TokenRepository in SQLite.

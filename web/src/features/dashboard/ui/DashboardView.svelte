@@ -81,9 +81,9 @@
     pickerFooter,
   }: Props = $props();
 
-  const ACTIVE_TAB_KEY = 'trisse-home.activeTab';
+  const ACTIVE_TAB_KEY = 'waylight.activeTab';
   // A tab picked by hand wins over rules until the browser is closed (#71).
-  const MANUAL_TAB_KEY = 'trisse-home.manualTab';
+  const MANUAL_TAB_KEY = 'waylight.manualTab';
 
   let tabs = $state<Tab[]>([]);
   let activeId = $state('');

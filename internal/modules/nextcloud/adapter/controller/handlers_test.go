@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/nextcloud/domain"
-	"trisse-home/internal/modules/nextcloud/usecase"
+	"waylight/internal/modules/nextcloud/domain"
+	"waylight/internal/modules/nextcloud/usecase"
 )
 
 type fakeUC struct{ usecase.Nextcloud }

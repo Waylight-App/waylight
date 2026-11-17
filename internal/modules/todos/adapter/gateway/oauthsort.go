@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/internal/modules/todos/domain"
+	"waylight/internal/modules/todos/domain"
 )
 
 func slicesSortTodos(todos []domain.Todo) {

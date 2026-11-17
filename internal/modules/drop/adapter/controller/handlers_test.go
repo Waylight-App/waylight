@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/drop/domain"
-	"trisse-home/internal/modules/drop/usecase"
+	"waylight/internal/modules/drop/domain"
+	"waylight/internal/modules/drop/usecase"
 )
 
 type fakeUC struct {

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/ee/teamsbot/adapter/botauth"
-	"trisse-home/ee/teamsbot/domain"
+	"waylight/ee/teamsbot/adapter/botauth"
+	"waylight/ee/teamsbot/domain"
 )
 
 type verifier struct {

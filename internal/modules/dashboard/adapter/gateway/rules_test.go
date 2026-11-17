@@ -5,8 +5,8 @@ import (
 	"io/fs"
 	"testing"
 
-	"trisse-home/internal/modules/dashboard/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestTabRulesRoundTrip(t *testing.T) {

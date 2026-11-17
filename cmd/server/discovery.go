@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"trisse-home/internal/modules/docker"
-	servicesdomain "trisse-home/internal/modules/services/domain"
+	"waylight/internal/modules/docker"
+	servicesdomain "waylight/internal/modules/services/domain"
 )
 
 // containerLabels adapts the docker module's read model to the container

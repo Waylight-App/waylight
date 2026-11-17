@@ -11,10 +11,10 @@ package teamcalendar
 import (
 	"context"
 
-	"trisse-home/ee/licence"
-	"trisse-home/ee/teamcalendar/adapter/controller"
-	"trisse-home/ee/teamcalendar/usecase"
-	"trisse-home/internal/modules"
+	"waylight/ee/licence"
+	"waylight/ee/teamcalendar/adapter/controller"
+	"waylight/ee/teamcalendar/usecase"
+	"waylight/internal/modules"
 )
 
 // Module wires the rings.

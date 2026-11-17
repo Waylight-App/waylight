@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/readlater/domain"
-	"trisse-home/internal/modules/readlater/usecase"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/readlater/domain"
+	"waylight/internal/modules/readlater/usecase"
+	"waylight/internal/platform/database/dbtest"
 )
 
 var png1x1 = []byte("\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\rIDATx\x9cc\xf8\xff\xff?\x00\x05\xfe\x02\xfe\xa7\x35\x81\x84\x00\x00\x00\x00IEND\xaeB`\x82")

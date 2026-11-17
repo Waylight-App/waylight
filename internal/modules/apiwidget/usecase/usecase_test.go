@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/apiwidget/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/apiwidget/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRepo struct{ m map[string]domain.Endpoint }

@@ -17,7 +17,7 @@ function memoryStorage(): Storage {
 }
 
 const amber =
-  '/* trisse-home theme: amber */\n:root:root,\n:root:root[data-theme] {\n  --color-bg: #fff3d6;\n}\n';
+  '/* waylight theme: amber */\n:root:root,\n:root:root[data-theme] {\n  --color-bg: #fff3d6;\n}\n';
 
 describe('the sign-in page keeps the last look (#526)', () => {
   it('keeps a gallery theme and the scheme', () => {
@@ -36,18 +36,18 @@ describe('the sign-in page keeps the last look (#526)', () => {
   it('refuses entries that were changed to load something', () => {
     expect(isGalleryThemeCss(amber)).toBe(true);
     expect(isGalleryThemeCss(amber + 'body{background:url(https://evil.example/x)}')).toBe(false);
-    expect(isGalleryThemeCss('/* trisse-home theme: x */ @import "https://evil.example/a.css";')).toBe(false);
+    expect(isGalleryThemeCss('/* waylight theme: x */ @import "https://evil.example/a.css";')).toBe(false);
     expect(isGalleryThemeCss(amber + 'x'.repeat(17 << 10))).toBe(false);
     const s = memoryStorage();
-    s.setItem('trisse-home:sign-in-look', JSON.stringify({ css: 'body{}', theme: 'dark' }));
+    s.setItem('waylight:sign-in-look', JSON.stringify({ css: 'body{}', theme: 'dark' }));
     expect(lastLook(s)).toBeNull();
-    s.setItem('trisse-home:sign-in-look', '{not json');
+    s.setItem('waylight:sign-in-look', '{not json');
     expect(lastLook(s)).toBeNull();
   });
 
   it('falls back to the system scheme for an unknown one', () => {
     const s = memoryStorage();
-    s.setItem('trisse-home:sign-in-look', JSON.stringify({ css: amber, theme: 'sepia' }));
+    s.setItem('waylight:sign-in-look', JSON.stringify({ css: amber, theme: 'sepia' }));
     expect(lastLook(s)?.theme).toBe('system');
   });
 });

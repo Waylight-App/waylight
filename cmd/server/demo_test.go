@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 func demoConfig(t *testing.T, dbPath string) config.Config {

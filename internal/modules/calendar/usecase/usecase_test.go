@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRepo struct{ s *domain.Settings }
@@ -116,7 +116,7 @@ func TestRangeAndCreate(t *testing.T) {
 	}
 	day := time.Date(2026, 11, 20, 0, 0, 0, 0, time.UTC)
 	v, err := uc.CreateEvent(ctx, NewEventInput{CalendarURL: urls[0], Summary: "Holiday", AllDay: true, Start: day, End: day})
-	if err != nil || !v.End.Equal(day.AddDate(0, 0, 1)) || !strings.HasSuffix(w.created[0].UID, "@trisse-home") || v.Calendar != "home" {
+	if err != nil || !v.End.Equal(day.AddDate(0, 0, 1)) || !strings.HasSuffix(w.created[0].UID, "@waylight") || v.Calendar != "home" {
 		t.Fatalf("all-day create: %+v %v %+v", v, err, w.created)
 	}
 	w.err = errors.New("403 Forbidden")

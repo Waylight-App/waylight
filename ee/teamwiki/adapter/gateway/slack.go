@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/wiki/domain"
+	"waylight/internal/modules/wiki/domain"
 )
 
 // Slack searches messages with the member's user token through the

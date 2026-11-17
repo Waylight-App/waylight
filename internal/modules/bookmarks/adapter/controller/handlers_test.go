@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/bookmarks/domain"
-	"trisse-home/internal/modules/bookmarks/usecase"
+	"waylight/internal/modules/bookmarks/domain"
+	"waylight/internal/modules/bookmarks/usecase"
 )
 
 type fakeList struct{ got usecase.Filter }

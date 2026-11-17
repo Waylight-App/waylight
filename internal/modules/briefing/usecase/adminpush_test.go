@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // TestPushIsAdminOnly: the scheduled briefing goes to the instance's

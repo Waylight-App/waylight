@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/docker/adapter/presenter"
-	"trisse-home/internal/modules/docker/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/docker/adapter/presenter"
+	"waylight/internal/modules/docker/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // UpdateHandlers serves the image update hints (#107).

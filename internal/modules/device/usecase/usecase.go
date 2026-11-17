@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/device/domain"
+	"waylight/internal/modules/device/domain"
 )
 
 // DisplayDetector tells whether a screen is connected (output port).

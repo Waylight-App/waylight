@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/ee/absences/domain"
-	"trisse-home/ee/absences/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/ee/absences/domain"
+	"waylight/ee/absences/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serve the API.

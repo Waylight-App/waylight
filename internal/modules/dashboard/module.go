@@ -7,12 +7,12 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/dashboard/adapter/configfile"
-	"trisse-home/internal/modules/dashboard/adapter/controller"
-	"trisse-home/internal/modules/dashboard/adapter/gateway"
-	"trisse-home/internal/modules/dashboard/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/dashboard/adapter/configfile"
+	"waylight/internal/modules/dashboard/adapter/controller"
+	"waylight/internal/modules/dashboard/adapter/gateway"
+	"waylight/internal/modules/dashboard/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the dashboard rings and implements modules.Module.

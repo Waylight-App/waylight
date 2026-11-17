@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/shared/ical"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/shared/ical"
 )
 
 // maxFeedBytes bounds one ICS download; timetables with years of history

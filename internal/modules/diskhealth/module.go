@@ -3,11 +3,11 @@ package diskhealth
 import (
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/diskhealth/adapter/controller"
-	"trisse-home/internal/modules/diskhealth/adapter/gateway"
-	"trisse-home/internal/modules/diskhealth/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/diskhealth/adapter/controller"
+	"waylight/internal/modules/diskhealth/adapter/gateway"
+	"waylight/internal/modules/diskhealth/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // evaluateInterval: how often disk states are reported to notifications.

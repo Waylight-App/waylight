@@ -10,12 +10,12 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/ee/licence"
-	"trisse-home/ee/scim/adapter/controller"
-	"trisse-home/ee/scim/adapter/gateway"
-	"trisse-home/ee/scim/usecase"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/auth"
+	"waylight/ee/licence"
+	"waylight/ee/scim/adapter/controller"
+	"waylight/ee/scim/adapter/gateway"
+	"waylight/ee/scim/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/modules/auth"
 )
 
 // Module wires the rings.

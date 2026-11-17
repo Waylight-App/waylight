@@ -9,7 +9,7 @@ import (
 	"context"
 	"slices"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Tab is an own tab and who else sees it.

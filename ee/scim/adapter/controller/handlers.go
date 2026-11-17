@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"trisse-home/ee/scim/domain"
-	"trisse-home/ee/scim/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/scim/domain"
+	"waylight/ee/scim/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 const (
@@ -72,7 +72,7 @@ func fail(w http.ResponseWriter, err error) {
 func (h *Handlers) authorized(w http.ResponseWriter, r *http.Request) bool {
 	token, ok := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
 	if !ok || !h.s.Authorized(strings.TrimSpace(token)) {
-		w.Header().Set("WWW-Authenticate", `Bearer realm="trisse-home SCIM"`)
+		w.Header().Set("WWW-Authenticate", `Bearer realm="Waylight SCIM"`)
 		writeError(w, http.StatusUnauthorized, "", usecase.ErrUnauthorized.Error())
 		return false
 	}
@@ -87,7 +87,7 @@ func decode(w http.ResponseWriter, r *http.Request, dst any) bool {
 	return true
 }
 
-// userDTO is the SCIM user resource, with the attributes trisse-home keeps.
+// userDTO is the SCIM user resource, with the attributes waylight keeps.
 type userDTO struct {
 	Schemas     []string `json:"schemas"`
 	ID          string   `json:"id,omitempty"`

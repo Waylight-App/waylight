@@ -5,7 +5,7 @@ import (
 	"slices"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // OwnerID identifies the owner account in sessions and events.
@@ -31,7 +31,7 @@ const (
 	RoleMember Role = "member"
 )
 
-// MaxMembers bounds the number of member accounts; trisse-home is meant for
+// MaxMembers bounds the number of member accounts; waylight is meant for
 // a household or a small office.
 const MaxMembers = 50
 

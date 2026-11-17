@@ -7,13 +7,13 @@ import (
 	"os"
 	"strings"
 
-	"trisse-home/ee/slackcmd"
-	"trisse-home/ee/slackcmd/domain"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/bookmarks"
-	"trisse-home/internal/modules/services"
-	"trisse-home/internal/modules/wiki"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/slackcmd"
+	"waylight/ee/slackcmd/domain"
+	"waylight/internal/modules"
+	"waylight/internal/modules/bookmarks"
+	"waylight/internal/modules/services"
+	"waylight/internal/modules/wiki"
+	"waylight/internal/shared/kernel"
 )
 
 // slackAPI points the command at a fake Slack in tests.

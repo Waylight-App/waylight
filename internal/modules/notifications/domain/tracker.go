@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Confirmations is how many consecutive observations a new state needs

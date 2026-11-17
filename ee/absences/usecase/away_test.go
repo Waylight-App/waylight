@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"trisse-home/ee/absences/domain"
+	"waylight/ee/absences/domain"
 )
 
 type memStore struct{ list []domain.Absence }

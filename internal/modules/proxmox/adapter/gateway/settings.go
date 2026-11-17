@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"io/fs"
 
-	"trisse-home/internal/modules/proxmox/domain"
+	"waylight/internal/modules/proxmox/domain"
 )
 
 //go:embed migrations/*.sql

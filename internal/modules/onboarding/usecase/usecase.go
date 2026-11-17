@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/onboarding/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/onboarding/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // StatusResponse describes the tour state.

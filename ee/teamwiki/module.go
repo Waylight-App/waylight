@@ -11,11 +11,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/ee/licence"
-	"trisse-home/ee/teamwiki/adapter/gateway"
-	"trisse-home/ee/teamwiki/usecase"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/wiki"
+	"waylight/ee/licence"
+	"waylight/ee/teamwiki/adapter/gateway"
+	"waylight/ee/teamwiki/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/modules/wiki"
 )
 
 // Module wires the sources into the wiki search.

@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
-	"trisse-home/internal/platform/config"
+	"waylight/ee/licence/domain"
+	"waylight/internal/platform/config"
 )
 
 // TestSignUpFromInvitationWithSSO accepts an invitation through the provider
@@ -26,7 +26,7 @@ func TestSignUpFromInvitationWithSSO(t *testing.T) {
 	var appURL string
 	idp := fakeIDP(t, "sam@outlook.com", &appURL, map[string]any{"email_verified": nil, "sub": "sam-sub"})
 	app := newTestServer(t, "http://127.0.0.1:1", func(c *config.Config) {
-		c.OIDCIssuer, c.OIDCClientID, c.OIDCClientSecret = idp.URL, "trisse", "secret"
+		c.OIDCIssuer, c.OIDCClientID, c.OIDCClientSecret = idp.URL, "waylight", "secret"
 		c.OIDCRedirectURL = "http://placeholder/api/auth/oidc/callback"
 	})
 	appURL = app.URL

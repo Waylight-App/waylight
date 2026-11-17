@@ -32,7 +32,7 @@ export interface ClearedDTO {
   deleted: number /* int */;
 }
 /**
- * ListDTO is a shopping list kept on trisse-home (#471).
+ * ListDTO is a shopping list kept on waylight (#471).
  */
 export interface ListDTO {
   id: string;

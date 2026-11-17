@@ -3,8 +3,8 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/notes/domain"
-	"trisse-home/internal/modules/notes/usecase"
+	"waylight/internal/modules/notes/domain"
+	"waylight/internal/modules/notes/usecase"
 )
 
 // NoteDTO is a note in API responses.

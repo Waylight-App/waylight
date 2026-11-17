@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/ee/teamsbot/domain"
+	licence "waylight/ee/licence/domain"
+	"waylight/ee/teamsbot/domain"
 )
 
 // Connections finds the members who connected Microsoft 365 (output port).

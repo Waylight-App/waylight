@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/releases/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/releases/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 const radiohead = "a74b1b7f-71a5-4011-9441-d0b5e4122711"

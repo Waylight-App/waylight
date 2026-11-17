@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/backup/adapter/presenter"
-	"trisse-home/internal/modules/backup/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/backup/adapter/presenter"
+	"waylight/internal/modules/backup/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // RemoteHandlers serves the off-site backup endpoints (#46).

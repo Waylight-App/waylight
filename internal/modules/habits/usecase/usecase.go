@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/habits/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/habits/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Habits is the input port of the module; every method is one use case (#106).

@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // ErrorBody is the JSON envelope for every error response.

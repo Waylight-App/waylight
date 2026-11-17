@@ -1,15 +1,15 @@
 #!/bin/sh
-# Install/upgrade/remove/purge test for the trisse-home .deb.
+# Install/upgrade/remove/purge test for the waylight .deb.
 #
 # Run as root in a throwaway Debian container without a running systemd, e.g.:
 #   docker run --rm -v "$PWD:/src:ro" -w /src debian:trixie \
-#     sh packaging/test/package-test.sh dist/trisse-home_*_amd64.deb
+#     sh packaging/test/package-test.sh dist/waylight_*_amd64.deb
 # The service itself is started and probed separately on a systemd host (CI).
 set -eu
 
 deb=${1:?usage: package-test.sh <package.deb>}
-conf=/etc/trisse-home
-state=/var/lib/trisse-home
+conf=/etc/waylight
+state=/var/lib/waylight
 
 step() { printf '\n== %s\n' "$*"; }
 fail() {
@@ -25,74 +25,74 @@ export DEBIAN_FRONTEND=noninteractive
 step "install"
 apt-get update -qq
 apt-get install -y -qq "$(realpath "$deb")" >/dev/null
-getent passwd trisse-home >/dev/null || fail "system user missing"
-[ "$(getent passwd trisse-home | cut -d: -f7)" = /usr/sbin/nologin ] || fail "user must not have a login shell"
-[ "$(mode_of $conf)" = "root:trisse-home 750" ] || fail "$conf: $(mode_of $conf)"
-[ "$(mode_of $conf/trisse-home.env)" = "root:trisse-home 640" ] || fail "config: $(mode_of $conf/trisse-home.env)"
+getent passwd waylight >/dev/null || fail "system user missing"
+[ "$(getent passwd waylight | cut -d: -f7)" = /usr/sbin/nologin ] || fail "user must not have a login shell"
+[ "$(mode_of $conf)" = "root:waylight 750" ] || fail "$conf: $(mode_of $conf)"
+[ "$(mode_of $conf/waylight.env)" = "root:waylight 640" ] || fail "config: $(mode_of $conf/waylight.env)"
 [ ! -e $conf/secret.env ] || fail "secret must not exist before the first start"
-[ -x /usr/bin/trisse-home ] || fail "binary missing"
-/usr/bin/trisse-home version
-[ -f /usr/lib/systemd/system/trisse-home.service ] || fail "unit missing"
+[ -x /usr/bin/waylight ] || fail "binary missing"
+/usr/bin/waylight version
+[ -f /usr/lib/systemd/system/waylight.service ] || fail "unit missing"
 # Enabled for the next boot even without a running systemd (image builds).
-[ -L /etc/systemd/system/multi-user.target.wants/trisse-home.service ] || fail "unit not enabled"
+[ -L /etc/systemd/system/multi-user.target.wants/waylight.service ] || fail "unit not enabled"
 
 step "first start creates a per-installation key and setup token"
-/usr/lib/trisse-home/trisse-home-init
-[ "$(mode_of $conf/secret.env)" = "root:trisse-home 640" ] || fail "secret: $(mode_of $conf/secret.env)"
+/usr/lib/waylight/waylight-init
+[ "$(mode_of $conf/secret.env)" = "root:waylight 640" ] || fail "secret: $(mode_of $conf/secret.env)"
 key=$(key_of $conf/secret.env)
 [ "$(printf %s "$key" | base64 -d | wc -c)" -eq 32 ] || fail "SECRET_KEY is not 32 bytes base64"
 token=$(token_of $conf/secret.env)
 echo "$token" | grep -Eq '^[A-HJ-NP-Z2-9]{4}(-[A-HJ-NP-Z2-9]{4}){4}$' || fail "unexpected setup token format: $token"
-/usr/lib/trisse-home/trisse-home-init
+/usr/lib/waylight/waylight-init
 [ "$(key_of $conf/secret.env)" = "$key" ] || fail "second start must keep the key"
 [ "$(token_of $conf/secret.env)" = "$token" ] || fail "second start must keep the setup token"
 [ "$(grep -c '^SECRET_KEY=' $conf/secret.env)" -eq 1 ] || fail "duplicate SECRET_KEY lines"
 
 step "setup token helper"
-trisse-home-setup-token | grep -q "Token  $token" || fail "trisse-home-setup-token does not show the token"
-[ -f /usr/lib/systemd/system/trisse-home-setup-info.timer ] || fail "setup info timer missing"
-[ -L /etc/systemd/system/timers.target.wants/trisse-home-setup-info.timer ] || fail "setup info timer not enabled"
+waylight-setup-token | grep -q "Token  $token" || fail "waylight-setup-token does not show the token"
+[ -f /usr/lib/systemd/system/waylight-setup-info.timer ] || fail "setup info timer missing"
+[ -L /etc/systemd/system/timers.target.wants/waylight-setup-info.timer ] || fail "setup info timer not enabled"
 
 step "upgrade keeps local changes and copies the database first"
-mkdir -p $state && echo "data v1" >$state/trisse-home.db && echo "wal" >$state/trisse-home.db-wal
-echo "LOG_LEVEL=debug" >>$conf/trisse-home.env
+mkdir -p $state && echo "data v1" >$state/waylight.db && echo "wal" >$state/waylight.db-wal
+echo "LOG_LEVEL=debug" >>$conf/waylight.env
 apt-get install -y -qq --reinstall -o Dpkg::Options::=--force-confold "$(realpath "$deb")" >/dev/null
-grep -q '^LOG_LEVEL=debug' $conf/trisse-home.env || fail "local config change lost"
+grep -q '^LOG_LEVEL=debug' $conf/waylight.env || fail "local config change lost"
 [ "$(key_of $conf/secret.env)" = "$key" ] || fail "upgrade changed the key"
-[ "$(mode_of $conf/trisse-home.env)" = "root:trisse-home 640" ] || fail "upgrade changed config permissions"
-copy=$(ls $state/backups/pre-upgrade/trisse-home-*.db)
+[ "$(mode_of $conf/waylight.env)" = "root:waylight 640" ] || fail "upgrade changed config permissions"
+copy=$(ls $state/backups/pre-upgrade/waylight-*.db)
 [ "$(cat "$copy")" = "data v1" ] && [ -f "$copy-wal" ] || fail "no pre-upgrade copy of the database"
 for _ in 1 2 3; do apt-get install -y -qq --reinstall -o Dpkg::Options::=--force-confold "$(realpath "$deb")" >/dev/null; sleep 1; done
 [ "$(ls $state/backups/pre-upgrade/*.db | wc -l)" -eq 3 ] || fail "more than three pre-upgrade copies kept"
 
 step "remove keeps configuration and data"
-apt-get remove -y -qq trisse-home >/dev/null
-[ ! -e /usr/bin/trisse-home ] || fail "binary still installed"
-[ -f $conf/trisse-home.env ] && [ -f $conf/secret.env ] || fail "remove deleted configuration"
-[ -f $state/trisse-home.db ] || fail "remove deleted data"
+apt-get remove -y -qq waylight >/dev/null
+[ ! -e /usr/bin/waylight ] || fail "binary still installed"
+[ -f $conf/waylight.env ] && [ -f $conf/secret.env ] || fail "remove deleted configuration"
+[ -f $state/waylight.db ] || fail "remove deleted data"
 
 step "purge deletes configuration, keeps data and the key next to it"
-apt-get purge -y -qq trisse-home >/dev/null
+apt-get purge -y -qq waylight >/dev/null
 [ ! -e $conf ] || fail "$conf still exists"
-[ -f $state/trisse-home.db ] || fail "purge deleted data"
+[ -f $state/waylight.db ] || fail "purge deleted data"
 [ "$(mode_of $state/secret.env.purged)" = "root:root 600" ] || fail "saved key: $(mode_of $state/secret.env.purged 2>/dev/null || echo missing)"
-[ ! -L /etc/systemd/system/multi-user.target.wants/trisse-home.service ] || fail "unit still enabled"
+[ ! -L /etc/systemd/system/multi-user.target.wants/waylight.service ] || fail "unit still enabled"
 
 step "reinstall after purge restores the key"
 apt-get install -y -qq "$(realpath "$deb")" >/dev/null
-/usr/lib/trisse-home/trisse-home-init
+/usr/lib/waylight/waylight-init
 [ "$(key_of $conf/secret.env)" = "$key" ] || fail "key not restored"
 [ ! -e $state/secret.env.purged ] || fail "saved key not cleaned up"
 
 step "an admin-provided key wins"
-apt-get purge -y -qq trisse-home >/dev/null
+apt-get purge -y -qq waylight >/dev/null
 rm -rf $state
 apt-get install -y -qq "$(realpath "$deb")" >/dev/null
-echo "SECRET_KEY=$key" >>$conf/trisse-home.env
-echo "SETUP_TOKEN=my-own-setup-token-123" >>$conf/trisse-home.env
-/usr/lib/trisse-home/trisse-home-init
+echo "SECRET_KEY=$key" >>$conf/waylight.env
+echo "SETUP_TOKEN=my-own-setup-token-123" >>$conf/waylight.env
+/usr/lib/waylight/waylight-init
 ! grep -q '^SECRET_KEY=' $conf/secret.env 2>/dev/null || fail "key generated although one is configured"
 ! grep -q '^SETUP_TOKEN=' $conf/secret.env 2>/dev/null || fail "token generated although one is configured"
-trisse-home-setup-token | grep -q "Token  my-own-setup-token-123" || fail "configured token not shown"
+waylight-setup-token | grep -q "Token  my-own-setup-token-123" || fail "configured token not shown"
 
 printf '\nOK: all package tests passed\n'

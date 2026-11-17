@@ -10,10 +10,10 @@ import (
 	"sync"
 	"time"
 
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/internal/modules/wiki"
-	"trisse-home/internal/modules/wiki/domain"
-	"trisse-home/internal/shared/kernel"
+	licence "waylight/ee/licence/domain"
+	"waylight/internal/modules/wiki"
+	"waylight/internal/modules/wiki/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Tokens hands out a member's access token at a service (output port, the

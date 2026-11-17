@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // EventType classifies a security event. The values are stable: they are

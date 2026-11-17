@@ -25,7 +25,7 @@ import (
 	"strconv"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 var constructors = map[string]bool{"NewPublicError": true, "NewValidationError": true, "NewPublicErrorf": true, "NewValidationErrorf": true}

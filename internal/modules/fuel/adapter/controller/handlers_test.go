@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/fuel/domain"
-	"trisse-home/internal/modules/fuel/usecase"
+	"waylight/internal/modules/fuel/domain"
+	"waylight/internal/modules/fuel/usecase"
 )
 
 type fakeFuel struct {

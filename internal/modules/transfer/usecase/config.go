@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/internal/modules/transfer/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transfer/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // ConfigSource is a module that takes part in config as code (#88); it is
@@ -25,7 +25,7 @@ type NamedSection struct {
 	Value any
 }
 
-// ConfigCodec reads and writes trisse-home.yaml (output port).
+// ConfigCodec reads and writes waylight.yaml (output port).
 type ConfigCodec interface {
 	Encode(version int, sections []NamedSection) ([]byte, error)
 	// Decode parses data, runs every string through expand and decodes

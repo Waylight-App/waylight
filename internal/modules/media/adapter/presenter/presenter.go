@@ -7,8 +7,8 @@ import (
 	"math"
 	"time"
 
-	"trisse-home/internal/modules/media/domain"
-	"trisse-home/internal/modules/media/usecase"
+	"waylight/internal/modules/media/domain"
+	"waylight/internal/modules/media/usecase"
 )
 
 // SettingsDTO is returned by GET/PUT /api/media/settings; the token is

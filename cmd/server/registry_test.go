@@ -3,8 +3,8 @@ package main
 import (
 	"testing"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/platform/config"
+	"waylight/internal/modules"
+	"waylight/internal/platform/config"
 )
 
 func TestRegisterModuleSortsAndRejectsDuplicates(t *testing.T) {

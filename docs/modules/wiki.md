@@ -2,7 +2,7 @@
 
 **What it does:** Finds pages of your wikis from the search field of the start page (#321). Supported are **BookStack**, **Outline** (#322) and **Wiki.js** (#323). Results show the title, a short excerpt, the book, collection or language they belong to, and open the page in the wiki.
 
-The search is **federated**: trisse-home asks the wikis while you type and stores no page content, so there is no index to keep up to date and nothing grows in the database.
+The search is **federated**: Waylight asks the wikis while you type and stores no page content, so there is no index to keep up to date and nothing grows in the database.
 
 ## Configuration
 
@@ -56,7 +56,7 @@ the same words can get different results.
   matches page titles only, not their text.
 - Slack messages come from the Real-time Search API with the person's user
   token: public and private channels, group and direct messages they are in.
-  Slack allows about ten searches per person and minute; trisse-home asks at
+  Slack allows about ten searches per person and minute; Waylight asks at
   most eight times a minute per person and otherwise lists Slack as not
   reachable for that search instead of running into Slack's limit.
 - Teams messages come from the Microsoft Graph search: chats and channels the

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"syscall"
 
-	"trisse-home/internal/modules/system/domain"
+	"waylight/internal/modules/system/domain"
 )
 
 func statfs(path string) (domain.Usage, error) {

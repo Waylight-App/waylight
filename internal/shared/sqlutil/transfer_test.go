@@ -8,8 +8,8 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/sqlutil"
 )
 
 func TestDumpAndRestore(t *testing.T) {

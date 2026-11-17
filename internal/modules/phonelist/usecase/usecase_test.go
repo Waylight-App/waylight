@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/phonelist/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/phonelist/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRepo struct {

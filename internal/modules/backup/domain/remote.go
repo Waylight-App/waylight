@@ -3,7 +3,7 @@ package domain
 import (
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // DefaultRemoteRetention is the number of backups kept off-site (#46).

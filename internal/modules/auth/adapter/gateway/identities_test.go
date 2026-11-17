@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestIdentityRepository(t *testing.T) {

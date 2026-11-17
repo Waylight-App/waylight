@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Limits of a recorded session.

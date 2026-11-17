@@ -1,4 +1,4 @@
-module trisse-home
+module waylight
 
 go 1.27
 

@@ -19,8 +19,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
-	"trisse-home/internal/platform/config"
+	"waylight/ee/licence/domain"
+	"waylight/internal/platform/config"
 )
 
 // TestTeamsRouteIsOptIn checks ADR 0023: without TEAMS_BOT_APP_ID the route

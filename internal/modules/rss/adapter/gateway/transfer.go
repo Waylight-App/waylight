@@ -1,6 +1,6 @@
 package gateway
 
-import "trisse-home/internal/shared/sqlutil"
+import "waylight/internal/shared/sqlutil"
 
 // TransferTables are the tables included in data exports, parents before
 // children; they contain no secrets. Read state and cached items are not exported; feeds are fetched again.

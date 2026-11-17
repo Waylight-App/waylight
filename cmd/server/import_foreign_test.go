@@ -10,7 +10,7 @@ import (
 	"os"
 	"testing"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 type foreignResult struct {

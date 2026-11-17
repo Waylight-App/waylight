@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/parcels/adapter/controller"
-	"trisse-home/internal/modules/parcels/adapter/gateway"
-	"trisse-home/internal/modules/parcels/domain"
-	"trisse-home/internal/modules/parcels/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/parcels/adapter/controller"
+	"waylight/internal/modules/parcels/adapter/gateway"
+	"waylight/internal/modules/parcels/domain"
+	"waylight/internal/modules/parcels/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // refreshInterval keeps well below the free DHL quota of 250 calls a day.

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // DefaultStaleAfter is the age after which an export is shown as unknown.

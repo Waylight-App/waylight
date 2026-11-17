@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/timeline/domain"
+	"waylight/internal/modules/timeline/domain"
 )
 
 // EventDTO is one timeline entry.

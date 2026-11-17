@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // HTTPStats counts HTTP requests by method and status class; labels are
@@ -62,12 +62,12 @@ func (s *HTTPStats) Samples() []kernel.MetricSample {
 	defer s.mu.Unlock()
 	out := make([]kernel.MetricSample, 0, len(s.requests)+2)
 	for k, n := range s.requests {
-		out = append(out, kernel.MetricSample{Name: "trisse_http_requests_total", Help: "HTTP requests by method and status class.",
+		out = append(out, kernel.MetricSample{Name: "waylight_http_requests_total", Help: "HTTP requests by method and status class.",
 			Type: kernel.MetricCounter, Labels: []kernel.Label{{Name: "method", Value: k[0]}, {Name: "code", Value: k[1]}}, Value: float64(n)})
 	}
 	out = append(out,
-		kernel.MetricSample{Name: "trisse_http_request_duration_seconds_sum", Help: "Total time spent serving HTTP requests.", Type: kernel.MetricCounter, Value: s.seconds},
-		kernel.MetricSample{Name: "trisse_http_request_duration_seconds_count", Help: "Number of timed HTTP requests.", Type: kernel.MetricCounter, Value: float64(s.count)},
+		kernel.MetricSample{Name: "waylight_http_request_duration_seconds_sum", Help: "Total time spent serving HTTP requests.", Type: kernel.MetricCounter, Value: s.seconds},
+		kernel.MetricSample{Name: "waylight_http_request_duration_seconds_count", Help: "Number of timed HTTP requests.", Type: kernel.MetricCounter, Value: float64(s.count)},
 	)
 	return out
 }

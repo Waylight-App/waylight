@@ -6,11 +6,11 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/briefing/adapter/controller"
-	"trisse-home/internal/modules/briefing/adapter/gateway"
-	"trisse-home/internal/modules/briefing/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/briefing/adapter/controller"
+	"waylight/internal/modules/briefing/adapter/gateway"
+	"waylight/internal/modules/briefing/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // The read ports, the push channel and their fact types are re-exported so

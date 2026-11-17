@@ -7,7 +7,7 @@ import (
 	"slices"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Zone is a bidding zone of the day-ahead market.

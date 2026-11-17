@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/weather/adapter/controller"
-	"trisse-home/internal/modules/weather/adapter/gateway"
-	"trisse-home/internal/modules/weather/domain"
-	"trisse-home/internal/modules/weather/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/weather/adapter/controller"
+	"waylight/internal/modules/weather/adapter/gateway"
+	"waylight/internal/modules/weather/domain"
+	"waylight/internal/modules/weather/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // refreshInterval keeps cached forecasts fresh; Open-Meteo updates hourly.

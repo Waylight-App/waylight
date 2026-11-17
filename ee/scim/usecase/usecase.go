@@ -13,10 +13,10 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/ee/scim/domain"
-	authdomain "trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/modules/auth/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/scim/domain"
+	authdomain "waylight/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Accounts is what the auth module offers for provisioning (output port).
@@ -239,7 +239,7 @@ func (s *Service) PatchUser(ctx context.Context, id string, ops []PatchOp) (User
 		case "externalid":
 			u.ExternalID = fmt.Sprint(v)
 		default:
-			// Attributes trisse-home does not keep (name, emails, title …) are
+			// Attributes waylight does not keep (name, emails, title …) are
 			// accepted and ignored, so a provider's full update does not fail.
 		}
 		return nil

@@ -8,12 +8,12 @@ import (
 	"net/url"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/todos/adapter/controller"
-	"trisse-home/internal/modules/todos/adapter/gateway"
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/modules/todos/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/todos/adapter/controller"
+	"waylight/internal/modules/todos/adapter/gateway"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/modules/todos/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the to-do rings and implements modules.Module.

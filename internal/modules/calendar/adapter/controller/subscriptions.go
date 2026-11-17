@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/calendar/adapter/presenter"
-	"trisse-home/internal/modules/calendar/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/calendar/adapter/presenter"
+	"waylight/internal/modules/calendar/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // SubscriptionHandlers serve the ICS subscription endpoints (#98).

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/adguard/usecase"
+	"waylight/internal/modules/adguard/usecase"
 )
 
 type fakeAdGuard struct {

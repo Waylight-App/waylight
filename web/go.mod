@@ -1,4 +1,4 @@
-module trisse-home/web
+module waylight/web
 
 // This file only exists so that the Go toolchain ignores the frontend
 // directory (including node_modules) when running ./... patterns.

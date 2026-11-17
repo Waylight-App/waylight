@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules/summary/adapter/presenter"
-	"trisse-home/internal/modules/summary/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/summary/adapter/presenter"
+	"waylight/internal/modules/summary/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves /api/summary.

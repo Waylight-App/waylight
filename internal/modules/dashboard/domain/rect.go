@@ -1,6 +1,6 @@
 package domain
 
-import "trisse-home/internal/shared/kernel"
+import "waylight/internal/shared/kernel"
 
 // Grid limits. The frontend uses the same 12-column grid.
 const (

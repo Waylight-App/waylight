@@ -3,7 +3,7 @@
 // Ring: Interface Adapters.
 package presenter
 
-import "trisse-home/internal/modules/summary/usecase"
+import "waylight/internal/modules/summary/usecase"
 
 // SettingsDTO describes the setup; configured=false hides the feature (#75).
 type SettingsDTO struct {

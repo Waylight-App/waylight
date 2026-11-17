@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestInspector(t *testing.T) {

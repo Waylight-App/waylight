@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/diskhealth/domain"
+	"waylight/internal/modules/diskhealth/domain"
 )
 
 // Limits protecting against a broken or hostile export directory.

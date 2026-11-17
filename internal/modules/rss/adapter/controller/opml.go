@@ -5,9 +5,9 @@ import (
 	"io"
 	"net/http"
 
-	"trisse-home/internal/modules/rss/adapter/presenter"
-	"trisse-home/internal/modules/rss/domain"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/rss/adapter/presenter"
+	"waylight/internal/modules/rss/domain"
+	"waylight/internal/shared/httpapi"
 )
 
 // ExportOPML handles GET /api/rss/opml: all subscriptions as an OPML 2.0
@@ -19,7 +19,7 @@ func (h *Handlers) ExportOPML(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/x-opml; charset=utf-8")
-	w.Header().Set("Content-Disposition", `attachment; filename="trisse-home-feeds.opml"`)
+	w.Header().Set("Content-Disposition", `attachment; filename="waylight-feeds.opml"`)
 	w.Header().Set("Cache-Control", "no-store")
 	_, _ = w.Write(data)
 }

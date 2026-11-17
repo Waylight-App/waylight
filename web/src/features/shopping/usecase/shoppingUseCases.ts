@@ -18,7 +18,7 @@ export interface ShoppingGateway {
   remove(id: string): Promise<void>;
   clearCompleted(): Promise<number>;
 
-  // Lists kept on trisse-home (#471).
+  // Lists kept on waylight (#471).
   overview(): Promise<ShoppingOverview>;
   createList(name: string, visibility?: Visibility): Promise<ShoppingList>;
   updateList(id: string, name: string, visibility: Visibility): Promise<ShoppingList>;
@@ -83,7 +83,7 @@ export class ShoppingUseCases {
     return this.gateway.shareGroups();
   }
 
-  /** The items of the CalDAV list (CALDAV) or of a list on trisse-home. */
+  /** The items of the CalDAV list (CALDAV) or of a list on waylight. */
   source(current: string): ItemSource {
     const g = this.gateway;
     const trimmed = async (summary: string, add: (s: string) => Promise<ShoppingItem>) => {

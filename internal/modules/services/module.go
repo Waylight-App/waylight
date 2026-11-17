@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/services/adapter/configfile"
-	"trisse-home/internal/modules/services/adapter/controller"
-	"trisse-home/internal/modules/services/adapter/gateway"
-	"trisse-home/internal/modules/services/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/services/adapter/configfile"
+	"waylight/internal/modules/services/adapter/controller"
+	"waylight/internal/modules/services/adapter/gateway"
+	"waylight/internal/modules/services/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 const checkInterval = time.Minute
@@ -164,10 +164,10 @@ func (m *Module) Metrics(ctx context.Context) []kernel.MetricSample {
 		}
 		l := kernel.Label{Name: "service", Value: s.Name}
 		out = append(out,
-			kernel.Gauge("trisse_service_up", "Whether the service answered its last check (1) or not (0).", kernel.Bool(s.State == "online"), l),
-			kernel.Gauge("trisse_service_response_seconds", "Response time of the last check in seconds.", float64(s.LatencyMs)/1000, l))
+			kernel.Gauge("waylight_service_up", "Whether the service answered its last check (1) or not (0).", kernel.Bool(s.State == "online"), l),
+			kernel.Gauge("waylight_service_response_seconds", "Response time of the last check in seconds.", float64(s.LatencyMs)/1000, l))
 		if !s.CertExpiresAt.IsZero() {
-			out = append(out, kernel.Gauge("trisse_service_cert_expiry_timestamp_seconds", "Expiry of the TLS certificate since the Unix epoch.", float64(s.CertExpiresAt.Unix()), l))
+			out = append(out, kernel.Gauge("waylight_service_cert_expiry_timestamp_seconds", "Expiry of the TLS certificate since the Unix epoch.", float64(s.CertExpiresAt.Unix()), l))
 		}
 	}
 	return out

@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
+	"waylight/internal/modules/calendar/domain"
 )
 
 const (

@@ -16,11 +16,11 @@ import (
 	"syscall"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // UserAgent identifies this application to external services.
-const UserAgent = "trisse-home (+https://github.com/topics/self-hosted)"
+const UserAgent = "waylight (+https://github.com/topics/self-hosted)"
 
 // Option configures a client.
 type Option func(*options)

@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-const modulePath = "trisse-home"
+const modulePath = "waylight"
 
 // ring classifies a package directory relative to the repository root.
 type ring int
@@ -124,16 +124,16 @@ func TestAllowedRules(t *testing.T) {
 		pkg, imp string
 		want     bool
 	}{
-		{"trisse-home/internal/modules/notes/domain", "trisse-home/internal/shared/kernel", true},
-		{"trisse-home/internal/modules/notes/domain", "net/http", true}, // depguard forbids specific stdlib packages
-		{"trisse-home/internal/modules/notes/domain", "trisse-home/internal/modules/notes/usecase", false},
-		{"trisse-home/internal/modules/notes/usecase", "trisse-home/internal/modules/notes/domain", true},
-		{"trisse-home/internal/modules/notes/usecase", "trisse-home/internal/modules/todos/domain", false},
-		{"trisse-home/internal/modules/notes/usecase", "github.com/x/y", false},
-		{"trisse-home/internal/modules/notes/adapter/gateway", "trisse-home/internal/platform/database", false},
-		{"trisse-home/internal/modules/notes/adapter/gateway", "trisse-home/internal/modules/notes/usecase", true},
-		{"trisse-home/internal/modules/notes", "trisse-home/internal/platform/httpclient", true},
-		{"trisse-home/internal/shared/kernel", "trisse-home/internal/shared/httpapi", false},
+		{"waylight/internal/modules/notes/domain", "waylight/internal/shared/kernel", true},
+		{"waylight/internal/modules/notes/domain", "net/http", true}, // depguard forbids specific stdlib packages
+		{"waylight/internal/modules/notes/domain", "waylight/internal/modules/notes/usecase", false},
+		{"waylight/internal/modules/notes/usecase", "waylight/internal/modules/notes/domain", true},
+		{"waylight/internal/modules/notes/usecase", "waylight/internal/modules/todos/domain", false},
+		{"waylight/internal/modules/notes/usecase", "github.com/x/y", false},
+		{"waylight/internal/modules/notes/adapter/gateway", "waylight/internal/platform/database", false},
+		{"waylight/internal/modules/notes/adapter/gateway", "waylight/internal/modules/notes/usecase", true},
+		{"waylight/internal/modules/notes", "waylight/internal/platform/httpclient", true},
+		{"waylight/internal/shared/kernel", "waylight/internal/shared/httpapi", false},
 	}
 	for _, c := range cases {
 		if got, _ := allowed(classify(c.pkg), c.imp); got != c.want {

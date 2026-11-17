@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/dashboard/domain"
-	"trisse-home/internal/modules/dashboard/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/modules/dashboard/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 type fakeWidgets struct {

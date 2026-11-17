@@ -6,7 +6,7 @@ each member can connect their own account at Microsoft 365, Confluence
 search, then act on the member's behalf and only find what that person may
 see. This needs a server built with the `ee` features and `PUBLIC_URL`.
 
-## Register trisse-home at a service (admins)
+## Register Waylight at a service (admins)
 
 Each service needs an app registration of your organisation. Its redirect URI
 is shown in the settings and is always `<PUBLIC_URL>/api/connections/callback`,
@@ -15,7 +15,7 @@ only has to be reachable from your members' browsers, not from the internet.
 
 - **Microsoft 365:** in the Entra admin center, *App registrations → New
   registration*, platform *Web*, the redirect URI above. Add a client secret.
-  The delegated permissions trisse-home asks for are `User.Read`,
+  The delegated permissions Waylight asks for are `User.Read`,
   `Sites.Read.All`, `Files.Read.All`, `ChannelMessage.Read.All`, `Chat.Read`
   and `offline_access`. `ChannelMessage.Read.All` (Teams channel messages)
   needs admin consent in most tenants: grant it for the organisation in the
@@ -39,7 +39,7 @@ only has to be reachable from your members' browsers, not from the internet.
 
   ```yaml
   display_information:
-    name: trisse-home search
+    name: waylight search
   oauth_config:
     redirect_urls:
       - https://home.example.org/api/connections/callback
@@ -53,7 +53,7 @@ only has to be reachable from your members' browsers, not from the internet.
     org_deploy_enabled: false
   ```
 
-  trisse-home asks for exactly these four user scopes and never for a bot
+  Waylight asks for exactly these four user scopes and never for a bot
   token. The search runs as the member, so private channels and direct
   messages are found only where the member is a participant. A token that
   lacks the private scopes still searches public channels.

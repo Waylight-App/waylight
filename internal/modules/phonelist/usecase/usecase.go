@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/phonelist/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/phonelist/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Phonelist is the input port of the module (#300). Everyone who can see

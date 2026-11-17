@@ -6,8 +6,8 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/notifications/domain"
-	"trisse-home/internal/modules/notifications/usecase"
+	"waylight/internal/modules/notifications/domain"
+	"waylight/internal/modules/notifications/usecase"
 )
 
 // RulesDTO selects what is notified.

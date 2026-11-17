@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/countdown/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/countdown/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRepo struct{ items map[string]domain.Countdown }

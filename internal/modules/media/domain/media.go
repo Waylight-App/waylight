@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Provider is a media server the module can read from (#61).

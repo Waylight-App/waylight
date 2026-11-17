@@ -1,6 +1,6 @@
 # Security model
 
-trisse-home runs on a home server next to things that matter: the Docker
+Waylight runs on a home server next to things that matter: the Docker
 daemon, the WireGuard VPN, the router. The guiding rule is **least privilege
 per component**: the application gets read access to exactly what a widget
 shows, and every capability that could change something lives in a separate,
@@ -44,8 +44,8 @@ flowchart LR
     browser["Browser\n(session cookie, CSRF token)"]
   end
 
-  subgraph net["Docker network trisse-home"]
-    app["trisse-home\nnon-root, read-only FS,\nno capabilities"]
+  subgraph net["Docker network waylight"]
+    app["waylight\nnon-root, read-only FS,\nno capabilities"]
     proxy["docker-socket-proxy\nGET only"]
     actions["docker-actions-proxy\n(optional) restart only"]
   end
@@ -79,9 +79,9 @@ optional component.
 
 | Component | Can | Cannot |
 | --- | --- | --- |
-| **trisse-home** container | Read container list and stats through the read-only proxy, read host metrics from read-only mounts, read the WireGuard peer and S.M.A.R.T. exports, call the integrations you configured | Write to Docker, read files outside its mounts, gain privileges (non-root, no capabilities, `no-new-privileges`, read-only root FS), be reached from outside `ALLOWED_CIDRS` |
-| **docker-socket-proxy** | Forward `GET` requests to the container and image endpoints (plus ping/version); `IMAGES=1` lets trisse-home read the repo digests and labels of the images of running containers for the update hints | Write anything (`POST: 0`) — it cannot pull, delete or build images — read system info, volumes, networks or secrets |
-| **docker-actions-proxy** (profile `docker-actions`) | Forward `POST /containers/<name>/stop\|restart\|kill` | Any read, create, exec, image or volume operation; trisse-home itself only calls *restart* for containers on `DOCKER_ACTIONS_CONTAINERS` |
+| **Waylight** container | Read container list and stats through the read-only proxy, read host metrics from read-only mounts, read the WireGuard peer and S.M.A.R.T. exports, call the integrations you configured | Write to Docker, read files outside its mounts, gain privileges (non-root, no capabilities, `no-new-privileges`, read-only root FS), be reached from outside `ALLOWED_CIDRS` |
+| **docker-socket-proxy** | Forward `GET` requests to the container and image endpoints (plus ping/version); `IMAGES=1` lets Waylight read the repo digests and labels of the images of running containers for the update hints | Write anything (`POST: 0`) — it cannot pull, delete or build images — read system info, volumes, networks or secrets |
+| **docker-actions-proxy** (profile `docker-actions`) | Forward `POST /containers/<name>/stop\|restart\|kill` | Any read, create, exec, image or volume operation; Waylight itself only calls *restart* for containers on `DOCKER_ACTIONS_CONTAINERS` |
 | **wireguard-export.sh** (cron, root) | Run `wg show all dump` and write peer public keys, endpoints, handshakes and traffic | Write private or preshared keys — the interface line is dropped and the PSK column blanked |
 | **smart-export.sh** (cron, root) | Run `smartctl --scan-open` and `smartctl --json -a` and write one JSON file per disk | Change disks or read their data — smartctl only reads the health log; the container gets no device access |
 | **wol-relay** (profile `wol`) | Accept valid magic packets on UDP 9009 and broadcast them into the LAN, rate-limited | Read data, Docker or secrets; forward anything that is not a magic packet; it has no capabilities and a read-only filesystem |
@@ -138,13 +138,13 @@ compromise. The proxy reduces the API to the read endpoints the widget needs.
 
 Restarting needs `POST`, which the read-only proxy rightly refuses. Instead
 of loosening it, a **second** proxy allows nothing but stop/restart/kill and
-nothing else — not even reads — and trisse-home adds its own allow-list of
+nothing else — not even reads — and Waylight adds its own allow-list of
 container names on top. Logs are read through the read-only proxy.
 
 ### Home Assistant
 
 A long-lived access token can do everything its user can, including unlocking
-doors. trisse-home therefore reads states only and calls exactly one service
+doors. Waylight therefore reads states only and calls exactly one service
 per entity type (toggle or press), and only for entities that
 `SMARTHOME_ACTIONS_ENTITIES` lists in the environment. A browser session cannot
 widen that list. Entity types without a safe action, such as locks, alarm
@@ -154,7 +154,7 @@ the token so it can be revoked on its own.
 
 The widget only needs to read, so the documented token has the role
 `PVEAuditor`. Proxmox serves a self-signed certificate. Instead of switching
-TLS verification off, trisse-home pins the certificate's SHA-256 fingerprint
+TLS verification off, Waylight pins the certificate's SHA-256 fingerprint
 and rejects every other certificate, so a machine in the LAN cannot pose as
 the node and catch the token. Start and shutdown need two independent steps:
 `PROXMOX_ACTIONS_GUESTS` in the environment (a browser session cannot change it)
@@ -184,7 +184,7 @@ event log, and the setting is refused together with `DEMO_MODE=true`.
 ### Parcels from e-mails
 
 Mail is personal, so the IMAP discovery (#166) is off by default and reads
-one folder only. trisse-home opens it with `EXAMINE` and fetches with
+one folder only. Waylight opens it with `EXAMINE` and fetches with
 `BODY.PEEK`, so the server itself refuses changes and not even the read flag
 moves; a test against a scripted IMAP server fails on any writing command.
 Only IMAP over TLS is supported, and the connection goes through the same
@@ -199,8 +199,8 @@ stored, only the extracted tracking number, carrier and label.
 output contains the server's private key. Giving the dashboard either would
 put the whole VPN at risk. A tiny script on the host, run by cron, writes only
 the public peer status into a directory that is mounted read-only into
-trisse-home. The script is short enough to read in a minute:
-[`scripts/wireguard-export.sh`](https://github.com/itadori26/trisse-home/blob/main/scripts/wireguard-export.sh).
+Waylight. The script is short enough to read in a minute:
+[`scripts/wireguard-export.sh`](https://github.com/itadori26/waylight/blob/main/scripts/wireguard-export.sh).
 
 ### Backup restore
 
@@ -209,7 +209,7 @@ owner-only (no guests, no API tokens), needs the password and — when enabled �
 a fresh 2FA code again (rate-limited and logged like a login), and validates the
 file with SQLite's integrity check and the schema version before anything is
 replaced. The swap happens on the next start, before the database is opened;
-the previous database stays next to it as `trisse-home.db.before-restore`.
+the previous database stays next to it as `waylight.db.before-restore`.
 Off-site copies go to the WebDAV folder you configure; its password is
 encrypted with `SECRET_KEY`. The backups themselves contain your data (secrets
 stay encrypted with `SECRET_KEY`, passwords only as hashes), so use a folder only
@@ -228,22 +228,22 @@ disk names, but no credentials and nothing from your data. See
 Reading disk health needs raw device access (`/dev/sd*`, `CAP_SYS_RAWIO`),
 which would let a compromised dashboard read every disk. Instead a host
 script run by cron writes the JSON output of `smartctl` into a directory that
-is mounted read-only into trisse-home:
-[`scripts/smart-export.sh`](https://github.com/itadori26/trisse-home/blob/main/scripts/smart-export.sh). The export contains
+is mounted read-only into Waylight:
+[`scripts/smart-export.sh`](https://github.com/itadori26/waylight/blob/main/scripts/smart-export.sh). The export contains
 model and serial numbers and health counters, nothing from the disks' contents.
 
 ### Wake-on-LAN relay
 
 Magic packets are broadcasts, and broadcasts do not leave a Docker bridge
-network. Putting trisse-home itself into the host network would remove the
+network. Putting Waylight itself into the host network would remove the
 network isolation of the whole application. The relay is the only component
 in the host network, and it can do exactly one thing: send magic packets —
 which any device in your LAN can do anyway.
 
 ## FAQ: alternatives and their trade-offs
 
-**Can I run trisse-home in the host network instead of using the relay?**
-Yes: set `WOL_RELAY=` (empty). trisse-home then broadcasts itself. The
+**Can I run Waylight in the host network instead of using the relay?**
+Yes: set `WOL_RELAY=` (empty). Waylight then broadcasts itself. The
 trade-off: the application can reach every service bound to `localhost` on
 the host and loses the network isolation of its own Docker network.
 
@@ -262,7 +262,7 @@ The capability is not limited to WireGuard: it allows changing routes,
 firewall rules and interfaces of that network namespace. The export script
 needs no change to the container at all.
 
-**Can I expose trisse-home to the internet?**
+**Can I expose Waylight to the internet?**
 It is designed for the LAN or a VPN. If you must, put it behind a reverse
 proxy with HTTPS, set `COOKIE_SECURE=true`, `TRUSTED_PROXIES` and a strict
 `ALLOWED_CIDRS`, and enable two-factor authentication. Never forward the port
@@ -275,4 +275,4 @@ telemetry; the update check is off by default.
 
 ## Reporting vulnerabilities
 
-See [SECURITY.md](https://github.com/itadori26/trisse-home/blob/main/SECURITY.md).
+See [SECURITY.md](https://github.com/itadori26/waylight/blob/main/SECURITY.md).

@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/modules/appearance/usecase"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/modules/appearance/usecase"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestBackgroundStore(t *testing.T) {

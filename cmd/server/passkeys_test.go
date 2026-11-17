@@ -12,7 +12,7 @@ import (
 	"net/url"
 	"testing"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 // cbor encodes the few CBOR items a "none" attestation needs.

@@ -1,6 +1,6 @@
 // Package oidc is a small OpenID Connect relying party: discovery, the
 // authorization code flow with PKCE (S256) and ID token validation (RS256,
-// ES256) against the provider's JWKS. It implements only what trisse-home
+// ES256) against the provider's JWKS. It implements only what waylight
 // needs and uses the standard library only (ADR 0013).
 //
 // Ring: Frameworks & Drivers.

@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"trisse-home/internal/modules/dashboard/adapter/gateway"
-	"trisse-home/internal/modules/dashboard/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/dashboard/adapter/gateway"
+	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Sharing connects team tabs (ee/, #295) to the dashboard without the core

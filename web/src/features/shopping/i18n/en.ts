@@ -1,4 +1,4 @@
-/** English UI texts of the shopping lists on trisse-home (#471). */
+/** English UI texts of the shopping lists on Waylight (#471). */
 export const en = {
   'shopping.list': 'List',
   'shopping.caldav_list': 'CalDAV task list',
@@ -8,7 +8,7 @@ export const en = {
   'shopping.default_list_name': 'Shopping',
   'shopping.create_list': 'Create list',
   'shopping.remove_item': 'Remove “{name}”',
-  'shopping.lists_title': 'Lists on trisse-home',
+  'shopping.lists_title': 'Lists on Waylight',
   'shopping.lists_hint':
     'These lists need no other service. Share a list with a group or with everyone, and they can add, tick off and remove items too. The widget shows one list; pick it in the widget.',
   'shopping.list_name': 'Name',

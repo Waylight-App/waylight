@@ -10,8 +10,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"trisse-home/internal/modules/releases/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/releases/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // ReleasesView is the cached release list.

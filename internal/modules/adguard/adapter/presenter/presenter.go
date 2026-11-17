@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"trisse-home/internal/modules/adguard/usecase"
+	"waylight/internal/modules/adguard/usecase"
 )
 
 // SettingsDTO is returned by GET/PUT /api/adguard/settings. The password is

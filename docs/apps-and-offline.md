@@ -1,25 +1,25 @@
 # Phones, offline use and the browser extension
 
-trisse-home is a web page, but it can behave like an app: installed on your
+Waylight is a web page, but it can behave like an app: installed on your
 phone's home screen, readable without a connection and opened on every new
 browser tab. This page explains what each of these needs.
 
 ## Install it as an app
 
 On Android (Chrome), iOS (Safari, *Share → Add to Home Screen*) and desktop
-browsers with app support you can install trisse-home. It then opens in its
+browsers with app support you can install Waylight. It then opens in its
 own window without the browser's address bar, and on Android it appears in
 the share menu for [quick capture](search.md#saving-from-other-pages).
 
 Browsers only allow installation from a **secure context**: an `https://`
 address or `localhost`. On a plain `http://192.168.x.x:8090` address the
 dashboard works normally, but the browser will not offer to install it and
-there is no offline mode. Put trisse-home behind a
+there is no offline mode. Put Waylight behind a
 [reverse proxy](reverse-proxy.md) with a certificate to get both.
 
 ## Offline use
 
-Once installed, or once the page has been opened over HTTPS, trisse-home
+Once installed, or once the page has been opened over HTTPS, Waylight
 keeps the app itself and the last loaded data of most widgets on the device.
 When the server cannot be reached, the dashboard still opens and shows that
 data, and each widget's status badge tells you how old it is.
@@ -27,7 +27,7 @@ data, and each widget's status badge tells you how old it is.
 To-dos are the exception that also works the other way: you can add, tick off
 and edit to-dos while offline. The changes are kept in the browser and sent
 to the server when the connection is back. If a to-do was changed elsewhere
-in the meantime, trisse-home does not overwrite it silently; it lists the
+in the meantime, Waylight does not overwrite it silently; it lists the
 conflicting changes under *Resolve* and lets you decide.
 
 What is never stored on the device: the login, settings, exports, backups,
@@ -36,15 +36,15 @@ Signing out deletes the stored data.
 
 ## Browser extension
 
-The extension makes trisse-home the page you see on every new tab, with the
-cursor already in the search field. It also adds *Save page to trisse-home*
+The extension makes Waylight the page you see on every new tab, with the
+cursor already in the search field. It also adds *Save page to Waylight*
 to the toolbar and to the context menu, which opens the quick capture dialog
 with the current page, the link you right-clicked or the selected text.
 
 It works in Chrome, Edge and Firefox:
 
-1. Download `trisse-home-extension-<version>.zip` from the
-   [latest release](https://github.com/itadori26/trisse-home/releases/latest)
+1. Download `waylight-extension-<version>.zip` from the
+   [latest release](https://github.com/itadori26/waylight/releases/latest)
    and unzip it.
 2. Load it:
    - **Chrome and Edge:** open `chrome://extensions`, switch on
@@ -60,7 +60,7 @@ It works in Chrome, Edge and Firefox:
 
 ### Without a server
 
-Without a server the extension runs trisse-home itself, in the browser:
+Without a server the extension runs Waylight itself, in the browser:
 bookmarks, notes, to-dos, countdowns, the focus timer, habits, the clock and
 the weather. Everything that needs a machine running in the background stays
 out, such as service checks, Docker, parcels and notifications. Your data is
@@ -70,7 +70,7 @@ is lost when you remove the extension.
 To move to a server later, open the extension's options, choose *Download my
 data*, and import the file on the server under *Settings → Transfer*. The
 import replaces the server's dashboard and appearance with what you made in
-the browser. Then switch the options to *With my trisse-home server*.
+the browser. Then switch the options to *With my Waylight server*.
 
 The extension asks for three permissions: `storage` for the address and the mode,
 `contextMenus` for the menu entry and `activeTab` to read the URL and title

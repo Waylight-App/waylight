@@ -12,8 +12,8 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules/backupmonitor/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/backupmonitor/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

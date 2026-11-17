@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/backupmonitor/domain"
-	"trisse-home/internal/modules/backupmonitor/usecase"
+	"waylight/internal/modules/backupmonitor/domain"
+	"waylight/internal/modules/backupmonitor/usecase"
 )
 
 type fakeUC struct {

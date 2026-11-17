@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/waste/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/waste/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestICSSource(t *testing.T) {

@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // fakeTodoist answers like the Todoist API v1 (field names and shapes from

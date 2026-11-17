@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/smarthome/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/smarthome/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 type prefixCipher struct{}

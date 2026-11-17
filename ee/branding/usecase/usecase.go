@@ -10,11 +10,11 @@ import (
 	"image/png"
 	"time"
 
-	"trisse-home/ee/branding/domain"
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/internal/platform/branding"
-	"trisse-home/internal/shared/imaging"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/branding/domain"
+	licence "waylight/ee/licence/domain"
+	"waylight/internal/platform/branding"
+	"waylight/internal/shared/imaging"
+	"waylight/internal/shared/kernel"
 )
 
 // Asset is a stored image.

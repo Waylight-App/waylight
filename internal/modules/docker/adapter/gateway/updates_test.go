@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/docker/domain"
-	"trisse-home/internal/modules/docker/usecase"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/docker/domain"
+	"waylight/internal/modules/docker/usecase"
+	"waylight/internal/platform/database/dbtest"
 )
 
 // fakeRegistry speaks the distribution API with a bearer token challenge.

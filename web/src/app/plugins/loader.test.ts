@@ -4,13 +4,13 @@ import type { AuthUseCases } from '../../features/auth';
 import type { SearchAction } from '../searchActions';
 import type { SettingsSection } from '../settingsKit';
 import type { WidgetDefinition } from '../widgetKit';
-import { PLUGIN_API_VERSION, type TrissePlugin } from './api';
+import { PLUGIN_API_VERSION, type WaylightPlugin } from './api';
 import { loadPlugins } from './loader';
 
 const auth = { owner: true, admin: true, member: false, guest: false } as AuthUseCases;
 const mountable = { mount: vi.fn(() => () => undefined) };
 
-const plugin: TrissePlugin = {
+const plugin: WaylightPlugin = {
   apiVersion: PLUGIN_API_VERSION,
   name: 'ee',
   widgets: [
@@ -97,7 +97,7 @@ describe('loadPlugins', () => {
 
   describe('search actions (#453)', () => {
     const run = vi.fn(() => Promise.resolve());
-    const withActions: TrissePlugin = {
+    const withActions: WaylightPlugin = {
       ...plugin,
       searchActions: [
         {
@@ -116,7 +116,7 @@ describe('loadPlugins', () => {
       '/api/plugins': { plugins: ['/ee/plugin.js'] },
       '/api/licence/features': { features: { presence: 'full', branding: 'read' } },
     };
-    const load = async (account: AuthUseCases, p: TrissePlugin = withActions) => {
+    const load = async (account: AuthUseCases, p: WaylightPlugin = withActions) => {
       const targets = { widgets: [], sections: [], searchActions: [] as SearchAction[] };
       await loadPlugins(http(routes), account, targets, () => Promise.resolve({ plugin: p }));
       return targets.searchActions;

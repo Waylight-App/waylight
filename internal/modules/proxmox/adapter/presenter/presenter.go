@@ -8,7 +8,7 @@ import (
 	"slices"
 	"time"
 
-	"trisse-home/internal/modules/proxmox/usecase"
+	"waylight/internal/modules/proxmox/usecase"
 )
 
 // SettingsDTO is returned by GET/PUT /api/proxmox/settings; the token

@@ -4,7 +4,7 @@ import "context"
 
 // ProductName is what the instance is called without an organisation's
 // own branding.
-const ProductName = "trisse-home"
+const ProductName = "Waylight"
 
 // InstanceName returns what the instance is called right now: the
 // organisation's name from the branding (#305), or ProductName. The

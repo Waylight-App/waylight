@@ -18,7 +18,7 @@ export class BrowserPasskeys implements PasskeyAuthenticator {
     const cred = (await navigator.credentials.create({
       publicKey: {
         challenge: fromBase64Url(o.challenge),
-        rp: { id: o.rpId, name: 'trisse-home' },
+        rp: { id: o.rpId, name: 'Waylight' },
         user: { id: fromBase64Url(o.userId), name: o.userName, displayName: o.userName },
         pubKeyCredParams: [
           { type: 'public-key', alg: -7 },

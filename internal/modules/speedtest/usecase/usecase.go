@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/speedtest/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/speedtest/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // HistoryRange is how far back results are fetched (7 days).

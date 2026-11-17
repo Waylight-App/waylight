@@ -6,8 +6,8 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/waste/domain"
-	"trisse-home/internal/modules/waste/usecase"
+	"waylight/internal/modules/waste/domain"
+	"waylight/internal/modules/waste/usecase"
 )
 
 // RuleDTO maps summaries to a label and style.

@@ -36,7 +36,7 @@ func get(h http.HandlerFunc, target, kind string) *httptest.ResponseRecorder {
 func TestProductBrandingWithoutSource(t *testing.T) {
 	var info InfoDTO
 	_ = json.Unmarshal(get(InfoHandler(func() Source { return nil }), "/api/branding", "").Body.Bytes(), &info)
-	if info.Name != "trisse-home" || info.Custom || info.Logo != "" {
+	if info.Name != "Waylight" || info.Custom || info.Logo != "" {
 		t.Fatalf("%+v", info)
 	}
 	if rec := get(AssetHandler(func() Source { return nil }), "/api/branding/logo", "logo"); rec.Code != http.StatusNotFound {
@@ -63,7 +63,7 @@ func TestOrganisationBranding(t *testing.T) {
 	if rec := get(AssetHandler(s), "/api/branding/../x", "x"); rec.Code != http.StatusNotFound {
 		t.Fatalf("unknown kind: %d", rec.Code)
 	}
-	base := []byte(`{"name":"trisse-home","short_name":"trisse-home","theme_color":"#3b6ef5","icons":[{"src":"/icons/icon-192.png"}]}`)
+	base := []byte(`{"name":"Waylight","short_name":"Waylight","theme_color":"#3b6ef5","icons":[{"src":"/icons/icon-192.png"}]}`)
 	var m map[string]any
 	_ = json.Unmarshal(get(ManifestHandler(base, s), "/manifest.webmanifest", "").Body.Bytes(), &m)
 	icons, _ := m["icons"].([]any)

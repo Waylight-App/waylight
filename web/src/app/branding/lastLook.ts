@@ -11,9 +11,9 @@ export interface LastLook {
   theme: ThemeMode;
 }
 
-const KEY = 'trisse-home:sign-in-look';
+const KEY = 'waylight:sign-in-look';
 /** Marker the server writes at the start of a gallery theme's CSS. */
-const THEME_MARKER = '/* trisse-home theme: ';
+const THEME_MARKER = '/* waylight theme: ';
 /** Gallery themes are a few hundred bytes; anything far larger is not one. */
 const MAX_CSS = 16 << 10;
 const MODES: readonly ThemeMode[] = ['system', 'light', 'dark'];

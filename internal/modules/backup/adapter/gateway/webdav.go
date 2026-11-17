@@ -16,8 +16,8 @@ import (
 	"strconv"
 	"strings"
 
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/shared/kernel"
 )
 
 //go:embed migrations/*.sql
@@ -93,7 +93,7 @@ func NewWebDAV(client *http.Client) *WebDAV { return &WebDAV{client: client} }
 
 const (
 	maxListBytes = 4 << 20
-	testFile     = ".trisse-home-write-test"
+	testFile     = ".waylight-write-test"
 )
 
 func (w *WebDAV) request(ctx context.Context, s domain.RemoteSettings, method, name string, body io.Reader, size int64, header map[string]string) (*http.Response, error) {

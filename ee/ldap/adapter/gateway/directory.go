@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/ee/ldap/adapter/ldapclient"
-	"trisse-home/ee/ldap/domain"
+	"waylight/ee/ldap/adapter/ldapclient"
+	"waylight/ee/ldap/domain"
 )
 
 // Config tells the gateway how to reach and search the directory.

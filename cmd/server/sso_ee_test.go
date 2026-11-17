@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
-	"trisse-home/internal/platform/config"
+	"waylight/ee/licence/domain"
+	"waylight/internal/platform/config"
 )
 
 // TestSSOForMembers signs a member in through OpenID Connect in the ee build
@@ -26,7 +26,7 @@ func TestSSOForMembers(t *testing.T) {
 	var appURL string
 	idp := fakeIDP(t, "anna@example.org", &appURL, map[string]any{"preferred_username": "anna", "groups": []string{"Office"}})
 	app := newTestServer(t, "http://127.0.0.1:1", func(c *config.Config) {
-		c.OIDCIssuer, c.OIDCClientID, c.OIDCClientSecret = idp.URL, "trisse", "secret"
+		c.OIDCIssuer, c.OIDCClientID, c.OIDCClientSecret = idp.URL, "waylight", "secret"
 		c.OIDCAllowedEmails = []string{"owner@example.org"}
 		c.OIDCRedirectURL = "http://placeholder/api/auth/oidc/callback"
 		c.OIDCGroupsClaim = "groups"

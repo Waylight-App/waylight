@@ -10,9 +10,9 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/ee/ldap/domain"
-	licence "trisse-home/ee/licence/domain"
-	authdomain "trisse-home/internal/modules/auth/domain"
+	"waylight/ee/ldap/domain"
+	licence "waylight/ee/licence/domain"
+	authdomain "waylight/internal/modules/auth/domain"
 )
 
 // Directory looks users up and checks passwords (output port).

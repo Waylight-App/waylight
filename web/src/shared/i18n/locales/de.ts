@@ -21,7 +21,7 @@ export const de: Record<BaseMessageKey, string> = {
   'full_version.learn_more': 'So installierst du es',
   'full_version.dismiss': 'Hinweis ausblenden',
   'full_version.intro':
-    'Die Erweiterung funktioniert ohne Server: Dashboard, Lesezeichen, Notizen, To-dos, Countdowns, Fokus-Timer, Gewohnheiten und Wetter bleiben in diesem Browser. Läuft trisse-home auf einem Server oder einem Raspberry Pi, kommt dazu:',
+    'Die Erweiterung funktioniert ohne Server: Dashboard, Lesezeichen, Notizen, To-dos, Countdowns, Fokus-Timer, Gewohnheiten und Wetter bleiben in diesem Browser. Läuft Waylight auf einem Server oder einem Raspberry Pi, kommt dazu:',
   'full_version.feature_services': 'Kacheln mit Statusprüfung für deine Apps und Geräte',
   'full_version.feature_docker': 'Docker-Container, Serverzustand und Backups',
   'full_version.feature_parcels': 'Paketverfolgung, Kalender, Feeds und die anderen Integrationen',
@@ -62,7 +62,7 @@ export const de: Record<BaseMessageKey, string> = {
   'app.results': 'Ergebnisse',
   'app.guided_tour': 'Einführungstour',
   'app.shows_the_most_important_features_of':
-    'Zeigt Schritt für Schritt die wichtigsten Funktionen von trisse-home.',
+    'Zeigt Schritt für Schritt die wichtigsten Funktionen von Waylight.',
   'app.restart_the_tour': 'Tour erneut starten',
   'app.two_factor_authentication': 'Zwei-Faktor-Anmeldung',
   'app.active_sessions': 'Aktive Sitzungen',
@@ -538,7 +538,7 @@ export const de: Record<BaseMessageKey, string> = {
     'Unsicher? Wähle „Alltag“. Du kannst das jederzeit unter Einstellungen → Darstellung ändern.',
   'appearance.profile': 'Die Startseite zeigt',
   'appearance.profile_hint': 'Blendet nur Widgets und Einstellungen ein oder aus; gelöscht wird nichts.',
-  'auth.welcome_to_trisse_home': 'Willkommen bei trisse-home',
+  'auth.welcome_to_waylight': 'Willkommen bei Waylight',
   'auth.two_factor_authentication_is_on': 'Die Zwei-Faktor-Anmeldung ist aktiv.',
   'auth.store_these_recovery_codes_in_a':
     'Bewahre diese Wiederherstellungscodes sicher auf – jeder funktioniert einmal, falls du dein Handy verlierst. Sie werden nur jetzt angezeigt.',
@@ -744,7 +744,7 @@ export const de: Record<BaseMessageKey, string> = {
   'app.results_count': '{n} Treffer',
   'app.untitled_note': 'Notiz ohne Titel',
   'app.marked_done': '„{title}“ als erledigt markiert.',
-  'tour.welcome.title': 'Willkommen bei trisse-home 👋',
+  'tour.welcome.title': 'Willkommen bei Waylight 👋',
   'tour.welcome.body':
     'Deine persönliche Startseite: Widgets für den Alltag und deinen Homeserver. Diese kurze Tour zeigt dir alles Wichtige – sie dauert weniger als eine Minute.',
   'tour.tabs.title': 'Tabs',
@@ -809,7 +809,7 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.passwords_differ': 'Die Passwörter stimmen nicht überein.',
   'auth.browser_on_os': '{browser} unter {os}',
   'auth.unknown_device': 'Unbekanntes Gerät',
-  'auth.recovery_file_title': 'trisse-home – Wiederherstellungscodes',
+  'auth.recovery_file_title': 'Waylight – Wiederherstellungscodes',
   'auth.recovery_file_created': 'Erstellt: {date}',
   'auth.recovery_file_hint':
     'Jeder Code kann einmal statt eines Codes aus der Authenticator-App verwendet werden.',
@@ -866,7 +866,7 @@ export const de: Record<BaseMessageKey, string> = {
   'services.invalid_check_url': 'Die Prüf-URL muss mit http:// oder https:// beginnen.',
   'services.invalid_mac': 'Die MAC-Adresse muss wie aa:bb:cc:dd:ee:ff aussehen.',
   'transfer.invalid_json': 'Die Datei ist kein gültiges JSON.',
-  'transfer.not_export': 'Das ist keine Exportdatei von trisse-home.',
+  'transfer.not_export': 'Das ist keine Exportdatei von Waylight.',
   'transfer.result_imported': 'Importiert: {list}.',
   'transfer.nothing': 'nichts',
   'transfer.result_skipped': 'Übersprungen (Modul deaktiviert oder unbekannt): {list}.',
@@ -991,12 +991,12 @@ export const de: Record<BaseMessageKey, string> = {
   'common.copied': 'Kopiert ✓',
   'common.why_extra_step': 'Warum ist das ein extra Schritt?',
   'wireguard.setup_snippet': 'Export auf dem Host einrichten',
-  'wireguard.stack_dir': 'trisse-home-Verzeichnis auf dem Host',
+  'wireguard.stack_dir': 'Waylight-Verzeichnis auf dem Host',
   'wireguard.container': 'WireGuard-Container',
   'wireguard.container_host': 'leer: wg läuft auf dem Host',
   'wireguard.snippet_invalid': 'Bitte einen absoluten Pfad und einen einfachen Containernamen angeben.',
   'services.wol_setup': 'Wake-on-LAN auf dem Server aktivieren',
-  'services.wol_how': 'Wie trisse-home läuft',
+  'services.wol_how': 'Wie Waylight läuft',
   'services.wol_relay': 'Docker Compose (Relay-Container)',
   'services.wol_host_network': 'Binary oder Host-Netzwerk (ohne Relay)',
   'services.wol_broadcast': 'Broadcast-Adresse (optional)',
@@ -1136,7 +1136,7 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.event.invite_accepted': 'Einladung angenommen',
   'auth.event.reset_link_created': 'Link zum Zurücksetzen erstellt',
   'auth.event.password_reset': 'Passwort per Link zurückgesetzt',
-  'auth.powered_by': 'Läuft mit trisse-home',
+  'auth.powered_by': 'Läuft mit Waylight',
   'auth.forgot_password': 'Passwort vergessen?',
   'auth.reset_mail_hint':
     'Gib deinen Namen ein. Hat dein Konto eine E-Mail-Adresse, geht dorthin ein Link zum Festlegen eines neuen Passworts.',
@@ -1177,7 +1177,7 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.passkeys_hint':
     'Nutze einen Sicherheitsschlüssel, dein Handy oder den Fingerabdrucksensor als zweiten Faktor statt einen Code einzutippen.',
   'auth.passkeys_need_https':
-    'Passkeys brauchen HTTPS: trisse-home hinter einem Reverse Proxy betreiben und PUBLIC_URL setzen (siehe docs/reverse-proxy.md).',
+    'Passkeys brauchen HTTPS: Waylight hinter einem Reverse Proxy betreiben und PUBLIC_URL setzen (siehe docs/reverse-proxy.md).',
   'auth.passkeys_unsupported': 'Dieser Browser kann hier keine Passkeys nutzen.',
   'auth.passkey_default_name': 'Passkey',
   'auth.passkey_name': 'Name, z. B. „YubiKey“ oder „iPhone“',
@@ -1225,7 +1225,7 @@ export const de: Record<BaseMessageKey, string> = {
   'notifications.gotify_url': 'Gotify-Server-URL',
   'notifications.webhook_url': 'Webhook-URL',
   'notifications.gotify_token': 'App-Token',
-  'notifications.webhook_secret': 'HMAC-Geheimnis (optional, als X-Trisse-Signature)',
+  'notifications.webhook_secret': 'HMAC-Geheimnis (optional, als X-Waylight-Signature)',
   'notifications.smtp_password': 'SMTP-Passwort',
   'notifications.webhook_template': 'JSON-Inhalt ({{title}}, {{body}}, {{severity}}, {{type}})',
   'notifications.smtp_host': 'SMTP-Server',
@@ -1272,7 +1272,7 @@ export const de: Record<BaseMessageKey, string> = {
   'services.no_incidents': 'Keine Störungen erfasst.',
   'services.discovery.title': 'Docker-Autodiscovery',
   'services.discovery.hint':
-    'Container mit diesen Labels erscheinen automatisch als Kachel. Homepage-Labels (homepage.name, homepage.href, …) funktionieren ebenfalls; trisse-home.enable: false überspringt einen Container.',
+    'Container mit diesen Labels erscheinen automatisch als Kachel. Homepage-Labels (homepage.name, homepage.href, …) funktionieren ebenfalls; waylight.enable: false überspringt einen Container.',
   'services.discovery.unavailable':
     'Die Autodiscovery liest Container-Labels über das Docker-Modul. Aktiviere es, um diese Funktion zu nutzen.',
   'services.discovery.enabled': 'Automatisch abgleichen',
@@ -1367,7 +1367,7 @@ export const de: Record<BaseMessageKey, string> = {
   'speedtest.ping_history': 'Ping im Verlauf',
   'speedtest.loading': 'Wird geladen …',
   'speedtest.settings_hint':
-    'trisse-home führt selbst keine Tests aus, sondern liest die Ergebnisse deines Speedtest Trackers. Lege dort ein API-Token mit dem Bereich results:read an.',
+    'Waylight führt selbst keine Tests aus, sondern liest die Ergebnisse deines Speedtest Trackers. Lege dort ein API-Token mit dem Bereich results:read an.',
   'speedtest.url': 'Speedtest-Tracker-URL',
   'speedtest.token': 'API-Token {value}',
   'speedtest.min_down': 'Benachrichtigen unter Download (Mbit/s, 0 = aus)',
@@ -1379,7 +1379,7 @@ export const de: Record<BaseMessageKey, string> = {
   'docker.newer_tag': 'Neuere Version {tag} verfügbar',
   'settings.section.docker_updates': 'Docker-Updates',
   'docker_updates.hint':
-    'trisse-home vergleicht den Image-Digest jedes laufenden Containers mit seiner Registry (höchstens alle 6 Stunden pro Image) und zeigt nur Hinweise – es lädt oder aktualisiert nie selbst. Die Anfragen gehen an die Registries deiner Images.',
+    'Waylight vergleicht den Image-Digest jedes laufenden Containers mit seiner Registry (höchstens alle 6 Stunden pro Image) und zeigt nur Hinweise – es lädt oder aktualisiert nie selbst. Die Anfragen gehen an die Registries deiner Images.',
   'docker_updates.enabled': 'Auf Image-Updates prüfen',
   'docker_updates.semver': 'Auch neuere Versions-Tags anzeigen (z. B. 1.28.0 für 1.27.1)',
   'docker_updates.registries': 'Registry-Zugänge (optional, für private Images oder höhere Limits)',
@@ -1410,7 +1410,7 @@ export const de: Record<BaseMessageKey, string> = {
   'backup.remote_backups': 'Externe Backups',
   'backup.restore': 'Backup wiederherstellen',
   'backup.restore_hint':
-    'Die aktuellen Daten werden ersetzt und trisse-home startet neu (Docker startet es automatisch wieder). Die bisherige Datenbank bleibt als trisse-home.db.before-restore erhalten. Backups einer neueren Version lassen sich nicht wiederherstellen.',
+    'Die aktuellen Daten werden ersetzt und Waylight startet neu (Docker startet es automatisch wieder). Die bisherige Datenbank bleibt als waylight.db.before-restore erhalten. Backups einer neueren Version lassen sich nicht wiederherstellen.',
   'backup.restore_source': 'Backup',
   'backup.source_upload': 'Datei hochladen',
   'backup.source_local': 'Lokal: {date}',
@@ -1422,7 +1422,7 @@ export const de: Record<BaseMessageKey, string> = {
   'backup.restore_confirm': 'Alle aktuellen Daten durch dieses Backup ersetzen?',
   'backup.restoring': 'Wird wiederhergestellt …',
   'backup.restarting':
-    'Das Backup wird wiederhergestellt; trisse-home startet neu. Die Seite lädt in wenigen Sekunden neu.',
+    'Das Backup wird wiederhergestellt; Waylight startet neu. Die Seite lädt in wenigen Sekunden neu.',
   'app.loading_widget': 'Widget wird geladen …',
   'app.widget_failed_to_load': 'Dieses Widget konnte nicht geladen werden.',
   'app.retry': 'Erneut versuchen',
@@ -1502,7 +1502,7 @@ export const de: Record<BaseMessageKey, string> = {
   'quick.open': 'Öffnen',
   'quick.undone': 'Rückgängig gemacht.',
   'quick.not_allowed_restart':
-    'Dieser Container kann in trisse-home nicht neu gestartet werden (DOCKER_ACTIONS_CONTAINERS).',
+    'Dieser Container kann in Waylight nicht neu gestartet werden (DOCKER_ACTIONS_CONTAINERS).',
   'quick.not_allowed_wake': 'Es gibt keinen Dienst mit diesem Namen und einer MAC-Adresse.',
   'quick.prefixes': 'Schnellerfassung',
   'quick.prefixes_hint':

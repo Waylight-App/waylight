@@ -3,7 +3,7 @@ name: Deploy
 # Updates the server after a push to main whose CI run succeeded (#211). The
 # server is only reachable through its WireGuard VPN, so the job opens a tunnel
 # first and then asks over SSH. The SSH key can run only
-# scripts/deploy/trisse-home-deploy (forced command), which builds exactly this
+# scripts/deploy/waylight-deploy (forced command), which builds exactly this
 # commit, backs up the data first and rolls back if the new version does not
 # become healthy. See docs/deploy.md.
 #
@@ -52,7 +52,7 @@ jobs:
           KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
           HOST: ${{ vars.DEPLOY_HOST }}
           PORT: ${{ vars.DEPLOY_PORT || '22' }}
-          SSH_USER: ${{ vars.DEPLOY_USER || 'trisse-deploy' }}
+          SSH_USER: ${{ vars.DEPLOY_USER || 'waylight-deploy' }}
         run: |
           set -euo pipefail
           [[ -n $HOST && -n $SSH_KEY && -n $KNOWN_HOSTS ]] || { echo "::error::DEPLOY_HOST, DEPLOY_SSH_KEY and DEPLOY_KNOWN_HOSTS must be set (docs/deploy.md)"; exit 1; }

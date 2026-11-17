@@ -4,8 +4,8 @@
 package presenter
 
 import (
-	"trisse-home/internal/modules/shopping/domain"
-	"trisse-home/internal/modules/shopping/usecase"
+	"waylight/internal/modules/shopping/domain"
+	"waylight/internal/modules/shopping/usecase"
 )
 
 // SettingsDTO is returned by the settings endpoints (never the password).
@@ -43,7 +43,7 @@ func Items(items []domain.Item) []ItemDTO {
 	return out
 }
 
-// ListDTO is a shopping list kept on trisse-home (#471).
+// ListDTO is a shopping list kept on waylight (#471).
 type ListDTO struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`

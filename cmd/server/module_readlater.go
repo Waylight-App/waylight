@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/readlater"
+	"waylight/internal/modules"
+	"waylight/internal/modules/readlater"
 )
 
 // The read-later module registers itself; no shared file lists it (#193).

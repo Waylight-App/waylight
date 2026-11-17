@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/briefing/domain"
-	"trisse-home/internal/modules/briefing/usecase"
+	"waylight/internal/modules/briefing/domain"
+	"waylight/internal/modules/briefing/usecase"
 )
 
 type fakeBuild struct{}

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/gamedeals/domain"
+	"waylight/internal/modules/gamedeals/domain"
 )
 
 // Public store endpoints. They are not official APIs: everything that

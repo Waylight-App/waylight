@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // ErrSecretsDisabled is returned when something tries to store a secret.

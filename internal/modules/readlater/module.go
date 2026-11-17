@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/readlater/adapter/controller"
-	"trisse-home/internal/modules/readlater/adapter/gateway"
-	"trisse-home/internal/modules/readlater/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/readlater/adapter/controller"
+	"waylight/internal/modules/readlater/adapter/gateway"
+	"waylight/internal/modules/readlater/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the read-later rings and implements modules.Module.

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Cron is a parsed five-field cron expression (minute hour day-of-month

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/shared/caldav/caldavtest"
+	"waylight/internal/shared/caldav/caldavtest"
 )
 
 func setup(t *testing.T) (*caldavtest.Server, Client, Account) {

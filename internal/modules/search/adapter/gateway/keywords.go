@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/search/domain"
-	"trisse-home/internal/modules/search/usecase"
-	"trisse-home/internal/shared/kernel"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/search/domain"
+	"waylight/internal/modules/search/usecase"
+	"waylight/internal/shared/kernel"
+	"waylight/internal/shared/sqlutil"
 )
 
 // Own keywords (#478) are strictly personal, unlike the rest of the search

@@ -7,8 +7,8 @@ import (
 	"slices"
 	"strconv"
 
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // StyleBackup is the user's own style that applying a theme replaced.
@@ -160,7 +160,7 @@ func (uc *themes) Import(ctx context.Context, data []byte) (domain.ThemeDef, err
 		if errors.As(err, &ve) {
 			return domain.ThemeDef{}, err
 		}
-		return domain.ThemeDef{}, kernel.NewValidationError("file", "The file is not a trisse-home theme (JSON).")
+		return domain.ThemeDef{}, kernel.NewValidationError("file", "The file is not a Waylight theme (JSON).")
 	}
 	imported, err := uc.store.Imported(ctx)
 	if err != nil {

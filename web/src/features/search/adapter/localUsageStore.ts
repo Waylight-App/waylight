@@ -1,7 +1,7 @@
 import { parseEntries } from '../domain/frecency';
 import type { UsageState, UsageStore } from '../usecase/searchUsage';
 
-const KEY = 'trisse-home.search-usage';
+const KEY = 'waylight.search-usage';
 
 /**
  * Keeps the search history in localStorage (#159). Works without storage

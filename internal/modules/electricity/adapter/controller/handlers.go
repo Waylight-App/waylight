@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/electricity/adapter/presenter"
-	"trisse-home/internal/modules/electricity/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/electricity/adapter/presenter"
+	"waylight/internal/modules/electricity/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the endpoint.

@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"trisse-home/internal/modules/backup/usecase"
+	"waylight/internal/modules/backup/usecase"
 )
 
 type fakeRestorer struct {

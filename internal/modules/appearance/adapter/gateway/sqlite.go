@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"io/fs"
 
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/shared/kernel"
 )
 
 //go:embed migrations/*.sql

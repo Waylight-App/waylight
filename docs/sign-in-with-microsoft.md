@@ -1,6 +1,6 @@
 # Sign in with a personal Microsoft account
 
-You can sign in to trisse-home with your personal Microsoft account
+You can sign in to Waylight with your personal Microsoft account
 (outlook.com, hotmail.com, live.com) instead of your password. You link the
 Microsoft account to your account here once, while you are signed in; after
 that, **Sign in with Microsoft** on the sign-in page is enough.
@@ -40,17 +40,17 @@ Microsoft and back. It needs your own registration and an HTTPS address.
 
 ## What you need
 
-- trisse-home reachable under a fixed address, such as
+- Waylight reachable under a fixed address, such as
   `https://home.example.org`. The address only has to work in your own
   browser; it does not have to be reachable from the internet.
-- A Microsoft account to register trisse-home with Microsoft. Your personal
+- A Microsoft account to register Waylight with Microsoft. Your personal
   account works for that too; registering is free.
 
-## Register trisse-home with Microsoft
+## Register Waylight with Microsoft
 
 1. Open the [Microsoft Entra admin center](https://entra.microsoft.com) with
    your Microsoft account and go to *App registrations → New registration*.
-2. Name: `trisse-home`. *Supported account types*: **Personal Microsoft
+2. Name: `waylight`. *Supported account types*: **Personal Microsoft
    accounts only**.
 3. *Redirect URI*: platform **Web**, address
    `https://home.example.org/api/auth/oidc/callback` (your address).
@@ -59,9 +59,9 @@ Microsoft and back. It needs your own registration and an HTTPS address.
    copy its *Value* right away; it is shown only once. Note when it expires
    and renew it before then.
 
-## Configure trisse-home
+## Configure Waylight
 
-Add to `.env` and restart trisse-home:
+Add to `.env` and restart Waylight:
 
 ```sh
 OIDC_ISSUER=https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0
@@ -74,7 +74,7 @@ OIDC_BUTTON_ICON=microsoft
 
 The long ID in `OIDC_ISSUER` is the same for everyone: it stands for
 personal Microsoft accounts. `OIDC_ALLOWED_EMAILS` is not needed. Microsoft
-does not mark the address of a personal account as verified, so trisse-home
+does not mark the address of a personal account as verified, so Waylight
 does not let anyone in by address; it only trusts the link you make in the
 next step.
 
@@ -131,7 +131,7 @@ a personal account, not through `OIDC_ALLOWED_EMAILS`.
 
 Once the link works, you can turn the password sign-in off with
 `PASSWORD_LOGIN=false`, and with `OIDC_AUTO_REDIRECT=true` opening
-trisse-home goes straight to Microsoft
+Waylight goes straight to Microsoft
 ([configuration](configuration.md)). `/?local=1` always shows the sign-in
 page, for example when Microsoft cannot be reached. Keep the recovery
 instructions for the owner's account at hand

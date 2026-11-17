@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // steamIDPattern matches 64-bit Steam IDs (profile URLs show them as

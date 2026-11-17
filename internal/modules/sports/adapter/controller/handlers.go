@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/sports/adapter/presenter"
-	"trisse-home/internal/modules/sports/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/sports/adapter/presenter"
+	"waylight/internal/modules/sports/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the endpoints.

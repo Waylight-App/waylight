@@ -10,8 +10,8 @@ export const serverMessages = {
   srv_1a3955e489757321: "The backup does not exist.",
   srv_0fd566747f1cd503: "The backup interval must be at least one hour.",
   srv_678e4dc426de200a: "The backup is damaged (integrity check failed).",
-  srv_5b20a69f346d31d3: "The backup was made by a newer version of trisse-home. Update first, then restore it.",
-  srv_2dd869ff96b4bc7a: "The file is not a trisse-home backup.",
+  srv_c8745160757d198c: "The backup was made by a newer version of Waylight. Update first, then restore it.",
+  srv_cc68528bcc0907b5: "The file is not a Waylight backup.",
   srv_7054f9e52efbae1e: "The source must be local, remote or upload.",
   srv_1c73ff4160f4ee94: "User name and password (or app password) are required.",
 } as const;

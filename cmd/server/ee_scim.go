@@ -5,8 +5,8 @@ package main
 import (
 	"os"
 
-	"trisse-home/ee/scim"
-	"trisse-home/internal/modules"
+	"waylight/ee/scim"
+	"waylight/internal/modules"
 )
 
 // SCIM provisioning from a directory (#396), part of the ee/ features. Without

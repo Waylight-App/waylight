@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"trisse-home/internal/modules/system/domain"
+	"waylight/internal/modules/system/domain"
 )
 
 // AggregateStore implements usecase.AggregateRepository in SQLite.

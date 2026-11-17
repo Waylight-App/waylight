@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/transfer/usecase"
+	"waylight/internal/modules/transfer/usecase"
 )
 
 type fakeUC struct{ usecase.Transfer }

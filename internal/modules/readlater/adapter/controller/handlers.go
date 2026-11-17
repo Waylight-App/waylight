@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/readlater/adapter/presenter"
-	"trisse-home/internal/modules/readlater/domain"
-	"trisse-home/internal/modules/readlater/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/readlater/adapter/presenter"
+	"waylight/internal/modules/readlater/domain"
+	"waylight/internal/modules/readlater/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // SaveDTO is the body of POST /api/readlater.

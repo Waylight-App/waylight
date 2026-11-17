@@ -18,9 +18,9 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/modules/todos/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/modules/todos/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // TodoistAPI is the base URL of the Todoist API v1.

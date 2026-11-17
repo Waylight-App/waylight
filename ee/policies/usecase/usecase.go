@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"strings"
 
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/ee/policies/domain"
-	"trisse-home/internal/shared/kernel"
+	licence "waylight/ee/licence/domain"
+	"waylight/ee/policies/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Store keeps the settings (output port); Load returns the zero Settings

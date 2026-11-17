@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Clock is the kernel clock, re-declared for readable constructor signatures.

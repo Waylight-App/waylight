@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/modules/todos/usecase"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/modules/todos/usecase"
 )
 
 // TickTickAPI is the base URL of the TickTick Open API.

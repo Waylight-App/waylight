@@ -11,7 +11,7 @@ import (
 
 func TestRestoreLifecycle(t *testing.T) {
 	dir := t.TempDir()
-	db := filepath.Join(dir, "trisse-home.db")
+	db := filepath.Join(dir, "waylight.db")
 	_ = os.WriteFile(db, []byte("old"), 0o600)
 	_ = os.WriteFile(db+"-wal", []byte("old-wal"), 0o600)
 

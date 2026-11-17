@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/system/domain"
+	"waylight/internal/modules/system/domain"
 )
 
 type fakeReleases struct {

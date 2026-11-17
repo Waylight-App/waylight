@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 // TestBriefingReadsOtherModules checks the composition-root adapters of

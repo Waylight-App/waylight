@@ -30,7 +30,7 @@ func TestBuildAddsConventionalModulesOnly(t *testing.T) {
 
 	base := filepath.Join(dir, "tygo.yaml")
 	body := "packages:\n" +
-		"  - path: \"trisse-home/internal/modules/irregular/adapter/controller\"\n" +
+		"  - path: \"waylight/internal/modules/irregular/adapter/controller\"\n" +
 		"    output_path: \"web/src/shared/api-client/generated/irregular.ts\"\n"
 	if err := os.WriteFile(base, []byte(body), 0o600); err != nil {
 		t.Fatal(err)
@@ -41,9 +41,9 @@ func TestBuildAddsConventionalModulesOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, want := range []string{
-		`path: "trisse-home/internal/modules/media/adapter/presenter"`,
+		`path: "waylight/internal/modules/media/adapter/presenter"`,
 		`output_path: "web/src/shared/api-client/generated/media.ts"`,
-		`path: "trisse-home/internal/modules/media/adapter/controller"`,
+		`path: "waylight/internal/modules/media/adapter/controller"`,
 		`output_path: "web/src/shared/api-client/generated/media-requests.ts"`,
 		`include_files: ["dto.go"]`,
 	} {

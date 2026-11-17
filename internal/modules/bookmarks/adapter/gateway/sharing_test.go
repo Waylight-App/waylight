@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/bookmarks/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/bookmarks/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestFolderSharedWithGroup: a folder the admin shares with a group is that

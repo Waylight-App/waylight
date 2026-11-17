@@ -1,6 +1,6 @@
 # Backups and restore
 
-Everything trisse-home knows lives in one SQLite database. This page explains
+Everything Waylight knows lives in one SQLite database. This page explains
 what is backed up automatically, how to keep a copy away from the server and
 how to restore it. The examples use Docker Compose; the
 [Raspberry Pi](raspberry-pi.md#backups) and
@@ -9,7 +9,7 @@ paths.
 
 ## Automatic backups
 
-trisse-home makes a consistent copy of the database once a day and keeps the
+Waylight makes a consistent copy of the database once a day and keeps the
 last seven. Both can be changed with `BACKUP_INTERVAL` and
 `BACKUP_RETENTION` ([configuration](configuration.md#storage-and-backups)).
 In Docker the backups are stored in the data volume under `/data/backups`.
@@ -31,7 +31,7 @@ raises a [notification](notifications.md).
 To copy the backups by hand instead:
 
 ```sh
-sudo docker run --rm -v trisse-home-data:/data -v "$PWD":/backup alpine \
+sudo docker run --rm -v waylight-data:/data -v "$PWD":/backup alpine \
   cp -r /data/backups /backup/
 ```
 
@@ -41,21 +41,21 @@ Settings → Backups → *Restore a backup*:
 
 1. Pick a local or off-site backup, or upload a file.
 2. Enter your password, and your two-factor code if it is on.
-3. trisse-home checks the file before touching anything: it must be an intact
-   SQLite database with a trisse-home schema that is not newer than the
+3. Waylight checks the file before touching anything: it must be an intact
+   SQLite database with a Waylight schema that is not newer than the
    running version.
-4. The current database is kept as `trisse-home.db.before-restore`, the
-   backup takes its place, and trisse-home restarts. Docker and systemd start
+4. The current database is kept as `waylight.db.before-restore`, the
+   backup takes its place, and Waylight restarts. Docker and systemd start
    it again with the restored data.
 
 ## Restore without the web interface
 
-If trisse-home does not start any more:
+If Waylight does not start any more:
 
-1. Stop it: `sudo docker compose stop trisse-home`.
-2. In the data volume, replace `trisse-home.db` with the backup file and
-   delete `trisse-home.db-wal` and `trisse-home.db-shm` if they exist.
-3. Start it again: `sudo docker compose start trisse-home`.
+1. Stop it: `sudo docker compose stop waylight`.
+2. In the data volume, replace `waylight.db` with the backup file and
+   delete `waylight.db-wal` and `waylight.db-shm` if they exist.
+3. Start it again: `sudo docker compose start waylight`.
 
 ## Export and import
 
@@ -71,5 +71,5 @@ enter the integration passwords again.
 The same page imports bookmarks exported from a browser as an HTML file.
 
 For settings you want to keep in Git or copy to another instance, the same
-page also writes and reads `trisse-home.yaml`: see
+page also writes and reads `waylight.yaml`: see
 [Settings as a YAML file](config-as-code.md).

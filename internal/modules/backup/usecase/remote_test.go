@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRemote struct {

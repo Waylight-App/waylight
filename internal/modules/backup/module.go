@@ -9,12 +9,12 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/backup/adapter/controller"
-	"trisse-home/internal/modules/backup/adapter/gateway"
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/modules/backup/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/backup/adapter/controller"
+	"waylight/internal/modules/backup/adapter/gateway"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/modules/backup/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // checkInterval is how often the job checks whether a backup is due.

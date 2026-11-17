@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 type memSharing struct{ tabs map[string]Tab }

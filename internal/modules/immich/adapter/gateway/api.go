@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/immich/domain"
+	"waylight/internal/modules/immich/domain"
 )
 
 const (

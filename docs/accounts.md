@@ -1,6 +1,6 @@
 # Accounts, guests and kiosk displays
 
-trisse-home has one owner, who can change everything. The owner can let
+Waylight has one owner, who can change everything. The owner can let
 other people and devices look at selected tabs: guests sign in with their own
 password, kiosk displays with a secret link. Neither can change anything.
 This page covers all three and how to protect the owner account.
@@ -13,8 +13,8 @@ you can:
 - change the password (at least 12 characters);
 - set up two-factor authentication with any authenticator app (TOTP). You
   get ten recovery codes, each usable once instead of a code. Download them
-  and keep them outside trisse-home;
-- add passkeys as a second factor, if trisse-home runs behind HTTPS with
+  and keep them outside Waylight;
+- add passkeys as a second factor, if Waylight runs behind HTTPS with
   `PUBLIC_URL` set (see [reverse proxy](reverse-proxy.md#passkeys));
 - see every signed-in session with its device and last use, and sign out a
   single session or all others;
@@ -98,7 +98,7 @@ What a member may do, enforced for every request like the guest rules:
 
 Every account has its own dashboard tabs: a member sees only their own, you
 see only yours, and guests keep seeing exactly the tabs you shared with them.
-`trisse-home.yaml` describes your (the admin's) tabs, never a member's.
+`waylight.yaml` describes your (the admin's) tabs, never a member's.
 
 Account and group changes are written to the security log.
 
@@ -217,7 +217,7 @@ Create one under Settings → Kiosk displays:
 2. Optionally set a **tab rotation**: the display moves to the next tab every
    few seconds.
 3. Optionally **dim at night** between two times.
-4. Click *Create display*. trisse-home shows a link and a QR code **once**.
+4. Click *Create display*. Waylight shows a link and a QR code **once**.
    Open the link on the device or scan the code with it.
 
 The device signs in and switches to a clean full-screen view of the chosen
@@ -232,6 +232,6 @@ the same network allow-list as everybody else.
 
 ## API tokens
 
-Scripts, iOS Shortcuts and Home Assistant can talk to trisse-home with an API
+Scripts, iOS Shortcuts and Home Assistant can talk to Waylight with an API
 token instead of a session. Each token is limited to the scopes you choose,
 for example only adding to-dos. See [API tokens](api-tokens.md).

@@ -1,7 +1,7 @@
 {
   "id": "amber",
   "name": "Amber",
-  "author": "trisse-home (MIT)",
+  "author": "Waylight (MIT)",
   "tokens": {
     "--font-sans": "figtree",
     "--font-display": "fraunces",

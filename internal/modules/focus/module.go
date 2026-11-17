@@ -5,11 +5,11 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/focus/adapter/controller"
-	"trisse-home/internal/modules/focus/adapter/gateway"
-	"trisse-home/internal/modules/focus/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/focus/adapter/controller"
+	"waylight/internal/modules/focus/adapter/gateway"
+	"waylight/internal/modules/focus/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the focus timer rings and implements modules.Module (#58).

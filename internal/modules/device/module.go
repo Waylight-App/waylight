@@ -3,10 +3,10 @@ package device
 import (
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/device/adapter/controller"
-	"trisse-home/internal/modules/device/adapter/gateway"
-	"trisse-home/internal/modules/device/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/modules/device/adapter/controller"
+	"waylight/internal/modules/device/adapter/gateway"
+	"waylight/internal/modules/device/usecase"
 )
 
 // Config are the dependencies of the module.

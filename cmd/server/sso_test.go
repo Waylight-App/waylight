@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 // fakeIDP is a minimal OpenID provider that signs RS256 ID tokens for user-1
@@ -44,7 +44,7 @@ func fakeIDP(t *testing.T, email string, appURL *string, extra ...map[string]any
 	mux.HandleFunc("/token", func(w http.ResponseWriter, r *http.Request) {
 		_ = r.ParseForm()
 		h, _ := json.Marshal(map[string]string{"alg": "RS256", "kid": "k1"})
-		claims := map[string]any{"iss": srv.URL, "sub": "user-1", "aud": "trisse", "exp": time.Now().Add(time.Hour).Unix(),
+		claims := map[string]any{"iss": srv.URL, "sub": "user-1", "aud": "waylight", "exp": time.Now().Add(time.Hour).Unix(),
 			"iat": time.Now().Unix(), "nonce": nonces[r.Form.Get("code")], "email": email, "email_verified": true}
 		for _, e := range extra {
 			maps.Copy(claims, e)
@@ -68,7 +68,7 @@ func TestOIDCLoginEndToEnd(t *testing.T) {
 		var appURL string
 		idp := fakeIDP(t, tc.email, &appURL)
 		app := newTestServer(t, "http://127.0.0.1:1", func(c *config.Config) {
-			c.OIDCIssuer, c.OIDCClientID, c.OIDCClientSecret = idp.URL, "trisse", "secret"
+			c.OIDCIssuer, c.OIDCClientID, c.OIDCClientSecret = idp.URL, "waylight", "secret"
 			c.OIDCAllowedEmails = []string{"me@example.org"}
 			c.OIDCRedirectURL = "http://placeholder/api/auth/oidc/callback"
 			c.PasswordLogin = false

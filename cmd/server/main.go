@@ -15,23 +15,23 @@ import (
 	"time"
 	_ "time/tzdata" // the distroless image has no zoneinfo; calendars need time zones
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/auth"
-	"trisse-home/internal/platform/branding"
-	"trisse-home/internal/platform/config"
-	"trisse-home/internal/platform/crypto"
-	"trisse-home/internal/platform/database"
-	"trisse-home/internal/platform/demo"
-	"trisse-home/internal/platform/httpserver"
-	"trisse-home/internal/platform/logging"
-	"trisse-home/internal/platform/metrics"
-	"trisse-home/internal/platform/middleware"
-	"trisse-home/internal/platform/router"
-	"trisse-home/internal/platform/scheduler"
-	"trisse-home/internal/platform/sdnotify"
-	"trisse-home/internal/platform/spa"
-	"trisse-home/internal/platform/webui"
-	"trisse-home/internal/platform/wol"
+	"waylight/internal/modules"
+	"waylight/internal/modules/auth"
+	"waylight/internal/platform/branding"
+	"waylight/internal/platform/config"
+	"waylight/internal/platform/crypto"
+	"waylight/internal/platform/database"
+	"waylight/internal/platform/demo"
+	"waylight/internal/platform/httpserver"
+	"waylight/internal/platform/logging"
+	"waylight/internal/platform/metrics"
+	"waylight/internal/platform/middleware"
+	"waylight/internal/platform/router"
+	"waylight/internal/platform/scheduler"
+	"waylight/internal/platform/sdnotify"
+	"waylight/internal/platform/spa"
+	"waylight/internal/platform/webui"
+	"waylight/internal/platform/wol"
 )
 
 // version is set at build time via -ldflags "-X main.version=...".
@@ -159,7 +159,7 @@ func serve() error {
 		return err
 	}
 	defer a.db.Close()
-	a.log.Info("starting trisse-home", "version", version, "modules", a.registry.Names())
+	a.log.Info("starting waylight", "version", version, "modules", a.registry.Names())
 	sched := newScheduler(a)
 	if a.cfg.DemoMode {
 		reset, err := prepareDemo(ctx, a)

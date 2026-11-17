@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/transfer/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transfer/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // The fixtures follow the examples of the Homepage documentation and the

@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/arr/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/arr/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // overviewTTL bounds how often the apps are asked; the overview is fetched

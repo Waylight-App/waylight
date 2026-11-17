@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestAccountRepository(t *testing.T) {

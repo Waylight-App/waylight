@@ -18,8 +18,8 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/notifications/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/notifications/domain"
+	"waylight/internal/shared/kernel"
 )
 
 func post(ctx context.Context, client *http.Client, url string, body []byte, headers map[string]string) error {
@@ -102,7 +102,7 @@ func (w *WebhookPublisher) Publish(ctx context.Context, c domain.Channel, m doma
 	body := RenderWebhook(c.Template, m)
 	headers := map[string]string{}
 	if c.Secret != "" {
-		headers["X-Trisse-Signature"] = Signature(c.Secret, body)
+		headers["X-Waylight-Signature"] = Signature(c.Secret, body)
 	}
 	if err := post(ctx, w.client, c.URL, body, headers); err != nil {
 		return fmt.Errorf("webhook %w", err)

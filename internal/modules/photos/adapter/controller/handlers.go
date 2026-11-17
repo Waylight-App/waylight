@@ -9,10 +9,10 @@ import (
 	"mime"
 	"net/http"
 
-	"trisse-home/internal/modules/photos/adapter/presenter"
-	"trisse-home/internal/modules/photos/domain"
-	"trisse-home/internal/modules/photos/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/photos/adapter/presenter"
+	"waylight/internal/modules/photos/domain"
+	"waylight/internal/modules/photos/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // OrderInputDTO is the body of PUT /api/photos/order.

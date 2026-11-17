@@ -11,8 +11,8 @@ import (
 	"strings"
 	"sync"
 
-	"trisse-home/ee/licence/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/licence/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Store keeps the key entered in the settings (output port).

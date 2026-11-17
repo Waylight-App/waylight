@@ -15,5 +15,5 @@ export const de: Record<keyof typeof en, string> = {
   'immich.url': 'Immich-URL',
   'immich.api_key': 'API-Schlüssel {value}',
   'immich.key_hint':
-    'Lege einen API-Schlüssel unter Kontoeinstellungen → API-Schlüssel mit den Berechtigungen asset.statistics, server.storage, memory.read und asset.view an. Er wird verschlüsselt gespeichert; Fotos lädt trisse-home selbst.',
+    'Lege einen API-Schlüssel unter Kontoeinstellungen → API-Schlüssel mit den Berechtigungen asset.statistics, server.storage, memory.read und asset.view an. Er wird verschlüsselt gespeichert; Fotos lädt Waylight selbst.',
 };

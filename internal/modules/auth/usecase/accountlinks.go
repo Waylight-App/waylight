@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 // AccountLinkRepository persists invitation and reset links (#296).

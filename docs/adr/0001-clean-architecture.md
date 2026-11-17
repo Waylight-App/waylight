@@ -5,7 +5,7 @@
 
 ## Context
 
-trisse-home bundles many small, independent features (bookmarks, weather,
+Waylight bundles many small, independent features (bookmarks, weather,
 RSS, server monitoring …). Several of them talk to external systems whose
 APIs change over time. The project is also meant as a readable reference that
 others can extend.

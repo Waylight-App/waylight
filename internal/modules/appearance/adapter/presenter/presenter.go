@@ -1,8 +1,8 @@
 package presenter
 
 import (
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/modules/appearance/usecase"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/modules/appearance/usecase"
 )
 
 // AppearanceDTO is returned by GET/PUT /api/appearance and is also the body

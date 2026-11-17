@@ -1,10 +1,10 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/apiwidget"
-	"trisse-home/internal/modules/apiwidget/adapter/gateway"
-	"trisse-home/internal/platform/httpclient"
+	"waylight/internal/modules"
+	"waylight/internal/modules/apiwidget"
+	"waylight/internal/modules/apiwidget/adapter/gateway"
+	"waylight/internal/platform/httpclient"
 )
 
 // The JSON widget registers itself; no shared file lists it (#193).

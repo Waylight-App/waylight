@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/rss/domain"
+	"waylight/internal/modules/rss/domain"
 )
 
 // OPML implements usecase.OPMLCodec (OPML 2.0, #97).
@@ -79,7 +79,7 @@ func (OPML) Decode(data []byte) ([]domain.ImportEntry, error) {
 // Encode implements usecase.OPMLCodec: feeds grouped into one folder per
 // category, feeds without a category at the top level.
 func (OPML) Encode(feeds []domain.Feed, created time.Time) ([]byte, error) {
-	doc := opmlDoc{Version: "2.0", Head: opmlHead{Title: "trisse-home feeds", DateCreated: created.UTC().Format(time.RFC1123Z)}}
+	doc := opmlDoc{Version: "2.0", Head: opmlHead{Title: "Waylight feeds", DateCreated: created.UTC().Format(time.RFC1123Z)}}
 	folders := map[string]int{}
 	for _, f := range feeds {
 		o := opmlOutline{Text: f.Title, Title: f.Title, Type: "rss", XMLURL: f.URL, HTMLURL: f.SiteURL}

@@ -61,6 +61,15 @@ func TestDiskPathsKeepCase(t *testing.T) {
 	}
 }
 
+func TestDefaultThemeIsAmberUnlessTurnedOff(t *testing.T) {
+	for in, want := range map[string]string{"": "amber", "Amber-Dark": "amber-dark", "none": "", "NONE": ""} {
+		cfg, err := Load(env(map[string]string{"SECRET_KEY": validKey, "DEFAULT_THEME": in}))
+		if err != nil || cfg.DefaultTheme != want {
+			t.Errorf("DEFAULT_THEME=%q: got %q, %v; want %q", in, cfg.DefaultTheme, err, want)
+		}
+	}
+}
+
 func TestSampleSettings(t *testing.T) {
 	cfg, err := Load(env(map[string]string{"SECRET_KEY": validKey, "SAMPLE_WEATHER_LOCATION": "Oldenburg, 53.14, 8.21"}))
 	if err != nil || !cfg.SampleData || cfg.SampleWeather != (SampleLocation{Name: "Oldenburg", Lat: 53.14, Lon: 8.21}) || len(cfg.SampleFeeds) != 2 {
@@ -72,7 +81,7 @@ func TestSampleSettings(t *testing.T) {
 }
 
 func TestBackupDefaults(t *testing.T) {
-	cfg, err := Load(env(map[string]string{"SECRET_KEY": validKey, "DATABASE_PATH": "/data/trisse-home.db"}))
+	cfg, err := Load(env(map[string]string{"SECRET_KEY": validKey, "DATABASE_PATH": "/data/waylight.db"}))
 	if err != nil || cfg.BackupDir != "/data/backups" || cfg.BackupInterval != 24*time.Hour || cfg.BackupRetention != 7 {
 		t.Fatalf("unexpected %q %v %d %v", cfg.BackupDir, cfg.BackupInterval, cfg.BackupRetention, err)
 	}
@@ -186,7 +195,7 @@ func TestDeviceModuleOnlyOnAppliances(t *testing.T) {
 		t.Fatal("device module outside the appliance", err)
 	}
 	cfg, err = Load(env(map[string]string{"SECRET_KEY": validKey, "INSTALL_METHOD": "appliance"}))
-	if err != nil || !cfg.ModuleEnabled("device") || cfg.DeviceDir != "/var/lib/trisse-home/device" {
+	if err != nil || !cfg.ModuleEnabled("device") || cfg.DeviceDir != "/var/lib/waylight/device" {
 		t.Fatal(cfg.DeviceDir, err)
 	}
 }

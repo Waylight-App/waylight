@@ -3,11 +3,11 @@ package sports
 import (
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/sports/adapter/controller"
-	"trisse-home/internal/modules/sports/adapter/gateway"
-	"trisse-home/internal/modules/sports/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/sports/adapter/controller"
+	"waylight/internal/modules/sports/adapter/gateway"
+	"waylight/internal/modules/sports/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the sports rings and implements modules.Module.

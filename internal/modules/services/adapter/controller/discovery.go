@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/services/adapter/presenter"
-	"trisse-home/internal/modules/services/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/services/adapter/presenter"
+	"waylight/internal/modules/services/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // DiscoveryHandlers serve the Docker autodiscovery endpoints (#78).

@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/countdown/domain"
+	"waylight/internal/modules/countdown/domain"
 )
 
 // CountdownDTO is one countdown in API responses.

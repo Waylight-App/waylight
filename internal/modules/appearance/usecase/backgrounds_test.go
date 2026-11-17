@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memBackgrounds struct{ list []domain.Background }

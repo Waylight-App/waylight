@@ -1,11 +1,11 @@
 openapi: 3.1.0
 info:
-  title: trisse-home API
+  title: waylight API
   version: 1.0.0
-  summary: JSON API of trisse-home, a self-hosted personal start page.
+  summary: JSON API of waylight, a self-hosted personal start page.
   description: |
     All endpoints below `/api/` except the ones marked as public require a
-    session cookie (`trisse_session`, or `__Host-trisse_session` when
+    session cookie (`waylight_session`, or `__Host-waylight_session` when
     `COOKIE_SECURE=true`). State-changing requests (POST, PUT, PATCH, DELETE)
     additionally require the session's CSRF token in the `X-CSRF-Token`
     header; it is returned by login, setup and `GET /api/auth/status`.
@@ -49,8 +49,8 @@ components:
     session:
       type: apiKey
       in: cookie
-      name: trisse_session
-      description: HttpOnly, SameSite=Strict session cookie (`__Host-trisse_session` with COOKIE_SECURE=true).
+      name: waylight_session
+      description: HttpOnly, SameSite=Strict session cookie (`__Host-waylight_session` with COOKIE_SECURE=true).
     csrf:
       type: apiKey
       in: header

@@ -3,7 +3,7 @@ package presenter
 import (
 	"encoding/xml"
 
-	"trisse-home/internal/modules/search/usecase"
+	"waylight/internal/modules/search/usecase"
 )
 
 // ProviderDTO describes a provider.
@@ -86,8 +86,8 @@ type openSearchDescription struct {
 // start page as their search engine.
 func OpenSearch(baseURL string) ([]byte, error) {
 	doc := openSearchDescription{
-		Xmlns: "http://a9.com/-/spec/opensearch/1.1/", ShortName: "trisse-home",
-		Description: "Search via trisse-home", InputEncoding: "UTF-8",
+		Xmlns: "http://a9.com/-/spec/opensearch/1.1/", ShortName: "Waylight",
+		Description: "Search via waylight", InputEncoding: "UTF-8",
 		URL: openSearchURL{Type: "text/html", Method: "get", Template: baseURL + "/api/search?q={searchTerms}"},
 	}
 	out, err := xml.MarshalIndent(doc, "", "  ")

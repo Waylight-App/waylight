@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/weather/domain"
+	"waylight/internal/modules/weather/domain"
 )
 
 // Default DWD open data files of the health forecasts (#56).

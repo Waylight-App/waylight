@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/shopping/domain"
-	"trisse-home/internal/shared/caldav"
-	"trisse-home/internal/shared/ical"
+	"waylight/internal/modules/shopping/domain"
+	"waylight/internal/shared/caldav"
+	"waylight/internal/shared/ical"
 )
 
 // CalDAVStore implements usecase.Store on the shared CalDAV client.

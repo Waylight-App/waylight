@@ -3,7 +3,7 @@ package domain
 import (
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // ErrNotConfigured is returned while no Nextcloud instance is configured.

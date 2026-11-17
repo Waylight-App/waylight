@@ -6,8 +6,8 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/releases/domain"
-	"trisse-home/internal/modules/releases/usecase"
+	"waylight/internal/modules/releases/domain"
+	"waylight/internal/modules/releases/usecase"
 )
 
 // ArtistDTO is a MusicBrainz artist.

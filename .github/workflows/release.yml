@@ -78,7 +78,7 @@ jobs:
         with:
           image: ${{ env.IMAGE }}@${{ needs.image.outputs.digest }}
           format: spdx-json
-          output-file: trisse-home-${{ needs.image.outputs.version }}.spdx.json
+          output-file: waylight-${{ needs.image.outputs.version }}.spdx.json
           upload-artifact: false
       - name: Publish release
         env:
@@ -87,7 +87,7 @@ jobs:
           sh scripts/release-notes.sh "$GITHUB_REF_NAME" > notes.md
           printf '\n### Container image\n\n```\n%s:%s\n```\n' "$IMAGE" "${{ needs.image.outputs.version }}" >> notes.md
           gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md \
-            "trisse-home-${{ needs.image.outputs.version }}.spdx.json"
+            "waylight-${{ needs.image.outputs.version }}.spdx.json"
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 26
@@ -120,7 +120,7 @@ jobs:
             exit 0
           fi
           # Sign exactly the files of the released zip.
-          mkdir -p amo-src && cd amo-src && unzip -q ../dist/trisse-home-extension-*.zip
+          mkdir -p amo-src && cd amo-src && unzip -q ../dist/waylight-extension-*.zip
           npx --yes web-ext@8.3.0 sign --source-dir . --artifacts-dir ../dist/amo \
             --channel listed --amo-metadata ../store/amo-metadata.json --approval-timeout 0 \
             --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET"

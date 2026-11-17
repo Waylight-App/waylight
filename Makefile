@@ -3,7 +3,7 @@ SHELL := /bin/bash
 export PATH := $(PATH):/usr/local/go/bin:/usr/local/node/bin:$(HOME)/go/bin
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
-BIN     := bin/trisse-home
+BIN     := bin/waylight
 WEB     := web
 
 # Native packages (ADR 0015). PKG_VERSION is a Debian version derived from
@@ -69,15 +69,15 @@ package: build-web ## Build .deb packages for PKG_ARCHS into dist/ (needs nfpm)
 	mkdir -p dist
 	set -e; for arch in $(PKG_ARCHS); do \
 		CGO_ENABLED=0 GOOS=linux GOARCH=$$arch go build -trimpath -ldflags="-s -w -X main.version=$(VERSION)" \
-			-o bin/linux-$$arch/trisse-home ./cmd/server; \
+			-o bin/linux-$$arch/waylight ./cmd/server; \
 		GOARCH=$$arch PKG_VERSION=$(PKG_VERSION) $(NFPM) package --config packaging/nfpm.yaml --packager deb --target dist/; \
 	done
-	cd dist && sha256sum *.deb > trisse-home_$(PKG_VERSION)_packages.sha256
+	cd dist && sha256sum *.deb > waylight_$(PKG_VERSION)_packages.sha256
 
 .PHONY: run
 run: build ## Run locally with data in ./data (needs SECRET_KEY or .env)
 	set -a; [ -f .env ] && source .env; set +a; \
-	DATABASE_PATH=$${DATABASE_PATH_LOCAL:-data/trisse-home.db} LOG_FORMAT=text ./$(BIN)
+	DATABASE_PATH=$${DATABASE_PATH_LOCAL:-data/waylight.db} LOG_FORMAT=text ./$(BIN)
 
 .PHONY: smoke
 smoke: build ## Run the Playwright smoke test against a fresh instance
@@ -113,7 +113,7 @@ up: ## Build and (re)start the stack
 
 .PHONY: logs
 logs: ## Follow the application logs
-	sudo docker compose logs -f trisse-home
+	sudo docker compose logs -f waylight
 
 .PHONY: clean
 clean: ## Remove build output

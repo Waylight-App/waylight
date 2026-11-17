@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/modules/smarthome/adapter/presenter"
-	"trisse-home/internal/modules/smarthome/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/smarthome/adapter/presenter"
+	"waylight/internal/modules/smarthome/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the smart home endpoints.

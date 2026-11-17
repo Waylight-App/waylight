@@ -5,11 +5,11 @@ package main
 import (
 	"context"
 
-	"trisse-home/ee/teamcalendar"
-	"trisse-home/ee/teamcalendar/usecase"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/calendar"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/teamcalendar"
+	"waylight/ee/teamcalendar/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/modules/calendar"
+	"waylight/internal/shared/kernel"
 )
 
 // calendarSharingPort adapts the calendar's Sharing to the team calendar.

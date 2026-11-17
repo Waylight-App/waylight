@@ -1,6 +1,6 @@
 # Outbound requests
 
-trisse-home sends no telemetry and contacts no server of its own. It only
+Waylight sends no telemetry and contacts no server of its own. It only
 talks to services you set up or switch on. This page lists every outside
 connection, when it happens and how often, so you can check the claim and
 plan your firewall.

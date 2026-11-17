@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/holidays/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/holidays/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Overview is returned by Upcoming.

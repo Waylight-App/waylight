@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"trisse-home/internal/modules/wiki/domain"
+	"waylight/internal/modules/wiki/domain"
 )
 
 // Teams searches the chat and channel messages the member is part of through

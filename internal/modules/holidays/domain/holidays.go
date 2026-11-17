@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // State is a German federal state (ISO 3166-2:DE subdivision code).

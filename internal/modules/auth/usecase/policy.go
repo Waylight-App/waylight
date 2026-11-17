@@ -7,8 +7,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Policy holds instance-wide rules that admins set (#304). The zero value is

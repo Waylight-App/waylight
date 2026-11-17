@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/focus/adapter/presenter"
-	"trisse-home/internal/modules/focus/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/focus/adapter/presenter"
+	"waylight/internal/modules/focus/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the focus timer endpoints.

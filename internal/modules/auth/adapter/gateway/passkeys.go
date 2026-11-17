@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/kernel"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/kernel"
+	"waylight/internal/shared/sqlutil"
 )
 
 // PasskeyRepository implements usecase.PasskeyRepository in SQLite.

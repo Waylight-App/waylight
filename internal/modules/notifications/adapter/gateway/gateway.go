@@ -15,8 +15,8 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules/notifications/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/notifications/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

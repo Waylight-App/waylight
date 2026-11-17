@@ -1,17 +1,17 @@
 #!/bin/sh
-# Adds .deb packages to the trisse-home APT repository and re-signs it
+# Adds .deb packages to the waylight APT repository and re-signs it
 # (ADR 0015). The repository is a static directory, served by GitHub Pages:
 #
 #   APT_SIGNING_KEY_ID=<fingerprint> scripts/apt-repo.sh <repo-dir> <package.deb>...
 #
 # Layout (suite "stable", component "main", amd64 and arm64):
-#   pool/main/t/trisse-home/*.deb
+#   pool/main/t/waylight/*.deb
 #   dists/stable/{InRelease,Release,Release.gpg}
 #   dists/stable/main/binary-<arch>/Packages(.gz)
-#   trisse-home-archive-keyring.asc    public key for Signed-By
+#   waylight-archive-keyring.asc    public key for Signed-By
 #
 # The newest APT_KEEP versions (default 5) stay in the pool, so that users can
-# roll back with apt install trisse-home=<version>. Needs dpkg-dev and gpg with
+# roll back with apt install waylight=<version>. Needs dpkg-dev and gpg with
 # the signing key in the current keyring.
 set -eu
 
@@ -21,7 +21,7 @@ key=${APT_SIGNING_KEY_ID:?APT_SIGNING_KEY_ID missing}
 keep=${APT_KEEP:-5}
 suite=stable
 archs="amd64 arm64"
-pool="pool/main/t/trisse-home"
+pool="pool/main/t/waylight"
 
 mkdir -p "$repo/$pool"
 for deb in "$@"; do
@@ -62,14 +62,14 @@ hashes() {
 }
 
 {
-	echo "Origin: trisse-home"
-	echo "Label: trisse-home"
+	echo "Origin: waylight"
+	echo "Label: waylight"
 	echo "Suite: $suite"
 	echo "Codename: $suite"
 	echo "Date: $(LC_ALL=C date -u '+%a, %d %b %Y %H:%M:%S UTC')"
 	echo "Architectures: $archs"
 	echo "Components: main"
-	echo "Description: trisse-home self-hosted start page"
+	echo "Description: waylight self-hosted start page"
 	echo "MD5Sum:"
 	hashes md5sum
 	echo "SHA256:"
@@ -78,6 +78,6 @@ hashes() {
 
 gpg --batch --yes --local-user "$key" --clearsign --output "$dist/InRelease" "$dist/Release"
 gpg --batch --yes --local-user "$key" --armor --detach-sign --output "$dist/Release.gpg" "$dist/Release"
-gpg --batch --yes --armor --export "$key" >trisse-home-archive-keyring.asc
+gpg --batch --yes --armor --export "$key" >waylight-archive-keyring.asc
 
 echo "apt-repo: $(ls "$pool" | wc -l) packages, versions:" $(for f in "$pool"/*.deb; do dpkg-deb -f "$f" Version; done | sort -u | sort -V -r)

@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/connections/domain"
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/connections/domain"
+	licence "waylight/ee/licence/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memTokens map[string]domain.Connection

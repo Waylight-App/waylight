@@ -27,7 +27,7 @@ export class MemoryDocumentStore implements DocumentStore {
   }
 }
 
-const DB = 'trisse-local';
+const DB = 'waylight-local';
 const STORE = 'documents';
 
 /**

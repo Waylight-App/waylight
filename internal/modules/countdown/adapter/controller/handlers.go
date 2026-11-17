@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/countdown/adapter/presenter"
-	"trisse-home/internal/modules/countdown/domain"
-	"trisse-home/internal/modules/countdown/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/countdown/adapter/presenter"
+	"waylight/internal/modules/countdown/domain"
+	"waylight/internal/modules/countdown/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // DefaultGraceDays is how long past countdowns stay visible when the

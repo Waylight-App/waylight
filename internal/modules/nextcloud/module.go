@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/nextcloud/adapter/controller"
-	"trisse-home/internal/modules/nextcloud/adapter/gateway"
-	"trisse-home/internal/modules/nextcloud/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/nextcloud/adapter/controller"
+	"waylight/internal/modules/nextcloud/adapter/gateway"
+	"waylight/internal/modules/nextcloud/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 const refreshInterval = 5 * time.Minute

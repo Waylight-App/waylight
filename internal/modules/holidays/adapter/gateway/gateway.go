@@ -17,9 +17,9 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/holidays/domain"
-	"trisse-home/internal/shared/ical"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/holidays/domain"
+	"waylight/internal/shared/ical"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

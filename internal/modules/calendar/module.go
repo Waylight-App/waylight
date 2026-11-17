@@ -8,11 +8,11 @@ import (
 	"net/url"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/calendar/adapter/controller"
-	"trisse-home/internal/modules/calendar/adapter/gateway"
-	"trisse-home/internal/modules/calendar/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/calendar/adapter/controller"
+	"waylight/internal/modules/calendar/adapter/gateway"
+	"waylight/internal/modules/calendar/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 const refreshInterval = 15 * time.Minute

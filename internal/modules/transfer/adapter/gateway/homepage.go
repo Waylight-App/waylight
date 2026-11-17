@@ -7,8 +7,8 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	"trisse-home/internal/modules/transfer/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transfer/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Homepage reads the configuration of gethomepage.dev (#77): services.yaml,
@@ -80,7 +80,7 @@ func (Homepage) Parse(files map[string][]byte) (domain.ImportPlan, error) {
 }
 
 // homepageServices walks the groups; nested groups (Homepage layouts) are
-// flattened, since trisse-home tiles have no groups.
+// flattened, since waylight tiles have no groups.
 func homepageServices(root *yaml.Node, plan *domain.ImportPlan) {
 	var walk func(n *yaml.Node)
 	walk = func(n *yaml.Node) {
@@ -152,9 +152,9 @@ func homepageWidgets(root *yaml.Node, plan *domain.ImportPlan) {
 			}
 			plan.Widgets = append(plan.Widgets, weather(o.Label, o.Latitude, o.Longitude))
 		case "search":
-			plan.Warnings = append(plan.Warnings, "Widget search skipped: the search field is always at the top of trisse-home.")
+			plan.Warnings = append(plan.Warnings, "Widget search skipped: the search field is always at the top of waylight.")
 		default:
-			plan.Warnings = append(plan.Warnings, fmt.Sprintf("Widget %s skipped: trisse-home has no counterpart.", w.name))
+			plan.Warnings = append(plan.Warnings, fmt.Sprintf("Widget %s skipped: waylight has no counterpart.", w.name))
 		}
 	}
 }
@@ -178,7 +178,7 @@ func isHTTP(raw string) bool {
 
 // iconURL keeps icons given as http(s) URLs. Icon names ("sonarr.png",
 // "mdi-…", "si-…") would make the browser load images from a public CDN,
-// which trisse-home avoids by default, so they are reported instead.
+// which waylight avoids by default, so they are reported instead.
 func iconURL(icon, service string, plan *domain.ImportPlan) string {
 	if icon == "" {
 		return ""

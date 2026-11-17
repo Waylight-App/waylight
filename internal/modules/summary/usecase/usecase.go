@@ -7,8 +7,8 @@ import (
 	"slices"
 	"time"
 
-	"trisse-home/internal/modules/summary/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/summary/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Summarizer asks a language model (output port; Ollama today, swappable).

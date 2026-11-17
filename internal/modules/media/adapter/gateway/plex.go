@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	"trisse-home/internal/modules/media/domain"
+	"waylight/internal/modules/media/domain"
 )
 
 // Plex implements usecase.MediaServerProvider with the Plex Media Server

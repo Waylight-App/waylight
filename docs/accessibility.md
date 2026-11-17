@@ -1,6 +1,6 @@
 # Accessibility
 
-trisse-home aims for **WCAG 2.2 level AA** (#113). Everything can be used with a keyboard and a screen reader.
+Waylight aims for **WCAG 2.2 level AA** (#113). Everything can be used with a keyboard and a screen reader.
 
 ## What is checked automatically
 

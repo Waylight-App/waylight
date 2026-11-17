@@ -9,9 +9,9 @@ import (
 	"net/url"
 	"strings"
 
-	"trisse-home/internal/modules/readlater/domain"
-	"trisse-home/internal/modules/readlater/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/readlater/domain"
+	"waylight/internal/modules/readlater/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // maxPageBytes bounds a fetched page.

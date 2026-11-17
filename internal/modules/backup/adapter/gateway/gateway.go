@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/backup/domain"
+	"waylight/internal/modules/backup/domain"
 )
 
 // Snapshotter creates consistent copies of the live SQLite database.
@@ -71,7 +71,7 @@ func (s *DirStore) stat(name string) (domain.File, error) {
 	if err != nil {
 		return domain.File{}, err
 	}
-	stamp := strings.TrimSuffix(strings.TrimPrefix(name, "trisse-home-"), ".db")
+	stamp := strings.TrimSuffix(strings.TrimPrefix(name, "waylight-"), ".db")
 	created, err := time.Parse("20060102-150405", stamp)
 	if err != nil {
 		created = info.ModTime().UTC()

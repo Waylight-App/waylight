@@ -1,5 +1,5 @@
 [Unit]
-Description=Show the trisse-home setup token until the account exists
+Description=Show the waylight setup token until the account exists
 
 [Timer]
 OnBootSec=20s

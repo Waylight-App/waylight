@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/wireguard/domain"
-	"trisse-home/internal/modules/wireguard/usecase"
+	"waylight/internal/modules/wireguard/domain"
+	"waylight/internal/modules/wireguard/usecase"
 )
 
 type fakeUC struct{ usecase.WireGuard }

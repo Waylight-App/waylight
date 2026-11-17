@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"trisse-home/internal/modules/dashboard/adapter/presenter"
-	"trisse-home/internal/modules/dashboard/domain"
-	"trisse-home/internal/modules/dashboard/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/dashboard/adapter/presenter"
+	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/modules/dashboard/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // Handlers serves the dashboard endpoints.

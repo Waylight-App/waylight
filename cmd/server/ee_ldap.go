@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"os"
 
-	"trisse-home/ee/ldap"
-	"trisse-home/internal/modules"
+	"waylight/ee/ldap"
+	"waylight/internal/modules"
 )
 
 // Sign-in with an LDAP or Active Directory password (#396), part of the ee/

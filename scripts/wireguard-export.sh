@@ -1,8 +1,8 @@
 #!/bin/sh
-# Exports the WireGuard peer status for the trisse-home "wireguard" widget.
+# Exports the WireGuard peer status for the waylight "wireguard" widget.
 #
-# Run it every minute on the Docker host, e.g. /etc/cron.d/trisse-home-wireguard:
-#   * * * * * root /opt/stacks/trisse-home/scripts/wireguard-export.sh
+# Run it every minute on the Docker host, e.g. /etc/cron.d/waylight-wireguard:
+#   * * * * * root /opt/stacks/waylight/scripts/wireguard-export.sh
 #
 # No secret is written: only peer lines of `wg show all dump` are kept and the
 # preshared key column is blanked; the interface line (private key) is dropped.
@@ -12,7 +12,7 @@
 # Environment:
 #   WG_CONTAINER  container running WireGuard (default: wireguard); set
 #                 WG_CONTAINER= (empty) to call wg on the host itself
-#   OUT_DIR       target directory, mounted into trisse-home as /wireguard
+#   OUT_DIR       target directory, mounted into waylight as /wireguard
 #                 (default: the "wireguard" directory next to this script's parent)
 set -eu
 

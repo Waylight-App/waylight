@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/system/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/system/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // HostReader reads raw metrics of the host (output port).

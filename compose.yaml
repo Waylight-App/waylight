@@ -1,14 +1,14 @@
-# trisse-home - self-hosted personal start page.
+# waylight - self-hosted personal start page.
 # Configuration lives in .env (see .env.example). Update with:
 #   docker compose pull && docker compose up -d
-# Pin a release with TRISSE_HOME_VERSION=1.2.3 in .env (rollback = older version).
+# Pin a release with WAYLIGHT_VERSION=1.2.3 in .env (rollback = older version).
 # To build from source instead: docker compose -f compose.yaml -f compose.build.yaml up -d --build
-name: trisse-home
+name: waylight
 
 services:
-  trisse-home:
-    image: ${TRISSE_HOME_IMAGE:-ghcr.io/itadori26/trisse-home}:${TRISSE_HOME_VERSION:-latest}
-    container_name: trisse-home
+  waylight:
+    image: ${WAYLIGHT_IMAGE:-ghcr.io/itadori26/waylight}:${WAYLIGHT_VERSION:-latest}
+    container_name: waylight
     restart: unless-stopped
     env_file: .env
     environment:
@@ -49,7 +49,7 @@ services:
   # internal network without a published port.
   docker-socket-proxy:
     image: tecnativa/docker-socket-proxy:v0.5.0
-    container_name: trisse-home-docker-proxy
+    container_name: waylight-docker-proxy
     restart: unless-stopped
     environment:
       CONTAINERS: 1
@@ -71,11 +71,11 @@ services:
 
   # Optional, only started with COMPOSE_PROFILES=docker-actions: a second
   # socket proxy that allows nothing but POST /containers/<name>/stop|restart|kill
-  # (no reads, no create/exec). trisse-home only calls restart, and only for
+  # (no reads, no create/exec). waylight only calls restart, and only for
   # the containers listed in DOCKER_ACTIONS_CONTAINERS.
   docker-actions-proxy:
     image: tecnativa/docker-socket-proxy:v0.5.0
-    container_name: trisse-home-docker-actions-proxy
+    container_name: waylight-docker-actions-proxy
     profiles: [docker-actions]
     restart: unless-stopped
     environment:
@@ -100,8 +100,8 @@ services:
   # network (broadcasts cannot leave a Docker bridge network); it has no access
   # to data, Docker or secrets and ignores everything that is not a magic packet.
   wol-relay:
-    image: ${TRISSE_HOME_IMAGE:-ghcr.io/itadori26/trisse-home}:${TRISSE_HOME_VERSION:-latest}
-    container_name: trisse-home-wol-relay
+    image: ${WAYLIGHT_IMAGE:-ghcr.io/itadori26/waylight}:${WAYLIGHT_VERSION:-latest}
+    container_name: waylight-wol-relay
     profiles: [wol]
     command: ["wol-relay"]
     restart: unless-stopped
@@ -114,15 +114,15 @@ services:
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
-    depends_on: [trisse-home]
+    depends_on: [waylight]
 
 networks:
   default:
-    name: trisse-home
+    name: waylight
   docker-api:
-    name: trisse-home-docker-api
+    name: waylight-docker-api
     internal: true
 
 volumes:
   data:
-    name: trisse-home-data
+    name: waylight-data

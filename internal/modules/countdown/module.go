@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/countdown/adapter/controller"
-	"trisse-home/internal/modules/countdown/adapter/gateway"
-	"trisse-home/internal/modules/countdown/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/countdown/adapter/controller"
+	"waylight/internal/modules/countdown/adapter/gateway"
+	"waylight/internal/modules/countdown/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the countdown rings and implements modules.Module (#54).

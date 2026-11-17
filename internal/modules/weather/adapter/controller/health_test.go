@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/weather/domain"
-	"trisse-home/internal/modules/weather/usecase"
+	"waylight/internal/modules/weather/domain"
+	"waylight/internal/modules/weather/usecase"
 )
 
 type fakeHealthUC struct {

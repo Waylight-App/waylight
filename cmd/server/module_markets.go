@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/markets"
+	"waylight/internal/modules"
+	"waylight/internal/modules/markets"
 )
 
 // The markets module registers itself; no shared file lists it (#193).

@@ -1,16 +1,16 @@
 #!/bin/sh
-# postrm for the trisse-home .deb.
+# postrm for the waylight .deb.
 #
 # remove: the unit is masked (dh_installsystemd behaviour), configuration and
 #         data stay.
-# purge:  the configuration in /etc/trisse-home is deleted. The data in
-#         /var/lib/trisse-home is never deleted automatically; if it still
+# purge:  the configuration in /etc/waylight is deleted. The data in
+#         /var/lib/waylight is never deleted automatically; if it still
 #         holds a database, the generated SECRET_KEY is moved next to it, so
 #         a later reinstall can still decrypt stored credentials.
 set -e
 
-UNITS="trisse-home.service trisse-home-setup-info.timer"
-STATE_DIR=/var/lib/trisse-home
+UNITS="waylight.service waylight-setup-info.timer"
+STATE_DIR=/var/lib/waylight
 
 case "$1" in
 remove)
@@ -27,13 +27,13 @@ purge)
 			deb-systemd-helper unmask "$unit" >/dev/null || true
 		done
 	fi
-	if [ -f /etc/trisse-home/secret.env ] && [ -f "$STATE_DIR/trisse-home.db" ]; then
-		(umask 077 && cp /etc/trisse-home/secret.env "$STATE_DIR/secret.env.purged")
+	if [ -f /etc/waylight/secret.env ] && [ -f "$STATE_DIR/waylight.db" ]; then
+		(umask 077 && cp /etc/waylight/secret.env "$STATE_DIR/secret.env.purged")
 	fi
-	rm -rf /etc/trisse-home
-	rm -f /etc/issue.d/trisse-home.issue /boot/firmware/trisse-home-setup.txt
+	rm -rf /etc/waylight
+	rm -f /etc/issue.d/waylight.issue /boot/firmware/waylight-setup.txt
 	if [ -d "$STATE_DIR" ]; then
-		echo "trisse-home: data kept in $STATE_DIR (delete it yourself if you no longer need it)"
+		echo "waylight: data kept in $STATE_DIR (delete it yourself if you no longer need it)"
 	fi
 	;;
 esac

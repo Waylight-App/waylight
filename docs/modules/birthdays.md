@@ -9,7 +9,7 @@ Add the **Birthdays** widget. Its **+** button adds a person by hand; the year c
 Under **Settings → Birthdays** you can:
 
 - **import a vCard file** (`.vcf`, as exported by most phones, Google Contacts, Outlook or Thunderbird). Only contacts with a birthday are taken; a person with the same name and day that is already in the list is skipped, so importing the same file twice does no harm.
-- **connect a CardDAV address book**, for example Nextcloud (`https://cloud.example.org/remote.php/dav/addressbooks/users/<name>/contacts/`). Use an app password. The address book is read when you save and then every six hours; its entries replace the previously synced ones and are changed or removed in the address book itself, not in trisse-home.
+- **connect a CardDAV address book**, for example Nextcloud (`https://cloud.example.org/remote.php/dav/addressbooks/users/<name>/contacts/`). Use an app password. The address book is read when you save and then every six hours; its entries replace the previously synced ones and are changed or removed in the address book itself, not in Waylight.
 - **turn on the reminder**: at the chosen time each day, one push per birthday through the notification channels.
 
 The daily briefing gets a **Birthdays** section with today's and tomorrow's birthdays; it can be switched off or moved in the briefing's settings like the other sections.

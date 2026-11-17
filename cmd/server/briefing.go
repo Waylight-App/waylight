@@ -6,16 +6,16 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/birthdays"
-	"trisse-home/internal/modules/briefing"
-	"trisse-home/internal/modules/calendar"
-	"trisse-home/internal/modules/services"
-	"trisse-home/internal/modules/timeline"
-	"trisse-home/internal/modules/todos"
-	"trisse-home/internal/modules/waste"
-	"trisse-home/internal/modules/weather"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/birthdays"
+	"waylight/internal/modules/briefing"
+	"waylight/internal/modules/calendar"
+	"waylight/internal/modules/services"
+	"waylight/internal/modules/timeline"
+	"waylight/internal/modules/todos"
+	"waylight/internal/modules/waste"
+	"waylight/internal/modules/weather"
+	"waylight/internal/shared/kernel"
 )
 
 // This file is the composition root of the briefing (#52, ADR 0016): the

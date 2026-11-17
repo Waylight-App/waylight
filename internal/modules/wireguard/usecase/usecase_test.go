@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/wireguard/domain"
+	"waylight/internal/modules/wireguard/domain"
 )
 
 var keyA, keyB = strings.Repeat("A", 43) + "=", strings.Repeat("B", 42) + "A="

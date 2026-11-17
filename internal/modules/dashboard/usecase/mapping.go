@@ -4,8 +4,8 @@ import (
 	"context"
 	"slices"
 
-	"trisse-home/internal/modules/dashboard/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/shared/kernel"
 )
 
 func toWidgetResponse(w domain.Widget) WidgetResponse {

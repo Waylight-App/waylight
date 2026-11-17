@@ -2,7 +2,7 @@
 
 - Status: Accepted (2026-11-15, by the maintainer)
 - Date: 2026-11-15
-- Issue: [#394](https://github.com/itadori26/trisse-home/issues/394), part of [#292](https://github.com/itadori26/trisse-home/issues/292)
+- Issue: [#394](https://github.com/itadori26/waylight/issues/394), part of [#292](https://github.com/itadori26/waylight/issues/292)
 - Supersedes in part: [ADR 0017](0017-open-core.md) (the licence of `ee/`
   and the rule for what goes there; the technical separation stays)
 
@@ -22,11 +22,11 @@ licence yet.
   open-source licence over time. It is source-available: anyone can read it,
   but it is not open source and the project does not call it that.
 - **Licence: Elastic License 2.0 (ELv2)**, unless the review in
-  [#319](https://github.com/itadori26/trisse-home/issues/319) leads to
+  [#319](https://github.com/itadori26/waylight/issues/319) leads to
   another licence without a future grant. ELv2 allows use, change and
   redistribution, and forbids offering the software as a hosted or managed
   service, moving or circumventing the licence key
-  ([#307](https://github.com/itadori26/trisse-home/issues/307)), and removing
+  ([#307](https://github.com/itadori26/waylight/issues/307)), and removing
   licence notices.
 
 ### What goes into `ee/`
@@ -45,19 +45,19 @@ As of today this covers:
 
 | Issue | Feature |
 | ----- | ------- |
-| [#295](https://github.com/itadori26/trisse-home/issues/295) | Team tabs maintained by admins |
-| [#297](https://github.com/itadori26/trisse-home/issues/297) | Announcements |
-| [#299](https://github.com/itadori26/trisse-home/issues/299) | Absences and team calendar |
-| [#302](https://github.com/itadori26/trisse-home/issues/302) | Single sign-on for all accounts with group mapping |
-| [#303](https://github.com/itadori26/trisse-home/issues/303) | Audit log with export and retention |
-| [#304](https://github.com/itadori26/trisse-home/issues/304) | Admin policies (required second factor, session length, allowed modules) |
-| [#305](https://github.com/itadori26/trisse-home/issues/305) | Branding: own name, logo and colours |
-| [#307](https://github.com/itadori26/trisse-home/issues/307) | The licence key itself |
-| [#326](https://github.com/itadori26/trisse-home/issues/326) | Connected accounts per member |
-| [#327](https://github.com/itadori26/trisse-home/issues/327)–[#331](https://github.com/itadori26/trisse-home/issues/331) | Workplace search: Confluence, SharePoint/OneDrive, Notion, Slack, Teams |
-| [#332](https://github.com/itadori26/trisse-home/issues/332)–[#334](https://github.com/itadori26/trisse-home/issues/334) | Announcements to Slack/Teams channels, Slack app, Teams app |
-| [#346](https://github.com/itadori26/trisse-home/issues/346) | Live presence widget |
-| [#396](https://github.com/itadori26/trisse-home/issues/396) | Directory sync: LDAP, Active Directory and SCIM |
+| [#295](https://github.com/itadori26/waylight/issues/295) | Team tabs maintained by admins |
+| [#297](https://github.com/itadori26/waylight/issues/297) | Announcements |
+| [#299](https://github.com/itadori26/waylight/issues/299) | Absences and team calendar |
+| [#302](https://github.com/itadori26/waylight/issues/302) | Single sign-on for all accounts with group mapping |
+| [#303](https://github.com/itadori26/waylight/issues/303) | Audit log with export and retention |
+| [#304](https://github.com/itadori26/waylight/issues/304) | Admin policies (required second factor, session length, allowed modules) |
+| [#305](https://github.com/itadori26/waylight/issues/305) | Branding: own name, logo and colours |
+| [#307](https://github.com/itadori26/waylight/issues/307) | The licence key itself |
+| [#326](https://github.com/itadori26/waylight/issues/326) | Connected accounts per member |
+| [#327](https://github.com/itadori26/waylight/issues/327)–[#331](https://github.com/itadori26/waylight/issues/331) | Workplace search: Confluence, SharePoint/OneDrive, Notion, Slack, Teams |
+| [#332](https://github.com/itadori26/waylight/issues/332)–[#334](https://github.com/itadori26/waylight/issues/334) | Announcements to Slack/Teams channels, Slack app, Teams app |
+| [#346](https://github.com/itadori26/waylight/issues/346) | Live presence widget |
+| [#396](https://github.com/itadori26/waylight/issues/396) | Directory sync: LDAP, Active Directory and SCIM |
 
 These stay in the MIT core:
 
@@ -77,7 +77,7 @@ behind the licence key. A feature in `ee/` may move to the core at any time.
 
 ### How the project describes itself
 
-"trisse-home is open source (MIT). Optional features for organisations are
+"Waylight is open source (MIT). Optional features for organisations are
 available under a commercial licence." The documentation names `ee/` plainly
 as not open source and does not describe the whole repository as open
 source.

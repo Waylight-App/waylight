@@ -6,8 +6,8 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/briefing/domain"
-	"trisse-home/internal/modules/briefing/usecase"
+	"waylight/internal/modules/briefing/domain"
+	"waylight/internal/modules/briefing/usecase"
 )
 
 // ItemDTO is one line of a section. severity is "info", "warning" or

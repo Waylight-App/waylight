@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/nextcloud/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/nextcloud/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func fakeNextcloud(t *testing.T, serverinfo bool) *httptest.Server {

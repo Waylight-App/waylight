@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
+	"waylight/ee/licence/domain"
 )
 
 // TestAdminPolicies checks #304 in the ee build.

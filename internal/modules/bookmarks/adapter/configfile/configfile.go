@@ -1,12 +1,12 @@
 // Package configfile maps the bookmarks to their section of
-// trisse-home.yaml (#88) and back.
+// waylight.yaml (#88) and back.
 //
 // Ring: Interface Adapters.
 package configfile
 
 import (
-	"trisse-home/internal/modules/bookmarks/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/bookmarks/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Bookmark is one link.

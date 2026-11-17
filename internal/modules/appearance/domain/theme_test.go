@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 func base() map[string]string {
@@ -19,7 +19,7 @@ func TestThemeDef(t *testing.T) {
 		t.Fatalf("%+v %v", th, err)
 	}
 	css := th.CSS()
-	if !strings.HasPrefix(css, "/* trisse-home theme: nord */") || !strings.Contains(css, "--color-accent: #88c0d0;") || !IsThemeCSS(css) || AppliedTheme(css) != "nord" {
+	if !strings.HasPrefix(css, "/* waylight theme: nord */") || !strings.Contains(css, "--color-accent: #88c0d0;") || !IsThemeCSS(css) || AppliedTheme(css) != "nord" {
 		t.Fatalf("%s", css)
 	}
 	for name, mod := range map[string]func(map[string]string){

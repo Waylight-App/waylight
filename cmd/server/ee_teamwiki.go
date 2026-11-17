@@ -3,8 +3,8 @@
 package main
 
 import (
-	"trisse-home/ee/teamwiki"
-	"trisse-home/internal/modules"
+	"waylight/ee/teamwiki"
+	"waylight/internal/modules"
 )
 
 // teamwikiAPIs points the services at fakes in tests.

@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // ErrNotConfigured is returned while Immich is not configured.

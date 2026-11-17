@@ -3,11 +3,11 @@ package transfer
 import (
 	"context"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/transfer/adapter/controller"
-	"trisse-home/internal/modules/transfer/adapter/gateway"
-	"trisse-home/internal/modules/transfer/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/transfer/adapter/controller"
+	"waylight/internal/modules/transfer/adapter/gateway"
+	"waylight/internal/modules/transfer/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the transfer rings and implements modules.Module.

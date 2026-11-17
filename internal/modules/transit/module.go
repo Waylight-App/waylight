@@ -3,11 +3,11 @@ package transit
 import (
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/transit/adapter/controller"
-	"trisse-home/internal/modules/transit/adapter/gateway"
-	"trisse-home/internal/modules/transit/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/transit/adapter/controller"
+	"waylight/internal/modules/transit/adapter/gateway"
+	"waylight/internal/modules/transit/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the transit rings and implements modules.Module.

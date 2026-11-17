@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/speedtest/adapter/presenter"
-	"trisse-home/internal/modules/speedtest/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/speedtest/adapter/presenter"
+	"waylight/internal/modules/speedtest/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the speedtest endpoints.

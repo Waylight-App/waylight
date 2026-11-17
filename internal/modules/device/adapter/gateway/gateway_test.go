@@ -7,7 +7,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"trisse-home/internal/modules/device/domain"
+	"waylight/internal/modules/device/domain"
 )
 
 func TestSysfs(t *testing.T) {

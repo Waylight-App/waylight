@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/system/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/system/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // AggregateRepository persists daily disk usage and the forecast

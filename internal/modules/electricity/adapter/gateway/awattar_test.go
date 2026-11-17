@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/electricity/domain"
+	"waylight/internal/modules/electricity/domain"
 )
 
 // An answer as aWATTar sends it (shortened).

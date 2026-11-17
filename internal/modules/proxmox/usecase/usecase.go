@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/proxmox/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/proxmox/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // SettingsView never contains the token secret, only whether one is stored.

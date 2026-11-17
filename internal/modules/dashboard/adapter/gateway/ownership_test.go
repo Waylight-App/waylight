@@ -6,9 +6,9 @@ import (
 	"slices"
 	"testing"
 
-	"trisse-home/internal/modules/dashboard/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestPersonalTabs proves the separation of ADR 0018 for the dashboard: an

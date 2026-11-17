@@ -43,7 +43,7 @@ type ImportSummaryDTO struct {
 }
 
 // ForeignImportDTO is returned by POST /api/transfer/import/{format}: the
-// merged trisse-home.yaml, the summary and, when applied, the result.
+// merged waylight.yaml, the summary and, when applied, the result.
 type ForeignImportDTO struct {
 	YAML    string           `json:"yaml"`
 	Summary ImportSummaryDTO `json:"summary"`

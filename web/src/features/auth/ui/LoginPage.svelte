@@ -23,7 +23,7 @@
     logo?: string;
     logoDark?: string;
   }
-  let { auth, ondone, brandName = 'trisse-home', poweredBy = false, logo, logoDark }: Props = $props();
+  let { auth, ondone, brandName = 'Waylight', poweredBy = false, logo, logoDark }: Props = $props();
 
   /** Moves the focus to a message that appears, so it is read out at once. */
   function focusOnShow(node: HTMLElement) {

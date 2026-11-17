@@ -3,7 +3,7 @@ package usecase
 import (
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // StatusRequest carries the (possibly empty) session token of the caller.

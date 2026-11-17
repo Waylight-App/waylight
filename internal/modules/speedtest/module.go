@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/speedtest/adapter/controller"
-	"trisse-home/internal/modules/speedtest/adapter/gateway"
-	"trisse-home/internal/modules/speedtest/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/speedtest/adapter/controller"
+	"waylight/internal/modules/speedtest/adapter/gateway"
+	"waylight/internal/modules/speedtest/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // refreshInterval: Speedtest Tracker usually tests hourly.

@@ -6,8 +6,8 @@ import (
 	"io"
 	"time"
 
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // FileView is a backup at the use case boundary.

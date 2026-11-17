@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"trisse-home/internal/modules/gamedeals/domain"
+	"waylight/internal/modules/gamedeals/domain"
 )
 
 // SettingsDTO is returned by the settings endpoints.

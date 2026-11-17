@@ -5,12 +5,12 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/smarthome/adapter/controller"
-	"trisse-home/internal/modules/smarthome/adapter/gateway"
-	"trisse-home/internal/modules/smarthome/domain"
-	"trisse-home/internal/modules/smarthome/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/smarthome/adapter/controller"
+	"waylight/internal/modules/smarthome/adapter/gateway"
+	"waylight/internal/modules/smarthome/domain"
+	"waylight/internal/modules/smarthome/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Config configures the smart home module.

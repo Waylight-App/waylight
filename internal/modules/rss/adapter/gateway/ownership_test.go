@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/rss/domain"
-	"trisse-home/internal/modules/rss/usecase"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/rss/domain"
+	"waylight/internal/modules/rss/usecase"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestSubscriptionsArePersonal: two accounts can subscribe to the same feed,

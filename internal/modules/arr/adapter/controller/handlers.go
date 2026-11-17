@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/arr/adapter/presenter"
-	"trisse-home/internal/modules/arr/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/arr/adapter/presenter"
+	"waylight/internal/modules/arr/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the *arr endpoints.

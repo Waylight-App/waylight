@@ -1,19 +1,19 @@
-# What trisse-home is and is not
+# What Waylight is and is not
 
-This page is for deciding whether trisse-home is worth installing. It
+This page is for deciding whether Waylight is worth installing. It
 describes the ideas behind the project, what you need to run it and where it
 falls short today.
 
 ## The idea
 
 Most homelab dashboards are a wall of service links and status lights.
-trisse-home started from a different question: what would you want to see
+Waylight started from a different question: what would you want to see
 first thing in the morning? The answer was a mix. The weather and the rain
 radar, the next train, today's appointments and to-dos, the bin that goes
 out tonight, and, below that, whether the server, the backups and the VPN
 are fine.
 
-So trisse-home is a personal start page first and a server dashboard second.
+So Waylight is a personal start page first and a server dashboard second.
 Both halves live on the same grid, and you decide which widgets go on which
 tab.
 
@@ -62,7 +62,7 @@ set of files of its own, so contributions rarely collide
 
 ## Current limits
 
-trisse-home is a young project with one maintainer. That shows in a few
+Waylight is a young project with one maintainer. That shows in a few
 places:
 
 - **One owner.** Guests can see the tabs you share with them, but they cannot
@@ -71,9 +71,9 @@ places:
   far more services. The [generic JSON widget](modules/apiwidget.md) covers
   many gaps; for the rest you would write a module.
 - **No configuration as code yet.** A YAML export and import is planned
-  ([#88](https://github.com/itadori26/trisse-home/issues/88)).
+  ([#88](https://github.com/itadori26/waylight/issues/88)).
 - **English and German only.** Adding a language is a matter of translating
-  one file per feature ([contributing](https://github.com/itadori26/trisse-home/blob/main/CONTRIBUTING.md#ui-texts-and-translations)).
+  one file per feature ([contributing](https://github.com/itadori26/waylight/blob/main/CONTRIBUTING.md#ui-texts-and-translations)).
 - **Several integrations are Germany-specific:** weather warnings, rain radar
   and pollen from the DWD, fuel prices from Tankerkönig, public and school
   holidays. They simply stay unused elsewhere.

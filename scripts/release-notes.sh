@@ -24,5 +24,5 @@ section 'Performance' '^perf(\([^)]*\))?:'
 section 'Documentation' '^docs(\([^)]*\))?:'
 section 'Maintenance' '^(chore|build|ci|refactor|style|test)(\([^)]*\))?:'
 if [ -n "$prev" ]; then
-	printf '**Full changelog:** https://github.com/itadori26/trisse-home/compare/%s...%s\n' "$prev" "$tag"
+	printf '**Full changelog:** https://github.com/itadori26/waylight/compare/%s...%s\n' "$prev" "$tag"
 fi

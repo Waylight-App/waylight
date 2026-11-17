@@ -6,7 +6,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // SourceKind says where the collection dates come from (#153).

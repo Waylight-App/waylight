@@ -1,4 +1,4 @@
--- Shopping lists kept on trisse-home (#471), next to the connected CalDAV
+-- Shopping lists kept on waylight (#471), next to the connected CalDAV
 -- list. A list belongs to its owner and is shared like a note (ADR 0018);
 -- everyone who sees it may add, tick off and remove items.
 CREATE TABLE shopping_lists (

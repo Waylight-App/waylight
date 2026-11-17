@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/modules/appearance/usecase"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/modules/appearance/usecase"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 func TestBuiltinThemes(t *testing.T) {

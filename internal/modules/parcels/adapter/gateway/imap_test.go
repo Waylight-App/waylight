@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/parcels/domain"
-	"trisse-home/internal/modules/parcels/usecase"
-	"trisse-home/internal/shared/imap"
+	"waylight/internal/modules/parcels/domain"
+	"waylight/internal/modules/parcels/usecase"
+	"waylight/internal/shared/imap"
 )
 
 // fakeIMAP is a scripted IMAP server: it records every command and fails

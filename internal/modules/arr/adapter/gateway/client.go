@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/modules/arr/domain"
+	"waylight/internal/modules/arr/domain"
 )
 
 const maxResponseBytes = 4 << 20

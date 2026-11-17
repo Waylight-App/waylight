@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Account links (#296): an admin invites someone with a link, or sends a

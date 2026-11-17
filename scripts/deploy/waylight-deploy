@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Deploys trisse-home on the server (#211). It is the only thing the deploy key
-# may run: authorized_keys forces `sudo /usr/local/bin/trisse-home-deploy`, and
+# Deploys waylight on the server (#211). It is the only thing the deploy key
+# may run: authorized_keys forces `sudo /usr/local/bin/waylight-deploy`, and
 # the request the client sends is read from SSH_ORIGINAL_COMMAND:
 #
 #   (empty)              deploy the head of origin/main
@@ -20,16 +20,16 @@
 set -euo pipefail
 umask 077
 
-STACK_DIR=${STACK_DIR:-/opt/stacks/trisse-home}
-STATE_DIR=${STATE_DIR:-/var/lib/trisse-home-deploy}
-BACKUP_DIR=${BACKUP_DIR:-/var/backups/trisse-home}
-LOCK_FILE=${LOCK_FILE:-/var/lock/trisse-home-deploy.lock}
-VOLUME=${VOLUME:-trisse-home-data}
-SERVICE=${SERVICE:-trisse-home}
+STACK_DIR=${STACK_DIR:-/opt/stacks/waylight}
+STATE_DIR=${STATE_DIR:-/var/lib/waylight-deploy}
+BACKUP_DIR=${BACKUP_DIR:-/var/backups/waylight}
+LOCK_FILE=${LOCK_FILE:-/var/lock/waylight-deploy.lock}
+VOLUME=${VOLUME:-waylight-data}
+SERVICE=${SERVICE:-waylight}
 KEEP_BACKUPS=${KEEP_BACKUPS:-7}
 HEALTH_TIMEOUT=${HEALTH_TIMEOUT:-120}
 HEALTH_INTERVAL=${HEALTH_INTERVAL:-3}
-IMAGE=${IMAGE:-trisse-home}
+IMAGE=${IMAGE:-waylight}
 COMPOSE_FILES=(-f compose.yaml -f compose.build.yaml)
 BUILD_DIR=""
 

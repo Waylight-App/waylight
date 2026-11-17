@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/fritzbox/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/fritzbox/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // callsTTL is how long a fetched call list is reused (cache-aside, ADR 0006).

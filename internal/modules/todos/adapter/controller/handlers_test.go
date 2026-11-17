@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/todos/usecase"
+	"waylight/internal/modules/todos/usecase"
 )
 
 type fakeCreate struct{ got usecase.TodoInput }

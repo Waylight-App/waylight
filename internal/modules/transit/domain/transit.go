@@ -7,7 +7,7 @@ import (
 	"time"
 	"unicode"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Limits.

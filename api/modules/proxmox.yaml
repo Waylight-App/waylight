@@ -43,7 +43,7 @@ schemas:
     properties:
       configured: { type: boolean }
       url: { type: string }
-      tokenId: { type: string, example: "monitor@pve!trisse-home" }
+      tokenId: { type: string, example: "monitor@pve!waylight" }
       hasSecret: { type: boolean }
       fingerprint: { type: string, description: Pinned SHA-256 certificate fingerprint (lower-case hex) or empty }
   ProxmoxSettingsInput:

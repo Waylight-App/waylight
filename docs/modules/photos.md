@@ -1,6 +1,6 @@
 # Photo frame
 
-**What it does:** Shows your own pictures one after another, like a digital photo frame. The pictures are uploaded to trisse-home itself, so no photo server is needed (#286). If you run Immich, the [Immich widget](immich.md) shows pictures from there instead.
+**What it does:** Shows your own pictures one after another, like a digital photo frame. The pictures are uploaded to Waylight itself, so no photo server is needed (#286). If you run Immich, the [Immich widget](immich.md) shows pictures from there instead.
 
 ## Configuration
 

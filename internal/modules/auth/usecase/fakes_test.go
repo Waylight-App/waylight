@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 type fakeClock struct{ now time.Time }

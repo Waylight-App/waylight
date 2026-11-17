@@ -14,7 +14,7 @@ import (
 	"slices"
 	"time"
 
-	"trisse-home/internal/modules/adguard/domain"
+	"waylight/internal/modules/adguard/domain"
 )
 
 //go:embed migrations/*.sql

@@ -13,12 +13,12 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/ee/licence/adapter/controller"
-	"trisse-home/ee/licence/adapter/gateway"
-	"trisse-home/ee/licence/domain"
-	"trisse-home/ee/licence/usecase"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/licence/adapter/controller"
+	"waylight/ee/licence/adapter/gateway"
+	"waylight/ee/licence/domain"
+	"waylight/ee/licence/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/shared/kernel"
 )
 
 // Licensing is the port the ee/ features ask.

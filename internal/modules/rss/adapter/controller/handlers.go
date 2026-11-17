@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/rss/adapter/presenter"
-	"trisse-home/internal/modules/rss/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/rss/adapter/presenter"
+	"waylight/internal/modules/rss/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the feed reader endpoints.

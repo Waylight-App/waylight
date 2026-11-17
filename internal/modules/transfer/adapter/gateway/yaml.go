@@ -8,13 +8,13 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	"trisse-home/internal/modules/transfer/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transfer/usecase"
+	"waylight/internal/shared/kernel"
 )
 
-// SchemaURL is the published JSON Schema of trisse-home.yaml; editors with
+// SchemaURL is the published JSON Schema of waylight.yaml; editors with
 // the YAML language server validate the file against it.
-const SchemaURL = "https://raw.githubusercontent.com/itadori26/trisse-home/main/docs/schema/trisse-home.v1.schema.json"
+const SchemaURL = "https://raw.githubusercontent.com/itadori26/waylight/main/docs/schema/waylight.v1.schema.json"
 
 // YAMLCodec implements usecase.ConfigCodec (#88).
 type YAMLCodec struct{}

@@ -6,7 +6,7 @@
   import { exportUrl, type ShoppingList } from '../domain/shopping';
   import type { ShoppingUseCases } from '../usecase/shoppingUseCases';
 
-  /** Props of the management of the lists kept on trisse-home (#471). */
+  /** Props of the management of the lists kept on waylight (#471). */
   interface Props {
     shopping: ShoppingUseCases;
   }

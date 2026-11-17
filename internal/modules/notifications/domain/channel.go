@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // ChannelKind selects the delivery adapter (#87).

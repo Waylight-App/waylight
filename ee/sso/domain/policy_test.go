@@ -6,7 +6,7 @@ import (
 )
 
 func TestPolicyAllows(t *testing.T) {
-	p := Policy{Emails: []string{"@Example.org", "freelancer@mail.test"}, Groups: []string{"trisse-users"}}
+	p := Policy{Emails: []string{"@Example.org", "freelancer@mail.test"}, Groups: []string{"waylight-users"}}
 	for name, tc := range map[string]struct {
 		id   Identity
 		want bool
@@ -15,7 +15,7 @@ func TestPolicyAllows(t *testing.T) {
 		"listed address":                 {Identity{Subject: "s", Email: "Freelancer@mail.test", EmailVerified: true}, true},
 		"unverified address":             {Identity{Subject: "s", Email: "anna@example.org"}, false},
 		"other domain":                   {Identity{Subject: "s", Email: "anna@example.org.evil", EmailVerified: true}, false},
-		"allowed group":                  {Identity{Subject: "s", Groups: []string{"TRISSE-users"}}, true},
+		"allowed group":                  {Identity{Subject: "s", Groups: []string{"WAYLIGHT-users"}}, true},
 		"no subject":                     {Identity{Email: "anna@example.org", EmailVerified: true}, false},
 		"nothing matches":                {Identity{Subject: "s", Groups: []string{"sales"}}, false},
 	} {

@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/birthdays/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/birthdays/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type repo struct {

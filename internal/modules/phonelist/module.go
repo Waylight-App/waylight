@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/phonelist/adapter/controller"
-	"trisse-home/internal/modules/phonelist/adapter/gateway"
-	"trisse-home/internal/modules/phonelist/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/phonelist/adapter/controller"
+	"waylight/internal/modules/phonelist/adapter/gateway"
+	"waylight/internal/modules/phonelist/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the phone list rings and implements modules.Module.

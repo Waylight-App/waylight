@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/ee/connections/domain"
-	"trisse-home/ee/connections/usecase"
-	"trisse-home/internal/platform/oauth"
+	"waylight/ee/connections/domain"
+	"waylight/ee/connections/usecase"
+	"waylight/internal/platform/oauth"
 )
 
 // CallbackPath is where services send the browser back.

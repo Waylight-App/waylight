@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"trisse-home/internal/modules/system/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/system/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestAggregateStore(t *testing.T) {

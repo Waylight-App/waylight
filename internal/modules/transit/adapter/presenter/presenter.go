@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/transit/domain"
+	"waylight/internal/modules/transit/domain"
 )
 
 // StopDTO is a stop found by the search.

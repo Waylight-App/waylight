@@ -18,19 +18,19 @@ COPY cmd ./cmd
 COPY internal ./internal
 COPY --from=web /src/internal/platform/webui/dist ./internal/platform/webui/dist
 ARG VERSION=dev
-RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o /out/trisse-home ./cmd/server \
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o /out/waylight ./cmd/server \
     && mkdir -p /out/data
 
 # Stage 3: minimal runtime image without shell, running as non-root.
 FROM gcr.io/distroless/static-debian13:nonroot
-COPY --from=build /out/trisse-home /trisse-home
+COPY --from=build /out/waylight /waylight
 COPY --from=build --chown=65532:65532 /out/data /data
-ENV DATABASE_PATH=/data/trisse-home.db \
+ENV DATABASE_PATH=/data/waylight.db \
     LISTEN_ADDR=:8090 \
     INSTALL_METHOD=docker
 EXPOSE 8090
 VOLUME ["/data"]
 USER nonroot:nonroot
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["/trisse-home", "healthcheck"]
-ENTRYPOINT ["/trisse-home"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["/waylight", "healthcheck"]
+ENTRYPOINT ["/waylight"]
 CMD ["serve"]

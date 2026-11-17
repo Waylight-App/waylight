@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/drop/domain"
+	"waylight/internal/modules/drop/domain"
 )
 
 // ItemDTO is a drop item; files are downloaded from /api/drop/{id}/file.

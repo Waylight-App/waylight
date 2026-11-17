@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/habits/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/habits/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestHabitOwnership proves ADR 0018 for habits, including ticking off.

@@ -23,7 +23,7 @@ async function go() {
     return;
   }
   if (target === 'choose') {
-    show('Use trisse-home right here in your browser, or connect it to your own server.');
+    show('Use waylight right here in your browser, or connect it to your own server.');
     choose.hidden = false;
     return;
   }

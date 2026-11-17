@@ -3,7 +3,7 @@ package usecase
 import (
 	"testing"
 
-	"trisse-home/internal/modules/dashboard/domain"
+	"waylight/internal/modules/dashboard/domain"
 )
 
 func TestSampleLayoutIsValid(t *testing.T) {

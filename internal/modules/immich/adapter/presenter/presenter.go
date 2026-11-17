@@ -6,8 +6,8 @@ package presenter
 import (
 	"math"
 
-	"trisse-home/internal/modules/immich/domain"
-	"trisse-home/internal/modules/immich/usecase"
+	"waylight/internal/modules/immich/domain"
+	"waylight/internal/modules/immich/usecase"
 )
 
 // SettingsDTO is returned by GET/PUT /api/immich/settings; the API key is

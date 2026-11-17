@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/parcels/domain"
-	"trisse-home/internal/modules/parcels/usecase"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/parcels/domain"
+	"waylight/internal/modules/parcels/usecase"
+	"waylight/internal/shared/sqlutil"
 )
 
 // MailStore implements usecase.MailStore; the password is encrypted.

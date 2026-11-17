@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/modules/shopping/adapter/presenter"
-	"trisse-home/internal/modules/shopping/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/shopping/adapter/presenter"
+	"waylight/internal/modules/shopping/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
-// ListHandlers serve the lists kept on trisse-home (#471).
+// ListHandlers serve the lists kept on waylight (#471).
 type ListHandlers struct{ uc *usecase.Lists }
 
 // NewListHandlers returns the handlers.

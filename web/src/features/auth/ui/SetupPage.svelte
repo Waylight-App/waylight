@@ -36,7 +36,7 @@
 </script>
 
 <AuthCard
-  title={t('auth.welcome_to_trisse_home')}
+  title={t('auth.welcome_to_waylight')}
   subtitle="Set a password to finish the setup. The setup token is printed in the server log."
 >
   <form onsubmit={submit}>

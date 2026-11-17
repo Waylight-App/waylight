@@ -12,14 +12,14 @@ import (
 	"net/url"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/auth/adapter/controller"
-	"trisse-home/internal/modules/auth/adapter/gateway"
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/modules/auth/usecase"
-	"trisse-home/internal/platform/oidc"
-	"trisse-home/internal/platform/webauthn"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/auth/adapter/controller"
+	"waylight/internal/modules/auth/adapter/gateway"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/usecase"
+	"waylight/internal/platform/oidc"
+	"waylight/internal/platform/webauthn"
+	"waylight/internal/shared/kernel"
 )
 
 const (

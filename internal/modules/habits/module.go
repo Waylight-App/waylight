@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/habits/adapter/controller"
-	"trisse-home/internal/modules/habits/adapter/gateway"
-	"trisse-home/internal/modules/habits/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/habits/adapter/controller"
+	"waylight/internal/modules/habits/adapter/gateway"
+	"waylight/internal/modules/habits/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the habit tracker rings and implements modules.Module (#106).

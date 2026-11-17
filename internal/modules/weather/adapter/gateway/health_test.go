@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/weather/domain"
+	"waylight/internal/modules/weather/domain"
 )
 
 // The fixtures are the real DWD files of 13 November 2026.

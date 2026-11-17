@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/services/domain"
+	"waylight/internal/modules/services/domain"
 )
 
 // ContainerSource lists the containers with their labels (output port,

@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/modules/markets/adapter/presenter"
-	"trisse-home/internal/modules/markets/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/markets/adapter/presenter"
+	"waylight/internal/modules/markets/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the endpoint.

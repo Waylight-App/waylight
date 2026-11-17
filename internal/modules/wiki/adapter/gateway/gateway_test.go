@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/wiki/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/wiki/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 // The fixtures follow the documented response shapes of BookStack's

@@ -12,4 +12,4 @@ extensions:
       pack: codeql/go-all
       extensible: barrierModel
     data:
-      - ["trisse-home/internal/shared/kernel", "", false, "ParseTarget", "", "", "ReturnValue[0]", "request-forgery", "manual"]
+      - ["waylight/internal/shared/kernel", "", false, "ParseTarget", "", "", "ReturnValue[0]", "request-forgery", "manual"]

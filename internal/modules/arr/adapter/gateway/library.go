@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/arr/domain"
+	"waylight/internal/modules/arr/domain"
 )
 
 // Library implements usecase.Provider for Sonarr and Radarr (API v3):

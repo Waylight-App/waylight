@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/system/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/system/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // updateCheckInterval is the minimum time between two release lookups.

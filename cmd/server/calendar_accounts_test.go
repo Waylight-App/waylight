@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 // TestCalendarAccounts checks the wiring of #282: without PUBLIC_URL signing

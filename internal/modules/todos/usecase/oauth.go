@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // OAuth signs in to providers with the user's own app registration (output
@@ -95,7 +95,7 @@ type signIns struct {
 
 var (
 	errSignInUnknown = kernel.NewPublicError(kernel.ErrNotFound, "The sign-in was not started here or has expired. Please start again.")
-	errNoPublicURL   = kernel.NewValidationError("kind", "Signing in needs PUBLIC_URL (an https:// address of trisse-home).")
+	errNoPublicURL   = kernel.NewValidationError("kind", "Signing in needs PUBLIC_URL (an https:// address of Waylight).")
 	errSignInFailed  = kernel.NewPublicError(kernel.ErrUnavailable, "The sign-in did not succeed. Check client ID, client secret and the registered redirect address.")
 )
 

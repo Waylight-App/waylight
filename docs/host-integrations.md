@@ -1,12 +1,12 @@
 # Host integrations
 
-Some widgets need a little setup on the server itself, because trisse-home
+Some widgets need a little setup on the server itself, because Waylight
 deliberately does not get the access they would otherwise require. Each
 section below starts with the reason, then shows the steps. The
 [security model](security-model.md) explains the boundaries in more depth.
 
 The examples assume Docker Compose with the repository checked out in
-`/opt/trisse-home`. Adjust the path to your checkout. The settings pages for
+`/opt/waylight`. Adjust the path to your checkout. The settings pages for
 WireGuard, Wake-on-LAN and the services generate the exact lines for your
 setup, so you can usually copy them from there.
 
@@ -19,15 +19,15 @@ small script on the host exports only the public peer status.
 Run the export every minute with cron:
 
 ```sh
-sudo tee /etc/cron.d/trisse-home-wireguard <<'CRON'
-* * * * * root /opt/trisse-home/scripts/wireguard-export.sh
+sudo tee /etc/cron.d/waylight-wireguard <<'CRON'
+* * * * * root /opt/waylight/scripts/wireguard-export.sh
 CRON
 ```
 
 The script runs `wg show all dump` inside the `wireguard` container (set
 `WG_CONTAINER=` to an empty value if WireGuard runs on the host). It drops the
 interface line with the private key, blanks preshared keys and writes the
-result to `./wireguard`, which Compose mounts read-only into trisse-home.
+result to `./wireguard`, which Compose mounts read-only into Waylight.
 With `linuxserver/wireguard`, peer names are taken from its `peer_<name>`
 folders; you can rename peers under Settings → WireGuard.
 
@@ -44,14 +44,14 @@ Install smartmontools 7.0 or newer (`sudo apt install smartmontools`) and run
 the export every 30 minutes:
 
 ```sh
-sudo tee /etc/cron.d/trisse-home-smart <<'CRON'
-*/30 * * * * root /opt/trisse-home/scripts/smart-export.sh
+sudo tee /etc/cron.d/waylight-smart <<'CRON'
+*/30 * * * * root /opt/waylight/scripts/smart-export.sh
 CRON
 ```
 
 The script writes `smartctl --json -a` for every disk that
 `smartctl --scan-open` finds into `./smart` and removes files of disks that
-are gone. trisse-home rates each disk like this:
+are gone. Waylight rates each disk like this:
 
 | Finding | Status |
 | --- | --- |
@@ -67,7 +67,7 @@ nothing stored on the disks.
 ## Wake-on-LAN
 
 **Why an extra step:** magic packets are broadcasts, and broadcasts cannot
-leave a Docker bridge network. Moving trisse-home into the host network would
+leave a Docker bridge network. Moving Waylight into the host network would
 remove its isolation, so a tiny relay in the host network does this one job.
 
 Service tiles with a MAC address show a power button while the service is
@@ -88,7 +88,7 @@ lets them do what every LAN device can do anyway: wake a computer.
 | Setup | What to do |
 | --- | --- |
 | Docker Compose | `COMPOSE_PROFILES=wol` |
-| Package, Pi image or a container in the host network | `WOL_RELAY=` (empty); trisse-home broadcasts itself |
+| Package, Pi image or a container in the host network | `WOL_RELAY=` (empty); Waylight broadcasts itself |
 | Docker without the extra container | Enable directed broadcast forwarding on the host (`sysctl net.ipv4.conf.all.bc_forwarding=1` and the same for your LAN interface), then set `WOL_RELAY=` and `WOL_BROADCAST=<your-lan>.255:9` |
 
 The target computer must have Wake-on-LAN enabled in its firmware and its
@@ -98,7 +98,7 @@ network driver.
 
 **Why an extra step:** write access to Docker amounts to root access on the
 host. Instead of loosening the read-only proxy, a second proxy allows nothing
-but restarts, and trisse-home only restarts containers on your list.
+but restarts, and Waylight only restarts containers on your list.
 
 The Docker widget can restart containers and show their last 200 log lines.
 Add to `.env`:
@@ -111,7 +111,7 @@ DOCKER_ACTIONS_CONTAINERS=jellyfin,paperless
 
 The read-only proxy stays as it is. The additional `docker-actions-proxy`
 accepts only `POST /containers/<name>/stop|restart|kill` and refuses
-everything else, including reads, creating containers and `exec`. trisse-home
+everything else, including reads, creating containers and `exec`. Waylight
 itself only calls *restart*, and only for the listed containers.
 
 Logs are read through the read-only proxy and can contain secrets. List only
@@ -128,19 +128,19 @@ permission is needed.
 services:
   jellyfin:
     labels:
-      trisse-home.name: Jellyfin
-      trisse-home.url: https://jellyfin.example.com
-      trisse-home.icon: 🎬
-      trisse-home.description: Films and series
+      waylight.name: Jellyfin
+      waylight.url: https://jellyfin.example.com
+      waylight.icon: 🎬
+      waylight.description: Films and series
 ```
 
 | Label | Also accepted | Meaning |
 | --- | --- | --- |
-| `trisse-home.url` | `homepage.href` | Link and health-check address of the tile. Required. |
-| `trisse-home.name` | `homepage.name` | Name of the tile; defaults to the container name. |
-| `trisse-home.icon` | `homepage.icon` | An emoji or an image URL. |
-| `trisse-home.description` | `homepage.description` | A short description. |
-| `trisse-home.enable` | | `false` skips the container. |
+| `waylight.url` | `homepage.href` | Link and health-check address of the tile. Required. |
+| `waylight.name` | `homepage.name` | Name of the tile; defaults to the container name. |
+| `waylight.icon` | `homepage.icon` | An emoji or an image URL. |
+| `waylight.description` | `homepage.description` | A short description. |
+| `waylight.enable` | | `false` skips the container. |
 
 Stacks labelled for [Homepage](https://gethomepage.dev/configs/docker/) work
 unchanged; `homepage.group` and `homepage.widget.*` are ignored.
@@ -168,7 +168,7 @@ read on demand, at most every ten seconds and only while a widget is open;
 nothing is polled in the background.
 
 **Switches and buttons** are off by default. A Home Assistant token can do
-everything its user can, so trisse-home keeps its own list of entities that
+everything its user can, so Waylight keeps its own list of entities that
 may be controlled:
 
 ```sh
@@ -188,11 +188,11 @@ token. Create one on any node:
 ```sh
 pveum user add monitor@pve
 pveum aclmod / -user monitor@pve -role PVEAuditor
-pveum user token add monitor@pve trisse-home --privsep 0   # prints the secret once
+pveum user token add monitor@pve waylight --privsep 0   # prints the secret once
 ```
 
 Enter the address (`https://<node>:8006`), the token ID
-(`monitor@pve!trisse-home`) and the secret under Settings → Proxmox. Proxmox
+(`monitor@pve!waylight`) and the secret under Settings → Proxmox. Proxmox
 uses a self-signed certificate, so also paste its SHA-256 fingerprint, which
 you find under *node → System → Certificates* or with:
 
@@ -200,7 +200,7 @@ you find under *node → System → Certificates* or with:
 openssl x509 -in /etc/pve/local/pve-ssl.pem -noout -fingerprint -sha256
 ```
 
-trisse-home then trusts exactly this certificate. Certificate checks are
+Waylight then trusts exactly this certificate. Certificate checks are
 never switched off.
 
 **Start and shutdown** are off by default. List the guests in `.env` and

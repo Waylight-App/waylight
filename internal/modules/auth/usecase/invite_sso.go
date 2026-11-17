@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 // InviteSignUp creates an invited account through the provider's sign-in

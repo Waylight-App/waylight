@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"io/fs"
 
-	"trisse-home/ee/scim/usecase"
+	"waylight/ee/scim/usecase"
 )
 
 //go:embed migrations/*.sql

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"unicode"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // CapturePrefixes are the short prefixes that turn a search into quick

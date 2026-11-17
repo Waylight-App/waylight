@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"trisse-home/internal/modules/shopping/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/shopping/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // SettingsView never contains the password.
@@ -122,7 +122,7 @@ func (uc *shopping) Add(ctx context.Context, summary string) (domain.Item, error
 	if err != nil {
 		return domain.Item{}, err
 	}
-	it, err := uc.store.Add(ctx, s, uc.ids.NewID()+"@trisse-home", summary)
+	it, err := uc.store.Add(ctx, s, uc.ids.NewID()+"@waylight", summary)
 	if err != nil {
 		return domain.Item{}, unavailable(err)
 	}

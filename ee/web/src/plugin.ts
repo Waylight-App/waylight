@@ -3,7 +3,7 @@
  * server offers this bundle. Features without a licence stay listed in the
  * settings; their widgets are hidden by the server's module list.
  */
-import { PLUGIN_API_VERSION, type TrissePlugin } from '../../../web/src/app/plugins/api';
+import { PLUGIN_API_VERSION, type WaylightPlugin } from '../../../web/src/app/plugins/api';
 import { texts as absenceTexts } from './absences/texts';
 import { texts as announcementTexts } from './announcements/texts';
 import { texts as brandingTexts } from './branding/texts';
@@ -17,7 +17,7 @@ import { texts as presenceTexts } from './presence/texts';
 import { presenceSearchActions } from './presence/searchActions';
 import { lazyMountable, mountable } from './lib/mountable';
 
-export const plugin: TrissePlugin = {
+export const plugin: WaylightPlugin = {
   apiVersion: PLUGIN_API_VERSION,
   name: 'ee',
   widgets: [

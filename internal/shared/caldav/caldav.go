@@ -18,7 +18,7 @@ import (
 	"path"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // MaxResponseBytes limits every response body that is read.

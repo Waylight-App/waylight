@@ -8,10 +8,10 @@ import (
 	"errors"
 	"net/http"
 
-	"trisse-home/internal/modules/transfer/domain"
-	"trisse-home/internal/modules/transfer/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transfer/domain"
+	"waylight/internal/modules/transfer/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // Handlers serves the transfer endpoints.
@@ -31,7 +31,7 @@ func (h *Handlers) Export(w http.ResponseWriter, r *http.Request) {
 	for name, data := range doc.Sections {
 		dto.Sections[name] = data
 	}
-	w.Header().Set("Content-Disposition", `attachment; filename="trisse-home-export-`+doc.ExportedAt.Format("20060102-150405")+`.json"`)
+	w.Header().Set("Content-Disposition", `attachment; filename="waylight-export-`+doc.ExportedAt.Format("20060102-150405")+`.json"`)
 	w.Header().Set("Cache-Control", "no-store")
 	httpapi.WriteJSON(w, http.StatusOK, dto)
 }

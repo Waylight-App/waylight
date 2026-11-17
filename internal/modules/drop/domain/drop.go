@@ -7,7 +7,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Kind of an item.

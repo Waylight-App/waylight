@@ -8,7 +8,7 @@ import type { AppearanceGateway } from '../../usecase/appearanceUseCases';
 export class AppearanceNeedsServerError extends Error {
   override name = 'AppearanceNeedsServerError';
   constructor() {
-    super('This needs a trisse-home server.');
+    super('This needs a waylight server.');
   }
 }
 

@@ -109,7 +109,7 @@ export interface PluginSearchAction {
  * shipped are optional, so plugins built against the first version still
  * load and an older core ignores what it does not know.
  */
-export interface TrissePlugin {
+export interface WaylightPlugin {
   apiVersion: number;
   name: string;
   widgets: PluginWidget[];

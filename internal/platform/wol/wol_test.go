@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // TestRelay sends through a relay whose "broadcast" target is a local UDP

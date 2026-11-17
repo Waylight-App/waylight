@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/weather/domain"
+	"waylight/internal/modules/weather/domain"
 )
 
 const forecastJSON = `{"timezone":"Europe/Berlin",

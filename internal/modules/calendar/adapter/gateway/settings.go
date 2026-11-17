@@ -9,8 +9,8 @@ import (
 	"io/fs"
 	"strings"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/shared/kernel"
 )
 
 //go:embed migrations/*.sql

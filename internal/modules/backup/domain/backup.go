@@ -5,14 +5,14 @@ import (
 	"slices"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Policy limits.
 const (
 	MinInterval  = time.Hour
 	MaxRetention = 365
-	namePrefix   = "trisse-home-"
+	namePrefix   = "waylight-"
 	nameSuffix   = ".db"
 	nameLayout   = "20060102-150405"
 )
@@ -20,7 +20,7 @@ const (
 // ErrBackupNotFound is returned for unknown backup names.
 var ErrBackupNotFound = kernel.NewPublicError(kernel.ErrNotFound, "The backup does not exist.")
 
-var namePattern = regexp.MustCompile(`^trisse-home-\d{8}-\d{6}\.db$`)
+var namePattern = regexp.MustCompile(`^waylight-\d{8}-\d{6}\.db$`)
 
 // Policy describes how often backups are taken and how many are kept.
 type Policy struct {

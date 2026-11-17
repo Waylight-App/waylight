@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Disk forecast limits (#108).

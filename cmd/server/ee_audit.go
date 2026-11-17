@@ -5,8 +5,8 @@ package main
 import (
 	"log/slog"
 
-	"trisse-home/ee/audit"
-	"trisse-home/internal/modules"
+	"waylight/ee/audit"
+	"waylight/internal/modules"
 )
 
 // The audit log (#303), part of the ee/ features. It receives every change to

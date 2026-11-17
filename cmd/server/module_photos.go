@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/photos"
+	"waylight/internal/modules"
+	"waylight/internal/modules/photos"
 )
 
 // The Photo frame module registers itself; no shared file lists it (#193).

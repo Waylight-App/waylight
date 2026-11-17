@@ -6,10 +6,10 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/phonelist/adapter/presenter"
-	"trisse-home/internal/modules/phonelist/domain"
-	"trisse-home/internal/modules/phonelist/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/phonelist/adapter/presenter"
+	"waylight/internal/modules/phonelist/domain"
+	"waylight/internal/modules/phonelist/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the phone list endpoints.
