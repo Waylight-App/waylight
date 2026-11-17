@@ -49,6 +49,10 @@
     <span>{t('appearance.greeting_name')}</span>
     <input class="input" bind:value={form.greetingName} maxlength="40" autocomplete="given-name" />
   </label>
+  <label class="check">
+    <input type="checkbox" bind:checked={form.greetingMoment} />
+    <span>{t('appearance.greeting_moment')}</span>
+  </label>
   <label class="field">
     <span>{t('appearance.profile')}</span>
     <select class="input" bind:value={form.profile}>
@@ -138,6 +142,12 @@
 {/if}
 
 <style>
+  .check {
+    display: flex;
+    gap: var(--space-1);
+    align-items: center;
+    margin-bottom: var(--space-2);
+  }
   .bg-row {
     display: flex;
     gap: var(--space-2);

@@ -35,6 +35,7 @@
     text-align: center;
   }
   .time {
+    font-family: var(--font-display);
     font-size: clamp(1.6rem, min(19cqi, 42cqh), 10rem);
     font-weight: 600;
     font-variant-numeric: tabular-nums;

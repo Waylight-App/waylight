@@ -97,6 +97,8 @@
       ondone={refresh}
       brandName={branding().name}
       poweredBy={branding().custom && !branding().hidePoweredBy}
+      logo={branding().logo}
+      logoDark={branding().logoDark}
     />
   {/await}
 {:else if view === 'app' && location.pathname === '/capture'}

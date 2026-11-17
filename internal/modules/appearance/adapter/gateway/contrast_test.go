@@ -34,11 +34,13 @@ func contrast(a, b string) float64 {
 }
 
 // Every built-in theme meets WCAG AA (4.5:1) for all text it is used for (#113).
+// The accent itself is a fill with --color-accent-contrast on it; where it
+// appears as text, icon or focus ring, --color-accent-text is used (#504,
+// #506), which falls back to the accent and is checked below.
 func TestBuiltinThemesMeetWCAGAA(t *testing.T) {
 	pairs := map[string][]string{
 		"--color-text":            {"--color-bg", "--color-surface", "--color-surface-2"},
 		"--color-text-muted":      {"--color-bg", "--color-surface", "--color-surface-2"},
-		"--color-accent":          {"--color-surface"},
 		"--color-accent-text":     {"--color-surface", "--color-surface-2"},
 		"--color-danger":          {"--color-surface"},
 		"--color-accent-contrast": {"--color-accent"},

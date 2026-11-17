@@ -18,8 +18,16 @@
     brandName?: string;
     /** Shows a small "powered by" line under a custom brand. */
     poweredBy?: boolean;
+    /** The organisation's logos (#305, #513); the product mark without them. */
+    logo?: string;
+    logoDark?: string;
   }
-  let { auth, ondone, brandName = 'trisse-home', poweredBy = false }: Props = $props();
+  let { auth, ondone, brandName = 'trisse-home', poweredBy = false, logo, logoDark }: Props = $props();
+
+  /** Moves the focus to a message that appears, so it is read out at once. */
+  function focusOnShow(node: HTMLElement) {
+    node.focus();
+  }
 
   const params = new URLSearchParams(location.search);
   // OIDC_AUTO_REDIRECT (#514): without a password form the page has nothing
@@ -98,17 +106,24 @@
   }
 </script>
 
-<AuthCard title={brandName} subtitle={needsCode ? t('auth.enter_code_hint') : t('auth.please_log_in')}>
-  {#if ssoError}<p class="error" role="alert">{t(ssoError)}</p>{/if}
+<AuthCard
+  title={t('auth.welcome_back')}
+  subtitle={needsCode ? t('auth.enter_code_hint') : t('auth.please_log_in')}
+  brand={{ name: brandName, logo, logoDark }}
+>
+  {#if ssoError}<p class="error" role="alert" tabindex="-1" use:focusOnShow>{t(ssoError)}</p>{/if}
   {#if forgot}
     <ForgotPassword {auth} onback={() => (forgot = false)} />
   {:else}
     {#if auth.sso.oidc && !ticket && !needsCode}
-      <a class="btn btn-primary sso" href="/api/auth/oidc/start"
+      <a class="btn btn-primary wide" href="/api/auth/oidc/start"
         >{#if auth.sso.buttonIcon}<SsoIcon icon={auth.sso.buttonIcon} />{/if}{auth.sso.buttonLabel
           ? t('auth.sign_in_with_provider', { name: auth.sso.buttonLabel })
           : t('auth.sign_in_with_sso')}</a
       >
+      {#if !passwordHidden}
+        <p class="divider"><span>{t('auth.or_with_password')}</span></p>
+      {/if}
     {/if}
     <form onsubmit={submit}>
       {#if asGuest}
@@ -158,14 +173,15 @@
           />
         </label>
       {/if}
-      {#if error}<p class="error" role="alert">{error}</p>{/if}
+      {#if error}<p class="error" role="alert" tabindex="-1" use:focusOnShow>{error}</p>{/if}
       {#if !passwordHidden || needsCode || ticket}
-        <button class="btn btn-primary" type="submit" disabled={busy}
+        <button class="btn btn-primary wide" type="submit" disabled={busy}
           >{needsCode || ticket ? t('auth.verify') : t('auth.log_in')}</button
         >
       {/if}
       {#if !needsCode}
-        <button class="btn btn-icon" type="button" onclick={() => ((asGuest = !asGuest), (error = ''))}
+        <!-- A real second button, as large as the first: guests are people too (#513). -->
+        <button class="btn wide" type="button" onclick={() => ((asGuest = !asGuest), (error = ''))}
           >{asGuest ? t('auth.sign_in_as_owner') : t('auth.sign_in_as_guest')}</button
         >
       {/if}
@@ -198,6 +214,32 @@
   }
   .hidden {
     display: none;
+  }
+  form {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .wide {
+    width: 100%;
+    justify-content: center;
+    min-height: 2.6rem;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-3) 0;
+    font-size: 0.85em;
+    color: var(--color-text-muted);
+  }
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid var(--color-border);
+  }
+  .error:focus {
+    outline: none;
   }
   .code {
     font-family: var(--font-mono);

@@ -87,6 +87,48 @@ export interface Forecast {
   updatedAt: Date;
 }
 
+/** What a forecast hint warns of (#509). */
+export type HintKind = 'storm' | 'frost' | 'heat' | 'rain';
+
+/** One hint for the next days: what, and on which day (0 = today). */
+export interface ForecastHint {
+  kind: HintKind;
+  day: number;
+  date: Date;
+}
+
+/**
+ * When a day earns a hint, most important first: a thunderstorm before
+ * frost before heat before likely rain. Frost and heat use the daily
+ * minimum and maximum, rain the daily probability of precipitation.
+ */
+export const hintRules: readonly { kind: HintKind; applies: (d: ForecastDay) => boolean }[] = [
+  // WMO 95–99 are thunderstorms, 82 violent rain showers.
+  { kind: 'storm', applies: (d) => d.code >= 95 || d.code === 82 },
+  { kind: 'frost', applies: (d) => d.min <= 0 },
+  { kind: 'heat', applies: (d) => d.max >= 30 },
+  { kind: 'rain', applies: (d) => d.precipitationProbability >= 70 },
+];
+
+/** How many days, from today, a hint looks ahead. */
+export const HINT_DAYS = 3;
+
+/**
+ * The one hint the weather widget shows, or null: the most important kind
+ * that occurs in the next HINT_DAYS days, on the earliest day it occurs.
+ * One hint only, so the widget does not turn into a list of warnings; the
+ * official warnings (DWD) are shown separately.
+ */
+export function forecastHint(days: ForecastDay[]): ForecastHint | null {
+  const near = days.slice(0, HINT_DAYS);
+  for (const rule of hintRules) {
+    const day = near.findIndex(rule.applies);
+    const hit = near[day];
+    if (hit) return { kind: rule.kind, day, date: hit.date };
+  }
+  return null;
+}
+
 /** A geocoding result. */
 export interface Place {
   name: string;

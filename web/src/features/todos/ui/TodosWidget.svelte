@@ -1,6 +1,7 @@
 <script lang="ts">
   import { intlLocale, t } from '../../../shared/i18n';
   import TodoEditDialog from './TodoEditDialog.svelte';
+  import HintChip from '../../../shared/ui/HintChip.svelte';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
   import { usePolling } from '../../../shared/refresh';
   import {
@@ -8,6 +9,7 @@
     describeReminder,
     describeRepeat,
     formatDue,
+    isDueToday,
     parseTodosConfig,
     type Todo,
     type TodoSource,
@@ -97,8 +99,14 @@
         {@const text = describeReminder(todo.reminder)}
         <span class="icon" title={text} aria-label={text} role="img">🔔</span>
       {/if}
-      {#if todo.due}<span class="due" class:overdue={todo.overdue}>{formatDue(todo.due, new Date())}</span
-        >{/if}
+      {#if todo.due}
+        {@const label = formatDue(todo.due, new Date())}
+        {#if todo.overdue || isDueToday(todo.due, new Date())}
+          <HintChip lead={label} tone={todo.overdue ? 'danger' : 'accent'} />
+        {:else}
+          <span class="due">{label}</span>
+        {/if}
+      {/if}
       <button
         class="btn btn-icon del"
         type="button"
@@ -168,9 +176,6 @@
   }
   .icon {
     font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
-  }
-  .overdue {
-    color: var(--color-danger);
   }
   .del {
     opacity: 0;

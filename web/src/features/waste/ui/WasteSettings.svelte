@@ -196,7 +196,7 @@
     color: var(--color-accent-contrast);
   }
   .modes label:has(:focus-visible) {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
     outline-offset: -2px;
   }
   .modes input,
@@ -208,7 +208,7 @@
     pointer-events: none;
   }
   .row label:has(:focus-visible) {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
   }
   .file dl {
     display: grid;

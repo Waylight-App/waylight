@@ -197,7 +197,7 @@
   }
   button.cell {
     cursor: pointer;
-    outline: 1px dashed var(--color-accent);
+    outline: 1px dashed var(--color-accent-text);
     outline-offset: 1px;
   }
 </style>

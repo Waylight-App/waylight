@@ -16,6 +16,7 @@
   import { widgetDefinitions } from './widgets';
   import { searchActions } from './searchActions';
   import { registeredSections } from './settingsSections';
+  import { provideOpenSettings } from '../shared/ui/settingsLink';
   import { attachShortcuts } from '../shared/shortcuts';
   import Icon from '../shared/ui/icons/Icon.svelte';
   import AccountMenu from './AccountMenu.svelte';
@@ -45,6 +46,11 @@
   let settingsOpen = $state(false);
   /** Section the settings open with (#261), e.g. Appearance from the launcher. */
   let settingsSection = $state<string | undefined>();
+  // Widgets that need setting up open their settings section (#512).
+  provideOpenSettings((section) => {
+    settingsSection = section;
+    settingsOpen = true;
+  });
   let editing = $state(false);
   let error = $state('');
   let appearance = $state<Appearance>(defaultAppearance);
@@ -453,6 +459,7 @@
 <Hero
   bind:this={hero}
   name={appearance.greetingName}
+  moment={appearance.greetingMoment}
   tabsId="header-tabs"
   {container}
   {modules}

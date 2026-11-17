@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { CommandHandlers } from './appCommands';
-  import { dayPart, greetingKey } from '../features/appearance/domain/greeting';
+  import { dayPart, greetingKey, momentKey } from '../features/appearance/domain/greeting';
   import { hintExamples } from '../features/search/domain/help';
   import { HINT_INTERVAL_MS, MAX_EXAMPLE_HINTS, nextHint } from '../features/search/domain/hints';
   import type { WeatherConfig } from '../features/weather/domain/weather';
-  import { t } from '../shared/i18n';
+  import { intlLocale, t } from '../shared/i18n';
   import Icon from '../shared/ui/icons/Icon.svelte';
   import type { Container } from './container';
 
@@ -12,6 +12,8 @@
   interface Props {
     /** Name in the greeting; may be empty. */
     name: string;
+    /** Show a line by time of day under the greeting (#512). */
+    moment?: boolean;
     /** Id of the element the dashboard renders its tab pills into. */
     tabsId: string;
     container: Container;
@@ -26,6 +28,7 @@
   }
   let {
     name,
+    moment = false,
     tabsId,
     container,
     modules,
@@ -80,6 +83,9 @@
   ]);
 
   const hello = $derived(t(greetingKey(dayPart(now), name !== ''), { name }));
+  const momentLine = $derived(
+    moment ? t(momentKey(now), { weekday: now.toLocaleDateString(intlLocale(), { weekday: 'long' }) }) : '',
+  );
 
   // The field is the search (#222): it keeps the text and the focus, and the
   // results open in a panel directly below it (SearchPanel.svelte).
@@ -159,6 +165,7 @@
 
 <section class="hero">
   <h1>{hello}</h1>
+  {#if momentLine}<p class="moment">{momentLine}</p>{/if}
   <div class="search" bind:this={box}>
     <label class="pill" class:active={open} data-tour="search">
       <Icon name="search" size={20} />
@@ -248,6 +255,7 @@
     border-color: var(--color-accent);
   }
   .pill:focus-within {
+    border-color: var(--color-accent-text);
     box-shadow:
       var(--shadow),
       0 0 0 2px color-mix(in srgb, var(--color-accent) 45%, transparent);
@@ -286,5 +294,10 @@
     kbd {
       display: none;
     }
+  }
+  .moment {
+    margin: calc(-1 * var(--space-2)) 0 var(--space-2);
+    text-align: center;
+    color: var(--color-text-muted);
   }
 </style>

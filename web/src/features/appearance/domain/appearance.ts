@@ -16,6 +16,8 @@ export interface Appearance {
   language: '' | 'en' | 'de';
   /** Name in the greeting of the header (#189); may be empty. */
   greetingName: string;
+  /** A line by time of day after the greeting (#512). */
+  greetingMoment: boolean;
   /** What the launcher lists (#189). */
   launcher: 'both' | 'services' | 'bookmarks';
   /** What the start page shows (#281): everyday topics, or also the home network. */
@@ -40,6 +42,7 @@ export const defaultAppearance: Appearance = {
   customCss: '',
   language: '',
   greetingName: '',
+  greetingMoment: false,
   launcher: 'both',
   profile: 'homelab',
 };

@@ -66,6 +66,7 @@
           "custom_css": "",
           "language": "",
           "greeting_name": "Sam",
+          "greeting_moment": 0,
           "launcher": "both",
           "profile": "everyday"
         }

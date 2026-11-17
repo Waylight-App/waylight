@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from '../../../shared/ui/EmptyState.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -60,7 +61,7 @@
 {#if error}<p class="error">{error}</p>{/if}
 {#if notice}<p class="muted small" role="status">{notice}</p>{/if}
 {#if list.length === 0 && !error}
-  <p class="muted">{t('services.no_services_yet_add_them_under')}</p>
+  <EmptyState text={t('services.no_services_yet_add_them_under')} section="services" />
 {/if}
 <ul class="tiles" class:compact>
   {#each list as s (s.id)}
@@ -86,7 +87,7 @@
             })}>🔒 {days}d</span
           >
         {/if}
-        <span class="dot {s.state}" aria-label={s.state}></span>
+        <span class="dot {s.state}" role="img" aria-label={statusText(s)}></span>
       </a>
       {#if canWake(s)}
         <button
@@ -139,7 +140,7 @@
     text-decoration: none;
   }
   a:hover {
-    outline: 1px solid var(--color-accent);
+    outline: 1px solid var(--color-accent-text);
   }
   .text {
     display: flex;

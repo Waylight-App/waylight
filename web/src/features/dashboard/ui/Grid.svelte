@@ -146,6 +146,9 @@
     grid-auto-rows: var(--row-height);
     gap: var(--gap);
     min-height: 200px;
+    /* A theme's soft light around the widget area (#512); none by default. */
+    border-radius: var(--radius);
+    box-shadow: var(--glow);
   }
   .grid.editing {
     background-image: linear-gradient(to right, transparent calc(100% - 1px), var(--color-border) 0);
@@ -159,7 +162,7 @@
     min-height: 0;
   }
   .cell:focus-visible {
-    outline: 3px solid var(--color-accent);
+    outline: 3px solid var(--color-accent-text);
     outline-offset: 2px;
     border-radius: var(--radius);
   }

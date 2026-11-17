@@ -169,7 +169,7 @@
     border-color: var(--color-accent);
   }
   .tile:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
     outline-offset: 2px;
   }
   .tile:active {

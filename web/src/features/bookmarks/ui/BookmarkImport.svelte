@@ -53,6 +53,6 @@
     opacity: 0;
   }
   .file:focus-within {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
   }
 </style>
