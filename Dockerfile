@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Stage 1: build the Svelte single-page application.
-FROM node:26.13.0-alpine AS web
+FROM node:26.13.1-alpine AS web
 WORKDIR /src/web
 RUN mkdir -p ../internal/platform/webui
 COPY web/package.json web/package-lock.json ./
