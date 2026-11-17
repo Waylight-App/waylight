@@ -18,6 +18,10 @@ export interface AppearanceDTO {
    */
   greetingName: string;
   /**
+   * GreetingMoment adds a line by time of day to the greeting (#512).
+   */
+  greetingMoment: boolean;
+  /**
    * Launcher is what the launcher lists (#189).
    */
   launcher: 'both' | 'services' | 'bookmarks';

@@ -15,6 +15,7 @@ type AppearanceResponse struct {
 	BackgroundImage string
 	CustomCSS       string
 	GreetingName    string
+	GreetingMoment  bool
 	Launcher        string
 	Profile         string
 	// ThemeLocked: the organisation set theme and accent colour (#305).
@@ -29,6 +30,7 @@ type UpdateAppearanceRequest struct {
 	BackgroundImage string
 	CustomCSS       string
 	GreetingName    string
+	GreetingMoment  bool
 	Launcher        string
 	// Profile is "everyday" or "homelab" (#281); empty keeps the stored one.
 	Profile string
@@ -53,7 +55,7 @@ type Repository interface {
 
 func toResponse(a domain.Appearance) AppearanceResponse {
 	return AppearanceResponse{Theme: string(a.Theme()), AccentColor: a.AccentColor(), BackgroundImage: a.BackgroundImage(), CustomCSS: a.CustomCSS(), Language: a.Language(),
-		GreetingName: a.GreetingName(), Launcher: string(a.Launcher()), Profile: string(a.Profile())}
+		GreetingName: a.GreetingName(), GreetingMoment: a.GreetingMoment(), Launcher: string(a.Launcher()), Profile: string(a.Profile())}
 }
 
 type getAppearance struct {
@@ -107,6 +109,7 @@ func (uc *updateAppearance) Execute(ctx context.Context, req UpdateAppearanceReq
 	if err == nil {
 		err = a.SetGreetingName(req.GreetingName)
 	}
+	a.SetGreetingMoment(req.GreetingMoment)
 	if err == nil {
 		err = a.SetLauncher(req.Launcher)
 	}

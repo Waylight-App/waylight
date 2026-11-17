@@ -66,3 +66,29 @@ func TestGreetingNameAndLauncher(t *testing.T) {
 		t.Fatal("unknown launcher accepted")
 	}
 }
+
+// Applying a theme or a preset changes the look only: the profile, the
+// greeting and its line by time of day stay (#512).
+func TestStyleKeepsPersonalSettings(t *testing.T) {
+	a := Default()
+	if err := a.SetProfile("everyday"); err != nil {
+		t.Fatal(err)
+	}
+	if err := a.SetGreetingName("Alex"); err != nil {
+		t.Fatal(err)
+	}
+	a.SetGreetingMoment(true)
+	styled, err := a.WithStyle("/* trisse-home theme: x */", ThemeDark, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	schemed, err := a.WithScheme(ThemeLight, "#0055aa")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, b := range map[string]Appearance{"style": styled, "scheme": schemed} {
+		if b.Profile() != ProfileEveryday || b.GreetingName() != "Alex" || !b.GreetingMoment() {
+			t.Errorf("%s: %+v", name, b)
+		}
+	}
+}

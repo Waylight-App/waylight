@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from '../../../shared/ui/EmptyState.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -36,7 +37,7 @@
 </script>
 
 {#if unconfigured}
-  <p class="muted">{t('waste.add_the_ics_link_of_your')}</p>
+  <EmptyState text={t('waste.add_the_ics_link_of_your')} section="waste" />
 {:else if error && !overview}
   <p class="error">{error}</p>
 {:else if overview}
