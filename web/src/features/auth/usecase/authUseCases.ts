@@ -17,6 +17,7 @@ import {
   validateNewPassword,
   viewFor,
 } from '../domain/auth';
+import type { LinkedSignIn } from '../domain/identity';
 import type { SecurityEvent } from '../domain/securityEvent';
 import type { SessionInfo } from '../domain/session';
 import type { TwoFactorEnrollment, TwoFactorStatus } from '../domain/twoFactor';
@@ -145,6 +146,20 @@ export class AuthUseCases {
 
   deletePasskey(id: string): Promise<void> {
     return this.gateway.deletePasskey(id);
+  }
+
+  /** Sign-ins at the OpenID provider linked to this account (#527). */
+  linkedSignIns(): Promise<LinkedSignIn[]> {
+    return this.gateway.linkedSignIns();
+  }
+
+  /** Starts linking a sign-in; returns the provider URL to open. */
+  beginLinkSignIn(): Promise<string> {
+    return this.gateway.beginLinkSignIn();
+  }
+
+  unlinkSignIn(subject: string): Promise<void> {
+    return this.gateway.unlinkSignIn(subject);
   }
 
   /** Finishes an SSO sign-in that needs the local authentication code. */

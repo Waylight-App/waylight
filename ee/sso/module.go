@@ -42,6 +42,13 @@ func New(db *sql.DB, clock kernel.Clock, a *auth.Module, licensing licence.Licen
 // externalAccounts adapts the resolver to the auth module's port.
 type externalAccounts struct{ r *usecase.Resolver }
 
+// SSOLicensed implements the auth module's SSOLicence (#527): linked
+// sign-ins of members and guests count with any licence level, new links
+// need full use.
+func (e externalAccounts) SSOLicensed(ctx context.Context) (signIn, link bool) {
+	return e.r.Licensed(ctx)
+}
+
 func (e externalAccounts) Resolve(ctx context.Context, id auth.ExternalIdentity) (string, error) {
 	return e.r.Resolve(ctx, domain.Identity{Subject: id.Subject, Email: id.Email, EmailVerified: id.EmailVerified,
 		Name: id.Name, Username: id.Username, Groups: id.Groups})

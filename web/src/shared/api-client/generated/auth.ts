@@ -308,3 +308,25 @@ export interface LinkInfoDTO {
 export interface EmailDTO {
   email: string;
 }
+/**
+ * IdentityDTO is a sign-in at the OpenID Connect provider linked to the
+ * account (#527).
+ */
+export interface IdentityDTO {
+  /**
+   * Subject identifies the link for DELETE; it is the provider's id.
+   */
+  subject: string;
+  /**
+   * Email helps people recognise the account; it decides nothing.
+   */
+  email: string;
+  linkedAt: string /* RFC 3339 */;
+}
+/**
+ * LinkStartDTO is returned by POST /api/auth/identities/link: the page opens
+ * the provider's sign-in at Redirect.
+ */
+export interface LinkStartDTO {
+  redirect: string;
+}

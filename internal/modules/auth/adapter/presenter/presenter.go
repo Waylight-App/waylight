@@ -440,3 +440,28 @@ func LinkInfo(i usecase.LinkInfo) LinkInfoDTO {
 type EmailDTO struct {
 	Email string `json:"email"`
 }
+
+// IdentityDTO is a sign-in at the OpenID Connect provider linked to the
+// account (#527).
+type IdentityDTO struct {
+	// Subject identifies the link for DELETE; it is the provider's id.
+	Subject string `json:"subject"`
+	// Email helps people recognise the account; it decides nothing.
+	Email    string    `json:"email"`
+	LinkedAt time.Time `json:"linkedAt"`
+}
+
+// Identities maps the linked sign-ins; never null.
+func Identities(list []domain.IdentityLink) []IdentityDTO {
+	out := make([]IdentityDTO, 0, len(list))
+	for _, l := range list {
+		out = append(out, IdentityDTO{Subject: l.Subject, Email: l.Email, LinkedAt: l.CreatedAt})
+	}
+	return out
+}
+
+// LinkStartDTO is returned by POST /api/auth/identities/link: the page opens
+// the provider's sign-in at Redirect.
+type LinkStartDTO struct {
+	Redirect string `json:"redirect"`
+}

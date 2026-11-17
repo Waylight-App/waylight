@@ -528,7 +528,15 @@ func (h *Handlers) OIDCCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) redirectAfterSSO(w http.ResponseWriter, r *http.Request, res usecase.SessionResponse, ticket string, err error) {
+	// Linking a sign-in (#527) ends in the account settings, not in a session.
+	const linkResult = "/?settings=account&link="
 	switch {
+	case err == nil && res.Linked:
+		http.Redirect(w, r, linkResult+"ok", http.StatusFound)
+	case errors.Is(err, domain.ErrIdentityTaken):
+		http.Redirect(w, r, linkResult+"taken", http.StatusFound)
+	case errors.Is(err, domain.ErrLinkNeedsLicence):
+		http.Redirect(w, r, linkResult+"licence", http.StatusFound)
 	case errors.Is(err, domain.ErrSSOSecondFactorNeed):
 		http.Redirect(w, r, "/?sso_ticket="+url.QueryEscape(ticket), http.StatusFound)
 	case errors.Is(err, domain.ErrSSONotAllowed):

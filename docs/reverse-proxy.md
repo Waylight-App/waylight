@@ -80,6 +80,12 @@ dashboard without typing anything. After an error from the provider the page
 stays, so nothing loops. `https://home.example.org/?local=1` always shows the
 sign-in page, for guests or when the provider is down.
 
+Instead of the address lists, you can link an account at the provider to
+your account here while signed in: *Settings → Account → Sign in with …*.
+That is the way for personal Microsoft accounts, whose address Microsoft
+does not mark as verified; see
+[sign in with a personal Microsoft account](sign-in-with-microsoft.md).
+
 Authelia example (`configuration.yml`):
 
 ```yaml

@@ -1,3 +1,4 @@
+import type { LinkedSignIn } from '../../domain/identity';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type {
   EnrollmentDTO,
@@ -24,6 +25,8 @@ import type {
   ResetLinkDTO,
   KioskLinkDTO,
   KioskOptionsDTO,
+  IdentityDTO,
+  LinkStartDTO,
   PasskeysDTO,
   RegisteredPasskeyDTO,
   RegistrationOptionsDTO,
@@ -192,6 +195,19 @@ export class AuthApi implements AuthGateway {
 
   deletePasskey(id: string): Promise<void> {
     return this.http.delete(`/api/auth/passkeys/${encodeURIComponent(id)}`);
+  }
+
+  async linkedSignIns(): Promise<LinkedSignIn[]> {
+    const list = await this.http.get<IdentityDTO[]>('/api/auth/identities');
+    return (list ?? []).map((l) => ({ subject: l.subject, email: l.email, linkedAt: new Date(l.linkedAt) }));
+  }
+
+  async beginLinkSignIn(): Promise<string> {
+    return (await this.http.post<LinkStartDTO>('/api/auth/identities/link')).redirect;
+  }
+
+  unlinkSignIn(subject: string): Promise<void> {
+    return this.http.delete(`/api/auth/identities/${encodeURIComponent(subject)}`);
   }
 
   async logout(): Promise<void> {

@@ -49,6 +49,11 @@ type SSOConfig struct {
 	// AutoRedirect sends the sign-in page straight to the provider when no
 	// password form is offered (#514).
 	AutoRedirect bool
+	// Issuer is the provider's issuer URL; linked sign-ins are stored per
+	// issuer, so a different provider never matches an old link (#527).
+	Issuer string
+	// Identities stores linked sign-ins (#527); nil disables linking.
+	Identities IdentityRepository
 }
 
 // SSOButton is how the sign-in page labels the single sign-on button.
@@ -80,6 +85,13 @@ type SSO interface {
 	// HeaderLogin trusts the user name a trusted proxy authenticated.
 	HeaderLogin(ctx context.Context, user string, client domain.Client) (SessionResponse, string, error)
 	CompleteSecondFactor(ctx context.Context, ticket, code string, client domain.Client) (SessionResponse, error)
+	// BeginLink starts linking a sign-in at the provider to the signed-in
+	// account (#527); CompleteOIDC then returns a response with Linked set.
+	BeginLink(ctx context.Context, accountID string) (redirect, state string, err error)
+	// Links lists the sign-ins linked to an account.
+	Links(ctx context.Context, accountID string) ([]domain.IdentityLink, error)
+	// Unlink removes one of the account's linked sign-ins.
+	Unlink(ctx context.Context, accountID, subject string, client domain.Client) error
 	// SetExternalAccounts lets other people sign in through OpenID Connect
 	// (#302). It is called once while the server is built.
 	SetExternalAccounts(e ExternalAccounts)
@@ -88,6 +100,9 @@ type SSO interface {
 type pendingSSO struct {
 	nonce, verifier string
 	expires         time.Time
+	// link is the account that started linking a sign-in (#527), "" for a
+	// sign-in.
+	link string
 }
 
 // pendingTicket waits for the local second factor of one account.
@@ -155,6 +170,12 @@ func (uc *sso) BeginOIDC(ctx context.Context) (string, string, error) {
 	if uc.cfg.OIDC == nil {
 		return "", "", domain.ErrSSOUnavailable
 	}
+	return uc.begin(ctx, "")
+}
+
+// begin starts the code flow; link is the account that links the sign-in,
+// or "" to sign in.
+func (uc *sso) begin(ctx context.Context, link string) (string, string, error) {
 	state, err := uc.token()
 	if err != nil {
 		return "", "", err
@@ -178,7 +199,7 @@ func (uc *sso) BeginOIDC(ctx context.Context) (string, string, error) {
 	if len(uc.pending) >= maxPendingSSO {
 		return "", "", domain.ErrTooManyAttempts
 	}
-	uc.pending[state] = pendingSSO{nonce: nonce, verifier: verifier, expires: now.Add(ssoStateTTL)}
+	uc.pending[state] = pendingSSO{nonce: nonce, verifier: verifier, expires: now.Add(ssoStateTTL), link: link}
 	return url, state, nil
 }
 
@@ -201,6 +222,9 @@ func (uc *sso) CompleteOIDC(ctx context.Context, state, code string, client doma
 		return SessionResponse{}, "", kernel.NewPublicErrorf(kernel.ErrUnauthorized, "The identity provider did not confirm the sign-in: {detail}", "detail", err.Error())
 	}
 	id.Provider = "oidc"
+	if p.link != "" {
+		return uc.completeLink(ctx, p.link, id, client)
+	}
 	return uc.finish(ctx, id, client)
 }
 
@@ -220,7 +244,19 @@ func (uc *sso) HeaderLogin(ctx context.Context, user string, client domain.Clien
 
 func (uc *sso) finish(ctx context.Context, id domain.ExternalIdentity, client domain.Client) (SessionResponse, string, error) {
 	accountID := domain.OwnerID
-	if id.Provider == "oidc" && !uc.cfg.Mapping.Allows(id) {
+	// A sign-in linked to an account (#527) wins over the lists of the
+	// configuration: the person proved both sides while signed in.
+	linked := ""
+	if id.Provider == "oidc" {
+		var err error
+		if linked, err = uc.linkedAccount(ctx, id); err != nil {
+			uc.deps.Events.record(ctx, domain.EventLoginFailed, domain.OwnerID, client, "sso: linked account not allowed")
+			return SessionResponse{}, "", domain.ErrSSONotAllowed
+		}
+	}
+	if linked != "" {
+		accountID = linked
+	} else if id.Provider == "oidc" && !uc.cfg.Mapping.Allows(id) {
 		uc.mu.Lock()
 		external := uc.external
 		uc.mu.Unlock()

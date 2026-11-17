@@ -1,0 +1,74 @@
+# Sign in with a personal Microsoft account
+
+You can sign in to trisse-home with your personal Microsoft account
+(outlook.com, hotmail.com, live.com) instead of your password. You link the
+Microsoft account to your account here once, while you are signed in; after
+that, **Sign in with Microsoft** on the sign-in page is enough.
+
+The owner can always do this. Members and guests need a licence key that
+includes `sso` ([licence keys](licence-keys.md)).
+
+## What you need
+
+- trisse-home reachable under a fixed address, such as
+  `https://home.example.org`. The address only has to work in your own
+  browser; it does not have to be reachable from the internet.
+- A Microsoft account to register trisse-home with Microsoft. Your personal
+  account works for that too; registering is free.
+
+## Register trisse-home with Microsoft
+
+1. Open the [Microsoft Entra admin center](https://entra.microsoft.com) with
+   your Microsoft account and go to *App registrations → New registration*.
+2. Name: `trisse-home`. *Supported account types*: **Personal Microsoft
+   accounts only**.
+3. *Redirect URI*: platform **Web**, address
+   `https://home.example.org/api/auth/oidc/callback` (your address).
+4. After *Register*, copy the *Application (client) ID*.
+5. Under *Certificates & secrets → New client secret*, create a secret and
+   copy its *Value* right away; it is shown only once. Note when it expires
+   and renew it before then.
+
+## Configure trisse-home
+
+Add to `.env` and restart trisse-home:
+
+```sh
+OIDC_ISSUER=https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0
+OIDC_CLIENT_ID=<application (client) id>
+OIDC_CLIENT_SECRET=<secret value>
+OIDC_REDIRECT_URL=https://home.example.org/api/auth/oidc/callback
+OIDC_BUTTON_LABEL=Microsoft
+OIDC_BUTTON_ICON=microsoft
+```
+
+The long ID in `OIDC_ISSUER` is the same for everyone: it stands for
+personal Microsoft accounts. `OIDC_ALLOWED_EMAILS` is not needed. Microsoft
+does not mark the address of a personal account as verified, so trisse-home
+does not let anyone in by address; it only trusts the link you make in the
+next step.
+
+## Link your Microsoft account
+
+1. Sign in with your password as usual.
+2. Open *Settings → Account → Sign in with Microsoft* and choose **Connect
+   Microsoft**.
+3. Sign in at Microsoft and confirm. You come back to the settings, which
+   say that Microsoft is linked.
+
+From now on, **Sign in with Microsoft** on the sign-in page signs you in. If
+you are already signed in at Microsoft in that browser, it takes one click.
+
+**Disconnect** in the same place removes the link; you then sign in with
+your password again. One Microsoft account can be linked to one account
+here only.
+
+## Without a password
+
+Once the link works, you can turn the password sign-in off with
+`PASSWORD_LOGIN=false`, and with `OIDC_AUTO_REDIRECT=true` opening
+trisse-home goes straight to Microsoft
+([configuration](configuration.md)). `/?local=1` always shows the sign-in
+page, for example when Microsoft cannot be reached. Keep the recovery
+instructions for the owner's account at hand
+([accounts](accounts.md)).
