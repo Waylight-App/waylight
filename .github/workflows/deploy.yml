@@ -9,11 +9,10 @@ name: Deploy
 #
 # Inactive until the repository variable DEPLOY_ENABLED is "true". Never runs
 # for pull requests.
+# Paused while the server moves to the new volume and paths: the automatic
+# trigger returns once the server runs the renamed stack.
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
