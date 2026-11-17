@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '../../../../shared/i18n';
   import Meter from '../../../../shared/ui/Meter.svelte';
+  import WeatherIcon from '../../../weather/ui/WeatherIcon.svelte';
   import { copyToClipboard } from '../../../../shared/ui/clipboard';
   import { type ActionItem, type Answer, dataAge } from '../../domain/smart/answer';
 
@@ -48,7 +49,7 @@
   {#if answer.kind === 'metric'}
     <p class="value" data-severity={answer.severity}>
       {#if answer.swatch}<span class="swatch" style:background={answer.swatch} aria-hidden="true"
-        ></span>{/if}<span>{answer.value}</span>
+        ></span>{/if}{#if answer.weather}<WeatherIcon icon={answer.weather} />{/if}<span>{answer.value}</span>
     </p>
     {#if answer.percent !== undefined}<Meter percent={answer.percent} label={answer.title} />{/if}
     {#if answer.detail}<p class="detail">{answer.detail}</p>{/if}

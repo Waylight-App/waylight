@@ -14,6 +14,7 @@
   } from '../domain/weather';
   import { pollenColors, uvColors } from '../domain/healthColors';
   import type { WeatherUseCases } from '../usecase/weatherUseCases';
+  import WeatherIcon from './WeatherIcon.svelte';
 
   /** Props of the weather widget. */
   interface Props {
@@ -83,7 +84,7 @@
   {/each}
   <div class="weather">
     <div class="now">
-      <span class="icon" aria-hidden="true">{now.icon}</span>
+      <span class="icon"><WeatherIcon icon={now.icon} /></span>
       <div>
         <div class="temp">{deg(forecast.temperature)}</div>
         <div class="muted">{now.label}{cfg.label ? ` · ${cfg.label}` : ''}</div>
@@ -110,7 +111,7 @@
           {@const c = describe(d.code)}
           <li title={c.label}>
             <span class="muted">{weekday(d.date)}</span>
-            <span class="day-icon" aria-hidden="true">{c.icon}</span>
+            <span class="day-icon"><WeatherIcon icon={c.icon} /></span>
             <span>{deg(d.max)} <span class="muted">{deg(d.min)}</span></span>
             {#if d.precipitationProbability > 0}<span class="rain small"
                 >{Math.round(d.precipitationProbability)}%</span
@@ -200,8 +201,10 @@
     justify-content: center;
   }
   .icon {
+    display: flex;
     font-size: clamp(2rem, 20cqmin, 8rem);
     line-height: 1;
+    color: var(--color-accent-text);
   }
   .temp {
     font-size: clamp(1.6rem, 15cqmin, 6rem);

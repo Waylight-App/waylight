@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { TodosUseCases } from '../features/todos/usecase/todosUseCases';
-  import { describe, type WeatherConfig } from '../features/weather/domain/weather';
+  import {
+    describe,
+    type WeatherConfig,
+    type WeatherIcon as WeatherIconKind,
+  } from '../features/weather/domain/weather';
+  import WeatherIcon from '../features/weather/ui/WeatherIcon.svelte';
   import type { WeatherUseCases } from '../features/weather/usecase/weatherUseCases';
   import { intlLocale, t } from '../shared/i18n';
   import { usePolling } from '../shared/refresh';
@@ -17,7 +22,7 @@
   const poll = usePolling();
 
   let now = $state(new Date());
-  let temperature = $state<{ value: number; icon: string } | null>(null);
+  let temperature = $state<{ value: number; icon: WeatherIconKind } | null>(null);
   let due = $state<number | null>(null);
 
   $effect(() => {
@@ -61,7 +66,10 @@
   <span>{date}</span>
   {#if temperature}
     <span class="sep" aria-hidden="true">·</span>
-    <span>{temperature.icon} {t('app.greeting_temperature', { t: temperature.value })}</span>
+    <span class="temperature"
+      ><WeatherIcon icon={temperature.icon} />
+      {t('app.greeting_temperature', { t: temperature.value })}</span
+    >
   {/if}
   {#if due}
     <span class="sep" aria-hidden="true">·</span>
