@@ -2,7 +2,7 @@
   import { usePolling } from '../../../shared/refresh';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
-  import type { Service } from '../domain/service';
+  import { type Service, statusText } from '../domain/service';
   import {
     type Incident,
     type ServiceUptime,
@@ -64,7 +64,7 @@
     {@const u = uptime[s.id]}
     <li>
       <button class="row" type="button" aria-expanded={open === s.id} onclick={() => toggle(s.id)}>
-        <span class="dot {s.state}"></span>
+        <span class="dot {s.state}" role="img" aria-label={statusText(s)}></span>
         <span class="name">{s.name}</span>
         <span class="pct" title={t('services.uptime_30d')}>{formatUptime(u?.month ?? null)}</span>
       </button>
