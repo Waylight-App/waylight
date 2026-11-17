@@ -887,6 +887,8 @@ export const de: Record<BaseMessageKey, string> = {
   'common.testing': 'Wird geprüft …',
   'common.test_save': 'Prüfen & speichern',
   'auth.enter_code_hint': 'Gib den Code aus deiner Authenticator-App ein.',
+  'auth.welcome_back': 'Willkommen zurück',
+  'auth.or_with_password': 'oder mit Passwort',
   'auth.please_log_in': 'Bitte melde dich an.',
   'auth.unknown_ip': 'unbekannte IP',
   'backup.creating': 'Wird erstellt …',
