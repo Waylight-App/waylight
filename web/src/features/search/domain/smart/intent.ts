@@ -186,20 +186,24 @@ function interpretIntent(
   // lacks a required slot is only useful when the user asked for it.
   let trigger = score;
   if (!explicit) {
-    for (const { term, weight } of intent.terms) {
-      let best = 0;
-      let at = -1;
+    // Every (term, word) pair that matches, best first: each word and each
+    // term count once, so "containers" goes to the exact term "containers"
+    // and is not taken first by a fuzzy match on "container".
+    const pairs: { term: number; token: number; score: number }[] = [];
+    intent.terms.forEach(({ term, weight }, ti) =>
       tokens.forEach((t, i) => {
-        if (used.has(i)) return;
         const q = matchToken(t, term);
-        const s = q ? weight * QUALITY_FACTOR[q] : 0;
-        if (s > best) [best, at] = [s, i];
-      });
-      if (at >= 0) {
-        used.add(at);
-        score += best;
-        trigger += best;
-      }
+        if (q) pairs.push({ term: ti, token: i, score: weight * QUALITY_FACTOR[q] });
+      }),
+    );
+    pairs.sort((a, b) => b.score - a.score || a.term - b.term || a.token - b.token);
+    const termsUsed = new Set<number>();
+    for (const p of pairs) {
+      if (termsUsed.has(p.term) || used.has(p.token)) continue;
+      termsUsed.add(p.term);
+      used.add(p.token);
+      score += p.score;
+      trigger += p.score;
     }
   }
   const slots: Record<string, SlotValue> = {};

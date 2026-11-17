@@ -135,6 +135,33 @@ describe('SmartSearch', () => {
     expect(answers.map((a) => a.intent)).toEqual(['system.temperature']);
   });
 
+  it('says why when a source fails, and asks again next time', async () => {
+    const system = {
+      id: 'system',
+      resolve: vi.fn<(m: Match, s: AbortSignal) => Promise<Answer>>(async () => {
+        throw new Error('down');
+      }),
+    } satisfies SearchSource;
+    const search = new SmartSearch({
+      intents: INTENTS,
+      sources: [system],
+      canAct: true,
+      askBack: () => ({ kind: 'text', intent: '', title: '', text: '', at: null }),
+      unavailable: (m, e) => ({
+        kind: 'text',
+        intent: m.intent.id,
+        title: 'unavailable',
+        text: (e as Error).message,
+        at: null,
+      }),
+    });
+    const [first] = await search.answer('ram', signal());
+    expect(first).toMatchObject({ intent: 'system.memory', title: 'unavailable', text: 'down' });
+    await search.answer('ram', signal());
+    // The failure is not cached: the second query asks the source again.
+    expect(system.resolve).toHaveBeenCalledTimes(2);
+  });
+
   it('puts direct answers first and survives a throwing direct source', async () => {
     const calc: SearchSource = {
       id: 'calc',

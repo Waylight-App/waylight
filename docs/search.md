@@ -173,8 +173,20 @@ morgen") or use a prefix with a slash for a direct answer:
 | `/smart` | Disk health |
 | `/speed` | Latest internet speed test |
 | `/timeline` | Recent events |
+| `/feiertag`, `/holiday` | The next public and school holidays |
+| `/geburtstag`, `/birthday` | Upcoming birthdays |
+| `/einkauf`, `/shopping` | The open items of your shopping list |
+| `/strom`, `/power` | The electricity price now and the cheapest hour ahead |
+| `/football`, `/fussball` | Last and next match of your team, or the league table |
+| `/sprit`, `/fuel` | Fuel prices nearby |
 
-An answer only appears for modules that are enabled and set up. A restart
+Questions work as well: "wann fährt der nächste bus", "brauche ich einen
+schirm", "wer hat heute geburtstag", "was muss ich einkaufen", "wann ist
+strom am günstigsten", "is everything up".
+
+An answer only appears for modules that are enabled and set up. When a
+module cannot answer right now, for example because the departure service
+is down, the answer says so instead of leaving only the web search. A restart
 from the search asks for confirmation first, exactly like the button in the
 Docker widget.
 
