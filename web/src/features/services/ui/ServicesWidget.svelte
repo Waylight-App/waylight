@@ -140,7 +140,7 @@
     text-decoration: none;
   }
   a:hover {
-    outline: 1px solid var(--color-accent);
+    outline: 1px solid var(--color-accent-text);
   }
   .text {
     display: flex;

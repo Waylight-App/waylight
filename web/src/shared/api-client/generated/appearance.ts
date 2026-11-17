@@ -72,6 +72,16 @@ export interface GalleryDTO {
   canRestore: boolean;
 }
 /**
+ * DefaultThemeDTO is GET /api/appearance/default-theme (#507): the theme the
+ * sign-in page uses before anyone is known. CSS is empty for the built-in
+ * look; Scheme is empty for a theme that has a light and a dark variant.
+ */
+export interface DefaultThemeDTO {
+  id: string;
+  css: string;
+  scheme: 'light' | 'dark' | '';
+}
+/**
  * BackgroundDTO is an uploaded background picture (#277); url is the value
  * to store as background, thumb a small preview.
  */

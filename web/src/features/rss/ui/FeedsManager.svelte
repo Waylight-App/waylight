@@ -255,7 +255,7 @@
     margin-top: var(--space-2);
   }
   .opml label:has(:focus-visible) {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
   }
   .file {
     position: absolute;

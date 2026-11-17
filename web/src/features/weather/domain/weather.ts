@@ -116,49 +116,72 @@ export function parseWeatherConfig(raw: Record<string, unknown>): WeatherConfig 
   };
 }
 
-/** Human readable label and emoji for a WMO weather code. */
+/**
+ * The kinds of weather the icons draw (#508). Day and night differ only where
+ * the sun or the moon is visible.
+ */
+export type WeatherIcon =
+  | 'clear-day'
+  | 'clear-night'
+  | 'partly-day'
+  | 'partly-night'
+  | 'cloudy'
+  | 'fog'
+  | 'drizzle'
+  | 'rain'
+  | 'sleet'
+  | 'snow'
+  | 'thunder'
+  | 'unknown';
+
+/** Human readable label and icon for a WMO weather code. */
 export interface Condition {
   label: string;
-  icon: string;
+  icon: WeatherIcon;
 }
 
 const conditions: Record<number, Condition> = {
-  0: { label: 'weather.cond.clear_sky', icon: '☀️' },
-  1: { label: 'weather.cond.mainly_clear', icon: '🌤️' },
-  2: { label: 'weather.cond.partly_cloudy', icon: '⛅' },
-  3: { label: 'weather.cond.overcast', icon: '☁️' },
-  45: { label: 'weather.cond.fog', icon: '🌫️' },
-  48: { label: 'weather.cond.rime_fog', icon: '🌫️' },
-  51: { label: 'weather.cond.light_drizzle', icon: '🌦️' },
-  53: { label: 'weather.cond.drizzle', icon: '🌦️' },
-  55: { label: 'weather.cond.dense_drizzle', icon: '🌧️' },
-  56: { label: 'weather.cond.freezing_drizzle', icon: '🌧️' },
-  57: { label: 'weather.cond.freezing_drizzle', icon: '🌧️' },
-  61: { label: 'weather.cond.light_rain', icon: '🌦️' },
-  63: { label: 'weather.cond.rain', icon: '🌧️' },
-  65: { label: 'weather.cond.heavy_rain', icon: '🌧️' },
-  66: { label: 'weather.cond.freezing_rain', icon: '🌧️' },
-  67: { label: 'weather.cond.freezing_rain', icon: '🌧️' },
-  71: { label: 'weather.cond.light_snow', icon: '🌨️' },
-  73: { label: 'weather.cond.snow', icon: '🌨️' },
-  75: { label: 'weather.cond.heavy_snow', icon: '❄️' },
-  77: { label: 'weather.cond.snow_grains', icon: '🌨️' },
-  80: { label: 'weather.cond.rain_showers', icon: '🌦️' },
-  81: { label: 'weather.cond.rain_showers', icon: '🌧️' },
-  82: { label: 'weather.cond.violent_showers', icon: '⛈️' },
-  85: { label: 'weather.cond.snow_showers', icon: '🌨️' },
-  86: { label: 'weather.cond.snow_showers', icon: '❄️' },
-  95: { label: 'weather.cond.thunderstorm', icon: '⛈️' },
-  96: { label: 'weather.cond.thunderstorm_with_hail', icon: '⛈️' },
-  99: { label: 'weather.cond.thunderstorm_with_hail', icon: '⛈️' },
+  0: { label: 'weather.cond.clear_sky', icon: 'clear-day' },
+  1: { label: 'weather.cond.mainly_clear', icon: 'partly-day' },
+  2: { label: 'weather.cond.partly_cloudy', icon: 'partly-day' },
+  3: { label: 'weather.cond.overcast', icon: 'cloudy' },
+  45: { label: 'weather.cond.fog', icon: 'fog' },
+  48: { label: 'weather.cond.rime_fog', icon: 'fog' },
+  51: { label: 'weather.cond.light_drizzle', icon: 'drizzle' },
+  53: { label: 'weather.cond.drizzle', icon: 'drizzle' },
+  55: { label: 'weather.cond.dense_drizzle', icon: 'drizzle' },
+  56: { label: 'weather.cond.freezing_drizzle', icon: 'sleet' },
+  57: { label: 'weather.cond.freezing_drizzle', icon: 'sleet' },
+  61: { label: 'weather.cond.light_rain', icon: 'rain' },
+  63: { label: 'weather.cond.rain', icon: 'rain' },
+  65: { label: 'weather.cond.heavy_rain', icon: 'rain' },
+  66: { label: 'weather.cond.freezing_rain', icon: 'sleet' },
+  67: { label: 'weather.cond.freezing_rain', icon: 'sleet' },
+  71: { label: 'weather.cond.light_snow', icon: 'snow' },
+  73: { label: 'weather.cond.snow', icon: 'snow' },
+  75: { label: 'weather.cond.heavy_snow', icon: 'snow' },
+  77: { label: 'weather.cond.snow_grains', icon: 'snow' },
+  80: { label: 'weather.cond.rain_showers', icon: 'rain' },
+  81: { label: 'weather.cond.rain_showers', icon: 'rain' },
+  82: { label: 'weather.cond.violent_showers', icon: 'thunder' },
+  85: { label: 'weather.cond.snow_showers', icon: 'snow' },
+  86: { label: 'weather.cond.snow_showers', icon: 'snow' },
+  95: { label: 'weather.cond.thunderstorm', icon: 'thunder' },
+  96: { label: 'weather.cond.thunderstorm_with_hail', icon: 'thunder' },
+  99: { label: 'weather.cond.thunderstorm_with_hail', icon: 'thunder' },
 };
 
-/** Maps a WMO weather code to a label and icon; night variants for clear skies. */
+/** Night versions of the icons that show the sun. */
+const atNight: Partial<Record<WeatherIcon, WeatherIcon>> = {
+  'clear-day': 'clear-night',
+  'partly-day': 'partly-night',
+};
+
+/** Maps a WMO weather code to a label and icon; the moon instead of the sun at night. */
 export function describe(code: number, isDay = true): Condition {
-  const c = conditions[code] ?? { label: 'weather.cond.unknown', icon: '❔' };
+  const c = conditions[code] ?? { label: 'weather.cond.unknown', icon: 'unknown' };
   const label = t(c.label as MessageKey);
-  if (!isDay && (code === 0 || code === 1)) return { label, icon: '🌙' };
-  return { label, icon: c.icon };
+  return { label, icon: (!isDay && atNight[c.icon]) || c.icon };
 }
 
 /** Formats a place for display, e.g. "Oldenburg, Lower Saxony, Germany". */

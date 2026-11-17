@@ -255,6 +255,7 @@
     border-color: var(--color-accent);
   }
   .pill:focus-within {
+    border-color: var(--color-accent-text);
     box-shadow:
       var(--shadow),
       0 0 0 2px color-mix(in srgb, var(--color-accent) 45%, transparent);

@@ -21,7 +21,7 @@ that text on buttons stays readable.
 
 ## Theme gallery
 
-The gallery offers ready-made themes: Nord, Catppuccin Latte and Mocha,
+The gallery offers ready-made themes: Amber (light and dark), Nord, Catppuccin Latte and Mocha,
 Gruvbox Dark, Solarized Light and Dark, Dracula, Tokyo Night, One Dark, a
 high-contrast theme and a classic portal look. *Apply* switches to a theme at once.
 
@@ -29,6 +29,15 @@ Applying a theme replaces your accent colour and custom CSS. A theme made
 for light or for dark also switches to that scheme; a theme marked *Light and
 dark* brings both and follows your choice, including *System*. Your own
 settings are kept, and **Restore my own style** brings them back.
+
+### Default theme for everyone
+
+The server operator can make a built-in theme the default with
+`DEFAULT_THEME` ([configuration](configuration.md#look)). The sign-in page
+uses it, and so does every account until it chooses its own appearance.
+Changing one setting, such as the accent colour, keeps the theme as it was
+shown; from then on the account's own choice counts. An organisation's
+branding still sets the scheme and accent colour on top.
 
 Every theme can be downloaded as a small JSON file, and **Import theme…**
 adds one somebody shared with you. Themes set colours, corner radii, shadows
