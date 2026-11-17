@@ -32,7 +32,7 @@
   function openMicrosoft() {
     if (!flow) return;
     // A window, not a tab, so this dialog stays visible next to it.
-    popup = window.open(flow.verificationUri, 'trisse-microsoft', 'popup,width=520,height=700');
+    popup = window.open(flow.verificationUri, 'waylight-microsoft', 'popup,width=520,height=700');
   }
 
   async function copy() {

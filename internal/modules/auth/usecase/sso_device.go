@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 // Sign in with Microsoft by code (#535): the device authorization grant needs

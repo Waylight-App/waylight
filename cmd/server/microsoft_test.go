@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 // fakeMicrosoft is a device-flow provider (RFC 8628) like Microsoft's
@@ -62,7 +62,7 @@ func fakeMicrosoft(t *testing.T, subject, email string) *httptest.Server {
 			return
 		}
 		h, _ := json.Marshal(map[string]string{"alg": "RS256", "kid": "k1"})
-		c, _ := json.Marshal(map[string]any{"iss": srv.URL, "sub": subject, "aud": "trisse", "email": email,
+		c, _ := json.Marshal(map[string]any{"iss": srv.URL, "sub": subject, "aud": "waylight", "email": email,
 			"exp": time.Now().Add(time.Hour).Unix(), "iat": time.Now().Unix()})
 		input := b64(h) + "." + b64(c)
 		digest := sha256.Sum256([]byte(input))
@@ -79,7 +79,7 @@ func fakeMicrosoft(t *testing.T, subject, email string) *httptest.Server {
 func TestSignInWithMicrosoftByCode(t *testing.T) {
 	ms := fakeMicrosoft(t, "ms-sub", "me@outlook.com")
 	app := newTestServer(t, "http://127.0.0.1:1", func(c *config.Config) {
-		c.MicrosoftClientID, c.MicrosoftIssuer = "trisse", ms.URL
+		c.MicrosoftClientID, c.MicrosoftIssuer = "waylight", ms.URL
 	})
 	owner := newClient(t, app.URL)
 	var session obj

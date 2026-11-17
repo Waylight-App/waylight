@@ -23,7 +23,7 @@ const SecretKeyBytes = 32
 // is a safe default for a service that must not be reachable from the internet.
 const DefaultAllowedCIDRs = "127.0.0.0/8,::1/128,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fc00::/7"
 
-// DefaultMicrosoftClientID is trisse-home's public app registration at
+// DefaultMicrosoftClientID is Waylight's public app registration at
 // Microsoft for personal accounts (#535). It is not a secret: the device
 // flow uses no secret, and the id only names the app on Microsoft's consent
 // page. MICROSOFT_CLIENT_ID replaces it; an empty value turns the feature off.
