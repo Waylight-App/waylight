@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/modules/todos/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/modules/todos/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // oauthAPI is the HTTP side shared by the providers that sign in with OAuth

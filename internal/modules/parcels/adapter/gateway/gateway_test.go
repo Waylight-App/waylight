@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/parcels/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/parcels/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 func TestDHL(t *testing.T) {

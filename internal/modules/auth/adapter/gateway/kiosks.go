@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 // KioskRepository implements usecase.KioskRepository (#50).

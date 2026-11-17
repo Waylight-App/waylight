@@ -2,7 +2,7 @@
 
 - Status: Accepted (2026-11-16)
 - Date: 2026-11-16
-- Issue: [#307](https://github.com/itadori26/trisse-home/issues/307), part of [#292](https://github.com/itadori26/trisse-home/issues/292)
+- Issue: [#307](https://github.com/itadori26/waylight/issues/307), part of [#292](https://github.com/itadori26/waylight/issues/292)
 - Builds on: [ADR 0017](0017-open-core.md), [ADR 0020](0020-ee-stays-proprietary.md)
 
 ## Context
@@ -32,7 +32,7 @@ the ones that are switched off.
 
 ### The plugin API (core, MIT)
 
-- A plugin exports `plugin: TrissePlugin` with widgets, settings sections and
+- A plugin exports `plugin: WaylightPlugin` with widgets, settings sections and
   search contributions. Each entry carries its metadata (kind, title,
   category, icon, default size, the licence feature it needs) and a
   `mount(host, context)` function that returns an `unmount` function.

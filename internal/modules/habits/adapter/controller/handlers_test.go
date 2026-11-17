@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/habits/domain"
-	"trisse-home/internal/modules/habits/usecase"
+	"waylight/internal/modules/habits/domain"
+	"waylight/internal/modules/habits/usecase"
 )
 
 type fakeUC struct{ usecase.Habits }

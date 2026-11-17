@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"trisse-home/internal/platform/scheduler"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/platform/scheduler"
+	"waylight/internal/shared/sqlutil"
 )
 
 // prepareDemo creates the demo account (which seeds the sample data), takes

@@ -5,17 +5,17 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 const fp = "AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89"
 
 func TestNewSettings(t *testing.T) {
-	s, err := NewSettings(" https://10.0.0.5:8006/ ", " monitor@pve!trisse-home ", " uuid ", fp)
+	s, err := NewSettings(" https://10.0.0.5:8006/ ", " monitor@pve!waylight ", " uuid ", fp)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if s.URL != "https://10.0.0.5:8006" || s.TokenID != "monitor@pve!trisse-home" || s.Secret != "uuid" ||
+	if s.URL != "https://10.0.0.5:8006" || s.TokenID != "monitor@pve!waylight" || s.Secret != "uuid" ||
 		s.Fingerprint != strings.ToLower(strings.ReplaceAll(fp, ":", "")) {
 		t.Fatalf("not normalised: %+v", s)
 	}

@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/backupmonitor/usecase"
+	"waylight/internal/modules/backupmonitor/usecase"
 )
 
 // SourceDTO is a backup source in API responses.

@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/photos/adapter/controller"
-	"trisse-home/internal/modules/photos/adapter/gateway"
-	"trisse-home/internal/modules/photos/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/photos/adapter/controller"
+	"waylight/internal/modules/photos/adapter/gateway"
+	"waylight/internal/modules/photos/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the photo frame rings and implements modules.Module.

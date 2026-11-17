@@ -13,7 +13,7 @@ export const serverMessages = {
   srv_cd1893bbd9659e1f: "The author must be at most 60 characters long.",
   srv_d972a27017a770c5: "The background picture does not exist (any more).",
   srv_b410fbcb84d6e168: "The custom CSS must be at most 64 KiB.",
-  srv_68677939789f0976: "The file is not a trisse-home theme (JSON).",
+  srv_8527099a2a6e9931: "The file is not a Waylight theme (JSON).",
   srv_d55a4312396d903f: "The language must be en, de or empty (browser).",
   srv_64b6233c48b2792b: "The launcher shows both, services or bookmarks.",
   srv_a285cd5903e89e3c: "The scheme must be light or dark.",

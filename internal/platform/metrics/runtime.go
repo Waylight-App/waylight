@@ -5,7 +5,7 @@ import (
 	"runtime/metrics"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 var started = time.Now()
@@ -44,7 +44,7 @@ func Runtime(version string) []kernel.MetricSample {
 	}
 	out = append(out,
 		kernel.Gauge("process_start_time_seconds", "Start time of the process since the Unix epoch in seconds.", float64(started.Unix())),
-		kernel.Gauge("trisse_build_info", "Version of the running build (value is always 1).", 1,
+		kernel.Gauge("waylight_build_info", "Version of the running build (value is always 1).", 1,
 			kernel.Label{Name: "version", Value: version}, kernel.Label{Name: "goversion", Value: runtime.Version()}),
 	)
 	return out

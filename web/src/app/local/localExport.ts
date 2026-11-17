@@ -1,6 +1,6 @@
 /**
  * Export of the extension's local mode (ADR 0019, step 4): writes the local
- * data as a trisse-home export file, so moving to a server is the server's
+ * data as a waylight export file, so moving to a server is the server's
  * existing import (Settings → Transfer). Each feature with a local gateway
  * contributes one section, named like its server module; a feature without
  * stored data is left out, so the import keeps the server's data for it.
@@ -110,8 +110,8 @@ export async function exportLocalData(
   return { format: EXPORT_FORMAT, version: EXPORT_VERSION, exportedAt: now.toISOString(), sections: out };
 }
 
-/** File name in the server's pattern (trisse-home-export-YYYYMMDD-HHMMSS.json). */
+/** File name in the server's pattern (waylight-export-YYYYMMDD-HHMMSS.json). */
 export function exportFileName(now: Date): string {
   const p = (n: number) => String(n).padStart(2, '0');
-  return `trisse-home-export-${now.getFullYear()}${p(now.getMonth() + 1)}${p(now.getDate())}-${p(now.getHours())}${p(now.getMinutes())}${p(now.getSeconds())}.json`;
+  return `waylight-export-${now.getFullYear()}${p(now.getMonth() + 1)}${p(now.getDate())}-${p(now.getHours())}${p(now.getMinutes())}${p(now.getSeconds())}.json`;
 }

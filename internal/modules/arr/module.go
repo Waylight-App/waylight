@@ -5,12 +5,12 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/arr/adapter/controller"
-	"trisse-home/internal/modules/arr/adapter/gateway"
-	"trisse-home/internal/modules/arr/domain"
-	"trisse-home/internal/modules/arr/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/arr/adapter/controller"
+	"waylight/internal/modules/arr/adapter/gateway"
+	"waylight/internal/modules/arr/domain"
+	"waylight/internal/modules/arr/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the *arr rings and implements modules.Module.

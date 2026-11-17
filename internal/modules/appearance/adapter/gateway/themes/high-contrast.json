@@ -1,7 +1,7 @@
 {
   "id": "high-contrast",
   "name": "High contrast",
-  "author": "trisse-home",
+  "author": "waylight",
   "scheme": "dark",
   "tokens": {
     "--color-bg": "#000000",

@@ -3,7 +3,7 @@ package usecase
 import (
 	"time"
 
-	"trisse-home/internal/modules/bookmarks/domain"
+	"waylight/internal/modules/bookmarks/domain"
 )
 
 // Filter narrows ListBookmarks. Empty fields match everything; FolderID

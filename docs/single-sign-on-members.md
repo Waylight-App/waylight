@@ -16,10 +16,10 @@ Set the OpenID Connect variables for the owner first, then add:
 # People with a verified address in this domain, or these addresses.
 OIDC_MEMBER_EMAILS=@example.org,freelancer@mail.example
 # Or everyone in one of these groups of the provider.
-OIDC_MEMBER_GROUPS=trisse-home-users
+OIDC_MEMBER_GROUPS=waylight-users
 # The claim that lists a person's groups.
 OIDC_GROUPS_CLAIM=groups
-# Optional: only these provider groups become trisse-home groups.
+# Optional: only these provider groups become waylight groups.
 OIDC_SYNC_GROUPS=Office,Sales
 ```
 
@@ -42,7 +42,7 @@ number.
 - **Licence key expired or too few seats:** existing members still sign in,
   but no new accounts are created and groups are not changed.
 
-- **Admins:** with `OIDC_ADMIN_GROUPS=trisse-admins` (comma-separated),
+- **Admins:** with `OIDC_ADMIN_GROUPS=waylight-admins` (comma-separated),
   everyone in one of these provider groups becomes an admin at sign-in
   ([admins](accounts.md#admins)). Someone who left the group is a member
   again at their next sign-in. An admin you made by hand stays one whatever
@@ -61,14 +61,14 @@ under *Settings → Members and groups*.
 2. Under *Certificates & secrets*, create a client secret.
 3. Under *Token configuration*, add the *groups* claim for ID tokens and
    choose *Groups assigned to the application*. By default Entra puts the
-   groups' object IDs into the claim; trisse-home then names its groups
+   groups' object IDs into the claim; Waylight then names its groups
    after these IDs, and `OIDC_MEMBER_GROUPS` and `OIDC_SYNC_GROUPS` take the
    IDs too. Where Entra offers to emit group names instead (for groups synced
    from Active Directory, and for cloud-only groups in newer tenants), the
    claim and the variables use names. This guide has not been tested against
    a real tenant yet; please report what you find.
 4. Under *Enterprise applications*, open the app, set *Assignment required*
-   and assign the groups that may use trisse-home.
+   and assign the groups that may use Waylight.
 5. Set:
 
    ```sh
@@ -102,6 +102,6 @@ Google's ID tokens carry no groups. Use the e-mail domain instead:
    OIDC_MEMBER_EMAILS=@your-workspace-domain.example
    ```
 
-Groups are then maintained in trisse-home itself. If you need provider
+Groups are then maintained in Waylight itself. If you need provider
 groups, put an identity provider that adds a groups claim, such as
 Authentik or Keycloak, in front of Google.

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Theme gallery (#111): a theme sets design tokens only, never layout or
@@ -81,7 +81,7 @@ func validToken(k, v string) bool {
 }
 
 // ThemeCSSMarker starts the custom CSS written by applying a theme.
-const ThemeCSSMarker = "/* trisse-home theme: "
+const ThemeCSSMarker = "/* waylight theme: "
 
 // ThemeDef is a gallery theme.
 type ThemeDef struct {

@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/fuel/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/fuel/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 const key = "00000000-0000-0000-0000-000000000002"

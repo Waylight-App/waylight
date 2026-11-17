@@ -209,7 +209,7 @@
       {/if}
       <p class="muted">
         <a
-          href="https://github.com/itadori26/trisse-home/blob/main/docs/security-model.md#wake-on-lan-relay"
+          href="https://github.com/itadori26/waylight/blob/main/docs/security-model.md#wake-on-lan-relay"
           target="_blank"
           rel="noopener noreferrer">{t('common.why_extra_step')}</a
         >

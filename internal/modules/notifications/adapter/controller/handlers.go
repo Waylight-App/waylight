@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules/notifications/adapter/presenter"
-	"trisse-home/internal/modules/notifications/domain"
-	"trisse-home/internal/modules/notifications/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/notifications/adapter/presenter"
+	"waylight/internal/modules/notifications/domain"
+	"waylight/internal/modules/notifications/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the notification endpoints.

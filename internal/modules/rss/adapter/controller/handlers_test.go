@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/rss/domain"
-	"trisse-home/internal/modules/rss/usecase"
+	"waylight/internal/modules/rss/domain"
+	"waylight/internal/modules/rss/usecase"
 )
 
 type fakeReader struct {
@@ -62,7 +62,7 @@ func TestOPMLHandlers(t *testing.T) {
 	rec = httptest.NewRecorder()
 	h.ExportOPML(rec, httptest.NewRequest(http.MethodGet, "/api/rss/opml", nil))
 	if rec.Body.String() != "<opml/>" || !strings.HasPrefix(rec.Header().Get("Content-Type"), "text/x-opml") ||
-		!strings.Contains(rec.Header().Get("Content-Disposition"), "trisse-home-feeds.opml") {
+		!strings.Contains(rec.Header().Get("Content-Disposition"), "waylight-feeds.opml") {
 		t.Fatalf("%v %s", rec.Header(), rec.Body)
 	}
 }

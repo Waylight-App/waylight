@@ -4,7 +4,7 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // RecoveryCodeCount is the number of recovery codes issued when 2FA is enabled.

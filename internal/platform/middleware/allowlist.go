@@ -6,7 +6,7 @@ import (
 	"net/netip"
 	"sync"
 
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/shared/httpapi"
 )
 
 // maxRememberedClients bounds the memory used to deduplicate allow logs.

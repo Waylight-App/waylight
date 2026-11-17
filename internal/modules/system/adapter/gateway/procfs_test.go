@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/system/domain"
+	"waylight/internal/modules/system/domain"
 )
 
 func writeFile(t *testing.T, path, content string) {

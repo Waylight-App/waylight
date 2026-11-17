@@ -1,6 +1,6 @@
 package gateway
 
-import "trisse-home/internal/shared/sqlutil"
+import "waylight/internal/shared/sqlutil"
 
 // TransferTables are the tables included in data exports, parents before
 // children (#471). The CalDAV settings are left out: they hold a password.

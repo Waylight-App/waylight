@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/dashboard/domain"
+	"waylight/internal/modules/dashboard/domain"
 )
 
 type manageTabs struct{ deps Deps }

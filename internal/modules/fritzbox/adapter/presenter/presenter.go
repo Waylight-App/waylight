@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/fritzbox/usecase"
+	"waylight/internal/modules/fritzbox/usecase"
 )
 
 // SettingsDTO is returned by the settings endpoints (never the password).

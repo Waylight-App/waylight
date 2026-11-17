@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/onboarding/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/onboarding/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestTourPerAccount: the owner finishing the tour does not hide it from a

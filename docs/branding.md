@@ -16,7 +16,7 @@ colours. This needs a server built with the `ee` features.
 - **Accent** and **secondary colour** as `#rrggbb`. The settings warn when a
   colour has less than 4.5:1 contrast (WCAG AA) on the light or the dark
   theme; it can still be saved.
-- **Hide "Powered by trisse-home"** on the sign-in page, in the footer and
+- **Hide "Powered by Waylight"** on the sign-in page, in the footer and
   in the about section.
 - **Default theme** (system, light or dark): the sign-in page uses it, and
   every account that has not chosen its own appearance starts with it and

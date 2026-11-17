@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 // A module adds its end-to-end check from its own cmd/server/api_<name>_test.go

@@ -89,7 +89,7 @@ type Config struct {
 	SpacePictureAPIURL string
 	// WireGuardDir contains the export of scripts/wireguard-export.sh.
 	WireGuardDir string
-	// ConfigFile is a trisse-home.yaml applied at every start; the sections
+	// ConfigFile is a waylight.yaml applied at every start; the sections
 	// it contains are read-only in the UI (#88). Empty disables managed mode.
 	ConfigFile string
 	// DiskHealthDir contains the export of scripts/smart-export.sh; exports
@@ -138,8 +138,9 @@ type Config struct {
 	OIDCButtonIcon   string
 	OIDCAutoRedirect bool
 	// DefaultTheme is the id of a built-in theme for the sign-in page and
-	// every account without its own appearance (#507); empty keeps the
-	// built-in look.
+	// every account without its own appearance (#507). Amber unless the
+	// operator names another theme; "none" leaves it empty, which keeps the
+	// look of the plain design tokens.
 	DefaultTheme string
 	// PublicURL is the address users open, e.g. https://home.example.org;
 	// required for passkeys (WebAuthn needs a fixed origin and HTTPS).
@@ -172,7 +173,7 @@ func Load(getenv func(string) string) (Config, error) {
 	l := loader{getenv: getenv}
 	cfg := Config{
 		ListenAddr:               l.str("LISTEN_ADDR", ":8090"),
-		DatabasePath:             l.str("DATABASE_PATH", "data/trisse-home.db"),
+		DatabasePath:             l.str("DATABASE_PATH", "data/waylight.db"),
 		LogLevel:                 l.level("LOG_LEVEL", slog.LevelInfo),
 		LogFormat:                l.oneOf("LOG_FORMAT", "json", "json", "text"),
 		AllowedCIDRs:             l.prefixes("ALLOWED_CIDRS", DefaultAllowedCIDRs),
@@ -218,7 +219,7 @@ func Load(getenv func(string) string) (Config, error) {
 		DemoMode:                 l.boolean("DEMO_MODE", false),
 		DemoResetInterval:        l.duration("DEMO_RESET_INTERVAL", 3*time.Hour),
 		InstallMethod:            l.oneOf("INSTALL_METHOD", "", "", "docker", "package", "appliance"),
-		DeviceDir:                l.str("DEVICE_DIR", "/var/lib/trisse-home/device"),
+		DeviceDir:                l.str("DEVICE_DIR", "/var/lib/waylight/device"),
 		OIDCIssuer:               l.str("OIDC_ISSUER", ""),
 		OIDCClientID:             l.str("OIDC_CLIENT_ID", ""),
 		OIDCClientSecret:         l.str("OIDC_CLIENT_SECRET", ""),
@@ -235,7 +236,7 @@ func Load(getenv func(string) string) (Config, error) {
 		OIDCAutoRedirect:         l.boolean("OIDC_AUTO_REDIRECT", false),
 		MicrosoftClientID:        strings.TrimSpace(l.str("MICROSOFT_CLIENT_ID", DefaultMicrosoftClientID)),
 		MicrosoftIssuer:          MicrosoftConsumersIssuer,
-		DefaultTheme:             strings.ToLower(l.str("DEFAULT_THEME", "")),
+		DefaultTheme:             defaultTheme(l.str("DEFAULT_THEME", "amber")),
 	}
 	if raw := l.getenv("PUBLIC_URL"); raw != "" {
 		u, err := url.Parse(strings.TrimRight(raw, "/"))
@@ -324,6 +325,16 @@ func (l *loader) str(key, def string) string {
 		return v
 	}
 	return def
+}
+
+// defaultTheme maps DEFAULT_THEME to a theme id; "none" turns the default
+// theme off.
+func defaultTheme(v string) string {
+	v = strings.ToLower(v)
+	if v == "none" {
+		return ""
+	}
+	return v
 }
 
 // entityID matches Home Assistant entity IDs such as switch.coffee.

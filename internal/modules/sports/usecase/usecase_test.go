@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/sports/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/sports/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type clk struct{ t time.Time }

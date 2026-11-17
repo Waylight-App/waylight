@@ -56,7 +56,7 @@
   <p class="muted small">
     {t('parcels.mail_hint')}
     <a
-      href="https://github.com/itadori26/trisse-home/blob/main/docs/parcels-mail.md"
+      href="https://github.com/itadori26/waylight/blob/main/docs/parcels-mail.md"
       target="_blank"
       rel="noopener noreferrer">{t('parcels.mail_guide')}</a
     >

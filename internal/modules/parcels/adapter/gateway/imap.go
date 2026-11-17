@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/parcels/domain"
-	"trisse-home/internal/modules/parcels/usecase"
-	"trisse-home/internal/shared/imap"
+	"waylight/internal/modules/parcels/domain"
+	"waylight/internal/modules/parcels/usecase"
+	"waylight/internal/shared/imap"
 )
 
 // IMAP reads shipping mails from one folder (#166). It is deliberately

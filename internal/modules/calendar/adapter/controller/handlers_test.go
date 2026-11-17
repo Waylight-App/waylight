@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/calendar/usecase"
+	"waylight/internal/modules/calendar/usecase"
 )
 
 type fakeCalendar struct {

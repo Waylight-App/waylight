@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/ee/connections"
-	"trisse-home/ee/connections/adapter/gateway"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/platform/oauth"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/connections"
+	"waylight/ee/connections/adapter/gateway"
+	"waylight/internal/modules"
+	"waylight/internal/platform/oauth"
+	"waylight/internal/shared/kernel"
 )
 
 // connectionEndpoints points services at a fake provider in tests; nil in

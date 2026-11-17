@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/transit/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transit/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // cacheTTL protects the (community-run) provider: one request per stop and

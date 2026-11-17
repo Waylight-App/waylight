@@ -3,8 +3,8 @@ import { exportCronSnippet } from './snippet';
 
 describe('exportCronSnippet', () => {
   it('uses the default container without extra variables', () => {
-    expect(exportCronSnippet({ stackDir: '/opt/stacks/trisse-home/', container: 'wireguard' })).toBe(
-      "sudo tee /etc/cron.d/trisse-home-wireguard <<'CRON'\n* * * * * root /opt/stacks/trisse-home/scripts/wireguard-export.sh\nCRON",
+    expect(exportCronSnippet({ stackDir: '/opt/stacks/waylight/', container: 'wireguard' })).toBe(
+      "sudo tee /etc/cron.d/waylight-wireguard <<'CRON'\n* * * * * root /opt/stacks/waylight/scripts/wireguard-export.sh\nCRON",
     );
   });
 

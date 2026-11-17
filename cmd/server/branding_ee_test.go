@@ -16,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
+	"waylight/ee/licence/domain"
 )
 
 // TestBranding checks #305 in the ee build: unlicensed, licensed, and the
@@ -39,7 +39,7 @@ func TestBranding(t *testing.T) {
 		public.json(http.MethodGet, "/api/branding", nil, http.StatusOK, &o)
 		return o
 	}
-	if b := info(); b["name"] != "trisse-home" || b["custom"] != false {
+	if b := info(); b["name"] != "Waylight" || b["custom"] != false {
 		t.Fatalf("product branding: %v", b)
 	}
 	owner.do(http.MethodPut, "/api/branding/settings", obj{"name": "Example GmbH"}, http.StatusForbidden)
@@ -140,7 +140,7 @@ func TestBranding(t *testing.T) {
 
 	// Without the key the product shows again; the branding is kept.
 	owner.do(http.MethodDelete, "/api/licence", nil, http.StatusNoContent)
-	if b := info(); b["name"] != "trisse-home" || b["custom"] != false {
+	if b := info(); b["name"] != "Waylight" || b["custom"] != false {
 		t.Fatalf("after removing the key: %v", b)
 	}
 	owner.do(http.MethodPut, "/api/licence", obj{"key": key}, http.StatusOK)

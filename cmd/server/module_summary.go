@@ -3,9 +3,9 @@ package main
 import (
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/summary"
-	"trisse-home/internal/platform/httpclient"
+	"waylight/internal/modules"
+	"waylight/internal/modules/summary"
+	"waylight/internal/platform/httpclient"
 )
 
 // ollamaTimeout leaves a local model on a CPU time to answer (#75).

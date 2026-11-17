@@ -6,10 +6,10 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/gamedeals/adapter/presenter"
-	"trisse-home/internal/modules/gamedeals/domain"
-	"trisse-home/internal/modules/gamedeals/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/gamedeals/adapter/presenter"
+	"waylight/internal/modules/gamedeals/domain"
+	"waylight/internal/modules/gamedeals/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the game deals endpoints.

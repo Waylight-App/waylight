@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/proxmox/adapter/controller"
-	"trisse-home/internal/modules/proxmox/adapter/gateway"
-	"trisse-home/internal/modules/proxmox/domain"
-	"trisse-home/internal/modules/proxmox/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/proxmox/adapter/controller"
+	"waylight/internal/modules/proxmox/adapter/gateway"
+	"waylight/internal/modules/proxmox/domain"
+	"waylight/internal/modules/proxmox/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 const refreshInterval = 30 * time.Second

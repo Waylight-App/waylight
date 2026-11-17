@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/apiwidget/adapter/controller"
-	"trisse-home/internal/modules/apiwidget/adapter/gateway"
-	"trisse-home/internal/modules/apiwidget/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/apiwidget/adapter/controller"
+	"waylight/internal/modules/apiwidget/adapter/gateway"
+	"waylight/internal/modules/apiwidget/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the JSON widget rings and implements modules.Module.

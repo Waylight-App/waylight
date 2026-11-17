@@ -3,8 +3,8 @@ package gateway
 import (
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/shared/ical"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/shared/ical"
 )
 
 // ParseICalendar extracts the VEVENTs of an iCalendar object as domain

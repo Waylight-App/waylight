@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"trisse-home/internal/modules/transit/domain"
-	"trisse-home/internal/modules/transit/usecase"
+	"waylight/internal/modules/transit/domain"
+	"waylight/internal/modules/transit/usecase"
 )
 
 type fakeUC struct{ usecase.Transit }

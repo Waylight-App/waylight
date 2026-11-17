@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Kiosk displays (#50): a wall tablet shows some tabs without a full

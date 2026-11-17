@@ -1,6 +1,6 @@
 package controller
 
-import "trisse-home/internal/modules/services/usecase"
+import "waylight/internal/modules/services/usecase"
 
 // ServiceInputDTO is the body of POST /api/services and PUT /api/services/{id}.
 type ServiceInputDTO struct {

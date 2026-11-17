@@ -6,13 +6,13 @@ import (
 	"context"
 	"log/slog"
 
-	"trisse-home/ee/absences"
-	"trisse-home/ee/presence"
-	presencedomain "trisse-home/ee/presence/domain"
-	presenceusecase "trisse-home/ee/presence/usecase"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/auth"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/absences"
+	"waylight/ee/presence"
+	presencedomain "waylight/ee/presence/domain"
+	presenceusecase "waylight/ee/presence/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/modules/auth"
+	"waylight/internal/shared/kernel"
 )
 
 // Live presence (#346), part of the ee/ features.

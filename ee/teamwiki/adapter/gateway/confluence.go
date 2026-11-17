@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"trisse-home/internal/modules/wiki/domain"
+	"waylight/internal/modules/wiki/domain"
 )
 
 // Confluence searches every Confluence site the member's Atlassian account

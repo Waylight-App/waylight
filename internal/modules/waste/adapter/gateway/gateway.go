@@ -15,8 +15,8 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules/waste/domain"
-	"trisse-home/internal/shared/ical"
+	"waylight/internal/modules/waste/domain"
+	"waylight/internal/shared/ical"
 )
 
 //go:embed migrations/*.sql

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/modules/docker/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/docker/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type fakeController struct{ restarted []string }

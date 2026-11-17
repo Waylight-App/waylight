@@ -9,8 +9,8 @@ import (
 	"testing/fstest"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 // Migration 0010 rebuilds auth_accounts for the member role: owner, guests,

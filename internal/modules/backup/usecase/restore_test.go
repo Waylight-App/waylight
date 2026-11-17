@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type fakeReauth struct{ err error }
@@ -47,7 +47,7 @@ func TestRestore(t *testing.T) {
 	ctx := context.Background()
 	migrations := []domain.Migration{{Module: "auth", Version: "0001"}}
 	good := domain.BackupInfo{Integrity: "ok", Migrations: migrations}
-	name := "trisse-home-20261111-030000.db"
+	name := "waylight-20261111-030000.db"
 	store := &memStore{files: map[string]domain.File{name: {Name: name, CreatedAt: time.Now()}}}
 
 	run := func(reauth error, info domain.BackupInfo, req RestoreRequest, c context.Context) (*fakeSwapper, *alertRec, bool, error) {

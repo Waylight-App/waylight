@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/fuel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/fuel"
 )
 
 // The fuel module registers itself; no shared file lists it (#193).

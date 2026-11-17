@@ -11,10 +11,10 @@ import (
 	"errors"
 	"fmt"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/transfer/usecase"
-	"trisse-home/internal/shared/kernel"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules"
+	"waylight/internal/modules/transfer/usecase"
+	"waylight/internal/shared/kernel"
+	"waylight/internal/shared/sqlutil"
 )
 
 // PortableSection implements usecase.Section for a modules.Portable.

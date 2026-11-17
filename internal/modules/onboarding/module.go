@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/onboarding/adapter/controller"
-	"trisse-home/internal/modules/onboarding/adapter/gateway"
-	"trisse-home/internal/modules/onboarding/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/onboarding/adapter/controller"
+	"waylight/internal/modules/onboarding/adapter/gateway"
+	"waylight/internal/modules/onboarding/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the onboarding rings and implements modules.Module.

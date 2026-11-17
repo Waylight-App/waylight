@@ -104,7 +104,7 @@ func containers(now time.Time) string {
 	}
 	created := now.Add(-72 * time.Hour).Unix()
 	list := []c{
-		{"a1", []string{"/trisse-home"}, "ghcr.io/itadori26/trisse-home:latest", "running", "Up 3 days (healthy)", created, nil},
+		{"a1", []string{"/waylight"}, "ghcr.io/itadori26/waylight:latest", "running", "Up 3 days (healthy)", created, nil},
 		{"b2", []string{"/jellyfin"}, "jellyfin/jellyfin:latest", "running", "Up 3 days", created, nil},
 		{"c3", []string{"/adguardhome"}, "adguard/adguardhome:latest", "running", "Up 3 days", created, nil},
 		{"d4", []string{"/paperless"}, "ghcr.io/paperless-ngx/paperless-ngx:latest", "running", "Up 2 hours", created, nil},
@@ -116,7 +116,7 @@ func containers(now time.Time) string {
 // feed is a small Atom feed with entries from the last days.
 func feed(host string, now time.Time) string {
 	titles := []string{
-		"Welcome to the trisse-home demo",
+		"Welcome to the waylight demo",
 		"Widgets can be moved and resized with the mouse or keyboard",
 		"Press / or Ctrl+K to search bookmarks, services, notes and to-dos",
 		"Everything runs on your own server: no account, no tracking",
@@ -134,7 +134,7 @@ func feed(host string, now time.Time) string {
 		host, host, now.Format(time.RFC3339))
 	for i, title := range titles {
 		ts := now.Add(-time.Duration(i*9+1) * time.Hour).Format(time.RFC3339)
-		fmt.Fprintf(&b, `<entry><title>%s</title><id>urn:demo:%s:%d</id><link href="https://github.com/itadori26/trisse-home"/><updated>%s</updated><published>%s</published></entry>`,
+		fmt.Fprintf(&b, `<entry><title>%s</title><id>urn:demo:%s:%d</id><link href="https://github.com/itadori26/waylight"/><updated>%s</updated><published>%s</published></entry>`,
 			title, host, i, ts, ts)
 	}
 	b.WriteString(`</feed>`)

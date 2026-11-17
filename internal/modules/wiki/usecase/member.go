@@ -5,7 +5,7 @@ import (
 	"errors"
 	"sync"
 
-	"trisse-home/internal/modules/wiki/domain"
+	"waylight/internal/modules/wiki/domain"
 )
 
 // ErrNotConnected tells the search to skip a member source quietly: the

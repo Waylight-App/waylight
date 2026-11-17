@@ -3,8 +3,8 @@
 package main
 
 import (
-	"trisse-home/ee/policies"
-	"trisse-home/internal/modules"
+	"waylight/ee/policies"
+	"waylight/internal/modules"
 )
 
 // Admin policies (#304), part of the ee/ features. Without a licence key that

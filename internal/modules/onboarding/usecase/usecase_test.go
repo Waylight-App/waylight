@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/onboarding/domain"
+	"waylight/internal/modules/onboarding/domain"
 )
 
 type memRepo struct{ s domain.State }

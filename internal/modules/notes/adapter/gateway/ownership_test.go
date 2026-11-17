@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/notes/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/notes/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestNoteOwnership proves ADR 0018 for notes: a member's notes are private

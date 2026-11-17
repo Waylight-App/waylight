@@ -28,10 +28,10 @@ Demo mode refuses to start when
 ## Running a demo
 
 ```sh
-docker run -d --name trisse-home-demo -p 8090:8090 \
+docker run -d --name waylight-demo -p 8090:8090 \
   -e DEMO_MODE=true -e SECRET_KEY="$(openssl rand -base64 32)" \
   -e ALLOWED_CIDRS=0.0.0.0/0 \
-  ghcr.io/itadori26/trisse-home:latest
+  ghcr.io/itadori26/waylight:latest
 ```
 
 Put it behind a reverse proxy with HTTPS (`COOKIE_SECURE=true`,

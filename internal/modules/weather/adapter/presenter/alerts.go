@@ -3,7 +3,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/weather/domain"
+	"waylight/internal/modules/weather/domain"
 )
 
 // WarningDTO is an official weather warning.

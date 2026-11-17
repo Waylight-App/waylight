@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/wiki/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/wiki/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Repository stores the connected wikis with encrypted tokens (output port).
@@ -85,7 +85,7 @@ const (
 	cacheTTL     = time.Minute
 	maxCacheSize = 100
 	// testQuery is what the test button searches for; any word works.
-	testQuery = "trisse"
+	testQuery = "waylight"
 )
 
 type cached struct {

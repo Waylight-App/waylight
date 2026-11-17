@@ -7,7 +7,7 @@ export const serverMessages = {
   srv_d30d28cec1fe8a0e: "Proxmox VE is not configured yet.",
   srv_98db8603c1a1c4cd: "Proxmox VE is not reachable.",
   srv_53b624415dd21efb: "The fingerprint must be a SHA-256 value such as AB:CD:…, 32 bytes.",
-  srv_98a0961ed24f0281: "The token ID must look like monitor@pve!trisse-home.",
+  srv_aa22340e214f97da: "The token ID must look like monitor@pve!waylight.",
   srv_3d3a9008e1d23718: "The token secret is required.",
   srv_048731d99c865141: "Unknown action, use start or shutdown.",
 } as const;

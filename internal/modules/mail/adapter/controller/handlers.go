@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/mail/adapter/presenter"
-	"trisse-home/internal/modules/mail/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/mail/adapter/presenter"
+	"waylight/internal/modules/mail/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // AccountInputDTO is the body of POST/PUT /api/mail/settings/accounts; an

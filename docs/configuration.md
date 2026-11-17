@@ -1,24 +1,24 @@
 # Configuration reference
 
-trisse-home reads its configuration from environment variables when it
+Waylight reads its configuration from environment variables when it
 starts. Everything that only you as the signed-in owner should decide, such
 as service tiles, calendars or notification channels, lives in the web
 interface instead. Settings that widen what the server may do, such as
 restarting containers, are deliberately environment-only, so a stolen browser
 session cannot switch them on.
 
-Where the variables go depends on how you installed trisse-home:
+Where the variables go depends on how you installed Waylight:
 
 | Installation | File | Apply changes with |
 | --- | --- | --- |
 | Docker Compose | `.env` next to `compose.yaml` | `sudo docker compose up -d` |
-| Debian package, Raspberry Pi image | `/etc/trisse-home/trisse-home.env` | `sudo systemctl restart trisse-home` |
+| Debian package, Raspberry Pi image | `/etc/waylight/waylight.env` | `sudo systemctl restart waylight` |
 
-The fully commented [`.env.example`](https://github.com/itadori26/trisse-home/blob/main/.env.example)
+The fully commented [`.env.example`](https://github.com/itadori26/waylight/blob/main/.env.example)
 is the starting point. Only `SECRET_KEY` is required; the package and the Pi
 image generate it on the first start.
 
-trisse-home checks the whole configuration at start-up and reports every
+Waylight checks the whole configuration at start-up and reports every
 problem at once instead of failing on the first one.
 
 Durations use Go syntax: `90s`, `15m`, `24h`, `720h`.
@@ -32,7 +32,7 @@ Durations use Go syntax: `90s`, `15m`, `24h`, `720h`.
 | `MODULES_DISABLED` | empty | Comma-separated modules to switch off, for example `docker,adguard`. Module names are listed in the [feature overview](features.md). |
 | `CURRENCY_RATES` | `true` | Currency conversion in the search with the ECB's daily reference rates (fetched at most once a day). `false` for installations without internet. See [markets](modules/markets.md#currency-conversion-in-the-search). |
 | `SAMPLE_DATA` | `true` | Fill a fresh installation with example tabs, widgets and data after setup. Existing data is never touched. |
-| `CONFIG_FILE` | – | Path to a `trisse-home.yaml` that is applied at every start. The sections it contains become read-only in the UI. See [Settings as a YAML file](config-as-code.md#managed-mode). |
+| `CONFIG_FILE` | – | Path to a `waylight.yaml` that is applied at every start. The sections it contains become read-only in the UI. See [Settings as a YAML file](config-as-code.md#managed-mode). |
 
 ## Network and access
 
@@ -96,7 +96,7 @@ see the [host integrations](host-integrations.md) and the
 | `DISKHEALTH_STALE_AFTER` | `2h` | S.M.A.R.T. exports older than this are shown as unknown. |
 | `WOL_RELAY` | `host.docker.internal:9009` in Compose | The Wake-on-LAN relay. Empty sends the broadcast directly, for installations without Docker or in the host network. |
 | `WOL_BROADCAST` | `255.255.255.255:9` | Where the magic packet is sent, by the relay or directly. |
-| `DEVICE_DIR` | `/var/lib/trisse-home/device` | Raspberry Pi image only: where the chosen display mode is handed to the system service that switches the screen. |
+| `DEVICE_DIR` | `/var/lib/waylight/device` | Raspberry Pi image only: where the chosen display mode is handed to the system service that switches the screen. |
 
 ## External services
 
@@ -113,7 +113,7 @@ Change these only to use a mirror, your own instance or a test server.
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `DATABASE_PATH` | `/data/trisse-home.db` | The SQLite database file. |
+| `DATABASE_PATH` | `/data/waylight.db` | The SQLite database file. |
 | `BACKUP_DIR` | `backups` next to the database | Directory for the automatic backups. |
 | `BACKUP_INTERVAL` | `24h` | How often a backup is made; at least `1h`. |
 | `BACKUP_RETENTION` | `7` | How many backups are kept. |
@@ -128,14 +128,14 @@ Change these only to use a mirror, your own instance or a test server.
 | `METRICS_ENABLED` | `false` | Expose `GET /metrics` for Prometheus. See [metrics](metrics.md). |
 | `METRICS_TOKEN` | none | Bearer token for `/metrics`, at least 32 characters. |
 | `INSTALL_METHOD` | set by the image, the package and the Pi image | `docker`, `package` or `appliance`. Chooses which update instructions the settings show. |
-| `TRISSE_HOME_VERSION` | `latest` | The image tag Docker Compose runs. A version such as `1.2.3` pins it. Docker Compose only. |
+| `WAYLIGHT_VERSION` | `latest` | The image tag Docker Compose runs. A version such as `1.2.3` pins it. Docker Compose only. |
 | `COMPOSE_PROFILES` | empty | Optional Compose services: `wol` for the Wake-on-LAN relay, `docker-actions` for the restart proxy. Docker Compose only. |
 
 ## Look
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `DEFAULT_THEME` | empty | Id of a built-in theme, such as `nord`, for the sign-in page and every account that has not chosen its own appearance. Empty keeps the built-in look; an unknown id logs a warning and keeps it too. See [appearance](appearance.md#default-theme-for-everyone). |
+| `DEFAULT_THEME` | `amber` | Id of a built-in theme, such as `amber-dark` or `nord`, for the sign-in page and every account that has not chosen its own appearance. `none` keeps the plain built-in look; an unknown id logs a warning and keeps it too. See [appearance](appearance.md#default-theme-for-everyone). |
 
 ## Sample data and demo
 

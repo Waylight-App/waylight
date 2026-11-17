@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/focus/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/focus/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestFocusIsPersonal: focus statistics count only the account's own

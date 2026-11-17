@@ -32,7 +32,7 @@ func (uc *seedSampleData) Execute(ctx context.Context) error {
 		due   time.Time
 		done  bool
 	}{
-		{"Set up trisse-home", time.Time{}, true},
+		{"Set up waylight", time.Time{}, true},
 		{"Try edit mode: drag and resize a widget", today, false},
 		{"Add your own services under Settings → Services", today.AddDate(0, 0, 1), false},
 		{"Connect your calendar under Settings → Calendar", today.AddDate(0, 0, 3), false},

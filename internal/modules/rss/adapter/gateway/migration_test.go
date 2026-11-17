@@ -6,7 +6,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/platform/database/dbtest"
 )
 
 // Migration 0003 rebuilds rss_feeds with foreign keys on. Items and their

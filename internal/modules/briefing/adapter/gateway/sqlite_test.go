@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/briefing/domain"
-	"trisse-home/internal/modules/briefing/usecase"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/briefing/domain"
+	"waylight/internal/modules/briefing/usecase"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestSettingsRoundTrip(t *testing.T) {

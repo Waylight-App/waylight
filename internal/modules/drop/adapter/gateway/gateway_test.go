@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/drop/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/drop/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestRepository(t *testing.T) {

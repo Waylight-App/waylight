@@ -6,7 +6,7 @@ import (
 )
 
 func TestDomain(t *testing.T) {
-	if !ValidItemID("abc-123@trisse-home.ics") || ValidItemID("../x.ics") || ValidItemID("a/b.ics") || ValidItemID("x.txt") {
+	if !ValidItemID("abc-123@waylight.ics") || ValidItemID("../x.ics") || ValidItemID("a/b.ics") || ValidItemID("x.txt") {
 		t.Fatal("item ID validation wrong")
 	}
 	if s, err := NormaliseSummary("  Milk   2 l "); err != nil || s != "Milk 2 l" {

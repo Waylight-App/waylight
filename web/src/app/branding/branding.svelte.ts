@@ -20,7 +20,7 @@ export interface Branding {
   defaultTheme?: '' | 'system' | 'light' | 'dark';
 }
 
-export const PRODUCT_NAME = 'trisse-home';
+export const PRODUCT_NAME = 'Waylight';
 const defaultBranding: Branding = { name: PRODUCT_NAME, custom: false, hidePoweredBy: false };
 
 const state = $state<{ current: Branding }>({ current: defaultBranding });

@@ -24,8 +24,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_fb18e524af59aa63: 'Ungültiger Wert für {token}.',
   // The author must be at most 60 characters long.
   srv_cd1893bbd9659e1f: 'Der Autor darf höchstens 60 Zeichen lang sein.',
-  // The file is not a trisse-home theme (JSON).
-  srv_68677939789f0976: 'Die Datei ist kein trisse-home-Design (JSON).',
+  // The file is not a Waylight theme (JSON).
+  srv_8527099a2a6e9931: 'Die Datei ist kein Waylight-Design (JSON).',
   // The scheme must be light or dark.
   srv_a285cd5903e89e3c: 'Das Farbschema muss light oder dark sein.',
   // A theme with variants has no scheme of its own.

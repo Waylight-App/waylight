@@ -32,7 +32,7 @@ export class TransferUseCases {
     return this.gateway.import(parsed);
   }
 
-  /** URL that downloads trisse-home.yaml (#88). */
+  /** URL that downloads waylight.yaml (#88). */
   configUrl(): string {
     return this.gateway.configUrl();
   }
@@ -52,7 +52,7 @@ export class TransferUseCases {
     return this.gateway.managedSections();
   }
 
-  /** Applies a trisse-home.yaml; the server checks the whole file first. */
+  /** Applies a waylight.yaml; the server checks the whole file first. */
   applyConfigFile(yaml: string): Promise<ConfigResult> {
     return this.gateway.applyConfig(yaml);
   }

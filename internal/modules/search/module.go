@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/search/adapter/configfile"
-	"trisse-home/internal/modules/search/adapter/controller"
-	"trisse-home/internal/modules/search/adapter/gateway"
-	"trisse-home/internal/modules/search/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/modules/search/adapter/configfile"
+	"waylight/internal/modules/search/adapter/controller"
+	"waylight/internal/modules/search/adapter/gateway"
+	"waylight/internal/modules/search/usecase"
 )
 
 // Module wires the search rings and implements modules.Module.

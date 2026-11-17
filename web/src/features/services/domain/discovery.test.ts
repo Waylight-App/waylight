@@ -13,7 +13,7 @@ describe('discovery', () => {
   });
   it('shows the labels the backend reads', () => {
     for (const key of ['name', 'url', 'icon', 'description'])
-      expect(labelExample).toContain(`trisse-home.${key}:`);
+      expect(labelExample).toContain(`waylight.${key}:`);
   });
   it('filters hidden tiles', () => {
     expect(visibleServices([{ hidden: false }, { hidden: true }])).toEqual([{ hidden: false }]);

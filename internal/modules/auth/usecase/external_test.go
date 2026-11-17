@@ -6,7 +6,7 @@ import (
 	"slices"
 	"testing"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 func provisioningEnv(t *testing.T) (*env, *memGroups, Provisioning) {

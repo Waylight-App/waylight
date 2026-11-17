@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
+	"waylight/ee/licence/domain"
 )
 
 // TestPresence checks #346 in the ee build: own statuses, planned absences

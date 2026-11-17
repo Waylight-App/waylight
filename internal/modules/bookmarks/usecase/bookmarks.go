@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/internal/modules/bookmarks/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/bookmarks/domain"
+	"waylight/internal/shared/kernel"
 )
 
 func toView(ctx context.Context, b domain.Bookmark) BookmarkView {

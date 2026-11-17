@@ -5,12 +5,12 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/media/adapter/controller"
-	"trisse-home/internal/modules/media/adapter/gateway"
-	"trisse-home/internal/modules/media/domain"
-	"trisse-home/internal/modules/media/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/media/adapter/controller"
+	"waylight/internal/modules/media/adapter/gateway"
+	"waylight/internal/modules/media/domain"
+	"waylight/internal/modules/media/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the media server rings and implements modules.Module.

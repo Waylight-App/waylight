@@ -210,6 +210,6 @@ describe('exportLocalData', () => {
   });
 
   it('names the file like the server does', () => {
-    expect(exportFileName(new Date(2026, 10, 16, 7, 30, 5))).toBe('trisse-home-export-20261116-073005.json');
+    expect(exportFileName(new Date(2026, 10, 16, 7, 30, 5))).toBe('waylight-export-20261116-073005.json');
   });
 });

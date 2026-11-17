@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/summary/domain"
-	"trisse-home/internal/modules/summary/usecase"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/summary/domain"
+	"waylight/internal/modules/summary/usecase"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestRepository(t *testing.T) {

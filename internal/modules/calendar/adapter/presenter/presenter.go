@@ -3,7 +3,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/calendar/usecase"
+	"waylight/internal/modules/calendar/usecase"
 )
 
 // SettingsDTO is returned by GET/PUT /api/calendar/settings; the password is never returned.

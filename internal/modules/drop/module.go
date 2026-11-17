@@ -6,11 +6,11 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/drop/adapter/controller"
-	"trisse-home/internal/modules/drop/adapter/gateway"
-	"trisse-home/internal/modules/drop/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/drop/adapter/controller"
+	"waylight/internal/modules/drop/adapter/gateway"
+	"waylight/internal/modules/drop/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // purgeInterval: expired items are removed within a quarter of an hour (and

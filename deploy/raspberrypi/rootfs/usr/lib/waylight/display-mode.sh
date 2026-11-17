@@ -1,12 +1,12 @@
 #!/bin/bash
-# Applies the display mode requested by trisse-home (#140). Runs as root from
-# trisse-home-display.service; the app itself stays unprivileged and can only
+# Applies the display mode requested by waylight (#140). Runs as root from
+# waylight-display.service; the app itself stays unprivileged and can only
 # write the request file. Accepts exactly "headless" or "kiosk".
 set -uo pipefail
 
-dir=${TRISSE_DEVICE_DIR:-/var/lib/trisse-home/device}
-env_file=${TRISSE_KIOSK_ENV:-/etc/trisse-home/kiosk.env}
-dry=${TRISSE_DISPLAY_DRY_RUN:-}
+dir=${WAYLIGHT_DEVICE_DIR:-/var/lib/waylight/device}
+env_file=${WAYLIGHT_KIOSK_ENV:-/etc/waylight/kiosk.env}
+dry=${WAYLIGHT_DISPLAY_DRY_RUN:-}
 
 status() { # status <mode> <phase> [error]
 	# The directory belongs to the unprivileged service: never write through
@@ -49,18 +49,18 @@ if [ "$mode" = kiosk ]; then
 			exit 1
 		fi
 	fi
-	id trisse-kiosk >/dev/null 2>&1 || run useradd --system --create-home --shell /usr/sbin/nologin --groups video,render,input trisse-kiosk
+	id waylight-kiosk >/dev/null 2>&1 || run useradd --system --create-home --shell /usr/sbin/nologin --groups video,render,input waylight-kiosk
 	umask 027
 	printf 'KIOSK_URL=%s\n' "$url" >"$env_file.tmp" && mv "$env_file.tmp" "$env_file"
-	chgrp trisse-kiosk "$env_file" 2>/dev/null || true
+	chgrp waylight-kiosk "$env_file" 2>/dev/null || true
 	run systemctl set-default graphical.target
-	if ! run systemctl enable --now trisse-home-kiosk.service; then
+	if ! run systemctl enable --now waylight-kiosk.service; then
 		status kiosk failed "the display could not be started"
 		exit 1
 	fi
-	run systemctl restart trisse-home-kiosk.service
+	run systemctl restart waylight-kiosk.service
 else
-	run systemctl disable --now trisse-home-kiosk.service 2>/dev/null
+	run systemctl disable --now waylight-kiosk.service 2>/dev/null
 	rm -f "$env_file"
 	run systemctl set-default multi-user.target
 fi

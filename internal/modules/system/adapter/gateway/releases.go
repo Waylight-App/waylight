@@ -10,11 +10,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules/system/usecase"
+	"waylight/internal/modules/system/usecase"
 )
 
 // DefaultReleasesURL is the GitHub API endpoint of the latest release.
-const DefaultReleasesURL = "https://api.github.com/repos/itadori26/trisse-home/releases/latest"
+const DefaultReleasesURL = "https://api.github.com/repos/itadori26/waylight/releases/latest"
 
 // GitHubReleases implements usecase.ReleaseSource.
 type GitHubReleases struct {
@@ -34,7 +34,7 @@ func (g *GitHubReleases) Latest(ctx context.Context) (usecase.Release, bool, err
 		return usecase.Release{}, false, fmt.Errorf("build request: %w", err)
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
-	req.Header.Set("User-Agent", "trisse-home")
+	req.Header.Set("User-Agent", "waylight")
 	res, err := g.client.Do(req)
 	if err != nil {
 		return usecase.Release{}, false, fmt.Errorf("request failed: %w", err)

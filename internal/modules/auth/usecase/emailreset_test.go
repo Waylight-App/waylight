@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memEmails map[string]string

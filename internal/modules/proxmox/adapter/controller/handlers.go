@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/proxmox/adapter/presenter"
-	"trisse-home/internal/modules/proxmox/domain"
-	"trisse-home/internal/modules/proxmox/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/proxmox/adapter/presenter"
+	"waylight/internal/modules/proxmox/domain"
+	"waylight/internal/modules/proxmox/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the Proxmox endpoints.

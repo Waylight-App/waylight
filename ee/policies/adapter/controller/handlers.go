@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/ee/policies/domain"
-	"trisse-home/ee/policies/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/ee/policies/domain"
+	"waylight/ee/policies/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // PoliciesDTO is GET and PUT /api/policies.

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"trisse-home/internal/modules/parcels/domain"
+	"waylight/internal/modules/parcels/domain"
 )
 
 // MailState is where the mail discovery stopped (#166).

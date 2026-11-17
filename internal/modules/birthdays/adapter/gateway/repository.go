@@ -12,10 +12,10 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules/birthdays/domain"
-	"trisse-home/internal/modules/birthdays/usecase"
-	"trisse-home/internal/shared/kernel"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/birthdays/domain"
+	"waylight/internal/modules/birthdays/usecase"
+	"waylight/internal/shared/kernel"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

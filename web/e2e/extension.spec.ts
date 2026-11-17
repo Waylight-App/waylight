@@ -15,7 +15,7 @@ test.skip(
 );
 
 test('the extension works without a server and exports what was added (#291)', async () => {
-  const profile = mkdtempSync(join(tmpdir(), 'trisse-home-extension-'));
+  const profile = mkdtempSync(join(tmpdir(), 'waylight-extension-'));
   // Extensions only load in Chromium's own build, not in branded Chrome.
   const context = await chromium.launchPersistentContext(profile, {
     channel: 'chromium',
@@ -54,7 +54,7 @@ test('the extension works without a server and exports what was added (#291)', a
       format: string;
       sections: Record<string, Record<string, { title?: string }[]>>;
     };
-    expect(file.format).toBe('trisse-home-export');
+    expect(file.format).toBe('waylight-export');
     expect(file.sections['todos']?.['todos']?.map((t) => t.title)).toContain('Buy stamps');
     expect(file.sections['dashboard']?.['dashboard_tabs']?.length).toBeGreaterThan(0);
   } finally {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/releases"
+	"waylight/internal/modules"
+	"waylight/internal/modules/releases"
 )
 
 // The releases module registers itself; no shared file lists it (#193).

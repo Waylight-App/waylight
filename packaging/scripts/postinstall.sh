@@ -1,35 +1,35 @@
 #!/bin/sh
-# postinst for the trisse-home .deb. The systemd handling follows what
+# postinst for the waylight .deb. The systemd handling follows what
 # dh_installsystemd generates, so the package behaves like any Debian service:
 # enabled and started on install, restarted on upgrade, an admin's
 # "systemctl disable" is respected.
 set -e
 
 # The service and the timer that shows the setup token on a headless device.
-UNITS="trisse-home.service trisse-home-setup-info.timer"
+UNITS="waylight.service waylight-setup-info.timer"
 
 create_user() {
-	if getent passwd trisse-home >/dev/null; then
+	if getent passwd waylight >/dev/null; then
 		return
 	fi
 	if command -v systemd-sysusers >/dev/null 2>&1; then
-		systemd-sysusers trisse-home.conf
+		systemd-sysusers waylight.conf
 	else
-		useradd --system --user-group --home-dir /var/lib/trisse-home \
+		useradd --system --user-group --home-dir /var/lib/waylight \
 			--no-create-home --shell /usr/sbin/nologin \
-			--comment "trisse-home start page" trisse-home
+			--comment "waylight start page" waylight
 	fi
 }
 
 fix_permissions() {
 	# The config may contain credentials (SECRET_KEY, OIDC secret): readable
 	# by root and the service group only.
-	chown root:trisse-home /etc/trisse-home /etc/trisse-home/trisse-home.env
-	chmod 0750 /etc/trisse-home
-	chmod 0640 /etc/trisse-home/trisse-home.env
-	if [ -f /etc/trisse-home/secret.env ]; then
-		chown root:trisse-home /etc/trisse-home/secret.env
-		chmod 0640 /etc/trisse-home/secret.env
+	chown root:waylight /etc/waylight /etc/waylight/waylight.env
+	chmod 0750 /etc/waylight
+	chmod 0640 /etc/waylight/waylight.env
+	if [ -f /etc/waylight/secret.env ]; then
+		chown root:waylight /etc/waylight/secret.env
+		chmod 0640 /etc/waylight/secret.env
 	fi
 }
 
@@ -54,11 +54,11 @@ configure | abort-upgrade | abort-deconfigure | abort-remove)
 	if [ -d /run/systemd/system ]; then
 		systemctl --system daemon-reload >/dev/null || true
 		if [ -n "$2" ]; then
-			deb-systemd-invoke restart trisse-home.service >/dev/null || true
+			deb-systemd-invoke restart waylight.service >/dev/null || true
 		else
 			deb-systemd-invoke start $UNITS >/dev/null || true
-			echo "trisse-home is starting. Show the address and setup token with:"
-			echo "  sudo trisse-home-setup-token"
+			echo "waylight is starting. Show the address and setup token with:"
+			echo "  sudo waylight-setup-token"
 		fi
 	fi
 	;;

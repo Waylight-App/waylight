@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/shared/httpapi"
 )
 
 type statusRecorder struct {

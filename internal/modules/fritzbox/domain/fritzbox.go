@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // DefaultURL is the TR-064 endpoint of a FRITZ!Box in its default network.

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/diskhealth/domain"
-	"trisse-home/internal/modules/diskhealth/usecase"
+	"waylight/internal/modules/diskhealth/domain"
+	"waylight/internal/modules/diskhealth/usecase"
 )
 
 type fakeUC struct {

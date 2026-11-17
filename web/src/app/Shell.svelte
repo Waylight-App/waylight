@@ -1,4 +1,5 @@
 <script lang="ts">
+  import WaylightMark from '../shared/ui/WaylightMark.svelte';
   import { rememberLook } from './branding/lastLook';
   import type { CommandHandlers } from './appCommands';
   import { hasStoredTimers, timerAlerts } from './timerAlerts.svelte';
@@ -406,7 +407,7 @@
       <img class="brand-logo light" src={branding().logo} alt="" height="28" />
       <img class="brand-logo dark" src={branding().logoDark || branding().logo} alt="" height="28" />
     {:else}
-      <span class="logo" aria-hidden="true">t</span>
+      <span class="logo"><WaylightMark size={22} /></span>
     {/if}
     {branding().name}
   </a>
@@ -597,14 +598,9 @@
     white-space: nowrap;
   }
   .logo {
-    width: 1.7rem;
-    height: 1.7rem;
-    border-radius: 6px;
-    display: grid;
+    display: inline-grid;
     place-items: center;
-    background: var(--color-accent);
-    color: var(--color-accent-contrast);
-    font-size: 0.95rem;
+    color: var(--color-accent);
   }
   .center {
     min-width: 0;

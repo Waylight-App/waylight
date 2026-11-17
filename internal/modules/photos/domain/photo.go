@@ -9,7 +9,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Limits. Pictures are stored once in screen size, so 300 MB hold several

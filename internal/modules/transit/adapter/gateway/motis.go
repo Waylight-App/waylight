@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/transit/domain"
+	"waylight/internal/modules/transit/domain"
 )
 
 // DefaultURL is the public, community-run Transitous API.
@@ -23,7 +23,7 @@ const DefaultURL = "https://api.transitous.org"
 const (
 	maxResponseBytes = 2 << 20
 	maxStops         = 8
-	userAgent        = "trisse-home (self-hosted start page)"
+	userAgent        = "waylight (self-hosted start page)"
 )
 
 // MOTIS implements usecase.Provider.

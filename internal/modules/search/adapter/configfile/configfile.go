@@ -1,12 +1,12 @@
 // Package configfile maps the search settings to their section of
-// trisse-home.yaml (#88) and back.
+// waylight.yaml (#88) and back.
 //
 // Ring: Interface Adapters.
 package configfile
 
 import (
-	"trisse-home/internal/modules/search/domain"
-	"trisse-home/internal/modules/search/usecase"
+	"waylight/internal/modules/search/domain"
+	"waylight/internal/modules/search/usecase"
 )
 
 // Section is the search section.

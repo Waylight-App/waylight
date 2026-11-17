@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/holidays/adapter/presenter"
-	"trisse-home/internal/modules/holidays/domain"
-	"trisse-home/internal/modules/holidays/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/holidays/adapter/presenter"
+	"waylight/internal/modules/holidays/domain"
+	"waylight/internal/modules/holidays/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves /api/holidays.

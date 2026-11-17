@@ -10,6 +10,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_3d12d1ec207507cd: 'Eine Änderung des Anzeigemodus läuft noch.',
   // Choose headless or kiosk.
   srv_5d89741428373d07: 'Wähle „nur Server“ oder „Server mit Anzeige“.',
-  // Display modes are only available on the trisse-home appliance image.
-  srv_ff97b7a031a91020: 'Anzeigemodi gibt es nur im trisse-home-Image für den Raspberry Pi.',
+  // Display modes are only available on the Waylight appliance image.
+  srv_bde0f626350fac35: 'Anzeigemodi gibt es nur im Waylight-Image für den Raspberry Pi.',
 };

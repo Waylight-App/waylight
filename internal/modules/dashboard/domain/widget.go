@@ -3,7 +3,7 @@ package domain
 import (
 	"regexp"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // MaxConfigBytes limits the opaque widget configuration.

@@ -3,7 +3,7 @@ package sqlutil
 import (
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // VisibleTo returns a condition and its arguments that limit a query of a

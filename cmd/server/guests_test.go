@@ -51,7 +51,7 @@ func TestGuestAccess(t *testing.T) {
 	// the search field (#221), denied for everything else.
 	g.do(http.MethodGet, "/api/modules", nil, http.StatusOK)
 	g.do(http.MethodGet, "/api/appearance", nil, http.StatusOK)
-	g.do(http.MethodGet, "/api/search?q=trisse", nil, http.StatusFound) // web search of the search field (#221)
+	g.do(http.MethodGet, "/api/search?q=waylight", nil, http.StatusFound) // web search of the search field (#221)
 	g.do(http.MethodGet, "/api/search/settings", nil, http.StatusForbidden)
 	for _, path := range []string{"/api/notes", "/api/todos", "/api/system", "/api/docker/containers", "/api/bookmarks",
 		"/api/notifications/settings", "/api/adguard/settings", "/api/auth/events", "/api/auth/guests", "/api/transfer/export",

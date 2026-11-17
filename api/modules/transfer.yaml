@@ -6,24 +6,24 @@ paths:
     get:
       tags: [transfer]
       summary: Download all user data (layout, bookmarks, notes, to-dos, feeds, services, settings) as a versioned JSON file; never contains secrets
-      responses: { "200": { description: "Export file (format trisse-home-export, version, exportedAt, sections)" } }
+      responses: { "200": { description: "Export file (format waylight-export, version, exportedAt, sections)" } }
   /api/transfer/import:
     post:
       tags: [transfer]
       summary: Import an export file (max. 16 MB). Each contained section replaces the module's data atomically; sections of disabled modules are skipped
-      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { format: { type: string, enum: [trisse-home-export] }, version: { type: integer }, sections: { type: object } } } } } }
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { format: { type: string, enum: [waylight-export] }, version: { type: integer }, sections: { type: object } } } } } }
       responses:
         "200": { description: "Result (imported, skipped, failed with reasons)" }
         "422": { description: Not an export file, unsupported version or too large }
   /api/transfer/config:
     get:
       tags: [transfer]
-      summary: "Download the settings as trisse-home.yaml (#88): appearance, search, manual services, bookmarks and dashboard, semantic (names instead of IDs) and without secrets"
+      summary: "Download the settings as waylight.yaml (#88): appearance, search, manual services, bookmarks and dashboard, semantic (names instead of IDs) and without secrets"
       responses:
         "200": { description: The YAML file, content: { application/yaml: { schema: { type: string } } } }
     post:
       tags: [transfer]
-      summary: "Apply a trisse-home.yaml (max. 2 MB); sections managed by CONFIG_FILE are reported as failed. ${NAME} in strings is read from the environment. The whole file is checked first (YAML, version, known sections and fields, variables); then each present section replaces its module's settings atomically, sections missing from the file stay unchanged"
+      summary: "Apply a waylight.yaml (max. 2 MB); sections managed by CONFIG_FILE are reported as failed. ${NAME} in strings is read from the environment. The whole file is checked first (YAML, version, known sections and fields, variables); then each present section replaces its module's settings atomically, sections missing from the file stay unchanged"
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/yaml: { schema: { type: string } } } }
       responses:
@@ -48,7 +48,7 @@ paths:
         content: { multipart/form-data: { schema: { type: object, properties: { file: { type: array, items: { type: string, format: binary } } } } } }
       responses:
         "200":
-          description: The changed parts of trisse-home.yaml, a summary with warnings, and the result when applied
+          description: The changed parts of waylight.yaml, a summary with warnings, and the result when applied
           content:
             application/json:
               schema:

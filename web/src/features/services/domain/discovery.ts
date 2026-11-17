@@ -39,7 +39,7 @@ export function validInterval(minutes: number): boolean {
 
 /** Labels to copy into a compose file, shown as an example in the settings. */
 export const labelExample = `labels:
-  trisse-home.name: Jellyfin
-  trisse-home.url: https://jellyfin.example.com
-  trisse-home.icon: 🎬
-  trisse-home.description: Films and series`;
+  waylight.name: Jellyfin
+  waylight.url: https://jellyfin.example.com
+  waylight.icon: 🎬
+  waylight.description: Films and series`;

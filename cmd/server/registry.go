@@ -6,16 +6,16 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/auth"
-	"trisse-home/internal/modules/calendar"
-	"trisse-home/internal/modules/dashboard"
-	"trisse-home/internal/modules/notifications"
-	"trisse-home/internal/modules/wiki"
-	"trisse-home/internal/platform/clock"
-	"trisse-home/internal/platform/config"
-	"trisse-home/internal/platform/idgen"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/auth"
+	"waylight/internal/modules/calendar"
+	"waylight/internal/modules/dashboard"
+	"waylight/internal/modules/notifications"
+	"waylight/internal/modules/wiki"
+	"waylight/internal/platform/clock"
+	"waylight/internal/platform/config"
+	"waylight/internal/platform/idgen"
+	"waylight/internal/shared/kernel"
 )
 
 // moduleDeps is everything a module constructor may need. Modules that live

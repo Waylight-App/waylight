@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/study/adapter/controller"
-	"trisse-home/internal/modules/study/adapter/gateway"
-	"trisse-home/internal/modules/study/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/study/adapter/controller"
+	"waylight/internal/modules/study/adapter/gateway"
+	"waylight/internal/modules/study/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the study rings and implements modules.Module.

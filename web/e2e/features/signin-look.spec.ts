@@ -28,9 +28,9 @@ test('the sign-in page shows the theme of the last account on this browser (#526
     await account(page, 'Log out');
     await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible();
     await expect(look).toHaveCount(1);
-    expect(await look.textContent()).toContain('/* trisse-home theme: nord */');
+    expect(await look.textContent()).toContain('/* waylight theme: nord */');
     // Only the look is kept, nothing about the account.
-    const kept = await page.evaluate(() => localStorage.getItem('trisse-home:sign-in-look') ?? '');
+    const kept = await page.evaluate(() => localStorage.getItem('waylight:sign-in-look') ?? '');
     expect(kept).not.toContain('owner');
   } finally {
     await signIn(page);

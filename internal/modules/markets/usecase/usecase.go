@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/markets/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/markets/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // cacheTTL: daily closes and reference rates change once a day; an hour

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 const testMetricsToken = "0123456789abcdef0123456789abcdef"
@@ -42,7 +42,7 @@ func TestMetricsEndpoint(t *testing.T) {
 	if code != http.StatusOK {
 		t.Fatalf("%d %s", code, body)
 	}
-	for _, want := range []string{"# TYPE go_goroutines gauge", "trisse_build_info{", "trisse_http_requests_total{method=\"GET\",code=\"4xx\"}", "trisse_host_cpu_ratio"} {
+	for _, want := range []string{"# TYPE go_goroutines gauge", "waylight_build_info{", "waylight_http_requests_total{method=\"GET\",code=\"4xx\"}", "waylight_host_cpu_ratio"} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("missing %q in\n%s", want, body)
 		}

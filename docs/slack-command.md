@@ -43,7 +43,7 @@ Without the token nothing connects.
 
 Everyone first connects their own Slack account under *Settings → Connected
 accounts* ([connected accounts](connected-accounts.md)). That tells
-trisse-home which member is behind a Slack user; someone who has not
+Waylight which member is behind a Slack user; someone who has not
 connected gets a short answer with a link to do so, and no results.
 
 - `/home vpn` lists up to eight results: services whose name or

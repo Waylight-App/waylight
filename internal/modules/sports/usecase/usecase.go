@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/sports/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/sports/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // cacheTTL: results change on match days only; a quarter of an hour keeps

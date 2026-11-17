@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"trisse-home/internal/modules/weather/usecase"
+	"waylight/internal/modules/weather/usecase"
 )
 
 type fakeWeather struct{ usecase.Weather }

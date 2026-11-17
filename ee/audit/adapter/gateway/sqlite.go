@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/ee/audit/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/ee/audit/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

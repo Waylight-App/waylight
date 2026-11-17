@@ -61,6 +61,6 @@ export function initialForm(s: Shared): CaptureForm {
 export function bookmarklet(origin: string): string {
   return (
     `javascript:(()=>{const e=encodeURIComponent;window.open('${origin}/capture?url='+e(location.href)+'&title='+e(document.title)` +
-    `+'&text='+e(String(getSelection())),'trisse-capture','width=520,height=640')})()`
+    `+'&text='+e(String(getSelection())),'waylight-capture','width=520,height=640')})()`
   );
 }

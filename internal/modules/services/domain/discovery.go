@@ -4,13 +4,13 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Label prefixes read from containers (#78). Homepage labels are accepted as
 // a fallback so stacks prepared for gethomepage.dev work unchanged.
 const (
-	LabelPrefix         = "trisse-home."
+	LabelPrefix         = "waylight."
 	HomepageLabelPrefix = "homepage."
 )
 
@@ -46,7 +46,7 @@ func (d DiscoveredService) Validate() error {
 	return err
 }
 
-// labelKeys maps a field to its trisse-home and Homepage label suffixes.
+// labelKeys maps a field to its waylight and Homepage label suffixes.
 var labelKeys = struct{ name, url, icon, description [2]string }{
 	name: [2]string{"name", "name"}, url: [2]string{"url", "href"},
 	icon: [2]string{"icon", "icon"}, description: [2]string{"description", "description"},
@@ -54,7 +54,7 @@ var labelKeys = struct{ name, url, icon, description [2]string }{
 
 // ParseLabels reads a discovered service from the labels of a container.
 // It reports false when the container carries no usable URL label or opts
-// out with trisse-home.enable=false. The name defaults to the container name.
+// out with waylight.enable=false. The name defaults to the container name.
 func ParseLabels(c Container) (DiscoveredService, bool) {
 	if strings.EqualFold(strings.TrimSpace(c.Labels[LabelPrefix+"enable"]), "false") {
 		return DiscoveredService{}, false

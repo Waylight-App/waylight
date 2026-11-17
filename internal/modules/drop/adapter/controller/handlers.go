@@ -12,10 +12,10 @@ import (
 	"strconv"
 	"time"
 
-	"trisse-home/internal/modules/drop/adapter/presenter"
-	"trisse-home/internal/modules/drop/domain"
-	"trisse-home/internal/modules/drop/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/drop/adapter/presenter"
+	"waylight/internal/modules/drop/domain"
+	"waylight/internal/modules/drop/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // TextDTO is the body of POST /api/drop/text; expiresInHours is 1, 24 or 168 (0 = 24).

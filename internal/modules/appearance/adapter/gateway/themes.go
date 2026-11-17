@@ -12,9 +12,9 @@ import (
 	"path"
 	"sort"
 
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/modules/appearance/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/modules/appearance/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Built-in themes (#111); see themes/README.md at the repository root.

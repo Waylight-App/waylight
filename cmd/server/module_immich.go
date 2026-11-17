@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/immich"
+	"waylight/internal/modules"
+	"waylight/internal/modules/immich"
 )
 
 // The Immich module registers itself; no shared file lists it (#193).

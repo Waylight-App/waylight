@@ -6,10 +6,10 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/briefing/adapter/presenter"
-	"trisse-home/internal/modules/briefing/domain"
-	"trisse-home/internal/modules/briefing/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/briefing/adapter/presenter"
+	"waylight/internal/modules/briefing/domain"
+	"waylight/internal/modules/briefing/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // UseCases bundles the briefing input ports.

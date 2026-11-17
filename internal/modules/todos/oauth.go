@@ -8,9 +8,9 @@ import (
 	"net/url"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/modules/todos/usecase"
-	"trisse-home/internal/platform/oauth"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/modules/todos/usecase"
+	"waylight/internal/platform/oauth"
 )
 
 // CallbackPath is where the providers send the browser back after signing

@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	plainCookieName = "trisse_session"
+	plainCookieName = "waylight_session"
 	// hostCookieName uses the __Host- prefix, which browsers only accept for
 	// Secure, host-only cookies with Path=/. It hardens the cookie once HTTPS
 	// is in place.
-	hostCookieName = "__Host-trisse_session"
+	hostCookieName = "__Host-waylight_session"
 )
 
 // CookieConfig controls how the session cookie is issued.

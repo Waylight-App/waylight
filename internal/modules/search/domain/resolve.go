@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // MaxQueryLength bounds the query to keep redirect URLs reasonable.

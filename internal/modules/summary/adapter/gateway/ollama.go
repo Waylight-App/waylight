@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"sort"
 
-	"trisse-home/internal/modules/summary/domain"
+	"waylight/internal/modules/summary/domain"
 )
 
 // Ollama implements usecase.Summarizer with the Ollama HTTP API.

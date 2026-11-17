@@ -1,6 +1,6 @@
 # Parcels from shipping e-mails
 
-The parcels widget can find tracking numbers in your shipping e-mails by itself (#166). trisse-home reads **one folder** of your mailbox over IMAP and adds every new parcel it finds.
+The parcels widget can find tracking numbers in your shipping e-mails by itself (#166). Waylight reads **one folder** of your mailbox over IMAP and adds every new parcel it finds.
 
 ## What it reads, and what it never does
 
@@ -17,7 +17,7 @@ The parcels widget can find tracking numbers in your shipping e-mails by itself 
    - sender contains `dhl.de`, `deutschepost.de`, `hermesworld`, `myhermes`, `dpd.de`, `gls-pakete`, `gls-group` or `ups.com`, **or**
    - subject contains `Sendung`, `Versand`, `versandt`, `shipped`, `on its way` or `unterwegs`.
 3. **Optional: turn on DHL parcel announcements.** In your DHL customer account under _Einstellungen → Benachrichtigungen_, enable e-mail notifications. DHL then mails you about every parcel addressed to you, even when the shop doesn't send a tracking number.
-4. In trisse-home open **Settings → Parcels → Parcels from e-mails**:
+4. In Waylight open **Settings → Parcels → Parcels from e-mails**:
    - enter the server (e.g. `imap.gmx.net`), user name, app password and folder;
    - choose how often to check (every 15 minutes by default);
    - switch it on and save. The connection is tested before saving.

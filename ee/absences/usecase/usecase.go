@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"sort"
 
-	"trisse-home/ee/absences/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/absences/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Store keeps absences (output port).

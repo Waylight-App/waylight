@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/fuel/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/fuel/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // cacheTTL follows the provider's terms: at most one request every five

@@ -1,10 +1,10 @@
 // Package configfile maps the manual service tiles to their section of
-// trisse-home.yaml (#88) and back.
+// waylight.yaml (#88) and back.
 //
 // Ring: Interface Adapters.
 package configfile
 
-import "trisse-home/internal/modules/services/usecase"
+import "waylight/internal/modules/services/usecase"
 
 // Service is one tile. checkUrl is only written when it differs from url.
 type Service struct {

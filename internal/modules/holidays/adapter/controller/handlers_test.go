@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/holidays/domain"
-	"trisse-home/internal/modules/holidays/usecase"
+	"waylight/internal/modules/holidays/domain"
+	"waylight/internal/modules/holidays/usecase"
 )
 
 type fakeUC struct {

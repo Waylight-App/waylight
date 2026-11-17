@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 type sinkFunc func(Change)

@@ -1,4 +1,4 @@
-// Package configfile maps the dashboard to its section of trisse-home.yaml
+// Package configfile maps the dashboard to its section of waylight.yaml
 // (#88) and back.
 //
 // Ring: Interface Adapters.
@@ -7,9 +7,9 @@ package configfile
 import (
 	"encoding/json"
 
-	"trisse-home/internal/modules/dashboard/domain"
-	"trisse-home/internal/modules/dashboard/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/modules/dashboard/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Section is the dashboard section.

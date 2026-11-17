@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"io/fs"
 
-	"trisse-home/internal/modules/fritzbox/domain"
+	"waylight/internal/modules/fritzbox/domain"
 )
 
 //go:embed migrations/*.sql

@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/space/adapter/presenter"
-	"trisse-home/internal/modules/space/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/space/adapter/presenter"
+	"waylight/internal/modules/space/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // SettingsInputDTO is the body of PUT /api/space/settings; an empty nasaKey

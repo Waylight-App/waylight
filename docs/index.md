@@ -1,6 +1,6 @@
-# trisse-home documentation
+# Waylight documentation
 
-trisse-home is a self-hosted start page for one person and, if you like, the
+Waylight is a self-hosted start page for one person and, if you like, the
 people they share a home with. You arrange widgets on tabs: the weather, your
 calendar and to-dos next to the state of your home server, its containers and
 its backups. It runs as a single small program with an SQLite database, on a
@@ -11,7 +11,7 @@ home server, a NAS or a Raspberry Pi.
 ## Where to start
 
 **You are wondering whether it fits your needs.** Read
-[what trisse-home is and is not](about.md) and the
+[what Waylight is and is not](about.md) and the
 [comparison with Homarr, Homepage, Glance and Dashy](comparison.md). The
 [feature overview](features.md) lists every module.
 
@@ -40,7 +40,7 @@ way it does.
 ## Getting help
 
 Questions and ideas belong in
-[GitHub Discussions](https://github.com/itadori26/trisse-home/discussions),
-bugs in the [issue tracker](https://github.com/itadori26/trisse-home/issues).
+[GitHub Discussions](https://github.com/itadori26/waylight/discussions),
+bugs in the [issue tracker](https://github.com/itadori26/waylight/issues).
 Please report security problems privately, as described in the
-[security policy](https://github.com/itadori26/trisse-home/blob/main/SECURITY.md).
+[security policy](https://github.com/itadori26/waylight/blob/main/SECURITY.md).

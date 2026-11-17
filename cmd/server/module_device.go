@@ -4,9 +4,9 @@ import (
 	"context"
 	"os"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/auth"
-	"trisse-home/internal/modules/device"
+	"waylight/internal/modules"
+	"waylight/internal/modules/auth"
+	"waylight/internal/modules/device"
 )
 
 // The device module registers itself (#193); it only works on the

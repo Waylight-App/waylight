@@ -1,10 +1,10 @@
 # yaml-language-server: $schema=https://nfpm.goreleaser.com/schema.json
 #
-# Native packages for trisse-home (ADR 0015). Built by `make package`:
+# Native packages for waylight (ADR 0015). Built by `make package`:
 #   GOARCH        target architecture (amd64, arm64)
 #   PKG_VERSION   Debian version without a leading "v", e.g. 1.2.3
-# The binary is expected in bin/linux-${GOARCH}/trisse-home.
-name: trisse-home
+# The binary is expected in bin/linux-${GOARCH}/waylight.
+name: waylight
 arch: ${GOARCH}
 platform: linux
 version: ${PKG_VERSION}
@@ -12,9 +12,9 @@ version: ${PKG_VERSION}
 version_schema: none
 section: web
 priority: optional
-maintainer: Trisse <32554080+itadori26@users.noreply.github.com>
-vendor: trisse-home contributors
-homepage: https://github.com/itadori26/trisse-home
+maintainer: Tristan Leoluca Farinella <32554080+itadori26@users.noreply.github.com>
+vendor: waylight contributors
+homepage: https://github.com/itadori26/waylight
 license: MIT
 description: |-
   Self-hosted personal start page
@@ -27,44 +27,44 @@ depends:
   - init-system-helpers
 
 contents:
-  - src: ./bin/linux-${GOARCH}/trisse-home
-    dst: /usr/bin/trisse-home
+  - src: ./bin/linux-${GOARCH}/waylight
+    dst: /usr/bin/waylight
     expand: true
     file_info:
       mode: 0755
 
-  - src: ./packaging/lib/trisse-home-init
-    dst: /usr/lib/trisse-home/trisse-home-init
+  - src: ./packaging/lib/waylight-init
+    dst: /usr/lib/waylight/waylight-init
     file_info:
       mode: 0755
 
   - src: ./packaging/lib/env.sh
-    dst: /usr/lib/trisse-home/env.sh
+    dst: /usr/lib/waylight/env.sh
     file_info:
       mode: 0644
 
-  - src: ./packaging/lib/trisse-home-setup-info
-    dst: /usr/lib/trisse-home/trisse-home-setup-info
+  - src: ./packaging/lib/waylight-setup-info
+    dst: /usr/lib/waylight/waylight-setup-info
     file_info:
       mode: 0755
 
-  - src: ./packaging/lib/trisse-home-setup-token
-    dst: /usr/sbin/trisse-home-setup-token
+  - src: ./packaging/lib/waylight-setup-token
+    dst: /usr/sbin/waylight-setup-token
     file_info:
       mode: 0755
 
-  - src: ./packaging/systemd/trisse-home.service
-    dst: /usr/lib/systemd/system/trisse-home.service
+  - src: ./packaging/systemd/waylight.service
+    dst: /usr/lib/systemd/system/waylight.service
     file_info:
       mode: 0644
 
-  - src: ./packaging/systemd/trisse-home-setup-info.service
-    dst: /usr/lib/systemd/system/trisse-home-setup-info.service
+  - src: ./packaging/systemd/waylight-setup-info.service
+    dst: /usr/lib/systemd/system/waylight-setup-info.service
     file_info:
       mode: 0644
 
-  - src: ./packaging/systemd/trisse-home-setup-info.timer
-    dst: /usr/lib/systemd/system/trisse-home-setup-info.timer
+  - src: ./packaging/systemd/waylight-setup-info.timer
+    dst: /usr/lib/systemd/system/waylight-setup-info.timer
     file_info:
       mode: 0644
 
@@ -74,26 +74,26 @@ contents:
     file_info:
       mode: 0755
 
-  - src: ./packaging/sysusers.d/trisse-home.conf
-    dst: /usr/lib/sysusers.d/trisse-home.conf
+  - src: ./packaging/sysusers.d/waylight.conf
+    dst: /usr/lib/sysusers.d/waylight.conf
     file_info:
       mode: 0644
 
-  # Ownership (root:trisse-home) is set in postinst: the group does not exist
+  # Ownership (root:waylight) is set in postinst: the group does not exist
   # yet when dpkg unpacks the files.
-  - dst: /etc/trisse-home
+  - dst: /etc/waylight
     type: dir
     file_info:
       mode: 0750
 
-  - src: ./packaging/trisse-home.env
-    dst: /etc/trisse-home/trisse-home.env
+  - src: ./packaging/waylight.env
+    dst: /etc/waylight/waylight.env
     type: config
     file_info:
       mode: 0640
 
   - src: ./LICENSE
-    dst: /usr/share/doc/trisse-home/copyright
+    dst: /usr/share/doc/waylight/copyright
     file_info:
       mode: 0644
 

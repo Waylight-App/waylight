@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/modules/notifications/domain"
+	"waylight/internal/modules/notifications/domain"
 )
 
 // Chat channels (#324, #325) post to the webhook URL kept in Channel.Secret.
@@ -57,7 +57,7 @@ func SlackMessage(m domain.Message, link string) []byte {
 		footer += " · " + slackEscape(m.Type)
 	}
 	if link != "" {
-		footer += " · <" + link + "|trisse-home>"
+		footer += " · <" + link + "|waylight>"
 	}
 	blocks := []map[string]any{
 		{"type": "header", "text": map[string]any{"type": "plain_text", "text": title, "emoji": true}},
@@ -127,7 +127,7 @@ func TeamsMessage(m domain.Message, link string) []byte {
 		"body":    body,
 	}
 	if link != "" {
-		card["actions"] = []map[string]any{{"type": "Action.OpenUrl", "title": "Open trisse-home", "url": link}}
+		card["actions"] = []map[string]any{{"type": "Action.OpenUrl", "title": "Open waylight", "url": link}}
 	}
 	b, _ := json.Marshal(map[string]any{ // plain maps: cannot fail
 		"type": "message",

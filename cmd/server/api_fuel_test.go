@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 func init() {

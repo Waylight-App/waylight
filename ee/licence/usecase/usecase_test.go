@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/licence/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memStore struct {

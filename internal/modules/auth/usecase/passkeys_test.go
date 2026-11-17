@@ -6,7 +6,7 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 type memPasskeys struct{ list []domain.Passkey }

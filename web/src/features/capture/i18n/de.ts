@@ -2,7 +2,7 @@ import type { en } from './en';
 
 /** German UI texts of the quick capture page; the type makes every key mandatory. */
 export const de: Record<keyof typeof en, string> = {
-  'capture.title': 'In trisse-home speichern',
+  'capture.title': 'In Waylight speichern',
   'capture.as': 'Speichern als',
   'capture.bookmark': 'Lesezeichen',
   'capture.todo': 'Aufgabe',
@@ -23,6 +23,6 @@ export const de: Record<keyof typeof en, string> = {
   'capture.bookmarklet': 'Schnell speichern von jeder Seite',
   'capture.bookmarklet_hint':
     'Zieh diesen Link in deine Lesezeichenleiste. Auf jeder Seite öffnet er ein kleines Fenster, das die Seite als Lesezeichen, Aufgabe oder Notiz speichert (markierter Text wird mitgenommen). Auf dem Handy teilst du stattdessen an die installierte App.',
-  'capture.bookmarklet_link': '＋ trisse-home',
+  'capture.bookmarklet_link': '＋ Waylight',
   'capture.bookmarklet_copy': 'Bookmarklet kopieren',
 };

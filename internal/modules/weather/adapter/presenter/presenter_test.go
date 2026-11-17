@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/weather/usecase"
+	"waylight/internal/modules/weather/usecase"
 )
 
 func TestForecastWindDirection(t *testing.T) {

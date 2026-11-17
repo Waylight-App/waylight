@@ -83,7 +83,7 @@ func NewTodo(uid, summary string, now time.Time) string {
 func NewTodoDue(uid, summary string, due, now time.Time) string {
 	stamp := now.UTC().Format("20060102T150405Z")
 	lines := []string{
-		"BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//trisse-home//EN",
+		"BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//waylight//EN",
 		"BEGIN:VTODO", "UID:" + uid, "DTSTAMP:" + stamp, "CREATED:" + stamp, "LAST-MODIFIED:" + stamp,
 		"SUMMARY:" + EscapeText(summary), "STATUS:NEEDS-ACTION",
 	}

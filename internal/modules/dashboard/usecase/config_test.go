@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/modules/dashboard/domain"
+	"waylight/internal/modules/dashboard/domain"
 )
 
 type configRepo struct{ *memRepo }

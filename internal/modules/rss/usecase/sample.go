@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/rss/domain"
+	"waylight/internal/modules/rss/domain"
 )
 
 // SeedSampleData subscribes to example feeds if there are none (input port).

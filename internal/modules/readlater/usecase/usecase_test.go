@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/readlater/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/readlater/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRepo struct {

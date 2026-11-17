@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // MaxPasskeys bounds the passkeys per account.

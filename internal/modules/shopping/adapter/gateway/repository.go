@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"io/fs"
 
-	"trisse-home/internal/modules/shopping/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/shopping/domain"
+	"waylight/internal/shared/kernel"
 )
 
 //go:embed migrations/*.sql

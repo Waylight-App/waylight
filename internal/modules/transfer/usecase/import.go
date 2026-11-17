@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/internal/modules/transfer/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transfer/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // ImportSource reads the files of another dashboard (output port, one
@@ -16,7 +16,7 @@ type ImportSource interface {
 	Parse(files map[string][]byte) (domain.ImportPlan, error)
 }
 
-// ImportOutcome is the merged trisse-home.yaml with what it adds; Result is
+// ImportOutcome is the merged waylight.yaml with what it adds; Result is
 // set when the import was applied.
 type ImportOutcome struct {
 	YAML    []byte
@@ -24,7 +24,7 @@ type ImportOutcome struct {
 	Result  *ApplyResult
 }
 
-// Importer turns another dashboard into additions to trisse-home.yaml
+// Importer turns another dashboard into additions to waylight.yaml
 // (#77); the input port.
 type Importer interface {
 	// Import previews the merged file, or applies it when apply is true.

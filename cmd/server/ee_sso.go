@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"trisse-home/ee/sso"
-	"trisse-home/internal/modules"
+	"waylight/ee/sso"
+	"waylight/internal/modules"
 )
 
 // Single sign-on for members (#302), part of the ee/ features. Without

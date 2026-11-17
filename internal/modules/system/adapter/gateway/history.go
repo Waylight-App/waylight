@@ -8,8 +8,8 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules/system/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/system/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

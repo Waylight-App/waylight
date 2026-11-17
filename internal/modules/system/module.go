@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/system/adapter/controller"
-	"trisse-home/internal/modules/system/adapter/gateway"
-	"trisse-home/internal/modules/system/domain"
-	"trisse-home/internal/modules/system/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/system/adapter/controller"
+	"waylight/internal/modules/system/adapter/gateway"
+	"waylight/internal/modules/system/domain"
+	"waylight/internal/modules/system/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // sampleInterval balances fresh CPU numbers against wake-ups on the host.
@@ -96,20 +96,20 @@ func (m *Module) Metrics(ctx context.Context) []kernel.MetricSample {
 		return nil
 	}
 	out := []kernel.MetricSample{
-		kernel.Gauge("trisse_host_cpu_ratio", "CPU usage of the host (0-1).", s.CPUPercent/100),
-		kernel.Gauge("trisse_host_load1", "1-minute load average.", s.Load1),
-		kernel.Gauge("trisse_host_memory_used_bytes", "Used memory of the host.", float64(s.Memory.Used)),
-		kernel.Gauge("trisse_host_memory_total_bytes", "Total memory of the host.", float64(s.Memory.Total)),
-		kernel.Gauge("trisse_host_uptime_seconds", "Uptime of the host.", s.Uptime.Seconds()),
+		kernel.Gauge("waylight_host_cpu_ratio", "CPU usage of the host (0-1).", s.CPUPercent/100),
+		kernel.Gauge("waylight_host_load1", "1-minute load average.", s.Load1),
+		kernel.Gauge("waylight_host_memory_used_bytes", "Used memory of the host.", float64(s.Memory.Used)),
+		kernel.Gauge("waylight_host_memory_total_bytes", "Total memory of the host.", float64(s.Memory.Total)),
+		kernel.Gauge("waylight_host_uptime_seconds", "Uptime of the host.", s.Uptime.Seconds()),
 	}
 	if s.Temperature > 0 {
-		out = append(out, kernel.Gauge("trisse_host_temperature_celsius", "Highest temperature sensor reading.", s.Temperature))
+		out = append(out, kernel.Gauge("waylight_host_temperature_celsius", "Highest temperature sensor reading.", s.Temperature))
 	}
 	for _, d := range s.Disks {
 		l := kernel.Label{Name: "disk", Value: d.Label}
 		out = append(out,
-			kernel.Gauge("trisse_host_disk_used_bytes", "Used bytes per configured file system.", float64(d.Usage.Used), l),
-			kernel.Gauge("trisse_host_disk_total_bytes", "Size per configured file system.", float64(d.Usage.Total), l))
+			kernel.Gauge("waylight_host_disk_used_bytes", "Used bytes per configured file system.", float64(d.Usage.Used), l),
+			kernel.Gauge("waylight_host_disk_total_bytes", "Size per configured file system.", float64(d.Usage.Total), l))
 	}
 	return out
 }

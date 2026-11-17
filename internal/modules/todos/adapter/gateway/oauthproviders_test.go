@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 type staticTokens struct{ token string }

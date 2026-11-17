@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/ee/teamsbot/domain"
+	licence "waylight/ee/licence/domain"
+	"waylight/ee/teamsbot/domain"
 )
 
 type conns map[string]string

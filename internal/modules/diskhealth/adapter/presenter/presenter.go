@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/diskhealth/domain"
+	"waylight/internal/modules/diskhealth/domain"
 )
 
 // FindingDTO explains a status.

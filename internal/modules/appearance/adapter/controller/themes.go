@@ -4,11 +4,11 @@ import (
 	"io"
 	"net/http"
 
-	"trisse-home/internal/modules/appearance/adapter/gateway"
-	"trisse-home/internal/modules/appearance/adapter/presenter"
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/modules/appearance/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/appearance/adapter/gateway"
+	"waylight/internal/modules/appearance/adapter/presenter"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/modules/appearance/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // ThemeHandlers serves /api/appearance/themes (#111).
@@ -81,7 +81,7 @@ func (h *ThemeHandlers) Export(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	// The id is validated (a-z, 0-9, -), so it is safe in the header.
-	w.Header().Set("Content-Disposition", `attachment; filename="trisse-theme-`+id+`.json"`)
+	w.Header().Set("Content-Disposition", `attachment; filename="waylight-theme-`+id+`.json"`)
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	_, _ = w.Write(data) //nolint:gosec // JSON built by EncodeTheme from validated tokens, sent as an attachment with nosniff
 

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/electricity"
+	"waylight/internal/modules"
+	"waylight/internal/modules/electricity"
 )
 
 // The electricity price module registers itself; no shared file lists it (#193).

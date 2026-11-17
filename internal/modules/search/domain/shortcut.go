@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 var keywordPattern = regexp.MustCompile(`^[a-z0-9]{1,16}$`)

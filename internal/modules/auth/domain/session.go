@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // sessionRefreshInterval limits how often a sliding session is extended so

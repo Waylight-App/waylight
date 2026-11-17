@@ -11,8 +11,8 @@ import (
 	"sync"
 	"testing"
 
-	"trisse-home/internal/modules/shopping/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/shopping/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 // fakeTaskList is a minimal CalDAV collection with ETags.
@@ -76,8 +76,8 @@ func TestCalDAVStore(t *testing.T) {
 	defer srv.Close()
 	s := domain.Settings{ListURL: srv.URL + "/tasks/", Username: "me", Password: "pw"}
 	store := NewCalDAVStore(srv.Client())
-	it, err := store.Add(ctx, s, "u1@trisse-home", "Milk")
-	if err != nil || it.ID != "u1-trisse-home.ics" {
+	it, err := store.Add(ctx, s, "u1@waylight", "Milk")
+	if err != nil || it.ID != "u1-waylight.ics" {
 		t.Fatalf("add: %+v %v", it, err)
 	}
 	if err := store.SetDone(ctx, s, it.ID, true); err != nil {

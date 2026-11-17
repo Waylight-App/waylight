@@ -6,12 +6,12 @@ import (
 	"context"
 	"log/slog"
 
-	"trisse-home/ee/announcements"
-	"trisse-home/ee/announcements/usecase"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/auth"
-	"trisse-home/internal/modules/notifications"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/announcements"
+	"waylight/ee/announcements/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/modules/auth"
+	"waylight/internal/modules/notifications"
+	"waylight/internal/shared/kernel"
 )
 
 // accountNames shows authors by their account name; the owner has none in

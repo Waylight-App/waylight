@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/readlater/domain"
-	"trisse-home/internal/modules/readlater/usecase"
+	"waylight/internal/modules/readlater/domain"
+	"waylight/internal/modules/readlater/usecase"
 )
 
 type fakeUC struct {

@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/modules/todos/usecase"
-	"trisse-home/internal/shared/caldav"
-	"trisse-home/internal/shared/ical"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/modules/todos/usecase"
+	"waylight/internal/shared/caldav"
+	"waylight/internal/shared/ical"
 )
 
 // CalDAVProviders implements usecase.Providers for CalDAV task lists
@@ -253,7 +253,7 @@ func (l *calDAVList) Save(ctx context.Context, t domain.Todo) error {
 		return domainError(err)
 	}
 	name := objectName(t.ID())
-	uid := strings.TrimSuffix(name, ".ics") + "@trisse-home"
+	uid := strings.TrimSuffix(name, ".ics") + "@waylight"
 	data := ical.NewTodoDue(uid, t.Title(), t.Due(), now)
 	if t.Done() {
 		data = ical.SetTodoDone(data, true, now)

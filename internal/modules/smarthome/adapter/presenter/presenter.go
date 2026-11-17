@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/smarthome/usecase"
+	"waylight/internal/modules/smarthome/usecase"
 )
 
 // SettingsDTO is returned by GET/PUT /api/smarthome/settings; the token is

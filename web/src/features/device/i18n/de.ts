@@ -5,7 +5,7 @@ export const de: Record<keyof typeof en, string> = {
   'settings.section.device': 'Gerät',
   'device.question': 'Wie möchtest du dieses Gerät nutzen?',
   'device.headless': 'Nur Server',
-  'device.headless_hint': 'trisse-home auf Handy, Tablet oder Computer öffnen.',
+  'device.headless_hint': 'Waylight auf Handy, Tablet oder Computer öffnen.',
   'device.kiosk': 'Server + Anzeige',
   'device.kiosk_hint':
     'Zusätzlich das Dashboard im Vollbild auf dem am Pi angeschlossenen Bildschirm zeigen (installiert einen schlanken Browser, mehrere hundert MB).',

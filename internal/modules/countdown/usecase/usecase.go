@@ -6,8 +6,8 @@ import (
 	"sort"
 	"time"
 
-	"trisse-home/internal/modules/countdown/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/countdown/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Countdowns is the input port of the module; every method is one use

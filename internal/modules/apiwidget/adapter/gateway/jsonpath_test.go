@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/apiwidget/domain"
+	"waylight/internal/modules/apiwidget/domain"
 )
 
 func TestJSONPath(t *testing.T) {

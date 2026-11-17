@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/modules/backup/usecase"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/modules/backup/usecase"
 )
 
 type fakeOffsite struct {

@@ -1,5 +1,5 @@
 /**
- * Simple 24×24 stroke icons drawn for trisse-home (no icon library, font or
+ * Simple 24×24 stroke icons drawn for waylight (no icon library, font or
  * CDN, ADR 0010). Each entry is a list of SVG path data strings rendered with
  * stroke="currentColor", so they follow the theme in light and dark mode.
  */

@@ -7,7 +7,7 @@ export interface OutboxStore {
   clear(): Promise<void>;
 }
 
-const DB = 'trisse-offline';
+const DB = 'waylight-offline';
 const STORE = 'outbox';
 const KEY = 'state';
 

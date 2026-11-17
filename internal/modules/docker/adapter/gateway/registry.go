@@ -11,8 +11,8 @@ import (
 	"net/url"
 	"strings"
 
-	"trisse-home/internal/modules/docker/domain"
-	"trisse-home/internal/modules/docker/usecase"
+	"waylight/internal/modules/docker/domain"
+	"waylight/internal/modules/docker/usecase"
 )
 
 // manifestTypes are accepted so the registry returns the digest of the

@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/ee/audit/domain"
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/audit/domain"
+	licence "waylight/ee/licence/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Store keeps entries (output port). There is no update and no delete of a

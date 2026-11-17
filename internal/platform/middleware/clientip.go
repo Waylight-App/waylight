@@ -6,7 +6,7 @@ import (
 	"net/netip"
 	"strings"
 
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/shared/httpapi"
 )
 
 // ClientIP resolves the real client address once per request and stores it in

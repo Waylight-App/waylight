@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/notifications/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/notifications/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 type prefixCipher struct{}

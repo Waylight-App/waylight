@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/birthdays/adapter/controller"
-	"trisse-home/internal/modules/birthdays/adapter/gateway"
-	"trisse-home/internal/modules/birthdays/domain"
-	"trisse-home/internal/modules/birthdays/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/birthdays/adapter/controller"
+	"waylight/internal/modules/birthdays/adapter/gateway"
+	"waylight/internal/modules/birthdays/domain"
+	"waylight/internal/modules/birthdays/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the birthday rings and implements modules.Module.

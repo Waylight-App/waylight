@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // TargetKind says what an own keyword opens (#478).

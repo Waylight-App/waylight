@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/mail/domain"
-	"trisse-home/internal/shared/imap"
+	"waylight/internal/modules/mail/domain"
+	"waylight/internal/shared/imap"
 )
 
 // IMAP implements usecase.Reader with the shared read-only IMAP client:

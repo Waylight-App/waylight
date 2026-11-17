@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/backup/domain"
+	"waylight/internal/modules/backup/domain"
 )
 
 type memStore struct{ files map[string]domain.File }

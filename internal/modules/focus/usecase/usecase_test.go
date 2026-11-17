@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/focus/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/focus/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRepo struct{ sessions []domain.Session }

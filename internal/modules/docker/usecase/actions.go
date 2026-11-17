@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/docker/domain"
+	"waylight/internal/modules/docker/domain"
 )
 
 // ContainerController restarts containers (output port, write access).

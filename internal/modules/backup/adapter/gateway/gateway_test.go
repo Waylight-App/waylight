@@ -8,9 +8,9 @@ import (
 	"testing/fstest"
 	"time"
 
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/platform/database"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/platform/database"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestSnapshotAndStore(t *testing.T) {

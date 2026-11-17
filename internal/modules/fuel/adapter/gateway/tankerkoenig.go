@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"trisse-home/internal/modules/fuel/domain"
+	"waylight/internal/modules/fuel/domain"
 )
 
 // DefaultTankerkoenigURL is the public API (data: Markttransparenzstelle

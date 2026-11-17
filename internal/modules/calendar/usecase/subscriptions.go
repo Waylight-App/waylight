@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // SubscriptionView is an ICS subscription without its full URL, which may

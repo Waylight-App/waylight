@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 const key = "00000000-0000-0000-0000-000000000002"

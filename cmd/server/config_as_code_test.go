@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/platform/config"
+	"waylight/internal/modules"
+	"waylight/internal/platform/config"
 )
 
 // postYAML sends a config file and returns the status and body.
@@ -31,11 +31,11 @@ func postYAML(t *testing.T, c *client, body string) (int, []byte) {
 	return res.StatusCode, out
 }
 
-// TestConfigAsCode covers trisse-home.yaml (#88) end to end: the sample
+// TestConfigAsCode covers waylight.yaml (#88) end to end: the sample
 // data survives export → import → export byte for byte, ${NAME} comes from
 // the environment, and mistakes are reported without changing anything.
 func TestConfigAsCode(t *testing.T) {
-	t.Setenv("TRISSE_TEST_DOMAIN", "example.org")
+	t.Setenv("WAYLIGHT_TEST_DOMAIN", "example.org")
 	up := fakeUpstream(t)
 	srv := newTestServer(t, up.URL, func(c *config.Config) { c.DisabledModules = []string{"weather", "calendar", "waste"} })
 	c := newClient(t, srv.URL)
@@ -70,14 +70,14 @@ func TestConfigAsCode(t *testing.T) {
 	own := `version: 1
 services:
   - name: Jellyfin
-    url: https://jf.${TRISSE_TEST_DOMAIN}
+    url: https://jf.${WAYLIGHT_TEST_DOMAIN}
 bookmarks:
   - title: Docs
     url: https://docs.example.org
     tags: [work]
   - folder: Media
     bookmarks:
-      - { title: Films, url: "https://films.${TRISSE_TEST_DOMAIN}" }
+      - { title: Films, url: "https://films.${WAYLIGHT_TEST_DOMAIN}" }
 dashboard:
   tabs:
     - name: Home
@@ -112,7 +112,7 @@ dashboard:
 	// Rejected before anything changes.
 	for name, file := range map[string]string{
 		"unknown field":    "version: 1\nservices:\n  - name: A\n    url: https://a.example\n    colour: red\n",
-		"missing variable": "version: 1\nservices:\n  - name: A\n    url: https://${TRISSE_NOT_SET}\n",
+		"missing variable": "version: 1\nservices:\n  - name: A\n    url: https://${WAYLIGHT_NOT_SET}\n",
 		"unknown section":  "version: 1\nrecipes: []\n",
 		"newer version":    "version: 2\n",
 		"not yaml":         "version: [1\n",
@@ -174,7 +174,7 @@ func TestConfigRoutesAreRegistered(t *testing.T) {
 // changes through the API and uploads, the others stay editable, and a
 // broken file stops the start.
 func TestManagedMode(t *testing.T) {
-	file := filepath.Join(t.TempDir(), "trisse-home.yaml")
+	file := filepath.Join(t.TempDir(), "waylight.yaml")
 	_ = os.WriteFile(file, []byte("version: 1\nservices:\n  - name: NAS\n    url: https://nas.example\n"), 0o600)
 	up := fakeUpstream(t)
 	srv := newTestServer(t, up.URL, func(c *config.Config) {

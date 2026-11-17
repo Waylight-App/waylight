@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"trisse-home/ee/presence/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/ee/presence/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestStore(t *testing.T) {

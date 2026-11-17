@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/apiwidget/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/apiwidget/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Values is the result of one fetch of an endpoint.

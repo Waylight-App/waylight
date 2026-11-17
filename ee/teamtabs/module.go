@@ -11,11 +11,11 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/ee/licence"
-	"trisse-home/ee/teamtabs/adapter/controller"
-	"trisse-home/ee/teamtabs/adapter/gateway"
-	"trisse-home/ee/teamtabs/usecase"
-	"trisse-home/internal/modules"
+	"waylight/ee/licence"
+	"waylight/ee/teamtabs/adapter/controller"
+	"waylight/ee/teamtabs/adapter/gateway"
+	"waylight/ee/teamtabs/usecase"
+	"waylight/internal/modules"
 )
 
 // Module wires the rings.

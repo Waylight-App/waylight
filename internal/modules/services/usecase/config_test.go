@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/modules/services/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/services/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type configRepo struct{ memRepo }

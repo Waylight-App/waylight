@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/modules/wiki/domain"
+	"waylight/internal/modules/wiki/domain"
 )
 
 // notionVersion is the API version the requests are written for.

@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // IdentityLink ties an account at the OpenID Connect provider, such as a

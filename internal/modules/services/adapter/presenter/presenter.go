@@ -3,8 +3,8 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/services/domain"
-	"trisse-home/internal/modules/services/usecase"
+	"waylight/internal/modules/services/domain"
+	"waylight/internal/modules/services/usecase"
 )
 
 // ServiceDTO is a service tile with its status.

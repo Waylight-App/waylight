@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/releases/domain"
+	"waylight/internal/modules/releases/domain"
 )
 
 // Public endpoints of MusicBrainz and the Cover Art Archive.

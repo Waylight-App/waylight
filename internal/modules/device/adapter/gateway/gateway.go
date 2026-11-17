@@ -14,7 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"trisse-home/internal/modules/device/domain"
+	"waylight/internal/modules/device/domain"
 )
 
 // Sysfs implements usecase.DisplayDetector on /sys/class/drm.
@@ -41,7 +41,7 @@ func (s *Sysfs) Display(context.Context) domain.Display {
 }
 
 // Files names in the state directory; the root script reads the first two
-// and writes the status (see deploy/raspberrypi/rootfs/usr/lib/trisse-home).
+// and writes the status (see deploy/raspberrypi/rootfs/usr/lib/waylight).
 const (
 	requestFile = "display-mode"
 	urlFile     = "kiosk-url"

@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/mail/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/imap"
+	"waylight/internal/modules/mail/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/imap"
 )
 
 var writes = regexp.MustCompile(`(?i)^(?:SELECT|STORE|UID STORE|COPY|UID COPY|MOVE|UID MOVE|EXPUNGE|DELETE|APPEND)\b`)

@@ -7,7 +7,7 @@
 
 ## Context
 
-trisse-home runs wherever Docker and Compose run, and multi-arch images
+Waylight runs wherever Docker and Compose run, and multi-arch images
 (including `arm64`) are published and smoke-tested for every release (#43).
 That still assumes a Linux server, a terminal and a hand-edited `.env`.
 
@@ -52,17 +52,17 @@ Constraints on a Raspberry Pi differ from a home server:
 3. **Packaging: `.deb` packages, built with nfpm, for `arm64` and `amd64`.**
    The image installs the same package that any Debian or Ubuntu user can
    install without Docker. nfpm is a build-time tool only (ADR 0011).
-   Configuration stays environment-based (`/etc/trisse-home/trisse-home.env`
+   Configuration stays environment-based (`/etc/waylight/waylight.env`
    loaded with `EnvironmentFile=`), so `internal/platform/config` does not
-   change. Data lives in `/var/lib/trisse-home`.
+   change. Data lives in `/var/lib/waylight`.
 
 4. **Updates: signed APT repository plus `unattended-upgrades`.**
    Packages are published to an APT repository on GitHub Pages, signed with
    a dedicated key held in GitHub secrets. The image trusts that key via
-   `Signed-By` and installs OS security updates and trisse-home releases
+   `Signed-By` and installs OS security updates and Waylight releases
    automatically, with reboots only inside a maintenance window. Pinning a
    version and rolling back work with `apt`, mirroring
-   `TRISSE_HOME_VERSION` for Docker.
+   `WAYLIGHT_VERSION` for Docker.
 
 5. **First boot creates all secrets on the device.**
    A oneshot service generates `SECRET_KEY` and a setup token before the
@@ -139,7 +139,7 @@ Constraints on a Raspberry Pi differ from a home server:
   who do not want Docker.
 - The image size becomes a budget in `budgets.json` (ADR 0011).
 - The Docker setup remains the primary, fully supported way to run
-  trisse-home on a server; documentation presents both.
+  Waylight on a server; documentation presents both.
 - **One image, two display modes (#140).** After the account setup, Pi
   installs ask whether the device is a server only (default) or should also
   show the dashboard full-screen on an attached display; the choice can be

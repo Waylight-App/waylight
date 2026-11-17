@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/modules/auth/usecase"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/usecase"
 )
 
 // StatusDTO is returned by GET /api/auth/status.

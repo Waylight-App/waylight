@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/system/adapter/presenter"
-	"trisse-home/internal/modules/system/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/system/adapter/presenter"
+	"waylight/internal/modules/system/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // VersionHandlers serve the version endpoints.

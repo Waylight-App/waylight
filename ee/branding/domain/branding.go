@@ -11,7 +11,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Settings are the organisation's name, colours and whether the product

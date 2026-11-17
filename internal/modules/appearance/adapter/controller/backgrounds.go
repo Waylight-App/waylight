@@ -6,10 +6,10 @@ import (
 	"mime"
 	"net/http"
 
-	"trisse-home/internal/modules/appearance/adapter/presenter"
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/modules/appearance/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/appearance/adapter/presenter"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/modules/appearance/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // BackgroundInputDTO is the body of PUT /api/appearance/background.

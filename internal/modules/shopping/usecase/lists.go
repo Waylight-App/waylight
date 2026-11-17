@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/shopping/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/shopping/domain"
+	"waylight/internal/shared/kernel"
 )
 
-// ListRepository stores the lists kept on trisse-home (output port, #471).
+// ListRepository stores the lists kept on waylight (output port, #471).
 type ListRepository interface {
 	Lists(ctx context.Context) ([]domain.List, error)
 	Get(ctx context.Context, id string) (domain.List, error)
@@ -47,7 +47,7 @@ type Export struct {
 	Name, ContentType, Body string
 }
 
-// Lists implements the use cases of lists on trisse-home.
+// Lists implements the use cases of lists on waylight.
 type Lists struct {
 	lists    ListRepository
 	settings SettingsRepository

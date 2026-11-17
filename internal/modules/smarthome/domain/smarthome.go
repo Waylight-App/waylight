@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // ErrNotConfigured is returned while no smart home hub is configured.

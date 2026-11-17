@@ -1,6 +1,6 @@
-# trisse-home
+# Waylight
 
-[![CI](https://github.com/itadori26/trisse-home/actions/workflows/ci.yml/badge.svg)](https://github.com/itadori26/trisse-home/actions/workflows/ci.yml)
+[![CI](https://github.com/itadori26/waylight/actions/workflows/ci.yml/badge.svg)](https://github.com/itadori26/waylight/actions/workflows/ci.yml)
 
 A self-hosted start page in the spirit of iGoogle. Arrange widgets on tabs:
 the weather, your calendar, to-dos and the next train next to the state of
@@ -51,12 +51,12 @@ The screenshots are taken from a demo instance with every release
 With Docker and the Compose plugin:
 
 ```sh
-git clone https://github.com/itadori26/trisse-home.git
-cd trisse-home
+git clone https://github.com/itadori26/waylight.git
+cd waylight
 cp .env.example .env
 sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$(openssl rand -base64 32)|" .env
 sudo docker compose up -d
-sudo docker compose logs trisse-home | grep setup_token
+sudo docker compose logs waylight | grep setup_token
 ```
 
 Open `http://<server-ip>:8090`, enter the setup token and choose a password.
@@ -71,7 +71,7 @@ you flash with Raspberry Pi Imager and that updates itself.
 
 The [documentation](docs/index.md) is organised by what you want to do:
 
-- **Deciding:** [what trisse-home is and is not](docs/about.md),
+- **Deciding:** [what Waylight is and is not](docs/about.md),
   [features](docs/features.md), [comparison with Homarr, Homepage, Glance
   and Dashy](docs/comparison.md), [FAQ](docs/faq.md)
 - **Using:** [first steps](docs/first-steps.md),
@@ -90,11 +90,11 @@ The [documentation](docs/index.md) is organised by what you want to do:
 Contributions are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) covers the
 setup, the rules for pull requests, new modules and translations. Planned
 work is on the [roadmap](ROADMAP.md); the changelog of every version is in
-the [release notes](https://github.com/itadori26/trisse-home/releases), which
+the [release notes](https://github.com/itadori26/waylight/releases), which
 the release pipeline writes from the merged pull requests. Issues labelled
-[good first issue](https://github.com/itadori26/trisse-home/labels/good%20first%20issue)
+[good first issue](https://github.com/itadori26/waylight/labels/good%20first%20issue)
 name the files and tests to touch and are a good way in. Questions and
-ideas go to [Discussions](https://github.com/itadori26/trisse-home/discussions).
+ideas go to [Discussions](https://github.com/itadori26/waylight/discussions).
 Please follow the [Code of Conduct](CODE_OF_CONDUCT.md), and report security
 problems as described in [SECURITY.md](SECURITY.md).
 

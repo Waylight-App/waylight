@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/space/domain"
-	"trisse-home/internal/modules/space/usecase"
+	"waylight/internal/modules/space/domain"
+	"waylight/internal/modules/space/usecase"
 )
 
 type fakeUC struct{ usecase.Space }

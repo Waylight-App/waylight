@@ -5,11 +5,11 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/immich/adapter/controller"
-	"trisse-home/internal/modules/immich/adapter/gateway"
-	"trisse-home/internal/modules/immich/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/immich/adapter/controller"
+	"waylight/internal/modules/immich/adapter/gateway"
+	"waylight/internal/modules/immich/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the Immich rings and implements modules.Module.

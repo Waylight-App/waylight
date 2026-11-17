@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/wireguard/adapter/presenter"
-	"trisse-home/internal/modules/wireguard/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/wireguard/adapter/presenter"
+	"waylight/internal/modules/wireguard/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the WireGuard endpoints.

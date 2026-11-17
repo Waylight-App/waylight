@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/ee/connections/domain"
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/connections/domain"
+	licence "waylight/ee/licence/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Tokens stores connections, encrypted per row (output port).
@@ -70,7 +70,7 @@ type Audit func(ctx context.Context, action, service string)
 // Errors shown to people.
 var (
 	ErrUnknownService = kernel.NewPublicError(kernel.ErrNotFound, "This service is not known.")
-	ErrNotConfigured  = kernel.NewPublicError(kernel.ErrConflict, "An admin has to register trisse-home at this service first.")
+	ErrNotConfigured  = kernel.NewPublicError(kernel.ErrConflict, "An admin has to register waylight at this service first.")
 	ErrNoPublicURL    = kernel.NewPublicError(kernel.ErrConflict, "Connecting accounts needs PUBLIC_URL, so the service can send the browser back.")
 	ErrNotConnected   = kernel.NewPublicError(kernel.ErrNotFound, "This account is not connected.")
 	ErrReconnect      = kernel.NewPublicError(kernel.ErrConflict, "The connection has expired; connect the account again.")
@@ -330,7 +330,7 @@ func (s *Service) ClientsList(ctx context.Context) ([]ClientView, string, error)
 	return out, s.d.OAuth.RedirectURL(), nil
 }
 
-// SaveClient registers trisse-home at a service (admins). An empty secret
+// SaveClient registers waylight at a service (admins). An empty secret
 // keeps the stored one.
 func (s *Service) SaveClient(ctx context.Context, in domain.Client) error {
 	if !kernel.PrincipalFrom(ctx).IsAdmin() {

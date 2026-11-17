@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/notes/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/notes/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func TestRepositoryOrdering(t *testing.T) {

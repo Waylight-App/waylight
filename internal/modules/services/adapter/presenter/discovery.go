@@ -3,7 +3,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/services/usecase"
+	"waylight/internal/modules/services/usecase"
 )
 
 // DiscoveryDTO is the state of Docker autodiscovery (#78).

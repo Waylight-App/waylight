@@ -76,7 +76,7 @@ describe('LocalUsageStore', () => {
   it('works without storage and with garbage', () => {
     expect(new LocalUsageStore(() => undefined).load()).toEqual({ enabled: true, entries: [] });
     const { storage, data } = fake();
-    data.set('trisse-home.search-usage', '{not json');
+    data.set('waylight.search-usage', '{not json');
     expect(new LocalUsageStore(() => storage).load()).toEqual({ enabled: true, entries: [] });
     const throwing = {
       getItem: () => {

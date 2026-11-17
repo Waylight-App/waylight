@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/ee/presence/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/presence/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Store keeps today's statuses and the on/off switch (output port).

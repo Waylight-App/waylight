@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"trisse-home/internal/modules/system/usecase"
+	"waylight/internal/modules/system/usecase"
 )
 
 // UsageDTO is a used/total pair in bytes with the percentage.

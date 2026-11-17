@@ -11,7 +11,7 @@ import { join } from 'node:path';
 const port = Number(process.env.SCREENSHOT_PORT ?? 18092);
 /** Set to screenshot an already running demo (e.g. the release image). */
 const external = process.env.SCREENSHOT_BASE_URL;
-const dataDir = mkdtempSync(join(tmpdir(), 'trisse-home-shots-'));
+const dataDir = mkdtempSync(join(tmpdir(), 'waylight-shots-'));
 
 export default defineConfig({
   testDir: 'e2e/screenshots',
@@ -23,7 +23,7 @@ export default defineConfig({
   webServer: external
     ? undefined
     : {
-        command: '../bin/trisse-home',
+        command: '../bin/waylight',
         url: `http://127.0.0.1:${port}/healthz`,
         reuseExistingServer: false,
         env: {

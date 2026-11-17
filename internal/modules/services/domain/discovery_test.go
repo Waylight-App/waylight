@@ -13,18 +13,18 @@ func TestParseLabels(t *testing.T) {
 		wantOK bool
 	}{
 		{"own labels", Container{Name: "jellyfin", Labels: map[string]string{
-			"trisse-home.name": "Media", "trisse-home.url": "https://media.lan", "trisse-home.icon": "🎬", "trisse-home.description": "Films",
+			"waylight.name": "Media", "waylight.url": "https://media.lan", "waylight.icon": "🎬", "waylight.description": "Films",
 		}}, DiscoveredService{Container: "jellyfin", Name: "Media", URL: "https://media.lan", Icon: "🎬", Description: "Films"}, true},
 		{"homepage fallback", Container{Name: "grafana", Labels: map[string]string{
 			"homepage.name": "Grafana", "homepage.href": "http://grafana:3000", "homepage.icon": "grafana.png", "homepage.group": "Monitoring",
 		}}, DiscoveredService{Container: "grafana", Name: "Grafana", URL: "http://grafana:3000", Icon: "grafana.png"}, true},
 		{"own labels win over homepage", Container{Name: "x", Labels: map[string]string{
-			"trisse-home.url": "https://a.lan", "homepage.href": "https://b.lan", "homepage.name": "B",
+			"waylight.url": "https://a.lan", "homepage.href": "https://b.lan", "homepage.name": "B",
 		}}, DiscoveredService{Container: "x", Name: "B", URL: "https://a.lan"}, true},
-		{"name defaults to container", Container{Name: "pihole", Labels: map[string]string{"trisse-home.url": " https://pi.lan "}},
+		{"name defaults to container", Container{Name: "pihole", Labels: map[string]string{"waylight.url": " https://pi.lan "}},
 			DiscoveredService{Container: "pihole", Name: "pihole", URL: "https://pi.lan"}, true},
-		{"no url", Container{Name: "db", Labels: map[string]string{"trisse-home.name": "DB"}}, DiscoveredService{}, false},
-		{"opt out", Container{Name: "x", Labels: map[string]string{"trisse-home.url": "https://a.lan", "trisse-home.enable": "False"}}, DiscoveredService{}, false},
+		{"no url", Container{Name: "db", Labels: map[string]string{"waylight.name": "DB"}}, DiscoveredService{}, false},
+		{"opt out", Container{Name: "x", Labels: map[string]string{"waylight.url": "https://a.lan", "waylight.enable": "False"}}, DiscoveredService{}, false},
 		{"no labels", Container{Name: "x"}, DiscoveredService{}, false},
 	}
 	for _, c := range cases {

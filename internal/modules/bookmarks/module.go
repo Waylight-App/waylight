@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/bookmarks/adapter/configfile"
-	"trisse-home/internal/modules/bookmarks/adapter/controller"
-	"trisse-home/internal/modules/bookmarks/adapter/gateway"
-	"trisse-home/internal/modules/bookmarks/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/bookmarks/adapter/configfile"
+	"waylight/internal/modules/bookmarks/adapter/controller"
+	"waylight/internal/modules/bookmarks/adapter/gateway"
+	"waylight/internal/modules/bookmarks/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the bookmarks rings and implements modules.Module.

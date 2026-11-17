@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/services/domain"
-	"trisse-home/internal/modules/services/usecase"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/services/domain"
+	"waylight/internal/modules/services/usecase"
+	"waylight/internal/shared/sqlutil"
 )
 
 // DiscoveryStore implements usecase.DiscoveryStore on SQLite (one row).

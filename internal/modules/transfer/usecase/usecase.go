@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/transfer/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transfer/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Section is the exportable data of one module (output port).

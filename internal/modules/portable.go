@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/shared/sqlutil"
 )
 
 // Portable is implemented by modules whose user data can be exported and

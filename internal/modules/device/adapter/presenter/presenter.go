@@ -3,7 +3,7 @@
 // Ring: Interface Adapters.
 package presenter
 
-import "trisse-home/internal/modules/device/domain"
+import "waylight/internal/modules/device/domain"
 
 // StateDTO is returned by GET /api/device (#140).
 type StateDTO struct {

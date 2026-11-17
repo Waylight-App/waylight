@@ -16,8 +16,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"trisse-home/internal/modules/nextcloud/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/nextcloud/domain"
+	"waylight/internal/shared/kernel"
 )
 
 //go:embed migrations/*.sql

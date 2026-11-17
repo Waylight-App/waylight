@@ -3,7 +3,7 @@ export const en = {
   'settings.section.wiki': 'Wiki search',
   'app.group.wiki': 'Wiki',
   'wiki.intro':
-    'Find wiki pages from the search field. trisse-home asks the wiki while you type and stores no page content. Type “w ” first to search the wikis only.',
+    'Find wiki pages from the search field. Waylight asks the wiki while you type and stores no page content. Type “w ” first to search the wikis only.',
   'wiki.shared_token':
     'Everyone who uses this start page sees what the API token may read. Use a token of an account that only reads what all of you may see.',
   'wiki.none': 'No wiki connected yet.',

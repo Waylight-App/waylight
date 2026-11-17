@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 const mbid = "a74b1b7f-71a5-4011-9441-d0b5e4122711"

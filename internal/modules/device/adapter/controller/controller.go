@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/device/adapter/presenter"
-	"trisse-home/internal/modules/device/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/device/adapter/presenter"
+	"waylight/internal/modules/device/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves /api/device.

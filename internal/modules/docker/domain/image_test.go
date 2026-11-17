@@ -11,7 +11,7 @@ func TestParseImageRef(t *testing.T) {
 		{"nginx", DockerHub, "library/nginx", "latest", "", "nginx:latest"},
 		{"nginx:1.27", DockerHub, "library/nginx", "1.27", "", "nginx:1.27"},
 		{"linuxserver/wireguard:latest", DockerHub, "linuxserver/wireguard", "latest", "", "linuxserver/wireguard:latest"},
-		{"ghcr.io/itadori26/trisse-home:v1.2.0", "ghcr.io", "itadori26/trisse-home", "v1.2.0", "", "ghcr.io/itadori26/trisse-home:v1.2.0"},
+		{"ghcr.io/itadori26/waylight:v1.2.0", "ghcr.io", "itadori26/waylight", "v1.2.0", "", "ghcr.io/itadori26/waylight:v1.2.0"},
 		{"registry.local:5000/app", "registry.local:5000", "app", "latest", "", "registry.local:5000/app:latest"},
 		{"localhost/app:dev", "localhost", "app", "dev", "", "localhost/app:dev"},
 		{"redis@sha256:abc", DockerHub, "library/redis", "", "sha256:abc", "redis@sha256:abc"},
@@ -56,11 +56,11 @@ func TestNewerTag(t *testing.T) {
 
 func TestReleaseNotesURL(t *testing.T) {
 	cases := map[string]string{
-		"https://github.com/itadori26/trisse-home":     "https://github.com/itadori26/trisse-home/releases",
-		"https://github.com/itadori26/trisse-home.git": "https://github.com/itadori26/trisse-home/releases",
-		"https://gitlab.com/group/project":             "https://gitlab.com/group/project",
-		"javascript:alert(1)":                          "",
-		"":                                             "",
+		"https://github.com/itadori26/waylight":     "https://github.com/itadori26/waylight/releases",
+		"https://github.com/itadori26/waylight.git": "https://github.com/itadori26/waylight/releases",
+		"https://gitlab.com/group/project":          "https://gitlab.com/group/project",
+		"javascript:alert(1)":                       "",
+		"":                                          "",
 	}
 	for in, want := range cases {
 		if got := ReleaseNotesURL(map[string]string{SourceLabel: in}); got != want {

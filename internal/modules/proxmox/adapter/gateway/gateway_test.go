@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/proxmox/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/proxmox/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 type prefixCipher struct{}

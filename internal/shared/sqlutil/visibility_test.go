@@ -8,7 +8,7 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // TestVisibleToMatchesTheKernelRule runs the SQL filter against a table that

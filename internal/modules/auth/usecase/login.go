@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 type login struct{ deps Deps }

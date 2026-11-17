@@ -11,7 +11,7 @@ const MAX_PLACES = 6;
 export class WeatherNeedsServerError extends Error {
   override name = 'WeatherNeedsServerError';
   constructor() {
-    super('This needs a trisse-home server.');
+    super('This needs a waylight server.');
   }
 }
 

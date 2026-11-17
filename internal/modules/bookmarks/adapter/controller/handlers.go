@@ -3,10 +3,10 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/bookmarks/adapter/presenter"
-	"trisse-home/internal/modules/bookmarks/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/bookmarks/adapter/presenter"
+	"waylight/internal/modules/bookmarks/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // UseCases bundles the bookmarks input ports.

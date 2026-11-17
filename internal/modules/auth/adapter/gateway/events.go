@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 // EventRepository implements usecase.SecurityEventRepository in SQLite.

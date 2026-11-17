@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/device/domain"
+	"waylight/internal/modules/device/domain"
 )
 
 type memStore struct {

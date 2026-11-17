@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 const today = "2026-11-16"

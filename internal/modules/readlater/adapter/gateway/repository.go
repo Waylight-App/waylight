@@ -13,10 +13,10 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules/readlater/domain"
-	"trisse-home/internal/modules/readlater/usecase"
-	"trisse-home/internal/shared/kernel"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/readlater/domain"
+	"waylight/internal/modules/readlater/usecase"
+	"waylight/internal/shared/kernel"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

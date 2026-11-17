@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/todos/domain"
-	"trisse-home/internal/shared/kernel"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/todos/domain"
+	"waylight/internal/shared/kernel"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

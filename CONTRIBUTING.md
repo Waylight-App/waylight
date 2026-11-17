@@ -1,10 +1,10 @@
 # Contributing
 
-Thanks for your interest in trisse-home! Please follow our
+Thanks for your interest in Waylight! Please follow our
 [Code of Conduct](CODE_OF_CONDUCT.md). Questions and ideas are welcome in
-[Discussions](https://github.com/itadori26/trisse-home/discussions); planned
+[Discussions](https://github.com/itadori26/waylight/discussions); planned
 work is in the [roadmap](ROADMAP.md), and issues labelled
-[good first issue](https://github.com/itadori26/trisse-home/labels/good%20first%20issue)
+[good first issue](https://github.com/itadori26/waylight/labels/good%20first%20issue)
 are a good place to start.
 
 ## Development setup (about 10 minutes)
@@ -13,7 +13,7 @@ Requirements: Go (version in `go.mod`), Node.js 22 or newer, `make`, and
 Docker only if you want to build the image.
 
 ```sh
-git clone https://github.com/itadori26/trisse-home.git && cd trisse-home
+git clone https://github.com/itadori26/waylight.git && cd waylight
 make deps          # Go modules, npm packages and the code generators
 make ci            # lint, architecture tests, unit tests, type check, build
 cp .env.example .env && sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$(openssl rand -base64 32)|" .env
@@ -95,7 +95,7 @@ still touch are listed in [docs/modules/README.md](docs/modules/README.md).
 ## Adding an integration
 
 Integrations (Home Assistant, Pi-hole, Jellyfin, …) are tracked in
-[#91](https://github.com/itadori26/trisse-home/issues/91). Every integration
+[#91](https://github.com/itadori26/waylight/issues/91). Every integration
 follows the same pattern:
 
 1. **Scaffold** a module with `make new-module NAME=pihole`.
@@ -115,7 +115,7 @@ follows the same pattern:
 
 Anything that only needs to show a value from a JSON endpoint does not need
 its own module: use the generic JSON widget
-([#48](https://github.com/itadori26/trisse-home/issues/48)).
+([#48](https://github.com/itadori26/waylight/issues/48)).
 
 ## UI texts and translations
 
@@ -164,7 +164,7 @@ Before a minor release (x.**y**.0): review [docs/comparison.md](docs/comparison.
 against the current versions of the compared projects and update its date.
 
 The release workflow builds `linux/amd64` and `linux/arm64` images, pushes
-`ghcr.io/itadori26/trisse-home:1.2.0`, `:1.2` and `:latest`, smoke-tests both
+`ghcr.io/itadori26/waylight:1.2.0`, `:1.2` and `:latest`, smoke-tests both
 architectures, attaches an SPDX SBOM and publishes release notes generated
 from the Conventional Commit messages (`scripts/release-notes.sh`, also usable
 locally to preview the notes).

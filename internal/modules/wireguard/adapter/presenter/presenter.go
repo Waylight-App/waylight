@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/wireguard/usecase"
+	"waylight/internal/modules/wireguard/usecase"
 )
 
 // PeerDTO is one peer; latestHandshake is null when there never was one.

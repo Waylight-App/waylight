@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/platform/metrics"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/platform/metrics"
+	"waylight/internal/shared/kernel"
 )
 
 // metricsHandler serves GET /metrics in the Prometheus text format (#109).
@@ -19,7 +19,7 @@ func metricsHandler(a *app, httpStats *metrics.HTTPStats) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got := []byte(strings.TrimSpace(r.Header.Get("Authorization")))
 		if subtle.ConstantTimeCompare(got, want) != 1 {
-			w.Header().Set("WWW-Authenticate", `Bearer realm="trisse-home metrics"`)
+			w.Header().Set("WWW-Authenticate", `Bearer realm="Waylight metrics"`)
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}

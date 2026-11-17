@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
-	"trisse-home/internal/modules/bookmarks/domain"
-	"trisse-home/internal/shared/kernel"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/bookmarks/domain"
+	"waylight/internal/shared/kernel"
+	"waylight/internal/shared/sqlutil"
 )
 
 // LoadSettings implements usecase.SettingsRepository; defaults are off.

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/gamedeals"
+	"waylight/internal/modules"
+	"waylight/internal/modules/gamedeals"
 )
 
 // The gamedeals module registers itself; no shared file lists it (#193).

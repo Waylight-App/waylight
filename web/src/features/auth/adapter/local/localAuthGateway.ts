@@ -8,7 +8,7 @@ import type { AuthGateway, CsrfTokenStore } from '../../usecase/ports';
 export class LocalModeUnavailableError extends Error {
   override name = 'LocalModeUnavailableError';
   constructor() {
-    super('This needs a trisse-home server.');
+    super('This needs a waylight server.');
   }
 }
 

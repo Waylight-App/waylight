@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/mail/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/mail/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // cacheTTL: a widget asks every few minutes; this keeps logins rare.

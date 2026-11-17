@@ -2,12 +2,12 @@
 
 - Status: Accepted (2026-11-15)
 - Date: 2026-11-15
-- Issue: [#291](https://github.com/itadori26/trisse-home/issues/291), part of [#280](https://github.com/itadori26/trisse-home/issues/280)
+- Issue: [#291](https://github.com/itadori26/waylight/issues/291), part of [#280](https://github.com/itadori26/waylight/issues/280)
 
 ## Context
 
-The browser extension (#65) forwards the new tab to a running trisse-home
-server. Someone without a server cannot try trisse-home at all, and the
+The browser extension (#65) forwards the new tab to a running Waylight
+server. Someone without a server cannot try Waylight at all, and the
 extension is about to be listed on addons.mozilla.org (#290), where most
 visitors will not have one.
 
@@ -82,7 +82,7 @@ Compile the server to WebAssembly and run it in the extension.
   server's tables (IDs, timestamps), so that the export (below) is a direct
   mapping.
 - **Export and moving to a server:** the local mode writes the JSON export
-  format of the `transfer` module (format `trisse-home-export`, sections per
+  format of the `transfer` module (format `waylight-export`, sections per
   module with table rows). When the user later enters a server address, the
   extension offers to import that file into the server through the existing
   import endpoint, then switches to forwarding mode.

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/fritzbox/domain"
-	"trisse-home/internal/modules/fritzbox/usecase"
+	"waylight/internal/modules/fritzbox/domain"
+	"waylight/internal/modules/fritzbox/usecase"
 )
 
 type fakeUC struct{ usecase.FritzBox }

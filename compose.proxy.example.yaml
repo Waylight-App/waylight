@@ -4,7 +4,7 @@
 #   sudo docker compose up -d
 # See docs/reverse-proxy.md for the matching .env settings.
 services:
-  trisse-home:
+  waylight:
     environment:
       VIRTUAL_HOST: home.example.com
       VIRTUAL_PORT: "8090"

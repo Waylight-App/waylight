@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 func TestNormaliseAlbum(t *testing.T) {

@@ -7,10 +7,10 @@ import (
 	"os"
 	"strings"
 
-	"trisse-home/ee/teamsbot"
-	"trisse-home/ee/teamsbot/adapter/botauth"
-	"trisse-home/ee/teamsbot/domain"
-	"trisse-home/internal/modules"
+	"waylight/ee/teamsbot"
+	"waylight/ee/teamsbot/adapter/botauth"
+	"waylight/ee/teamsbot/domain"
+	"waylight/internal/modules"
 )
 
 // Endpoints of the Teams command box search; tests point them at fakes.

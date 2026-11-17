@@ -6,8 +6,8 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/ee/teamcalendar/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/ee/teamcalendar/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serve the API.

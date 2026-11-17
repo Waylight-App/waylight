@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/notes/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/notes/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // maxSearchHits limits the full-text search results.

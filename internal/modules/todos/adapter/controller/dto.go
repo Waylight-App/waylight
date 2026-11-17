@@ -1,6 +1,6 @@
 package controller
 
-import "trisse-home/internal/modules/todos/usecase"
+import "waylight/internal/modules/todos/usecase"
 
 // VisibilityDTO shares a to-do: "private", "everyone" or "group:<id>".
 type VisibilityDTO struct {

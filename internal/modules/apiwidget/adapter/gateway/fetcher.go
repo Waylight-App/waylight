@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules/apiwidget/domain"
-	"trisse-home/internal/modules/apiwidget/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/apiwidget/domain"
+	"waylight/internal/modules/apiwidget/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // MaxResponseBytes is the largest JSON response that is read (1 MB).

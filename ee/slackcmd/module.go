@@ -12,10 +12,10 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/ee/slackcmd/adapter/slackapi"
-	"trisse-home/ee/slackcmd/adapter/socket"
-	"trisse-home/ee/slackcmd/usecase"
-	"trisse-home/internal/modules"
+	"waylight/ee/slackcmd/adapter/slackapi"
+	"waylight/ee/slackcmd/adapter/socket"
+	"waylight/ee/slackcmd/usecase"
+	"waylight/internal/modules"
 )
 
 // Module runs the connection as a background job.

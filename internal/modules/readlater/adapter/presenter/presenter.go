@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/readlater/domain"
+	"waylight/internal/modules/readlater/domain"
 )
 
 // ArticleDTO is a saved article. Content (sanitised HTML) is only set when

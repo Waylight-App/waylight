@@ -6,8 +6,8 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/birthdays/domain"
-	"trisse-home/internal/modules/birthdays/usecase"
+	"waylight/internal/modules/birthdays/domain"
+	"waylight/internal/modules/birthdays/usecase"
 )
 
 // BirthdayDTO is one birthday with its next occurrence.

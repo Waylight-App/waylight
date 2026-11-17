@@ -2,13 +2,13 @@
 
 - Status: Accepted (2026-11-16, by the maintainer)
 - Date: 2026-11-16
-- Issues: [#333](https://github.com/itadori26/trisse-home/issues/333), [#334](https://github.com/itadori26/trisse-home/issues/334), part of [#335](https://github.com/itadori26/trisse-home/issues/335)
+- Issues: [#333](https://github.com/itadori26/waylight/issues/333), [#334](https://github.com/itadori26/waylight/issues/334), part of [#335](https://github.com/itadori26/waylight/issues/335)
 
 ## Context
 
 A Slack slash command (#333) and a search in the Teams command box (#334)
 are requests that start at Slack or Microsoft and must reach the instance.
-Until now every request to trisse-home comes from a browser in the
+Until now every request to Waylight comes from a browser in the
 organisation's network; the instance is private by default and nothing in
 it expects traffic from the internet.
 

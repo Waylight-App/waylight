@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/wireguard/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/wireguard/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Export is the content of the export file.

@@ -12,7 +12,7 @@ import (
 	"time"
 	"unicode"
 
-	"trisse-home/internal/modules/system/domain"
+	"waylight/internal/modules/system/domain"
 )
 
 // DiskMount is a file system to report: Label is shown, Path is statted.

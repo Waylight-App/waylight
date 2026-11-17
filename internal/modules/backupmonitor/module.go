@@ -6,11 +6,11 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/backupmonitor/adapter/controller"
-	"trisse-home/internal/modules/backupmonitor/adapter/gateway"
-	"trisse-home/internal/modules/backupmonitor/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/backupmonitor/adapter/controller"
+	"waylight/internal/modules/backupmonitor/adapter/gateway"
+	"waylight/internal/modules/backupmonitor/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // reportInterval is how often the source states are reported for notifications.
@@ -86,10 +86,10 @@ func (m *Module) Metrics(ctx context.Context) []kernel.MetricSample {
 			continue
 		}
 		labels := []kernel.Label{{Name: "name", Value: s.Name}, {Name: "kind", Value: s.Kind}}
-		out = append(out, kernel.Gauge("trisse_backup_ok", "Whether the backup or check is healthy (1: ok or running, 0: overdue or failed).",
+		out = append(out, kernel.Gauge("waylight_backup_ok", "Whether the backup or check is healthy (1: ok or running, 0: overdue or failed).",
 			kernel.Bool(s.State == "ok" || s.State == "running"), labels...))
 		if !s.LastSuccessAt.IsZero() {
-			out = append(out, kernel.Gauge("trisse_backup_last_success_timestamp_seconds", "Last successful run since the Unix epoch.", float64(s.LastSuccessAt.Unix()), labels...))
+			out = append(out, kernel.Gauge("waylight_backup_last_success_timestamp_seconds", "Last successful run since the Unix epoch.", float64(s.LastSuccessAt.Unix()), labels...))
 		}
 	}
 	return out

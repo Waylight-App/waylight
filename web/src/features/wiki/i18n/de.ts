@@ -5,7 +5,7 @@ export const de: Record<keyof typeof en, string> = {
   'settings.section.wiki': 'Wiki-Suche',
   'app.group.wiki': 'Wiki',
   'wiki.intro':
-    'Finde Wiki-Seiten über das Suchfeld. trisse-home fragt das Wiki beim Tippen und speichert keine Seiteninhalte. Mit „w “ am Anfang suchst du nur in den Wikis.',
+    'Finde Wiki-Seiten über das Suchfeld. Waylight fragt das Wiki beim Tippen und speichert keine Seiteninhalte. Mit „w “ am Anfang suchst du nur in den Wikis.',
   'wiki.shared_token':
     'Alle, die diese Startseite nutzen, sehen, was das API-Token lesen darf. Nimm ein Token eines Kontos, das nur liest, was ihr alle sehen dürft.',
   'wiki.none': 'Noch kein Wiki verbunden.',

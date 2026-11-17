@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Bounds for the number of days requested by the widget.
@@ -473,7 +473,7 @@ func (uc *calendar) CreateEvent(ctx context.Context, in NewEventInput) (EventVie
 	if in.AllDay {
 		end = end.AddDate(0, 0, 1) // inclusive date → exclusive end
 	}
-	e, err := domain.NewEvent(uc.ids.NewID()+"@trisse-home", in.Summary, in.Location, in.Start, end, in.AllDay)
+	e, err := domain.NewEvent(uc.ids.NewID()+"@waylight", in.Summary, in.Location, in.Start, end, in.AllDay)
 	if err != nil {
 		return EventView{}, err
 	}

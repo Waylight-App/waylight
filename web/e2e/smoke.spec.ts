@@ -95,7 +95,7 @@ test('installable app shows the last data offline and never caches auth', async 
   await expect(page.getByTestId('dashboard')).toBeVisible();
 
   const cached = await page.evaluate(async () => {
-    const cache = await caches.open('trisse-data-v1');
+    const cache = await caches.open('waylight-data-v1');
     return (await cache.keys()).map((r) => new URL(r.url).pathname);
   });
   expect(cached).toContain('/api/dashboard');

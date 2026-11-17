@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // ErrNotConfigured is returned while no Proxmox VE host is configured.
 var ErrNotConfigured = kernel.NewPublicError(kernel.ErrNotFound, "Proxmox VE is not configured yet.")
 
-// tokenIDPattern matches API token IDs such as monitor@pve!trisse-home.
+// tokenIDPattern matches API token IDs such as monitor@pve!waylight.
 var tokenIDPattern = regexp.MustCompile(`^[^\s@!]+@[^\s@!]+![A-Za-z][A-Za-z0-9._-]*$`)
 
 // Settings are the connection details of a Proxmox VE host or cluster.
@@ -36,7 +36,7 @@ func NewSettings(rawURL, tokenID, secret, fingerprint string) (Settings, error) 
 	}
 	tokenID = strings.TrimSpace(tokenID)
 	if !tokenIDPattern.MatchString(tokenID) {
-		return Settings{}, kernel.NewValidationError("tokenId", "The token ID must look like monitor@pve!trisse-home.")
+		return Settings{}, kernel.NewValidationError("tokenId", "The token ID must look like monitor@pve!waylight.")
 	}
 	secret = strings.TrimSpace(secret)
 	if secret == "" {

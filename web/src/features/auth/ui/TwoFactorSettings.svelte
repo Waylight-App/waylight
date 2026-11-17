@@ -37,7 +37,7 @@
     const blob = new Blob([recoveryCodesText(codes, new Date())], { type: 'text/plain' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'trisse-home-recovery-codes.txt';
+    a.download = 'waylight-recovery-codes.txt';
     a.click();
     URL.revokeObjectURL(a.href);
   }

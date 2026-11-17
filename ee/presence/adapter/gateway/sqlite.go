@@ -10,8 +10,8 @@ import (
 	"errors"
 	"io/fs"
 
-	"trisse-home/ee/presence/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/ee/presence/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

@@ -1,6 +1,6 @@
 # API tokens
 
-Personal API tokens let scripts and automations use the trisse-home API
+Personal API tokens let scripts and automations use the Waylight API
 without a browser session: iOS Shortcuts, Home Assistant, cron jobs.
 
 ## Create a token
@@ -28,8 +28,8 @@ curl -X POST -H "Authorization: Bearer th_…" -H "Content-Type: application/jso
   -d '{"title":"Milch kaufen"}' http://192.168.178.115:8090/api/todos
 ```
 
-All endpoints are described in OpenAPI: [`api/openapi.base.yaml`](https://github.com/itadori26/trisse-home/blob/main/api/openapi.base.yaml)
-plus one fragment per module in [`api/modules/`](https://github.com/itadori26/trisse-home/tree/main/api/modules); `make openapi` merges
+All endpoints are described in OpenAPI: [`api/openapi.base.yaml`](https://github.com/itadori26/waylight/blob/main/api/openapi.base.yaml)
+plus one fragment per module in [`api/modules/`](https://github.com/itadori26/waylight/tree/main/api/modules); `make openapi` merges
 them into `dist/openapi.yaml`.
 
 ## Example: iOS Shortcut "Add to-do"
@@ -51,13 +51,13 @@ The phone must be in your LAN or VPN, as for the web interface.
 
 ```yaml
 rest_command:
-  trisse_todo:
+  waylight_todo:
     url: "http://192.168.178.115:8090/api/todos"
     method: POST
     headers:
-      Authorization: !secret trisse_home_token
+      Authorization: !secret waylight_token
       Content-Type: application/json
     payload: '{"title": "{{ title }}"}'
 ```
 
-with `trisse_home_token: "Bearer th_…"` in `secrets.yaml`.
+with `waylight_token: "Bearer th_…"` in `secrets.yaml`.

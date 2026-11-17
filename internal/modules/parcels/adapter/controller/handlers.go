@@ -6,10 +6,10 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/parcels/adapter/presenter"
-	"trisse-home/internal/modules/parcels/domain"
-	"trisse-home/internal/modules/parcels/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/parcels/adapter/presenter"
+	"waylight/internal/modules/parcels/domain"
+	"waylight/internal/modules/parcels/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the parcel endpoints.

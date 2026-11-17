@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"io/fs"
 
-	"trisse-home/ee/ldap/usecase"
+	"waylight/ee/ldap/usecase"
 )
 
 //go:embed migrations/*.sql

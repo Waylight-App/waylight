@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"time"
 
-	"trisse-home/internal/modules/smarthome/domain"
+	"waylight/internal/modules/smarthome/domain"
 )
 
 // maxStatesBytes bounds GET /api/states; large installations have a few

@@ -6,10 +6,10 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
-// LocalSource is the ID of the built-in list stored in trisse-home.
+// LocalSource is the ID of the built-in list stored in waylight.
 const LocalSource = "local"
 
 // SourceKind is the type of an external to-do provider (#169).

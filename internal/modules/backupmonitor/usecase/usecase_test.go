@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/backupmonitor/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/backupmonitor/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRepo struct{ m map[string]domain.Source }

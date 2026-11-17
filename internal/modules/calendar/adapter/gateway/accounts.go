@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/modules/calendar/usecase"
-	"trisse-home/internal/shared/kernel"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/modules/calendar/usecase"
+	"waylight/internal/shared/kernel"
+	"waylight/internal/shared/sqlutil"
 )
 
 // AccountRepository implements usecase.AccountRepository (#282). Secrets

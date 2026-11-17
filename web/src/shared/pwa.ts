@@ -3,7 +3,7 @@
  * in a secure context (HTTPS or localhost); elsewhere these are no-ops.
  */
 
-const SIGNED_IN_KEY = 'trisse-home.signedIn';
+const SIGNED_IN_KEY = 'waylight.signedIn';
 
 /** Registers the service worker in production builds. */
 export function registerServiceWorker(): void {
@@ -37,5 +37,5 @@ export function canStartOffline(): boolean {
 /** Deletes cached widget data (on logout). */
 export async function clearOfflineData(): Promise<void> {
   navigator.serviceWorker?.controller?.postMessage('clear-data');
-  if ('caches' in window) await caches.delete('trisse-data-v1').catch(() => false);
+  if ('caches' in window) await caches.delete('waylight-data-v1').catch(() => false);
 }

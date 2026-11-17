@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules/apiwidget/adapter/presenter"
-	"trisse-home/internal/modules/apiwidget/domain"
-	"trisse-home/internal/modules/apiwidget/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/apiwidget/adapter/presenter"
+	"waylight/internal/modules/apiwidget/domain"
+	"waylight/internal/modules/apiwidget/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves /api/apiwidget.

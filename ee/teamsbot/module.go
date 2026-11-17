@@ -12,14 +12,14 @@ import (
 	"net/http"
 	"time"
 
-	licence "trisse-home/ee/licence/domain"
+	licence "waylight/ee/licence/domain"
 
-	"trisse-home/ee/teamsbot/adapter/botauth"
-	"trisse-home/ee/teamsbot/adapter/controller"
-	"trisse-home/ee/teamsbot/adapter/graph"
-	"trisse-home/ee/teamsbot/adapter/tab"
-	"trisse-home/ee/teamsbot/usecase"
-	"trisse-home/internal/modules"
+	"waylight/ee/teamsbot/adapter/botauth"
+	"waylight/ee/teamsbot/adapter/controller"
+	"waylight/ee/teamsbot/adapter/graph"
+	"waylight/ee/teamsbot/adapter/tab"
+	"waylight/ee/teamsbot/usecase"
+	"waylight/internal/modules"
 )
 
 // Module wires the rings.

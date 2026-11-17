@@ -19,7 +19,7 @@ type Label struct{ Name, Value string }
 // (Prometheus text format). Samples with the same Name form one family
 // and must share Help and Type.
 type MetricSample struct {
-	Name   string // with the trisse_ prefix, snake_case
+	Name   string // with the waylight_ prefix, snake_case
 	Help   string
 	Type   MetricType
 	Labels []Label

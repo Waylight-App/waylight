@@ -4,7 +4,7 @@ import (
 	"slices"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // RepeatKind selects how a to-do recurs (#68).

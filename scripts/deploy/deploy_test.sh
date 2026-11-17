@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Tests scripts/deploy/trisse-home-deploy with stubbed git, docker and runuser (#211).
+# Tests scripts/deploy/waylight-deploy with stubbed git, docker and runuser (#211).
 # The stubs model what matters: which image is "running", what the "database"
 # contains (a new version migrates it) and which commit the checkout is on.
 #   bash scripts/deploy/deploy_test.sh
 set -uo pipefail
 
-SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/trisse-home-deploy"
+SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/waylight-deploy"
 ROOT=$(mktemp -d)
 trap 'rm -rf "$ROOT"' EXIT
 fails=0
@@ -125,7 +125,7 @@ for old in 20250101T000000Z-aaaaaaa 20250102T000000Z-bbbbbbb 20250103T000000Z-cc
 deploy
 check "exit 0" exit_is 0
 check "the image is built before the service is stopped" before "docker build" "compose.* stop"
-check "the service is stopped before the new one starts" before "stop trisse-home" "up -d --no-build"
+check "the service is stopped before the new one starts" before "stop waylight" "up -d --no-build"
 check "the checkout moved to the new commit" eq "$T/head" "$MAIN"
 check "the new version is running" eq "$T/running" candidate
 check "the state file records the commit" eq "$T/state/current" "$MAIN"
@@ -155,7 +155,7 @@ setup older
 export SSH_ORIGINAL_COMMAND="deploy $OLDER_SHA"
 OLDER=1 deploy
 check "an older commit is skipped without an error (exit 0)" exit_is 0
-check "  nothing is built, stopped or switched" bash -c "! grep -q -e 'docker build' -e 'stop trisse-home' -e 'git checkout' \"$T/calls.log\""
+check "  nothing is built, stopped or switched" bash -c "! grep -q -e 'docker build' -e 'stop waylight' -e 'git checkout' \"$T/calls.log\""
 check "  the running version stays" eq "$T/head" "$PREV"
 check "  the reason is logged" bash -c "grep -q 'is newer' \"$T/out.log\""
 check "  the data is untouched" bash -c "grep -qx old-data \"$T/volume/db.sqlite\""
@@ -171,7 +171,7 @@ echo "== build failure"
 setup buildfail
 FAIL_BUILD=1 deploy
 check "exit 6" exit_is 6
-check "the running service is not stopped" not_called "stop trisse-home"
+check "the running service is not stopped" not_called "stop waylight"
 check "the checkout is unchanged" eq "$T/head" "$PREV"
 check "the data is untouched" bash -c "grep -qx old-data \"$T/volume/db.sqlite\""
 
@@ -223,14 +223,14 @@ source "$(dirname "$SCRIPT")/install.sh"
 ak="$T/authorized_keys"
 other='command="sudo /usr/local/bin/senseo-deploy",no-pty,no-port-forwarding,no-agent-forwarding github-actions'
 echo "$other" >"$ak"
-set_authorized_key "$ak" /usr/local/bin/trisse-home-deploy "ssh-ed25519 AAAAfirst trisse"
+set_authorized_key "$ak" /usr/local/bin/waylight-deploy "ssh-ed25519 AAAAfirst waylight"
 check "the other key is kept" bash -c "grep -qxF '$other' \"$ak\""
-check "our key is added with its forced command" bash -c "grep -q '^command=\"sudo /usr/local/bin/trisse-home-deploy\",no-pty.* ssh-ed25519 AAAAfirst' \"$ak\""
-set_authorized_key "$ak" /usr/local/bin/trisse-home-deploy "ssh-ed25519 AAAAsecond trisse"
-check "running it again replaces only our line (no duplicate)" bash -c "[[ \$(grep -c trisse-home-deploy \"$ak\") -eq 1 ]] && grep -q AAAAsecond \"$ak\" && ! grep -q AAAAfirst \"$ak\""
+check "our key is added with its forced command" bash -c "grep -q '^command=\"sudo /usr/local/bin/waylight-deploy\",no-pty.* ssh-ed25519 AAAAfirst' \"$ak\""
+set_authorized_key "$ak" /usr/local/bin/waylight-deploy "ssh-ed25519 AAAAsecond waylight"
+check "running it again replaces only our line (no duplicate)" bash -c "[[ \$(grep -c waylight-deploy \"$ak\") -eq 1 ]] && grep -q AAAAsecond \"$ak\" && ! grep -q AAAAfirst \"$ak\""
 check "the other key is still there" bash -c "grep -qxF '$other' \"$ak\""
 rm -f "$T/authorized_keys"
-set_authorized_key "$T/authorized_keys" /usr/local/bin/trisse-home-deploy "ssh-ed25519 AAAAnew trisse"
+set_authorized_key "$T/authorized_keys" /usr/local/bin/waylight-deploy "ssh-ed25519 AAAAnew waylight"
 check "works for a new file too" bash -c "[[ \$(wc -l < \"$T/authorized_keys\") -eq 1 ]]"
 
 if ((fails > 0)); then

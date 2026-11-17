@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Deps bundles the output ports shared by the auth use cases.

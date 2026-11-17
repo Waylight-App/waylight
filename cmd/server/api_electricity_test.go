@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 func init() {

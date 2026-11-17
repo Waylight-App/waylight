@@ -6,8 +6,8 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/holidays/domain"
-	"trisse-home/internal/modules/holidays/usecase"
+	"waylight/internal/modules/holidays/domain"
+	"waylight/internal/modules/holidays/usecase"
 )
 
 // EntryDTO is one public holiday or school holiday period; dates are YYYY-MM-DD.

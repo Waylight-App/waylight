@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/modules/study/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/study/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestStudyIsPersonal: a transcript counts only the account's own modules,

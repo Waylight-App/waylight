@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 func (c *client) restore(fields map[string]string, file []byte, wantStatus int) []byte {

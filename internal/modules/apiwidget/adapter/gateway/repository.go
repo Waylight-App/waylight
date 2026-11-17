@@ -14,8 +14,8 @@ import (
 	"io/fs"
 	"time"
 
-	"trisse-home/internal/modules/apiwidget/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/apiwidget/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

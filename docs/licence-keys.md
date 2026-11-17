@@ -2,7 +2,7 @@
 
 The features in `ee/` (team tabs, single sign-on with groups, branding and the
 others listed in [ADR 0020](adr/0020-ee-stays-proprietary.md)) work only with a
-licence key. Everything else in trisse-home needs no key. This page explains
+licence key. Everything else in Waylight needs no key. This page explains
 how a key is checked and how to enter one.
 
 Builds published so far do not contain `ee/`. A server built with
@@ -17,7 +17,7 @@ lists no plugin.
 
 A key is a line of text starting with `THL1.`. It names the licensee, the
 last day it is valid, the number of accounts it covers and the features it
-unlocks. trisse-home checks its signature on the server itself; no request
+unlocks. Waylight checks its signature on the server itself; no request
 leaves the instance to validate it.
 
 Every account counts: the owner, members and guests that are not disabled.

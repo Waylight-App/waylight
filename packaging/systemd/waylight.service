@@ -1,6 +1,6 @@
 [Unit]
-Description=trisse-home self-hosted start page
-Documentation=https://github.com/itadori26/trisse-home/blob/main/docs/native-install.md
+Description=waylight self-hosted start page
+Documentation=https://github.com/itadori26/waylight/blob/main/docs/native-install.md
 Wants=network-online.target
 After=network-online.target
 
@@ -11,29 +11,29 @@ After=network-online.target
 Type=notify
 NotifyAccess=main
 WatchdogSec=60s
-User=trisse-home
-Group=trisse-home
+User=waylight
+Group=waylight
 
 # The per-installation SECRET_KEY is created on the first start, never at
 # build time, so that packages and Raspberry Pi images contain no secret.
 # "+" runs this one command with full privileges outside the sandbox below.
-ExecStartPre=+/usr/lib/trisse-home/trisse-home-init
-# Later files win: a SECRET_KEY set by the admin in trisse-home.env (e.g. when
+ExecStartPre=+/usr/lib/waylight/waylight-init
+# Later files win: a SECRET_KEY set by the admin in waylight.env (e.g. when
 # moving from Docker) overrides the generated one.
-EnvironmentFile=-/etc/trisse-home/secret.env
-EnvironmentFile=/etc/trisse-home/trisse-home.env
+EnvironmentFile=-/etc/waylight/secret.env
+EnvironmentFile=/etc/waylight/waylight.env
 # Selects the update hint in the settings (the image overrides it).
 Environment=INSTALL_METHOD=package
-ExecStart=/usr/bin/trisse-home serve
+ExecStart=/usr/bin/waylight serve
 
 Restart=on-failure
 RestartSec=5s
 # SHUTDOWN_TIMEOUT (15s) plus a margin.
 TimeoutStopSec=20s
 
-StateDirectory=trisse-home
+StateDirectory=waylight
 StateDirectoryMode=0750
-WorkingDirectory=/var/lib/trisse-home
+WorkingDirectory=/var/lib/waylight
 UMask=0027
 
 # --- Sandbox -----------------------------------------------------------------

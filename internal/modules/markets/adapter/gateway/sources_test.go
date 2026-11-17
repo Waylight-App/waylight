@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/markets/domain"
+	"waylight/internal/modules/markets/domain"
 )
 
 // Shortened answers as the ECB and Stooq send them.

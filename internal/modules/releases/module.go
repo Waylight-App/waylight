@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/releases/adapter/controller"
-	"trisse-home/internal/modules/releases/adapter/gateway"
-	"trisse-home/internal/modules/releases/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/releases/adapter/controller"
+	"waylight/internal/modules/releases/adapter/gateway"
+	"waylight/internal/modules/releases/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // refreshInterval: new releases appear at most daily; with one request per

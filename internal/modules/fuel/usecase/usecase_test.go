@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/fuel/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/fuel/domain"
+	"waylight/internal/shared/kernel"
 )
 
 const (

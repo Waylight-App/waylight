@@ -4,7 +4,7 @@ import { account, password, setupToken } from './support';
 test('setup, logout and login lead to the dashboard', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: 'Welcome to trisse-home' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welcome to waylight' })).toBeVisible();
   await page.getByLabel('Setup token').fill(setupToken);
   await page.getByLabel('Password (at least 12 characters)').fill(password);
   await page.getByLabel('Repeat password').fill(password);
@@ -16,7 +16,7 @@ test('setup, logout and login lead to the dashboard', async ({ page }) => {
   await expect(page.getByTestId('dashboard')).toBeVisible();
 
   // The guided tour starts automatically after the first login.
-  const tour = page.getByRole('dialog', { name: 'Welcome to trisse-home 👋' });
+  const tour = page.getByRole('dialog', { name: 'Welcome to waylight 👋' });
   await expect(tour).toBeVisible();
   for (const title of ['Tabs', 'Search', 'Edit mode', 'Settings', 'Server overview']) {
     await page.getByRole('button', { name: 'Next', exact: true }).click();
@@ -28,7 +28,7 @@ test('setup, logout and login lead to the dashboard', async ({ page }) => {
   // After the first setup the dashboard is filled with sample widgets and data.
   await expect(page.getByRole('combobox', { name: 'Quick search (Ctrl+K or /)' })).toBeVisible();
   await expect(page.locator('time')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Welcome to trisse-home 👋' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welcome to waylight 👋' })).toBeVisible();
   await expect(page.getByText('Try edit mode: drag and resize a widget')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Docker documentation' })).toBeVisible();
   await page.getByRole('button', { name: 'Server', exact: true }).click();

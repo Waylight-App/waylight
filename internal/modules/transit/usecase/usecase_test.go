@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/transit/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transit/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type fakeProvider struct {

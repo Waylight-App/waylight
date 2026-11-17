@@ -78,7 +78,7 @@ func TestStyleKeepsPersonalSettings(t *testing.T) {
 		t.Fatal(err)
 	}
 	a.SetGreetingMoment(true)
-	styled, err := a.WithStyle("/* trisse-home theme: x */", ThemeDark, "")
+	styled, err := a.WithStyle("/* waylight theme: x */", ThemeDark, "")
 	if err != nil {
 		t.Fatal(err)
 	}

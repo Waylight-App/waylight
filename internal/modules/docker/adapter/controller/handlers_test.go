@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"trisse-home/internal/modules/docker/domain"
-	"trisse-home/internal/modules/docker/usecase"
+	"waylight/internal/modules/docker/domain"
+	"waylight/internal/modules/docker/usecase"
 )
 
 type fakeActions struct{ usecase.Actions }

@@ -11,10 +11,10 @@ import (
 	"path"
 	"strings"
 
-	"trisse-home/internal/modules/waste/adapter/presenter"
-	"trisse-home/internal/modules/waste/domain"
-	"trisse-home/internal/modules/waste/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/waste/adapter/presenter"
+	"waylight/internal/modules/waste/domain"
+	"waylight/internal/modules/waste/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the waste endpoints.

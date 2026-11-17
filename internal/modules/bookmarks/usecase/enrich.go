@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"slices"
 
-	"trisse-home/internal/modules/bookmarks/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/bookmarks/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // maxChecksPerRun spreads the weekly link check over the hourly job runs.

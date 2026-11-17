@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/mail/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/mail/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type repo struct{ m map[string]domain.Account }

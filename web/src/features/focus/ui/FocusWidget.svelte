@@ -28,7 +28,7 @@
   }
   let { focus, config }: Props = $props();
 
-  const STORAGE_KEY = 'trisse-focus-timer';
+  const STORAGE_KEY = 'waylight-focus-timer';
   const cfg = $derived(parseFocusConfig(config));
 
   function restore(): TimerState {

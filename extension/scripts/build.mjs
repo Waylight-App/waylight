@@ -1,4 +1,4 @@
-// Packs the extension into dist/trisse-home-extension-<version>.zip with
+// Packs the extension into dist/waylight-extension-<version>.zip with
 // Node's own zlib (no dependencies). Store order and fixed timestamps keep
 // the archive reproducible.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -53,7 +53,7 @@ end.writeUInt16LE(files.length, 10);
 end.writeUInt32LE(dir.length, 12);
 end.writeUInt32LE(offset, 16);
 mkdirSync('dist', { recursive: true });
-const out = `dist/trisse-home-extension-${version}.zip`;
+const out = `dist/waylight-extension-${version}.zip`;
 const zip = Buffer.concat([...locals, dir, end]);
 writeFileSync(out, zip);
 const kb = zip.length / 1024;

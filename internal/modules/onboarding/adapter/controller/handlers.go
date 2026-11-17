@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/onboarding/adapter/presenter"
-	"trisse-home/internal/modules/onboarding/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/onboarding/adapter/presenter"
+	"waylight/internal/modules/onboarding/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves /api/onboarding.

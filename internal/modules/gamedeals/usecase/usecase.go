@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/gamedeals/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/gamedeals/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // MaxDeals bounds the wishlist deals shown.

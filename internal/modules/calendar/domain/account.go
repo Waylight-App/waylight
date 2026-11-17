@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Provider is a calendar service connected by signing in (#282).

@@ -3,10 +3,10 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/auth/adapter/presenter"
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/auth/adapter/presenter"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // linkingAccount is the account that may link a sign-in: a person signed in

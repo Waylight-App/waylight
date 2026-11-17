@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/services/domain"
+	"waylight/internal/modules/services/domain"
 )
 
 // UptimeStore keeps daily aggregates and incidents (output port, #81).

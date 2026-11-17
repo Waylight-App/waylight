@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/transit/adapter/presenter"
-	"trisse-home/internal/modules/transit/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/transit/adapter/presenter"
+	"waylight/internal/modules/transit/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the transit endpoints.

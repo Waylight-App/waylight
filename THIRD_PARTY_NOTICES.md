@@ -1,6 +1,6 @@
 # Third-party notices
 
-Files from other projects that are distributed with trisse-home and whose
+Files from other projects that are distributed with Waylight and whose
 licence asks for a notice. Go modules and npm packages that are only linked
 or bundled as code are listed in `go.mod` and `web/package.json`.
 

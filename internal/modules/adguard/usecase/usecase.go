@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/adguard/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/adguard/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // SettingsView never contains the password, only whether one is stored.

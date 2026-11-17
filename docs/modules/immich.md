@@ -1,6 +1,6 @@
 # Immich
 
-**What it does:** Immich photo library on the dashboard: number of photos and videos, storage, and today's "on this day" memories. Thumbnails are proxied by trisse-home, so the API key never reaches the browser.
+**What it does:** Immich photo library on the dashboard: number of photos and videos, storage, and today's "on this day" memories. Thumbnails are proxied by Waylight, so the API key never reaches the browser.
 
 ## Configuration
 

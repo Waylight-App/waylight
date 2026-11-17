@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/arr/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/arr/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type memRepo struct{ list []domain.Instance }

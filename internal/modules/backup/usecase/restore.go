@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"io"
 
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Reauthenticator re-checks the password and 2FA code of the signed-in
@@ -112,7 +112,7 @@ func (uc *restorer) Restore(ctx context.Context, req RestoreRequest) error {
 	}
 	scheduled = true
 	uc.d.Alerts.Alert(ctx, kernel.Alert{Kind: "security", Title: "Database restore started",
-		Body: "trisse-home restarts with a restored backup. The previous database is kept as trisse-home.db.before-restore.", Urgent: true})
+		Body: "Waylight restarts with a restored backup. The previous database is kept as waylight.db.before-restore.", Urgent: true})
 	uc.d.Restart()
 	return nil
 }

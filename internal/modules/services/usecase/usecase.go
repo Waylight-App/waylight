@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/services/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/services/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // maxParallelChecks bounds concurrent outbound health checks.

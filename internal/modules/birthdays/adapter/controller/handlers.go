@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/birthdays/adapter/presenter"
-	"trisse-home/internal/modules/birthdays/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/birthdays/adapter/presenter"
+	"waylight/internal/modules/birthdays/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // BirthdayInputDTO is the body of POST /api/birthdays; year 0 = unknown.

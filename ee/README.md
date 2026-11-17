@@ -62,20 +62,20 @@ core or answer outside requests (`sso/`, `ldap/`, `teamwiki/`, `slackcmd/`,
 
 | Directory | Feature | Docs |
 | --- | --- | --- |
-| `licence/` | Licence keys ([#307](https://github.com/itadori26/trisse-home/issues/307)) | [licence-keys.md](../docs/licence-keys.md) |
-| `teamtabs/` | Dashboard tabs shared by admins ([#295](https://github.com/itadori26/trisse-home/issues/295)) | [team-tabs.md](../docs/team-tabs.md) |
-| `announcements/` | Notices for the whole instance ([#297](https://github.com/itadori26/trisse-home/issues/297)) | [announcements.md](../docs/announcements.md) |
-| `absences/` | Absences ([#299](https://github.com/itadori26/trisse-home/issues/299)) | [absences.md](../docs/absences.md) |
-| `teamcalendar/` | Calendars shared with a group ([#299](https://github.com/itadori26/trisse-home/issues/299)) | [team-calendar.md](../docs/team-calendar.md) |
-| `sso/` | Single sign-on for members with group mapping ([#302](https://github.com/itadori26/trisse-home/issues/302)) | [single-sign-on-members.md](../docs/single-sign-on-members.md) |
-| `audit/` | Audit log ([#303](https://github.com/itadori26/trisse-home/issues/303)) | [audit-log.md](../docs/audit-log.md) |
-| `policies/` | Admin policies ([#304](https://github.com/itadori26/trisse-home/issues/304)) | [admin-policies.md](../docs/admin-policies.md) |
-| `branding/` | Own name, logos and colours ([#305](https://github.com/itadori26/trisse-home/issues/305)) | [branding.md](../docs/branding.md) |
-| `connections/` | Connected accounts per member ([#326](https://github.com/itadori26/trisse-home/issues/326)) | [connected-accounts.md](../docs/connected-accounts.md) |
-| `teamwiki/` | Confluence, SharePoint/OneDrive, Notion, Slack and Teams in the wiki search ([#327](https://github.com/itadori26/trisse-home/issues/327)–[#331](https://github.com/itadori26/trisse-home/issues/331)) | [connected-accounts.md](../docs/connected-accounts.md) |
-| `slackcmd/` | Slack slash command ([#333](https://github.com/itadori26/trisse-home/issues/333)) | [slack-command.md](../docs/slack-command.md) |
-| `teamsbot/` | Search from the Microsoft Teams command box ([#334](https://github.com/itadori26/trisse-home/issues/334)) | [teams.md](../docs/teams.md) |
-| `ldap/`, `scim/` | Directory sync: LDAP, Active Directory and SCIM ([#396](https://github.com/itadori26/trisse-home/issues/396)) | [directory-sync.md](../docs/directory-sync.md) |
+| `licence/` | Licence keys ([#307](https://github.com/itadori26/waylight/issues/307)) | [licence-keys.md](../docs/licence-keys.md) |
+| `teamtabs/` | Dashboard tabs shared by admins ([#295](https://github.com/itadori26/waylight/issues/295)) | [team-tabs.md](../docs/team-tabs.md) |
+| `announcements/` | Notices for the whole instance ([#297](https://github.com/itadori26/waylight/issues/297)) | [announcements.md](../docs/announcements.md) |
+| `absences/` | Absences ([#299](https://github.com/itadori26/waylight/issues/299)) | [absences.md](../docs/absences.md) |
+| `teamcalendar/` | Calendars shared with a group ([#299](https://github.com/itadori26/waylight/issues/299)) | [team-calendar.md](../docs/team-calendar.md) |
+| `sso/` | Single sign-on for members with group mapping ([#302](https://github.com/itadori26/waylight/issues/302)) | [single-sign-on-members.md](../docs/single-sign-on-members.md) |
+| `audit/` | Audit log ([#303](https://github.com/itadori26/waylight/issues/303)) | [audit-log.md](../docs/audit-log.md) |
+| `policies/` | Admin policies ([#304](https://github.com/itadori26/waylight/issues/304)) | [admin-policies.md](../docs/admin-policies.md) |
+| `branding/` | Own name, logos and colours ([#305](https://github.com/itadori26/waylight/issues/305)) | [branding.md](../docs/branding.md) |
+| `connections/` | Connected accounts per member ([#326](https://github.com/itadori26/waylight/issues/326)) | [connected-accounts.md](../docs/connected-accounts.md) |
+| `teamwiki/` | Confluence, SharePoint/OneDrive, Notion, Slack and Teams in the wiki search ([#327](https://github.com/itadori26/waylight/issues/327)–[#331](https://github.com/itadori26/waylight/issues/331)) | [connected-accounts.md](../docs/connected-accounts.md) |
+| `slackcmd/` | Slack slash command ([#333](https://github.com/itadori26/waylight/issues/333)) | [slack-command.md](../docs/slack-command.md) |
+| `teamsbot/` | Search from the Microsoft Teams command box ([#334](https://github.com/itadori26/waylight/issues/334)) | [teams.md](../docs/teams.md) |
+| `ldap/`, `scim/` | Directory sync: LDAP, Active Directory and SCIM ([#396](https://github.com/itadori26/waylight/issues/396)) | [directory-sync.md](../docs/directory-sync.md) |
 
 ## Frontend
 

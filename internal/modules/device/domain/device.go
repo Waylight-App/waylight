@@ -3,7 +3,7 @@ package domain
 import (
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // Mode is how the appliance is used.
@@ -74,7 +74,7 @@ func (s State) Phase() Phase {
 
 // Errors.
 var (
-	ErrNotAppliance = kernel.NewPublicError(kernel.ErrNotFound, "Display modes are only available on the trisse-home appliance image.")
+	ErrNotAppliance = kernel.NewPublicError(kernel.ErrNotFound, "Display modes are only available on the Waylight appliance image.")
 	ErrBusy         = kernel.NewPublicError(kernel.ErrConflict, "A change of the display mode is still in progress.")
 )
 

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/modules/calendar/usecase"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/modules/calendar/usecase"
 )
 
 type fakeSubscriptions struct {

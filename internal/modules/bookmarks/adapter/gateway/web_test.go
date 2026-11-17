@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/bookmarks/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/bookmarks/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 // pngHeader is enough for content sniffing to report image/png.

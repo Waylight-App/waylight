@@ -11,7 +11,7 @@ import (
 	"regexp"
 	"strings"
 
-	"trisse-home/internal/modules/bookmarks/domain"
+	"waylight/internal/modules/bookmarks/domain"
 )
 
 // Size limits of outbound reads (#72).

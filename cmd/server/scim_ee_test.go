@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
+	"waylight/ee/licence/domain"
 )
 
 // TestSCIMProvisioning runs a provider's typical SCIM sequence against the ee

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/notes/domain"
-	"trisse-home/internal/modules/notes/usecase"
+	"waylight/internal/modules/notes/domain"
+	"waylight/internal/modules/notes/usecase"
 )
 
 type fakeSave struct{ gotID string }

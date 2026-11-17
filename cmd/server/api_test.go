@@ -22,8 +22,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/platform/config"
-	"trisse-home/internal/platform/crypto"
+	"waylight/internal/platform/config"
+	"waylight/internal/platform/crypto"
 )
 
 // wolTarget receives the magic packets of the end-to-end test.
@@ -834,7 +834,7 @@ func TestAPIEndToEnd(t *testing.T) {
 		Sections map[string]json.RawMessage `json:"sections"`
 	}
 	c.json(http.MethodGet, "/api/transfer/export", nil, http.StatusOK, &export)
-	if export.Format != "trisse-home-export" || export.Sections["notes"] == nil || export.Sections["dashboard"] == nil {
+	if export.Format != "waylight-export" || export.Sections["notes"] == nil || export.Sections["dashboard"] == nil {
 		t.Fatalf("export: %v", export)
 	}
 	if strings.Contains(string(c.do(http.MethodGet, "/api/transfer/export", nil, http.StatusOK)), "e2e-password") {

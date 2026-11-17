@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"trisse-home/internal/modules/calendar/adapter/gateway"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/calendar/adapter/gateway"
+	"waylight/internal/shared/kernel"
 )
 
 // Sharing connects the team calendar (ee/, #299) to the calendar without

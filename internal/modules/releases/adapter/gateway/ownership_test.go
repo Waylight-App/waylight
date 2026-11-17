@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"trisse-home/internal/modules/releases/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/releases/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestFollowedArtistsArePersonal: two accounts can follow the same artist,

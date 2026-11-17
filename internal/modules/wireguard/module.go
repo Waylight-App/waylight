@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/wireguard/adapter/controller"
-	"trisse-home/internal/modules/wireguard/adapter/gateway"
-	"trisse-home/internal/modules/wireguard/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/wireguard/adapter/controller"
+	"waylight/internal/modules/wireguard/adapter/gateway"
+	"waylight/internal/modules/wireguard/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the WireGuard rings and implements modules.Module.

@@ -13,8 +13,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/wiki/domain"
-	"trisse-home/internal/modules/wiki/usecase"
+	"waylight/internal/modules/wiki/domain"
+	"waylight/internal/modules/wiki/usecase"
 )
 
 // maxResponseBytes bounds a search answer; a page of results is far smaller.

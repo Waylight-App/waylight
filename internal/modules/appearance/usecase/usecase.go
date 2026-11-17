@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/appearance/domain"
+	"waylight/internal/modules/appearance/domain"
 )
 
 // AppearanceResponse is the use case output.

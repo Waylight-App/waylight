@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/readlater/domain"
+	"waylight/internal/modules/readlater/domain"
 )
 
 // Codec implements usecase.ExportCodec.

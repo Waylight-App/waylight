@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/markets/domain"
+	"waylight/internal/modules/markets/domain"
 )
 
 // Default addresses (no API key).

@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/services/adapter/presenter"
-	"trisse-home/internal/modules/services/domain"
-	"trisse-home/internal/modules/services/usecase"
+	"waylight/internal/modules/services/adapter/presenter"
+	"waylight/internal/modules/services/domain"
+	"waylight/internal/modules/services/usecase"
 )
 
 type fakeDiscovery struct {

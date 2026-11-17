@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/immich/domain"
-	"trisse-home/internal/modules/immich/usecase"
+	"waylight/internal/modules/immich/domain"
+	"waylight/internal/modules/immich/usecase"
 )
 
 type fakeImmich struct{ usecase.Immich }

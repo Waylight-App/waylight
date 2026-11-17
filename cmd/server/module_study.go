@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/study"
+	"waylight/internal/modules"
+	"waylight/internal/modules/study"
 )
 
 // The study module registers itself; no shared file lists it (#193).

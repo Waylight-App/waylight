@@ -7,10 +7,10 @@ import (
 	"testing"
 )
 
-// TestShoppingListsOnTrisseHome checks #471 through the API: lists without
+// TestShoppingListsOnWaylight checks #471 through the API: lists without
 // CalDAV, sharing with a group, rights of owner and others, the widget's
 // current list, import from CalDAV and export.
-func TestShoppingListsOnTrisseHome(t *testing.T) {
+func TestShoppingListsOnWaylight(t *testing.T) {
 	saved := membersEnabled
 	membersEnabled = true
 	t.Cleanup(func() { membersEnabled = saved })

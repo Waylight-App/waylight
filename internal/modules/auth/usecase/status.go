@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 type getStatus struct {

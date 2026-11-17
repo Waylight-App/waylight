@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"trisse-home/internal/modules/diskhealth/domain"
+	"waylight/internal/modules/diskhealth/domain"
 )
 
 func TestReports(t *testing.T) {

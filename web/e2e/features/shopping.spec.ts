@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { account, password } from '../support';
 
-test('a shopping list on trisse-home works without CalDAV and can be exported (#471)', async ({ page }) => {
+test('a shopping list on waylight works without CalDAV and can be exported (#471)', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
@@ -36,7 +36,7 @@ test('a shopping list on trisse-home works without CalDAV and can be exported (#
   // A second list brings up the choice in the widget.
   await account(page, 'Settings');
   await page.getByRole('button', { name: 'Shopping list', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Lists on trisse-home' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Lists on waylight' })).toBeVisible();
   await page.getByPlaceholder('Name of the new list').fill('Hardware store');
   await page.getByRole('button', { name: 'Create list' }).click();
   await expect(page.getByRole('textbox', { name: 'Name', exact: true }).last()).toHaveValue('Hardware store');

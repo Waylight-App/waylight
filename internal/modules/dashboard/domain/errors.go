@@ -1,6 +1,6 @@
 package domain
 
-import "trisse-home/internal/shared/kernel"
+import "waylight/internal/shared/kernel"
 
 // Domain errors of the dashboard module.
 var (

@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/space/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/space/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Space is the input port of the module.

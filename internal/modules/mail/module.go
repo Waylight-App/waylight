@@ -4,12 +4,12 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/mail/adapter/controller"
-	"trisse-home/internal/modules/mail/adapter/gateway"
-	"trisse-home/internal/modules/mail/usecase"
-	"trisse-home/internal/shared/imap"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/mail/adapter/controller"
+	"waylight/internal/modules/mail/adapter/gateway"
+	"waylight/internal/modules/mail/usecase"
+	"waylight/internal/shared/imap"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the mail rings and implements modules.Module.

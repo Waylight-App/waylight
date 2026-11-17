@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/habits/adapter/presenter"
-	"trisse-home/internal/modules/habits/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/habits/adapter/presenter"
+	"waylight/internal/modules/habits/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the habit endpoints.

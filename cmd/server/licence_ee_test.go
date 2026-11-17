@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
+	"waylight/ee/licence/domain"
 )
 
 // TestLicenceKeys runs the licence endpoints of the ee build (#307) against a

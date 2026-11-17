@@ -7,8 +7,8 @@ import (
 	"slices"
 	"time"
 
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // Router lets a module register its HTTP handlers. Patterns use the Go 1.22+

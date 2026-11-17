@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/markets/adapter/presenter"
-	"trisse-home/internal/modules/markets/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/markets/adapter/presenter"
+	"waylight/internal/modules/markets/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // RatesHandler serves the reference rates.

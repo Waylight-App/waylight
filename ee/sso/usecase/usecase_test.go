@@ -6,9 +6,9 @@ import (
 	"slices"
 	"testing"
 
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/ee/sso/domain"
-	authdomain "trisse-home/internal/modules/auth/domain"
+	licence "waylight/ee/licence/domain"
+	"waylight/ee/sso/domain"
+	authdomain "waylight/internal/modules/auth/domain"
 )
 
 type memLinks map[string]Link
@@ -97,7 +97,7 @@ var ctx = context.Background()
 func setup() (*Resolver, *fakeAccounts, memLinks, *level) {
 	accounts, links, lvl := &fakeAccounts{members: map[string]*member{}}, memLinks{}, level(licence.LevelFull)
 	return New(Deps{Links: links, Accounts: accounts, Licensing: &lvl,
-		Policy: domain.Policy{Emails: []string{"@example.org"}, Groups: []string{"trisse-users"}}}), accounts, links, &lvl
+		Policy: domain.Policy{Emails: []string{"@example.org"}, Groups: []string{"waylight-users"}}}), accounts, links, &lvl
 }
 
 func anna(groups ...string) domain.Identity {
@@ -197,8 +197,8 @@ func TestADeletedMemberIsCreatedAgain(t *testing.T) {
 func TestAdminGroupGrantsAndTakesBackOnlyItsOwnRole(t *testing.T) {
 	accounts, lvl := &fakeAccounts{members: map[string]*member{}}, level(licence.LevelFull)
 	r := New(Deps{Links: memLinks{}, Accounts: accounts, Licensing: &lvl,
-		Policy: domain.Policy{Emails: []string{"@example.org"}, AdminGroups: []string{"trisse-admins"}}})
-	id, err := r.Resolve(ctx, anna("trisse-admins"))
+		Policy: domain.Policy{Emails: []string{"@example.org"}, AdminGroups: []string{"waylight-admins"}}})
+	id, err := r.Resolve(ctx, anna("waylight-admins"))
 	if err != nil || !accounts.members[id].admin || accounts.members[id].adminSource != "sso" {
 		t.Fatalf("first sign-in in the admin group: %v %+v", err, accounts.members[id])
 	}

@@ -6,9 +6,9 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestAppearancePerAccount: each account keeps its own appearance, starts

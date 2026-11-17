@@ -85,7 +85,7 @@ func Message(text string) Response {
 
 // Texts.
 const (
-	NotConnected = "Connect your Microsoft 365 account in trisse-home first, under Settings → Connected accounts."
-	Unlicensed   = "The search is not available: the licence key of this trisse-home does not include chat apps."
+	NotConnected = "Connect your Microsoft 365 account in waylight first, under Settings → Connected accounts."
+	Unlicensed   = "The search is not available: the licence key of this waylight does not include chat apps."
 	Failed       = "The search did not work this time; try again or use the start page."
 )

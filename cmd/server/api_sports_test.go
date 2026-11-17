@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 func init() {

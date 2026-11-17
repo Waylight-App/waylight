@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/electricity/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/electricity/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // cacheTTL: day-ahead prices change once a day (tomorrow's are published

@@ -1,7 +1,7 @@
 # Auto deploy
 
 Every merge to `main` whose CI run is green updates the server (#211). Until a
-release image exists on GHCR, the server builds trisse-home from source; this
+release image exists on GHCR, the server builds Waylight from source; this
 automates exactly that, with a backup before and a rollback after.
 
 ## How it works
@@ -12,15 +12,15 @@ automates exactly that, with a backup before and a rollback after.
 2. It opens a **WireGuard tunnel** to the server (the server is not reachable
    from the internet otherwise), connects over SSH with a key that may run **one
    script and nothing else** (SSH forced command) and sends `deploy <commit>`.
-3. `scripts/deploy/trisse-home-deploy` runs as root on the server:
+3. `scripts/deploy/waylight-deploy` runs as root on the server:
    - checks the request (exactly `deploy` plus 40 hex characters, and the commit
      must be part of `origin/main`), takes a lock so only one deploy runs, and
      stops if the stack checkout has local changes;
    - builds the image from a separate worktree **while the old version keeps
      running**: a failing build changes nothing;
    - stops the service, copies the data volume to
-     `/var/backups/trisse-home/<time>-<commit>` (the seven newest are kept),
-     switches the stack checkout `/opt/stacks/trisse-home` to the commit and
+     `/var/backups/waylight/<time>-<commit>` (the seven newest are kept),
+     switches the stack checkout `/opt/stacks/waylight` to the commit and
      starts the new image;
    - waits until the container is `healthy` (up to two minutes). If it is not,
      it **restores the data from the backup, the previous image and the previous
@@ -33,7 +33,7 @@ database that a newer version already migrated. This also covers two merges clos
 together whose CI runs finish in the wrong order. A deliberate downgrade is only
 possible on the server by an administrator, never through the SSH key, and only
 after restoring a backup that matches the older version:
-`sudo env ALLOW_DOWNGRADE=1 SSH_ORIGINAL_COMMAND="deploy <40 hex commit>" /usr/local/bin/trisse-home-deploy`.
+`sudo env ALLOW_DOWNGRADE=1 SSH_ORIGINAL_COMMAND="deploy <40 hex commit>" /usr/local/bin/waylight-deploy`.
 
 The downtime is the time from stop to healthy, usually well under a minute.
 
@@ -52,17 +52,17 @@ The downtime is the time from stop to healthy, usually well under a minute.
 
 ## One-time setup
 
-The server is reached the same way as for `trisse-senseo`: through a WireGuard
+The server is reached the same way as the other stacks on it: through a WireGuard
 peer reserved for GitHub (`peer_github`, address `10.13.13.6`, the server listens
-on `trisse.net:51820`). The deploy can share that peer and also the user
+on the VPN endpoint, port 51820). The deploy can share that peer and also the user
 `deploy`, or use its own.
 
 On the server (as an administrator), `DEPLOY_USER=deploy` shares the existing user
-(its other keys stay untouched; leave it out to create `trisse-deploy`):
+(its other keys stay untouched; leave it out to create `waylight-deploy`):
 
 ```sh
-ssh-keygen -t ed25519 -N '' -C github-actions-trisse-home -f /tmp/trisse-deploy-key
-sudo DEPLOY_USER=deploy bash scripts/deploy/install.sh /tmp/trisse-deploy-key.pub
+ssh-keygen -t ed25519 -N '' -C github-actions-waylight -f /tmp/waylight-deploy-key
+sudo DEPLOY_USER=deploy bash scripts/deploy/install.sh /tmp/waylight-deploy-key.pub
 ```
 
 The installer installs the script and the `sudo` rule and writes the key with its
@@ -72,13 +72,13 @@ forced command. It prints the host key line for `DEPLOY_KNOWN_HOSTS`; replace
 In GitHub (repository Settings → Secrets and variables → Actions), with the GitHub CLI:
 
 ```sh
-gh secret set DEPLOY_SSH_KEY < /tmp/trisse-deploy-key        # then delete the file
+gh secret set DEPLOY_SSH_KEY < /tmp/waylight-deploy-key        # then delete the file
 gh secret set DEPLOY_KNOWN_HOSTS                              # the line printed by the installer
 gh secret set DEPLOY_WG_CONFIG < /opt/stacks/wireguard/config/peer_github/peer_github.conf
 gh variable set DEPLOY_HOST --body 192.168.178.115           # the server's address inside the tunnel
 gh variable set DEPLOY_USER --body deploy                     # only if you shared the user
 gh variable set DEPLOY_ENABLED --body true                    # last: switches the workflow on
-rm /tmp/trisse-deploy-key /tmp/trisse-deploy-key.pub
+rm /tmp/waylight-deploy-key /tmp/waylight-deploy-key.pub
 ```
 
 `DEPLOY_WG_CONFIG` is the content of a WireGuard peer configuration. Reusing
@@ -94,10 +94,10 @@ environment variable that a release needs must be added there by hand.
 
 - **Deploy by hand:** re-run the workflow in GitHub (Actions → Deploy → Re-run),
   or, from a machine inside the VPN, `ssh -i key USER@HOST "deploy <40 hex commit>"`.
-- **Updated script:** after changing `scripts/deploy/trisse-home-deploy`, run
+- **Updated script:** after changing `scripts/deploy/waylight-deploy`, run
   `sudo bash scripts/deploy/install.sh <key.pub>` on the server again.
 - **Restore a backup** (service stopped): copy the directory back into the volume,
-  `/var/lib/docker/volumes/trisse-home-data/_data`.
+  `/var/lib/docker/volumes/waylight-data/_data`.
 - **Pause:** set the variable `DEPLOY_ENABLED` to anything but `true`.
 - **Tests:** `bash scripts/deploy/deploy_test.sh` (stubbed git and docker; covers
   success, nothing to do, build failure, rollback, rejected requests and the lock).

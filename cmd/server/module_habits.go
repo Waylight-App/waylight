@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/habits"
+	"waylight/internal/modules"
+	"waylight/internal/modules/habits"
 )
 
 // The Habits module registers itself; no shared file lists it (#193).

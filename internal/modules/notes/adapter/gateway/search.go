@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"trisse-home/internal/modules/notes/domain"
-	"trisse-home/internal/shared/kernel"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/notes/domain"
+	"waylight/internal/shared/kernel"
+	"waylight/internal/shared/sqlutil"
 )
 
 // Highlight markers produced by the SQL below (char(2) and char(3)).

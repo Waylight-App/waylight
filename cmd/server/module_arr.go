@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/arr"
+	"waylight/internal/modules"
+	"waylight/internal/modules/arr"
 )
 
 func init() {

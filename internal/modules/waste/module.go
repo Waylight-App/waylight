@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/waste/adapter/controller"
-	"trisse-home/internal/modules/waste/adapter/gateway"
-	"trisse-home/internal/modules/waste/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/waste/adapter/controller"
+	"waylight/internal/modules/waste/adapter/gateway"
+	"waylight/internal/modules/waste/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // refreshInterval: collection calendars rarely change.

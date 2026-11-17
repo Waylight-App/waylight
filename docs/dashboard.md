@@ -1,6 +1,6 @@
 # Tabs and widgets
 
-Everything you see in trisse-home is a widget on a tab. This page explains
+Everything you see in Waylight is a widget on a tab. This page explains
 how to arrange them, how the phone layout works and how to make a tab open
 by itself. For a guided first run, see [first steps](first-steps.md).
 
@@ -62,7 +62,7 @@ weekdays, a time window and client networks, and each part is optional:
 
 A tab can have several rules; any one of them is enough. When several tabs
 match, the first tab in the tab bar wins. Rules use the server's time zone
-(`TZ`). Network rules see your real address only if trisse-home trusts your
+(`TZ`). Network rules see your real address only if Waylight trusts your
 reverse proxy (`TRUSTED_PROXIES`, see [configuration](configuration.md)).
 
 ## The phone layout

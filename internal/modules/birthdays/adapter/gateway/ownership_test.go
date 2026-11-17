@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/modules/birthdays/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/birthdays/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestBirthdayOwnership proves ADR 0018 for birthdays, including the

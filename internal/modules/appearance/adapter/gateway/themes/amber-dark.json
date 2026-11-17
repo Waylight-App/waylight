@@ -1,0 +1,28 @@
+{
+  "id": "amber-dark",
+  "name": "Dark Amber",
+  "author": "Waylight (MIT)",
+  "scheme": "dark",
+  "tokens": {
+    "--font-sans": "figtree",
+    "--font-display": "fraunces",
+    "--radius": "14px",
+    "--radius-small": "10px",
+    "--color-bg": "#0f1322",
+    "--color-surface": "#171d31",
+    "--color-surface-2": "#1f2740",
+    "--color-border": "#2e3650",
+    "--color-text": "#f2efe8",
+    "--color-text-muted": "#c9ced8",
+    "--color-accent": "#f2b441",
+    "--color-accent-contrast": "#1a1206",
+    "--color-accent-text": "#ffd27a",
+    "--color-danger": "#ff8a80",
+    "--color-success": "#8fd6a8",
+    "--color-warning": "#f5c04e",
+    "--shadow": "0 1px 2px #00000059, 0 6px 20px #0000004d",
+    "--shadow-pop": "0 16px 48px #00000080",
+    "--glow": "0 0 120px #f2b44138",
+    "--page-gradient": "linear-gradient(180deg, #131829, #0b0e1a)"
+  }
+}

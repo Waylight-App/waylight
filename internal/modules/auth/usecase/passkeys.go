@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/domain"
 )
 
 // passkeyChallengeTTL bounds a registration or login ceremony.

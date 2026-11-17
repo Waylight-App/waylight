@@ -11,12 +11,12 @@ import (
 	"errors"
 	"io/fs"
 
-	"trisse-home/ee/ldap/adapter/gateway"
-	"trisse-home/ee/ldap/domain"
-	"trisse-home/ee/ldap/usecase"
-	"trisse-home/ee/licence"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/auth"
+	"waylight/ee/ldap/adapter/gateway"
+	"waylight/ee/ldap/domain"
+	"waylight/ee/ldap/usecase"
+	"waylight/ee/licence"
+	"waylight/internal/modules"
+	"waylight/internal/modules/auth"
 )
 
 // Config of the directory; see gateway.Config.

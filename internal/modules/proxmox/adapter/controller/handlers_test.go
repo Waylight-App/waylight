@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/proxmox/domain"
-	"trisse-home/internal/modules/proxmox/usecase"
+	"waylight/internal/modules/proxmox/domain"
+	"waylight/internal/modules/proxmox/usecase"
 )
 
 type fakeProxmox struct {

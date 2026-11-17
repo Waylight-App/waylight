@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/nextcloud/usecase"
+	"waylight/internal/modules/nextcloud/usecase"
 )
 
 // SettingsDTO is returned by the settings endpoints (never the password).

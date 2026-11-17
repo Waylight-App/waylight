@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/rss/domain"
+	"waylight/internal/modules/rss/domain"
 )
 
 // A typical export of another reader: nested folders, feeds at the top

@@ -36,7 +36,7 @@ e-mail or web address or a phone or account number are never remembered.
 *Clear the list* empties it, and switching the setting off deletes it.
 
 Without this setting, texts you send to the web search are not stored
-anywhere by trisse-home.
+anywhere by Waylight.
 
 ## Help: what the search can do
 
@@ -54,7 +54,7 @@ rotate in the empty search field come from the same list.
 
 DuckDuckGo is the default engine, so all of its
 [!bangs](https://duckduckgo.com/bangs) work: `!w Berlin` searches Wikipedia,
-`!gh trisse-home` GitHub. Under Settings → Search you can pick a different
+`!gh waylight` GitHub. Under Settings → Search you can pick a different
 engine, add your own shortcuts with a keyword and a URL containing `{query}`, and
 have results open in a new tab. The search is also registered as an
 OpenSearch provider, so most browsers offer to add it as a search engine.
@@ -63,7 +63,7 @@ Typing `!` lists the most used bangs, and further letters narrow the list
 (`!g` shows `!g`, `!gh`, `!gi` and so on). Your own shortcuts from Settings →
 Search appear first, marked as your own. Pick one and the bang is completed
 in the field, ready for the search terms. The built-in list ships with
-trisse-home, so nothing is sent to DuckDuckGo while you type. It only
+Waylight, so nothing is sent to DuckDuckGo while you type. It only
 appears when your engine understands bangs (DuckDuckGo and Brave Search);
 your own shortcuts always appear.
 
@@ -150,7 +150,7 @@ and for passwords and UUIDs *New* makes another one.
 | `192.168.178.0/24`, `10.0.0.5 255.255.255.0`, `2001:db8::/48` | Network, mask, broadcast, first and last host and the number of hosts; for IPv6 the first and last address of the prefix. |
 
 Passwords come from the browser's cryptographic random generator, also when
-trisse-home is opened over plain HTTP. They are not stored anywhere: the
+Waylight is opened over plain HTTP. They are not stored anywhere: the
 search history only learns which result you pick, never the values you copy.
 
 ## Answers about your home
@@ -193,22 +193,22 @@ a time for an alarm:
 
 The row shows when the timer runs out, and `Enter` starts it. An alarm time
 that has already passed today is set for tomorrow, and the row says so.
-When a timer runs out, trisse-home shows a notice at the bottom of the page
+When a timer runs out, Waylight shows a notice at the bottom of the page
 and plays a short sound. The first time you start a timer, the browser asks
-whether trisse-home may show notifications; if you allow it, you also get a
+whether Waylight may show notifications; if you allow it, you also get a
 notification while you are in another tab.
 
 Running timers are listed when you open the search with an empty field or
 type `timer`. Pick one and press `Enter` to cancel it. Timers are kept in
 this browser, so they survive a reload.
 
-A timer only fires while a trisse-home tab or the installed app is open.
+A timer only fires while a Waylight tab or the installed app is open.
 Closed tabs cannot ring; a timer that ran out in the meantime shows its
-notice the next time you open trisse-home. Kiosk displays have no timers.
+notice the next time you open Waylight. Kiosk displays have no timers.
 
 ## Commands
 
-The search field also controls trisse-home itself. Type what you want to do,
+The search field also controls Waylight itself. Type what you want to do,
 in English or German, and pick the command under **Commands**:
 
 | Type | Does |
@@ -250,15 +250,15 @@ short prefixes under Settings → Search.
 
 ## Saving from other pages
 
-You do not have to open trisse-home to save something:
+You do not have to open Waylight to save something:
 
 - **Bookmarklet.** Settings → Search offers a bookmarklet. Drag it to your
   browser's bookmarks bar; clicking it on any page opens a small dialog that
   saves the page as a bookmark, to-do or note.
-- **Share menu.** When trisse-home is [installed as an app](apps-and-offline.md)
+- **Share menu.** When Waylight is [installed as an app](apps-and-offline.md)
   on Android, it appears in the share menu. Sharing a link or text opens the
   same dialog.
 - **Browser extension.** The [extension](apps-and-offline.md#browser-extension)
-  adds *Save page to trisse-home* to the toolbar and the context menu.
+  adds *Save page to Waylight* to the toolbar and the context menu.
 
 Nothing is saved until you confirm the dialog.

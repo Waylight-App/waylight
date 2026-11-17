@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/electricity/domain"
+	"waylight/internal/modules/electricity/domain"
 )
 
 // DefaultAWATTarURL is the public market data API of aWATTar (no API key;

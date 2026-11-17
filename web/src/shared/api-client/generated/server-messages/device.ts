@@ -4,7 +4,7 @@
 export const serverMessages = {
   srv_3d12d1ec207507cd: "A change of the display mode is still in progress.",
   srv_5d89741428373d07: "Choose headless or kiosk.",
-  srv_ff97b7a031a91020: "Display modes are only available on the trisse-home appliance image.",
+  srv_bde0f626350fac35: "Display modes are only available on the Waylight appliance image.",
 } as const;
 
 /** Key of a backend message. */

@@ -34,7 +34,7 @@ import (
 	"strings"
 	"text/template"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 //go:embed templates

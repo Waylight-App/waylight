@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/markets/usecase"
+	"waylight/internal/modules/markets/usecase"
 )
 
 // PointDTO is one daily close.

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 // TestSetupProfileEveryday checks the start-page profile of the first setup

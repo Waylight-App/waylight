@@ -7,9 +7,9 @@ import (
 	"log/slog"
 	"sync"
 
-	"trisse-home/ee/absences"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/absences"
+	"waylight/internal/modules"
+	"waylight/internal/shared/kernel"
 )
 
 var (

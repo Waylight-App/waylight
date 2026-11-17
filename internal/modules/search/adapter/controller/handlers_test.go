@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules/search/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/search/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 type fakeSearcher struct{ usecase.Searcher }

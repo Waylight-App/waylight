@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"trisse-home/internal/modules/notifications/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/notifications/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // ChatChannel is a Slack or Teams channel other modules can post to (#332).

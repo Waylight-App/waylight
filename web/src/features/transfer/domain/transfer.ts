@@ -1,6 +1,6 @@
 import { t } from '../../../shared/i18n';
-/** Identifier of trisse-home export files. */
-export const EXPORT_FORMAT = 'trisse-home-export';
+/** Identifier of waylight export files. */
+export const EXPORT_FORMAT = 'waylight-export';
 
 /** Result of an import. */
 export interface ImportResult {
@@ -46,7 +46,7 @@ export function describeResult(r: ImportResult): string {
   return parts.join(' ');
 }
 
-/** Result of applying trisse-home.yaml (#88). */
+/** Result of applying waylight.yaml (#88). */
 export interface ConfigResult {
   applied: string[];
   failed: Record<string, string>;
@@ -74,7 +74,7 @@ export interface ForeignSummary {
 
 /** Preview or result of importing another dashboard. */
 export interface ForeignImport {
-  /** The parts of trisse-home.yaml the import changes. */
+  /** The parts of waylight.yaml the import changes. */
   yaml: string;
   summary: ForeignSummary;
   result: ConfigResult | null;

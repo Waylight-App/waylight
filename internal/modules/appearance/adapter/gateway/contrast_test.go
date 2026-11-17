@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	"trisse-home/internal/modules/appearance/domain"
+	"waylight/internal/modules/appearance/domain"
 )
 
 // luminance is the WCAG relative luminance of #rgb or #rrggbb.

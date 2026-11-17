@@ -9,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
+	"waylight/internal/modules/calendar/domain"
 )
 
 func TestFormatEventRoundTrip(t *testing.T) {
 	start := time.Date(2026, 11, 12, 9, 30, 0, 0, time.UTC)
-	e, _ := domain.NewEvent("abc@trisse-home", "Zahnarzt; Kontrolle, Teil 2 — "+strings.Repeat("ä", 40), "Main St\n2nd floor", start, start.Add(time.Hour), false)
+	e, _ := domain.NewEvent("abc@waylight", "Zahnarzt; Kontrolle, Teil 2 — "+strings.Repeat("ä", 40), "Main St\n2nd floor", start, start.Add(time.Hour), false)
 	ics := FormatEvent(e, start)
 	for _, l := range strings.Split(ics, "\r\n") {
 		if len(l) > 75 {
@@ -50,11 +50,11 @@ func TestCreate(t *testing.T) {
 	c := NewCalDAV(srv.Client(), time.UTC)
 	s := domain.Settings{Username: "me", Password: "pw"}
 	start := time.Date(2026, 11, 12, 9, 0, 0, 0, time.UTC)
-	e, _ := domain.NewEvent("u1@trisse-home", "Test", "", start, start.Add(time.Hour), false)
+	e, _ := domain.NewEvent("u1@waylight", "Test", "", start, start.Add(time.Hour), false)
 	if err := c.Create(context.Background(), s, srv.URL+"/cal/home", e); err != nil {
 		t.Fatal(err)
 	}
-	if gotPath != "/cal/home/u1-trisse-home.ics" || ifNoneMatch != "*" || !strings.Contains(gotBody, "SUMMARY:Test") {
+	if gotPath != "/cal/home/u1-waylight.ics" || ifNoneMatch != "*" || !strings.Contains(gotBody, "SUMMARY:Test") {
 		t.Fatalf("request %q %q %q", gotPath, ifNoneMatch, gotBody)
 	}
 	s.Password = "wrong"

@@ -1,10 +1,10 @@
 # Notifications and job monitoring
 
-trisse-home can tell you when something needs attention: a service goes
+Waylight can tell you when something needs attention: a service goes
 offline, a disk fills up, a certificate is about to expire, a backup did not
 run. This page explains how to set up the channels, how to keep alerts
 quiet when they should be, and how your own backup scripts and cron jobs
-report to trisse-home.
+report to Waylight.
 
 ## Channels
 
@@ -14,15 +14,15 @@ topic, and install the ntfy app on your phone. *Save & send test* checks the
 setup straight away.
 
 Topics on the public ntfy server can be read by anyone who knows the name.
-Use the long random topic trisse-home suggests, or run your own ntfy server
+Use the long random topic Waylight suggests, or run your own ntfy server
 with an access token.
 
 Under *More channels* you can add:
 
 - **Gotify** with a server address and an app token;
 - **webhooks**, which receive a JSON message. If you set a secret, each
-  request carries an `X-Trisse-Signature: sha256=…` header, an HMAC of the
-  body, so the receiver can check that it came from trisse-home;
+  request carries an `X-Waylight-Signature: sha256=…` header, an HMAC of the
+  body, so the receiver can check that it came from Waylight;
 - **e-mail** through an SMTP server;
 - **Slack**, through an incoming webhook;
 - **Microsoft Teams**, through a Workflows webhook.
@@ -37,7 +37,7 @@ after saving, and it is removed from error messages.
    and add **Incoming Webhooks**, or create your own Slack app with incoming
    webhooks at [api.slack.com/apps](https://api.slack.com/apps).
 2. Copy the webhook URL (`https://hooks.slack.com/services/…`).
-3. In trisse-home choose **+ Slack**, paste the URL and save. *Test* posts
+3. In Waylight choose **+ Slack**, paste the URL and save. *Test* posts
    a sample message.
 
 Messages show the title, the text, the importance and the alert type. With
@@ -48,18 +48,18 @@ channel.
 ### Microsoft Teams
 
 The old Office 365 connectors ("Incoming Webhook" in a channel's
-connectors) were switched off by Microsoft. trisse-home uses the
+connectors) were switched off by Microsoft. Waylight uses the
 replacement, a Workflows webhook:
 
 1. In Teams, open the channel's **⋯** menu → **Workflows**.
 2. Choose the template **Post to a channel when a webhook request is
    received**, give it a name, and pick the team and channel.
 3. Copy the address the workflow shows at the end.
-4. In trisse-home choose **+ Microsoft Teams**, paste the address and save.
+4. In Waylight choose **+ Microsoft Teams**, paste the address and save.
    *Test* posts a sample card.
 
 Messages arrive as an Adaptive Card with the title in the colour of the
-importance, the text and, with `PUBLIC_URL` set, an *Open trisse-home*
+importance, the text and, with `PUBLIC_URL` set, an *Open Waylight*
 button.
 
 ## What you are notified about
@@ -96,9 +96,9 @@ statistics.
 
 ## Backup and job monitoring
 
-trisse-home cannot see your backups, but your backup jobs can tell it how
+Waylight cannot see your backups, but your backup jobs can tell it how
 they went. Under Settings → Backup monitoring, create a check for each job.
-trisse-home shows a secret ping URL once. Call it from the job:
+Waylight shows a secret ping URL once. Call it from the job:
 
 ```sh
 curl -fsS -X POST "$PING_URL/start"     # optional: marks the start and measures the duration
@@ -117,5 +117,5 @@ successful ping. Failures and overdue checks appear on the dashboard, on the
 timeline and as notifications.
 
 The ping URL needs no sign-in, but it is still subject to `ALLOWED_CIDRS`.
-trisse-home stores only a hash of the token, so the URL cannot be shown
+Waylight stores only a hash of the token, so the URL cannot be shown
 again. If it leaks, generate a new one.

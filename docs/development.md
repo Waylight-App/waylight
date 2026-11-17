@@ -1,9 +1,9 @@
 # Development setup
 
-This page gets a development copy of trisse-home running and explains the
+This page gets a development copy of Waylight running and explains the
 everyday commands, the repository layout and the test suites. Plan about ten
 minutes for the setup. The rules for pull requests are in
-[CONTRIBUTING.md](https://github.com/itadori26/trisse-home/blob/main/CONTRIBUTING.md).
+[CONTRIBUTING.md](https://github.com/itadori26/waylight/blob/main/CONTRIBUTING.md).
 
 ## Requirements
 
@@ -19,8 +19,8 @@ generator.
 ## First run
 
 ```sh
-git clone https://github.com/itadori26/trisse-home.git
-cd trisse-home
+git clone https://github.com/itadori26/waylight.git
+cd waylight
 make deps
 cp .env.example .env
 sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$(openssl rand -base64 32)|" .env

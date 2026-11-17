@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"strings"
 
-	"trisse-home/internal/modules/weather/adapter/presenter"
-	"trisse-home/internal/modules/weather/domain"
-	"trisse-home/internal/modules/weather/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/weather/adapter/presenter"
+	"waylight/internal/modules/weather/domain"
+	"waylight/internal/modules/weather/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // HealthHandlers serves the pollen and UV forecasts (#56).

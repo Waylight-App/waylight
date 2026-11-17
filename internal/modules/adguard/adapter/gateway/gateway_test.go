@@ -14,8 +14,8 @@ import (
 	"testing/fstest"
 	"time"
 
-	"trisse-home/internal/modules/adguard/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/adguard/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 // reverseCipher is a reversible stand-in for AES-GCM in tests.

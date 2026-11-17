@@ -1,6 +1,6 @@
 package presenter
 
-import "trisse-home/internal/modules/todos/usecase"
+import "waylight/internal/modules/todos/usecase"
 
 // TodoDTO is a to-do in API responses. Due is a date (YYYY-MM-DD) or "".
 type TodoDTO struct {

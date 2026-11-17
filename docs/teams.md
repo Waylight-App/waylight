@@ -1,13 +1,13 @@
 # Microsoft Teams
 
 With a licence key that includes `chat-apps` ([licence keys](licence-keys.md)),
-trisse-home works with Microsoft Teams in two ways, both set up by your own
+Waylight works with Microsoft Teams in two ways, both set up by your own
 admins with your own Microsoft registrations
 ([ADR 0023](adr/0023-chat-apps-reach-private-instances.md)). This needs a
 server built with the `ee` features.
 
 - **Search from the command box** (opt-in, below): type in the Teams
-  message box and pick a service, bookmark or wiki page from trisse-home.
+  message box and pick a service, bookmark or wiki page from Waylight.
 - **The start page as a tab**: a tab with your instance's name and a
   button that opens the start page in the browser (below).
 
@@ -57,7 +57,7 @@ covered by it too; Microsoft's addresses change, so a proxy rule by path is
 easier to keep right.
 
 Every request must carry a token signed by Microsoft's Bot Connector for
-your bot. trisse-home checks it before anything else happens: issuer,
+your bot. Waylight checks it before anything else happens: issuer,
 audience (your bot's app ID), validity with five minutes of clock skew, the
 signature against Microsoft's published keys (refreshed daily), the service
 address and that the key is endorsed for Teams. Anything else is answered
@@ -75,7 +75,7 @@ with 403.
    TEAMS_BOT_APP_ID=00000000-0000-0000-0000-000000000000
    ```
 
-   trisse-home needs no bot password: the answer goes back in the HTTP
+   Waylight needs no bot password: the answer goes back in the HTTP
    response.
 3. Create a Teams app package with a search command for that bot and upload
    it in the Teams admin center. The relevant part of `manifest.json`:
@@ -94,7 +94,7 @@ with 403.
 
 Everyone first connects their Microsoft 365 account under *Settings →
 Connected accounts* ([connected accounts](connected-accounts.md)); that tells
-trisse-home which member is behind a Teams user. Others get a short hint and
+Waylight which member is behind a Teams user. Others get a short hint and
 no results.
 
 Results are what that member could find on the start page: services, their

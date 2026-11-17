@@ -1,10 +1,10 @@
-// Package configfile maps the appearance to its section of trisse-home.yaml
+// Package configfile maps the appearance to its section of waylight.yaml
 // (#88) and back.
 //
 // Ring: Interface Adapters.
 package configfile
 
-import "trisse-home/internal/modules/appearance/usecase"
+import "waylight/internal/modules/appearance/usecase"
 
 // Section is the appearance section. Empty fields fall back to the
 // defaults, like in the settings dialog.

@@ -12,8 +12,8 @@ export const texts: Catalogue = {
   secondary: { en: 'Second colour', de: 'Zweite Farbe' },
   none: { en: 'Default', de: 'Standard' },
   hide_powered_by: {
-    en: 'Hide "Powered by trisse-home" on the sign-in page',
-    de: '„Läuft mit trisse-home“ auf der Anmeldeseite ausblenden',
+    en: 'Hide "Powered by waylight" on the sign-in page',
+    de: '„Läuft mit waylight“ auf der Anmeldeseite ausblenden',
   },
   default_theme: {
     en: 'Theme for the sign-in page and new members',

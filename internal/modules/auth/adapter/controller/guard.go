@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/modules/auth/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // CSRFHeader carries the per-session CSRF token on state-changing requests.

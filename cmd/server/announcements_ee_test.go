@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
+	"waylight/ee/licence/domain"
 )
 
 // TestAnnouncements checks #297 in the ee build: who writes, who reads,

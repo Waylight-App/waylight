@@ -5,8 +5,8 @@
 
 ## Context
 
-trisse-home is MIT licensed. Features for organisations
-([#292](https://github.com/itadori26/trisse-home/issues/292)) get terms of
+Waylight is MIT licensed. Features for organisations
+([#292](https://github.com/itadori26/waylight/issues/292)) get terms of
 their own. Changing the licence of the whole project was considered and
 rejected: the published versions stay MIT in any case, and a copyleft or
 source-available core would add friction for every contributor.
@@ -27,7 +27,7 @@ source-available core would add friction for every contributor.
 - **Contributions** outside `ee/` are MIT, inbound as outbound, with nothing
   to sign. Contributions to `ee/` need an agreement with the maintainer.
 - The licence key is verified offline
-  ([#307](https://github.com/itadori26/trisse-home/issues/307)); the principle
+  ([#307](https://github.com/itadori26/waylight/issues/307)); the principle
   "no outbound request you did not configure" holds for licensed instances too.
 
 ## Consequences

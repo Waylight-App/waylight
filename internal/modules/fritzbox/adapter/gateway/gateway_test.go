@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/fritzbox/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/fritzbox/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 func md5hex(s string) string {

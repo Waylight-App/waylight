@@ -106,7 +106,7 @@ func TestSendsStates(t *testing.T) {
 }
 
 func TestAbstractSocket(t *testing.T) {
-	name := "trisse-home-test-" + strconv.FormatInt(time.Now().UnixNano(), 36)
+	name := "waylight-test-" + strconv.FormatInt(time.Now().UnixNano(), 36)
 	conn := listen(t, "\x00"+name)
 	n := FromEnv(env(map[string]string{"NOTIFY_SOCKET": "@" + name}), 1)
 	if err := n.Ready(); err != nil {

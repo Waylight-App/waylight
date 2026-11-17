@@ -1,6 +1,6 @@
 # Getting started
 
-This guide gets trisse-home running and takes you through the first login.
+This guide gets Waylight running and takes you through the first login.
 It takes about ten minutes.
 
 ## Pick an installation
@@ -19,12 +19,12 @@ page describes.
 
 You need Docker with the Compose plugin. The repository is only used for
 `compose.yaml`, the example configuration and a few optional helper scripts;
-the image itself comes from `ghcr.io/itadori26/trisse-home` (amd64 and
+the image itself comes from `ghcr.io/itadori26/waylight` (amd64 and
 arm64).
 
 ```sh
-git clone https://github.com/itadori26/trisse-home.git
-cd trisse-home
+git clone https://github.com/itadori26/waylight.git
+cd waylight
 cp .env.example .env
 sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$(openssl rand -base64 32)|" .env
 sudo docker compose up -d
@@ -48,7 +48,7 @@ Every other variable is described in the [configuration reference](configuration
 The first start prints a one-time setup token to the log:
 
 ```sh
-sudo docker compose logs trisse-home | grep setup_token
+sudo docker compose logs waylight | grep setup_token
 ```
 
 Open `http://<server-ip>:8090`, enter the token and choose a password of at
@@ -80,10 +80,10 @@ under Settings → About.
 Two steps are worth doing right away:
 
 1. **Turn on two-factor authentication** under Settings → Account. You get
-   ten recovery codes; store them outside trisse-home.
+   ten recovery codes; store them outside Waylight.
 2. **Do not forward the port on your router.** Use a VPN such as WireGuard to
    reach the dashboard from outside. If you want HTTPS, a public name or
-   passkeys, put trisse-home behind a [reverse proxy](reverse-proxy.md).
+   passkeys, put Waylight behind a [reverse proxy](reverse-proxy.md).
 
 ## Next steps
 
@@ -97,7 +97,7 @@ Two steps are worth doing right away:
 **The page does not load.** Check that the container is healthy with
 `sudo docker compose ps`. If your browser runs on a network outside
 `ALLOWED_CIDRS`, the server refuses the connection and logs the address it
-rejected: `sudo docker compose logs trisse-home | grep -i denied`.
+rejected: `sudo docker compose logs waylight | grep -i denied`.
 
 **You lost the setup token.** Run the `grep` command above again; the token
 is printed on every start until the account exists.
@@ -107,7 +107,7 @@ new token. This removes the owner's sign-in data (password, two-factor,
 passkeys, sessions); your tabs, widgets and everything in them stay.
 
 ```sh
-sudo docker compose exec trisse-home /trisse-home reset-account
-sudo docker compose restart trisse-home
-sudo docker compose logs trisse-home | grep setup_token
+sudo docker compose exec waylight /waylight reset-account
+sudo docker compose restart waylight
+sudo docker compose logs waylight | grep setup_token
 ```

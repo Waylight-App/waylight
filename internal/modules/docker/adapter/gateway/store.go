@@ -9,9 +9,9 @@ import (
 	"io/fs"
 	"strings"
 
-	"trisse-home/internal/modules/docker/domain"
-	"trisse-home/internal/modules/docker/usecase"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/docker/domain"
+	"waylight/internal/modules/docker/usecase"
+	"waylight/internal/shared/sqlutil"
 )
 
 //go:embed migrations/*.sql

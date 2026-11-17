@@ -11,13 +11,13 @@ import (
 	"database/sql"
 	"io/fs"
 
-	"trisse-home/ee/licence"
-	"trisse-home/ee/sso/adapter/gateway"
-	"trisse-home/ee/sso/domain"
-	"trisse-home/ee/sso/usecase"
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/auth"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/licence"
+	"waylight/ee/sso/adapter/gateway"
+	"waylight/ee/sso/domain"
+	"waylight/ee/sso/usecase"
+	"waylight/internal/modules"
+	"waylight/internal/modules/auth"
+	"waylight/internal/shared/kernel"
 )
 
 // Policy decides who becomes a member; see domain.Policy.

@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 var deviceDir string
@@ -16,7 +16,7 @@ func init() {
 	registerModuleE2E(moduleE2E{
 		Name: "device",
 		Config: func(cfg *config.Config, _ string) {
-			deviceDir, _ = os.MkdirTemp("", "trisse-device-")
+			deviceDir, _ = os.MkdirTemp("", "waylight-device-")
 			cfg.InstallMethod = "appliance"
 			cfg.DeviceDir = deviceDir
 			cfg.DisabledModules = slices.DeleteFunc(cfg.DisabledModules, func(m string) bool { return m == "device" })

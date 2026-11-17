@@ -1,6 +1,6 @@
 # Media server (Jellyfin, Plex)
 
-**What it does:** Jellyfin or Plex: what is playing right now (user, device, progress) and recently added movies, episodes and albums with posters. Posters are proxied by trisse-home, so the token stays on the server.
+**What it does:** Jellyfin or Plex: what is playing right now (user, device, progress) and recently added movies, episodes and albums with posters. Posters are proxied by Waylight, so the token stays on the server.
 
 ## Configuration
 

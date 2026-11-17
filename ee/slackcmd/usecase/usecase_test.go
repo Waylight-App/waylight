@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/ee/slackcmd/domain"
+	licence "waylight/ee/licence/domain"
+	"waylight/ee/slackcmd/domain"
 )
 
 type conns map[string]string // account → token

@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/wiki/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/wiki/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // personalSource answers only for the account it was connected by.

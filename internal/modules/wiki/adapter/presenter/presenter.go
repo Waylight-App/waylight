@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/wiki/usecase"
+	"waylight/internal/modules/wiki/usecase"
 )
 
 // PageDTO is one search result.

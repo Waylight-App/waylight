@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"trisse-home/internal/modules/dashboard/domain"
+	"waylight/internal/modules/dashboard/domain"
 )
 
 // ruleRow is the stored form of a tab rule (#71).

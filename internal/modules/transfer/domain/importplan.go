@@ -25,7 +25,7 @@ type ImportFolder struct {
 	Links []ImportLink
 }
 
-// ImportWidget is an information widget that has a trisse-home counterpart.
+// ImportWidget is an information widget that has a waylight counterpart.
 type ImportWidget struct {
 	Kind   string
 	Config map[string]any
@@ -56,7 +56,7 @@ type ImportSummary struct {
 
 // Imports only ever add: an existing tile, bookmark or tab is never
 // changed, so importing twice does no harm. The values below are the
-// generic form of the sections of trisse-home.yaml (maps and slices).
+// generic form of the sections of waylight.yaml (maps and slices).
 
 func str(m map[string]any, key string) string {
 	s, _ := m[key].(string)

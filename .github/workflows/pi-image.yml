@@ -63,7 +63,7 @@ jobs:
       - name: Build the image
         env:
           VERSION: ${{ steps.pkg.outputs.version }}
-        run: sudo deploy/raspberrypi/build-image.sh dist/trisse-home_*_arm64.deb "$VERSION" dist/image
+        run: sudo deploy/raspberrypi/build-image.sh dist/waylight_*_arm64.deb "$VERSION" dist/image
       - name: Boot the image and check the first-boot experience
         run: sudo NSPAWN_LOG="$RUNNER_TEMP/nspawn.log" deploy/raspberrypi/test-image.sh "$(cat deploy/raspberrypi/.work/last-image)"
       - name: Container console
@@ -79,7 +79,7 @@ jobs:
         with:
           path: ${{ env.PI_ROOT }}
           format: spdx-json
-          output-file: dist/image/trisse-home-${{ steps.pkg.outputs.version }}-raspberrypi-arm64.spdx.json
+          output-file: dist/image/waylight-${{ steps.pkg.outputs.version }}-raspberrypi-arm64.spdx.json
           upload-artifact: false
       - name: Summary
         run: |
@@ -99,7 +99,7 @@ jobs:
           retention-days: 7
           compression-level: 0
       # Signed build provenance of the published image (#138), like the
-      # container image: `gh attestation verify <img.xz> -R itadori26/trisse-home`.
+      # container image: `gh attestation verify <img.xz> -R itadori26/waylight`.
       - name: Attest the build provenance
         if: inputs.publish
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2

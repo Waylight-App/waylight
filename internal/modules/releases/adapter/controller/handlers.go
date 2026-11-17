@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/releases/adapter/presenter"
-	"trisse-home/internal/modules/releases/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/releases/adapter/presenter"
+	"waylight/internal/modules/releases/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the new-releases endpoints.

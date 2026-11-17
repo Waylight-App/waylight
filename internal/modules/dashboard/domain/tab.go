@@ -4,7 +4,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // MaxTabNameLength limits tab names so they fit into the tab bar.

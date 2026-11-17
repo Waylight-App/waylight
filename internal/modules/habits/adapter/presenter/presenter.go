@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/habits/usecase"
+	"waylight/internal/modules/habits/usecase"
 )
 
 // HeatCellDTO is one day of the 4-week heatmap.

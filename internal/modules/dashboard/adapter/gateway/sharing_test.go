@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/modules/dashboard/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestTeamTabs: a tab the admin shares with a group is visible to its

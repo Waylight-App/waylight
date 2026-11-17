@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // MemberView describes a member or an admin for the admin's settings.

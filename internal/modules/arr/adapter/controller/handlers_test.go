@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/arr/domain"
-	"trisse-home/internal/modules/arr/usecase"
+	"waylight/internal/modules/arr/domain"
+	"waylight/internal/modules/arr/usecase"
 )
 
 type fakeArr struct {

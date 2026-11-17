@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // AccountRepository stores connected accounts with encrypted tokens
@@ -113,7 +113,7 @@ const (
 
 var (
 	errSignInUnknown = kernel.NewPublicError(kernel.ErrNotFound, "The sign-in was not started here or has expired. Please start again.")
-	errNoPublicURL   = kernel.NewValidationError("provider", "Signing in needs PUBLIC_URL (an https:// address of trisse-home).")
+	errNoPublicURL   = kernel.NewValidationError("provider", "Signing in needs PUBLIC_URL (an https:// address of Waylight).")
 	errClientID      = kernel.NewValidationError("clientId", "Enter the client ID of your app registration.")
 	errTooManySignIn = kernel.NewValidationError("provider", "Too many sign-ins at once. Please wait a few minutes.")
 )

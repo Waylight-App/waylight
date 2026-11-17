@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/weather/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/weather/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // healthTTL: the DWD publishes pollen once a day (11:00) and UV once a day

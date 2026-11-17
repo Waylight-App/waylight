@@ -1,25 +1,25 @@
 #!/bin/sh
-# Prepares a native trisse-home installation before the service starts.
-# Runs as root via ExecStartPre=+ in trisse-home.service and is idempotent.
+# Prepares a native waylight installation before the service starts.
+# Runs as root via ExecStartPre=+ in waylight.service and is idempotent.
 #
-# It creates the per-installation secrets in /etc/trisse-home/secret.env on
+# It creates the per-installation secrets in /etc/waylight/secret.env on
 # the first start. They are never part of the package or of a Raspberry Pi
 # image, so every device that is installed or flashed gets its own:
 #
 #   SECRET_KEY   encrypts stored credentials of integrations
 #   SETUP_TOKEN  one-time token to create the account; persisted so that the
-#                console, the boot partition and trisse-home-setup-token can
+#                console, the boot partition and waylight-setup-token can
 #                show it on a headless device (it is useless after the setup)
 #
-# Values the admin sets in trisse-home.env always win.
-# Paths can be overridden for tests through the TRISSE_HOME_* variables.
+# Values the admin sets in waylight.env always win.
+# Paths can be overridden for tests through the WAYLIGHT_* variables.
 set -eu
 
-CONF_DIR=${TRISSE_HOME_CONF_DIR:-/etc/trisse-home}
-STATE_DIR=${TRISSE_HOME_STATE_DIR:-/var/lib/trisse-home}
-SERVICE_GROUP=${TRISSE_HOME_GROUP:-trisse-home}
+CONF_DIR=${WAYLIGHT_CONF_DIR:-/etc/waylight}
+STATE_DIR=${WAYLIGHT_STATE_DIR:-/var/lib/waylight}
+SERVICE_GROUP=${WAYLIGHT_GROUP:-waylight}
 
-CONFIG_FILE="$CONF_DIR/trisse-home.env"
+CONFIG_FILE="$CONF_DIR/waylight.env"
 SECRET_FILE="$CONF_DIR/secret.env"
 # Written by the postrm script when the package is purged but the data is
 # kept, so that a later reinstall can still decrypt stored credentials.
@@ -51,7 +51,7 @@ append_secret() {
 	if [ -f "$SECRET_FILE" ]; then
 		cat "$SECRET_FILE" >"$tmp"
 	else
-		echo "# Generated on the first start of trisse-home. Keep a copy of SECRET_KEY" >"$tmp"
+		echo "# Generated on the first start of waylight. Keep a copy of SECRET_KEY" >"$tmp"
 		echo "# next to your backups: it decrypts the stored credentials." >>"$tmp"
 	fi
 	printf '%s\n' "$@" >>"$tmp"
@@ -67,10 +67,10 @@ if ! has SECRET_KEY "$CONFIG_FILE" && ! has SECRET_KEY "$SECRET_FILE"; then
 	if has SECRET_KEY "$SAVED_SECRET"; then
 		append_secret "$(grep -E '^[[:space:]]*SECRET_KEY=' "$SAVED_SECRET" | tail -n 1)"
 		rm -f "$SAVED_SECRET"
-		echo "trisse-home: restored the SECRET_KEY saved when the package was purged" >&2
+		echo "waylight: restored the SECRET_KEY saved when the package was purged" >&2
 	else
 		append_secret "SECRET_KEY=$(random_key)"
-		echo "trisse-home: generated a new SECRET_KEY in $SECRET_FILE" >&2
+		echo "waylight: generated a new SECRET_KEY in $SECRET_FILE" >&2
 	fi
 fi
 

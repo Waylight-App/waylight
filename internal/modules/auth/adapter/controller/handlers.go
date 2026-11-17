@@ -9,11 +9,11 @@ import (
 	"net/url"
 	"strings"
 
-	"trisse-home/internal/modules/auth/adapter/presenter"
-	"trisse-home/internal/modules/auth/domain"
-	"trisse-home/internal/modules/auth/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/auth/adapter/presenter"
+	"waylight/internal/modules/auth/domain"
+	"waylight/internal/modules/auth/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // UseCases bundles the input ports the auth controller calls.
@@ -485,7 +485,7 @@ func (h *Handlers) RevokeToken(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-const oidcStateCookie = "trisse_oidc_state"
+const oidcStateCookie = "waylight_oidc_state"
 
 // OIDCStart handles GET /api/auth/oidc/start: redirect to the provider and
 // bind the state to this browser (protects against login CSRF).

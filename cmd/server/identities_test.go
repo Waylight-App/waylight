@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/platform/config"
+	"waylight/internal/platform/config"
 )
 
 // TestLinkPersonalMicrosoftAccount links a sign-in at the provider to the
@@ -15,7 +15,7 @@ func TestLinkPersonalMicrosoftAccount(t *testing.T) {
 	var appURL string
 	idp := fakeIDP(t, "me@outlook.com", &appURL, map[string]any{"email_verified": nil})
 	app := newTestServer(t, "http://127.0.0.1:1", func(c *config.Config) {
-		c.OIDCIssuer, c.OIDCClientID, c.OIDCClientSecret = idp.URL, "trisse", "secret"
+		c.OIDCIssuer, c.OIDCClientID, c.OIDCClientSecret = idp.URL, "waylight", "secret"
 		c.OIDCAllowedEmails = []string{"me@outlook.com"}
 		c.OIDCRedirectURL = "http://placeholder/api/auth/oidc/callback"
 	})

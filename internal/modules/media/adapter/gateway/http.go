@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strings"
 
-	"trisse-home/internal/modules/media/domain"
+	"waylight/internal/modules/media/domain"
 )
 
 const (

@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/ee/announcements/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/ee/announcements/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Store keeps announcements, read marks and settings (output port).

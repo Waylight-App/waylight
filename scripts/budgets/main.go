@@ -4,7 +4,7 @@
 // measurements as JSON for the next comparison and exits with status 1 when
 // a budget is exceeded.
 //
-//	go run ./scripts/budgets -dist internal/platform/webui/dist -binary bin/trisse-home \
+//	go run ./scripts/budgets -dist internal/platform/webui/dist -binary bin/waylight \
 //	    -image-bytes 26000000 -memory "18.5MiB / 7.6GiB" -baseline main.json -out measurements.json
 package main
 

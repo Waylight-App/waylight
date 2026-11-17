@@ -11,8 +11,8 @@ import (
 	"sync"
 	"testing"
 
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/platform/database/dbtest"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/platform/database/dbtest"
 )
 
 // fakeDAV is a minimal WebDAV collection at /dav/ with basic auth.
@@ -80,7 +80,7 @@ func TestWebDAV(t *testing.T) {
 	if err := dav.Test(ctx, missing); err == nil {
 		t.Fatal("missing folder must fail")
 	}
-	name := "trisse-home-20261111-030000.db"
+	name := "waylight-20261111-030000.db"
 	if err := dav.Put(ctx, s, name, strings.NewReader("sqlite"), 6); err != nil {
 		t.Fatal(err)
 	}

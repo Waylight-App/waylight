@@ -6,7 +6,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/mail/usecase"
+	"waylight/internal/modules/mail/usecase"
 )
 
 // AccountDTO never contains the password.

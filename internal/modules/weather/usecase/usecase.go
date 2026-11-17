@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/weather/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/weather/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Cache timing rules.

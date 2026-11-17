@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"trisse-home/internal/modules/appearance/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/appearance/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // ProcessedImage is an upload turned into what is stored.

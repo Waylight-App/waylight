@@ -1,6 +1,6 @@
 # Prometheus metrics
 
-trisse-home can expose its measurements at `GET /metrics` in the Prometheus
+Waylight can expose its measurements at `GET /metrics` in the Prometheus
 text format, so an existing Prometheus/Grafana setup can scrape them. The
 endpoint is **off by default**.
 
@@ -21,12 +21,12 @@ secret and do not publish the port.
 
 ```yaml
 scrape_configs:
-  - job_name: trisse-home
+  - job_name: waylight
     scrape_interval: 60s
     metrics_path: /metrics
     authorization:
       type: Bearer
-      credentials_file: /etc/prometheus/trisse-home.token
+      credentials_file: /etc/prometheus/waylight.token
     static_configs:
       - targets: ["192.168.178.115:8090"]
 ```
@@ -42,22 +42,22 @@ configured yourself), never request IDs or paths.
 
 | Metric | Type | Labels | Meaning |
 | --- | --- | --- | --- |
-| `trisse_build_info` | gauge | `version`, `goversion` | Always 1 |
-| `trisse_service_up` | gauge | `service` | 1 if the last health check succeeded |
-| `trisse_service_response_seconds` | gauge | `service` | Response time of the last check |
-| `trisse_service_cert_expiry_timestamp_seconds` | gauge | `service` | TLS certificate expiry (HTTPS services) |
-| `trisse_containers` | gauge | `state` (`running`, `stopped`, `unhealthy`) | Number of containers |
-| `trisse_container_running` | gauge | `container` | 1 if the container is running |
-| `trisse_backup_ok` | gauge | `name`, `kind` (`backup`, `check`) | 1 if ok or running, 0 if overdue or failed (waiting sources are omitted) |
-| `trisse_backup_last_success_timestamp_seconds` | gauge | `name`, `kind` | Last successful run |
-| `trisse_host_cpu_ratio` | gauge | – | CPU usage (0–1) |
-| `trisse_host_load1` | gauge | – | 1-minute load average |
-| `trisse_host_memory_used_bytes`, `trisse_host_memory_total_bytes` | gauge | – | Memory |
-| `trisse_host_disk_used_bytes`, `trisse_host_disk_total_bytes` | gauge | `disk` | Per `SYSTEM_DISK_PATHS` entry |
-| `trisse_host_temperature_celsius` | gauge | – | Highest sensor reading (omitted without sensors) |
-| `trisse_host_uptime_seconds` | gauge | – | Host uptime |
-| `trisse_http_requests_total` | counter | `method`, `code` (`2xx` … `5xx`) | Requests served by trisse-home |
-| `trisse_http_request_duration_seconds_sum` / `_count` | counter | – | Time spent serving requests |
+| `waylight_build_info` | gauge | `version`, `goversion` | Always 1 |
+| `waylight_service_up` | gauge | `service` | 1 if the last health check succeeded |
+| `waylight_service_response_seconds` | gauge | `service` | Response time of the last check |
+| `waylight_service_cert_expiry_timestamp_seconds` | gauge | `service` | TLS certificate expiry (HTTPS services) |
+| `waylight_containers` | gauge | `state` (`running`, `stopped`, `unhealthy`) | Number of containers |
+| `waylight_container_running` | gauge | `container` | 1 if the container is running |
+| `waylight_backup_ok` | gauge | `name`, `kind` (`backup`, `check`) | 1 if ok or running, 0 if overdue or failed (waiting sources are omitted) |
+| `waylight_backup_last_success_timestamp_seconds` | gauge | `name`, `kind` | Last successful run |
+| `waylight_host_cpu_ratio` | gauge | – | CPU usage (0–1) |
+| `waylight_host_load1` | gauge | – | 1-minute load average |
+| `waylight_host_memory_used_bytes`, `waylight_host_memory_total_bytes` | gauge | – | Memory |
+| `waylight_host_disk_used_bytes`, `waylight_host_disk_total_bytes` | gauge | `disk` | Per `SYSTEM_DISK_PATHS` entry |
+| `waylight_host_temperature_celsius` | gauge | – | Highest sensor reading (omitted without sensors) |
+| `waylight_host_uptime_seconds` | gauge | – | Host uptime |
+| `waylight_http_requests_total` | counter | `method`, `code` (`2xx` … `5xx`) | Requests served by Waylight |
+| `waylight_http_request_duration_seconds_sum` / `_count` | counter | – | Time spent serving requests |
 | `go_goroutines`, `go_memstats_heap_alloc_bytes`, `go_memstats_sys_bytes`, `go_gc_cycles_total` | gauge/counter | – | Go runtime |
 | `process_start_time_seconds` | gauge | – | Start of the process |
 

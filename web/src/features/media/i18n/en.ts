@@ -12,9 +12,9 @@ export const en = {
   'media.jellyfin_key': 'API key {value}',
   'media.plex_token': 'Plex token {value}',
   'media.jellyfin_hint':
-    'Create an API key in Jellyfin under Dashboard → API keys. It is stored encrypted; posters are loaded through trisse-home.',
+    'Create an API key in Jellyfin under Dashboard → API keys. It is stored encrypted; posters are loaded through Waylight.',
   'media.plex_hint':
-    'Use the X-Plex-Token of your account (Plex support article "Finding an authentication token"). It is stored encrypted; posters are loaded through trisse-home.',
+    'Use the X-Plex-Token of your account (Plex support article "Finding an authentication token"). It is stored encrypted; posters are loaded through Waylight.',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

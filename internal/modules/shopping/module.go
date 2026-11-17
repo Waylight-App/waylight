@@ -6,11 +6,11 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/shopping/adapter/controller"
-	"trisse-home/internal/modules/shopping/adapter/gateway"
-	"trisse-home/internal/modules/shopping/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/shopping/adapter/controller"
+	"waylight/internal/modules/shopping/adapter/gateway"
+	"waylight/internal/modules/shopping/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the shopping list rings and implements modules.Module.
@@ -29,7 +29,7 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, ids kernel.IDGe
 	uc := usecase.NewShopping(settings, store, ids)
 	repo := gateway.NewListRepository(db)
 	if host == "" {
-		host = "trisse-home.local"
+		host = "waylight.local"
 	}
 	return &Module{
 		Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
@@ -66,7 +66,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/shopping/items/{id}", h.SetDone)
 	r.Protected("DELETE /api/shopping/items/{id}", h.Delete)
 	r.Protected("POST /api/shopping/clear-completed", h.ClearCompleted)
-	// Lists kept on trisse-home (#471).
+	// Lists kept on waylight (#471).
 	l := m.lists
 	r.Protected("GET /api/shopping/lists", l.All)
 	r.Protected("POST /api/shopping/lists", l.Create)

@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"trisse-home/internal/modules/weather/usecase"
+	"waylight/internal/modules/weather/usecase"
 )
 
 // DayDTO is one forecast day.

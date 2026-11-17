@@ -26,7 +26,7 @@ type Policy struct {
 	Emails []string
 	// Groups lets in everyone in one of these provider groups.
 	Groups []string
-	// SyncGroups limits which provider groups become trisse-home groups;
+	// SyncGroups limits which provider groups become waylight groups;
 	// empty takes all of them.
 	SyncGroups []string
 	// AdminGroups makes everyone in one of these provider groups an admin
@@ -62,7 +62,7 @@ func (p Policy) Allows(id Identity) bool {
 	return false
 }
 
-// GroupsToSync returns the person's provider groups that become trisse-home
+// GroupsToSync returns the person's provider groups that become waylight
 // groups, without duplicates.
 func (p Policy) GroupsToSync(id Identity) []string {
 	var out []string

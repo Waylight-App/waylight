@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/shopping/adapter/presenter"
-	"trisse-home/internal/modules/shopping/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/shopping/adapter/presenter"
+	"waylight/internal/modules/shopping/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the shopping list endpoints.

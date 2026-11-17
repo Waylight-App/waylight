@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // QueryPlaceholder marks where the encoded query is inserted into a URL template.

@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/docker/adapter/controller"
-	"trisse-home/internal/modules/docker/adapter/gateway"
-	"trisse-home/internal/modules/docker/domain"
-	"trisse-home/internal/modules/docker/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/docker/adapter/controller"
+	"waylight/internal/modules/docker/adapter/gateway"
+	"waylight/internal/modules/docker/domain"
+	"waylight/internal/modules/docker/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 const refreshInterval = 20 * time.Second
@@ -102,12 +102,12 @@ func (m *Module) Metrics(ctx context.Context) []kernel.MetricSample {
 	}
 	const help = "Number of containers by state."
 	out := []kernel.MetricSample{
-		kernel.Gauge("trisse_containers", help, float64(res.Running), kernel.Label{Name: "state", Value: "running"}),
-		kernel.Gauge("trisse_containers", help, float64(res.Stopped), kernel.Label{Name: "state", Value: "stopped"}),
-		kernel.Gauge("trisse_containers", help, float64(res.Unhealthy), kernel.Label{Name: "state", Value: "unhealthy"}),
+		kernel.Gauge("waylight_containers", help, float64(res.Running), kernel.Label{Name: "state", Value: "running"}),
+		kernel.Gauge("waylight_containers", help, float64(res.Stopped), kernel.Label{Name: "state", Value: "stopped"}),
+		kernel.Gauge("waylight_containers", help, float64(res.Unhealthy), kernel.Label{Name: "state", Value: "unhealthy"}),
 	}
 	for _, c := range res.Containers {
-		out = append(out, kernel.Gauge("trisse_container_running", "Whether the container is running (1) or not (0).",
+		out = append(out, kernel.Gauge("waylight_container_running", "Whether the container is running (1) or not (0).",
 			kernel.Bool(c.State == "running"), kernel.Label{Name: "container", Value: c.Name}))
 	}
 	return out

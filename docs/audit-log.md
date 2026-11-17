@@ -1,7 +1,7 @@
 # Audit log
 
 With a licence key that includes `audit-log` ([licence keys](licence-keys.md)),
-trisse-home records who changed shared data and settings, when, and which
+Waylight records who changed shared data and settings, when, and which
 object. It never records the content: the log says that a service was
 changed, not what it is called now.
 

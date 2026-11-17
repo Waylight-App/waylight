@@ -5,7 +5,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // ErrDisabled is returned while a source is switched off in the settings.

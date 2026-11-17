@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"trisse-home/internal/modules/notifications/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/notifications/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // deliveryTimeout bounds one push delivery.
@@ -379,7 +379,7 @@ func (uc *notifier) SaveSettings(ctx context.Context, in SettingsInput) (Setting
 var ErrNotConfigured = kernel.NewPublicError(kernel.ErrInvalid, "Please enter and save a topic first.")
 
 func testMessage() domain.Message {
-	return domain.Message{Title: "trisse-home test", Body: "Notifications work. 🎉", Priority: domain.PriorityDefault,
+	return domain.Message{Title: "Waylight test", Body: "Notifications work. 🎉", Priority: domain.PriorityDefault,
 		Tags: []string{"tada"}, Type: "test", Severity: domain.SeverityInfo}
 }
 

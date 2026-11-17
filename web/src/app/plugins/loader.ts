@@ -15,7 +15,7 @@ import {
   type PluginSearchAction,
   type PluginSection,
   type PluginWidget,
-  type TrissePlugin,
+  type WaylightPlugin,
 } from './api';
 import LockedFeature from './LockedFeature.svelte';
 import PluginHost from './PluginHost.svelte';
@@ -29,7 +29,7 @@ export interface PluginTargets {
 }
 
 /** How the loader reaches a plugin module; tests replace it. */
-export type ImportPlugin = (url: string) => Promise<{ plugin?: TrissePlugin }>;
+export type ImportPlugin = (url: string) => Promise<{ plugin?: WaylightPlugin }>;
 
 const browserImport: ImportPlugin = (url) => import(/* @vite-ignore */ url);
 

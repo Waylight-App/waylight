@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"time"
 
-	"trisse-home/internal/modules/weather/domain"
+	"waylight/internal/modules/weather/domain"
 )
 
 // Default DWD open data endpoints (GeoServer of the Deutscher Wetterdienst).

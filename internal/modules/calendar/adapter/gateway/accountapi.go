@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/calendar/domain"
+	"waylight/internal/modules/calendar/domain"
 )
 
 // Limits of the provider APIs (#282).

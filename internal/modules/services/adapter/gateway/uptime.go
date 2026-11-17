@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/services/domain"
-	"trisse-home/internal/shared/sqlutil"
+	"waylight/internal/modules/services/domain"
+	"waylight/internal/shared/sqlutil"
 )
 
 // UptimeStore implements usecase.UptimeStore in SQLite.

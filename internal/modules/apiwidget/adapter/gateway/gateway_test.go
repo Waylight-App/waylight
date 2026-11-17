@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/apiwidget/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/platform/httpclient"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/apiwidget/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/platform/httpclient"
+	"waylight/internal/shared/kernel"
 )
 
 type reverseCipher struct{}

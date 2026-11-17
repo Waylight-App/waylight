@@ -1,6 +1,6 @@
 /** Input of the cron snippet for the WireGuard export script. */
 export interface ExportSnippetInput {
-  /** Directory of the trisse-home checkout on the host. */
+  /** Directory of the waylight checkout on the host. */
   stackDir: string;
   /** Container running WireGuard; empty when wg runs on the host. */
   container: string;
@@ -19,7 +19,7 @@ export function exportCronSnippet(input: ExportSnippetInput): string | null {
   if (!dir.startsWith('/') || !shellSafe.test(dir) || !shellSafe.test(container)) return null;
   const env = container === 'wireguard' ? '' : `WG_CONTAINER=${container} `;
   return [
-    `sudo tee /etc/cron.d/trisse-home-wireguard <<'CRON'`,
+    `sudo tee /etc/cron.d/waylight-wireguard <<'CRON'`,
     `* * * * * root ${env}${dir}/scripts/wireguard-export.sh`,
     'CRON',
   ].join('\n');

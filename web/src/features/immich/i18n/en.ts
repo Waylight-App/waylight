@@ -13,7 +13,7 @@ export const en = {
   'immich.url': 'Immich URL',
   'immich.api_key': 'API key {value}',
   'immich.key_hint':
-    'Create an API key under Account settings → API keys with the permissions asset.statistics, server.storage, memory.read and asset.view. It is stored encrypted; photos are loaded through trisse-home.',
+    'Create an API key under Account settings → API keys with the permissions asset.statistics, server.storage, memory.read and asset.view. It is stored encrypted; photos are loaded through Waylight.',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

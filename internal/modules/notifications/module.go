@@ -8,12 +8,12 @@ import (
 	"net/url"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/notifications/adapter/controller"
-	"trisse-home/internal/modules/notifications/adapter/gateway"
-	"trisse-home/internal/modules/notifications/domain"
-	"trisse-home/internal/modules/notifications/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/notifications/adapter/controller"
+	"waylight/internal/modules/notifications/adapter/gateway"
+	"waylight/internal/modules/notifications/domain"
+	"waylight/internal/modules/notifications/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the notification rings, implements modules.Module and is the

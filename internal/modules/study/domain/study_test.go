@@ -5,7 +5,7 @@ import (
 	"math"
 	"testing"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 func g(v float64) *float64 { return &v }

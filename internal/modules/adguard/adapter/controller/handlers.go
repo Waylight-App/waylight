@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/adguard/adapter/presenter"
-	"trisse-home/internal/modules/adguard/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/adguard/adapter/presenter"
+	"waylight/internal/modules/adguard/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the DNS filter endpoints. Every endpoint takes the

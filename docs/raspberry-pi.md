@@ -1,8 +1,8 @@
-# trisse-home on a Raspberry Pi
+# Waylight on a Raspberry Pi
 
 The Raspberry Pi image turns a Pi into a small appliance for your start page:
-flash an SD card, boot, open `http://trisse-home.local`. No Docker, no
-terminal needed. It is Raspberry Pi OS Lite (64-bit) with trisse-home
+flash an SD card, boot, open `http://waylight.local`. No Docker, no
+terminal needed. It is Raspberry Pi OS Lite (64-bit) with Waylight
 installed as a hardened service ([ADR 0015](adr/0015-raspberry-pi-image.md));
 everything runs on the Pi, your data never leaves it.
 
@@ -23,18 +23,18 @@ Install [Raspberry Pi Imager](https://www.raspberrypi.com/software/) (version
 **Recommended — Imager knows the image and offers its customisation:**
 
 1. *App Options → Content Repository → Use custom URL*, enter
-   `https://github.com/itadori26/trisse-home/releases/latest/download/os_list.json`
-2. Choose your device, then **trisse-home** as operating system, then the SD
+   `https://github.com/itadori26/waylight/releases/latest/download/os_list.json`
+2. Choose your device, then **Waylight** as operating system, then the SD
    card.
 3. In the customisation step set at least a user and password, and Wi-Fi if
    the Pi has no cable. Hostname, time zone and SSH are optional. Write.
 
 **Alternative — "Use custom" with the downloaded file:** download
-`trisse-home-<version>-raspberrypi-arm64.img.xz` from the
-[latest release](https://github.com/itadori26/trisse-home/releases/latest),
+`waylight-<version>-raspberrypi-arm64.img.xz` from the
+[latest release](https://github.com/itadori26/waylight/releases/latest),
 check it against the `.sha256` file and write it with *Use custom*. Imager may
 not offer its customisation for a local file, so use Ethernet and add a user
-later on the console if you need one. trisse-home itself needs no user
+later on the console if you need one. Waylight itself needs no user
 account on the Pi.
 
 To check that the image was built by this repository's release workflow and
@@ -42,18 +42,18 @@ not changed since (#138), verify its signed build provenance with the GitHub
 CLI:
 
 ```sh
-gh attestation verify trisse-home-<version>-raspberrypi-arm64.img.xz -R itadori26/trisse-home
+gh attestation verify waylight-<version>-raspberrypi-arm64.img.xz -R itadori26/waylight
 ```
 
 The release also carries the image's SPDX SBOM
-(`trisse-home-<version>-raspberrypi-arm64.spdx.json`).
+(`waylight-<version>-raspberrypi-arm64.spdx.json`).
 
 ## 2. First start and setup
 
 Insert the card, connect the network and power. The first boot takes one to
 three minutes (the file system is enlarged, keys are generated). Then open
 
-- `http://trisse-home.local` — or `http://<your-hostname>.local` if you set a
+- `http://waylight.local` — or `http://<your-hostname>.local` if you set a
   hostname in Imager,
 - or the Pi's IP address, which your router lists (e.g. FRITZ!Box: *Home
   Network → Network*). Some Android phones and older Windows versions do not
@@ -64,9 +64,9 @@ the first boot, is different on every device, and works only until your
 account exists. You find it
 
 - on a monitor attached to the Pi, above the login prompt,
-- in **`trisse-home-setup.txt` on the SD card** — shut the Pi down, put the
+- in **`waylight-setup.txt` on the SD card** — shut the Pi down, put the
   card into any computer and open the file on the small `bootfs` drive,
-- with `sudo trisse-home-setup-token` over SSH.
+- with `sudo waylight-setup-token` over SSH.
 
 Choose a password (at least 12 characters) — done. The setup copies of the
 token are deleted automatically afterwards. Want to choose the token
@@ -75,51 +75,51 @@ yourself? See *Setup token* in the [native install guide](native-install.md).
 ## Updates
 
 The Pi installs updates by itself every night: security updates of Raspberry
-Pi OS, kernel and firmware, and new trisse-home releases. If an update needs
+Pi OS, kernel and firmware, and new Waylight releases. If an update needs
 a reboot (e.g. a new kernel), it reboots at 04:00. Settings → About shows the
 running version.
 
-Before every trisse-home update the database is copied to
-`/var/lib/trisse-home/backups/pre-upgrade/`.
+Before every Waylight update the database is copied to
+`/var/lib/waylight/backups/pre-upgrade/`.
 
-- Hold a version: `sudo apt-mark hold trisse-home` (`unhold` to continue).
-- Roll back: `sudo apt install --allow-downgrades trisse-home=<version>` (the
+- Hold a version: `sudo apt-mark hold waylight` (`unhold` to continue).
+- Roll back: `sudo apt install --allow-downgrades waylight=<version>` (the
   last five releases are available).
 
 ## Backups
 
-trisse-home creates a database backup every day and keeps seven; download
+Waylight creates a database backup every day and keeps seven; download
 them under Settings → Backups. **Keep the key as well** — without it stored
 integration passwords (CalDAV, AdGuard Home, …) cannot be decrypted:
 
 ```sh
-sudo cat /etc/trisse-home/secret.env
+sudo cat /etc/waylight/secret.env
 ```
 
 For a copy outside the SD card, put the backups on a USB stick (see *Sandbox*
 in the [native install guide](native-install.md)) or use Settings → Export.
 
 **Restore on a new SD card:** flash the image, do *not* finish the setup, then
-over SSH: `sudo systemctl stop trisse-home`, copy your backup to
-`/var/lib/trisse-home/trisse-home.db` and your old `SECRET_KEY` into
-`/etc/trisse-home/trisse-home.env`, run
-`sudo chown trisse-home:trisse-home /var/lib/trisse-home/trisse-home.db` and
-`sudo systemctl start trisse-home`.
+over SSH: `sudo systemctl stop waylight`, copy your backup to
+`/var/lib/waylight/waylight.db` and your old `SECRET_KEY` into
+`/etc/waylight/waylight.env`, run
+`sudo chown waylight:waylight /var/lib/waylight/waylight.db` and
+`sudo systemctl start waylight`.
 
 ## HTTPS and passkeys
 
 On the local network plain `http://` works. For access from outside use a VPN
 (WireGuard, Tailscale) rather than forwarding a port. HTTPS — needed for
-passkeys and to install trisse-home as an app — works with a reverse proxy
+passkeys and to install Waylight as an app — works with a reverse proxy
 ([guide](reverse-proxy.md)); set `PUBLIC_URL` and `COOKIE_SECURE=true` in
-`/etc/trisse-home/trisse-home.env`.
+`/etc/waylight/waylight.env`.
 
 ## Configuration
 
 Everything you would set in Docker's `.env` goes into
-`/etc/trisse-home/trisse-home.env`; values there override the image defaults
-(port 80, see `/etc/trisse-home/appliance.env`). Apply with
-`sudo systemctl restart trisse-home`.
+`/etc/waylight/waylight.env`; values there override the image defaults
+(port 80, see `/etc/waylight/appliance.env`). Apply with
+`sudo systemctl restart waylight`.
 
 ## Moving between the Pi and Docker
 
@@ -133,17 +133,17 @@ including history, copy the database and `SECRET_KEY` as described in
 The image and the display mode are built and checked in CI, but have not yet
 been measured on real hardware: idle memory and CPU on a Pi Zero 2 W and a
 Pi 4, and the kiosk display on a Pi 4/5 with HDMI and the official touch
-display. If you run trisse-home on a Pi, a short report in
-[#361](https://github.com/itadori26/trisse-home/issues/361) helps; the numbers
+display. If you run Waylight on a Pi, a short report in
+[#361](https://github.com/itadori26/waylight/issues/361) helps; the numbers
 will be added here.
 
 ## Troubleshooting
 
 | Problem | What to do |
 | --- | --- |
-| `trisse-home.local` does not open | Use the IP address from your router. Wait three minutes after the first boot. Check that phone or laptop are in the same network (not a guest Wi-Fi). |
+| `waylight.local` does not open | Use the IP address from your router. Wait three minutes after the first boot. Check that phone or laptop are in the same network (not a guest Wi-Fi). |
 | No network over Wi-Fi | Wi-Fi is only set when flashing with Imager's customisation; flash again or use a cable. |
 | The Pi does not boot (no green LED activity) | Flash the card again, try another card and the official power supply. |
-| Forgot the password | `sudo -u trisse-home sh -c 'set -a; . /etc/trisse-home/secret.env; . /etc/trisse-home/appliance.env; . /etc/trisse-home/trisse-home.env; exec trisse-home reset-account'`, then `sudo systemctl restart trisse-home` and `sudo trisse-home-setup-token`. |
-| Something does not work | `systemctl status trisse-home` and `journalctl -u trisse-home -n 100`. The journal is limited to 50 MB to spare the SD card. |
+| Forgot the password | `sudo -u waylight sh -c 'set -a; . /etc/waylight/secret.env; . /etc/waylight/appliance.env; . /etc/waylight/waylight.env; exec waylight reset-account'`, then `sudo systemctl restart waylight` and `sudo waylight-setup-token`. |
+| Something does not work | `systemctl status waylight` and `journalctl -u waylight -n 100`. The journal is limited to 50 MB to spare the SD card. |
 | SD card full | `df -h /`; old backups are deleted automatically (`BACKUP_RETENTION`). |

@@ -18,7 +18,7 @@ import (
 	"sort"
 	"time"
 
-	"trisse-home/internal/modules/speedtest/domain"
+	"waylight/internal/modules/speedtest/domain"
 )
 
 //go:embed migrations/*.sql

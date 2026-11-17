@@ -7,8 +7,8 @@ import (
 	"io"
 	"slices"
 
-	"trisse-home/internal/modules/backup/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/backup/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // RemoteStore talks to the off-site target, e.g. WebDAV (output port).

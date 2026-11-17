@@ -86,7 +86,7 @@
   <p class="notice" role="note">{t('transfer.config_managed', { sections: managed.join(', ') })}</p>
 {/if}
 <p class="actions">
-  <a class="btn" href={transfer.configUrl()} download="trisse-home.yaml">{t('transfer.config_download')}</a>
+  <a class="btn" href={transfer.configUrl()} download="waylight.yaml">{t('transfer.config_download')}</a>
   <label class="btn file">
     {configBusy ? t('common.importing') : t('transfer.config_apply')}
     <input

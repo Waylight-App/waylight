@@ -7,8 +7,8 @@ import (
 	"os"
 	"sync"
 
-	"trisse-home/ee/licence"
-	"trisse-home/internal/modules"
+	"waylight/ee/licence"
+	"waylight/internal/modules"
 )
 
 // The licence module of the ee/ features (#307). This file is only built with

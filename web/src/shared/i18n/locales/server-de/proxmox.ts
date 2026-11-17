@@ -16,8 +16,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_98db8603c1a1c4cd: 'Proxmox VE ist nicht erreichbar.',
   // The fingerprint must be a SHA-256 value such as AB:CD:…, 32 bytes.
   srv_53b624415dd21efb: 'Der Fingerabdruck muss ein SHA-256-Wert wie AB:CD:… mit 32 Bytes sein.',
-  // The token ID must look like monitor@pve!trisse-home.
-  srv_98a0961ed24f0281: 'Die Token-ID muss wie monitor@pve!trisse-home aussehen.',
+  // The token ID must look like monitor@pve!Waylight.
+  srv_aa22340e214f97da: 'Die Token-ID muss wie monitor@pve!Waylight aussehen.',
   // The token secret is required.
   srv_3d3a9008e1d23718: 'Das Token-Secret ist erforderlich.',
   // Unknown action, use start or shutdown.

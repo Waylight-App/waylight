@@ -20,10 +20,10 @@ func TestNewPolicy(t *testing.T) {
 func TestNamesAndPruning(t *testing.T) {
 	t0 := time.Date(2026, 11, 11, 3, 0, 0, 0, time.UTC)
 	name := FileName(t0)
-	if name != "trisse-home-20261111-030000.db" || !ValidName(name) {
+	if name != "waylight-20261111-030000.db" || !ValidName(name) {
 		t.Fatalf("unexpected name %q", name)
 	}
-	for _, bad := range []string{"../etc/passwd", "trisse-home-20261111-030000.db/../x", "other.db", ""} {
+	for _, bad := range []string{"../etc/passwd", "waylight-20261111-030000.db/../x", "other.db", ""} {
 		if ValidName(bad) {
 			t.Errorf("%q accepted", bad)
 		}

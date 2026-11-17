@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"trisse-home/internal/modules/services/domain"
+	"waylight/internal/modules/services/domain"
 )
 
 // SeedSampleData creates example service tiles if there are none (input

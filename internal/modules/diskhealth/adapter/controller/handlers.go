@@ -6,9 +6,9 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/diskhealth/adapter/presenter"
-	"trisse-home/internal/modules/diskhealth/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/diskhealth/adapter/presenter"
+	"waylight/internal/modules/diskhealth/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the disk health endpoints.

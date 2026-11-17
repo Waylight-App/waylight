@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"trisse-home/internal/modules/sports/domain"
+	"waylight/internal/modules/sports/domain"
 )
 
 // DefaultOpenLigaDBURL is the public OpenLigaDB API (no API key).

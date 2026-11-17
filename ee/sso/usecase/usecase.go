@@ -8,9 +8,9 @@ import (
 	"errors"
 	"fmt"
 
-	licence "trisse-home/ee/licence/domain"
-	"trisse-home/ee/sso/domain"
-	authdomain "trisse-home/internal/modules/auth/domain"
+	licence "waylight/ee/licence/domain"
+	"waylight/ee/sso/domain"
+	authdomain "waylight/internal/modules/auth/domain"
 )
 
 // Link connects a provider subject with the member it signs in as.

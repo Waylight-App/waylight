@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"trisse-home/internal/modules/backupmonitor/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/backupmonitor/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // SourceInput carries the editable fields of a source.

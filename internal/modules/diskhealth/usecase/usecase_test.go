@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/diskhealth/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/diskhealth/domain"
+	"waylight/internal/shared/kernel"
 )
 
 type fakeSource struct {

@@ -7,7 +7,7 @@ export const en = {
   'todos.sources.connected': 'Connected lists',
   'todos.sources.none': 'No list connected yet.',
   'todos.sources.add': 'Connect a list',
-  'todos.sources.name': 'Name in trisse-home',
+  'todos.sources.name': 'Name in Waylight',
   'todos.sources.url': 'Server or list address',
   'todos.sources.url_hint':
     'The DAV address of the server is enough, e.g. https://cloud.example.com/remote.php/dav – then choose the list below.',
@@ -33,10 +33,10 @@ export const en = {
   'todos.sources.kind_google': 'Google Tasks',
   'todos.sources.kind_ticktick': 'TickTick',
   'todos.sources.oauth_intro':
-    'Sign in with an app you register yourself, so trisse-home talks to {service} without any company in between. Register this redirect address:',
+    'Sign in with an app you register yourself, so Waylight talks to {service} without any company in between. Register this redirect address:',
   'todos.sources.oauth_console': 'Open the app registration of {service}',
   'todos.sources.oauth_unavailable':
-    'Signing in needs PUBLIC_URL, the https:// address of trisse-home (see the configuration guide).',
+    'Signing in needs PUBLIC_URL, the https:// address of Waylight (see the configuration guide).',
   'todos.sources.client_id': 'Client ID',
   'todos.sources.client_secret': 'Client secret',
   'todos.sources.client_id_needed': 'Enter the client ID of your app registration.',
@@ -46,7 +46,7 @@ export const en = {
   'todos.sources.sign_in_failed':
     'The sign-in did not succeed. Check client ID, client secret and the redirect address.',
   'todos.sources.popup_blocked':
-    'The browser blocked the sign-in window. Allow pop-ups for trisse-home and try again.',
+    'The browser blocked the sign-in window. Allow pop-ups for Waylight and try again.',
   'todos.sources.token': 'API token',
   'todos.sources.token_hint':
     'In Todoist: Settings → Integrations → Developer → copy the API token. Then find your projects below.',

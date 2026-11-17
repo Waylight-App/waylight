@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"trisse-home/internal/modules/services/domain"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/services/domain"
+	"waylight/internal/shared/kernel"
 )
 
-// ConfigService is one tile in trisse-home.yaml (#88). Tiles created from
+// ConfigService is one tile in waylight.yaml (#88). Tiles created from
 // container labels are left out: Docker is their source of truth.
 type ConfigService struct {
 	Name          string

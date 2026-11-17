@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/shared/httpapi"
 )
 
 // Guard wraps handlers that require an authenticated session.

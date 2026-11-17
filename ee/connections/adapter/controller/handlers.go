@@ -8,16 +8,16 @@ import (
 	"net/url"
 	"time"
 
-	"trisse-home/ee/connections/domain"
-	"trisse-home/ee/connections/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/ee/connections/domain"
+	"waylight/ee/connections/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // ConnectionDTO is one service in GET /api/connections.
 type ConnectionDTO struct {
 	Service string `json:"service"`
 	Name    string `json:"name"`
-	// Configured is false until an admin registers trisse-home at the service.
+	// Configured is false until an admin registers waylight at the service.
 	Configured bool `json:"configured"`
 	// Status is "", "connected" or "expired" (connect again).
 	Status string     `json:"status"`

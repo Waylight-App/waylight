@@ -6,10 +6,10 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/fuel/adapter/presenter"
-	"trisse-home/internal/modules/fuel/domain"
-	"trisse-home/internal/modules/fuel/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/fuel/adapter/presenter"
+	"waylight/internal/modules/fuel/domain"
+	"waylight/internal/modules/fuel/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the fuel price endpoints.

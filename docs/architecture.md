@@ -1,6 +1,6 @@
 # Architecture
 
-trisse-home is a single Go binary that serves a JSON API and an embedded
+Waylight is a single Go binary that serves a JSON API and an embedded
 Svelte single-page application. Both halves follow Clean Architecture
 (see [ADR 0001](adr/0001-clean-architecture.md)).
 
@@ -134,8 +134,8 @@ other; `src/app` wires them.
 ## API
 
 The HTTP API is described in OpenAPI 3.1: a shared base
-([`api/openapi.base.yaml`](https://github.com/itadori26/trisse-home/blob/main/api/openapi.base.yaml)) and one fragment per module
-([`api/modules/`](https://github.com/itadori26/trisse-home/tree/main/api/modules)), merged by `make openapi` into
+([`api/openapi.base.yaml`](https://github.com/itadori26/waylight/blob/main/api/openapi.base.yaml)) and one fragment per module
+([`api/modules/`](https://github.com/itadori26/waylight/tree/main/api/modules)), merged by `make openapi` into
 `dist/openapi.yaml` (also a build artifact of every CI run). TypeScript types for all DTOs are generated from the Go
 presenter and request DTOs with tygo (`make generate`).
 

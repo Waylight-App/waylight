@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/backup/adapter/presenter"
-	"trisse-home/internal/modules/backup/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/backup/adapter/presenter"
+	"waylight/internal/modules/backup/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the backup endpoints.

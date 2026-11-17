@@ -3,7 +3,7 @@
 // Ring: Interface Adapters.
 package presenter
 
-import "trisse-home/internal/modules/study/domain"
+import "waylight/internal/modules/study/domain"
 
 // ModuleDTO is one module.
 type ModuleDTO struct {

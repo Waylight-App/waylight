@@ -6,10 +6,10 @@ package controller
 import (
 	"net/http"
 
-	"trisse-home/internal/modules/wiki/adapter/presenter"
-	"trisse-home/internal/modules/wiki/domain"
-	"trisse-home/internal/modules/wiki/usecase"
-	"trisse-home/internal/shared/httpapi"
+	"waylight/internal/modules/wiki/adapter/presenter"
+	"waylight/internal/modules/wiki/domain"
+	"waylight/internal/modules/wiki/usecase"
+	"waylight/internal/shared/httpapi"
 )
 
 // Handlers serves the endpoints.

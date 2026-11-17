@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"trisse-home/internal/modules/mail/domain"
-	"trisse-home/internal/platform/database/dbtest"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/mail/domain"
+	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 // TestMailboxesPerAccount: members see only their own mailboxes, never the

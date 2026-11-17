@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // ContentType of the exposition format.

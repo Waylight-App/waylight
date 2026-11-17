@@ -1,17 +1,17 @@
 #!/bin/bash
-# Builds the trisse-home Raspberry Pi image (ADR 0015) by customising the
+# Builds the waylight Raspberry Pi image (ADR 0015) by customising the
 # official Raspberry Pi OS Lite image pinned in base.env:
 #
-#   sudo deploy/raspberrypi/build-image.sh <trisse-home_*_arm64.deb> <version> [out-dir]
+#   sudo deploy/raspberrypi/build-image.sh <waylight_*_arm64.deb> <version> [out-dir]
 #
 # Runs as root on an arm64 Linux host (e.g. the GitHub runner ubuntu-24.04-arm,
 # or a Raspberry Pi), so the image's own binaries run in a chroot without
 # emulation. Needs: curl, xz, parted, e2fsprogs, util-linux (losetup).
 #
 # What it changes on top of Raspberry Pi OS Lite:
-#   - installs the trisse-home package and unattended-upgrades
+#   - installs the waylight package and unattended-upgrades
 #   - files from rootfs/ (port 80, journal limits, automatic updates)
-#   - hostname "trisse-home" (Imager customisation can still change it)
+#   - hostname "waylight" (Imager customisation can still change it)
 # Every device generates its own secrets on the first boot; the build checks
 # that the image contains none.
 set -euo pipefail
@@ -26,7 +26,7 @@ extra_mb=${IMAGE_EXTRA_MB:-512}
 # shellcheck source=deploy/raspberrypi/base.env
 . "$here/base.env"
 
-name="trisse-home-$version-raspberrypi-arm64"
+name="waylight-$version-raspberrypi-arm64"
 image="$work/$name.img"
 root="$work/root"
 loop=""
@@ -76,7 +76,7 @@ printf '#!/bin/sh\nexit 101\n' >"$root/usr/sbin/policy-rc.d"
 chmod 755 "$root/usr/sbin/policy-rc.d"
 resolv_backup=""
 if [ -e "$root/etc/resolv.conf" ] || [ -L "$root/etc/resolv.conf" ]; then
-	resolv_backup="$root/etc/resolv.conf.trisse-home-build"
+	resolv_backup="$root/etc/resolv.conf.waylight-build"
 	mv "$root/etc/resolv.conf" "$resolv_backup"
 fi
 cp -L /etc/resolv.conf "$root/etc/resolv.conf"
@@ -89,44 +89,44 @@ for f in user-data meta-data network-config; do
 done
 
 log "install packages"
-cp "$deb" "$root/tmp/trisse-home.deb"
+cp "$deb" "$root/tmp/waylight.deb"
 chroot "$root" /bin/sh -eu <<'EOF'
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
-apt-get install -y -qq --no-install-recommends avahi-daemon unattended-upgrades /tmp/trisse-home.deb
+apt-get install -y -qq --no-install-recommends avahi-daemon unattended-upgrades /tmp/waylight.deb
 apt-cache policy | grep -E '^ +release' | sort -u
 EOF
-rm -f "$root/tmp/trisse-home.deb"
+rm -f "$root/tmp/waylight.deb"
 
 log "appliance configuration"
 # Without -a/-p, files copied by root belong to root (not to the CI user).
 cp -r "$here/rootfs/." "$root/"
-chroot "$root" chown root:trisse-home /etc/trisse-home/appliance.env
-chmod 0640 "$root/etc/trisse-home/appliance.env"
+chroot "$root" chown root:waylight /etc/waylight/appliance.env
+chmod 0640 "$root/etc/waylight/appliance.env"
 old_host=$(cat "$root/etc/hostname")
-echo trisse-home >"$root/etc/hostname"
-sed -i "s/\b$old_host\b/trisse-home/g" "$root/etc/hosts"
+echo waylight >"$root/etc/hostname"
+sed -i "s/\b$old_host\b/waylight/g" "$root/etc/hosts"
 # Root file system without access times (fewer writes on the SD card).
 sed -i -E '/[[:space:]]\/[[:space:]]/ { /noatime/! s/(ext4[[:space:]]+)([^[:space:]]+)/\1\2,noatime/ }' "$root/etc/fstab"
 grep -E '[[:space:]]/[[:space:]]' "$root/etc/fstab"
 # Display mode (#140): the root-owned path unit applies what the app requests.
-chmod 0755 "$root/usr/lib/trisse-home/display-mode.sh"
-chroot "$root" systemctl enable trisse-home-display.path
-chroot "$root" systemctl is-enabled trisse-home.service trisse-home-setup-info.timer avahi-daemon.service trisse-home-display.path
+chmod 0755 "$root/usr/lib/waylight/display-mode.sh"
+chroot "$root" systemctl enable waylight-display.path
+chroot "$root" systemctl is-enabled waylight.service waylight-setup-info.timer avahi-daemon.service waylight-display.path
 
-keyring="$here/../../packaging/apt/trisse-home-archive-keyring.asc"
+keyring="$here/../../packaging/apt/waylight-archive-keyring.asc"
 if [ -f "$keyring" ]; then
 	log "APT repository for updates"
-	install -m 0644 "$keyring" "$root/usr/share/keyrings/trisse-home-archive-keyring.asc"
-	cat >"$root/etc/apt/sources.list.d/trisse-home.sources" <<SOURCES
+	install -m 0644 "$keyring" "$root/usr/share/keyrings/waylight-archive-keyring.asc"
+	cat >"$root/etc/apt/sources.list.d/waylight.sources" <<SOURCES
 Types: deb
-URIs: ${APT_REPOSITORY_URL:-https://itadori26.github.io/trisse-home/apt}
+URIs: ${APT_REPOSITORY_URL:-https://itadori26.github.io/waylight/apt}
 Suites: stable
 Components: main
-Signed-By: /usr/share/keyrings/trisse-home-archive-keyring.asc
+Signed-By: /usr/share/keyrings/waylight-archive-keyring.asc
 SOURCES
 else
-	echo "::warning::packaging/apt/trisse-home-archive-keyring.asc missing: the image gets no trisse-home updates (run scripts/apt-signing-key.sh)"
+	echo "::warning::packaging/apt/waylight-archive-keyring.asc missing: the image gets no waylight updates (run scripts/apt-signing-key.sh)"
 fi
 
 log "clean up"
@@ -138,8 +138,8 @@ rm -f "$root/usr/sbin/policy-rc.d" "$root/etc/resolv.conf"
 
 log "check: no secrets in the image"
 fail=0
-if [ -e "$root/etc/trisse-home/secret.env" ]; then echo "secret.env present"; fail=1; fi
-if grep -Eqs '^[[:space:]]*(SECRET_KEY|SETUP_TOKEN)=[^[:space:]]' "$root/etc/trisse-home/"*.env; then echo "secret in config"; fail=1; fi
+if [ -e "$root/etc/waylight/secret.env" ]; then echo "secret.env present"; fail=1; fi
+if grep -Eqs '^[[:space:]]*(SECRET_KEY|SETUP_TOKEN)=[^[:space:]]' "$root/etc/waylight/"*.env; then echo "secret in config"; fail=1; fi
 if ls "$root"/etc/ssh/ssh_host_*key* >/dev/null 2>&1; then echo "SSH host keys present"; fail=1; fi
 if awk -F: '$2 !~ /^[!*]/ && $2 != "" { found=1; print "password hash for " $1 } END { exit !found }' "$root/etc/shadow"; then fail=1; fi
 if [ -s "$root/etc/machine-id" ] && [ "$(cat "$root/etc/machine-id")" != uninitialized ]; then echo "machine-id set"; fail=1; fi

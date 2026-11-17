@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"slices"
 
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/shared/kernel"
 )
 
 // TabScope answers which widget kinds are placed on a set of tabs; the

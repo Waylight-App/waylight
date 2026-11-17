@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"trisse-home/internal/modules/weather/adapter/presenter"
-	"trisse-home/internal/modules/weather/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/weather/adapter/presenter"
+	"waylight/internal/modules/weather/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
 // Handlers serves the weather endpoints.

@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/holidays/adapter/controller"
-	"trisse-home/internal/modules/holidays/adapter/gateway"
-	"trisse-home/internal/modules/holidays/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/holidays/adapter/controller"
+	"waylight/internal/modules/holidays/adapter/gateway"
+	"waylight/internal/modules/holidays/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // refreshInterval: the job checks daily; school holidays are reloaded weekly.

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/sports"
+	"waylight/internal/modules"
+	"waylight/internal/modules/sports"
 )
 
 // The sports module registers itself; no shared file lists it (#193).

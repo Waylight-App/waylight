@@ -3,7 +3,7 @@ package presenter
 import (
 	"time"
 
-	"trisse-home/internal/modules/bookmarks/usecase"
+	"waylight/internal/modules/bookmarks/usecase"
 )
 
 // BookmarkDTO is a bookmark in API responses.

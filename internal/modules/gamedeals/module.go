@@ -5,11 +5,11 @@ import (
 	"io/fs"
 	"net/http"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/gamedeals/adapter/controller"
-	"trisse-home/internal/modules/gamedeals/adapter/gateway"
-	"trisse-home/internal/modules/gamedeals/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/gamedeals/adapter/controller"
+	"waylight/internal/modules/gamedeals/adapter/gateway"
+	"waylight/internal/modules/gamedeals/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the game deals rings and implements modules.Module.

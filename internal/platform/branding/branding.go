@@ -36,7 +36,7 @@ type Branding struct {
 }
 
 // Product is the branding without an organisation's own.
-var Product = Branding{Name: "trisse-home"}
+var Product = Branding{Name: "Waylight"}
 
 // Source supplies an organisation's branding (output port, implemented by
 // ee/branding). ok is false when none applies, for example without a valid

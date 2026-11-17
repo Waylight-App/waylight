@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"trisse-home/internal/modules"
+	"waylight/internal/modules"
 )
 
 // TestDataKinds keeps the kinds the modules declare in step with the table
@@ -35,7 +35,7 @@ func TestDataKinds(t *testing.T) {
 		if typ.Kind() == reflect.Pointer {
 			typ = typ.Elem()
 		}
-		if strings.HasPrefix(typ.PkgPath(), "trisse-home/ee/") {
+		if strings.HasPrefix(typ.PkgPath(), "waylight/ee/") {
 			continue
 		}
 		switch k := m.DataKind(); k {

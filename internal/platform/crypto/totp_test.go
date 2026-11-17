@@ -38,8 +38,8 @@ func TestTOTPVerifyWithSkew(t *testing.T) {
 
 func TestProvisioningURIAndRecoveryCode(t *testing.T) {
 	var otp TOTP
-	uri := otp.ProvisioningURI("ABC", "owner", "trisse-home")
-	if !strings.HasPrefix(uri, "otpauth://totp/trisse-home:owner?") || !strings.Contains(uri, "secret=ABC") {
+	uri := otp.ProvisioningURI("ABC", "owner", "waylight")
+	if !strings.HasPrefix(uri, "otpauth://totp/waylight:owner?") || !strings.Contains(uri, "secret=ABC") {
 		t.Fatalf("unexpected uri %s", uri)
 	}
 	code, err := otp.NewRecoveryCode()

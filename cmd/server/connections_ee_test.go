@@ -14,10 +14,10 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/ee/licence/domain"
-	"trisse-home/internal/platform/config"
-	"trisse-home/internal/platform/database"
-	"trisse-home/internal/platform/oauth"
+	"waylight/ee/licence/domain"
+	"waylight/internal/platform/config"
+	"waylight/internal/platform/database"
+	"waylight/internal/platform/oauth"
 )
 
 // TestConnectedAccounts runs #326 in the ee build: an admin registers a

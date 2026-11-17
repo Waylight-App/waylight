@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/apiwidget/domain"
-	"trisse-home/internal/modules/apiwidget/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/apiwidget/domain"
+	"waylight/internal/modules/apiwidget/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 type fakeUC struct {

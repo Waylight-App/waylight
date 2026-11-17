@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"trisse-home/internal/modules/notifications/domain"
+	"waylight/internal/modules/notifications/domain"
 )
 
 var msg = domain.Message{Title: `Disk "/" 95 %`, Body: "line1\nline2", Severity: domain.SeverityCritical, Type: "disk"}
@@ -22,7 +22,7 @@ func TestWebhookAndGotify(t *testing.T) {
 	var sig, key string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got, _ = io.ReadAll(r.Body)
-		sig, key = r.Header.Get("X-Trisse-Signature"), r.Header.Get("X-Gotify-Key")
+		sig, key = r.Header.Get("X-Waylight-Signature"), r.Header.Get("X-Gotify-Key")
 	}))
 	defer srv.Close()
 	hook := domain.Channel{Kind: domain.ChannelWebhook, Name: "h", URL: srv.URL, Secret: "s3cret"}
@@ -96,15 +96,15 @@ func TestEmail(t *testing.T) {
 		t.Fatal(err)
 	}
 	<-done
-	if !strings.Contains(data.String(), "Subject: [trisse-home] Disk") || !strings.Contains(data.String(), "line2") {
+	if !strings.Contains(data.String(), "Subject: [Waylight] Disk") || !strings.Contains(data.String(), "line2") {
 		t.Fatalf("mail:\n%s", data.String())
 	}
-	umlaut := string(BuildEmail(c, domain.Message{Title: "Größe"}, time.Unix(0, 0), "trisse-home"))
+	umlaut := string(BuildEmail(c, domain.Message{Title: "Größe"}, time.Unix(0, 0), "waylight"))
 	if !strings.Contains(umlaut, "Subject: =?utf-8?q?") {
 		t.Fatalf("non-ASCII subject not encoded: %s", umlaut)
 	}
 	evil := string(BuildEmail(domain.Channel{From: "a@b.c\r\nBcc: x@y.z", To: "me@b.c"},
-		domain.Message{Title: "NAS\r\nBcc: x@y.z", Body: "line\r\n.\r\nend\x00"}, time.Unix(0, 0), "trisse-home"))
+		domain.Message{Title: "NAS\r\nBcc: x@y.z", Body: "line\r\n.\r\nend\x00"}, time.Unix(0, 0), "waylight"))
 	head, body, _ := strings.Cut(evil, "\r\n\r\n")
 	if strings.Contains(head, "\r\nBcc:") || strings.Count(head, "\r\n") != 6 || strings.ContainsRune(body, 0) {
 		t.Fatalf("header injection:\n%q", evil)

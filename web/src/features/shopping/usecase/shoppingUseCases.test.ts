@@ -41,7 +41,7 @@ describe('ShoppingUseCases', () => {
     expect(g.addToList).not.toHaveBeenCalled();
   });
 
-  it('sends items of a list on trisse-home to that list', async () => {
+  it('sends items of a list on waylight to that list', async () => {
     const g = fakeGateway();
     const src = new ShoppingUseCases(g).source('l1');
     await src.items();

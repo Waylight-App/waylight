@@ -5,13 +5,13 @@ import (
 	"io"
 	"net/http"
 
-	"trisse-home/internal/modules/transfer/domain"
-	"trisse-home/internal/modules/transfer/usecase"
-	"trisse-home/internal/shared/httpapi"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules/transfer/domain"
+	"waylight/internal/modules/transfer/usecase"
+	"waylight/internal/shared/httpapi"
+	"waylight/internal/shared/kernel"
 )
 
-// ConfigHandlers serves trisse-home.yaml (#88).
+// ConfigHandlers serves waylight.yaml (#88).
 type ConfigHandlers struct{ uc usecase.Config }
 
 // NewConfigHandlers returns the handlers.
@@ -25,7 +25,7 @@ func (h *ConfigHandlers) Export(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/yaml; charset=utf-8")
-	w.Header().Set("Content-Disposition", `attachment; filename="trisse-home.yaml"`)
+	w.Header().Set("Content-Disposition", `attachment; filename="waylight.yaml"`)
 	w.Header().Set("Cache-Control", "no-store")
 	_, _ = w.Write(data)
 }

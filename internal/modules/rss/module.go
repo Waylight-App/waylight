@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	"trisse-home/internal/modules"
-	"trisse-home/internal/modules/rss/adapter/controller"
-	"trisse-home/internal/modules/rss/adapter/gateway"
-	"trisse-home/internal/modules/rss/usecase"
-	"trisse-home/internal/shared/kernel"
+	"waylight/internal/modules"
+	"waylight/internal/modules/rss/adapter/controller"
+	"waylight/internal/modules/rss/adapter/gateway"
+	"waylight/internal/modules/rss/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 const refreshInterval = 30 * time.Minute
