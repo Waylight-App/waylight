@@ -159,7 +159,7 @@
     min-height: 0;
   }
   .cell:focus-visible {
-    outline: 3px solid var(--color-accent);
+    outline: 3px solid var(--color-accent-text);
     outline-offset: 2px;
     border-radius: var(--radius);
   }

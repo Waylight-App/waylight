@@ -27,7 +27,7 @@ program with an SQLite database, on a home server, a NAS or a Raspberry Pi.
 ![The Home tab with clock, weather, to-dos, notes, bookmarks and news](docs/screenshots/home-desktop-light.png)
 
 <details>
-<summary>More screenshots (dark mode, server tab, mobile)</summary>
+<summary>More screenshots (dark mode, server tab, mobile, Amber theme)</summary>
 
 | Dark mode                                                        | Server tab                                                                                       |
 | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -36,6 +36,10 @@ program with an SQLite database, on a home server, a NAS or a Raspberry Pi.
 | Mobile (light)                                                  | Mobile (dark)                                                 |
 | --------------------------------------------------------------- | ------------------------------------------------------------- |
 | ![Mobile layout, light](docs/screenshots/home-mobile-light.png) | ![Mobile layout, dark](docs/screenshots/home-mobile-dark.png) |
+
+| Amber theme (light)                                                                  | Amber theme (dark)                                                                 |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| ![Home tab in the Amber theme, light](docs/screenshots/home-amber-desktop-light.png) | ![Home tab in the Amber theme, dark](docs/screenshots/home-amber-desktop-dark.png) |
 
 The screenshots are taken from a demo instance with every release
 ([demo mode](docs/demo.md)).

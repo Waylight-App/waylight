@@ -46,9 +46,11 @@ var (
 	themeID    = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{1,39}$`)
 	colorValue = regexp.MustCompile(`^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$`)
 	radiusVal  = regexp.MustCompile(`^(?:[0-9]|[1-2][0-9]|3[0-2])px$`)
-	// Shadows: "none" or up to three layers of offsets, blur, optional
-	// spread and a hex colour, optionally with alpha (#rrggbbaa).
-	shadowVal = regexp.MustCompile(`^(?:none|` + shadowLayer + `(?:, ` + shadowLayer + `){0,2})$`)
+	// Shadows: one to three layers of offsets, blur, optional spread and a
+	// hex colour, optionally with alpha (#rrggbbaa). Not "none": the shadow
+	// tokens are combined with focus rings in comma lists, where "none"
+	// would void the whole declaration; "0 0 0 #00000000" draws nothing.
+	shadowVal = regexp.MustCompile(`^` + shadowLayer + `(?:, ` + shadowLayer + `){0,2}$`)
 	// Glow: a soft light around a surface, only blur radius and colour.
 	glowVal = regexp.MustCompile(`^(?:none|0 0 [0-9]{1,3}px ` + hexAlpha + `)$`)
 	// Page gradient: two colours from top to bottom.
