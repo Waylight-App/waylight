@@ -284,6 +284,23 @@ describe('natural questions reach the right intent', () => {
   it.each(questions)('%s → %s', (query, want) => {
     expect(rank(interpret(query, INTENTS, people, today))[0]?.intent.id ?? null).toBe(want);
   });
+
+  it.each([
+    'brauche ich einen schirm',
+    'soll ich eine jacke anziehen',
+    'wird es morgen sonnig',
+    'brauche ich heute sonnencreme',
+    'do i need an umbrella',
+  ])('reads no place into "%s"', (query) => {
+    const m = top(query);
+    expect(m?.intent.id).toBe('weather.forecast');
+    expect(m?.slots['place']).toBeUndefined();
+  });
+
+  it('keeps a named place for the weather and the stop for departures', () => {
+    expect(top('weather in new york')?.slots['place']).toEqual({ type: 'place', text: 'new york' });
+    expect(top('abfahrt oldenburg hbf')?.slots['place']).toEqual({ type: 'place', text: 'oldenburg hbf' });
+  });
 });
 
 // --- sources -------------------------------------------------------------

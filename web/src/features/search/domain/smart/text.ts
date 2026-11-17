@@ -21,6 +21,8 @@ const STOP_WORDS = new Set(
     // Auxiliary verbs carry no topic; as two-letter prefixes ("do") they
     // would otherwise match terms like "docker".
     'habe hast hat haben muss musst soll sollte kann gibt schon ' +
+    // Verbs around a weather question would otherwise be read as a place.
+    'brauche brauchst brauchen anziehen mitnehmen ' +
     'the a an is are how what where when who which my me i you it in on at to of for with please now current ' +
     'currently show tell and or do does did will would can could should need there be'
   ).split(' '),
