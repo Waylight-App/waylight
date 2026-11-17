@@ -94,10 +94,9 @@ agreement with the maintainer.
 
 - The MIT core is unchanged. Features in `ee/` stay under their licence
   without an end date.
-- `ee/LICENSE.md`, `LICENSE`, `ee/README.md`, `CONTRIBUTING.md`, `README.md`
-  and `docs/faq.md` are updated in a separate change together with #319.
-  Until then they still name FCL-1.0-MIT, which has no effect because `ee/`
-  contains no code.
+- `ee/LICENSE.md` holds the ELv2 text with Tristan Leoluca Farinella as
+  licensor; `LICENSE`, `ee/README.md`, `CONTRIBUTING.md`, `README.md` and
+  `docs/faq.md` name ELv2.
 - Whether published images are built with the `ee` tag is decided with the
   first feature in `ee/`, as in ADR 0017.
 

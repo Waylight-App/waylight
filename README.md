@@ -101,6 +101,6 @@ problems as described in [SECURITY.md](SECURITY.md).
 ## Licence
 
 [MIT](LICENSE) for everything outside `ee/`. The directory [`ee/`](ee/README.md)
-is reserved for team features and uses the
-[Fair Core License](ee/LICENSE.md): source available, free to use except for a
-competing offer, MIT after two years.
+holds the features for organisations and is not open source: it is under the
+[Elastic License 2.0](ee/LICENSE.md), needs a licence key and never becomes
+MIT.

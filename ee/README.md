@@ -7,10 +7,8 @@ open-source licence over time. The rest of the repository stays under the
 MIT licence. The decision is [ADR 0020](../docs/adr/0020-ee-stays-proprietary.md),
 which replaces the licence part of [ADR 0017](../docs/adr/0017-open-core.md).
 
-`LICENSE.md` in this directory still holds the earlier Fair Core License text.
-It is replaced by the ELv2 text in
-[#319](https://github.com/itadori26/trisse-home/issues/319); until then no
-code from `ee/` ships in a release or a published image.
+The licensor is Tristan Leoluca Farinella; the full text is in
+[`LICENSE.md`](LICENSE.md).
 
 ## What the licence means
 
