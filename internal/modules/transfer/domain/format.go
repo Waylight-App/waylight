@@ -4,7 +4,7 @@ import (
 	"waylight/internal/shared/kernel"
 )
 
-// Format identifies waylight export files.
+// Format identifies Waylight export files.
 const Format = "waylight-export"
 
 // Version is the current version of the export format. Files of a newer

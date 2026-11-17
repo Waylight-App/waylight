@@ -12,7 +12,7 @@ import (
 	"waylight/internal/shared/sqlutil"
 )
 
-// ListRepository stores the shopping lists kept on waylight (#471). Every
+// ListRepository stores the shopping lists kept on Waylight (#471). Every
 // statement carries the visibility filter of ADR 0018 itself: items are only
 // reached through a list the principal may see, and only a list's owner may
 // rename, share or delete it.

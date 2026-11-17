@@ -31,7 +31,7 @@ const (
 	RoleMember Role = "member"
 )
 
-// MaxMembers bounds the number of member accounts; waylight is meant for
+// MaxMembers bounds the number of member accounts; Waylight is meant for
 // a household or a small office.
 const MaxMembers = 50
 

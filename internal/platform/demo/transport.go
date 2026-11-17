@@ -116,7 +116,7 @@ func containers(now time.Time) string {
 // feed is a small Atom feed with entries from the last days.
 func feed(host string, now time.Time) string {
 	titles := []string{
-		"Welcome to the waylight demo",
+		"Welcome to the Waylight demo",
 		"Widgets can be moved and resized with the mouse or keyboard",
 		"Press / or Ctrl+K to search bookmarks, services, notes and to-dos",
 		"Everything runs on your own server: no account, no tracking",

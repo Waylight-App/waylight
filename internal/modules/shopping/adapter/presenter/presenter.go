@@ -43,7 +43,7 @@ func Items(items []domain.Item) []ItemDTO {
 	return out
 }
 
-// ListDTO is a shopping list kept on waylight (#471).
+// ListDTO is a shopping list kept on Waylight (#471).
 type ListDTO struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`

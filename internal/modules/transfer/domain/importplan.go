@@ -25,7 +25,7 @@ type ImportFolder struct {
 	Links []ImportLink
 }
 
-// ImportWidget is an information widget that has a waylight counterpart.
+// ImportWidget is an information widget that has a Waylight counterpart.
 type ImportWidget struct {
 	Kind   string
 	Config map[string]any

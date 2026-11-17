@@ -1,5 +1,5 @@
 // Package domain holds the parts of SCIM 2.0 (RFC 7643, RFC 7644) that
-// waylight implements for directory provisioning (#396).
+// Waylight implements for directory provisioning (#396).
 //
 // Ring: Entities.
 package domain

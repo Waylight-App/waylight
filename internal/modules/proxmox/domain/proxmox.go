@@ -13,7 +13,7 @@ import (
 // ErrNotConfigured is returned while no Proxmox VE host is configured.
 var ErrNotConfigured = kernel.NewPublicError(kernel.ErrNotFound, "Proxmox VE is not configured yet.")
 
-// tokenIDPattern matches API token IDs such as monitor@pve!waylight.
+// tokenIDPattern matches API token IDs such as monitor@pve!Waylight.
 var tokenIDPattern = regexp.MustCompile(`^[^\s@!]+@[^\s@!]+![A-Za-z][A-Za-z0-9._-]*$`)
 
 // Settings are the connection details of a Proxmox VE host or cluster.

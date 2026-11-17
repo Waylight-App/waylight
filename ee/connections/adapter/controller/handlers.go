@@ -17,7 +17,7 @@ import (
 type ConnectionDTO struct {
 	Service string `json:"service"`
 	Name    string `json:"name"`
-	// Configured is false until an admin registers waylight at the service.
+	// Configured is false until an admin registers Waylight at the service.
 	Configured bool `json:"configured"`
 	// Status is "", "connected" or "expired" (connect again).
 	Status string     `json:"status"`

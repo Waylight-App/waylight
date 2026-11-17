@@ -25,7 +25,7 @@ export interface ItemStateDTO {
   done: boolean;
 }
 /**
- * ListRequestDTO creates or changes a list on waylight (#471).
+ * ListRequestDTO creates or changes a list on Waylight (#471).
  */
 export interface ListRequestDTO {
   name: string;

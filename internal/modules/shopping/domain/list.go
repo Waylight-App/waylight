@@ -9,7 +9,7 @@ import (
 	"waylight/internal/shared/kernel"
 )
 
-// Limits of lists kept on waylight (#471).
+// Limits of lists kept on Waylight (#471).
 const (
 	maxListName = 60
 	// MaxLists bounds the lists one account owns.
@@ -20,7 +20,7 @@ const (
 	CurrentCalDAV = "caldav"
 )
 
-// Errors of lists on waylight.
+// Errors of lists on Waylight.
 var (
 	ErrListNotFound = kernel.NewPublicError(kernel.ErrNotFound, "The shopping list does not exist or is not shared with you.")
 	ErrNotYourList  = kernel.NewPublicError(kernel.ErrForbidden, "Only the person who created the list can rename, share or delete it.")
@@ -28,7 +28,7 @@ var (
 	ErrListFull     = kernel.NewPublicError(kernel.ErrConflict, "The list has 500 items; clear the ticked ones first.")
 )
 
-// List is a shopping list kept on waylight (#471): an alternative to a
+// List is a shopping list kept on Waylight (#471): an alternative to a
 // CalDAV task list that needs no server and can be shared like a note.
 type List struct {
 	ID         string

@@ -68,7 +68,7 @@ func (Homarr) Parse(files map[string][]byte) (domain.ImportPlan, error) {
 		plan.Tiles = append(plan.Tiles, domain.ImportTile{Name: a.Name, URL: link, Icon: iconURL(a.Appearance.IconURL, a.Name, &plan)})
 	}
 	if len(c.Categories) > 0 {
-		plan.Warnings = append(plan.Warnings, "Categories are not carried over: service tiles in waylight have no groups.")
+		plan.Warnings = append(plan.Warnings, "Categories are not carried over: service tiles in Waylight have no groups.")
 	}
 	for _, w := range c.Widgets {
 		switch w.Type {
@@ -81,7 +81,7 @@ func (Homarr) Parse(files map[string][]byte) (domain.ImportPlan, error) {
 			}
 			plan.Warnings = append(plan.Warnings, "Widget weather skipped: it has no location.")
 		default:
-			plan.Warnings = append(plan.Warnings, fmt.Sprintf("Widget %s skipped: waylight has no counterpart.", w.Type))
+			plan.Warnings = append(plan.Warnings, fmt.Sprintf("Widget %s skipped: Waylight has no counterpart.", w.Type))
 		}
 	}
 	return plan, nil

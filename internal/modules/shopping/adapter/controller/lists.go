@@ -10,7 +10,7 @@ import (
 	"waylight/internal/shared/httpapi"
 )
 
-// ListHandlers serve the lists kept on waylight (#471).
+// ListHandlers serve the lists kept on Waylight (#471).
 type ListHandlers struct{ uc *usecase.Lists }
 
 // NewListHandlers returns the handlers.

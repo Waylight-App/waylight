@@ -46,7 +46,7 @@ func (d DiscoveredService) Validate() error {
 	return err
 }
 
-// labelKeys maps a field to its waylight and Homepage label suffixes.
+// labelKeys maps a field to its Waylight and Homepage label suffixes.
 var labelKeys = struct{ name, url, icon, description [2]string }{
 	name: [2]string{"name", "name"}, url: [2]string{"url", "href"},
 	icon: [2]string{"icon", "icon"}, description: [2]string{"description", "description"},

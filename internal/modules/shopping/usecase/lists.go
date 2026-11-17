@@ -10,7 +10,7 @@ import (
 	"waylight/internal/shared/kernel"
 )
 
-// ListRepository stores the lists kept on waylight (output port, #471).
+// ListRepository stores the lists kept on Waylight (output port, #471).
 type ListRepository interface {
 	Lists(ctx context.Context) ([]domain.List, error)
 	Get(ctx context.Context, id string) (domain.List, error)
@@ -47,7 +47,7 @@ type Export struct {
 	Name, ContentType, Body string
 }
 
-// Lists implements the use cases of lists on waylight.
+// Lists implements the use cases of lists on Waylight.
 type Lists struct {
 	lists    ListRepository
 	settings SettingsRepository

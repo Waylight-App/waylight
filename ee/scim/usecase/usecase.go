@@ -239,7 +239,7 @@ func (s *Service) PatchUser(ctx context.Context, id string, ops []PatchOp) (User
 		case "externalid":
 			u.ExternalID = fmt.Sprint(v)
 		default:
-			// Attributes waylight does not keep (name, emails, title …) are
+			// Attributes Waylight does not keep (name, emails, title …) are
 			// accepted and ignored, so a provider's full update does not fail.
 		}
 		return nil

@@ -87,7 +87,7 @@ type openSearchDescription struct {
 func OpenSearch(baseURL string) ([]byte, error) {
 	doc := openSearchDescription{
 		Xmlns: "http://a9.com/-/spec/opensearch/1.1/", ShortName: "Waylight",
-		Description: "Search via waylight", InputEncoding: "UTF-8",
+		Description: "Search via Waylight", InputEncoding: "UTF-8",
 		URL: openSearchURL{Type: "text/html", Method: "get", Template: baseURL + "/api/search?q={searchTerms}"},
 	}
 	out, err := xml.MarshalIndent(doc, "", "  ")

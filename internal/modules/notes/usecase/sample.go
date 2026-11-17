@@ -6,7 +6,7 @@ import (
 )
 
 // WelcomeNote is the pinned Markdown note created on a fresh installation.
-const WelcomeNote = `# Welcome to waylight 👋
+const WelcomeNote = `# Welcome to Waylight 👋
 
 This start page was filled with **sample data** so you can see what it can do.
 

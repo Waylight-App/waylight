@@ -18,7 +18,7 @@ type ItemStateDTO struct {
 	Done bool `json:"done"`
 }
 
-// ListRequestDTO creates or changes a list on waylight (#471).
+// ListRequestDTO creates or changes a list on Waylight (#471).
 type ListRequestDTO struct {
 	Name string `json:"name"`
 	// Visibility is "private", "everyone" or "group:<id>"; empty on create

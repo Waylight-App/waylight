@@ -1,6 +1,6 @@
 /**
  * Export of the extension's local mode (ADR 0019, step 4): writes the local
- * data as a waylight export file, so moving to a server is the server's
+ * data as a Waylight export file, so moving to a server is the server's
  * existing import (Settings → Transfer). Each feature with a local gateway
  * contributes one section, named like its server module; a feature without
  * stored data is left out, so the import keeps the server's data for it.

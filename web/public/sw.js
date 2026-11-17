@@ -1,4 +1,4 @@
-/* waylight service worker: app shell and last-known widget data offline.
+/* Waylight service worker: app shell and last-known widget data offline.
  *
  * Security rules (see README "Progressive Web App"):
  * - only GET requests of the same origin are ever cached;

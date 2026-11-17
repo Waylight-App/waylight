@@ -28,7 +28,7 @@ export function suggestListUrl(calendarUrl: string): string {
   return m ? `${m[1]}shopping/` : '';
 }
 
-/** A shopping list kept on waylight (#471). */
+/** A shopping list kept on Waylight (#471). */
 export interface ShoppingList {
   id: string;
   name: string;
@@ -40,7 +40,7 @@ export interface ShoppingList {
   open: number;
 }
 
-/** What the widget can show: the lists on waylight and the CalDAV list. */
+/** What the widget can show: the lists on Waylight and the CalDAV list. */
 export interface ShoppingOverview {
   lists: ShoppingList[];
   /** True when a CalDAV task list is connected. */
@@ -52,7 +52,7 @@ export interface ShoppingOverview {
 /** Value of the CalDAV list in a choice of lists. */
 export const CALDAV = 'caldav';
 
-/** Export formats of a list on waylight. */
+/** Export formats of a list on Waylight. */
 export type ExportFormat = 'text' | 'ics';
 
 /**
