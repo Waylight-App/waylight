@@ -63,6 +63,66 @@ func TestLockedPresetKeepsMembersButNotAdmins(t *testing.T) {
 	}
 }
 
+func defaultThemes(t *testing.T) []domain.ThemeDef {
+	t.Helper()
+	colors := map[string]string{"--color-bg": "#000", "--color-surface": "#111", "--color-text": "#fff", "--color-accent": "#f0f"}
+	single, err := domain.NewThemeDef("night", "Night", "", domain.ThemeDark, colors, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	both, err := domain.NewThemeDef("both", "Both", "", "", nil, map[domain.Theme]map[string]string{domain.ThemeLight: colors, domain.ThemeDark: colors})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return []domain.ThemeDef{single, both}
+}
+
+// DEFAULT_THEME (#507): accounts without their own appearance get it, an
+// own appearance wins, and an organisation's preset goes on top.
+func TestDefaultTheme(t *testing.T) {
+	repo := &presetRepo{a: domain.Default()}
+	p := NewPresets(func(context.Context) (bool, error) { return repo.own, nil })
+	if err := p.SetDefaultTheme(defaultThemes(t), "nope"); err == nil {
+		t.Fatal("unknown id accepted")
+	}
+	if _, ok := p.DefaultTheme(); ok {
+		t.Fatal("an unknown id must not set a default")
+	}
+	if err := p.SetDefaultTheme(defaultThemes(t), "night"); err != nil {
+		t.Fatal(err)
+	}
+	get, update := NewGetAppearance(repo, p), NewUpdateAppearance(repo, p)
+
+	res, _ := get.Execute(as("member"))
+	if domain.AppliedTheme(res.CustomCSS) != "night" || res.Theme != "dark" {
+		t.Fatalf("new account: %+v", res)
+	}
+	// A theme with variants keeps the stored light/dark/system choice.
+	_ = p.SetDefaultTheme(defaultThemes(t), "both")
+	if res, _ := get.Execute(as("member")); domain.AppliedTheme(res.CustomCSS) != "both" || res.Theme != "system" {
+		t.Fatalf("variants: %+v", res)
+	}
+	// The organisation's scheme and accent go on top.
+	p.SetSource(func(context.Context) (Preset, bool) { return Preset{Theme: domain.ThemeLight, Accent: "#0055aa"}, true })
+	if res, _ := get.Execute(as("member")); domain.AppliedTheme(res.CustomCSS) != "both" || res.Theme != "light" || res.AccentColor != "#0055aa" {
+		t.Fatalf("with preset: %+v", res)
+	}
+	// Once the account saves its own appearance, the default is gone.
+	if _, err := update.Execute(as("member"), UpdateAppearanceRequest{Theme: "dark", Launcher: "both", Profile: "everyday"}); err != nil {
+		t.Fatal(err)
+	}
+	if res, _ := get.Execute(as("member")); res.CustomCSS != "" || res.Theme != "dark" {
+		t.Fatalf("own: %+v", res)
+	}
+	// Empty keeps the built-in look.
+	if err := p.SetDefaultTheme(nil, ""); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := p.DefaultTheme(); ok {
+		t.Fatal("cleared default still set")
+	}
+}
+
 func TestNoPresetChangesNothing(t *testing.T) {
 	repo := &presetRepo{a: domain.Default()}
 	res, _ := NewGetAppearance(repo, nil).Execute(as("member"))

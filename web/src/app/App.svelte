@@ -8,6 +8,8 @@
   import { canStartOffline, clearOfflineData, rememberSignedIn } from '../shared/pwa';
   import { createContainer, type Container } from './container';
   import { branding, loadBranding } from './branding/branding.svelte';
+  import { loadDefaultTheme, showDefaultTheme } from './branding/defaultTheme';
+  import type { DefaultThemeDTO } from '../shared/api-client/generated/appearance';
   import { applyTheme } from '../shared/theme/theme';
   // The dashboard shell is fetched right away, in parallel with the session
   // check, but kept out of the initial bundle (#116); sign-in pages load
@@ -28,6 +30,11 @@
     history.replaceState(null, '', '/');
   }
   let loadError = $state('');
+  let defaultTheme = $state<DefaultThemeDTO>({ id: '', css: '', scheme: '' });
+  // The default theme's style only while nobody is signed in: the shell
+  // brings the account's appearance, which already includes it if the
+  // account has no appearance of its own.
+  $effect(() => (view === 'app' ? undefined : showDefaultTheme(defaultTheme)));
 
   // The container is built once; a changed prop would not rebuild it.
   // svelte-ignore state_referenced_locally
@@ -39,9 +46,12 @@
       await loadLanguage().catch(() => undefined);
       // The organisation's name and colours (#305) show from the sign-in page on.
       const brand = await loadBranding(container.http);
-      // Before sign-in nobody's own theme is known: use the organisation's.
-      // The shell applies the person's own preference after sign-in.
-      if (brand.defaultTheme) applyTheme(brand.defaultTheme);
+      // Before sign-in nobody's own theme is known: use the instance's default
+      // theme (#507) and the organisation's scheme, which wins. The shell
+      // applies the person's own preference after sign-in.
+      if (!container.localMode) defaultTheme = await loadDefaultTheme(container.http);
+      const scheme = brand.defaultTheme || defaultTheme.scheme;
+      if (scheme) applyTheme(scheme);
       // A kiosk link (#50): the token is in the fragment, so it never reaches
       // the server log; it signs this browser in as the display.
       if (location.pathname === '/kiosk' && location.hash.length > 1) {

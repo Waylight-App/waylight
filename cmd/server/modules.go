@@ -149,6 +149,9 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		{"appearance", func() modules.Module {
 			m := appearance.New(db, clk, ids)
 			m.SetPresetSource(appearancePreset)
+			if err := m.SetDefaultTheme(cfg.DefaultTheme); err != nil {
+				log.Warn("DEFAULT_THEME is not a built-in theme, the built-in look stays", "theme", cfg.DefaultTheme, "err", err)
+			}
 			return m
 		}},
 		{"search", func() modules.Module {
