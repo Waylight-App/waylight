@@ -99,7 +99,7 @@
     {#each shown as c (c.id)}
       {@const u = updates.get(c.name)}
       <li title="{c.image}\n{c.status}">
-        <span class="dot {indicator(c)}" aria-label={c.state}></span>
+        <span class="dot {indicator(c)}" role="img" aria-label={c.state}></span>
         <span class="name">{c.name}</span>
         {#if u}
           <a
