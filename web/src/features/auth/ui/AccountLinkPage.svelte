@@ -32,6 +32,19 @@
       .catch((err) => (error = errorMessage(err)));
   });
 
+  // Accept the invitation with the provider instead of a password (#528).
+  const provider = $derived(auth.sso.buttonLabel || t('auth.linked_provider'));
+  async function signUpWithProvider() {
+    busy = true;
+    error = '';
+    try {
+      location.assign(await auth.signUpWithSSO(token));
+    } catch (err) {
+      error = errorMessage(err);
+      busy = false;
+    }
+  }
+
   async function submit(event: SubmitEvent) {
     event.preventDefault();
     busy = true;
@@ -56,6 +69,12 @@
     <p role="status">{info?.purpose === 'reset' ? t('auth.link_reset_done') : t('auth.link_invite_done')}</p>
     <button class="btn btn-primary" type="button" onclick={ondone}>{t('auth.link_to_login')}</button>
   {:else if info}
+    {#if info.purpose === 'invite' && info.sso}
+      <button class="btn btn-primary wide" type="button" disabled={busy} onclick={signUpWithProvider}
+        >{t('auth.link_sign_up_with', { name: provider })}</button
+      >
+      <p class="divider"><span>{t('auth.or_with_password')}</span></p>
+    {/if}
     <form onsubmit={submit}>
       <!-- The name helps password managers store the new password under it. -->
       <input type="text" name="username" autocomplete="username" value={info.name} hidden readonly />
@@ -94,5 +113,24 @@
   form {
     display: grid;
     gap: var(--space-2);
+  }
+  .wide {
+    width: 100%;
+    justify-content: center;
+    min-height: 2.6rem;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-3) 0;
+    font-size: 0.85em;
+    color: var(--color-text-muted);
+  }
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid var(--color-border);
   }
 </style>

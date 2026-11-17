@@ -161,6 +161,7 @@ func (uc *guests) Update(ctx context.Context, req UpdateGuestRequest) (GuestView
 		if err := g.ChangePasswordHash(hash, now); err != nil {
 			return GuestView{}, err
 		}
+		uc.deps.passwordSet(ctx, g.ID())
 	}
 	if err := uc.deps.Accounts.Update(ctx, g); err != nil {
 		return GuestView{}, fmt.Errorf("update guest: %w", err)

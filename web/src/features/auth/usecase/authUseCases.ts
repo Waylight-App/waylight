@@ -162,6 +162,11 @@ export class AuthUseCases {
     return this.gateway.unlinkSignIn(subject);
   }
 
+  /** Accepts an invitation through the provider; returns the URL to open (#528). */
+  signUpWithSSO(token: string): Promise<string> {
+    return this.gateway.signUpWithSSO(token);
+  }
+
   /** Finishes an SSO sign-in that needs the local authentication code. */
   async completeSso(ticket: string, code: string): Promise<void> {
     if (code.trim() === '') throw new ValidationError(t('auth.enter_code_hint'));

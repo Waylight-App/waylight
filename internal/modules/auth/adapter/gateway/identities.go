@@ -18,8 +18,8 @@ func NewIdentityRepository(db *sql.DB) *IdentityRepository { return &IdentityRep
 
 // Add implements usecase.IdentityRepository.
 func (r *IdentityRepository) Add(ctx context.Context, l domain.IdentityLink) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO auth_identities (issuer, subject, account_id, email, created_at) VALUES (?, ?, ?, ?, ?)`,
-		l.Issuer, l.Subject, l.AccountID, l.Email, sqlutil.FormatTime(l.CreatedAt))
+	_, err := r.db.ExecContext(ctx, `INSERT INTO auth_identities (issuer, subject, account_id, email, created_at, only_sign_in) VALUES (?, ?, ?, ?, ?, ?)`,
+		l.Issuer, l.Subject, l.AccountID, l.Email, sqlutil.FormatTime(l.CreatedAt), l.OnlySignIn)
 	if sqlutil.IsUniqueViolation(err) {
 		return domain.ErrIdentityTaken
 	}
@@ -44,7 +44,7 @@ func (r *IdentityRepository) Find(ctx context.Context, issuer, subject string) (
 
 // ListByAccount implements usecase.IdentityRepository.
 func (r *IdentityRepository) ListByAccount(ctx context.Context, accountID string) ([]domain.IdentityLink, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT issuer, subject, account_id, email, created_at FROM auth_identities
+	rows, err := r.db.QueryContext(ctx, `SELECT issuer, subject, account_id, email, created_at, only_sign_in FROM auth_identities
 		WHERE account_id = ? ORDER BY created_at`, accountID)
 	if err != nil {
 		return nil, fmt.Errorf("query identities: %w", err)
@@ -54,7 +54,7 @@ func (r *IdentityRepository) ListByAccount(ctx context.Context, accountID string
 	for rows.Next() {
 		var l domain.IdentityLink
 		var created string
-		if err := rows.Scan(&l.Issuer, &l.Subject, &l.AccountID, &l.Email, &created); err != nil {
+		if err := rows.Scan(&l.Issuer, &l.Subject, &l.AccountID, &l.Email, &created, &l.OnlySignIn); err != nil {
 			return nil, fmt.Errorf("scan identity: %w", err)
 		}
 		if l.CreatedAt, err = sqlutil.ParseTime(created); err != nil {
@@ -81,6 +81,15 @@ func (r *IdentityRepository) Remove(ctx context.Context, accountID, issuer, subj
 func (r *IdentityRepository) RemoveAccount(ctx context.Context, accountID string) error {
 	if _, err := r.db.ExecContext(ctx, `DELETE FROM auth_identities WHERE account_id = ?`, accountID); err != nil {
 		return fmt.Errorf("delete identities: %w", err)
+	}
+	return nil
+}
+
+// PasswordSet implements usecase.IdentityRepository: the account has a known
+// password now, so its sign-ins may be disconnected.
+func (r *IdentityRepository) PasswordSet(ctx context.Context, accountID string) error {
+	if _, err := r.db.ExecContext(ctx, `UPDATE auth_identities SET only_sign_in = 0 WHERE account_id = ?`, accountID); err != nil {
+		return fmt.Errorf("update identities: %w", err)
 	}
 	return nil
 }

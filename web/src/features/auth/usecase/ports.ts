@@ -42,6 +42,8 @@ export interface AuthGateway {
   /** Starts linking; returns the provider URL to open. */
   beginLinkSignIn(): Promise<string>;
   unlinkSignIn(subject: string): Promise<void>;
+  /** Accepts an invitation through the provider (#528); returns its URL. */
+  signUpWithSSO(token: string): Promise<string>;
   guests(): Promise<Guest[]>;
   createGuest(name: string, password: string, tabs: string[]): Promise<Guest>;
   updateGuest(id: string, tabs: string[], disabled: boolean, password: string): Promise<Guest>;

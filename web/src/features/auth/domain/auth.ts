@@ -53,9 +53,24 @@ export type SsoResult = { kind: 'signed-in' } | { kind: 'needs-code'; ticket: st
 /** Message key for an error the provider redirect reported (?sso_error=…). */
 export function ssoErrorKey(
   code: string | null,
-): 'auth.sso_error.not_allowed' | 'auth.sso_error.failed' | null {
+):
+  | 'auth.sso_error.not_allowed'
+  | 'auth.sso_error.failed'
+  | 'auth.sso_error.taken'
+  | 'auth.sso_error.invite'
+  | null {
   if (!code) return null;
-  return code === 'not_allowed' ? 'auth.sso_error.not_allowed' : 'auth.sso_error.failed';
+  switch (code) {
+    case 'not_allowed':
+      return 'auth.sso_error.not_allowed';
+    // Accepting an invitation through the provider (#528).
+    case 'taken':
+      return 'auth.sso_error.taken';
+    case 'invite':
+      return 'auth.sso_error.invite';
+    default:
+      return 'auth.sso_error.failed';
+  }
 }
 
 /** A read-only guest account as managed by the owner. */
@@ -175,6 +190,8 @@ export interface InviteInput {
 export interface LinkInfo {
   purpose: 'invite' | 'reset';
   name: string;
+  /** The invitation can be accepted through single sign-on (#528). */
+  sso?: boolean;
 }
 
 /** The page behind invitation and reset links; the token stays in the fragment. */

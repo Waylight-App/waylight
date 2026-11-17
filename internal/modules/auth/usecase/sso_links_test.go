@@ -49,6 +49,15 @@ func (f *fakeIdentities) Remove(_ context.Context, accountID, issuer, subject st
 	return domain.ErrIdentityNotFound
 }
 
+func (f *fakeIdentities) PasswordSet(_ context.Context, accountID string) error {
+	for i := range f.links {
+		if f.links[i].AccountID == accountID {
+			f.links[i].OnlySignIn = false
+		}
+	}
+	return nil
+}
+
 func (f *fakeIdentities) RemoveAccount(_ context.Context, accountID string) error {
 	kept := f.links[:0]
 	for _, x := range f.links {
@@ -77,8 +86,9 @@ func TestLinkedSignIns(t *testing.T) {
 	member, _ := domain.NewMember("m1", "anna", "hash:x", e.clock.now)
 	e.accounts.guests = map[string]domain.Account{"m1": member}
 	ids := &fakeIdentities{}
+	e.deps.Identities = ids
 	provider := &fakeOIDC{}
-	uc := NewSSO(e.deps, SSOConfig{OIDC: provider, Issuer: "https://login.example", Identities: ids, LocalLogin: true})
+	uc := NewSSO(e.deps, SSOConfig{OIDC: provider, Issuer: "https://login.example", LocalLogin: true})
 	client := domain.Client{IP: "10.0.0.7"}
 
 	link := func(account, subject string) error {
@@ -143,5 +153,21 @@ func TestLinkedSignIns(t *testing.T) {
 	}
 	if links, _ := uc.Links(ctx, domain.OwnerID); len(links) != 0 {
 		t.Fatalf("after unlink: %v", links)
+	}
+}
+
+// An account created through its sign-in (#528) cannot lose it until a
+// password is set.
+func TestOnlySignInCannotBeDisconnected(t *testing.T) {
+	e := newEnv().withAccount()
+	ids := &fakeIdentities{links: []domain.IdentityLink{{AccountID: "m1", Issuer: "https://login.example", Subject: "s", OnlySignIn: true}}}
+	e.deps.Identities = ids
+	uc := NewSSO(e.deps, SSOConfig{OIDC: &fakeOIDC{}, Issuer: "https://login.example"})
+	if err := uc.Unlink(ctx, "m1", "s", domain.Client{}); !errors.Is(err, domain.ErrIdentityOnlySignIn) {
+		t.Fatalf("only sign-in removed: %v", err)
+	}
+	e.deps.passwordSet(ctx, "m1")
+	if err := uc.Unlink(ctx, "m1", "s", domain.Client{}); err != nil {
+		t.Fatalf("after a password was set: %v", err)
 	}
 }

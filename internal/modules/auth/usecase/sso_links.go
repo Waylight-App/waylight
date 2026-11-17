@@ -18,6 +18,16 @@ type IdentityRepository interface {
 	Remove(ctx context.Context, accountID, issuer, subject string) error
 	// RemoveAccount drops every link of a deleted account.
 	RemoveAccount(ctx context.Context, accountID string) error
+	// PasswordSet clears OnlySignIn once the account has a known password.
+	PasswordSet(ctx context.Context, accountID string) error
+}
+
+// passwordSet tells the linked sign-ins that the account has a known
+// password now (#528); called wherever a password is set.
+func (d Deps) passwordSet(ctx context.Context, accountID string) {
+	if d.Identities != nil {
+		_ = d.Identities.PasswordSet(ctx, accountID) // the account works either way
+	}
 }
 
 // SSOLicence is implemented by ExternalAccounts to tell how far single
@@ -63,7 +73,7 @@ func (uc *sso) maySignIn(ctx context.Context, accountID string) bool {
 // BeginLink starts the provider's sign-in to link it to the signed-in
 // account; the callback stores the link instead of signing in.
 func (uc *sso) BeginLink(ctx context.Context, accountID string) (string, string, error) {
-	if uc.cfg.OIDC == nil || uc.cfg.Identities == nil {
+	if uc.cfg.OIDC == nil || uc.deps.Identities == nil {
 		return "", "", domain.ErrSSOUnavailable
 	}
 	if !uc.mayLink(ctx, accountID) {
@@ -74,18 +84,27 @@ func (uc *sso) BeginLink(ctx context.Context, accountID string) (string, string,
 
 // Links lists the sign-ins linked to an account.
 func (uc *sso) Links(ctx context.Context, accountID string) ([]domain.IdentityLink, error) {
-	if uc.cfg.Identities == nil {
+	if uc.deps.Identities == nil {
 		return nil, nil
 	}
-	return uc.cfg.Identities.ListByAccount(ctx, accountID)
+	return uc.deps.Identities.ListByAccount(ctx, accountID)
 }
 
 // Unlink removes a linked sign-in of the account.
 func (uc *sso) Unlink(ctx context.Context, accountID, subject string, client domain.Client) error {
-	if uc.cfg.Identities == nil {
+	if uc.deps.Identities == nil {
 		return domain.ErrIdentityNotFound
 	}
-	if err := uc.cfg.Identities.Remove(ctx, accountID, uc.cfg.Issuer, subject); err != nil {
+	links, err := uc.deps.Identities.ListByAccount(ctx, accountID)
+	if err != nil {
+		return err
+	}
+	for _, l := range links {
+		if l.Subject == subject && l.Issuer == uc.cfg.Issuer && l.OnlySignIn {
+			return domain.ErrIdentityOnlySignIn
+		}
+	}
+	if err := uc.deps.Identities.Remove(ctx, accountID, uc.cfg.Issuer, subject); err != nil {
 		return err
 	}
 	uc.deps.Events.record(ctx, domain.EventIdentityUnlinked, accountID, client, "")
@@ -102,7 +121,7 @@ func (uc *sso) completeLink(ctx context.Context, accountID string, id domain.Ext
 		return SessionResponse{}, "", domain.ErrSSONotAllowed
 	}
 	link := domain.IdentityLink{AccountID: accountID, Issuer: uc.cfg.Issuer, Subject: id.Subject, Email: id.Email, CreatedAt: uc.deps.Clock.Now()}
-	if err := uc.cfg.Identities.Add(ctx, link); err != nil {
+	if err := uc.deps.Identities.Add(ctx, link); err != nil {
 		return SessionResponse{}, "", err
 	}
 	uc.deps.Events.record(ctx, domain.EventIdentityLinked, accountID, client, id.Email)
@@ -112,10 +131,10 @@ func (uc *sso) completeLink(ctx context.Context, accountID string, id domain.Ext
 // linkedAccount returns the account an identity is linked to, "" if none.
 // A link of someone other than the owner only counts while licensed.
 func (uc *sso) linkedAccount(ctx context.Context, id domain.ExternalIdentity) (string, error) {
-	if uc.cfg.Identities == nil || id.Subject == "" {
+	if uc.deps.Identities == nil || id.Subject == "" {
 		return "", nil
 	}
-	accountID, err := uc.cfg.Identities.Find(ctx, uc.cfg.Issuer, id.Subject)
+	accountID, err := uc.deps.Identities.Find(ctx, uc.cfg.Issuer, id.Subject)
 	if errors.Is(err, domain.ErrIdentityNotFound) {
 		return "", nil
 	}
