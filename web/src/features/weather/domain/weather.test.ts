@@ -1,5 +1,14 @@
 import { describe as group, expect, it } from 'vitest';
-import { compass, describe, parseWeatherConfig, placeLabel, radarKey, validity } from './weather';
+import {
+  compass,
+  describe,
+  type ForecastDay,
+  forecastHint,
+  parseWeatherConfig,
+  placeLabel,
+  radarKey,
+  validity,
+} from './weather';
 
 group('compass (#118)', () => {
   it.each([
@@ -82,6 +91,43 @@ group('pollen and UV config (#56)', () => {
       pollenRegion: 0,
       pollenTypes: [],
       uvCity: '',
+    });
+  });
+});
+
+group('forecast hint (#509)', () => {
+  const day = (i: number, d: Partial<ForecastDay> = {}): ForecastDay => ({
+    date: new Date(2026, 10, 14 + i),
+    min: 5,
+    max: 12,
+    code: 3,
+    precipitationProbability: 10,
+    ...d,
+  });
+
+  it('is empty for an ordinary outlook', () => {
+    expect(forecastHint([day(0), day(1), day(2)])).toBeNull();
+  });
+
+  it('names the earliest day of the most important kind', () => {
+    const days = [day(0, { precipitationProbability: 90 }), day(1, { min: -2 }), day(2, { min: -4 })];
+    expect(forecastHint(days)).toMatchObject({ kind: 'frost', day: 1 });
+  });
+
+  it('puts a thunderstorm before everything else', () => {
+    const days = [day(0, { min: -1 }), day(1), day(2, { code: 95 })];
+    expect(forecastHint(days)).toMatchObject({ kind: 'storm', day: 2 });
+  });
+
+  it('only looks three days ahead', () => {
+    expect(forecastHint([day(0), day(1), day(2), day(3, { max: 33 })])).toBeNull();
+  });
+
+  it('warns of heat and of likely rain', () => {
+    expect(forecastHint([day(0, { max: 31 })])).toMatchObject({ kind: 'heat', day: 0 });
+    expect(forecastHint([day(0), day(1, { precipitationProbability: 70 })])).toMatchObject({
+      kind: 'rain',
+      day: 1,
     });
   });
 });
