@@ -99,12 +99,20 @@ func (uc *sso) Unlink(ctx context.Context, accountID, subject string, client dom
 	if err != nil {
 		return err
 	}
+	issuer := ""
 	for _, l := range links {
-		if l.Subject == subject && l.Issuer == uc.cfg.Issuer && l.OnlySignIn {
+		if l.Subject != subject {
+			continue
+		}
+		if l.OnlySignIn {
 			return domain.ErrIdentityOnlySignIn
 		}
+		issuer = l.Issuer
 	}
-	if err := uc.deps.Identities.Remove(ctx, accountID, uc.cfg.Issuer, subject); err != nil {
+	if issuer == "" {
+		return domain.ErrIdentityNotFound
+	}
+	if err := uc.deps.Identities.Remove(ctx, accountID, issuer, subject); err != nil {
 		return err
 	}
 	uc.deps.Events.record(ctx, domain.EventIdentityUnlinked, accountID, client, "")
@@ -120,7 +128,7 @@ func (uc *sso) completeLink(ctx context.Context, accountID string, id domain.Ext
 	if id.Subject == "" {
 		return SessionResponse{}, "", domain.ErrSSONotAllowed
 	}
-	link := domain.IdentityLink{AccountID: accountID, Issuer: uc.cfg.Issuer, Subject: id.Subject, Email: id.Email, CreatedAt: uc.deps.Clock.Now()}
+	link := domain.IdentityLink{AccountID: accountID, Issuer: id.Issuer, Subject: id.Subject, Email: id.Email, CreatedAt: uc.deps.Clock.Now()}
 	if err := uc.deps.Identities.Add(ctx, link); err != nil {
 		return SessionResponse{}, "", err
 	}
@@ -134,7 +142,7 @@ func (uc *sso) linkedAccount(ctx context.Context, id domain.ExternalIdentity) (s
 	if uc.deps.Identities == nil || id.Subject == "" {
 		return "", nil
 	}
-	accountID, err := uc.deps.Identities.Find(ctx, uc.cfg.Issuer, id.Subject)
+	accountID, err := uc.deps.Identities.Find(ctx, id.Issuer, id.Subject)
 	if errors.Is(err, domain.ErrIdentityNotFound) {
 		return "", nil
 	}

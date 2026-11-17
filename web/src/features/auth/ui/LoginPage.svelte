@@ -4,6 +4,7 @@
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
   import { redirectToProvider, ssoErrorKey } from '../domain/auth';
   import SsoIcon from './SsoIcon.svelte';
+  import MicrosoftCodeDialog from './MicrosoftCodeDialog.svelte';
   import type { SecondFactorChallenge } from '../domain/passkey';
   import type { AuthUseCases } from '../usecase/authUseCases';
   import AuthCard from './AuthCard.svelte';
@@ -54,6 +55,8 @@
   let challenge = $state<SecondFactorChallenge | null>(null);
   /** Shows the "forgot your password?" form (#296). */
   let forgot = $state(false);
+  /** The Microsoft code dialog is open (#535). */
+  let microsoftDialog = $state(false);
 
   async function usePasskey() {
     if (!challenge) return;
@@ -122,6 +125,14 @@
           : t('auth.sign_in_with_sso')}</a
       >
       {#if !passwordHidden}
+        <p class="divider"><span>{t('auth.or_with_password')}</span></p>
+      {/if}
+    {/if}
+    {#if auth.sso.microsoft && !ticket && !needsCode}
+      <button class="btn btn-primary wide" type="button" onclick={() => (microsoftDialog = true)}
+        ><SsoIcon icon="microsoft" />{t('auth.ms_sign_in')}</button
+      >
+      {#if !passwordHidden && !auth.sso.oidc}
         <p class="divider"><span>{t('auth.or_with_password')}</span></p>
       {/if}
     {/if}
@@ -202,6 +213,18 @@
         >
       {/if}
     </form>
+  {/if}
+  {#if microsoftDialog}
+    <MicrosoftCodeDialog
+      {auth}
+      mode="signin"
+      onclose={() => (microsoftDialog = false)}
+      ondone={(r) => {
+        microsoftDialog = false;
+        if (r.ticket) ticket = r.ticket;
+        else ondone();
+      }}
+    />
   {/if}
   {#if poweredBy}<p class="powered muted">{t('auth.powered_by')}</p>{/if}
 </AuthCard>

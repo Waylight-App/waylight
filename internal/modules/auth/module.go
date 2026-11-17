@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"io/fs"
 	"log/slog"
@@ -67,7 +68,10 @@ func (a webauthnAdapter) VerifyAssertion(challenge []byte, cred usecase.PasskeyC
 // SSOConfig configures OpenID Connect and the trusted proxy header login.
 type SSOConfig struct {
 	// OIDC is nil when OpenID Connect is not configured.
-	OIDC            *oidc.Provider
+	OIDC *oidc.Provider
+	// Microsoft signs in with a personal Microsoft account by code (#535);
+	// nil when not available.
+	Microsoft       *oidc.Provider
 	AllowedSubjects []string
 	AllowedEmails   []string
 	// ProxyHeader (e.g. Remote-User) is believed only from TrustedProxies.
@@ -325,6 +329,9 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Public("GET /api/auth/oidc/start", m.handlers.OIDCStart)
 	r.Public("GET /api/auth/oidc/callback", m.handlers.OIDCCallback)
 	r.Protected("GET /api/auth/identities", m.handlers.ListIdentities)
+	r.Protected("POST /api/auth/microsoft/link", m.handlers.StartMicrosoftLink)
+	r.Public("POST /api/auth/microsoft/start", m.handlers.StartMicrosoftSignIn)
+	r.Public("POST /api/auth/microsoft/poll", m.handlers.PollMicrosoft)
 	r.Protected("POST /api/auth/identities/link", m.handlers.BeginIdentityLink)
 	r.Protected("DELETE /api/auth/identities/{subject}", m.handlers.DeleteIdentity)
 	r.Public("POST /api/auth/sso/header", m.handlers.HeaderLogin)
@@ -447,9 +454,37 @@ func (m *Module) ConfirmIdentity(ctx context.Context, password, code, clientKey 
 // Audit implements kernel.AuditSink for other modules (e.g. data import).
 func (m *Module) Audit(ctx context.Context, e kernel.AuditEvent) { m.security.Audit(ctx, e) }
 
+// deviceAdapter maps the platform's device flow to the use case port (#535).
+type deviceAdapter struct{ p *oidc.Provider }
+
+func (a deviceAdapter) StartDevice(ctx context.Context) (usecase.DeviceStart, error) {
+	d, err := a.p.StartDevice(ctx)
+	if err != nil {
+		return usecase.DeviceStart{}, err
+	}
+	return usecase.DeviceStart{DeviceCode: d.DeviceCode, UserCode: d.UserCode, VerificationURI: d.VerificationURI,
+		ExpiresIn: d.ExpiresIn, Interval: d.Interval}, nil
+}
+
+func (a deviceAdapter) PollDevice(ctx context.Context, deviceCode string) (domain.ExternalIdentity, error) {
+	id, err := a.p.PollDevice(ctx, deviceCode)
+	switch {
+	case errors.Is(err, oidc.ErrDevicePending):
+		return domain.ExternalIdentity{}, usecase.ErrDevicePending
+	case errors.Is(err, oidc.ErrDeviceSlowDown):
+		return domain.ExternalIdentity{}, usecase.ErrDeviceSlowDown
+	case errors.Is(err, oidc.ErrDeviceExpired), errors.Is(err, oidc.ErrDeviceDenied):
+		return domain.ExternalIdentity{}, usecase.ErrDeviceGone
+	case err != nil:
+		return domain.ExternalIdentity{}, err
+	}
+	return domain.ExternalIdentity{Subject: id.Subject, Email: id.Email, EmailVerified: id.EmailVerified,
+		Name: id.Name, Username: id.Username}, nil
+}
+
 // newSSO returns nil when no SSO method is configured.
 func newSSO(deps usecase.Deps, c SSOConfig) usecase.SSO {
-	if c.OIDC == nil && c.ProxyHeader == "" {
+	if c.OIDC == nil && c.ProxyHeader == "" && c.Microsoft == nil {
 		return nil
 	}
 	cfg := usecase.SSOConfig{Mapping: domain.IdentityMapping{Subjects: c.AllowedSubjects, Emails: c.AllowedEmails},
@@ -461,6 +496,10 @@ func newSSO(deps usecase.Deps, c SSOConfig) usecase.SSO {
 	}
 	if c.ProxyHeader != "" {
 		cfg.HeaderUsers = c.ProxyUsers
+	}
+	if c.Microsoft != nil {
+		cfg.Device = deviceAdapter{c.Microsoft}
+		cfg.DeviceIssuer = c.Microsoft.Issuer()
 	}
 	return usecase.NewSSO(deps, cfg)
 }

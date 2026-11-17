@@ -98,7 +98,7 @@ func (h *Handlers) Status(w http.ResponseWriter, r *http.Request) {
 	if h.uc.SSO != nil {
 		st := h.uc.SSO.Status()
 		dto.SSO = presenter.SSOStatusDTO{OIDC: st.OIDC, Header: st.Header && h.proxy.Header != "" && h.fromTrustedProxy(r), LocalLogin: st.LocalLogin,
-			ButtonLabel: st.Button.Label, ButtonIcon: st.Button.Icon, AutoRedirect: st.AutoRedirect}
+			ButtonLabel: st.Button.Label, ButtonIcon: st.Button.Icon, AutoRedirect: st.AutoRedirect, Microsoft: st.Microsoft}
 	} else {
 		dto.SSO = presenter.SSOStatusDTO{LocalLogin: true}
 	}

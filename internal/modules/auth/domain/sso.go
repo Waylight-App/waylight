@@ -8,7 +8,9 @@ import (
 // ExternalIdentity is a user proven by an identity provider or by a
 // trusted reverse proxy.
 type ExternalIdentity struct {
-	Provider      string // "oidc" or "header"
+	Provider string // "oidc", "microsoft" (#535) or "header"
+	// Issuer is the provider's issuer URL; links are stored per issuer.
+	Issuer        string
 	Subject       string
 	Email         string
 	EmailVerified bool

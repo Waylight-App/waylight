@@ -8,7 +8,7 @@ import (
 // guestSelfService are the auth endpoints a guest may use for its own
 // account (password, two-factor, sessions, logout, linked sign-ins) with any
 // method.
-var guestSelfService = []string{"/api/auth/logout", "/api/auth/password", "/api/auth/totp", "/api/auth/sessions", "/api/auth/passkeys", "/api/auth/my-groups", "/api/auth/email", "/api/auth/identities"}
+var guestSelfService = []string{"/api/auth/logout", "/api/auth/password", "/api/auth/totp", "/api/auth/sessions", "/api/auth/passkeys", "/api/auth/my-groups", "/api/auth/email", "/api/auth/identities", "/api/auth/microsoft"}
 
 // guestReadable are read endpoints every guest needs to render the page.
 // /api/search is the web search of the search field, which is part of every

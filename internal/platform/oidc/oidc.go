@@ -72,6 +72,8 @@ type discovery struct {
 	AuthEndpoint  string `json:"authorization_endpoint"`
 	TokenEndpoint string `json:"token_endpoint"`
 	JWKSURI       string `json:"jwks_uri"`
+	// DeviceEndpoint is the device authorization endpoint (RFC 8628), if any.
+	DeviceEndpoint string `json:"device_authorization_endpoint"`
 }
 
 // New returns a provider; discovery happens lazily on first use.
@@ -218,6 +220,13 @@ func (c claims) audience() []string {
 // Verify validates an ID token: signature (RS256/ES256 only), issuer,
 // audience, expiry, issue time and nonce.
 func (p *Provider) Verify(ctx context.Context, raw, nonce string) (Identity, error) {
+	return p.verify(ctx, raw, nonce, true)
+}
+
+// verify checks an ID token; withNonce is false only for the device flow,
+// which has no nonce (its device code is single use and never leaves the
+// server).
+func (p *Provider) verify(ctx context.Context, raw, nonce string, withNonce bool) (Identity, error) {
 	parts := strings.Split(raw, ".")
 	if len(parts) != 3 {
 		return Identity{}, errors.New("id token: malformed")
@@ -255,7 +264,7 @@ func (p *Provider) Verify(ctx context.Context, raw, nonce string) (Identity, err
 		return Identity{}, errors.New("id token: expired")
 	case c.Iat != 0 && time.Unix(c.Iat, 0).After(now.Add(clockSkew)):
 		return Identity{}, errors.New("id token: issued in the future")
-	case nonce == "" || c.Nonce != nonce:
+	case withNonce && (nonce == "" || c.Nonce != nonce):
 		return Identity{}, errors.New("id token: wrong nonce")
 	case c.Sub == "":
 		return Identity{}, errors.New("id token: no subject")

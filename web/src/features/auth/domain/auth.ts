@@ -29,6 +29,8 @@ export interface AuthStatus {
 
 /** The sign-in methods the server offers (ADR 0013, #514). */
 export interface SSOStatus {
+  /** Sign in with a Microsoft account by code (#535). */
+  microsoft?: boolean;
   oidc: boolean;
   header: boolean;
   localLogin: boolean;

@@ -66,6 +66,23 @@ paths:
       tags: [auth]
       summary: Sign-ins at the OpenID provider linked to the signed-in account (#527)
       responses: { "200": { description: "[{subject, email, linkedAt}]" } }
+  /api/auth/microsoft/link:
+    post:
+      tags: [auth]
+      summary: Start linking a Microsoft account to the signed-in account by code (#535); returns {flow, userCode, verificationUri, expiresAt, interval}
+      responses: { "200": { description: Flow started }, "403": { description: Needs a licence key with sso (accounts other than the owner) }, "404": { description: Not available } }
+  /api/auth/microsoft/start:
+    post:
+      tags: [auth]
+      summary: Start signing in with a linked Microsoft account by code (#535)
+      security: []
+      responses: { "200": { description: Flow started }, "404": { description: Not available } }
+  /api/auth/microsoft/poll:
+    post:
+      tags: [auth]
+      summary: "Poll a Microsoft code flow with {flow}: 202 while pending, then {linked}, {ticket} or the session (sets the cookie)"
+      security: []
+      responses: { "200": { description: Done }, "202": { description: Not confirmed yet }, "401": { description: Not linked }, "409": { description: Expired, declined or unknown flow } }
   /api/auth/identities/link:
     post:
       tags: [auth]

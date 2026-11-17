@@ -38,6 +38,10 @@ export interface StatusDTO {
  * SSOStatusDTO tells the login page which methods exist.
  */
 export interface SSOStatusDTO {
+  /**
+   * Microsoft: sign in with a Microsoft account by code (#535).
+   */
+  microsoft?: boolean;
   oidc: boolean;
   header: boolean;
   localLogin: boolean;
@@ -338,4 +342,26 @@ export interface IdentityDTO {
  */
 export interface LinkStartDTO {
   redirect: string;
+}
+/**
+ * DeviceFlowDTO is a started sign-in with a Microsoft account by code (#535):
+ * the page opens VerificationURI, shows UserCode and polls with Flow.
+ */
+export interface DeviceFlowDTO {
+  flow: string;
+  userCode: string;
+  verificationUri: string;
+  expiresAt: string /* RFC 3339 */;
+  /**
+   * Interval is the number of seconds to wait between two polls.
+   */
+  interval: number /* int */;
+}
+/**
+ * DevicePollDTO answers POST /api/auth/microsoft/poll unless a session starts.
+ */
+export interface DevicePollDTO {
+  pending?: boolean;
+  linked?: boolean;
+  ticket?: string;
 }

@@ -8,6 +8,36 @@ that, **Sign in with Microsoft** on the sign-in page is enough.
 The owner can always do this. Members and guests need a licence key that
 includes `sso` ([licence keys](licence-keys.md)).
 
+## Without any setup: sign in by code
+
+trisse-home comes with its own registration at Microsoft, so there is
+nothing to set up, and no HTTPS address is needed: it works under any
+address, in your home network and over a VPN.
+
+1. Sign in with your password as usual.
+2. Open *Settings → Account → Sign in with Microsoft* and choose **Connect
+   Microsoft**.
+3. A window opens at Microsoft and trisse-home shows a short code, already
+   copied to the clipboard. Enter it, sign in at Microsoft and confirm.
+4. The window closes by itself; Microsoft is linked.
+
+From then on, **Sign in with Microsoft** on the sign-in page works the same
+way: a window, the code, confirm. If you are already signed in at Microsoft
+in that browser, it is a matter of seconds.
+
+Microsoft shows trisse-home on its confirmation page and asks only for your
+name and e-mail address; trisse-home gets no access to mail, files or
+anything else. `MICROSOFT_CLIENT_ID` replaces the built-in registration with
+your own, and an empty value turns signing in by code off
+([configuration](configuration.md)).
+
+Signing in by code takes personal accounts only. For work or school
+accounts, see [With a work or school account](#with-a-work-or-school-account)
+below.
+
+The rest of this page sets up the other way, a sign-in that sends you to
+Microsoft and back. It needs your own registration and an HTTPS address.
+
 ## What you need
 
 - trisse-home reachable under a fixed address, such as
@@ -74,6 +104,28 @@ Microsoft account linked. The invitation is used up as with a password.
 Such an account has no password at first, so Microsoft is its only way in:
 *Disconnect* stays unavailable until a password is set, for example with a
 reset link from an admin or *Forgot password* on the sign-in page.
+
+## With a work or school account
+
+Accounts of an organisation (Microsoft Entra ID) sign in through the
+organisation's own registration, so its administrators keep control of who
+may sign in, multi-factor rules and conditional access. Follow the steps
+above with two changes:
+
+- *Supported account types*: **Accounts in this organizational directory
+  only**.
+- `OIDC_ISSUER` names the organisation's directory instead of personal
+  accounts:
+
+  ```sh
+  OIDC_ISSUER=https://login.microsoftonline.com/<directory (tenant) id>/v2.0
+  ```
+
+  The *Directory (tenant) ID* is on the overview page of the registration.
+
+Microsoft does not mark addresses as verified for work accounts either, so
+here too people get in through the link they make while signed in, as for
+a personal account, not through `OIDC_ALLOWED_EMAILS`.
 
 ## Without a password
 

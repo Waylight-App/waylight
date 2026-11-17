@@ -17,7 +17,7 @@ import {
   validateNewPassword,
   viewFor,
 } from '../domain/auth';
-import type { LinkedSignIn } from '../domain/identity';
+import type { LinkedSignIn, MicrosoftFlow, MicrosoftPoll } from '../domain/identity';
 import type { SecurityEvent } from '../domain/securityEvent';
 import type { SessionInfo } from '../domain/session';
 import type { TwoFactorEnrollment, TwoFactorStatus } from '../domain/twoFactor';
@@ -160,6 +160,21 @@ export class AuthUseCases {
 
   unlinkSignIn(subject: string): Promise<void> {
     return this.gateway.unlinkSignIn(subject);
+  }
+
+  /** Starts a Microsoft code flow: to link (signed in) or to sign in (#535). */
+  startMicrosoft(link: boolean): Promise<MicrosoftFlow> {
+    return this.gateway.startMicrosoft(link);
+  }
+
+  /** Polls a Microsoft code flow; a finished sign-in keeps its CSRF token. */
+  async pollMicrosoft(flow: string): Promise<MicrosoftPoll> {
+    const res = await this.gateway.pollMicrosoft(flow);
+    if ('csrfToken' in res) {
+      this.csrf.setCsrfToken(res.csrfToken);
+      return { signedIn: true };
+    }
+    return res;
   }
 
   /** Accepts an invitation through the provider; returns the URL to open (#528). */
