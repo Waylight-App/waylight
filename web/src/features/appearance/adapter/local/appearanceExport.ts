@@ -17,6 +17,7 @@ export function appearanceExport(a: Appearance): ExportTables {
         custom_css: a.customCss,
         language: a.language,
         greeting_name: a.greetingName,
+        greeting_moment: a.greetingMoment ? 1 : 0,
         launcher: a.launcher,
         profile: a.profile,
       },

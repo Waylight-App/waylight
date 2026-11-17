@@ -1,4 +1,5 @@
 <script lang="ts">
+  import EmptyState from '../../../shared/ui/EmptyState.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -34,7 +35,7 @@
 </script>
 
 {#if unconfigured}
-  <p class="muted">{t('nextcloud.connect_nextcloud_under_settings_nextclo')}</p>
+  <EmptyState text={t('nextcloud.connect_nextcloud_under_settings_nextclo')} section="nextcloud" />
 {:else if error && !status}
   <p class="error">{error}</p>
 {:else if status}
