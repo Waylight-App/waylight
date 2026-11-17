@@ -166,6 +166,7 @@
     color: var(--color-text-muted);
   }
   .clock {
+    font-family: var(--font-display);
     font-size: 2.6rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;

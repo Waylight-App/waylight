@@ -6,6 +6,8 @@
     compass,
     describe,
     type Forecast,
+    forecastHint,
+    type HintKind,
     type HealthReport,
     parseWeatherConfig,
     severityColors,
@@ -13,6 +15,7 @@
     type WeatherWarning,
   } from '../domain/weather';
   import { pollenColors, uvColors } from '../domain/healthColors';
+  import HintChip from '../../../shared/ui/HintChip.svelte';
   import type { WeatherUseCases } from '../usecase/weatherUseCases';
   import WeatherIcon from './WeatherIcon.svelte';
 
@@ -58,6 +61,20 @@
 
   const weekday = (d: Date) => d.toLocaleDateString(intlLocale(), { weekday: 'short' });
   const deg = (v: number) => `${Math.round(v)}°`;
+
+  // One hint for the next days (#509): thunderstorm, frost, heat or rain.
+  const hint = $derived(forecast ? forecastHint(forecast.days) : null);
+  const hintTone: Record<HintKind, 'accent' | 'warning'> = {
+    storm: 'warning',
+    frost: 'warning',
+    heat: 'warning',
+    rain: 'accent',
+  };
+  function hintWhen(day: number, date: Date): string {
+    if (day === 0) return t('weather.hint_today');
+    if (day === 1) return t('weather.hint_tomorrow');
+    return t('weather.hint_on', { day: date.toLocaleDateString(intlLocale(), { weekday: 'long' }) });
+  }
 </script>
 
 {#if !cfg}
@@ -83,6 +100,15 @@
     </button>
   {/each}
   <div class="weather">
+    {#if hint}
+      <p class="hint">
+        <HintChip
+          lead={t(`weather.hint_${hint.kind}`)}
+          text={hintWhen(hint.day, hint.date)}
+          tone={hintTone[hint.kind]}
+        />
+      </p>
+    {/if}
     <div class="now">
       <span class="icon"><WeatherIcon icon={now.icon} /></span>
       <div>
@@ -207,9 +233,15 @@
     color: var(--color-accent-text);
   }
   .temp {
+    font-family: var(--font-display);
     font-size: clamp(1.6rem, 15cqmin, 6rem);
     font-weight: 600;
+    font-variant-numeric: tabular-nums;
     line-height: 1;
+  }
+  .hint {
+    margin: 0 0 var(--space-2);
+    text-align: center;
   }
   .small {
     font-size: 0.85em;

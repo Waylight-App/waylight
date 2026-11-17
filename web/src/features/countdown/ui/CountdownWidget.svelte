@@ -12,6 +12,7 @@
   } from '../domain/countdown';
   import type { CountdownUseCases } from '../usecase/countdownUseCases';
   import CountdownDialog from './CountdownDialog.svelte';
+  import HintChip from '../../../shared/ui/HintChip.svelte';
 
   /** Props of the countdown widget (#54). */
   interface Props {
@@ -85,7 +86,11 @@
         <span class="title">{c.title}</span>
         <span class="when muted">{when(c)}</span>
       </span>
-      <span class="left">{label(r)}</span>
+      {#if r.kind === 'today'}
+        <HintChip lead={label(r)} />
+      {:else}
+        <span class="left">{label(r)}</span>
+      {/if}
       <span class="actions">
         <button
           class="btn btn-icon"
