@@ -158,6 +158,12 @@ export function capabilitiesOf(source: string, sources: readonly TodoSource[]): 
   );
 }
 
+/** Whether a due date (YYYY-MM-DD) is the day of `today` (#509). */
+export function isDueToday(due: string, today: Date): boolean {
+  const [y, m, d] = due.split('-').map(Number);
+  return y === today.getFullYear() && m === today.getMonth() + 1 && d === today.getDate();
+}
+
 /**
  * Formats a due date relative to today ("Today", "Tomorrow", weekday within
  * a week, otherwise the date).
