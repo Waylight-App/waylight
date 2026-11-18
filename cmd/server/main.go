@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"sync/atomic"
 	"syscall"
 	"time"
@@ -124,7 +125,7 @@ func build(ctx context.Context, cfg config.Config, log *slog.Logger) (*app, erro
 		}
 		// The demo never reads the host; disk health and WireGuard show
 		// example exports from a private directory instead.
-		smart, wg, err := demo.WriteExports(time.Now())
+		smart, wg, err := demo.WriteExports(filepath.Dir(cfg.DatabasePath), time.Now())
 		if err != nil {
 			_ = db.Close()
 			return nil, err

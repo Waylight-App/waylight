@@ -13,13 +13,19 @@ import (
 //go:embed exports/*.json
 var smartExports embed.FS
 
-// WriteExports fills a fresh private directory with example host exports
-// for the disk health and WireGuard widgets and returns its two
+// WriteExports fills a private directory below parent (rewritten on every
+// start) with example
+// host exports for the disk health and WireGuard widgets and returns its two
 // subdirectories. A demo never reads the real host (DISKHEALTH_DIR and
-// WIREGUARD_DIR are refused), so it shows these instead.
-func WriteExports(now time.Time) (smartDir, wireguardDir string, err error) {
-	root, err := os.MkdirTemp("", "waylight-demo-exports-")
-	if err != nil {
+// WIREGUARD_DIR are refused), so it shows these instead. parent is the data
+// directory: containers usually run with a read-only root and no writable
+// /tmp, but the data directory is always writable.
+func WriteExports(parent string, now time.Time) (smartDir, wireguardDir string, err error) {
+	root := filepath.Join(parent, "demo-exports")
+	if err := os.RemoveAll(root); err != nil {
+		return "", "", fmt.Errorf("demo exports: %w", err)
+	}
+	if err := os.Mkdir(root, 0o700); err != nil {
 		return "", "", fmt.Errorf("demo exports: %w", err)
 	}
 	smartDir, wireguardDir = filepath.Join(root, "smart"), filepath.Join(root, "wireguard")
