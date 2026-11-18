@@ -25,9 +25,9 @@ var demoSettings = []struct {
 	{"/api/media/settings", map[string]any{"provider": "jellyfin", "url": demo.JellyfinURL, "token": "demo-only-token"}},
 	{"/api/proxmox/settings", map[string]any{"url": demo.ProxmoxURL, "tokenId": "monitor@pve!waylight",
 		"secret": "00000000-0000-4000-8000-000000000000"}},
-	{"/api/immich/settings", map[string]any{"url": demo.ImmichURL, "apiKey": "demo-only-key"}},
+	{"/api/immich/settings", map[string]any{"url": demo.ImmichURL, "apiKey": "demo-only-key"}}, //nolint:gosec // example credentials of the demo fixtures
 	{"/api/smarthome/settings", map[string]any{"url": demo.HomeAssistantURL, "token": "demo-only-token"}},
-	{"/api/nextcloud/settings", map[string]any{"url": demo.NextcloudURL, "username": "anna", "appPassword": "demo-only-app-password"}},
+	{"/api/nextcloud/settings", map[string]any{"url": demo.NextcloudURL, "username": "anna", "appPassword": "demo-only-app-password"}}, //nolint:gosec // example credentials of the demo fixtures
 	{"/api/fritzbox/settings", map[string]any{"url": demo.FritzBoxURL, "username": "waylight", "password": "demo-only"}},
 	{"/api/fuel/settings", map[string]any{"apiKey": demo.TankerkoenigKey, "lat": 53.1435, "lon": 8.2146,
 		"place": "Oldenburg", "radiusKm": 5, "fuel": "e10"}},
@@ -127,7 +127,7 @@ func seedDemoIntegrations(ctx context.Context, handler http.Handler) error {
 			return fmt.Errorf("demo integration: %w", err)
 		}
 	}
-	for _, a := range demo.DemoArtists {
+	for _, a := range demo.Artists {
 		if _, err := c.ensure("/api/releases/artists", "id", a.ID, map[string]any{"id": a.ID, "name": a.Name}); err != nil {
 			return fmt.Errorf("demo integration: %w", err)
 		}

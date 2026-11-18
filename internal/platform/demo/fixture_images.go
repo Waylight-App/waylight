@@ -24,7 +24,7 @@ func picture(seed string, w, h int) string {
 	f := fnv.New32a()
 	_, _ = f.Write([]byte(seed))
 	n := f.Sum32()
-	a, b := palette[int(n%uint32(len(palette)))], palette[int((n/7+3)%uint32(len(palette)))]
+	a, b := palette[int(n)%len(palette)], palette[(int(n/7)+3)%len(palette)]
 	img := image.NewRGBA(image.Rect(0, 0, w, h))
 	for y := range h {
 		for x := range w {

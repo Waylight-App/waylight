@@ -12,7 +12,7 @@ const FamilyCalendarURL = "https://calendar.demo.invalid/family.ics"
 
 // DHLAPIKey is the example key of the parcel tracking; DHLParcels are
 // tracked live through the fixture below.
-const DHLAPIKey = "demo-only-dhl-key"
+const DHLAPIKey = "demo-only-dhl-key" //nolint:gosec // example key, answered only by the fixture
 
 // DHLParcels are the example shipments followed with DHL tracking.
 var DHLParcels = []struct{ Number, Label string }{

@@ -90,7 +90,7 @@ func TestDemoMode(t *testing.T) {
 	}
 
 	// The example integrations are set up once; resets add no duplicates.
-	for path, want := range map[string]int{"/api/arr/instances": 2, "/api/releases/artists": len(demo.DemoArtists),
+	for path, want := range map[string]int{"/api/arr/instances": 2, "/api/releases/artists": len(demo.Artists),
 		"/api/apiwidget/endpoints": 1, "/api/calendar/subscriptions": 1} {
 		var list []obj
 		c.json(http.MethodGet, path, nil, http.StatusOK, &list)
