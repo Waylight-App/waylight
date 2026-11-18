@@ -14,8 +14,12 @@ const variants = [
 async function openDashboard(page: Page) {
   await page.goto('/');
   // The demo opens on the sign-in page with its password shown (#539).
+  // A fresh demo seeds its showcase before it answers, so wait for either
+  // screen instead of guessing a delay.
   const fill = page.getByRole('button', { name: 'Fill in password' });
-  if (await fill.isVisible({ timeout: 5_000 }).catch(() => false)) {
+  const search = page.getByRole('combobox', { name: /Quick search/ });
+  await expect(fill.or(search)).toBeVisible({ timeout: 60_000 });
+  if (await fill.isVisible()) {
     await fill.click();
     await page.getByRole('button', { name: 'Log in' }).click();
   }
@@ -46,7 +50,7 @@ for (const v of variants) {
     });
     if (v.name.startsWith('desktop')) {
       await page.getByRole('button', { name: 'Server', exact: true }).click();
-      await expect(page.getByText(/CPU \(\d+ cores\)/)).toBeVisible({ timeout: 15_000 });
+      await expect(page.getByText(/CPU \(\d+ cores\)/).first()).toBeVisible({ timeout: 15_000 });
       await settle(page);
       await page.screenshot({ path: `${outDir}/server-${v.name}.png`, fullPage: true });
       // Widget picker (#104).
