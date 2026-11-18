@@ -176,7 +176,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		{"todos", func() modules.Module { return todos.New(db, clk, ids, alerts, secrets, out.integration, cfg.PublicURL) }},
 		{"rss", func() modules.Module { return rss.New(db, client, clk, ids, cfg.SampleFeeds) }},
 		{"system", func() modules.Module {
-			return system.New(system.Config{ProcPath: cfg.HostProcPath, SysPath: cfg.HostSysPath, DiskPaths: cfg.DiskPaths, Version: version, Client: client, InstallMethod: cfg.InstallMethod}, db, sink, clk)
+			return system.New(system.Config{ProcPath: cfg.HostProcPath, SysPath: cfg.HostSysPath, DiskPaths: cfg.DiskPaths, Version: version, Client: client, InstallMethod: cfg.InstallMethod, Demo: cfg.DemoMode}, db, sink, clk)
 		}},
 		{"docker", func() modules.Module { return dockerModule }},
 		{"adguard", func() modules.Module {
@@ -264,6 +264,9 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	kinds := append(append([]string{}, frontendOnlyWidgetKinds...), registry.WidgetKinds()...)
 	sample := dashboard.SampleWeather{Label: cfg.SampleWeather.Name, Lat: cfg.SampleWeather.Lat, Lon: cfg.SampleWeather.Lon}
 	dash := dashboard.New(db, ids, clk, kinds, sample, tabSharing)
+	if cfg.DemoMode {
+		dash.UseShowcase(sample)
+	}
 	registry.Register(dash)
 	scope.dashboard = dash
 	return authModule, registry, nil

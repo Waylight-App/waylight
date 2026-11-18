@@ -1,6 +1,7 @@
 package habits
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 
@@ -13,6 +14,7 @@ import (
 
 // Module wires the habit tracker rings and implements modules.Module (#106).
 type Module struct {
+	seedDemo func(ctx context.Context) error
 	modules.Base
 	modules.Transferable
 	handlers *controller.Handlers
@@ -20,8 +22,9 @@ type Module struct {
 
 // New builds the habit tracker module.
 func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
-	uc := usecase.NewHabits(usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids})
-	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, handlers: controller.NewHandlers(uc)}
+	deps := usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids}
+	uc := usecase.NewHabits(deps)
+	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, deps) }, Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, handlers: controller.NewHandlers(uc)}
 }
 
 // Name implements modules.Module.

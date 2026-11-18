@@ -18,6 +18,7 @@ import (
 
 // Module wires the to-do rings and implements modules.Module.
 type Module struct {
+	seedDemo func(ctx context.Context) error
 	modules.Base
 	modules.Transferable
 	handlers  *controller.Handlers
@@ -52,7 +53,7 @@ func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, alerts kernel.A
 		Sources: gateway.NewSourceRepository(db, cipher), OAuth: newOAuthPort(client, publicURL, clock.Now)}
 	d.Providers = gateway.NewProviders(client, usecase.NewTokenSource(d))
 	list := usecase.NewListTodos(d)
-	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d),
+	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d), seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, d) },
 		reminders: usecase.NewSendDueReminders(d), list: list, handlers: controller.NewHandlers(controller.UseCases{
 			List: list, Create: usecase.NewCreateTodo(d), Update: usecase.NewUpdateTodo(d),
 			Delete: usecase.NewDeleteTodo(d), ClearCompleted: usecase.NewClearCompleted(d), Sources: usecase.NewSources(d),

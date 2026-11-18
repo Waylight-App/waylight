@@ -19,6 +19,7 @@ const purgeInterval = 15 * time.Minute
 
 // Module wires the drop zone rings and implements modules.Module.
 type Module struct {
+	seedDemo func(ctx context.Context) error
 	modules.Base
 	uc       usecase.Drop
 	handlers *controller.Handlers
@@ -27,7 +28,7 @@ type Module struct {
 // New builds the module (#101); it makes no outbound requests.
 func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
 	uc := usecase.New(gateway.NewRepository(db), clock, ids)
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, uc) }, uc: uc, handlers: controller.NewHandlers(uc)}
 }
 
 // Name implements modules.Module.

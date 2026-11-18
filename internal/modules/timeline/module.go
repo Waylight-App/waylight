@@ -23,12 +23,15 @@ type Module struct {
 	modules.Base
 	uc       usecase.Timeline
 	handlers *controller.Handlers
+	seedDemo func(ctx context.Context) error
 }
 
 // New builds the timeline module.
 func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
-	uc := usecase.NewTimeline(gateway.NewRepository(db), clock, ids)
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	repo := gateway.NewRepository(db)
+	uc := usecase.NewTimeline(repo, clock, ids)
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc),
+		seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, repo, clock, ids) }}
 }
 
 // Observe implements kernel.ObservationSink.
@@ -36,6 +39,9 @@ func (m *Module) Observe(ctx context.Context, o kernel.Observation) { m.uc.Obser
 
 // Alert implements kernel.AlertSink.
 func (m *Module) Alert(ctx context.Context, a kernel.Alert) { m.uc.Alert(ctx, a) }
+
+// SeedDemo implements modules.DemoSeeder: a plausible day of events.
+func (m *Module) SeedDemo(ctx context.Context) error { return m.seedDemo(ctx) }
 
 // Name implements modules.Module.
 func (m *Module) Name() string { return "timeline" }

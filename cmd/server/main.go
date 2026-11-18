@@ -122,6 +122,14 @@ func build(ctx context.Context, cfg config.Config, log *slog.Logger) (*app, erro
 			_ = db.Close()
 			return nil, err
 		}
+		// The demo never reads the host; disk health and WireGuard show
+		// example exports from a private directory instead.
+		smart, wg, err := demo.WriteExports(time.Now())
+		if err != nil {
+			_ = db.Close()
+			return nil, err
+		}
+		cfg.DiskHealthDir, cfg.WireGuardDir = smart, wg
 	}
 	secrets, err := crypto.NewAESGCM(cfg.SecretKey)
 	if err != nil {

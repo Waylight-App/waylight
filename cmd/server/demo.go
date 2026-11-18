@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync/atomic"
 
+	"waylight/internal/platform/demo"
 	"waylight/internal/platform/scheduler"
 	"waylight/internal/shared/sqlutil"
 )
@@ -14,6 +15,11 @@ import (
 // every DEMO_RESET_INTERVAL.
 func prepareDemo(ctx context.Context, a *app) (scheduler.Task, error) {
 	if err := a.auth.PrepareDemo(ctx); err != nil {
+		return scheduler.Task{}, err
+	}
+	// Showcase data of the modules; the snapshot below includes it, so every
+	// reset brings it back.
+	if err := seedDemo(ctx, a); err != nil {
 		return scheduler.Task{}, err
 	}
 	snapshot := map[string]map[string]sqlutil.Rows{}
@@ -37,7 +43,27 @@ func prepareDemo(ctx context.Context, a *app) (scheduler.Task, error) {
 				return fmt.Errorf("reset %s: %w", name, err)
 			}
 		}
+		// Modules without an export (drop zone, backup monitor) are not in the
+		// snapshot; their seeders fill them again when a visitor emptied them
+		// or the entries expired.
+		if err := seedDemo(ctx, a); err != nil {
+			return err
+		}
 		a.log.InfoContext(ctx, "demo data reset")
 		return nil
 	}}, nil
+}
+
+// seedDemo runs the demo seeders of all modules and sets up the example
+// integrations. Each step only adds what is missing, so running it again is
+// harmless.
+func seedDemo(ctx context.Context, a *app) error {
+	return demo.Seed(func() error {
+		for name, s := range a.registry.DemoSeeders() {
+			if err := s.SeedDemo(ctx); err != nil {
+				return fmt.Errorf("demo data of %s: %w", name, err)
+			}
+		}
+		return seedDemoIntegrations(ctx, newHandler(a))
+	})
 }

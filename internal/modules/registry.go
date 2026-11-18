@@ -52,6 +52,14 @@ type Seeder interface {
 	SeedSampleData(ctx context.Context) error
 }
 
+// DemoSeeder is implemented by modules that add showcase data to the public
+// demo (DEMO_MODE): settings of example integrations, entries that make
+// their widget look used. It runs once, after the sample data and before the
+// snapshot that the hourly reset restores.
+type DemoSeeder interface {
+	SeedDemo(ctx context.Context) error
+}
+
 // GuestGated is implemented by modules with read endpoints that are too
 // personal for every guest of the module (#168): such a route is readable by
 // a guest only when the named widget kind is on one of the guest's tabs.
@@ -110,6 +118,18 @@ func (r *Registry) Seeders() map[string]Seeder {
 	out := map[string]Seeder{}
 	for _, m := range r.modules {
 		if s, ok := m.(Seeder); ok {
+			out[m.Name()] = s
+		}
+	}
+	return out
+}
+
+// DemoSeeders returns all registered modules that add demo data, keyed by
+// module name.
+func (r *Registry) DemoSeeders() map[string]DemoSeeder {
+	out := map[string]DemoSeeder{}
+	for _, m := range r.modules {
+		if s, ok := m.(DemoSeeder); ok {
 			out[m.Name()] = s
 		}
 	}

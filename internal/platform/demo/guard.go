@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync/atomic"
 
 	"waylight/internal/shared/kernel"
 )
@@ -25,11 +26,29 @@ type Cipher interface {
 	Decrypt(ciphertext string) (string, error)
 }
 
-// ReadOnlySecrets refuses to encrypt (and thus store) new secrets.
+// seeding is set while the demo stores its example data (see Seed).
+var seeding atomic.Bool
+
+// Seed runs fn with secrets enabled: the demo stores the credentials of its
+// example integrations, which point at the fixtures of Transport and never
+// at real systems. Visitors can never store secrets.
+func Seed(fn func() error) error {
+	seeding.Store(true)
+	defer seeding.Store(false)
+	return fn()
+}
+
+// ReadOnlySecrets refuses to encrypt (and thus store) new secrets outside
+// Seed.
 type ReadOnlySecrets struct{ Inner Cipher }
 
-// Encrypt implements Cipher and always fails.
-func (ReadOnlySecrets) Encrypt(string) (string, error) { return "", ErrSecretsDisabled }
+// Encrypt implements Cipher; it fails unless the demo is seeding.
+func (s ReadOnlySecrets) Encrypt(plaintext string) (string, error) {
+	if seeding.Load() {
+		return s.Inner.Encrypt(plaintext)
+	}
+	return "", ErrSecretsDisabled
+}
 
 // Decrypt implements Cipher.
 func (s ReadOnlySecrets) Decrypt(c string) (string, error) { return s.Inner.Decrypt(c) }

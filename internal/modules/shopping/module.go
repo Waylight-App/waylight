@@ -20,6 +20,8 @@ type Module struct {
 	handlers *controller.Handlers
 	lists    *controller.ListHandlers
 	repo     *gateway.ListRepository
+	// listsUC fills the demo's list (SeedDemo).
+	listsUC *usecase.Lists
 }
 
 // New builds the shopping list module; cipher encrypts the app password.
@@ -31,10 +33,12 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, ids kernel.IDGe
 	if host == "" {
 		host = "waylight.local"
 	}
+	lists := usecase.NewLists(repo, settings, store, ids, clock, host)
 	return &Module{
 		Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
 		handlers:     controller.NewHandlers(uc),
-		lists:        controller.NewListHandlers(usecase.NewLists(repo, settings, store, ids, clock, host)),
+		lists:        controller.NewListHandlers(lists),
+		listsUC:      lists,
 		repo:         repo,
 	}
 }

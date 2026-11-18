@@ -1,6 +1,7 @@
 package parcels
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
@@ -19,6 +20,7 @@ const refreshInterval = time.Hour
 
 // Module wires the parcel rings and implements modules.Module.
 type Module struct {
+	seedDemo func(ctx context.Context) error
 	modules.Base
 	modules.Transferable
 	uc       usecase.Parcels
@@ -32,14 +34,15 @@ const mailCheck = 5 * time.Minute
 // New builds the parcels module; cipher encrypts the API key and the mail
 // password, dial opens the read-only IMAP connection (#166).
 func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, dial gateway.DialFunc, clock kernel.Clock, ids kernel.IDGenerator) *Module {
-	uc := usecase.NewParcels(usecase.Deps{
+	deps := usecase.Deps{
 		Repo:      gateway.NewRepository(db, cipher),
 		Providers: map[domain.Carrier]usecase.Provider{domain.CarrierDHL: gateway.NewDHL(client, gateway.DefaultDHLURL)},
 		Clock:     clock, IDs: ids,
 		Mail:      gateway.NewIMAP(dial),
 		MailStore: gateway.NewMailStore(db, cipher, clock.Now),
-	})
-	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, uc: uc, handlers: controller.NewHandlers(uc)}
+	}
+	uc := usecase.NewParcels(deps)
+	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, deps) }, Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, uc: uc, handlers: controller.NewHandlers(uc)}
 }
 
 // Name implements modules.Module.

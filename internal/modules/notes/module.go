@@ -14,6 +14,7 @@ import (
 
 // Module wires the notes rings and implements modules.Module.
 type Module struct {
+	seedDemo func(ctx context.Context) error
 	modules.Base
 	modules.Transferable
 	handlers *controller.Handlers
@@ -27,7 +28,7 @@ func (m *Module) SeedSampleData(ctx context.Context) error { return m.seed.Execu
 func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
 	repo := gateway.NewRepository(db)
 	d := usecase.Deps{Repo: repo, Clock: clock, IDs: ids, Search: repo, Revisions: repo}
-	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d), handlers: controller.NewHandlers(controller.UseCases{
+	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d), seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, d) }, handlers: controller.NewHandlers(controller.UseCases{
 		List: usecase.NewListNotes(d), Get: usecase.NewGetNote(d), Save: usecase.NewSaveNote(d), Delete: usecase.NewDeleteNote(d),
 		Search: usecase.NewSearchNotes(d), Backlinks: usecase.NewListBacklinks(d), Revisions: usecase.NewListRevisions(d),
 		Revision: usecase.NewGetRevision(d), Restore: usecase.NewRestoreRevision(d), Share: usecase.NewShareNote(d),

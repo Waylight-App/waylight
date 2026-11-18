@@ -172,7 +172,9 @@ jobs:
           web=$(docker create waylight:web) && docker cp "$web:/src/internal/platform/webui/dist" dist && docker rm "$web"
           app=$(docker create waylight:ci) && docker cp "$app:/waylight" waylight.bin && docker rm "$app"
           echo "image=$(docker image inspect -f '{{.Size}}' waylight:ci)" >> "$GITHUB_OUTPUT"
-          docker run -d --name idle -e DEMO_MODE=true -e SECRET_KEY="$(openssl rand -base64 32)" waylight:ci
+          # A regular instance, as users run it; the demo carries far more
+          # example data and integrations since #549.
+          docker run -d --name idle -e SECRET_KEY="$(openssl rand -base64 32)" waylight:ci
           sleep 60
           echo "memory=$(docker stats --no-stream --format '{{.MemUsage}}' idle)" >> "$GITHUB_OUTPUT"
           docker rm -f idle

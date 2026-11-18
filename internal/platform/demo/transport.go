@@ -28,6 +28,12 @@ func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		now = t.Now()
 	}
 	host, path := req.URL.Hostname(), req.URL.Path
+	for _, r := range routes {
+		if r.match(host, path) {
+			status, contentType, body := r.serve(req, now)
+			return respond(req, status, contentType, body)
+		}
+	}
 	switch {
 	case host == "api.open-meteo.com":
 		return respond(req, http.StatusOK, "application/json", forecast(now))
