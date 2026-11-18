@@ -94,6 +94,7 @@ export const serverMessages = {
   srv_272f687c666a4c51: "id is required",
   srv_b27eab1b501a12b6: "incomplete credential",
   srv_3a9987390ce3d83f: "must be 1–80 characters",
+  srv_fbb05d449c473821: "must be an S256 PKCE code challenge",
   srv_0d6f4bdef976a82d: "must be base64url",
   srv_2199d11679859f04: "must be positive",
   srv_705d19e8395a99a3: "must not be empty",

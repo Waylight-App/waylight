@@ -37,7 +37,20 @@ export interface AppSessionRequestDTO {
   password?: string;
   code?: string;
   pairingCode?: string;
+  /**
+   * Verifier redeems the code of a browser handover (PKCE, #560).
+   */
+  verifier?: string;
   device: string;
+}
+/**
+ * HandoverRequestDTO is the body of POST /api/auth/app-sessions/handover.
+ */
+export interface HandoverRequestDTO {
+  /**
+   * Challenge is the S256 PKCE challenge the app passed to the sign-in page.
+   */
+  challenge: string;
 }
 /**
  * TwoFactorCodeDTO is the body of POST /api/auth/totp/confirm.

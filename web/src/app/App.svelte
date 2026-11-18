@@ -4,6 +4,12 @@
   // re-exports every auth settings component (and the QR code library behind
   // two-factor setup), which would otherwise land in the initial bundle.
   import { accountLinkPath, type AuthView } from '../features/auth/domain/auth';
+  import { appHandoverPath, parseAppHandover, type AppHandover } from '../features/auth/domain/appHandover';
+  import {
+    clearAppHandover,
+    pendingAppHandover,
+    saveAppHandover,
+  } from '../features/auth/adapter/appHandoverStore';
   import { errorMessage } from '../shared/api-client/http';
   import { canStartOffline, clearOfflineData, rememberSignedIn } from '../shared/pwa';
   import { createContainer, type Container } from './container';
@@ -29,6 +35,18 @@
   if (location.pathname === accountLinkPath && location.hash.length > 1) {
     linkToken = decodeURIComponent(location.hash.slice(1));
     history.replaceState(null, '', '/');
+  }
+  // A sign-in the mobile app started in the browser (#560): it is kept for
+  // this tab while the person signs in, then confirmed on a page of its own.
+  if (location.pathname === appHandoverPath) {
+    const request = parseAppHandover(location.search);
+    if (request) saveAppHandover(request);
+    history.replaceState(null, '', '/');
+  }
+  let appHandover = $state<AppHandover | null>(pendingAppHandover());
+  function finishAppHandover() {
+    clearAppHandover();
+    appHandover = null;
   }
   let loadError = $state('');
   let defaultTheme = $state<DefaultThemeDTO>({ id: '', css: '', scheme: '' });
@@ -104,6 +122,10 @@
       logo={branding().logo}
       logoDark={branding().logoDark}
     />
+  {/await}
+{:else if view === 'app' && appHandover && !container.localMode}
+  {#await import('../features/auth/ui/AppHandoverPage.svelte') then { default: AppHandoverPage }}
+    <AppHandoverPage auth={container.auth} handover={appHandover} ondone={finishAppHandover} />
   {/await}
 {:else if view === 'app' && location.pathname === '/capture'}
   <!-- Quick capture (#66): a page of its own, without the dashboard. -->

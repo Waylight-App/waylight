@@ -24,7 +24,15 @@ type AppSessionRequestDTO struct {
 	Password    string `json:"password,omitempty"`
 	Code        string `json:"code,omitempty"`
 	PairingCode string `json:"pairingCode,omitempty"`
-	Device      string `json:"device"`
+	// Verifier redeems the code of a browser handover (PKCE, #560).
+	Verifier string `json:"verifier,omitempty"`
+	Device   string `json:"device"`
+}
+
+// HandoverRequestDTO is the body of POST /api/auth/app-sessions/handover.
+type HandoverRequestDTO struct {
+	// Challenge is the S256 PKCE challenge the app passed to the sign-in page.
+	Challenge string `json:"challenge"`
 }
 
 // TwoFactorCodeDTO is the body of POST /api/auth/totp/confirm.

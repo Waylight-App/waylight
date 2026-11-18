@@ -92,6 +92,7 @@ export interface AuthGateway {
   revokeSession(id: string): Promise<void>;
   revokeOtherSessions(): Promise<number>;
   newPairingCode(): Promise<PairingCode>;
+  newHandoverCode(challenge: string): Promise<PairingCode>;
   twoFactorStatus(): Promise<TwoFactorStatus>;
   startTwoFactor(): Promise<TwoFactorEnrollment>;
   confirmTwoFactor(code: string): Promise<string[]>;

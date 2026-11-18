@@ -109,7 +109,10 @@ type SessionView struct {
 type AppSessionRequest struct {
 	Login       LoginRequest
 	PairingCode string
-	Device      string
+	// Verifier is the PKCE verifier that redeems the code of a browser
+	// handover (#560); empty for codes shown as QR code.
+	Verifier string
+	Device   string
 }
 
 // AppSessionResponse carries the bearer token of a new app session; it is

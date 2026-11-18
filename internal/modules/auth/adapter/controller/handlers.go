@@ -152,6 +152,7 @@ func (h *Handlers) CreateAppSession(w http.ResponseWriter, r *http.Request) {
 	res, err := h.uc.AppSessions.Create(r.Context(), usecase.AppSessionRequest{
 		Login:       usecase.LoginRequest{Username: dto.Username, Password: dto.Password, TOTPCode: dto.Code, ClientKey: clientKey(r), UserAgent: r.UserAgent()},
 		PairingCode: dto.PairingCode,
+		Verifier:    dto.Verifier,
 		Device:      dto.Device,
 	})
 	var sf *usecase.SecondFactorRequired
@@ -169,6 +170,22 @@ func (h *Handlers) CreateAppSession(w http.ResponseWriter, r *http.Request) {
 // NewPairingCode handles POST /api/auth/app-sessions/pairing-code.
 func (h *Handlers) NewPairingCode(w http.ResponseWriter, r *http.Request) {
 	res, err := h.uc.AppSessions.NewPairingCode(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusCreated, presenter.PairingCode(res))
+}
+
+// NewHandoverCode handles POST /api/auth/app-sessions/handover (#560): the
+// sign-in page asks for it after the person confirmed signing in the app.
+func (h *Handlers) NewHandoverCode(w http.ResponseWriter, r *http.Request) {
+	var dto HandoverRequestDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	res, err := h.uc.AppSessions.NewHandoverCode(r.Context(), dto.Challenge)
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return

@@ -51,3 +51,22 @@ func TestNewPairingCode(t *testing.T) {
 		t.Fatal("empty hash accepted")
 	}
 }
+
+func TestHandoverCodeVerifier(t *testing.T) {
+	now := time.Date(2026, 5, 1, 10, 0, 0, 0, time.UTC)
+	// The example of RFC 7636, appendix B.
+	c, err := NewHandoverCode(HashToken("h"), "owner", "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM", now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !c.AcceptsVerifier("dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk") || c.AcceptsVerifier("other") || c.AcceptsVerifier("") {
+		t.Fatal("verifier check wrong")
+	}
+	if !c.ExpiresAt.Equal(now.Add(HandoverCodeTTL)) {
+		t.Fatalf("expiry %v", c.ExpiresAt)
+	}
+	qr, _ := NewPairingCode(HashToken("q"), "owner", now)
+	if !qr.AcceptsVerifier("") || qr.AcceptsVerifier("x") {
+		t.Fatal("QR codes take no verifier")
+	}
+}
