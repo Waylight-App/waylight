@@ -29,6 +29,7 @@ type Session struct {
 	publicID    string
 	csrfToken   string
 	client      Client
+	device      string // empty for browser sessions
 	createdAt   time.Time
 	expiresAt   time.Time
 	refreshedAt time.Time
@@ -65,10 +66,11 @@ func NewSession(accountID string, tokenHash TokenHash, publicID, csrfToken strin
 		createdAt: now, expiresAt: now.Add(ttl), refreshedAt: now}, nil
 }
 
-// RestoreSession rebuilds a session from persisted state.
-func RestoreSession(accountID string, tokenHash TokenHash, publicID, csrfToken string, client Client, createdAt, expiresAt, refreshedAt time.Time) Session {
+// RestoreSession rebuilds a session from persisted state; device is empty
+// for browser sessions.
+func RestoreSession(accountID string, tokenHash TokenHash, publicID, csrfToken string, client Client, device string, createdAt, expiresAt, refreshedAt time.Time) Session {
 	return Session{accountID: accountID, tokenHash: tokenHash, publicID: publicID, csrfToken: csrfToken, client: client,
-		createdAt: createdAt, expiresAt: expiresAt, refreshedAt: refreshedAt}
+		device: device, createdAt: createdAt, expiresAt: expiresAt, refreshedAt: refreshedAt}
 }
 
 // AccountID returns the account the session belongs to.
@@ -79,6 +81,13 @@ func (s Session) PublicID() string { return s.publicID }
 
 // Client returns the browser metadata.
 func (s Session) Client() Client { return s.client }
+
+// Device returns the device name of an app session, or "" for a browser
+// session.
+func (s Session) Device() string { return s.device }
+
+// IsApp reports whether this is an app session (#559).
+func (s Session) IsApp() bool { return s.device != "" }
 
 // TokenHash returns the session identifier.
 func (s Session) TokenHash() TokenHash { return s.tokenHash }

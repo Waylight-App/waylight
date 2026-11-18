@@ -274,9 +274,9 @@ func NewSessionRepository(db *sql.DB) *SessionRepository { return &SessionReposi
 // Create implements usecase.SessionRepository.
 func (r *SessionRepository) Create(ctx context.Context, s domain.Session) error {
 	_, err := r.db.ExecContext(ctx,
-		`INSERT INTO auth_sessions (account_id, token_hash, public_id, csrf_token, user_agent, client_ip, created_at, expires_at, refreshed_at)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		s.AccountID(), string(s.TokenHash()), s.PublicID(), s.CSRFToken(), s.Client().UserAgent, s.Client().IP, sqlutil.FormatTime(s.CreatedAt()),
+		`INSERT INTO auth_sessions (account_id, token_hash, public_id, csrf_token, user_agent, client_ip, device, created_at, expires_at, refreshed_at)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		s.AccountID(), string(s.TokenHash()), s.PublicID(), s.CSRFToken(), s.Client().UserAgent, s.Client().IP, s.Device(), sqlutil.FormatTime(s.CreatedAt()),
 		sqlutil.FormatTime(s.ExpiresAt()), sqlutil.FormatTime(s.RefreshedAt()))
 	if err != nil {
 		return fmt.Errorf("insert session: %w", err)
@@ -284,11 +284,11 @@ func (r *SessionRepository) Create(ctx context.Context, s domain.Session) error 
 	return nil
 }
 
-const sessionColumns = `account_id, token_hash, public_id, csrf_token, user_agent, client_ip, created_at, expires_at, refreshed_at`
+const sessionColumns = `account_id, token_hash, public_id, csrf_token, user_agent, client_ip, device, created_at, expires_at, refreshed_at`
 
 func scanSession(sc interface{ Scan(...any) error }) (domain.Session, error) {
-	var account, hash, publicID, csrf, ua, ip, created, expires, refreshed string
-	if err := sc.Scan(&account, &hash, &publicID, &csrf, &ua, &ip, &created, &expires, &refreshed); err != nil {
+	var account, hash, publicID, csrf, ua, ip, device, created, expires, refreshed string
+	if err := sc.Scan(&account, &hash, &publicID, &csrf, &ua, &ip, &device, &created, &expires, &refreshed); err != nil {
 		return domain.Session{}, err
 	}
 	times := make([]time.Time, 3)
@@ -299,7 +299,7 @@ func scanSession(sc interface{ Scan(...any) error }) (domain.Session, error) {
 		}
 		times[i] = t
 	}
-	return domain.RestoreSession(account, domain.TokenHash(hash), publicID, csrf, domain.Client{UserAgent: ua, IP: ip}, times[0], times[1], times[2]), nil
+	return domain.RestoreSession(account, domain.TokenHash(hash), publicID, csrf, domain.Client{UserAgent: ua, IP: ip}, device, times[0], times[1], times[2]), nil
 }
 
 // Find implements usecase.SessionRepository.

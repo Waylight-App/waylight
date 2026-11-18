@@ -201,4 +201,13 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Richte einen zweiten Faktor ein (eine Authenticator-App oder einen Passkey), um weiterzumachen. Dein Admin verlangt das.',
   // The password must be at least {min} characters long.
   srv_15140a70901d43cd: 'Das Passwort muss mindestens {min} Zeichen lang sein.',
+  // This account cannot pair an app.
+  srv_ff3dc20386a5f761: 'Dieses Konto kann keine App koppeln.',
+  // This pairing code is not valid (any more). Show a new one in the settings.
+  srv_872a2ab087913d2c:
+    'Dieser Kopplungscode ist nicht (mehr) gültig. Lass dir in den Einstellungen einen neuen anzeigen.',
+  // hash and account are required
+  srv_1e96e5b609412e0e: 'Hash und Konto sind erforderlich',
+  // must be 1–80 characters
+  srv_3a9987390ce3d83f: 'muss 1–80 Zeichen lang sein',
 };

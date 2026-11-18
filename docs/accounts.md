@@ -230,6 +230,32 @@ proxy logs. If a device is lost or the link leaks, click **New link** (the old
 link stops working at once) or delete the display. A display is subject to
 the same network allow-list as everybody else.
 
+## Apps
+
+The [Waylight app](https://github.com/Waylight-App/waylight-mobile) for
+Android and iOS signs in with an **app session** of its own. Every account
+except kiosk displays can use it.
+
+To sign a phone in:
+
+1. Open *Settings → Mobile app* in the browser and choose
+   **Show pairing code**.
+2. Scan the QR code with the app. The code works once and for five
+   minutes; **New code** replaces it.
+
+The app can also sign in with the password and, if set up, the code of the
+authenticator app.
+
+The phone then appears under *Active sessions* with its device name, for
+example "App on Pixel 9". It stays signed in for 90 days after its last use.
+Sign it out there like any other session; changing the password signs out
+all apps as well.
+
+For developers: the app sends its token as `Authorization: Bearer wa_…`
+and needs no CSRF token. The endpoints are `POST /api/auth/app-sessions`
+and `POST /api/auth/app-sessions/pairing-code` (see the API reference);
+the design is in [ADR 0024](adr/0024-app-sessions.md).
+
 ## API tokens
 
 Scripts, iOS Shortcuts and Home Assistant can talk to Waylight with an API

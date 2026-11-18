@@ -21,6 +21,7 @@ servers:
   - url: http://localhost:8090
 security:
   - session: []
+  - appSession: []
   - apiToken: []
 tags:
   - name: auth
@@ -60,6 +61,10 @@ components:
       type: http
       scheme: bearer
       description: Personal API token (th_…) with module scopes such as todos:write; no CSRF token needed. Cannot reach /api/auth. See docs/api-tokens.md.
+    appSession:
+      type: http
+      scheme: bearer
+      description: Bearer token of an app session (wa_…) from POST /api/auth/app-sessions; acts like a session of the account, no CSRF token needed. See docs/accounts.md#apps.
   parameters:
     id: { name: id, in: path, required: true, schema: { type: string } }
   responses:

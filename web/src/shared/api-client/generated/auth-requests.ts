@@ -29,6 +29,17 @@ export interface LoginRequestDTO {
   code?: string;
 }
 /**
+ * AppSessionRequestDTO is the body of POST /api/auth/app-sessions: the
+ * fields of a login, or a pairing code from the QR code, and the device name.
+ */
+export interface AppSessionRequestDTO {
+  username?: string;
+  password?: string;
+  code?: string;
+  pairingCode?: string;
+  device: string;
+}
+/**
  * TwoFactorCodeDTO is the body of POST /api/auth/totp/confirm.
  */
 export interface TwoFactorCodeDTO {

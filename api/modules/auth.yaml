@@ -29,6 +29,26 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { description: Setup required, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
         "429": { $ref: "#/components/responses/TooManyRequests" }
+  /api/auth/app-sessions:
+    post:
+      tags: [auth]
+      summary: Sign an app in with the login fields or a pairing code (public, rate limited like the login); the bearer token is returned once (#559)
+      security: []
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/AppSessionRequest" } } } }
+      responses:
+        "201": { description: App session created, content: { application/json: { schema: { $ref: "#/components/schemas/AppSession" } } } }
+        "202": { description: Second factor required; repeat with code }
+        "401": { description: Invalid credentials or pairing code, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+  /api/auth/app-sessions/pairing-code:
+    post:
+      tags: [auth]
+      summary: Single-use pairing code for the QR code under Settings → Apps; valid for five minutes, not for kiosk displays
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/PairingCode" } } } }
+        "403": { description: Kiosk display, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
   /api/auth/logout:
     post:
       tags: [auth]
@@ -210,6 +230,28 @@ schemas:
       setupToken: { type: string }
       password: { type: string, minLength: 12, maxLength: 256 }
       profile: { type: string, enum: [everyday, homelab], description: "What the start page shows (#281); everyday seeds no Server tab. Omitted = homelab" }
+  AppSessionRequest:
+    type: object
+    required: [device]
+    properties:
+      device: { type: string, maxLength: 80, description: Name of the device, shown in the session overview }
+      pairingCode: { type: string, description: Code from the QR code; replaces username, password and code }
+      username: { type: string, description: Empty for the owner }
+      password: { type: string }
+      code: { type: string, description: TOTP or recovery code when the second factor is enabled }
+  AppSession:
+    type: object
+    required: [token, device, expiresAt]
+    properties:
+      token: { type: string, description: "Bearer token (wa_…); only returned here" }
+      device: { type: string }
+      expiresAt: { type: string, format: date-time, description: Extended on use (90 days) }
+  PairingCode:
+    type: object
+    required: [code, expiresAt]
+    properties:
+      code: { type: string }
+      expiresAt: { type: string, format: date-time }
   LoginRequest:
     type: object
     required: [password]

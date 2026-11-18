@@ -1,7 +1,7 @@
 <script lang="ts">
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
-  import { describeUserAgent, type SessionInfo } from '../domain/session';
+  import { describeSession, type SessionInfo } from '../domain/session';
   import type { AuthUseCases } from '../usecase/authUseCases';
 
   /** Props of the session overview. */
@@ -33,7 +33,7 @@
   {#each sessions as s (s.id)}
     <li>
       <span class="who">
-        <strong>{describeUserAgent(s.userAgent)}</strong>
+        <strong>{describeSession(s)}</strong>
         {#if s.current}<span class="badge">{t('auth.this_device')}</span>{/if}
         <br /><span class="muted small"
           >{t('auth.last_active', {
