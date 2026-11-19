@@ -66,3 +66,12 @@ type MaintenanceDTO struct {
 	Minutes int        `json:"minutes"`
 	Note    string     `json:"note"`
 }
+
+// AppDeviceDTO is the body of PUT /api/notifications/app-device.
+type AppDeviceDTO struct {
+	Name     string `json:"name"`
+	Platform string `json:"platform"`
+	Token    string `json:"token"`
+	// PublicKey is the device's X25519 key, base64.
+	PublicKey string `json:"publicKey"`
+}

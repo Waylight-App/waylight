@@ -50,7 +50,14 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_138e19899f7b394a:
     'Füge die https://-Adresse des Teams-Workflows ein (Auslöser: wenn eine Teams-Webhookanforderung empfangen wird).',
   // The channel type must be gotify, webhook, email, slack or teams.
-  srv_6b04c0c71a64ec19: 'Der Kanaltyp muss gotify, webhook, email, slack oder teams sein.',
+  srv_d16b183106957ea4: 'Der Kanaltyp muss gotify, webhook, email, slack, teams oder app sein.',
+  srv_582421b3bac9020d: 'Nur die Mobile-App kann sich für Push-Benachrichtigungen anmelden.',
+  srv_37ea6c105ce8cb51: 'Nur die Mobile-App kann ihr Gerät abmelden.',
+  srv_6c1d9ecca70c4817: 'Push-Benachrichtigungen an die App sind auf diesem Server ausgeschaltet.',
+  srv_e4ceda6a1ea595dc: 'Die Plattform muss fcm oder apns sein.',
+  srv_b91be91a3c1bb98d: 'Der öffentliche Schlüssel muss ein X25519-Schlüssel mit 32 Byte sein.',
+  srv_95d32fba3f7d35c3: 'Der öffentliche Schlüssel muss Base64-kodiert sein.',
+  srv_1865039b52f54fe7: 'Das Push-Token fehlt oder ist ungültig.',
   // invalid recipient
   srv_e05c34f2652ddd0f: 'Ungültiger Empfänger',
 };

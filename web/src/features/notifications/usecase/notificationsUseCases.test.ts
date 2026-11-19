@@ -17,6 +17,8 @@ describe('NotificationsUseCases', () => {
       saveChannel: vi.fn(),
       deleteChannel: vi.fn(),
       testChannel: vi.fn(),
+      appDevices: vi.fn(),
+      removeAppDevice: vi.fn(),
       maintenance: vi.fn(),
       startMaintenance: vi.fn(),
       endMaintenance: vi.fn(),

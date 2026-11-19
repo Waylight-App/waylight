@@ -81,3 +81,12 @@ export interface MaintenanceWindowDTO {
   end: string /* RFC 3339 */;
   note: string;
 }
+/**
+ * AppDeviceViewDTO describes a device; the push token is never returned.
+ */
+export interface AppDeviceViewDTO {
+  session: string;
+  name: string;
+  platform: string;
+  updatedAt: string /* RFC 3339 */;
+}

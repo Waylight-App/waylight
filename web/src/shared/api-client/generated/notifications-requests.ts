@@ -74,3 +74,15 @@ export interface MaintenanceDTO {
   minutes: number /* int */;
   note: string;
 }
+/**
+ * AppDeviceDTO is the body of PUT /api/notifications/app-device.
+ */
+export interface AppDeviceDTO {
+  name: string;
+  platform: string;
+  token: string;
+  /**
+   * PublicKey is the device's X25519 key, base64.
+   */
+  publicKey: string;
+}

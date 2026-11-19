@@ -1,5 +1,6 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type {
+  AppDeviceViewDTO,
   ChannelViewDTO,
   MaintenanceWindowDTO,
   SettingsDTO,
@@ -10,6 +11,7 @@ import type {
   SettingsInputDTO,
 } from '../../../../shared/api-client/generated/notifications-requests';
 import type {
+  AppDevice,
   Channel,
   ChannelInput,
   MaintenanceWindow,
@@ -67,6 +69,19 @@ export class NotificationsApi implements NotificationsGateway {
 
   testChannel(id: string): Promise<void> {
     return this.http.post(`/api/notifications/channels/${encodeURIComponent(id)}/test`);
+  }
+
+  async appDevices(): Promise<AppDevice[]> {
+    return (await this.http.get<AppDeviceViewDTO[]>('/api/notifications/app-devices')).map((d) => ({
+      session: d.session,
+      name: d.name,
+      platform: d.platform === 'apns' ? 'apns' : 'fcm',
+      updatedAt: new Date(d.updatedAt),
+    }));
+  }
+
+  removeAppDevice(session: string): Promise<void> {
+    return this.http.delete(`/api/notifications/app-devices/${encodeURIComponent(session)}`);
   }
 
   async maintenance(): Promise<MaintenanceWindow[]> {
