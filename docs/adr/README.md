@@ -30,3 +30,4 @@ that supersedes the old one.
 | [0022](0022-several-admins.md)              | Several admins next to the owner: by hand or from single sign-on and directory groups | Accepted |
 | [0023](0023-chat-apps-reach-private-instances.md) | How chat apps reach a private instance: Slack over Socket Mode, a Teams tab, the Teams command box search as an opt-in | Accepted |
 | [0024](0024-app-sessions.md)                | App sessions for the mobile app: sessions with a device name and a bearer token, paired by QR code | Proposed |
+| [0025](0025-push-relay.md)                  | Push relay to FCM and APNs: signed requests, tokens bound to the first instance, end-to-end encrypted payloads | Proposed |
