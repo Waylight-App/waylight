@@ -115,6 +115,7 @@ nav:
       - Prometheus metrics: metrics.md
       - Demo mode: demo.md
       - Deploy from source: deploy.md
+      - Push relay: push-relay.md
   - Security:
       - Security model: security-model.md
       - Outbound requests: outbound-requests.md
@@ -146,5 +147,6 @@ nav:
           - "ADR 0018: Data ownership": adr/0018-data-ownership.md
           - "ADR 0019: Extension without a server": adr/0019-extension-without-server.md
           - "ADR 0020: ee/ stays proprietary": adr/0020-ee-stays-proprietary.md
+          - "ADR 0025: Push relay for the mobile app": adr/0025-push-relay.md
       - Contributing: https://github.com/itadori26/waylight/blob/main/CONTRIBUTING.md
       - Roadmap: https://github.com/itadori26/waylight/blob/main/ROADMAP.md
