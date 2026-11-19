@@ -60,7 +60,7 @@ export interface NotificationPolicy {
 /** An additional delivery channel (#87); the secret is never returned. */
 export interface Channel {
   id: string;
-  kind: 'gotify' | 'webhook' | 'email' | 'slack' | 'teams';
+  kind: 'gotify' | 'webhook' | 'email' | 'slack' | 'teams' | 'app';
   name: string;
   enabled: boolean;
   minSeverity: Severity;
@@ -75,6 +75,15 @@ export interface Channel {
   from: string;
   to: string;
   tls: 'starttls' | 'tls' | 'none';
+}
+
+/** A phone that gets push notifications through the Waylight app (#564). */
+export interface AppDevice {
+  /** The app session the device belongs to. */
+  session: string;
+  name: string;
+  platform: 'fcm' | 'apns';
+  updatedAt: Date;
 }
 
 /** Input of a channel; an empty secret keeps the stored one. */

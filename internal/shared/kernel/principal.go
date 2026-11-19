@@ -28,6 +28,10 @@ type Principal struct {
 	// factor and the account has none (#304): until it sets one up, it may
 	// only reach its own account settings.
 	SecondFactorMissing bool
+	// AppSession is the public ID of the app session the request came
+	// through (ADR 0024), empty for browser sessions and tokens. The push
+	// devices of the notifications module belong to it (#564).
+	AppSession string
 }
 
 // SystemAccountID is the account that background jobs act for. It is the

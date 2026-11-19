@@ -127,3 +127,25 @@ func Maintenance(list []domain.MaintenanceWindow) []MaintenanceWindowDTO {
 	}
 	return out
 }
+
+// AppDeviceViewDTO describes a device; the push token is never returned.
+type AppDeviceViewDTO struct {
+	Session   string    `json:"session"`
+	Name      string    `json:"name"`
+	Platform  string    `json:"platform"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// AppDevice presents a push device.
+func AppDevice(d domain.AppDevice) AppDeviceViewDTO {
+	return AppDeviceViewDTO{Session: d.Session, Name: d.Name, Platform: string(d.Platform), UpdatedAt: d.UpdatedAt}
+}
+
+// AppDevices presents a list of push devices.
+func AppDevices(list []domain.AppDevice) []AppDeviceViewDTO {
+	out := make([]AppDeviceViewDTO, 0, len(list))
+	for _, d := range list {
+		out = append(out, AppDevice(d))
+	}
+	return out
+}

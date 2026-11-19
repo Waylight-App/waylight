@@ -3,6 +3,7 @@
   import { errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
   import {
+    type AppDevice,
     type Channel,
     type ChannelInput,
     alertTypes,
@@ -18,15 +19,16 @@
   let { notifications }: Props = $props();
 
   let channels = $state<Channel[]>([]);
+  let devices = $state<AppDevice[]>([]);
   let editing = $state<{ id: string | null; form: ChannelInput; hasSecret: boolean } | null>(null);
   let error = $state('');
   let message = $state('');
 
   const load = () =>
-    notifications
-      .channels()
-      .then((l) => (channels = l))
+    Promise.all([notifications.channels(), notifications.appDevices()])
+      .then(([c, d]) => ((channels = c), (devices = d)))
       .catch((err) => (error = errorMessage(err)));
+  const hasAppChannel = $derived(channels.some((c) => c.kind === 'app'));
 
   $effect(() => {
     load();
@@ -107,7 +109,9 @@
         required
       /></label
     >
-    {#if isChatChannel(editing.form.kind)}
+    {#if editing.form.kind === 'app'}
+      <p class="muted small">{t('notifications.app_hint')}</p>
+    {:else if isChatChannel(editing.form.kind)}
       <p class="muted small">
         {t(editing.form.kind === 'slack' ? 'notifications.slack_hint' : 'notifications.teams_hint')}
       </p>
@@ -169,24 +173,24 @@
         >
       </div>
     {/if}
-    <label class="field"
-      ><span
-        >{isChatChannel(editing.form.kind)
-          ? t('notifications.chat_webhook_url')
-          : editing.form.kind === 'gotify'
-            ? t('notifications.gotify_token')
-            : editing.form.kind === 'webhook'
-              ? t('notifications.webhook_secret')
-              : t('notifications.smtp_password')}{#if editing.hasSecret}
-          {t('common.keep_stored')}{/if}</span
-      ><input
-        class="input"
-        type="password"
-        autocomplete="new-password"
-        bind:value={editing.form.secret}
-        required={isChatChannel(editing.form.kind) && !editing.hasSecret}
-      /></label
-    >
+    {#if editing.form.kind !== 'app'}<label class="field"
+        ><span
+          >{isChatChannel(editing.form.kind)
+            ? t('notifications.chat_webhook_url')
+            : editing.form.kind === 'gotify'
+              ? t('notifications.gotify_token')
+              : editing.form.kind === 'webhook'
+                ? t('notifications.webhook_secret')
+                : t('notifications.smtp_password')}{#if editing.hasSecret}
+            {t('common.keep_stored')}{/if}</span
+        ><input
+          class="input"
+          type="password"
+          autocomplete="new-password"
+          bind:value={editing.form.secret}
+          required={isChatChannel(editing.form.kind) && !editing.hasSecret}
+        /></label
+      >{/if}
     {#if editing.form.kind === 'webhook'}
       <label class="field"
         ><span>{t('notifications.webhook_template')}</span><textarea
@@ -260,7 +264,43 @@
       onclick={() => (editing = { id: null, form: newChannel('teams'), hasSecret: false })}
       >+ Microsoft Teams</button
     >
+    {#if !hasAppChannel}
+      <button
+        class="btn"
+        type="button"
+        onclick={() =>
+          (editing = {
+            id: null,
+            form: { ...newChannel('app'), name: t('notifications.app') },
+            hasSecret: false,
+          })}>+ {t('notifications.app')}</button
+      >
+    {/if}
   </p>
+{/if}
+
+{#if hasAppChannel || devices.length > 0}
+  <h4>{t('notifications.app_devices')}</h4>
+  <ul class="list">
+    {#each devices as d (d.session)}
+      <li>
+        <span
+          ><strong>{d.name}</strong>
+          <span class="muted">({d.platform === 'apns' ? 'iOS' : 'Android'})</span></span
+        >
+        <button
+          class="btn btn-danger"
+          type="button"
+          onclick={() =>
+            confirm(t('common.confirm_delete', { name: d.name })) &&
+            act(() => notifications.removeAppDevice(d.session), '')}
+          >{t('notifications.app_device_remove')}</button
+        >
+      </li>
+    {:else}
+      <li class="muted">{t('notifications.app_devices_empty')}</li>
+    {/each}
+  </ul>
 {/if}
 
 <style>

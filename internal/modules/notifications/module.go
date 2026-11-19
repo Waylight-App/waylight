@@ -23,16 +23,29 @@ type Module struct {
 	uc       usecase.Notifier
 	email    *gateway.EmailPublisher
 	handlers *controller.Handlers
+	devices  *controller.AppDeviceHandlers
+}
+
+// Push configures delivery to the mobile app (#564): the relay's address
+// (empty turns it off) and the app sessions the devices belong to.
+type Push struct {
+	RelayURL string
+	Sessions kernel.AppSessions
 }
 
 // New builds the notifications module; cipher encrypts the ntfy token.
 // publicURL (PUBLIC_URL, may be nil) is linked from Slack and Teams messages.
-func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator, publicURL *url.URL) *Module {
+func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator, publicURL *url.URL, push Push) *Module {
 	link := ""
 	if publicURL != nil {
 		link = publicURL.String()
 	}
 	email := gateway.NewEmailPublisher(clock.Now)
+	var relay usecase.PushRelay
+	if push.RelayURL != "" {
+		relay = gateway.NewRelayClient(client, push.RelayURL, db, cipher, clock.Now)
+	}
+	devices := usecase.NewAppDevices(gateway.NewAppDeviceRepository(db, cipher), relay, push.Sessions, clock)
 	uc := usecase.NewNotifier(usecase.Deps{
 		Repo: gateway.NewRepository(db, cipher), Sender: gateway.NewNtfySender(client),
 		Channels: gateway.NewChannelRepository(db, cipher), Maintenance: gateway.NewMaintenanceRepository(db),
@@ -43,9 +56,10 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 			domain.ChannelEmail:   email,
 			domain.ChannelSlack:   gateway.NewSlackPublisher(client, link),
 			domain.ChannelTeams:   gateway.NewTeamsPublisher(client, link),
+			domain.ChannelApp:     devices,
 		},
 	})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc), email: email}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), devices: controller.NewAppDeviceHandlers(devices), email: email}
 }
 
 // SetInstanceName makes e-mail subjects start with the instance's name
@@ -98,6 +112,10 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/notifications/channels/{id}", m.handlers.SaveChannel)
 	r.Protected("DELETE /api/notifications/channels/{id}", m.handlers.DeleteChannel)
 	r.Protected("POST /api/notifications/channels/{id}/test", m.handlers.TestChannel)
+	r.Protected("PUT /api/notifications/app-device", m.devices.Register)
+	r.Protected("DELETE /api/notifications/app-device", m.devices.Unregister)
+	r.Protected("GET /api/notifications/app-devices", m.devices.List)
+	r.Protected("DELETE /api/notifications/app-devices/{session}", m.devices.Remove)
 	r.Protected("GET /api/notifications/maintenance", m.handlers.Maintenance)
 	r.Protected("POST /api/notifications/maintenance", m.handlers.StartMaintenance)
 	r.Protected("DELETE /api/notifications/maintenance/{id}", m.handlers.EndMaintenance)

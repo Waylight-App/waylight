@@ -110,6 +110,20 @@ func TestAppSessionsRefreshWithTheirOwnLifetime(t *testing.T) {
 	if !got.ExpiresAt.Equal(e.clock.now.Add(domain.AppSessionTTL)) {
 		t.Fatalf("refreshed to %v", got.ExpiresAt)
 	}
+	// The principal names the app session, and the session is reported as
+	// active until it is revoked (#564).
+	id := got.Principal.AppSession
+	sessions := NewManageSessions(e.sessions, e.clock, nil)
+	if active, err := sessions.AppSessionActive(context.Background(), got.Principal.AccountID, id); id == "" || !active || err != nil {
+		t.Fatalf("app session %q active=%v err=%v", id, active, err)
+	}
+	if active, _ := sessions.AppSessionActive(context.Background(), got.Principal.AccountID, "other"); active {
+		t.Fatal("unknown session reported active")
+	}
+	_ = e.sessions.Delete(context.Background(), domain.HashToken(res.Token))
+	if active, _ := sessions.AppSessionActive(context.Background(), got.Principal.AccountID, id); active {
+		t.Fatal("revoked session reported active")
+	}
 }
 
 func TestHandoverCodeNeedsTheVerifier(t *testing.T) {

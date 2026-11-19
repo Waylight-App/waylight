@@ -1,4 +1,5 @@
 import {
+  type AppDevice,
   type Channel,
   type ChannelInput,
   type MaintenanceWindow,
@@ -27,6 +28,8 @@ export interface NotificationsGateway {
   saveChannel(id: string | null, input: ChannelInput): Promise<Channel>;
   deleteChannel(id: string): Promise<void>;
   testChannel(id: string): Promise<void>;
+  appDevices(): Promise<AppDevice[]>;
+  removeAppDevice(session: string): Promise<void>;
   maintenance(): Promise<MaintenanceWindow[]>;
   startMaintenance(scope: string[], minutes: number, note: string): Promise<MaintenanceWindow>;
   endMaintenance(id: string): Promise<void>;
@@ -65,6 +68,15 @@ export class NotificationsUseCases {
 
   testChannel(id: string): Promise<void> {
     return this.gateway.testChannel(id);
+  }
+
+  /** Phones that registered for push notifications in the Waylight app. */
+  appDevices(): Promise<AppDevice[]> {
+    return this.gateway.appDevices();
+  }
+
+  removeAppDevice(session: string): Promise<void> {
+    return this.gateway.removeAppDevice(session);
   }
 
   maintenance(): Promise<MaintenanceWindow[]> {

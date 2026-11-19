@@ -62,6 +62,26 @@ Messages arrive as an Adaptive Card with the title in the colour of the
 importance, the text and, with `PUBLIC_URL` set, an *Open Waylight*
 button.
 
+### Waylight app
+
+The [mobile app](https://github.com/Waylight-App/waylight-mobile) can show
+notifications on a phone, even while it is closed. Add the channel
+**Waylight app** under *Settings → Notifications*, then turn on
+notifications in the app. The phone shows up below the channel; only
+accounts with admin rights can add theirs, because the notifications are
+about the whole instance.
+
+A phone belongs to its app session: signing out in the app, revoking the
+session under *Settings → Account → Sessions* or the session expiring
+removes it.
+
+Phones are reached through Google Firebase Cloud Messaging and the Apple
+Push Notification service, by way of the push relay of the Waylight
+project. Waylight encrypts every message for the phone before it leaves
+the server, so neither the relay nor Google or Apple can read it
+([ADR 0025](adr/0025-push-relay.md)). Set `PUSH_RELAY_URL=off` to turn the
+channel off.
+
 ## What you are notified about
 
 Under *Notify me when …* you choose the events:

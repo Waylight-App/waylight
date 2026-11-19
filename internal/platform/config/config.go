@@ -32,6 +32,9 @@ const DefaultMicrosoftClientID = "967b34c1-d6bd-4e2c-a4ae-b34c6d1d277d"
 // MicrosoftConsumersIssuer is the issuer of personal Microsoft accounts.
 const MicrosoftConsumersIssuer = "https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0"
 
+// DefaultPushRelayURL is the push relay run by the project (ADR 0025).
+const DefaultPushRelayURL = "https://push.getwaylight.app"
+
 // Config is the validated runtime configuration.
 type Config struct {
 	ListenAddr      string
@@ -142,6 +145,9 @@ type Config struct {
 	// operator names another theme; "none" leaves it empty, which keeps the
 	// look of the plain design tokens.
 	DefaultTheme string
+	// PushRelayURL is the push relay for the mobile app (ADR 0025); empty
+	// when PUSH_RELAY_URL is "off".
+	PushRelayURL string
 	// PublicURL is the address users open, e.g. https://home.example.org;
 	// required for passkeys (WebAuthn needs a fixed origin and HTTPS).
 	PublicURL *url.URL
@@ -237,6 +243,12 @@ func Load(getenv func(string) string) (Config, error) {
 		MicrosoftClientID:        strings.TrimSpace(l.str("MICROSOFT_CLIENT_ID", DefaultMicrosoftClientID)),
 		MicrosoftIssuer:          MicrosoftConsumersIssuer,
 		DefaultTheme:             defaultTheme(l.str("DEFAULT_THEME", "amber")),
+	}
+	cfg.PushRelayURL = l.str("PUSH_RELAY_URL", DefaultPushRelayURL)
+	if cfg.PushRelayURL == "off" {
+		cfg.PushRelayURL = ""
+	} else if u, err := url.Parse(cfg.PushRelayURL); err != nil || u.Scheme != "https" || u.Host == "" {
+		l.fail("PUSH_RELAY_URL", "must be an https:// address or off")
 	}
 	if raw := l.getenv("PUBLIC_URL"); raw != "" {
 		u, err := url.Parse(strings.TrimRight(raw, "/"))

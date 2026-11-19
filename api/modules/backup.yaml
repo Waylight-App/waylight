@@ -46,6 +46,26 @@ paths:
       summary: Send a test message through one channel
       parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
       responses: { "204": { description: Sent } }
+  /api/notifications/app-device:
+    put:
+      tags: [notifications]
+      summary: "Register the calling app session's phone for push notifications (#564): {name, platform: fcm|apns, token, publicKey (X25519, base64)}; admins only, app sessions only"
+      responses: { "200": { description: "{session, name, platform, updatedAt}" }, "403": { description: Not an app session or not an admin }, "503": { description: Push turned off (PUSH_RELAY_URL=off) } }
+    delete:
+      tags: [notifications]
+      summary: Stop push notifications to the calling app session's phone
+      responses: { "204": { description: Removed } }
+  /api/notifications/app-devices:
+    get:
+      tags: [notifications]
+      summary: Phones that get push notifications; the push token is never returned
+      responses: { "200": { description: "List of {session, name, platform, updatedAt}" } }
+  /api/notifications/app-devices/{session}:
+    delete:
+      tags: [notifications]
+      summary: Stop push notifications to one phone
+      parameters: [{ name: session, in: path, required: true, schema: { type: string } }]
+      responses: { "204": { description: Removed } }
   /api/notifications/maintenance:
     get:
       tags: [notifications]
