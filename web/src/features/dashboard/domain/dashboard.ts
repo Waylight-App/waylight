@@ -87,15 +87,16 @@ export function validateRules(rules: readonly TabRule[]): string | null {
 }
 
 /**
- * Picks the tab to show on load (#71): a tab chosen by hand in this
- * browser session wins, then the tab whose rules match, then the last
- * used tab, then the first one. IDs of deleted tabs are ignored.
+ * Picks the tab to show on load (#71): a tab requested by a link
+ * (?tab=<id>, #568) wins, then a tab chosen by hand in this browser
+ * session, then the tab whose rules match, then the last used tab, then
+ * the first one. IDs of deleted tabs are ignored.
  */
 export function initialTabId(
   tabIds: readonly string[],
-  choice: { manual: string; byRule: string; lastUsed: string },
+  choice: { requested?: string; manual: string; byRule: string; lastUsed: string },
 ): string {
-  for (const id of [choice.manual, choice.byRule, choice.lastUsed]) {
+  for (const id of [choice.requested ?? '', choice.manual, choice.byRule, choice.lastUsed]) {
     if (id !== '' && tabIds.includes(id)) return id;
   }
   return tabIds[0] ?? '';
