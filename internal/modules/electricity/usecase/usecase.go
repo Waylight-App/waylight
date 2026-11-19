@@ -78,9 +78,9 @@ func (uc *electricity) Prices(ctx context.Context, zone string) (Prices, error) 
 	slots, err := uc.provider.Slots(ctx, z, today, today.AddDate(0, 0, 2))
 	if err != nil {
 		if ok {
-			stale := cached.prices
-			stale.Stale = true
-			return stale, nil
+			if stale, ok := fromDay(cached.prices, today); ok {
+				return stale, nil
+			}
 		}
 		var pe *kernel.PublicError
 		if errors.As(err, &pe) {
@@ -97,4 +97,20 @@ func (uc *electricity) Prices(ctx context.Context, zone string) (Prices, error) 
 	uc.cache[z] = entry{prices: p, fetched: now}
 	uc.mu.Unlock()
 	return p, nil
+}
+
+// fromDay returns the cached prices without the hours before day, marked
+// stale; false when none are left. After midnight a failed refresh must not
+// show yesterday's prices as today's.
+func fromDay(p Prices, day time.Time) (Prices, bool) {
+	i := 0
+	for i < len(p.Hours) && p.Hours[i].Start.Before(day) {
+		i++
+	}
+	if i == len(p.Hours) {
+		return Prices{}, false
+	}
+	p.Hours = p.Hours[i:]
+	p.Stale = true
+	return p, true
 }

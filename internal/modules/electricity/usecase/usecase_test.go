@@ -62,3 +62,43 @@ func TestPrices(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestPricesAfterMidnight(t *testing.T) {
+	ctx := context.Background()
+	loc := time.FixedZone("CET", 3600)
+	c := &clk{t: time.Date(2026, 11, 14, 23, 0, 0, 0, loc)}
+	p := &fakeProvider{}
+	uc := New(p, c, loc)
+	if _, err := uc.Prices(ctx, "DE-LU"); err != nil {
+		t.Fatal(err)
+	}
+	// Past midnight the cache belongs to yesterday and is fetched again from
+	// the new day's midnight.
+	c.t = time.Date(2026, 11, 15, 0, 5, 0, 0, loc)
+	if _, err := uc.Prices(ctx, "DE-LU"); err != nil || p.calls != 2 {
+		t.Fatal(p.calls, err)
+	}
+	if !p.from.Equal(time.Date(2026, 11, 15, 0, 0, 0, 0, loc)) {
+		t.Fatal("must ask from the new midnight:", p.from)
+	}
+	// A failed refresh keeps only the hours from today on; with none left the
+	// error is shown instead of yesterday's prices.
+	c.t = time.Date(2026, 11, 16, 0, 5, 0, 0, loc)
+	p.fail = true
+	if _, err := uc.Prices(ctx, "DE-LU"); !errors.Is(err, kernel.ErrUnavailable) {
+		t.Fatal("yesterday's prices shown as stale:", err)
+	}
+}
+
+func TestFromDay(t *testing.T) {
+	loc := time.FixedZone("CET", 3600)
+	day := time.Date(2026, 11, 15, 0, 0, 0, 0, loc)
+	p := Prices{Hours: []domain.Hour{{Start: day.Add(-time.Hour)}, {Start: day}, {Start: day.Add(time.Hour)}}}
+	got, ok := fromDay(p, day)
+	if !ok || !got.Stale || len(got.Hours) != 2 || !got.Hours[0].Start.Equal(day) {
+		t.Fatalf("%+v %v", got, ok)
+	}
+	if _, ok := fromDay(p, day.AddDate(0, 0, 1)); ok {
+		t.Fatal("nothing left must report false")
+	}
+}

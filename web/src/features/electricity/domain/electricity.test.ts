@@ -16,7 +16,15 @@ describe('electricity prices (#288)', () => {
 
   it('groups by day and finds the current hour', () => {
     const hours = [h('2026-11-14T22:00:00', 10), h('2026-11-14T23:00:00', 9), h('2026-11-15T00:00:00', 8)];
-    expect(byDay(hours).map((d) => d.hours.length)).toEqual([2, 1]);
+    const now = new Date('2026-11-14T23:30:00');
+    expect(byDay(hours, now).map((d) => [d.when, d.hours.length])).toEqual([
+      ['today', 2],
+      ['tomorrow', 1],
+    ]);
+    // Shortly after midnight yesterday's hours are dropped, not shown as today.
+    expect(byDay(hours, new Date('2026-11-15T00:30:00')).map((d) => [d.when, d.hours.length])).toEqual([
+      ['today', 1],
+    ]);
     expect(currentHour(hours, new Date('2026-11-14T23:30:00'))?.centPerKWh).toBe(9);
     expect(currentHour(hours, new Date('2026-11-15T03:00:00'))).toBeUndefined();
   });
