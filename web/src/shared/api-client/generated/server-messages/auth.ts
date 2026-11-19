@@ -5,6 +5,7 @@ export const serverMessages = {
   srv_ed9c5c61fef0f9b0: "A group with this name already exists.",
   srv_083c4fe6f2b25f45: "A guest with this name already exists.",
   srv_d6a9ea1bfc72e12b: "A member can be a member or an admin.",
+  srv_11fa6fa4ace24e2a: "Accounts of this organisation may not sign in here. Ask the administrator to allow its directory.",
   srv_44205add2ef753e0: "An admin's password is set by the owner or another admin.",
   srv_7446a4ecf0cb75e6: "An invitation is valid for 1 to 30 days.",
   srv_d73d8c1a54199408: "At most 10 kiosk displays are supported.",

@@ -10,6 +10,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -26,6 +27,9 @@ type idp struct {
 	verifier string
 	claims   map[string]any
 	alg      string
+	// issuer is the issuer of the discovery document; empty means the
+	// server's address.
+	issuer string
 }
 
 var now = time.Date(2026, 11, 11, 12, 0, 0, 0, time.UTC)
@@ -40,10 +44,17 @@ func newIDP(t *testing.T) *idp {
 	mux := http.NewServeMux()
 	p.srv = httptest.NewServer(mux)
 	t.Cleanup(p.srv.Close)
-	mux.HandleFunc("/.well-known/openid-configuration", func(w http.ResponseWriter, _ *http.Request) {
-		_ = json.NewEncoder(w).Encode(map[string]string{"issuer": p.srv.URL, "authorization_endpoint": p.srv.URL + "/auth",
+	discovery := func(w http.ResponseWriter, _ *http.Request) {
+		iss := p.issuer
+		if iss == "" {
+			iss = p.srv.URL
+		}
+		_ = json.NewEncoder(w).Encode(map[string]string{"issuer": iss, "authorization_endpoint": p.srv.URL + "/auth",
 			"token_endpoint": p.srv.URL + "/token", "jwks_uri": p.srv.URL + "/jwks"})
-	})
+	}
+	mux.HandleFunc("/.well-known/openid-configuration", discovery)
+	// Microsoft's multi-tenant endpoint (#537) lives below /common/v2.0.
+	mux.HandleFunc("/common/v2.0/.well-known/openid-configuration", discovery)
 	mux.HandleFunc("/jwks", func(w http.ResponseWriter, _ *http.Request) {
 		e := big.NewInt(int64(rk.E)).Bytes()
 		_ = json.NewEncoder(w).Encode(map[string]any{"keys": []map[string]string{
@@ -205,5 +216,40 @@ func TestGroupsClaim(t *testing.T) {
 	p.claims["groups"] = []string{"office"}
 	if id, err := provider(p).Exchange(context.Background(), "the-code", "verifier-123", "n1"); err != nil || id.Groups != nil {
 		t.Errorf("groups read without a claim name: %v %v", id.Groups, err)
+	}
+}
+
+// TestMultiTenant checks Microsoft's common endpoint (#537): the issuer of a
+// token names its directory, and only the listed directories may sign in.
+func TestMultiTenant(t *testing.T) {
+	p := newIDP(t)
+	p.issuer = p.srv.URL + "/{tenantid}/v2.0"
+	rp := New(Config{Issuer: p.srv.URL + "/common/v2.0", ClientID: "client", Tenants: []string{"dir-a", "consumers"}},
+		p.srv.Client(), func() time.Time { return now })
+	token := func(tid, iss string) string {
+		c := p.goodClaims()
+		c["tid"], c["iss"] = tid, iss
+		return p.sign(t, c)
+	}
+	ctx := context.Background()
+	id, err := rp.verify(ctx, token("dir-a", p.srv.URL+"/dir-a/v2.0"), "", false)
+	if err != nil || id.Issuer != p.srv.URL+"/dir-a/v2.0" || id.Subject != "user-1" {
+		t.Fatalf("allowed directory: %+v %v", id, err)
+	}
+	if _, err := rp.verify(ctx, token("dir-b", p.srv.URL+"/dir-b/v2.0"), "", false); !errors.Is(err, ErrTenantNotAllowed) {
+		t.Fatal("other directory:", err)
+	}
+	if _, err := rp.verify(ctx, token("dir-a", p.srv.URL+"/dir-b/v2.0"), "", false); err == nil || errors.Is(err, ErrTenantNotAllowed) {
+		t.Fatal("issuer of another directory must not pass as an allowed one:", err)
+	}
+	if _, err := rp.verify(ctx, token("", p.srv.URL+"/dir-a/v2.0"), "", false); !errors.Is(err, ErrTenantNotAllowed) {
+		t.Fatal("token without directory:", err)
+	}
+
+	// A single-issuer document is refused for a multi-tenant provider.
+	plain := newIDP(t)
+	mt := New(Config{Issuer: plain.srv.URL, ClientID: "client", Tenants: []string{"dir-a"}}, plain.srv.Client(), func() time.Time { return now })
+	if _, err := mt.discover(ctx); err == nil {
+		t.Fatal("discovery without a tenant template accepted")
 	}
 }

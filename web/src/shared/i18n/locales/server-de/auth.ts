@@ -7,6 +7,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  */
 export const serverDe: Record<ServerMessageKey, string> = {
   // The code is no longer valid. Start again.
+  srv_11fa6fa4ace24e2a:
+    'Konten dieser Organisation dürfen sich hier nicht anmelden. Bitte die Administration, ihr Verzeichnis zuzulassen.',
   srv_48b65f2a0b803859: 'Der Code ist nicht mehr gültig. Bitte neu starten.',
   // This Microsoft account is not linked to an account here. Sign in with your password and connect it under Settings → Account.
   srv_d0088f948a0bcde7:

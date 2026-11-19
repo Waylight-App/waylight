@@ -53,9 +53,12 @@ var (
 
 // Errors of single sign-on.
 var (
-	ErrSSONotAllowed       = kernel.NewPublicError(kernel.ErrForbidden, "This account is not allowed to sign in here.")
-	ErrSSOStateInvalid     = kernel.NewPublicError(kernel.ErrUnauthorized, "The sign-in took too long or was started elsewhere. Please try again.")
-	ErrSSOUnavailable      = kernel.NewPublicError(kernel.ErrNotFound, "Single sign-on is not configured.")
-	ErrLocalLoginDisabled  = kernel.NewPublicError(kernel.ErrForbidden, "Password login is disabled. Use single sign-on.")
-	ErrSSOSecondFactorNeed = kernel.NewPublicError(kernel.ErrUnauthorized, "Enter your authentication code to finish signing in.")
+	ErrSSONotAllowed = kernel.NewPublicError(kernel.ErrForbidden, "This account is not allowed to sign in here.")
+	// ErrSSODirectoryNotAllowed refuses a work or school account of a
+	// directory that is not in MICROSOFT_ALLOWED_TENANTS (#537).
+	ErrSSODirectoryNotAllowed = kernel.NewPublicError(kernel.ErrForbidden, "Accounts of this organisation may not sign in here. Ask the administrator to allow its directory.")
+	ErrSSOStateInvalid        = kernel.NewPublicError(kernel.ErrUnauthorized, "The sign-in took too long or was started elsewhere. Please try again.")
+	ErrSSOUnavailable         = kernel.NewPublicError(kernel.ErrNotFound, "Single sign-on is not configured.")
+	ErrLocalLoginDisabled     = kernel.NewPublicError(kernel.ErrForbidden, "Password login is disabled. Use single sign-on.")
+	ErrSSOSecondFactorNeed    = kernel.NewPublicError(kernel.ErrUnauthorized, "Enter your authentication code to finish signing in.")
 )
