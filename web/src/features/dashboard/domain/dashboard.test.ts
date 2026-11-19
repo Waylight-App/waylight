@@ -72,6 +72,8 @@ describe('tab rules (#71)', () => {
     const ids = ['home', 'eve', 'srv'];
     expect(initialTabId(ids, { manual: 'srv', byRule: 'eve', lastUsed: 'home' })).toBe('srv');
     expect(initialTabId(ids, { manual: '', byRule: 'eve', lastUsed: 'srv' })).toBe('eve');
+    expect(initialTabId(ids, { requested: 'eve', manual: 'srv', byRule: '', lastUsed: 'home' })).toBe('eve');
+    expect(initialTabId(ids, { requested: 'gone', manual: 'srv', byRule: '', lastUsed: '' })).toBe('srv');
     expect(initialTabId(ids, { manual: 'gone', byRule: '', lastUsed: 'srv' })).toBe('srv');
     expect(initialTabId(ids, { manual: '', byRule: 'gone', lastUsed: '' })).toBe('home');
     expect(initialTabId([], { manual: '', byRule: '', lastUsed: '' })).toBe('');

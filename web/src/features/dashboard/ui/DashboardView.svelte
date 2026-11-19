@@ -208,13 +208,28 @@
     }
   }
 
+  // A link with ?tab=<id> opens that tab once (#568), e.g. from the mobile
+  // app; the parameter is dropped so a reload follows the usual choice.
+  function requestedTab(): string {
+    const url = new URL(location.href);
+    const id = url.searchParams.get('tab') ?? '';
+    if (id) {
+      url.searchParams.delete('tab');
+      // window.history: `history` here is the edit history of the tab.
+      window.history.replaceState(window.history.state, '', url);
+    }
+    return id;
+  }
+
   async function load() {
+    const requested = requestedTab();
     await run(async () => {
       const dashboard = await uc.open();
       tabs = dashboard.tabs;
       activeId = initialTabId(
         tabs.map((t) => t.id),
         {
+          requested,
           manual: readStored(() => sessionStorage, MANUAL_TAB_KEY),
           byRule: dashboard.defaultTabId,
           lastUsed: readStored(() => localStorage, ACTIVE_TAB_KEY),
