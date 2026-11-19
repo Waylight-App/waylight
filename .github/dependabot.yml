@@ -9,6 +9,10 @@ updates:
     groups:
       frontend:
         patterns: ["*"]
+    # svelte-check and typescript-eslint do not accept TypeScript 7 yet (#565).
+    ignore:
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: docker
     directory: /
     schedule: { interval: weekly }
