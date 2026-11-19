@@ -19,10 +19,13 @@ import (
 	"waylight/internal/pushrelay/jwt"
 )
 
+// Production and Sandbox are the APNs hosts.
 const (
-	// Production and Sandbox are the APNs hosts.
 	Production = "https://api.push.apple.com"
 	Sandbox    = "https://api.sandbox.push.apple.com"
+)
+
+const (
 	// tokenAge stays below the hour after which APNs rejects a provider
 	// token, and above the 20 minutes it may at most be renewed.
 	tokenAge = 40 * time.Minute

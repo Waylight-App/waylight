@@ -13,6 +13,7 @@ import (
 // Platform names a push service.
 type Platform string
 
+// The push services the relay forwards to.
 const (
 	FCM  Platform = "fcm"
 	APNs Platform = "apns"

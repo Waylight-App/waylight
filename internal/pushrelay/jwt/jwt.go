@@ -46,15 +46,13 @@ func Sign(key crypto.Signer, header, claims map[string]any) (string, error) {
 	case *rsa.PrivateKey:
 		sig, err = rsa.SignPKCS1v15(rand.Reader, k, crypto.SHA256, sum[:])
 	case *ecdsa.PrivateKey:
-		var r, s []byte
-		rr, ss, e := ecdsa.Sign(rand.Reader, k, sum[:])
+		r, s, e := ecdsa.Sign(rand.Reader, k, sum[:])
 		if e != nil {
 			return "", e
 		}
-		r, s = make([]byte, 32), make([]byte, 32)
-		rr.FillBytes(r)
-		ss.FillBytes(s)
-		sig = append(r, s...)
+		sig = make([]byte, 64)
+		r.FillBytes(sig[:32])
+		s.FillBytes(sig[32:])
 	}
 	if err != nil {
 		return "", err

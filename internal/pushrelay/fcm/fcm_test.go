@@ -24,15 +24,15 @@ func TestSend(t *testing.T) {
 	tokens, sends := 0, 0
 	var lastBody string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch {
-		case r.URL.Path == "/token":
+		switch r.URL.Path {
+		case "/token":
 			tokens++
 			_ = r.ParseForm()
 			if r.Form.Get("grant_type") != "urn:ietf:params:oauth:grant-type:jwt-bearer" || strings.Count(r.Form.Get("assertion"), ".") != 2 {
 				t.Error("bad grant", r.Form)
 			}
 			_, _ = io.WriteString(w, `{"access_token":"AT","expires_in":3600}`)
-		case r.URL.Path == "/v1/projects/proj/messages:send":
+		case "/v1/projects/proj/messages:send":
 			sends++
 			if r.Header.Get("Authorization") != "Bearer AT" {
 				t.Error("auth", r.Header.Get("Authorization"))

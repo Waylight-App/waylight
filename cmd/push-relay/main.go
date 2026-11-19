@@ -32,8 +32,9 @@ const bindingTTL = 90 * 24 * time.Hour
 func main() {
 	log := logging.New(os.Stderr, slog.LevelInfo, env("LOG_FORMAT", "json"))
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
-	if err := run(ctx, log); err != nil {
+	err := run(ctx, log)
+	stop()
+	if err != nil {
 		log.Error("push relay stopped", "error", err)
 		os.Exit(1)
 	}
@@ -84,7 +85,7 @@ func run(ctx context.Context, log *slog.Logger) error {
 func senders(client *http.Client) (map[pushrelay.Platform]pushrelay.Sender, error) {
 	out := map[pushrelay.Platform]pushrelay.Sender{}
 	if path := os.Getenv("FCM_SERVICE_ACCOUNT_FILE"); path != "" {
-		data, err := os.ReadFile(path)
+		data, err := os.ReadFile(path) //nolint:gosec // path set by the operator
 		if err != nil {
 			return nil, err
 		}
@@ -95,7 +96,7 @@ func senders(client *http.Client) (map[pushrelay.Platform]pushrelay.Sender, erro
 		out[pushrelay.FCM] = s
 	}
 	if path := os.Getenv("APNS_KEY_FILE"); path != "" {
-		key, err := os.ReadFile(path)
+		key, err := os.ReadFile(path) //nolint:gosec // path set by the operator
 		if err != nil {
 			return nil, err
 		}
