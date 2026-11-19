@@ -509,7 +509,8 @@ func ssoConfig(cfg config.Config, client *http.Client, clk clock.System) auth.SS
 	// The demo keeps the button to show the feature; the sign-in page answers
 	// it with a note instead of contacting Microsoft.
 	if cfg.MicrosoftClientID != "" {
-		sso.Microsoft = oidc.New(oidc.Config{Issuer: cfg.MicrosoftIssuer, ClientID: cfg.MicrosoftClientID}, client, clk.Now)
+		sso.Microsoft = oidc.New(oidc.Config{Issuer: cfg.MicrosoftIssuer, ClientID: cfg.MicrosoftClientID,
+			Tenants: cfg.MicrosoftTenants}, client, clk.Now)
 	}
 	return sso
 }

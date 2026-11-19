@@ -150,11 +150,19 @@ func (uc *sso) PollDevice(ctx context.Context, flowID string, client domain.Clie
 	case errors.Is(err, ErrDeviceGone):
 		uc.forgetDevice(flowID)
 		return DeviceResult{}, domain.ErrDeviceExpired
+	case errors.Is(err, domain.ErrSSODirectoryNotAllowed):
+		uc.forgetDevice(flowID)
+		return DeviceResult{}, err
 	case err != nil:
 		return DeviceResult{}, errProviderUnreachable(err)
 	}
 	uc.forgetDevice(flowID)
-	id.Provider, id.Issuer = "microsoft", uc.cfg.DeviceIssuer
+	// Work and school accounts carry the issuer of their directory, so the
+	// same person in two directories stays two links (#537).
+	id.Provider = "microsoft"
+	if id.Issuer == "" {
+		id.Issuer = uc.cfg.DeviceIssuer
+	}
 	if f.link != "" {
 		if _, _, err := uc.completeLink(ctx, f.link, id, client); err != nil {
 			return DeviceResult{}, err

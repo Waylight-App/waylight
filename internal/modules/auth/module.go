@@ -474,10 +474,12 @@ func (a deviceAdapter) PollDevice(ctx context.Context, deviceCode string) (domai
 		return domain.ExternalIdentity{}, usecase.ErrDeviceSlowDown
 	case errors.Is(err, oidc.ErrDeviceExpired), errors.Is(err, oidc.ErrDeviceDenied):
 		return domain.ExternalIdentity{}, usecase.ErrDeviceGone
+	case errors.Is(err, oidc.ErrTenantNotAllowed):
+		return domain.ExternalIdentity{}, domain.ErrSSODirectoryNotAllowed
 	case err != nil:
 		return domain.ExternalIdentity{}, err
 	}
-	return domain.ExternalIdentity{Subject: id.Subject, Email: id.Email, EmailVerified: id.EmailVerified,
+	return domain.ExternalIdentity{Issuer: id.Issuer, Subject: id.Subject, Email: id.Email, EmailVerified: id.EmailVerified,
 		Name: id.Name, Username: id.Username}, nil
 }
 

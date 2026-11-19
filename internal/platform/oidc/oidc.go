@@ -21,6 +21,7 @@ import (
 	"math/big"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -41,10 +42,28 @@ type Config struct {
 	// GroupsClaim names a claim with a list of groups (e.g. "groups" or
 	// "roles"); empty reads none. Used by single sign-on for members (#302).
 	GroupsClaim string
+	// Tenants turns the provider into a Microsoft multi-tenant endpoint
+	// (#537), such as https://login.microsoftonline.com/common/v2.0: the
+	// issuer of an ID token then names the account's directory
+	// (https://login.microsoftonline.com/{tid}/v2.0, with the tid claim),
+	// and only the directories listed here may sign in. Empty keeps the
+	// single issuer of Issuer.
+	Tenants []string
 }
+
+// ErrTenantNotAllowed is returned for an ID token of a directory that is
+// not in Config.Tenants.
+var ErrTenantNotAllowed = errors.New("id token: directory not allowed")
+
+// tenantPlaceholder is how Microsoft's discovery document of a multi-tenant
+// endpoint writes the directory in its issuer.
+const tenantPlaceholder = "{tenantid}"
 
 // Identity is the verified subject of an ID token.
 type Identity struct {
+	// Issuer is the verified issuer of the token; for a multi-tenant
+	// provider it names the account's directory.
+	Issuer        string
 	Subject       string
 	Email         string
 	EmailVerified bool
@@ -112,7 +131,13 @@ func (p *Provider) discover(ctx context.Context) (*discovery, error) {
 	if err := p.getJSON(ctx, p.cfg.Issuer+"/.well-known/openid-configuration", &doc); err != nil {
 		return nil, fmt.Errorf("oidc discovery: %w", err)
 	}
-	if strings.TrimRight(doc.Issuer, "/") != p.cfg.Issuer {
+	if len(p.cfg.Tenants) > 0 {
+		// A multi-tenant endpoint has no issuer of its own; its document
+		// names the template that verify fills with the token's directory.
+		if !strings.Contains(doc.Issuer, tenantPlaceholder) {
+			return nil, fmt.Errorf("oidc discovery: %q is no multi-tenant issuer", doc.Issuer)
+		}
+	} else if strings.TrimRight(doc.Issuer, "/") != p.cfg.Issuer {
 		return nil, fmt.Errorf("oidc discovery: issuer %q does not match %q", doc.Issuer, p.cfg.Issuer)
 	}
 	if doc.AuthEndpoint == "" || doc.TokenEndpoint == "" || doc.JWKSURI == "" {
@@ -205,6 +230,8 @@ type claims struct {
 	EmailVerified bool            `json:"email_verified"`
 	Name          string          `json:"name"`
 	Username      string          `json:"preferred_username"`
+	// Tid is the directory of a Microsoft account (#537).
+	Tid string `json:"tid"`
 }
 
 func (c claims) audience() []string {
@@ -221,6 +248,23 @@ func (c claims) audience() []string {
 // audience, expiry, issue time and nonce.
 func (p *Provider) Verify(ctx context.Context, raw, nonce string) (Identity, error) {
 	return p.verify(ctx, raw, nonce, true)
+}
+
+// expectedIssuer is the issuer an ID token must carry: the configured one,
+// or for a multi-tenant provider the template filled with the token's
+// directory, which must be one of Config.Tenants.
+func (p *Provider) expectedIssuer(ctx context.Context, tid string) (string, error) {
+	if len(p.cfg.Tenants) == 0 {
+		return p.cfg.Issuer, nil
+	}
+	if tid == "" || !slices.Contains(p.cfg.Tenants, tid) {
+		return "", ErrTenantNotAllowed
+	}
+	d, err := p.discover(ctx)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimRight(strings.ReplaceAll(d.Issuer, tenantPlaceholder, tid), "/"), nil
 }
 
 // verify checks an ID token; withNonce is false only for the device flow,
@@ -254,9 +298,13 @@ func (p *Provider) verify(ctx context.Context, raw, nonce string, withNonce bool
 	if err := decodePart(parts[1], &c); err != nil {
 		return Identity{}, fmt.Errorf("id token claims: %w", err)
 	}
+	issuer, err := p.expectedIssuer(ctx, c.Tid)
+	if err != nil {
+		return Identity{}, err
+	}
 	now := p.now()
 	switch {
-	case strings.TrimRight(c.Iss, "/") != p.cfg.Issuer:
+	case strings.TrimRight(c.Iss, "/") != issuer:
 		return Identity{}, errors.New("id token: wrong issuer")
 	case !contains(c.audience(), p.cfg.ClientID):
 		return Identity{}, errors.New("id token: wrong audience")
@@ -269,7 +317,7 @@ func (p *Provider) verify(ctx context.Context, raw, nonce string, withNonce bool
 	case c.Sub == "":
 		return Identity{}, errors.New("id token: no subject")
 	}
-	id := Identity{Subject: c.Sub, Email: c.Email, EmailVerified: c.EmailVerified, Name: c.Name, Username: c.Username}
+	id := Identity{Issuer: issuer, Subject: c.Sub, Email: c.Email, EmailVerified: c.EmailVerified, Name: c.Name, Username: c.Username}
 	if p.cfg.GroupsClaim != "" {
 		var all map[string]json.RawMessage
 		if err := decodePart(parts[1], &all); err == nil {

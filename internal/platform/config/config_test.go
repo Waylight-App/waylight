@@ -212,3 +212,21 @@ func TestDNSPauseProviders(t *testing.T) {
 		t.Fatal("a demo must not pause a real DNS filter")
 	}
 }
+
+// TestMicrosoftAllowedTenants switches the sign-in by code to the common
+// endpoint, keeping personal accounts (#537).
+func TestMicrosoftAllowedTenants(t *testing.T) {
+	cfg, err := Load(env(map[string]string{"SECRET_KEY": validKey}))
+	if err != nil || cfg.MicrosoftIssuer != MicrosoftConsumersIssuer || cfg.MicrosoftTenants != nil {
+		t.Fatalf("default: %v %v %v", cfg.MicrosoftIssuer, cfg.MicrosoftTenants, err)
+	}
+	const dir = "72f988bf-86f1-41af-91ab-2d7cd011db47"
+	cfg, err = Load(env(map[string]string{"SECRET_KEY": validKey, "MICROSOFT_ALLOWED_TENANTS": dir}))
+	if err != nil || cfg.MicrosoftIssuer != MicrosoftCommonIssuer || len(cfg.MicrosoftTenants) != 2 ||
+		cfg.MicrosoftTenants[0] != MicrosoftConsumersTenant || cfg.MicrosoftTenants[1] != dir {
+		t.Fatalf("tenants: %v %v %v", cfg.MicrosoftIssuer, cfg.MicrosoftTenants, err)
+	}
+	if _, err := Load(env(map[string]string{"SECRET_KEY": validKey, "MICROSOFT_ALLOWED_TENANTS": "contoso.com"})); err == nil {
+		t.Fatal("a domain name must be refused; Microsoft names directories by ID")
+	}
+}

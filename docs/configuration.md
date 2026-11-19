@@ -67,6 +67,7 @@ Durations use Go syntax: `90s`, `15m`, `24h`, `720h`.
 | `OIDC_BUTTON_ICON` | empty | An icon on that button: `microsoft` or `key`. |
 | `OIDC_AUTO_REDIRECT` | `false` | With `PASSWORD_LOGIN=false`, the sign-in page goes straight to the provider. `/?local=1` still shows it. See [single sign-on](reverse-proxy.md#single-sign-on-optional). |
 | `MICROSOFT_CLIENT_ID` | built in | Microsoft app registration for signing in with a personal Microsoft account by code, without any setup or HTTPS. Replace it with your own public client id; empty turns it off. See [sign in with Microsoft](sign-in-with-microsoft.md). |
+| `MICROSOFT_ALLOWED_TENANTS` | empty | Directory (tenant) IDs, separated by commas, whose work or school accounts may sign in by code as well. Empty allows personal accounts only. See [sign in with Microsoft](sign-in-with-microsoft.md#by-code). |
 
 ## Actions that change other systems
 

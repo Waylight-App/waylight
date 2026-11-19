@@ -31,9 +31,9 @@ anything else. `MICROSOFT_CLIENT_ID` replaces the built-in registration with
 your own, and an empty value turns signing in by code off
 ([configuration](configuration.md)).
 
-Signing in by code takes personal accounts only. For work or school
-accounts, see [With a work or school account](#with-a-work-or-school-account)
-below.
+Signing in by code takes personal accounts. Work or school accounts can
+sign in by code too once their directory is allowed; see
+[With a work or school account](#with-a-work-or-school-account) below.
 
 The rest of this page sets up the other way, a sign-in that sends you to
 Microsoft and back. It needs your own registration and an HTTPS address.
@@ -107,7 +107,32 @@ reset link from an admin or *Forgot password* on the sign-in page.
 
 ## With a work or school account
 
-Accounts of an organisation (Microsoft Entra ID) sign in through the
+### By code
+
+List the directories whose accounts may sign in by code in
+`MICROSOFT_ALLOWED_TENANTS`, separated by commas:
+
+```sh
+MICROSOFT_ALLOWED_TENANTS=72f988bf-86f1-41af-91ab-2d7cd011db47
+```
+
+The *Directory (tenant) ID* is on the overview page of Microsoft Entra ID,
+or the organisation's administrator can tell you. Personal accounts keep
+working. An account of any other directory is refused with a note to ask
+the administrator.
+
+Each person links their account once from *Settings → Account*, as with a
+personal account. A person with accounts in two directories links them
+separately; Waylight keeps them apart.
+
+Many organisations let only administrators approve new apps. Then the
+person sees "Need admin approval" on Microsoft's page instead of the
+confirmation, and an administrator of the directory has to grant consent
+to Waylight first, under *Enterprise applications* in Microsoft Entra ID.
+
+### Through the organisation's own registration
+
+Accounts of an organisation (Microsoft Entra ID) can also sign in through the
 organisation's own registration, so its administrators keep control of who
 may sign in, multi-factor rules and conditional access. Follow the steps
 above with two changes:

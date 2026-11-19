@@ -30,7 +30,15 @@ const DefaultAllowedCIDRs = "127.0.0.0/8,::1/128,10.0.0.0/8,172.16.0.0/12,192.16
 const DefaultMicrosoftClientID = "967b34c1-d6bd-4e2c-a4ae-b34c6d1d277d"
 
 // MicrosoftConsumersIssuer is the issuer of personal Microsoft accounts.
-const MicrosoftConsumersIssuer = "https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0"
+const MicrosoftConsumersIssuer = "https://login.microsoftonline.com/" + MicrosoftConsumersTenant + "/v2.0"
+
+// MicrosoftConsumersTenant is the directory of every personal Microsoft
+// account.
+const MicrosoftConsumersTenant = "9188040d-6c67-4c5b-b112-36a304b66dad"
+
+// MicrosoftCommonIssuer is the multi-tenant endpoint for personal and work
+// or school accounts (#537).
+const MicrosoftCommonIssuer = "https://login.microsoftonline.com/common/v2.0"
 
 // Config is the validated runtime configuration.
 type Config struct {
@@ -132,6 +140,10 @@ type Config struct {
 	// MicrosoftIssuer is the Microsoft identity platform for personal
 	// accounts; tests point it at a fake.
 	MicrosoftIssuer string
+	// MicrosoftTenants are the directories whose accounts may sign in by
+	// code (#537): personal accounts plus MICROSOFT_ALLOWED_TENANTS. Empty
+	// when that is not set, which keeps MicrosoftIssuer the single issuer.
+	MicrosoftTenants []string
 	// OIDCButtonLabel, OIDCButtonIcon and OIDCAutoRedirect shape the
 	// sign-in page for single sign-on (#514).
 	OIDCButtonLabel  string
@@ -237,6 +249,15 @@ func Load(getenv func(string) string) (Config, error) {
 		MicrosoftClientID:        strings.TrimSpace(l.str("MICROSOFT_CLIENT_ID", DefaultMicrosoftClientID)),
 		MicrosoftIssuer:          MicrosoftConsumersIssuer,
 		DefaultTheme:             defaultTheme(l.str("DEFAULT_THEME", "amber")),
+	}
+	if tenants := l.rawList("MICROSOFT_ALLOWED_TENANTS", ""); len(tenants) > 0 {
+		for _, t := range tenants {
+			if !isDirectoryID(t) {
+				l.fail("MICROSOFT_ALLOWED_TENANTS", "must list directory (tenant) IDs, e.g. 72f988bf-86f1-41af-91ab-2d7cd011db47")
+			}
+		}
+		cfg.MicrosoftIssuer = MicrosoftCommonIssuer
+		cfg.MicrosoftTenants = append([]string{MicrosoftConsumersTenant}, tenants...)
 	}
 	if raw := l.getenv("PUBLIC_URL"); raw != "" {
 		u, err := url.Parse(strings.TrimRight(raw, "/"))
@@ -462,4 +483,23 @@ func (l *loader) secretKey(key string) []byte {
 		return nil
 	}
 	return b
+}
+
+// isDirectoryID reports whether s looks like a Microsoft directory ID, a
+// GUID such as 72f988bf-86f1-41af-91ab-2d7cd011db47.
+func isDirectoryID(s string) bool {
+	if len(s) != 36 {
+		return false
+	}
+	for i, r := range s {
+		switch {
+		case i == 8 || i == 13 || i == 18 || i == 23:
+			if r != '-' {
+				return false
+			}
+		case !strings.ContainsRune("0123456789abcdefABCDEF", r):
+			return false
+		}
+	}
+	return true
 }
