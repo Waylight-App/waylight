@@ -53,6 +53,7 @@ func TestGuestAccess(t *testing.T) {
 	g.do(http.MethodGet, "/api/appearance", nil, http.StatusOK)
 	g.do(http.MethodGet, "/api/search?q=waylight", nil, http.StatusFound) // web search of the search field (#221)
 	g.do(http.MethodGet, "/api/search/settings", nil, http.StatusForbidden)
+	g.do(http.MethodGet, "/api/search/answers?q=cpu", nil, http.StatusForbidden) // smart search answers (ADR 0026)
 	for _, path := range []string{"/api/notes", "/api/todos", "/api/system", "/api/docker/containers", "/api/bookmarks",
 		"/api/notifications/settings", "/api/adguard/settings", "/api/auth/events", "/api/auth/guests", "/api/transfer/export",
 		"/api/backups", "/api/dashboard/templates"} {

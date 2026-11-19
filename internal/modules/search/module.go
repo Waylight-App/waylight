@@ -4,12 +4,17 @@ import (
 	"context"
 	"database/sql"
 	"io/fs"
+	"log/slog"
+	"net/http"
+	"time"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/search/adapter/configfile"
 	"waylight/internal/modules/search/adapter/controller"
 	"waylight/internal/modules/search/adapter/gateway"
 	"waylight/internal/modules/search/usecase"
+	"waylight/internal/shared/answers"
+	"waylight/internal/shared/kernel"
 )
 
 // Module wires the search rings and implements modules.Module.
@@ -20,6 +25,39 @@ type Module struct {
 	repo     *gateway.Repository
 	seed     usecase.SeedSampleData
 	config   usecase.Config
+	answers  *answerEngine
+}
+
+// answerEngine answers the smart search over the sources the account may use.
+type answerEngine struct {
+	sources []answers.Source
+	mayUse  func(ctx context.Context, module string) bool
+	clock   kernel.Clock
+	log     *slog.Logger
+}
+
+// Answer implements controller.AnswerEngine. Sources of modules hidden from
+// the account by the admin's policy do not answer.
+func (e *answerEngine) Answer(r *http.Request, query string, lang answers.Lang) []answers.Answer {
+	ctx := r.Context()
+	allowed := make([]answers.Source, 0, len(e.sources))
+	for _, s := range e.sources {
+		if e.mayUse == nil || e.mayUse(ctx, s.ID()) {
+			allowed = append(allowed, s)
+		}
+	}
+	ctx, cancel := context.WithTimeout(ctx, answerTimeout)
+	defer cancel()
+	return answers.NewEngine(e.log, allowed...).Answer(ctx, query, lang, e.clock.Now())
+}
+
+// answerTimeout bounds one search; a slow source answers "not available".
+const answerTimeout = 5 * time.Second
+
+// SetAnswerSources installs the sources of the smart search (ADR 0026):
+// those of the enabled modules, filtered per request by mayUse.
+func (m *Module) SetAnswerSources(log *slog.Logger, clock kernel.Clock, mayUse func(ctx context.Context, module string) bool, sources []answers.Source) {
+	m.answers = &answerEngine{sources: sources, mayUse: mayUse, clock: clock, log: log}
 }
 
 // New builds the search module.
@@ -94,6 +132,13 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/search", h.Search)
 	r.Public("GET /api/search/opensearch.xml", h.OpenSearch)
 	r.Protected("GET /api/search/settings", h.Settings)
+	a := controller.NewAnswerHandlers(func() controller.AnswerEngine {
+		if m.answers == nil {
+			return nil
+		}
+		return m.answers
+	})
+	r.Protected("GET /api/search/answers", a.Answers)
 	r.Protected("PUT /api/search/settings", h.SetDefaultProvider)
 	r.Protected("PUT /api/search/bar", h.SetBarOptions)
 	r.Protected("POST /api/search/shortcuts", h.AddShortcut)

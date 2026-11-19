@@ -11,8 +11,10 @@ import (
 	"waylight/internal/modules"
 	"waylight/internal/modules/docker/adapter/controller"
 	"waylight/internal/modules/docker/adapter/gateway"
+	"waylight/internal/modules/docker/adapter/smartsearch"
 	"waylight/internal/modules/docker/domain"
 	"waylight/internal/modules/docker/usecase"
+	"waylight/internal/shared/answers"
 	"waylight/internal/shared/kernel"
 )
 
@@ -129,4 +131,10 @@ func (m *Module) Containers(ctx context.Context) ([]usecase.ContainerView, error
 		return nil, ErrContainersUnavailable
 	}
 	return res.Containers, nil
+}
+
+// AnswerSources implements answers.Provider: the docker answers of the smart
+// search (ADR 0026).
+func (m *Module) AnswerSources() []answers.Source {
+	return []answers.Source{smartsearch.New(m.uc)}
 }

@@ -11,6 +11,17 @@ paths:
       responses:
         "302": { description: Redirect to the provider, headers: { Location: { schema: { type: string, format: uri } } } }
         "422": { $ref: "#/components/responses/Invalid" }
+  /api/search/answers:
+    get:
+      tags: [search]
+      summary: Answers of the smart search (ADR 0026) - up to three, in the client's language
+      description: Only modules the account may read answer; guests are refused.
+      parameters:
+        - { name: q, in: query, required: true, schema: { type: string, maxLength: 200 } }
+        - { name: lang, in: query, required: false, description: 'en or de; else Accept-Language, else en', schema: { type: string } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/SearchAnswers" } } } }
+        "403": { description: Guests cannot use the smart search, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
   /api/search/opensearch.xml:
     get:
       tags: [search]
@@ -103,3 +114,35 @@ schemas:
           todo: { type: string, examples: [t] }
           note: { type: string, examples: [n] }
           bookmark: { type: string, examples: [b] }
+  SearchAnswers:
+    type: object
+    required: [answers]
+    properties:
+      answers: { type: array, maxItems: 3, items: { $ref: "#/components/schemas/SearchAnswer" } }
+  SearchAnswer:
+    type: object
+    required: [kind, intent, title]
+    properties:
+      kind: { type: string, enum: [metric, status, list, text, actions] }
+      intent: { type: string, examples: [system.cpu] }
+      title: { type: string }
+      widgetKind: { type: string, description: Widget with the details }
+      at: { type: string, format: date-time, description: When the data was measured }
+      value: { type: string, description: metric }
+      detail: { type: string, description: metric and status }
+      percent: { type: number, description: 'metric: 0-100 for a meter' }
+      severity: { type: string, enum: [ok, warning, critical] }
+      state: { type: string, enum: [ok, warning, error, "off"], description: status }
+      text: { type: string, description: text and status }
+      suggestions: { type: array, items: { type: string }, description: 'text: names to pick when the search asks back' }
+      empty: { type: string, description: 'list: shown when there are no items' }
+      items:
+        type: array
+        items:
+          type: object
+          required: [label, value]
+          properties:
+            label: { type: string }
+            value: { type: string }
+            state: { type: string, enum: [ok, warning, error, "off"] }
+            percent: { type: number }
