@@ -20,6 +20,7 @@ import {
 import type { LinkedSignIn, MicrosoftFlow, MicrosoftPoll } from '../domain/identity';
 import type { SecurityEvent } from '../domain/securityEvent';
 import type { SessionInfo } from '../domain/session';
+import type { PairingCode } from '../domain/appPairing';
 import type { TwoFactorEnrollment, TwoFactorStatus } from '../domain/twoFactor';
 import type { Passkey, SecondFactorChallenge } from '../domain/passkey';
 import type { AuthGateway, CsrfTokenStore, PasskeyAuthenticator } from './ports';
@@ -410,6 +411,11 @@ export class AuthUseCases {
   /** Signs out every other device; returns how many sessions ended. */
   revokeOtherSessions(): Promise<number> {
     return this.gateway.revokeOtherSessions();
+  }
+
+  /** A single-use code for the QR code that pairs the mobile app. */
+  newPairingCode(): Promise<PairingCode> {
+    return this.gateway.newPairingCode();
   }
 
   twoFactorStatus(): Promise<TwoFactorStatus> {

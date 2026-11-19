@@ -47,6 +47,28 @@ func (i sessionIssuer) issue(ctx context.Context, accountID string, client domai
 	return SessionResponse{SessionToken: raw, CSRFToken: csrf, ExpiresAt: s.ExpiresAt()}, nil
 }
 
+// issueApp creates an app session for device (#559). The token carries
+// AppSessionTokenPrefix and is returned once; only its hash is stored.
+func (i sessionIssuer) issueApp(ctx context.Context, accountID string, client domain.Client, device string) (AppSessionResponse, error) {
+	raw, err := i.tokens.NewToken()
+	if err != nil {
+		return AppSessionResponse{}, fmt.Errorf("generate session token: %w", err)
+	}
+	csrf, err := i.tokens.NewToken()
+	if err != nil {
+		return AppSessionResponse{}, fmt.Errorf("generate csrf token: %w", err)
+	}
+	token := domain.AppSessionTokenPrefix + raw
+	s, err := domain.NewAppSession(accountID, domain.HashToken(token), i.ids.NewID(), csrf, client, device, i.clock.Now())
+	if err != nil {
+		return AppSessionResponse{}, err
+	}
+	if err := i.sessions.Create(ctx, s); err != nil {
+		return AppSessionResponse{}, fmt.Errorf("store session: %w", err)
+	}
+	return AppSessionResponse{Token: token, Device: s.Device(), ExpiresAt: s.ExpiresAt()}, nil
+}
+
 // validSession loads the session for raw and rejects unknown or expired ones.
 func validSession(ctx context.Context, repo SessionRepository, raw string, now time.Time) (domain.Session, error) {
 	if raw == "" {

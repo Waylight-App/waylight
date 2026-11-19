@@ -95,12 +95,35 @@ type ChangePasswordRequest struct {
 // SessionView describes an active session in the session overview.
 type SessionView struct {
 	ID         string
+	Device     string // empty for browser sessions
 	UserAgent  string
 	ClientIP   string
 	CreatedAt  time.Time
 	LastSeenAt time.Time
 	ExpiresAt  time.Time
 	Current    bool
+}
+
+// AppSessionRequest signs a device in (#559): either with the credentials
+// of a login or with a pairing code.
+type AppSessionRequest struct {
+	Login       LoginRequest
+	PairingCode string
+	Device      string
+}
+
+// AppSessionResponse carries the bearer token of a new app session; it is
+// shown only once.
+type AppSessionResponse struct {
+	Token     string
+	Device    string
+	ExpiresAt time.Time
+}
+
+// PairingCodeResponse is a pairing code for the QR code of the web interface.
+type PairingCodeResponse struct {
+	Code      string
+	ExpiresAt time.Time
 }
 
 // SessionResponse describes a newly created session. SessionToken is the raw

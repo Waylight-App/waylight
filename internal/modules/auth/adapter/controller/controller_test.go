@@ -30,6 +30,8 @@ func (f fakeAuth) Execute(_ context.Context, req usecase.AuthenticateRequest) (u
 		return usecase.AuthenticateResponse{}, f.err
 	case req.SessionToken == "tok":
 		return usecase.AuthenticateResponse{CSRFToken: "csrf", Principal: kernel.Principal{AccountID: "owner", Role: "owner"}}, nil
+	case req.SessionToken == "wa_app":
+		return usecase.AuthenticateResponse{CSRFToken: "csrf", Refreshed: true, Principal: kernel.Principal{AccountID: "owner", Role: "owner"}}, nil
 	case req.SessionToken == "guest":
 		return usecase.AuthenticateResponse{CSRFToken: "csrf", Principal: kernel.Principal{AccountID: "g1", Role: "guest"}}, nil
 	}
@@ -104,6 +106,46 @@ func TestGuard(t *testing.T) {
 				t.Fatalf("status %d, want %d", rec.Code, tt.want)
 			}
 		})
+	}
+}
+
+func TestGuardAcceptsAppSessionsWithoutCSRF(t *testing.T) {
+	h := NewHandlers(UseCases{Authenticate: fakeAuth{}, Authorizer: usecase.NewAuthorizer(nil)}, CookieConfig{})
+	guarded := h.Guard(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusNoContent) }))
+	for token, want := range map[string]int{"wa_app": http.StatusNoContent, "wa_unknown": http.StatusUnauthorized} {
+		r := httptest.NewRequest(http.MethodPost, "/api/x", nil)
+		r.Header.Set("Authorization", "Bearer "+token)
+		rec := httptest.NewRecorder()
+		guarded.ServeHTTP(rec, r)
+		if rec.Code != want {
+			t.Fatalf("%s: status %d, want %d", token, rec.Code, want)
+		}
+		if len(rec.Result().Cookies()) != 0 {
+			t.Fatalf("%s: app sessions must not set cookies", token)
+		}
+	}
+}
+
+type fakeAppSessions struct{ usecase.AppSessions }
+
+func (fakeAppSessions) Create(_ context.Context, req usecase.AppSessionRequest) (usecase.AppSessionResponse, error) {
+	if req.Login.Password != "pw" {
+		return usecase.AppSessionResponse{}, domain.ErrInvalidCredentials
+	}
+	return usecase.AppSessionResponse{Token: "wa_new", Device: req.Device}, nil
+}
+
+func TestCreateAppSession(t *testing.T) {
+	h := NewHandlers(UseCases{AppSessions: fakeAppSessions{}}, CookieConfig{})
+	for body, want := range map[string]int{`{"password":"pw","device":"Pixel"}`: http.StatusCreated, `{"password":"no","device":"Pixel"}`: http.StatusUnauthorized} {
+		rec := httptest.NewRecorder()
+		h.CreateAppSession(rec, httptest.NewRequest(http.MethodPost, "/api/auth/app-sessions", strings.NewReader(body)))
+		if rec.Code != want {
+			t.Fatalf("%s: status %d, want %d", body, rec.Code, want)
+		}
+		if want == http.StatusCreated && (!strings.Contains(rec.Body.String(), `"token":"wa_new"`) || len(rec.Result().Cookies()) != 0) {
+			t.Fatalf("unexpected response %s", rec.Body)
+		}
 	}
 }
 

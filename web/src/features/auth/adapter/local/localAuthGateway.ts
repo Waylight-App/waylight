@@ -99,6 +99,7 @@ export class LocalAuthGateway implements AuthGateway {
   securityEvents = unavailable;
   revokeSession = unavailable;
   revokeOtherSessions = unavailable;
+  newPairingCode = unavailable;
   twoFactorStatus = unavailable;
   startTwoFactor = unavailable;
   confirmTwoFactor = unavailable;

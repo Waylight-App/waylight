@@ -74,7 +74,11 @@ func (uc *authenticate) Execute(ctx context.Context, req AuthenticateRequest) (A
 		_ = uc.sessions.Delete(ctx, s.TokenHash())
 		return AuthenticateResponse{}, domain.ErrSessionInvalid
 	}
-	refreshed := s.Refresh(now, uc.ttl)
+	ttl := uc.ttl
+	if s.IsApp() {
+		ttl = domain.AppSessionTTL
+	}
+	refreshed := s.Refresh(now, ttl)
 	if refreshed {
 		if err := uc.sessions.Update(ctx, s); err != nil {
 			return AuthenticateResponse{}, fmt.Errorf("refresh session: %w", err)
@@ -212,7 +216,7 @@ func (uc *manageSessions) List(ctx context.Context, currentToken string) ([]Sess
 	out := make([]SessionView, 0, len(list))
 	for _, s := range list {
 		out = append(out, SessionView{
-			ID: s.PublicID(), UserAgent: s.Client().UserAgent, ClientIP: s.Client().IP, CreatedAt: s.CreatedAt(),
+			ID: s.PublicID(), Device: s.Device(), UserAgent: s.Client().UserAgent, ClientIP: s.Client().IP, CreatedAt: s.CreatedAt(),
 			LastSeenAt: s.RefreshedAt(), ExpiresAt: s.ExpiresAt(), Current: s.TokenHash() == current,
 		})
 	}

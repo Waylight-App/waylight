@@ -1,5 +1,6 @@
 import type { LinkedSignIn, MicrosoftFlow } from '../domain/identity';
 import type { ApiToken } from '../domain/apiToken';
+import type { PairingCode } from '../domain/appPairing';
 import type {
   Passkey,
   PasskeyAssertion,
@@ -90,6 +91,7 @@ export interface AuthGateway {
   securityEvents(): Promise<SecurityEvent[]>;
   revokeSession(id: string): Promise<void>;
   revokeOtherSessions(): Promise<number>;
+  newPairingCode(): Promise<PairingCode>;
   twoFactorStatus(): Promise<TwoFactorStatus>;
   startTwoFactor(): Promise<TwoFactorEnrollment>;
   confirmTwoFactor(code: string): Promise<string[]>;

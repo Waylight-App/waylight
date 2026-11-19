@@ -1,8 +1,10 @@
 import type { LinkedSignIn, MicrosoftFlow } from '../../domain/identity';
 import type { HttpClient } from '../../../../shared/api-client/http';
+import type { PairingCode } from '../../domain/appPairing';
 import type {
   EnrollmentDTO,
   RecoveryCodesDTO,
+  PairingCodeDTO,
   RevokedDTO,
   SessionDTO,
   SessionInfoDTO,
@@ -416,12 +418,18 @@ export class AuthApi implements AuthGateway {
     const dtos = await this.http.get<SessionInfoDTO[]>('/api/auth/sessions');
     return dtos.map((d) => ({
       id: d.id,
+      device: d.device ?? '',
       userAgent: d.userAgent,
       clientIp: d.clientIp,
       createdAt: new Date(d.createdAt),
       lastSeenAt: new Date(d.lastSeenAt),
       current: d.current,
     }));
+  }
+
+  async newPairingCode(): Promise<PairingCode> {
+    const d = await this.http.post<PairingCodeDTO>('/api/auth/app-sessions/pairing-code');
+    return { code: d.code, expiresAt: new Date(d.expiresAt) };
   }
 
   revokeSession(id: string): Promise<void> {

@@ -79,12 +79,31 @@ export interface SessionDTO {
  */
 export interface SessionInfoDTO {
   id: string;
+  /**
+   * Device is the device name of an app session; empty for browsers.
+   */
+  device?: string;
   userAgent: string;
   clientIp: string;
   createdAt: string /* RFC 3339 */;
   lastSeenAt: string /* RFC 3339 */;
   expiresAt: string /* RFC 3339 */;
   current: boolean;
+}
+/**
+ * AppSessionDTO is returned once when an app session is created (#559).
+ */
+export interface AppSessionDTO {
+  token: string;
+  device: string;
+  expiresAt: string /* RFC 3339 */;
+}
+/**
+ * PairingCodeDTO is a pairing code for the QR code of the web interface.
+ */
+export interface PairingCodeDTO {
+  code: string;
+  expiresAt: string /* RFC 3339 */;
 }
 /**
  * RevokedDTO is returned by POST /api/auth/sessions/revoke-others.

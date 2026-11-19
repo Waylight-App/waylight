@@ -16,32 +16,47 @@ func NewLogin(deps Deps) Login { return &login{deps: deps} }
 
 // Execute implements Login.
 func (uc *login) Execute(ctx context.Context, req LoginRequest) (SessionResponse, error) {
-	now := uc.deps.Clock.Now()
-	if !uc.deps.Limiter.Allow(req.ClientKey, now) {
-		return SessionResponse{}, domain.ErrTooManyAttempts
-	}
-	owner, exists, err := loadAccount(ctx, uc.deps.Accounts)
+	account, client, method, err := uc.verify(ctx, req)
 	if err != nil {
 		return SessionResponse{}, err
 	}
+	uc.deps.Events.loginSucceeded(ctx, account.ID(), client, method)
+	return uc.deps.issuer().issue(ctx, account.ID(), client)
+}
+
+// verify checks the credentials and the second factor of req with rate
+// limiting and the security log, and returns the account they belong to and
+// the sign-in method. Browser and app sessions share it (#559).
+func (uc *login) verify(ctx context.Context, req LoginRequest) (domain.Account, domain.Client, string, error) {
+	fail := func(err error) (domain.Account, domain.Client, string, error) {
+		return domain.Account{}, domain.Client{}, "", err
+	}
+	now := uc.deps.Clock.Now()
+	if !uc.deps.Limiter.Allow(req.ClientKey, now) {
+		return fail(domain.ErrTooManyAttempts)
+	}
+	owner, exists, err := loadAccount(ctx, uc.deps.Accounts)
+	if err != nil {
+		return fail(err)
+	}
 	if !exists {
-		return SessionResponse{}, domain.ErrSetupRequired
+		return fail(domain.ErrSetupRequired)
 	}
 	client := domain.NewClient(req.UserAgent, req.ClientKey)
 	account, err := uc.account(ctx, owner, req.Username)
 	if err != nil {
-		return SessionResponse{}, err
+		return fail(err)
 	}
 	directory, checked, err := uc.viaDirectory(ctx, req)
 	if err != nil {
 		uc.deps.Events.loginFailed(ctx, account.ID(), client, uc.deps.Limiter.RecordFailure(req.ClientKey, now))
-		return SessionResponse{}, domain.ErrInvalidCredentials
+		return fail(domain.ErrInvalidCredentials)
 	}
 	if checked {
 		account = directory
 	}
 	if account.IsOwner() && req.Username == "" && uc.deps.PasswordLoginDisabled {
-		return SessionResponse{}, domain.ErrLocalLoginDisabled
+		return fail(domain.ErrLocalLoginDisabled)
 	}
 	// Unknown and disabled guests are checked against the owner's hash so
 	// the response time does not reveal which names exist.
@@ -49,30 +64,30 @@ func (uc *login) Execute(ctx context.Context, req LoginRequest) (SessionResponse
 	if !checked {
 		ok, err = uc.deps.Hasher.Verify(req.Password, account.PasswordHash())
 		if err != nil {
-			return SessionResponse{}, fmt.Errorf("verify password: %w", err)
+			return fail(fmt.Errorf("verify password: %w", err))
 		}
 	}
 	if !ok || account.Disabled() || (req.Username != "" && account.IsOwner()) {
 		uc.deps.Events.loginFailed(ctx, account.ID(), client, uc.deps.Limiter.RecordFailure(req.ClientKey, now))
-		return SessionResponse{}, domain.ErrInvalidCredentials
+		return fail(domain.ErrInvalidCredentials)
 	}
 	keys, err := uc.deps.passkeysOf(ctx, account.ID())
 	if err != nil {
-		return SessionResponse{}, fmt.Errorf("list passkeys: %w", err)
+		return fail(fmt.Errorf("list passkeys: %w", err))
 	}
 	if len(keys) > 0 && strings.TrimSpace(req.TOTPCode) == "" {
 		// Second step: sign a challenge with a passkey (or send a code).
-		return SessionResponse{}, uc.deps.startPasskeyLogin(account, keys)
+		return fail(uc.deps.startPasskeyLogin(account, keys))
 	}
 	if account.TOTPEnabled() || len(keys) > 0 {
 		if err := uc.deps.checkSecondFactor(ctx, &account, req.TOTPCode, now); err != nil {
 			if errors.Is(err, domain.ErrInvalidTOTPCode) {
 				uc.deps.Events.loginFailed(ctx, account.ID(), client, uc.deps.Limiter.RecordFailure(req.ClientKey, now))
 			}
-			return SessionResponse{}, err
+			return fail(err)
 		}
 		if err := uc.deps.Accounts.Update(ctx, account); err != nil {
-			return SessionResponse{}, fmt.Errorf("update account: %w", err)
+			return fail(fmt.Errorf("update account: %w", err))
 		}
 	}
 	uc.deps.Limiter.Reset(req.ClientKey)
@@ -80,8 +95,7 @@ func (uc *login) Execute(ctx context.Context, req LoginRequest) (SessionResponse
 	if checked {
 		method = "directory"
 	}
-	uc.deps.Events.loginSucceeded(ctx, account.ID(), client, method)
-	return uc.deps.issuer().issue(ctx, account.ID(), client)
+	return account, client, method, nil
 }
 
 // account resolves the login name: empty means the owner; an unknown name

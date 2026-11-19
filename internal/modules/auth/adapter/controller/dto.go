@@ -17,6 +17,16 @@ type LoginRequestDTO struct {
 	Code string `json:"code,omitempty"`
 }
 
+// AppSessionRequestDTO is the body of POST /api/auth/app-sessions: the
+// fields of a login, or a pairing code from the QR code, and the device name.
+type AppSessionRequestDTO struct {
+	Username    string `json:"username,omitempty"`
+	Password    string `json:"password,omitempty"`
+	Code        string `json:"code,omitempty"`
+	PairingCode string `json:"pairingCode,omitempty"`
+	Device      string `json:"device"`
+}
+
 // TwoFactorCodeDTO is the body of POST /api/auth/totp/confirm.
 type TwoFactorCodeDTO struct {
 	Code string `json:"code"`

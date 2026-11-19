@@ -254,6 +254,12 @@
         {/if}
         <h3>{t('app.active_sessions')}</h3>
         <SessionsList auth={container.auth} />
+        {#if !container.auth.kiosk && !container.localMode}
+          <h3>{t('app.mobile_app')}</h3>
+          {#await import('../features/auth/ui/AppPairing.svelte') then { default: AppPairing }}
+            <AppPairing auth={container.auth} />
+          {/await}
+        {/if}
         <h3>{t('app.change_password')}</h3>
         <ChangePasswordForm auth={container.auth} />
         {#if !container.auth.admin && !container.auth.kiosk}

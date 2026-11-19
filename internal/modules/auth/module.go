@@ -226,6 +226,7 @@ func New(cfg Config, d Deps) (*Module, error) {
 		PasswordReset: usecase.NewPasswordReset(deps, gateway.NewAccountLinkRepository(d.DB), gateway.NewEmailRepository(d.DB),
 			d.Mailer, cfg.PublicURL),
 		APITokens:      usecase.NewAPITokens(deps, gateway.NewTokenRepository(d.DB)),
+		AppSessions:    usecase.NewAppSessions(deps, gateway.NewPairingCodeRepository(d.DB)),
 		SSO:            sso,
 		Passkeys:       usecase.NewPasskeys(deps),
 		ChangePassword: usecase.NewChangePassword(deps),
@@ -350,6 +351,8 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/auth/totp/confirm", m.handlers.ConfirmTwoFactor)
 	r.Protected("POST /api/auth/totp/disable", m.handlers.DisableTwoFactor)
 	r.Protected("GET /api/auth/sessions", m.handlers.ListSessions)
+	r.Public("POST /api/auth/app-sessions", m.handlers.CreateAppSession)
+	r.Protected("POST /api/auth/app-sessions/pairing-code", m.handlers.NewPairingCode)
 	r.Protected("GET /api/auth/events", m.handlers.SecurityEvents)
 	r.Protected("GET /api/auth/tokens", m.handlers.ListTokens)
 	r.Protected("POST /api/auth/tokens", m.handlers.CreateToken)

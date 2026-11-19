@@ -100,6 +100,7 @@ function setup(status: Partial<AuthStatus> = {}) {
     ]),
     revokeSession: vi.fn(),
     revokeOtherSessions: vi.fn(),
+    newPairingCode: vi.fn(),
     twoFactorStatus: vi.fn(),
     startTwoFactor: vi.fn(),
     confirmTwoFactor: vi.fn().mockResolvedValue(['a']),

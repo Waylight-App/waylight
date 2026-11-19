@@ -36,6 +36,7 @@ type UseCases struct {
 	AccountLinks   usecase.AccountLinks
 	PasswordReset  usecase.PasswordReset
 	APITokens      usecase.APITokens
+	AppSessions    usecase.AppSessions
 	// SSO is nil when no single sign-on method is configured.
 	SSO      usecase.SSO
 	Passkeys usecase.Passkeys
@@ -91,7 +92,7 @@ func NewHandlers(uc UseCases, cookies CookieConfig) *Handlers {
 
 // Status handles GET /api/auth/status.
 func (h *Handlers) Status(w http.ResponseWriter, r *http.Request) {
-	res, err := h.uc.Status.Execute(r.Context(), usecase.StatusRequest{SessionToken: h.cookies.read(r)})
+	res, err := h.uc.Status.Execute(r.Context(), usecase.StatusRequest{SessionToken: h.sessionToken(r)})
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
@@ -139,9 +140,45 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 	h.respondWithSession(w, r, res, err)
 }
 
+// CreateAppSession handles POST /api/auth/app-sessions (#559): a device
+// signs in with the credentials of a login or a pairing code and gets a
+// bearer token.
+func (h *Handlers) CreateAppSession(w http.ResponseWriter, r *http.Request) {
+	var dto AppSessionRequestDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	res, err := h.uc.AppSessions.Create(r.Context(), usecase.AppSessionRequest{
+		Login:       usecase.LoginRequest{Username: dto.Username, Password: dto.Password, TOTPCode: dto.Code, ClientKey: clientKey(r), UserAgent: r.UserAgent()},
+		PairingCode: dto.PairingCode,
+		Device:      dto.Device,
+	})
+	var sf *usecase.SecondFactorRequired
+	if errors.As(err, &sf) {
+		httpapi.WriteJSON(w, http.StatusAccepted, presenter.SecondFactor(sf))
+		return
+	}
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusCreated, presenter.AppSession(res))
+}
+
+// NewPairingCode handles POST /api/auth/app-sessions/pairing-code.
+func (h *Handlers) NewPairingCode(w http.ResponseWriter, r *http.Request) {
+	res, err := h.uc.AppSessions.NewPairingCode(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusCreated, presenter.PairingCode(res))
+}
+
 // Logout handles POST /api/auth/logout.
 func (h *Handlers) Logout(w http.ResponseWriter, r *http.Request) {
-	if err := h.uc.Logout.Execute(r.Context(), usecase.LogoutRequest{SessionToken: h.cookies.read(r)}); err != nil {
+	if err := h.uc.Logout.Execute(r.Context(), usecase.LogoutRequest{SessionToken: h.sessionToken(r)}); err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
@@ -164,7 +201,7 @@ func (h *Handlers) ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 // ListSessions handles GET /api/auth/sessions.
 func (h *Handlers) ListSessions(w http.ResponseWriter, r *http.Request) {
-	res, err := h.uc.Sessions.List(r.Context(), h.cookies.read(r))
+	res, err := h.uc.Sessions.List(r.Context(), h.sessionToken(r))
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
@@ -174,7 +211,7 @@ func (h *Handlers) ListSessions(w http.ResponseWriter, r *http.Request) {
 
 // RevokeSession handles DELETE /api/auth/sessions/{id}.
 func (h *Handlers) RevokeSession(w http.ResponseWriter, r *http.Request) {
-	if err := h.uc.Sessions.Revoke(r.Context(), h.cookies.read(r), r.PathValue("id")); err != nil {
+	if err := h.uc.Sessions.Revoke(r.Context(), h.sessionToken(r), r.PathValue("id")); err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
@@ -183,7 +220,7 @@ func (h *Handlers) RevokeSession(w http.ResponseWriter, r *http.Request) {
 
 // RevokeOtherSessions handles POST /api/auth/sessions/revoke-others.
 func (h *Handlers) RevokeOtherSessions(w http.ResponseWriter, r *http.Request) {
-	n, err := h.uc.Sessions.RevokeOthers(r.Context(), h.cookies.read(r))
+	n, err := h.uc.Sessions.RevokeOthers(r.Context(), h.sessionToken(r))
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return

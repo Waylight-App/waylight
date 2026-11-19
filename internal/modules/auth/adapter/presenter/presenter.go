@@ -70,13 +70,38 @@ func Session(r usecase.SessionResponse) SessionDTO {
 
 // SessionInfoDTO describes an active session in the session overview.
 type SessionInfoDTO struct {
-	ID         string    `json:"id"`
+	ID string `json:"id"`
+	// Device is the device name of an app session; empty for browsers.
+	Device     string    `json:"device,omitempty"`
 	UserAgent  string    `json:"userAgent"`
 	ClientIP   string    `json:"clientIp"`
 	CreatedAt  time.Time `json:"createdAt"`
 	LastSeenAt time.Time `json:"lastSeenAt"`
 	ExpiresAt  time.Time `json:"expiresAt"`
 	Current    bool      `json:"current"`
+}
+
+// AppSessionDTO is returned once when an app session is created (#559).
+type AppSessionDTO struct {
+	Token     string    `json:"token"`
+	Device    string    `json:"device"`
+	ExpiresAt time.Time `json:"expiresAt"`
+}
+
+// AppSession maps an AppSessionResponse to its DTO.
+func AppSession(r usecase.AppSessionResponse) AppSessionDTO {
+	return AppSessionDTO{Token: r.Token, Device: r.Device, ExpiresAt: r.ExpiresAt}
+}
+
+// PairingCodeDTO is a pairing code for the QR code of the web interface.
+type PairingCodeDTO struct {
+	Code      string    `json:"code"`
+	ExpiresAt time.Time `json:"expiresAt"`
+}
+
+// PairingCode maps a PairingCodeResponse to its DTO.
+func PairingCode(r usecase.PairingCodeResponse) PairingCodeDTO {
+	return PairingCodeDTO{Code: r.Code, ExpiresAt: r.ExpiresAt}
 }
 
 // RevokedDTO is returned by POST /api/auth/sessions/revoke-others.
