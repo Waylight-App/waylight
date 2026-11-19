@@ -20,6 +20,7 @@
   let { electricity, config }: Props = $props();
   const poll = usePolling();
   const POLL_MS = 15 * 60_000;
+  const DAY_LABEL = { today: 'electricity.today', tomorrow: 'electricity.tomorrow' } as const;
 
   const cfg = $derived(parseConfig(config));
   let prices = $state<ElectricityPrices | null>(null);
@@ -41,7 +42,7 @@
     );
   });
 
-  const days = $derived(prices ? byDay(prices.hours) : []);
+  const days = $derived(prices ? byDay(prices.hours, now) : []);
   const current = $derived(prices ? currentHour(prices.hours, now) : undefined);
   const time = (d: Date) => d.toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' });
 </script>
@@ -56,14 +57,10 @@
     {/if}
     <span class="legend"><span class="swatch cheap"></span> {t('electricity.cheapest')}</span>
   </div>
-  {#each days as d, i (d.day)}
+  {#each days as d (d.day)}
     {@const b = bars(d.hours)}
-    <h4>{i === 0 ? t('electricity.today') : t('electricity.tomorrow')}</h4>
-    <ul
-      class="chart"
-      style:--zero="{b.zero}%"
-      aria-label={i === 0 ? t('electricity.today') : t('electricity.tomorrow')}
-    >
+    <h4>{t(DAY_LABEL[d.when])}</h4>
+    <ul class="chart" style:--zero="{b.zero}%" aria-label={t(DAY_LABEL[d.when])}>
       {#each d.hours as h, j (h.start.getTime())}
         {@const label = t('electricity.hour', {
           time: time(h.start),
@@ -81,7 +78,9 @@
       {/each}
     </ul>
   {/each}
-  {#if days.length === 1}<p class="muted small">{t('electricity.tomorrow_later')}</p>{/if}
+  {#if days.length === 1 && days[0]?.when === 'today'}<p class="muted small">
+      {t('electricity.tomorrow_later')}
+    </p>{/if}
   <p class="muted small">
     {#if prices.stale}<span class="warn">{t('electricity.stale')}</span>{/if}
     {t('electricity.market_note')}

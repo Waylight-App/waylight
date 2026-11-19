@@ -27,14 +27,31 @@ export function parseConfig(raw: Record<string, unknown>): { zone: Zone } {
 /** Name of a zone for the settings. */
 export const zoneName = (z: Zone): string => t(z === 'AT' ? 'electricity.zone_at' : 'electricity.zone_de');
 
-/** The hours grouped by calendar day (today, tomorrow), in order. */
-export function byDay(hours: readonly PriceHour[]): { day: string; hours: PriceHour[] }[] {
-  const out: { day: string; hours: PriceHour[] }[] = [];
+const dayKey = (d: Date): string => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+
+/** A calendar day of prices, relative to now. */
+export interface PriceDay {
+  day: string;
+  when: 'today' | 'tomorrow';
+  hours: PriceHour[];
+}
+
+/**
+ * The hours of today and tomorrow, grouped by local calendar day. Days are
+ * labelled by their date, not their position, so prices that are still from
+ * yesterday (a stale answer shortly after midnight) never show as "today".
+ */
+export function byDay(hours: readonly PriceHour[], now: Date): PriceDay[] {
+  const today = dayKey(now);
+  const tomorrow = dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
+  const out: PriceDay[] = [];
   for (const h of hours) {
-    const day = `${h.start.getFullYear()}-${h.start.getMonth()}-${h.start.getDate()}`;
+    const day = dayKey(h.start);
+    const when = day === today ? 'today' : day === tomorrow ? 'tomorrow' : null;
+    if (!when) continue;
     const last = out.at(-1);
     if (last?.day === day) last.hours.push(h);
-    else out.push({ day, hours: [h] });
+    else out.push({ day, when, hours: [h] });
   }
   return out;
 }
