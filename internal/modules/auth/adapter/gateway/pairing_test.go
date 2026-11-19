@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -20,8 +21,8 @@ func TestPairingCodesAreSingleUseAndExpire(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if id, err := repo.Take(ctx, domain.HashToken("used"), now.Add(time.Minute)); err != nil || id != "owner" {
-		t.Fatalf("take: %q, %v", id, err)
+	if c, err := repo.Take(ctx, domain.HashToken("used"), now.Add(time.Minute)); err != nil || c.AccountID != "owner" {
+		t.Fatalf("take: %+v, %v", c, err)
 	}
 	if _, err := repo.Take(ctx, domain.HashToken("used"), now.Add(time.Minute)); !errors.Is(err, domain.ErrInvalidPairingCode) {
 		t.Fatalf("second take: %v", err)
@@ -50,6 +51,24 @@ func TestSessionKeepsDeviceName(t *testing.T) {
 	}
 	got, err := sessions.Find(ctx, domain.HashToken("wa_t"))
 	if err != nil || got.Device() != "Pixel 9" || !got.IsApp() {
+		t.Fatalf("got %+v, %v", got, err)
+	}
+}
+
+func TestHandoverCodeKeepsItsChallenge(t *testing.T) {
+	ctx := context.Background()
+	repo := NewPairingCodeRepository(dbtest.Open(t, "auth", Migrations()))
+	now := time.Date(2026, 5, 1, 10, 0, 0, 0, time.UTC)
+	challenge := strings.Repeat("c", 43)
+	c, err := domain.NewHandoverCode(domain.HashToken("h"), "owner", challenge, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := repo.Create(ctx, c, now); err != nil {
+		t.Fatal(err)
+	}
+	got, err := repo.Take(ctx, domain.HashToken("h"), now)
+	if err != nil || got.Challenge != challenge {
 		t.Fatalf("got %+v, %v", got, err)
 	}
 }

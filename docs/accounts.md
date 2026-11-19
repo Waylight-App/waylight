@@ -244,7 +244,10 @@ To sign a phone in:
    minutes; **New code** replaces it.
 
 The app can also sign in with the password and, if set up, the code of the
-authenticator app.
+authenticator app, or open Waylight's sign-in page in the browser of the
+phone. There every sign-in method works (passkey, Microsoft, single
+sign-on); Waylight then asks **Sign in the Waylight app?** and hands the
+sign-in over to the app. Only confirm a request you started yourself.
 
 The phone then appears under *Active sessions* with its device name, for
 example "App on Pixel 9". It stays signed in for 90 days after its last use.

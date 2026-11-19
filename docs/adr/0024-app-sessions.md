@@ -35,11 +35,20 @@ module and cannot reach `/api/auth`.
    minutes and redeemed once; failed redemptions count like failed logins.
    Kiosk displays cannot create codes.
 
+5. **Browser handover (#560).** For passkeys, Microsoft and single sign-on
+   the app opens `/app-sign-in?challenge=…&state=…` in the system browser
+   with an S256 PKCE challenge (RFC 7636). After the sign-in the page asks
+   the person to confirm, then sends a code to `waylight://auth` that is
+   valid for one minute and only with the app's verifier. The page only
+   ever redirects to the app's own scheme. A code read from the redirect by
+   another app is useless without the verifier, and the confirmation stops
+   an app that opens the page by itself from signing in unnoticed.
+
 ## Consequences
 
-- Accounts with only a passkey cannot sign the app in with a password; they
-  pair it with the QR code. A browser handover for passkeys, Microsoft and
-  single sign-on follows in #560.
+- Accounts with only a passkey or a single sign-on cannot use the password
+  form of the app; they pair it with the QR code or sign in through the
+  browser.
 - A stolen phone keeps access until the session is revoked in the session
   overview, where it is listed with its device name.
 - The design can later grow into the OAuth 2.0 device authorization flow if

@@ -49,6 +49,16 @@ paths:
       responses:
         "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/PairingCode" } } } }
         "403": { description: Kiosk display, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+  /api/auth/app-sessions/handover:
+    post:
+      tags: [auth]
+      summary: Code that the sign-in page hands to the app after a sign-in in the browser (#560); valid for one minute and only with the PKCE verifier of the app
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [challenge], properties: { challenge: { type: string, description: S256 PKCE code challenge (RFC 7636) } } } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/PairingCode" } } } }
+        "403": { description: Kiosk display, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
   /api/auth/logout:
     post:
       tags: [auth]
@@ -235,7 +245,8 @@ schemas:
     required: [device]
     properties:
       device: { type: string, maxLength: 80, description: Name of the device, shown in the session overview }
-      pairingCode: { type: string, description: Code from the QR code; replaces username, password and code }
+      pairingCode: { type: string, description: Code from the QR code or a browser handover; replaces username, password and code }
+      verifier: { type: string, description: PKCE verifier; required for the code of a browser handover }
       username: { type: string, description: Empty for the owner }
       password: { type: string }
       code: { type: string, description: TOTP or recovery code when the second factor is enabled }

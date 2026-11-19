@@ -116,9 +116,9 @@ type SessionRepository interface {
 // PairingCodeRepository stores the pairing codes of app sessions (#559).
 type PairingCodeRepository interface {
 	Create(ctx context.Context, c domain.PairingCode, now time.Time) error
-	// Take removes the code and returns its account; unknown, used and
-	// expired codes yield domain.ErrInvalidPairingCode.
-	Take(ctx context.Context, hash domain.TokenHash, now time.Time) (string, error)
+	// Take removes the code and returns it; unknown, used and expired codes
+	// yield domain.ErrInvalidPairingCode.
+	Take(ctx context.Context, hash domain.TokenHash, now time.Time) (domain.PairingCode, error)
 }
 
 // PasswordHasher hashes and verifies passwords.

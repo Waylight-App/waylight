@@ -353,6 +353,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/auth/sessions", m.handlers.ListSessions)
 	r.Public("POST /api/auth/app-sessions", m.handlers.CreateAppSession)
 	r.Protected("POST /api/auth/app-sessions/pairing-code", m.handlers.NewPairingCode)
+	r.Protected("POST /api/auth/app-sessions/handover", m.handlers.NewHandoverCode)
 	r.Protected("GET /api/auth/events", m.handlers.SecurityEvents)
 	r.Protected("GET /api/auth/tokens", m.handlers.ListTokens)
 	r.Protected("POST /api/auth/tokens", m.handlers.CreateToken)

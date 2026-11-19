@@ -432,6 +432,11 @@ export class AuthApi implements AuthGateway {
     return { code: d.code, expiresAt: new Date(d.expiresAt) };
   }
 
+  async newHandoverCode(challenge: string): Promise<PairingCode> {
+    const d = await this.http.post<PairingCodeDTO>('/api/auth/app-sessions/handover', { challenge });
+    return { code: d.code, expiresAt: new Date(d.expiresAt) };
+  }
+
   revokeSession(id: string): Promise<void> {
     return this.http.delete(`/api/auth/sessions/${encodeURIComponent(id)}`);
   }

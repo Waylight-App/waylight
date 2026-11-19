@@ -210,4 +210,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_1e96e5b609412e0e: 'Hash und Konto sind erforderlich',
   // must be 1–80 characters
   srv_3a9987390ce3d83f: 'muss 1–80 Zeichen lang sein',
+  // must be an S256 PKCE code challenge
+  srv_fbb05d449c473821: 'muss eine S256-PKCE-Code-Challenge sein',
 };

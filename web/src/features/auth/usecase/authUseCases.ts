@@ -418,6 +418,11 @@ export class AuthUseCases {
     return this.gateway.newPairingCode();
   }
 
+  /** The code the sign-in page hands to the app after a browser sign-in. */
+  newHandoverCode(challenge: string): Promise<PairingCode> {
+    return this.gateway.newHandoverCode(challenge);
+  }
+
   twoFactorStatus(): Promise<TwoFactorStatus> {
     return this.gateway.twoFactorStatus();
   }
