@@ -147,6 +147,7 @@ type Module struct {
 	kiosks       usecase.Kiosks
 	confirm      usecase.ConfirmIdentity
 	setup        usecase.SetupAccount
+	sessions     usecase.ManageSessions
 	demoPassword string
 	setupToken   string
 	log          *slog.Logger
@@ -245,6 +246,7 @@ func New(cfg Config, d Deps) (*Module, error) {
 		kiosks:       kiosks,
 		confirm:      usecase.NewConfirmIdentity(deps),
 		setup:        uc.Setup,
+		sessions:     uc.Sessions,
 		demoPassword: cfg.DemoPassword,
 		setupToken:   token,
 		log:          d.Log,
@@ -507,6 +509,11 @@ func newSSO(deps usecase.Deps, c SSOConfig) usecase.SSO {
 // appliance's own display and returns its link token (#140).
 func (m *Module) DeviceKioskLink(ctx context.Context, tabs []string) (string, error) {
 	return m.kiosks.DeviceLink(ctx, tabs)
+}
+
+// AppSessionActive implements kernel.AppSessions (#564).
+func (m *Module) AppSessionActive(ctx context.Context, accountID, publicID string) (bool, error) {
+	return m.sessions.AppSessionActive(ctx, accountID, publicID)
 }
 
 // RemoveDeviceKiosk deletes the kiosk of the appliance's own display.

@@ -85,6 +85,9 @@ func (uc *authenticate) Execute(ctx context.Context, req AuthenticateRequest) (A
 		}
 	}
 	p := principalOf(a)
+	if s.IsApp() {
+		p.AppSession = s.PublicID()
+	}
 	if policy.RequireSecondFactor && a.Role() != domain.RoleKiosk {
 		if p.SecondFactorMissing, err = uc.secondFactorMissing(ctx, a); err != nil {
 			return AuthenticateResponse{}, err
@@ -240,6 +243,20 @@ func (uc *manageSessions) RevokeOthers(ctx context.Context, currentToken string)
 	}
 	uc.events.record(ctx, domain.EventLogoutEverywhere, me(ctx), domain.Client{}, fmt.Sprintf("%d sessions", n))
 	return n, nil
+}
+
+// AppSessionActive implements kernel.AppSessions.
+func (uc *manageSessions) AppSessionActive(ctx context.Context, accountID, publicID string) (bool, error) {
+	list, err := uc.sessions.ListActive(ctx, accountID, uc.clock.Now())
+	if err != nil {
+		return false, fmt.Errorf("list sessions: %w", err)
+	}
+	for _, s := range list {
+		if s.IsApp() && s.PublicID() == publicID {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func principalOf(a domain.Account) kernel.Principal {

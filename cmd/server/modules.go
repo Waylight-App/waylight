@@ -110,7 +110,8 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	var notifier kernel.AlertSink
 	var notificationsModule *notifications.Module
 	if cfg.ModuleEnabled("notifications") {
-		n := notifications.New(db, secrets, out.integration, clk, ids, cfg.PublicURL)
+		n := notifications.New(db, secrets, out.integration, clk, ids, cfg.PublicURL,
+			notifications.Push{RelayURL: cfg.PushRelayURL, Sessions: authModule})
 		notifier, notificationsModule = n, n
 		n.SetInstanceName(instanceName)
 		registry.Register(n)

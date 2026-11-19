@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"waylight/internal/modules/auth/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // Input ports.
@@ -44,6 +45,7 @@ type ManageSessions interface {
 	List(ctx context.Context, currentToken string) ([]SessionView, error)
 	Revoke(ctx context.Context, currentToken, sessionID string) error
 	RevokeOthers(ctx context.Context, currentToken string) (int64, error)
+	kernel.AppSessions
 }
 
 // ResetAccount deletes the account and all sessions so setup runs again.
