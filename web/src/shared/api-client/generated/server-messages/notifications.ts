@@ -19,7 +19,7 @@ export const serverMessages = {
   srv_55663fc836edb6a7: "The certificate warning must be between 1 and 90 days.",
   srv_e97962ce6df48c04: "The channel does not exist.",
   srv_a072d53589f4ace4: "The channel is not an enabled Slack or Teams channel.",
-  srv_d16b183106957ea4: "The channel type must be gotify, webhook, email, slack, teams or app.",
+  srv_f6f4dd11b19007a6: "The channel type must be gotify, webhook, email, slack, teams, app or browser.",
   srv_1c6e2427a40c8139: "The disk threshold must be between 50 and 99 %.",
   srv_d6a9caae13404f6e: "The maintenance window does not exist.",
   srv_eefa15451a449631: "The platform must be sse or apns.",
@@ -30,6 +30,7 @@ export const serverMessages = {
   srv_83146ba690ec10f4: "The template must be at most 4000 characters long.",
   srv_218a25cf9751b7dd: "The topic may contain letters, digits, - and _ (max. 64 characters).",
   srv_53e6d03eb73e5456: "There are already 10 channels.",
+  srv_3cc4707e6d15f847: "Too many open notification streams; close a tab and try again.",
   srv_fc5b4d698d5d3c6f: "Unknown alert type {type}.",
   srv_e05c34f2652ddd0f: "invalid recipient",
 } as const;

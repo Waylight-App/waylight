@@ -29,6 +29,12 @@
       .then(([c, d]) => ((channels = c), (devices = d)))
       .catch((err) => (error = errorMessage(err)));
   const hasAppChannel = $derived(channels.some((c) => c.kind === 'app'));
+  const hasBrowserChannel = $derived(channels.some((c) => c.kind === 'browser'));
+  // The browser's permission for system notifications (#583).
+  let permission = $state(typeof Notification === 'undefined' ? 'unsupported' : Notification.permission);
+  async function allowNotifications() {
+    permission = await Notification.requestPermission();
+  }
 
   $effect(() => {
     load();
@@ -111,6 +117,8 @@
     >
     {#if editing.form.kind === 'app'}
       <p class="muted small">{t('notifications.app_hint')}</p>
+    {:else if editing.form.kind === 'browser'}
+      <p class="muted small">{t('notifications.browser_hint')}</p>
     {:else if isChatChannel(editing.form.kind)}
       <p class="muted small">
         {t(editing.form.kind === 'slack' ? 'notifications.slack_hint' : 'notifications.teams_hint')}
@@ -173,7 +181,7 @@
         >
       </div>
     {/if}
-    {#if editing.form.kind !== 'app'}<label class="field"
+    {#if editing.form.kind !== 'app' && editing.form.kind !== 'browser'}<label class="field"
         ><span
           >{isChatChannel(editing.form.kind)
             ? t('notifications.chat_webhook_url')
@@ -274,6 +282,32 @@
             form: { ...newChannel('app'), name: t('notifications.app') },
             hasSecret: false,
           })}>+ {t('notifications.app')}</button
+      >
+    {/if}
+    {#if !hasBrowserChannel}
+      <button
+        class="btn"
+        type="button"
+        onclick={() =>
+          (editing = {
+            id: null,
+            form: { ...newChannel('browser'), name: t('notifications.browser') },
+            hasSecret: false,
+          })}>+ {t('notifications.browser')}</button
+      >
+    {/if}
+  </p>
+{/if}
+
+{#if hasBrowserChannel && permission !== 'unsupported'}
+  <p class="small">
+    {#if permission === 'granted'}
+      <span class="muted">{t('notifications.browser_allowed')}</span>
+    {:else if permission === 'denied'}
+      <span class="muted">{t('notifications.browser_denied')}</span>
+    {:else}
+      <button class="btn" type="button" onclick={allowNotifications}
+        >{t('notifications.browser_allow')}</button
       >
     {/if}
   </p>

@@ -24,6 +24,7 @@ type Module struct {
 	email    *gateway.EmailPublisher
 	handlers *controller.Handlers
 	devices  *controller.AppDeviceHandlers
+	stream   *controller.StreamHandlers
 }
 
 // Push configures delivery to the mobile app (#564): the relay's address
@@ -45,6 +46,7 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 	if push.RelayURL != "" {
 		relay = gateway.NewRelayClient(client, push.RelayURL, db, cipher, clock.Now)
 	}
+	live := usecase.NewLive(clock)
 	devices := usecase.NewAppDevices(gateway.NewAppDeviceRepository(db, cipher), relay, push.Sessions, clock)
 	uc := usecase.NewNotifier(usecase.Deps{
 		Repo: gateway.NewRepository(db, cipher), Sender: gateway.NewNtfySender(client),
@@ -57,9 +59,11 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 			domain.ChannelSlack:   gateway.NewSlackPublisher(client, link),
 			domain.ChannelTeams:   gateway.NewTeamsPublisher(client, link),
 			domain.ChannelApp:     devices,
+			domain.ChannelBrowser: live,
 		},
 	})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc), devices: controller.NewAppDeviceHandlers(devices), email: email}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), devices: controller.NewAppDeviceHandlers(devices),
+		stream: controller.NewStreamHandlers(live), email: email}
 }
 
 // SetInstanceName makes e-mail subjects start with the instance's name
@@ -116,6 +120,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("DELETE /api/notifications/app-device", m.devices.Unregister)
 	r.Protected("GET /api/notifications/app-devices", m.devices.List)
 	r.Protected("DELETE /api/notifications/app-devices/{session}", m.devices.Remove)
+	r.Protected("GET /api/notifications/stream", m.stream.Stream)
 	r.Protected("GET /api/notifications/maintenance", m.handlers.Maintenance)
 	r.Protected("POST /api/notifications/maintenance", m.handlers.StartMaintenance)
 	r.Protected("DELETE /api/notifications/maintenance/{id}", m.handlers.EndMaintenance)
