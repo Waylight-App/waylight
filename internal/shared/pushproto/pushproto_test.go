@@ -13,7 +13,7 @@ import (
 func TestSignAndVerify(t *testing.T) {
 	_, key, _ := ed25519.GenerateKey(rand.Reader)
 	now := time.Unix(1_800_000_000, 0)
-	body := []byte(`{"platform":"fcm"}`)
+	body := []byte(`{"platform":"sse"}`)
 	h := Authorization(key, body, now)
 	pub, err := Verify(h, body, now.Add(time.Minute))
 	if err != nil || !pub.Equal(key.Public()) {

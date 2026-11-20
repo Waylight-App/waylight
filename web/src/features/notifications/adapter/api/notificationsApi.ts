@@ -75,7 +75,7 @@ export class NotificationsApi implements NotificationsGateway {
     return (await this.http.get<AppDeviceViewDTO[]>('/api/notifications/app-devices')).map((d) => ({
       session: d.session,
       name: d.name,
-      platform: d.platform === 'apns' ? 'apns' : 'fcm',
+      platform: d.platform === 'apns' ? 'apns' : 'sse',
       updatedAt: new Date(d.updatedAt),
     }));
   }

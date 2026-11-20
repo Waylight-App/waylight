@@ -37,7 +37,7 @@ func TestPush(t *testing.T) {
 	now := time.Unix(1_800_000_000, 0)
 	clock := func() time.Time { return now }
 	win := func() *pushrelay.Window { return &pushrelay.Window{Max: 100, Period: time.Hour} }
-	relay := pushrelay.New(map[pushrelay.Platform]pushrelay.Sender{pushrelay.FCM: sender{}, pushrelay.APNs: sender{err: pushrelay.ErrUnregistered}},
+	relay := pushrelay.New(map[pushrelay.Platform]pushrelay.Sender{pushrelay.SSE: sender{}, pushrelay.APNs: sender{err: pushrelay.ErrUnregistered}},
 		bindings{}, pushrelay.Limits{Instance: win(), Token: win(), Client: win()}, clock)
 	h := (&Handler{Relay: relay, ClientIP: func(*http.Request) string { return "ip" }, Now: clock,
 		Log: slog.New(slog.NewTextHandler(io.Discard, nil))}).Routes()
@@ -61,12 +61,12 @@ func TestPush(t *testing.T) {
 		sign bool
 		want int
 	}{
-		{"sent", keyA, map[string]any{"platform": "fcm", "token": "t1", "payload": p}, true, http.StatusAccepted},
-		{"unsigned", keyA, map[string]any{"platform": "fcm", "token": "t1", "payload": p}, false, http.StatusUnauthorized},
-		{"other instance", keyB, map[string]any{"platform": "fcm", "token": "t1", "payload": p}, true, http.StatusForbidden},
+		{"sent", keyA, map[string]any{"platform": "sse", "token": "t1", "payload": p}, true, http.StatusAccepted},
+		{"unsigned", keyA, map[string]any{"platform": "sse", "token": "t1", "payload": p}, false, http.StatusUnauthorized},
+		{"other instance", keyB, map[string]any{"platform": "sse", "token": "t1", "payload": p}, true, http.StatusForbidden},
 		{"unknown platform", keyA, map[string]any{"platform": "mail", "token": "t1", "payload": p}, true, http.StatusBadRequest},
-		{"bad payload", keyA, map[string]any{"platform": "fcm", "token": "t1", "payload": "%%"}, true, http.StatusBadRequest},
-		{"too large", keyA, map[string]any{"platform": "fcm", "token": "t1", "payload": base64.StdEncoding.EncodeToString(make([]byte, 3001))}, true, http.StatusRequestEntityTooLarge},
+		{"bad payload", keyA, map[string]any{"platform": "sse", "token": "t1", "payload": "%%"}, true, http.StatusBadRequest},
+		{"too large", keyA, map[string]any{"platform": "sse", "token": "t1", "payload": base64.StdEncoding.EncodeToString(make([]byte, 3001))}, true, http.StatusRequestEntityTooLarge},
 		{"unregistered", keyA, map[string]any{"platform": "apns", "token": "t2", "payload": p}, true, http.StatusGone},
 	}
 	for _, c := range cases {

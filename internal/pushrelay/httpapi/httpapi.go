@@ -1,5 +1,5 @@
-// Package httpapi is the HTTP interface of the push relay: POST /v1/push and
-// a health check.
+// Package httpapi is the HTTP interface of the push relay: POST /v1/push for
+// instances, GET /v1/stream for devices and a health check.
 package httpapi
 
 import (
@@ -26,6 +26,8 @@ type Handler struct {
 	ClientIP func(*http.Request) string
 	Now      func() time.Time
 	Log      *slog.Logger
+	// Streams serves GET /v1/stream; nil turns the endpoint off.
+	Streams *Streams
 }
 
 type request struct {
@@ -38,6 +40,9 @@ type request struct {
 func (h *Handler) Routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /v1/push", h.push)
+	if h.Streams != nil {
+		mux.HandleFunc("GET /v1/stream", h.stream)
+	}
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusNoContent) })
 	return mux
 }

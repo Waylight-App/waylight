@@ -32,14 +32,14 @@ func (m memBindings) Delete(_ context.Context, h TokenHash) error { delete(m, h)
 func newRelay(s Sender, b Bindings, max int) *Relay {
 	w := func() *Window { return &Window{Max: max, Period: time.Hour} }
 	now := time.Unix(1_800_000_000, 0)
-	return New(map[Platform]Sender{FCM: s}, b, Limits{Instance: w(), Token: w(), Client: w()}, func() time.Time { return now })
+	return New(map[Platform]Sender{SSE: s}, b, Limits{Instance: w(), Token: w(), Client: w()}, func() time.Time { return now })
 }
 
 func TestSend(t *testing.T) {
 	ctx := context.Background()
 	s, b := &fakeSender{}, memBindings{}
 	r := newRelay(s, b, 10)
-	msg := Message{Platform: FCM, Token: "tok", Payload: []byte{1}}
+	msg := Message{Platform: SSE, Token: "tok", Payload: []byte{1}}
 	if err := r.Send(ctx, "a", "1.2.3.4", msg); err != nil || len(s.sent) != 1 {
 		t.Fatal(err, s.sent)
 	}
@@ -49,14 +49,14 @@ func TestSend(t *testing.T) {
 	}
 	for _, m := range []Message{
 		{Platform: APNs, Token: "tok", Payload: []byte{1}}, // no APNs sender configured
-		{Platform: FCM, Payload: []byte{1}},
-		{Platform: FCM, Token: "tok"},
+		{Platform: SSE, Payload: []byte{1}},
+		{Platform: SSE, Token: "tok"},
 	} {
 		if err := r.Send(ctx, "a", "1.2.3.4", m); !errors.Is(err, ErrInvalid) {
 			t.Fatalf("%+v: %v", m, err)
 		}
 	}
-	if err := r.Send(ctx, "a", "1.2.3.4", Message{Platform: FCM, Token: "tok", Payload: make([]byte, 3001)}); !errors.Is(err, ErrTooLarge) {
+	if err := r.Send(ctx, "a", "1.2.3.4", Message{Platform: SSE, Token: "tok", Payload: make([]byte, 3001)}); !errors.Is(err, ErrTooLarge) {
 		t.Fatal(err)
 	}
 }
@@ -65,18 +65,18 @@ func TestSendUnregisteredDropsBinding(t *testing.T) {
 	ctx := context.Background()
 	s, b := &fakeSender{err: ErrUnregistered}, memBindings{}
 	r := newRelay(s, b, 10)
-	if err := r.Send(ctx, "a", "ip", Message{Platform: FCM, Token: "tok", Payload: []byte{1}}); !errors.Is(err, ErrUnregistered) || len(b) != 0 {
+	if err := r.Send(ctx, "a", "ip", Message{Platform: SSE, Token: "tok", Payload: []byte{1}}); !errors.Is(err, ErrUnregistered) || len(b) != 0 {
 		t.Fatal(err, len(b))
 	}
 	s.err = errors.New("timeout")
-	if err := r.Send(ctx, "a", "ip", Message{Platform: FCM, Token: "tok", Payload: []byte{1}}); !errors.Is(err, ErrUpstream) {
+	if err := r.Send(ctx, "a", "ip", Message{Platform: SSE, Token: "tok", Payload: []byte{1}}); !errors.Is(err, ErrUpstream) {
 		t.Fatal(err)
 	}
 }
 
 func TestSendRateLimited(t *testing.T) {
 	r := newRelay(&fakeSender{}, memBindings{}, 2)
-	msg := Message{Platform: FCM, Token: "tok", Payload: []byte{1}}
+	msg := Message{Platform: SSE, Token: "tok", Payload: []byte{1}}
 	for i := range 3 {
 		err := r.Send(context.Background(), "a", "ip", msg)
 		if (i < 2) != (err == nil) || (i == 2 && !errors.Is(err, ErrRateLimited)) {

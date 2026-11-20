@@ -14,14 +14,16 @@ const ChannelApp ChannelKind = "app"
 // PushPlatform is the push service a device is reached through.
 type PushPlatform string
 
-// The push services of Android and iOS.
+// The delivery paths of Android and iOS: Android devices keep a
+// Server-Sent Events stream open to the relay (ADR 0027), iOS devices are
+// reached through APNs.
 const (
-	PushFCM  PushPlatform = "fcm"
+	PushSSE  PushPlatform = "sse"
 	PushAPNs PushPlatform = "apns"
 )
 
-// maxPushToken bounds a device token; FCM tokens are about 160 characters,
-// APNs tokens 64.
+// maxPushToken bounds a device token; stream device IDs have 43
+// characters, APNs tokens 64.
 const maxPushToken = 4096
 
 // AppDevice is a phone that gets push notifications. It belongs to one app
@@ -44,8 +46,8 @@ func (d *AppDevice) Validate() error {
 	if d.Name == "" || len(d.Name) > 80 {
 		d.Name = "Phone"
 	}
-	if d.Platform != PushFCM && d.Platform != PushAPNs {
-		return kernel.NewValidationError("platform", "The platform must be fcm or apns.")
+	if d.Platform != PushSSE && d.Platform != PushAPNs {
+		return kernel.NewValidationError("platform", "The platform must be sse or apns.")
 	}
 	if d.Token == "" || len(d.Token) > maxPushToken || strings.ContainsAny(d.Token, " \n") {
 		return kernel.NewValidationError("token", "The push token is missing or invalid.")

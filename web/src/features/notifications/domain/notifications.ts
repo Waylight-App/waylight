@@ -82,7 +82,7 @@ export interface AppDevice {
   /** The app session the device belongs to. */
   session: string;
   name: string;
-  platform: 'fcm' | 'apns';
+  platform: 'sse' | 'apns';
   updatedAt: Date;
 }
 

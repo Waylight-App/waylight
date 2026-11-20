@@ -1,11 +1,11 @@
-// Command push-relay forwards end-to-end encrypted notifications from
-// Waylight instances to Google FCM and Apple APNs (ADR 0025,
+// Command push-relay delivers end-to-end encrypted notifications from
+// Waylight instances to the mobile app: to Android over its own
+// Server-Sent Events stream, to iOS through Apple APNs (ADR 0025, ADR 0027,
 // docs/push-relay.md). It is configured through the environment.
 package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -21,9 +21,9 @@ import (
 	"waylight/internal/platform/middleware"
 	"waylight/internal/pushrelay"
 	"waylight/internal/pushrelay/apns"
-	"waylight/internal/pushrelay/fcm"
 	"waylight/internal/pushrelay/httpapi"
 	"waylight/internal/pushrelay/store"
+	"waylight/internal/pushrelay/stream"
 )
 
 // bindingTTL is how long an unused token binding is kept (ADR 0025).
@@ -48,11 +48,6 @@ func env(name, fallback string) string {
 }
 
 func run(ctx context.Context, log *slog.Logger) error {
-	client := &http.Client{Timeout: 10 * time.Second}
-	senders, err := senders(client)
-	if err != nil {
-		return err
-	}
 	proxies, err := prefixes(os.Getenv("TRUSTED_PROXIES"))
 	if err != nil {
 		return err
@@ -64,6 +59,14 @@ func run(ctx context.Context, log *slog.Logger) error {
 	defer st.Close()
 	go prune(ctx, st, log)
 
+	hub := stream.NewHub()
+	senders := map[pushrelay.Platform]pushrelay.Sender{
+		pushrelay.SSE: &stream.Sender{Mailbox: st, Hub: hub, Now: time.Now},
+	}
+	if err := addAPNs(senders, &http.Client{Timeout: 10 * time.Second}); err != nil {
+		return err
+	}
+
 	limit := func(max int) *pushrelay.Window { return &pushrelay.Window{Max: max, Period: time.Hour} }
 	relay := pushrelay.New(senders, st, pushrelay.Limits{Instance: limit(600), Token: limit(120), Client: limit(1200)}, time.Now)
 	h := &httpapi.Handler{
@@ -71,6 +74,13 @@ func run(ctx context.Context, log *slog.Logger) error {
 		ClientIP: func(r *http.Request) string { return middleware.ResolveClientIP(r, proxies).String() },
 		Now:      time.Now,
 		Log:      log,
+		Streams: &httpapi.Streams{
+			Mailbox: st,
+			Hub:     hub,
+			Gate:    &stream.Gate{MaxPerClient: 20, MaxTotal: 20000},
+			// Reconnects back off on the device; this only stops floods.
+			Opens: &pushrelay.Window{Max: 600, Period: time.Hour},
+		},
 	}
 	platforms := make([]string, 0, len(senders))
 	for p := range senders {
@@ -80,40 +90,26 @@ func run(ctx context.Context, log *slog.Logger) error {
 	return httpserver.Run(ctx, env("PUSH_RELAY_ADDR", ":8080"), h.Routes(), 10*time.Second, log)
 }
 
-// senders builds a sender for every push service that is configured; at
-// least one is required.
-func senders(client *http.Client) (map[pushrelay.Platform]pushrelay.Sender, error) {
-	out := map[pushrelay.Platform]pushrelay.Sender{}
-	if path := os.Getenv("FCM_SERVICE_ACCOUNT_FILE"); path != "" {
-		data, err := os.ReadFile(path) //nolint:gosec // path set by the operator
-		if err != nil {
-			return nil, err
-		}
-		s, err := fcm.New(client, fcm.DefaultBase, data, time.Now)
-		if err != nil {
-			return nil, err
-		}
-		out[pushrelay.FCM] = s
+// addAPNs adds the APNs sender for the iOS app when a key is configured.
+func addAPNs(senders map[pushrelay.Platform]pushrelay.Sender, client *http.Client) error {
+	path := os.Getenv("APNS_KEY_FILE")
+	if path == "" {
+		return nil
 	}
-	if path := os.Getenv("APNS_KEY_FILE"); path != "" {
-		key, err := os.ReadFile(path) //nolint:gosec // path set by the operator
-		if err != nil {
-			return nil, err
-		}
-		base := apns.Production
-		if os.Getenv("APNS_SANDBOX") == "true" {
-			base = apns.Sandbox
-		}
-		s, err := apns.New(client, base, apns.Config{KeyID: os.Getenv("APNS_KEY_ID"), TeamID: os.Getenv("APNS_TEAM_ID"), Topic: os.Getenv("APNS_TOPIC"), Key: key}, time.Now)
-		if err != nil {
-			return nil, err
-		}
-		out[pushrelay.APNs] = s
+	key, err := os.ReadFile(path) //nolint:gosec // path set by the operator
+	if err != nil {
+		return err
 	}
-	if len(out) == 0 {
-		return nil, errors.New("neither FCM_SERVICE_ACCOUNT_FILE nor APNS_KEY_FILE is set")
+	base := apns.Production
+	if os.Getenv("APNS_SANDBOX") == "true" {
+		base = apns.Sandbox
 	}
-	return out, nil
+	s, err := apns.New(client, base, apns.Config{KeyID: os.Getenv("APNS_KEY_ID"), TeamID: os.Getenv("APNS_TEAM_ID"), Topic: os.Getenv("APNS_TOPIC"), Key: key}, time.Now)
+	if err != nil {
+		return err
+	}
+	senders[pushrelay.APNs] = s
+	return nil
 }
 
 func prefixes(list string) ([]netip.Prefix, error) {
@@ -128,15 +124,21 @@ func prefixes(list string) ([]netip.Prefix, error) {
 	return out, nil
 }
 
-// prune deletes unused bindings once a day.
+// prune deletes unused bindings and expired mailbox messages every hour.
 func prune(ctx context.Context, st *store.Store, log *slog.Logger) {
-	t := time.NewTicker(24 * time.Hour)
+	t := time.NewTicker(time.Hour)
 	defer t.Stop()
 	for {
-		if n, err := st.Prune(ctx, time.Now().Add(-bindingTTL)); err != nil {
+		now := time.Now()
+		if n, err := st.Prune(ctx, now.Add(-bindingTTL)); err != nil {
 			log.Warn("prune bindings", "error", err)
 		} else if n > 0 {
 			log.Info("pruned bindings", "count", n)
+		}
+		if n, err := st.PruneMailbox(ctx, now.Add(-stream.TTL)); err != nil {
+			log.Warn("prune mailbox", "error", err)
+		} else if n > 0 {
+			log.Info("pruned messages", "count", n)
 		}
 		select {
 		case <-ctx.Done():

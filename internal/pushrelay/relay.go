@@ -13,9 +13,10 @@ import (
 // Platform names a push service.
 type Platform string
 
-// The push services the relay forwards to.
+// The ways the relay delivers: its own Server-Sent Events stream (ADR 0027)
+// and Apple's push service for the iOS app.
 const (
-	FCM  Platform = "fcm"
+	SSE  Platform = "sse"
 	APNs Platform = "apns"
 )
 
@@ -36,9 +37,9 @@ var (
 	ErrForeignToken = errors.New("token bound to another instance")
 	// ErrRateLimited means a rate limit was reached.
 	ErrRateLimited = errors.New("rate limited")
-	// ErrUnregistered means FCM or APNs no longer accept the token.
+	// ErrUnregistered means the push service no longer accepts the token.
 	ErrUnregistered = errors.New("token unregistered")
-	// ErrUpstream means FCM or APNs failed for another reason.
+	// ErrUpstream means the push service failed for another reason.
 	ErrUpstream = errors.New("push service failed")
 )
 
@@ -46,6 +47,12 @@ var (
 // ErrUnregistered for tokens the service rejects for good.
 type Sender interface {
 	Send(ctx context.Context, token string, payload []byte) error
+}
+
+// TokenChecker is implemented by senders that can tell a malformed device
+// token without delivering, so no binding is created for it.
+type TokenChecker interface {
+	ValidToken(token string) bool
 }
 
 // TokenHash is the stored form of a device token.
@@ -78,7 +85,7 @@ type Relay struct {
 }
 
 // New returns the relay. Platforms without a sender are rejected as
-// invalid, so a relay can run with FCM only.
+// invalid, so a relay can run without APNs.
 func New(senders map[Platform]Sender, bindings Bindings, limits Limits, now func() time.Time) *Relay {
 	return &Relay{senders: senders, bindings: bindings, limits: limits, now: now}
 }
@@ -88,6 +95,9 @@ func New(senders map[Platform]Sender, bindings Bindings, limits Limits, now func
 func (r *Relay) Send(ctx context.Context, key, client string, m Message) error {
 	sender, ok := r.senders[m.Platform]
 	if !ok || m.Token == "" || len(m.Payload) == 0 {
+		return ErrInvalid
+	}
+	if c, isChecker := sender.(TokenChecker); isChecker && !c.ValidToken(m.Token) {
 		return ErrInvalid
 	}
 	if len(m.Payload) > pushproto.MaxPayload {

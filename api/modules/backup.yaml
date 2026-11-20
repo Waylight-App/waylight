@@ -49,7 +49,7 @@ paths:
   /api/notifications/app-device:
     put:
       tags: [notifications]
-      summary: "Register the calling app session's phone for push notifications (#564): {name, platform: fcm|apns, token, publicKey (X25519, base64)}; admins only, app sessions only"
+      summary: "Register the calling app session's phone for push notifications (#564): {name, platform: sse|apns, token, publicKey (X25519, base64)}; admins only, app sessions only"
       responses: { "200": { description: "{session, name, platform, updatedAt}" }, "403": { description: Not an app session or not an admin }, "503": { description: Push turned off (PUSH_RELAY_URL=off) } }
     delete:
       tags: [notifications]
