@@ -15,6 +15,9 @@ type TabScope interface {
 	// TabIDs lists every tab in display order (the display of an appliance
 	// shows them all, #140).
 	TabIDs(ctx context.Context) ([]string, error)
+	// FirstWidgetConfig returns the settings (JSON) of the first widget of
+	// kind on the account's tabs, in tab order and then top to bottom.
+	FirstWidgetConfig(ctx context.Context, kind string) (string, bool, error)
 }
 
 type tabScope struct{ deps Deps }
@@ -50,4 +53,24 @@ func (uc *tabScope) TabIDs(ctx context.Context) ([]string, error) {
 		ids = append(ids, t.ID())
 	}
 	return ids, nil
+}
+
+// FirstWidgetConfig implements TabScope.
+func (uc *tabScope) FirstWidgetConfig(ctx context.Context, kind string) (string, bool, error) {
+	tabs, err := uc.deps.Tabs.ListTabs(ctx)
+	if err != nil {
+		return "", false, fmt.Errorf("list tabs: %w", err)
+	}
+	widgets, err := uc.deps.Widgets.ListWidgets(ctx)
+	if err != nil {
+		return "", false, fmt.Errorf("list widgets: %w", err)
+	}
+	for _, t := range tabs {
+		for _, w := range widgets {
+			if w.TabID() == t.ID() && w.Kind() == kind {
+				return w.Config(), true, nil
+			}
+		}
+	}
+	return "", false, nil
 }

@@ -5,9 +5,14 @@ import (
 	"testing"
 	"time"
 
+	birthdaysearch "waylight/internal/modules/birthdays/adapter/smartsearch"
 	dockersearch "waylight/internal/modules/docker/adapter/smartsearch"
+	parcelsearch "waylight/internal/modules/parcels/adapter/smartsearch"
 	servicessearch "waylight/internal/modules/services/adapter/smartsearch"
 	systemsearch "waylight/internal/modules/system/adapter/smartsearch"
+	timelinesearch "waylight/internal/modules/timeline/adapter/smartsearch"
+	transitsearch "waylight/internal/modules/transit/adapter/smartsearch"
+	wastesearch "waylight/internal/modules/waste/adapter/smartsearch"
 	"waylight/internal/shared/answers"
 )
 
@@ -16,6 +21,8 @@ import (
 var (
 	intents = slices.Concat(
 		systemsearch.New(nil).Intents(), dockersearch.New(nil).Intents(), servicessearch.New(nil).Intents(),
+		parcelsearch.New(nil).Intents(), birthdaysearch.New(nil).Intents(),
+		timelinesearch.New(nil).Intents(), wastesearch.New(nil).Intents(), transitsearch.New(nil).Intents(),
 	)
 	entities = []answers.Entity{
 		{Kind: "container", ID: "c1", Name: "jellyfin"},
@@ -61,6 +68,17 @@ func TestRegressionTable(t *testing.T) {
 		{"what is down", "services.overview"},
 		{"router", "services.status"}, {"ist das nas erreichbar", "services.status"}, {"grafana ping", "services.status"},
 		{"/service router", "services.status"},
+		{"paket", "parcels.status"}, {"wo ist mein paket", "parcels.status"}, {"dhl", "parcels.status"},
+		{"dhl paket", "parcels.status"},
+		{"wer hat geburtstag", "birthdays.upcoming"}, {"wer hat heute geburtstag", "birthdays.upcoming"},
+		{"birthdays", "birthdays.upcoming"},
+		{"wann kommt die gelbe tonne", "waste.next"}, {"müll", "waste.next"}, {"abfall", "waste.next"},
+		{"when is the trash collected", "waste.next"}, {"/müll", "waste.next"},
+		{"was ist passiert", "timeline.recent"}, {"vorfälle", "timeline.recent"}, {"what happened", "timeline.recent"},
+		{"timeline", "timeline.recent"},
+		{"abfahrt", "transit.departures"}, {"nächster bus", "transit.departures"},
+		{"abfahrten hauptbahnhof", "transit.departures"}, {"wann fährt die nächste bahn", "transit.departures"},
+		{"/bus oldenburg hbf", "transit.departures"}, {"Abfahrt Oldenburg Hbf", "transit.departures"},
 		{"", ""}, {"hallo", ""}, {"xyz", ""}, {"der die das", ""},
 	}
 	for _, c := range table {

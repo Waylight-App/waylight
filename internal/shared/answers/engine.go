@@ -13,6 +13,18 @@ type Request struct {
 	Match Match
 	Lang  Lang
 	Now   time.Time
+	// Widget returns the settings of the account's first widget of a kind
+	// on the dashboard (the stop of the transit widget); nil without one.
+	Widget func(ctx context.Context, kind string) map[string]any
+}
+
+// WidgetConfig reads the settings of the first widget of kind; empty when
+// there is none or no dashboard.
+func (r Request) WidgetConfig(ctx context.Context, kind string) map[string]any {
+	if r.Widget == nil {
+		return nil
+	}
+	return r.Widget(ctx, kind)
 }
 
 // Source answers the intents of one module. Its intents name it by ID.
@@ -36,6 +48,13 @@ type Engine struct {
 	order   []Source
 	intents []Intent
 	log     *slog.Logger
+	widget  func(ctx context.Context, kind string) map[string]any
+}
+
+// WithWidgets lets sources read the settings of the account's widgets.
+func (e *Engine) WithWidgets(widget func(ctx context.Context, kind string) map[string]any) *Engine {
+	e.widget = widget
+	return e
 }
 
 // NewEngine builds the search over sources; log reports failing sources.
@@ -60,7 +79,7 @@ func (e *Engine) Answer(ctx context.Context, query string, lang Lang, now time.T
 	out := make([]Answer, len(matches))
 	var wg sync.WaitGroup
 	for i, m := range matches {
-		wg.Go(func() { out[i] = e.resolve(ctx, Request{Match: m, Lang: lang, Now: now}) })
+		wg.Go(func() { out[i] = e.resolve(ctx, Request{Match: m, Lang: lang, Now: now, Widget: e.widget}) })
 	}
 	wg.Wait()
 	return out

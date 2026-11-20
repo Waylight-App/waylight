@@ -10,8 +10,10 @@ import (
 	"waylight/internal/modules"
 	"waylight/internal/modules/parcels/adapter/controller"
 	"waylight/internal/modules/parcels/adapter/gateway"
+	"waylight/internal/modules/parcels/adapter/smartsearch"
 	"waylight/internal/modules/parcels/domain"
 	"waylight/internal/modules/parcels/usecase"
+	"waylight/internal/shared/answers"
 	"waylight/internal/shared/kernel"
 )
 
@@ -75,4 +77,10 @@ func (m *Module) Jobs() []modules.Job {
 		{Name: "parcels.refresh", Interval: refreshInterval, Run: m.uc.RefreshAll},
 		{Name: "parcels.mail", Interval: mailCheck, Run: m.uc.DiscoverParcels},
 	}
+}
+
+// AnswerSources implements answers.Provider: the parcels answers of the smart
+// search (ADR 0026).
+func (m *Module) AnswerSources() []answers.Source {
+	return []answers.Source{smartsearch.New(m.uc)}
 }

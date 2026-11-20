@@ -393,3 +393,30 @@ func TestGroupDefaultTab(t *testing.T) {
 		t.Fatalf("an invisible tab is never the default: %q", got.DefaultTabID)
 	}
 }
+
+func TestFirstWidgetConfigFollowsTabOrder(t *testing.T) {
+	deps, _ := newDeps("transit")
+	tabs := NewManageTabs(deps)
+	a, _ := tabs.Create(ctx, CreateTabRequest{Name: "A"})
+	b, _ := tabs.Create(ctx, CreateTabRequest{Name: "B"})
+	widgets := NewManageWidgets(deps)
+	if _, err := widgets.Add(ctx, AddWidgetRequest{TabID: a.ID, Kind: "transit", W: 2, H: 2, Config: `{"stopId":"a"}`}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := widgets.Add(ctx, AddWidgetRequest{TabID: b.ID, Kind: "transit", W: 2, H: 2, Config: `{"stopId":"b"}`}); err != nil {
+		t.Fatal(err)
+	}
+	scope := NewTabScope(deps)
+	if cfg, ok, err := scope.FirstWidgetConfig(ctx, "transit"); err != nil || !ok || cfg != `{"stopId":"a"}` {
+		t.Fatalf("first = %q, %v, %v", cfg, ok, err)
+	}
+	if err := tabs.Reorder(ctx, ReorderTabsRequest{TabIDs: []string{b.ID, a.ID}}); err != nil {
+		t.Fatal(err)
+	}
+	if cfg, _, _ := scope.FirstWidgetConfig(ctx, "transit"); cfg != `{"stopId":"b"}` {
+		t.Fatalf("after reorder = %q", cfg)
+	}
+	if _, ok, _ := scope.FirstWidgetConfig(ctx, "weather"); ok {
+		t.Fatal("no weather widget expected")
+	}
+}
