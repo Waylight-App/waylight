@@ -2,6 +2,7 @@ package answers
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"time"
 )
@@ -61,6 +62,9 @@ var common = Messages{
 		"today":             "Today",
 		"tomorrow":          "Tomorrow",
 		"in_days":           "in {n} days",
+		"minutes_ago":       "{n} min ago",
+		"hours_ago":         "{n} h ago",
+		"days_ago":          "{n} d ago",
 	},
 	German: {
 		"which_title":       "Welcher?",
@@ -70,6 +74,9 @@ var common = Messages{
 		"today":             "Heute",
 		"tomorrow":          "Morgen",
 		"in_days":           "in {n} Tagen",
+		"minutes_ago":       "vor {n} Min.",
+		"hours_ago":         "vor {n} Std.",
+		"days_ago":          "vor {n} T.",
 	},
 }
 
@@ -100,6 +107,20 @@ func InDays(lang Lang, days int) string {
 		return common.T(lang, "tomorrow")
 	default:
 		return common.T(lang, "in_days", "n", days)
+	}
+}
+
+// Ago writes how long ago t was, as the web interface does: minutes below
+// an hour, hours below two days, days after that.
+func Ago(lang Lang, t, now time.Time) string {
+	hours := max(0, now.Sub(t).Hours())
+	switch {
+	case hours < 1:
+		return common.T(lang, "minutes_ago", "n", int(math.Round(hours*60)))
+	case hours < 48:
+		return common.T(lang, "hours_ago", "n", int(math.Round(hours)))
+	default:
+		return common.T(lang, "days_ago", "n", int(math.Round(hours/24)))
 	}
 }
 

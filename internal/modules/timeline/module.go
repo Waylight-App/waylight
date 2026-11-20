@@ -9,8 +9,10 @@ import (
 	"waylight/internal/modules"
 	"waylight/internal/modules/timeline/adapter/controller"
 	"waylight/internal/modules/timeline/adapter/gateway"
+	"waylight/internal/modules/timeline/adapter/smartsearch"
 	"waylight/internal/modules/timeline/domain"
 	"waylight/internal/modules/timeline/usecase"
+	"waylight/internal/shared/answers"
 	"waylight/internal/shared/kernel"
 )
 
@@ -71,4 +73,10 @@ func (m *Module) Jobs() []modules.Job {
 // briefing, ADR 0016).
 func (m *Module) Recent(ctx context.Context, limit int) ([]domain.Event, error) {
 	return m.uc.List(ctx, usecase.Filter{Limit: limit})
+}
+
+// AnswerSources implements answers.Provider: the timeline answers of the smart
+// search (ADR 0026).
+func (m *Module) AnswerSources() []answers.Source {
+	return []answers.Source{smartsearch.New(m.uc)}
 }

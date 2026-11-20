@@ -10,7 +10,9 @@ import (
 	"waylight/internal/modules"
 	"waylight/internal/modules/waste/adapter/controller"
 	"waylight/internal/modules/waste/adapter/gateway"
+	"waylight/internal/modules/waste/adapter/smartsearch"
 	"waylight/internal/modules/waste/usecase"
+	"waylight/internal/shared/answers"
 	"waylight/internal/shared/kernel"
 )
 
@@ -60,3 +62,9 @@ func (m *Module) Jobs() []modules.Job {
 // Upcoming returns the next collections per type (read access for the
 // briefing, ADR 0016).
 func (m *Module) Upcoming(ctx context.Context) (usecase.Overview, error) { return m.uc.Upcoming(ctx) }
+
+// AnswerSources implements answers.Provider: the waste answers of the smart
+// search (ADR 0026).
+func (m *Module) AnswerSources() []answers.Source {
+	return []answers.Source{smartsearch.New(m.uc)}
+}
