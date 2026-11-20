@@ -59,6 +59,7 @@ import (
 	"waylight/internal/platform/oidc"
 	"waylight/internal/platform/webauthn"
 	"waylight/internal/platform/wol"
+	"waylight/internal/shared/answers"
 	"waylight/internal/shared/kernel"
 )
 
@@ -270,7 +271,27 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	}
 	registry.Register(dash)
 	scope.dashboard = dash
+	wireSmartSearch(registry, authModule.MayRead, log, clk)
 	return authModule, registry, nil
+}
+
+// wireSmartSearch hands the answer sources of the enabled modules to the
+// search module (ADR 0026), so no module imports another. A source answers
+// only accounts that may read its module's API (members, guests, policies).
+func wireSmartSearch(registry *modules.Registry, mayRead func(ctx context.Context, module string) bool, log *slog.Logger, clk kernel.Clock) {
+	var sources []answers.Source
+	var target *search.Module
+	for _, m := range registry.All() {
+		if p, ok := m.(answers.Provider); ok {
+			sources = append(sources, p.AnswerSources()...)
+		}
+		if s, ok := m.(*search.Module); ok {
+			target = s
+		}
+	}
+	if target != nil {
+		target.SetAnswerSources(log, clk, mayRead, sources)
+	}
 }
 
 // tourRestarter is implemented by the onboarding module.

@@ -10,8 +10,10 @@ import (
 	"waylight/internal/modules"
 	"waylight/internal/modules/system/adapter/controller"
 	"waylight/internal/modules/system/adapter/gateway"
+	"waylight/internal/modules/system/adapter/smartsearch"
 	"waylight/internal/modules/system/domain"
 	"waylight/internal/modules/system/usecase"
+	"waylight/internal/shared/answers"
 	"waylight/internal/shared/kernel"
 )
 
@@ -118,4 +120,10 @@ func (m *Module) Metrics(ctx context.Context) []kernel.MetricSample {
 			kernel.Gauge("waylight_host_disk_total_bytes", "Size per configured file system.", float64(d.Usage.Total), l))
 	}
 	return out
+}
+
+// AnswerSources implements answers.Provider: the system answers of the smart
+// search (ADR 0026).
+func (m *Module) AnswerSources() []answers.Source {
+	return []answers.Source{smartsearch.New(m.uc)}
 }

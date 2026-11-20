@@ -157,6 +157,7 @@ type Module struct {
 	directory    *usecase.DirectoryLogin
 	policies     *usecase.Policies
 	hooks        *usecase.AccountHooks
+	authorizer   usecase.Authorizer
 }
 
 // New builds the auth module.
@@ -256,7 +257,15 @@ func New(cfg Config, d Deps) (*Module, error) {
 		directory:    deps.Directory,
 		policies:     deps.Policies,
 		hooks:        deps.Hooks,
+		authorizer:   uc.Authorizer,
 	}, nil
+}
+
+// MayRead reports whether the principal in ctx may read the API of module,
+// by the same rules as a request to GET /api/<module>. Features that show
+// another module's data, such as the smart search, use it.
+func (m *Module) MayRead(ctx context.Context, module string) bool {
+	return m.authorizer.Authorize(ctx, kernel.PrincipalFrom(ctx), "GET", "/api/"+module) == nil
 }
 
 // OnAccountDeleted runs fn after a member or guest was deleted, so a module

@@ -11,7 +11,9 @@ import (
 	"waylight/internal/modules/services/adapter/configfile"
 	"waylight/internal/modules/services/adapter/controller"
 	"waylight/internal/modules/services/adapter/gateway"
+	"waylight/internal/modules/services/adapter/smartsearch"
 	"waylight/internal/modules/services/usecase"
+	"waylight/internal/shared/answers"
 	"waylight/internal/shared/kernel"
 )
 
@@ -176,3 +178,9 @@ func (m *Module) Metrics(ctx context.Context) []kernel.MetricSample {
 // Services returns all services with their last status (read access for
 // the briefing, ADR 0016).
 func (m *Module) Services(ctx context.Context) ([]usecase.ServiceView, error) { return m.uc.List(ctx) }
+
+// AnswerSources implements answers.Provider: the services answers of the smart
+// search (ADR 0026).
+func (m *Module) AnswerSources() []answers.Source {
+	return []answers.Source{smartsearch.New(m.uc)}
+}
