@@ -1,0 +1,97 @@
+tags:
+  - name: grafana
+
+paths:
+  /api/grafana/settings:
+    get:
+      tags: [grafana]
+      summary: Grafana connection (the token is never returned)
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/GrafanaSettings" } } } }
+    put:
+      tags: [grafana]
+      summary: Test and save the connection (an empty token keeps the stored one)
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [url], properties: { url: { type: string }, token: { type: string } } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/GrafanaSettings" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/grafana/alerts:
+    get:
+      tags: [grafana]
+      summary: Firing and pending alerts of Grafana Alerting, firing first (cached for 30 seconds)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [alerts, url]
+                properties:
+                  url: { type: string, description: Alert list in Grafana }
+                  alerts:
+                    type: array
+                    items:
+                      type: object
+                      required: [name, summary, severity, state]
+                      properties:
+                        name: { type: string }
+                        summary: { type: string }
+                        severity: { type: string, description: The severity label, may be empty }
+                        state: { type: string, enum: [firing, pending] }
+                        since: { type: string, format: date-time }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/Unavailable" }
+  /api/grafana/dashboards:
+    get:
+      tags: [grafana]
+      summary: Dashboards whose title matches q (at most 50)
+      parameters: [{ name: q, in: query, schema: { type: string } }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: object, properties: { uid: { type: string }, title: { type: string }, folder: { type: string }, url: { type: string } } }
+        "503": { $ref: "#/components/responses/Unavailable" }
+  /api/grafana/dashboards/{uid}/panels:
+    get:
+      tags: [grafana]
+      summary: Panels of a dashboard, panels in rows included
+      parameters: [{ name: uid, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: object, properties: { id: { type: integer }, title: { type: string }, type: { type: string } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/grafana/render/{uid}/{panel}:
+    get:
+      tags: [grafana]
+      summary: A panel as PNG from Grafana's image renderer
+      parameters:
+        - { name: uid, in: path, required: true, schema: { type: string } }
+        - { name: panel, in: path, required: true, schema: { type: integer } }
+        - { name: width, in: query, schema: { type: integer, minimum: 200, maximum: 1600 } }
+        - { name: height, in: query, schema: { type: integer, minimum: 100, maximum: 1200 } }
+        - { name: range, in: query, description: 'Time range back from now, e.g. 30m, 6h, 7d', schema: { type: string } }
+        - { name: theme, in: query, schema: { type: string, enum: [light, dark] } }
+      responses:
+        "200": { description: The image, content: { image/png: { schema: { type: string, format: binary } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "503": { description: Grafana has no image renderer or is not reachable, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+
+schemas:
+  GrafanaSettings:
+    type: object
+    required: [configured, url, hasToken]
+    properties:
+      configured: { type: boolean }
+      url: { type: string }
+      hasToken: { type: boolean }
