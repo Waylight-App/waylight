@@ -3,6 +3,7 @@ package answers
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 // Lang is a language of the answers.
@@ -57,12 +58,18 @@ var common = Messages{
 		"which":             "Which one do you mean?",
 		"unavailable_title": "Not available right now",
 		"unavailable":       "This information cannot be loaded right now. Try again later or open the widget.",
+		"today":             "Today",
+		"tomorrow":          "Tomorrow",
+		"in_days":           "in {n} days",
 	},
 	German: {
 		"which_title":       "Welcher?",
 		"which":             "Welchen meinst du?",
 		"unavailable_title": "Gerade nicht verfügbar",
 		"unavailable":       "Diese Information lässt sich gerade nicht laden. Versuch es später noch einmal oder öffne das Widget.",
+		"today":             "Heute",
+		"tomorrow":          "Morgen",
+		"in_days":           "in {n} Tagen",
 	},
 }
 
@@ -83,3 +90,26 @@ func FormatBytes(bytes uint64) string {
 
 // FormatPercent rounds a share to a whole percent, e.g. "42 %".
 func FormatPercent(p float64) string { return fmt.Sprintf("%.0f %%", p) }
+
+// InDays writes "Today", "Tomorrow" or "in 3 days" for a list row.
+func InDays(lang Lang, days int) string {
+	switch {
+	case days <= 0:
+		return common.T(lang, "today")
+	case days == 1:
+		return common.T(lang, "tomorrow")
+	default:
+		return common.T(lang, "in_days", "n", days)
+	}
+}
+
+var monthsEN = [12]string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
+
+// FormatDate writes a short date as the web interface does: "20.11." in
+// German, "Nov 20" in English.
+func FormatDate(lang Lang, t time.Time) string {
+	if lang == German {
+		return fmt.Sprintf("%d.%d.", t.Day(), int(t.Month()))
+	}
+	return fmt.Sprintf("%s %d", monthsEN[t.Month()-1], t.Day())
+}

@@ -10,8 +10,10 @@ import (
 	"waylight/internal/modules"
 	"waylight/internal/modules/birthdays/adapter/controller"
 	"waylight/internal/modules/birthdays/adapter/gateway"
+	"waylight/internal/modules/birthdays/adapter/smartsearch"
 	"waylight/internal/modules/birthdays/domain"
 	"waylight/internal/modules/birthdays/usecase"
+	"waylight/internal/shared/answers"
 	"waylight/internal/shared/kernel"
 )
 
@@ -73,4 +75,10 @@ func (m *Module) Jobs() []modules.Job {
 // Soon lists the birthdays of the next days (for the daily briefing).
 func (m *Module) Soon(ctx context.Context, days int) ([]domain.Upcoming, error) {
 	return m.uc.Soon(ctx, days)
+}
+
+// AnswerSources implements answers.Provider: the birthdays answers of the smart
+// search (ADR 0026).
+func (m *Module) AnswerSources() []answers.Source {
+	return []answers.Source{smartsearch.New(m.uc)}
 }
