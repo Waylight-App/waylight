@@ -1,6 +1,6 @@
 # ADR 0025: Push relay for the mobile app
 
-- Status: Proposed
+- Status: Accepted; the FCM parts are superseded by [ADR 0027](0027-push-over-server-sent-events.md)
 - Date: 2026-11-19
 - Issues: [#563](https://github.com/Waylight-App/waylight/issues/563), [#564](https://github.com/Waylight-App/waylight/issues/564)
 

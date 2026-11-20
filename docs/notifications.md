@@ -75,10 +75,12 @@ A phone belongs to its app session: signing out in the app, revoking the
 session under *Settings → Account → Sessions* or the session expiring
 removes it.
 
-Phones are reached through Google Firebase Cloud Messaging and the Apple
-Push Notification service, by way of the push relay of the Waylight
-project. Waylight encrypts every message for the phone before it leaves
-the server, so neither the relay nor Google or Apple can read it
+Phones are reached through the push relay of the Waylight project at
+`push.getwaylight.app`. Android phones keep a connection open to it and
+get their messages directly, without Google
+([ADR 0027](adr/0027-push-over-server-sent-events.md)); the iOS app will use
+the Apple Push Notification service. Waylight encrypts every message for
+the phone before it leaves the server, so the relay cannot read it
 ([ADR 0025](adr/0025-push-relay.md)). Set `PUSH_RELAY_URL=off` to turn the
 channel off.
 

@@ -17,8 +17,8 @@ const version = 0x01
 // info binds the derived key to this protocol and version.
 const info = "waylight-push-v1"
 
-// MaxPayload is the largest sealed payload the relay forwards; FCM and APNs
-// accept 4 KB including their own fields.
+// MaxPayload is the largest sealed payload the relay forwards; APNs accepts
+// 4 KB including its own fields, and the stream uses the same bound.
 const MaxPayload = 3000
 
 // ErrPayload means a sealed payload cannot be opened.

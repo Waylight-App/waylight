@@ -22,7 +22,7 @@ export const serverMessages = {
   srv_d16b183106957ea4: "The channel type must be gotify, webhook, email, slack, teams or app.",
   srv_1c6e2427a40c8139: "The disk threshold must be between 50 and 99 %.",
   srv_d6a9caae13404f6e: "The maintenance window does not exist.",
-  srv_e4ceda6a1ea595dc: "The platform must be fcm or apns.",
+  srv_eefa15451a449631: "The platform must be sse or apns.",
   srv_6566f488a34e8fc3: "The port must be between 1 and 65535.",
   srv_b91be91a3c1bb98d: "The public key must be an X25519 key of 32 bytes.",
   srv_95d32fba3f7d35c3: "The public key must be base64.",

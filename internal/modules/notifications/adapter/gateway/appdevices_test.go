@@ -24,7 +24,7 @@ func TestAppDeviceRepository(t *testing.T) {
 	ctx := context.Background()
 	db := dbtest.Open(t, "notifications", Migrations())
 	repo := NewAppDeviceRepository(db, prefixCipher{})
-	d := domain.AppDevice{Session: "s", AccountID: "a", Name: "Pixel", Platform: domain.PushFCM, Token: "tok",
+	d := domain.AppDevice{Session: "s", AccountID: "a", Name: "Pixel", Platform: domain.PushSSE, Token: "tok",
 		PublicKey: make([]byte, 32), UpdatedAt: time.Unix(1_800_000_000, 0).UTC()}
 	if err := repo.Save(ctx, d); err != nil {
 		t.Fatal(err)
@@ -81,7 +81,7 @@ func TestRelayClient(t *testing.T) {
 	}))
 	defer srv.Close()
 	c := NewRelayClient(srv.Client(), srv.URL+"/", db, prefixCipher{}, func() time.Time { return now })
-	d := domain.AppDevice{Platform: domain.PushFCM, Token: "tok", PublicKey: device.PublicKey().Bytes()}
+	d := domain.AppDevice{Platform: domain.PushSSE, Token: "tok", PublicKey: device.PublicKey().Bytes()}
 	msg := domain.Message{Title: "Backup failed", Body: strings.Repeat("x", 3000)}
 	if err := c.Push(ctx, d, msg); err != nil {
 		t.Fatal(err)

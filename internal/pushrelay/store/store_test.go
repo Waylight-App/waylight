@@ -39,3 +39,34 @@ func TestBindings(t *testing.T) {
 		t.Fatal("deleted binding must be free:", k)
 	}
 }
+
+func TestMailbox(t *testing.T) {
+	ctx := context.Background()
+	s, err := Open(ctx, filepath.Join(t.TempDir(), "relay.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	now := time.Unix(1_800_000_000, 0)
+	for i := range 4 {
+		if _, err := s.Put(ctx, "dev", []byte{byte(i)}, now, 3); err != nil {
+			t.Fatal(err)
+		}
+	}
+	_, _ = s.Put(ctx, "other", []byte{9}, now.Add(-100*time.Hour), 3)
+	events, err := s.After(ctx, "dev", 0)
+	if err != nil || len(events) != 3 || events[0].Payload[0] != 1 {
+		t.Fatalf("only the newest three are kept: %+v, %v", events, err)
+	}
+	if err := s.Ack(ctx, "dev", events[1].ID); err != nil {
+		t.Fatal(err)
+	}
+	rest, _ := s.After(ctx, "dev", 0)
+	if len(rest) != 1 || rest[0].Payload[0] != 3 {
+		t.Fatalf("after ack: %+v", rest)
+	}
+	n, err := s.PruneMailbox(ctx, now.Add(-72*time.Hour))
+	if err != nil || n != 1 {
+		t.Fatalf("pruned %d, %v", n, err)
+	}
+}

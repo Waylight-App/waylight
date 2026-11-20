@@ -47,7 +47,7 @@ func appCtx(role, session string) context.Context {
 func TestAppDevicesRegister(t *testing.T) {
 	repo := memDevices{}
 	uc := NewAppDevices(repo, &fakeRelay{}, activeSessions{}, clk{})
-	in := AppDeviceInput{Name: "Pixel", Platform: domain.PushFCM, Token: "tok", PublicKey: make([]byte, 32)}
+	in := AppDeviceInput{Name: "Pixel", Platform: domain.PushSSE, Token: "tok", PublicKey: make([]byte, 32)}
 	d, err := uc.Register(appCtx("owner", "s1"), in)
 	if err != nil || d.Session != "s1" || d.AccountID != "acc" || len(repo) != 1 {
 		t.Fatal(d, err)
