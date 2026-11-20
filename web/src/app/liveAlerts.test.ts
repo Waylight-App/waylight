@@ -18,7 +18,8 @@ describe('live toasts (#583)', () => {
   it('keeps the newest four and dismisses on request', () => {
     for (const t of ['a', 'b', 'c', 'd', 'e']) addLiveAlert(n(t));
     expect(liveAlerts.list.map((a) => a.title)).toEqual(['b', 'c', 'd', 'e']);
-    dismissLiveAlert(liveAlerts.list[0]!.key);
+    const first = liveAlerts.list[0];
+    if (first) dismissLiveAlert(first.key);
     expect(liveAlerts.list.map((a) => a.title)).toEqual(['c', 'd', 'e']);
   });
 
