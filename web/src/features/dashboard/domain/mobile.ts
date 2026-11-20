@@ -9,8 +9,31 @@ import { MAX_ROWS, type Rect, sortByPosition } from './layout';
 export interface MobileItem {
   id: string;
   hidden: boolean;
-  /** Minimum height in grid rows. */
+  /** Minimum height in grid rows, used while no size is set. */
   rows: number;
+  /** Size on the phone grid of four columns (#585); unset means full width. */
+  size?: MobileSize;
+}
+
+/** Sizes of the phone grid, as on phone home screens (#585). */
+export type MobileSize = 'small' | 'medium' | 'large' | 'strip';
+
+/** The sizes in the order the layout editor offers them, with their cells. */
+export const MOBILE_SIZES: readonly { size: MobileSize; cols: number; rows: number }[] = [
+  { size: 'small', cols: 2, rows: 2 },
+  { size: 'medium', cols: 4, rows: 2 },
+  { size: 'large', cols: 4, rows: 4 },
+  { size: 'strip', cols: 4, rows: 1 },
+];
+
+/** Columns and rows a size spans; undefined for a full-width widget. */
+export function sizeCells(size: MobileSize | undefined): { cols: number; rows: number } | undefined {
+  return MOBILE_SIZES.find((s) => s.size === size);
+}
+
+/** Whether any widget of the layout has a size, so the grid applies. */
+export function usesGrid(items: readonly MobileItem[]): boolean {
+  return items.some((i) => sizeCells(i.size) !== undefined);
 }
 
 /** Width below which the phone layout is used; matches the CSS breakpoint. */
@@ -37,7 +60,9 @@ export function resolveMobile(
   for (const e of stored) {
     if (!present.has(e.id) || seen.has(e.id)) continue;
     seen.add(e.id);
-    out.push({ ...e, rows: clampRows(e.rows) });
+    // A size from a newer server falls back to full width.
+    const size = sizeCells(e.size) ? e.size : undefined;
+    out.push({ id: e.id, hidden: e.hidden, rows: clampRows(e.rows), ...(size ? { size } : {}) });
   }
   for (const item of deriveMobile(widgets)) if (!seen.has(item.id)) out.push(item);
   return out;
@@ -58,7 +83,12 @@ export function moveMobile(items: readonly MobileItem[], id: string, delta: numb
 export function updateMobile(
   items: readonly MobileItem[],
   id: string,
-  change: Partial<Pick<MobileItem, 'hidden' | 'rows'>>,
+  change: Partial<Pick<MobileItem, 'hidden' | 'rows' | 'size'>>,
 ): MobileItem[] {
-  return items.map((i) => (i.id === id ? { ...i, ...change, rows: clampRows(change.rows ?? i.rows) } : i));
+  return items.map((i) => {
+    if (i.id !== id) return i;
+    const next: MobileItem = { ...i, ...change, rows: clampRows(change.rows ?? i.rows) };
+    if ('size' in change && !change.size) delete next.size;
+    return next;
+  });
 }

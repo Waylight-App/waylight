@@ -45,6 +45,9 @@ type MobileItemDTO struct {
 	ID     string `json:"id"`
 	Hidden bool   `json:"hidden"`
 	Rows   int    `json:"rows"`
+	// Size is small, medium, large or strip on the phone grid; omitted for
+	// full width (#585).
+	Size string `json:"size,omitempty"`
 }
 
 // WidgetDTO describes a widget. Config is the widget's JSON configuration.
@@ -81,7 +84,7 @@ func Tab(t usecase.TabResponse) TabDTO {
 	dto.MobileCustom = t.MobileCustom
 	dto.Mobile = make([]MobileItemDTO, 0, len(t.Mobile))
 	for _, m := range t.Mobile {
-		dto.Mobile = append(dto.Mobile, MobileItemDTO{ID: m.WidgetID, Hidden: m.Hidden, Rows: m.Rows})
+		dto.Mobile = append(dto.Mobile, MobileItemDTO{ID: m.WidgetID, Hidden: m.Hidden, Rows: m.Rows, Size: m.Size})
 	}
 	return dto
 }

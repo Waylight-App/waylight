@@ -2,9 +2,20 @@
   import { t } from '../../../shared/i18n';
   import type { Snippet } from 'svelte';
   import { MAX_ROWS } from '../domain/layout';
-  import { type MobileItem, moveMobile, updateMobile } from '../domain/mobile';
+  import {
+    MOBILE_SIZES,
+    type MobileItem,
+    type MobileSize,
+    moveMobile,
+    sizeCells,
+    updateMobile,
+    usesGrid,
+  } from '../domain/mobile';
 
-  /** Props of the single-column phone layout (#92). */
+  /**
+   * Props of the phone layout (#92): one column, or a grid of four columns
+   * once a widget has a size (#585), as in the mobile app.
+   */
   interface Props {
     /** Phone layout in display order. */
     layout: MobileItem[];
@@ -26,6 +37,7 @@
   let { layout, widgets, editing, custom, rowHeight = 56, onchange, onreset, item, label }: Props = $props();
 
   const visible = $derived(layout.filter((e) => widgets.has(e.id) && (editing || !e.hidden)));
+  const grid = $derived(usesGrid(layout));
   let announcement = $state('');
 
   function move(e: MobileItem, delta: number, name: string) {
@@ -45,12 +57,21 @@
   </div>
 {/if}
 
-<div class="list" style:--row-height="{rowHeight}px">
+<div class="list" class:grid style:--row-height="{rowHeight}px">
   {#each visible as e, i (e.id)}
     {@const w = widgets.get(e.id)}
     {#if w}
       {@const name = label(w)}
-      <div class="cell" class:hidden={e.hidden} style:--rows={e.rows} data-widget-id={e.id}>
+      {@const cells = sizeCells(e.size)}
+      <div
+        class="cell"
+        class:hidden={e.hidden}
+        class:sized={cells !== undefined}
+        style:--rows={e.rows}
+        style:--span-cols={cells?.cols}
+        style:--span-rows={cells?.rows}
+        data-widget-id={e.id}
+      >
         {#if editing}
           <div class="controls" role="group" aria-label={t('dashboard.mobile_controls', { name })}>
             <button
@@ -67,20 +88,38 @@
               disabled={i === visible.length - 1}
               onclick={() => move(e, 1, name)}>↓</button
             >
-            <button
-              class="btn btn-icon"
-              type="button"
-              aria-label={t('dashboard.mobile_shorter', { name })}
-              disabled={e.rows <= 1}
-              onclick={() => onchange(updateMobile(layout, e.id, { rows: e.rows - 1 }))}>−</button
+            <select
+              class="input size"
+              aria-label={t('dashboard.mobile_size', { name })}
+              value={e.size ?? ''}
+              onchange={(ev) =>
+                onchange(
+                  updateMobile(layout, e.id, {
+                    size: (ev.currentTarget.value || undefined) as MobileSize | undefined,
+                  }),
+                )}
             >
-            <button
-              class="btn btn-icon"
-              type="button"
-              aria-label={t('dashboard.mobile_taller', { name })}
-              disabled={e.rows >= MAX_ROWS}
-              onclick={() => onchange(updateMobile(layout, e.id, { rows: e.rows + 1 }))}>+</button
-            >
+              <option value="">{t('dashboard.mobile_size_full')}</option>
+              {#each MOBILE_SIZES as s (s.size)}
+                <option value={s.size}>{t(`dashboard.mobile_size_${s.size}`)}</option>
+              {/each}
+            </select>
+            {#if !cells}
+              <button
+                class="btn btn-icon"
+                type="button"
+                aria-label={t('dashboard.mobile_shorter', { name })}
+                disabled={e.rows <= 1}
+                onclick={() => onchange(updateMobile(layout, e.id, { rows: e.rows - 1 }))}>−</button
+              >
+              <button
+                class="btn btn-icon"
+                type="button"
+                aria-label={t('dashboard.mobile_taller', { name })}
+                disabled={e.rows >= MAX_ROWS}
+                onclick={() => onchange(updateMobile(layout, e.id, { rows: e.rows + 1 }))}>+</button
+              >
+            {/if}
             <label class="hide">
               <input
                 type="checkbox"
@@ -110,6 +149,29 @@
     min-height: calc(var(--rows) * (var(--row-height) + 12px) - 12px);
     max-height: max(70vh, calc(var(--rows) * (var(--row-height) + 12px) - 12px));
     min-width: 0;
+  }
+  /* The grid of the mobile app (#585): four columns, square-ish cells;
+     sized widgets span cells, the others take the full width. Dense packing
+     fills gaps in display order. */
+  .list.grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    /* A cell is at least one and a half rows high; full-width widgets
+       without a size grow with their content as before. */
+    grid-auto-rows: minmax(calc(var(--row-height) * 1.5), auto);
+    grid-auto-flow: row dense;
+  }
+  .list.grid .cell {
+    grid-column: 1 / -1;
+  }
+  .list.grid .cell.sized {
+    grid-column: span var(--span-cols);
+    grid-row: span var(--span-rows);
+    min-height: 0;
+    max-height: none;
+  }
+  .size {
+    width: auto;
+    padding-block: 0.15rem;
   }
   .content {
     flex: 1;

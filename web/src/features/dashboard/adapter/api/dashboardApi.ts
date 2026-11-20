@@ -18,7 +18,7 @@ import type {
 } from '../../../../shared/api-client/generated/dashboard-requests';
 import type { Dashboard, Tab, TabRule, TabTemplate, Widget, WidgetConfig } from '../../domain/dashboard';
 import type { LayoutItem, Rect } from '../../domain/layout';
-import type { MobileItem } from '../../domain/mobile';
+import { type MobileItem, type MobileSize, sizeCells } from '../../domain/mobile';
 import type { DashboardGateway } from '../../usecase/ports';
 
 const toWidget = (dto: WidgetDTO): Widget => ({
@@ -44,7 +44,12 @@ const toTab = (dto: TabDTO): Tab => ({
     networks: r.networks ?? [],
   })),
   widgets: dto.widgets.map(toWidget),
-  mobile: (dto.mobile ?? []).map((m) => ({ id: m.id, hidden: m.hidden, rows: m.rows })),
+  mobile: (dto.mobile ?? []).map((m) => ({
+    id: m.id,
+    hidden: m.hidden,
+    rows: m.rows,
+    ...(sizeCells(m.size as MobileSize) ? { size: m.size as MobileSize } : {}),
+  })),
   // Older servers do not send it; every tab was the viewer's own then.
   mine: dto.mine ?? true,
   mobileCustom: dto.mobileCustom ?? false,
@@ -114,7 +119,9 @@ export class DashboardApi implements DashboardGateway {
   }
 
   async saveMobileLayout(tabId: string, items: MobileItem[]): Promise<Tab> {
-    const body: MobileLayoutDTO = { items: items.map(({ id, hidden, rows }) => ({ id, hidden, rows })) };
+    const body: MobileLayoutDTO = {
+      items: items.map(({ id, hidden, rows, size }) => ({ id, hidden, rows, ...(size ? { size } : {}) })),
+    };
     return toTab(
       await this.http.put<TabDTO>(`/api/dashboard/tabs/${encodeURIComponent(tabId)}/mobile-layout`, body),
     );

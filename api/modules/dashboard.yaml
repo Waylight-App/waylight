@@ -167,7 +167,8 @@ schemas:
     properties:
       id: { type: string, description: Widget ID }
       hidden: { type: boolean, description: Hidden on phones only }
-      rows: { type: integer, minimum: 1, maximum: 24, description: Minimum height in grid rows }
+      rows: { type: integer, minimum: 1, maximum: 24, description: Minimum height in grid rows, used while no size is set }
+      size: { type: string, enum: [small, medium, large, strip], description: "Size on the phone grid of four columns (#585): small 2×2, medium 4×2, large 4×4, strip 4×1; omitted for full width" }
   TabRule:
     type: object
     description: Opens a tab by default. Empty parts always match; a range like 22:00–02:00 runs over midnight and belongs to the weekday it starts on.

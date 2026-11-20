@@ -77,6 +77,10 @@ export interface MobileItemInputDTO {
   id: string;
   hidden: boolean;
   rows: number /* int */;
+  /**
+   * Size is small, medium, large or strip; empty keeps full width (#585).
+   */
+  size?: string;
 }
 /**
  * MobileLayoutDTO is the body of PUT /api/dashboard/tabs/{id}/mobile-layout.

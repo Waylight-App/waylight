@@ -65,6 +65,8 @@ type MobileItemInputDTO struct {
 	ID     string `json:"id"`
 	Hidden bool   `json:"hidden"`
 	Rows   int    `json:"rows"`
+	// Size is small, medium, large or strip; empty keeps full width (#585).
+	Size string `json:"size,omitempty"`
 }
 
 // MobileLayoutDTO is the body of PUT /api/dashboard/tabs/{id}/mobile-layout.

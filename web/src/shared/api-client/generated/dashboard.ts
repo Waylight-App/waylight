@@ -55,6 +55,11 @@ export interface MobileItemDTO {
   id: string;
   hidden: boolean;
   rows: number /* int */;
+  /**
+   * Size is small, medium, large or strip on the phone grid; omitted for
+   * full width (#585).
+   */
+  size?: string;
 }
 /**
  * WidgetDTO describes a widget. Config is the widget's JSON configuration.

@@ -3,6 +3,8 @@ package domain
 import (
 	"errors"
 	"testing"
+
+	"waylight/internal/shared/kernel"
 )
 
 func widgetAt(id string, x, y, h int) Widget {
@@ -73,6 +75,7 @@ func TestNewMobileLayoutValidates(t *testing.T) {
 		{{WidgetID: "a", Rows: 2}, {WidgetID: "a", Rows: 2}},
 		{{WidgetID: "a", Rows: 0}},
 		{{WidgetID: "a", Rows: 25}},
+		{{WidgetID: "a", Rows: 2, Size: "huge"}},
 	} {
 		if _, err := NewMobileLayout(bad, ws); err == nil {
 			t.Errorf("accepted %+v", bad)
@@ -81,5 +84,27 @@ func TestNewMobileLayoutValidates(t *testing.T) {
 	got, err := NewMobileLayout([]MobileEntry{{WidgetID: "b", Rows: 3, Hidden: true}}, ws)
 	if err != nil || len(got) != 1 {
 		t.Fatalf("%v %v", got, err)
+	}
+}
+
+func TestMobileSizes(t *testing.T) {
+	ws := []Widget{widgetAt("a", 0, 0, 2), widgetAt("b", 4, 0, 2)}
+	got, err := NewMobileLayout([]MobileEntry{{WidgetID: "a", Rows: 2, Size: SizeSmall}, {WidgetID: "b", Rows: 2}}, ws)
+	if err != nil || got[0].Size != SizeSmall || got[1].Size != SizeAuto {
+		t.Fatalf("%+v %v", got, err)
+	}
+	var verr *kernel.ValidationError
+	if _, err := NewMobileLayout([]MobileEntry{{WidgetID: "a", Rows: 2, Size: "huge"}}, ws); !errors.As(err, &verr) || verr.Field != "size" {
+		t.Fatalf("invalid size: %v", err)
+	}
+	// A stored size this version does not know falls back to full width.
+	m := ResolveMobileLayout([]MobileEntry{{WidgetID: "a", Rows: 2, Size: "xl"}}, ws)
+	if e := m.Entries()[0]; e.Size != SizeAuto {
+		t.Fatalf("unknown stored size kept: %+v", e)
+	}
+	for _, s := range []MobileSize{SizeAuto, SizeSmall, SizeMedium, SizeLarge, SizeStrip} {
+		if !s.Valid() {
+			t.Errorf("%q must be valid", s)
+		}
 	}
 }

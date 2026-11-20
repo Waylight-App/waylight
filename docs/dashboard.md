@@ -73,6 +73,12 @@ phone layout instead: in edit mode on a phone, move widgets up and down, make
 them shorter or taller, or hide them on phones only. **Reset from desktop
 layout** discards the phone layout of that tab.
 
+Give a widget a size to place it on a grid of four columns, as on a phone's
+home screen: **Small** (two by two, two side by side), **Medium** (full width,
+two cells high), **Large** (four by four) or **Strip** (one cell high). Widgets
+without a size keep the full width and their height. The mobile app shows the
+same grid.
+
 The phone layout belongs to the tab, not to the device, so it applies to
 every phone you use.
 
