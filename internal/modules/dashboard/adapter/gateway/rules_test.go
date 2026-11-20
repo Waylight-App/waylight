@@ -49,7 +49,7 @@ func TestMobileLayoutRoundTrip(t *testing.T) {
 	if got, _ := repo.GetTab(ctx, "t1"); got.Mobile() != nil {
 		t.Fatal("new tabs follow the desktop layout")
 	}
-	m := []domain.MobileEntry{{WidgetID: "w2", Hidden: true, Rows: 3}, {WidgetID: "w1", Rows: 5}}
+	m := []domain.MobileEntry{{WidgetID: "w2", Hidden: true, Rows: 3, Size: domain.SizeMedium}, {WidgetID: "w1", Rows: 5}}
 	if err := repo.UpdateTab(ctx, tab.WithMobile(m)); err != nil {
 		t.Fatal(err)
 	}

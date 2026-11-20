@@ -43,6 +43,7 @@ type mobileRow struct {
 	ID     string `json:"id"`
 	Hidden bool   `json:"hidden,omitempty"`
 	Rows   int    `json:"rows"`
+	Size   string `json:"size,omitempty"`
 }
 
 // encodeMobile returns NULL for a derived layout.
@@ -52,7 +53,7 @@ func encodeMobile(m []domain.MobileEntry) any {
 	}
 	rows := make([]mobileRow, 0, len(m))
 	for _, e := range m {
-		rows = append(rows, mobileRow{ID: e.WidgetID, Hidden: e.Hidden, Rows: e.Rows})
+		rows = append(rows, mobileRow{ID: e.WidgetID, Hidden: e.Hidden, Rows: e.Rows, Size: string(e.Size)})
 	}
 	b, _ := json.Marshal(rows) // plain structs, cannot fail
 	return string(b)
@@ -69,7 +70,7 @@ func decodeMobile(raw sql.NullString) []domain.MobileEntry {
 	}
 	out := make([]domain.MobileEntry, 0, len(rows))
 	for _, r := range rows {
-		out = append(out, domain.MobileEntry{WidgetID: r.ID, Hidden: r.Hidden, Rows: r.Rows})
+		out = append(out, domain.MobileEntry{WidgetID: r.ID, Hidden: r.Hidden, Rows: r.Rows, Size: domain.MobileSize(r.Size)})
 	}
 	return out
 }

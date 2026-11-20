@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { deriveMobile, moveMobile, resolveMobile, updateMobile } from './mobile';
+import { deriveMobile, moveMobile, resolveMobile, sizeCells, updateMobile, usesGrid } from './mobile';
 
 const w = (id: string, x: number, y: number, h = 2) => ({ id, x, y, w: 4, h });
 
@@ -34,5 +34,36 @@ describe('phone layout (#92)', () => {
     expect(updateMobile(items, 'b', { hidden: true })[1]).toEqual({ id: 'b', hidden: true, rows: 2 });
     expect(updateMobile(items, 'b', { rows: 0 })[1]?.rows).toBe(1);
     expect(updateMobile(items, 'b', { rows: 30 })[1]?.rows).toBe(24);
+  });
+});
+
+describe('sizes on the phone grid (#585)', () => {
+  const widgets = [
+    { id: 'a', x: 0, y: 0, w: 4, h: 2 },
+    { id: 'b', x: 4, y: 0, w: 4, h: 3 },
+  ];
+
+  it('knows the cells of each size', () => {
+    expect(sizeCells('small')).toEqual({ size: 'small', cols: 2, rows: 2 });
+    expect(sizeCells('strip')?.rows).toBe(1);
+    expect(sizeCells(undefined)).toBeUndefined();
+  });
+
+  it('keeps known sizes and drops unknown ones', () => {
+    const stored = [
+      { id: 'a', hidden: false, rows: 2, size: 'large' as const },
+      { id: 'b', hidden: false, rows: 3, size: 'giant' as never },
+    ];
+    const out = resolveMobile(stored, widgets);
+    expect(out[0]?.size).toBe('large');
+    expect(out[1]).not.toHaveProperty('size');
+    expect(usesGrid(out)).toBe(true);
+    expect(usesGrid(deriveMobile(widgets))).toBe(false);
+  });
+
+  it('sets and clears a size', () => {
+    const sized = updateMobile(deriveMobile(widgets), 'a', { size: 'medium' });
+    expect(sized[0]?.size).toBe('medium');
+    expect(updateMobile(sized, 'a', { size: undefined })[0]).not.toHaveProperty('size');
   });
 });

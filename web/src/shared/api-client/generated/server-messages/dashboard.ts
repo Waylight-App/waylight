@@ -12,6 +12,7 @@ export const serverMessages = {
   srv_fd5437e3a5a60614: "The last tab cannot be deleted.",
   srv_3364239a85507862: "The new order must contain every tab exactly once.",
   srv_088ff184c130f97e: "The row is out of range.",
+  srv_015f5dd8d336931d: "The size must be small, medium, large or strip.",
   srv_7e608cff024ed2a8: "The tab does not exist.",
   srv_12af04b41c068c5d: "The tab has too many widgets for a template.",
   srv_e24dab6aca94e3e8: "The tab name must be at most 40 characters long.",

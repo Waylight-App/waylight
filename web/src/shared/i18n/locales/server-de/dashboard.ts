@@ -52,4 +52,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_db1f3b30c394907b: 'Die config eines Widgets muss eine Zuordnung von Einstellungen sein.',
   // Each tab name can be used only once.
   srv_1f452c9f72b6125d: 'Jeder Tab-Name darf nur einmal vorkommen.',
+  // The size must be small, medium, large or strip.
+  srv_015f5dd8d336931d: 'Die Größe muss small, medium, large oder strip sein.',
 };

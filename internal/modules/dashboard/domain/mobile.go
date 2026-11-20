@@ -6,13 +6,39 @@ import (
 	"waylight/internal/shared/kernel"
 )
 
-// MobileEntry places one widget in the single-column phone layout (#92).
+// MobileSize is the size of a widget on the phone's home screen grid of
+// four columns (#585). The empty size keeps the single-column layout: full
+// width, height from Rows.
+type MobileSize string
+
+// The sizes of the phone grid, in cells of four columns.
+const (
+	SizeAuto   MobileSize = ""
+	SizeSmall  MobileSize = "small"  // 2 × 2
+	SizeMedium MobileSize = "medium" // 4 × 2
+	SizeLarge  MobileSize = "large"  // 4 × 4
+	SizeStrip  MobileSize = "strip"  // 4 × 1
+)
+
+// Valid reports whether s is one of the sizes or empty.
+func (s MobileSize) Valid() bool {
+	switch s {
+	case SizeAuto, SizeSmall, SizeMedium, SizeLarge, SizeStrip:
+		return true
+	}
+	return false
+}
+
+// MobileEntry places one widget in the phone layout (#92).
 type MobileEntry struct {
 	WidgetID string
 	// Hidden hides the widget on phones only.
 	Hidden bool
-	// Rows is the minimum height in grid rows (1–MaxWidgetRows).
+	// Rows is the minimum height in grid rows (1–MaxWidgetRows), used while
+	// Size is empty.
 	Rows int
+	// Size places the widget on the phone grid; empty means full width.
+	Size MobileSize
 }
 
 // MobileLayout is the phone layout of a tab: widgets in reading order.
@@ -67,6 +93,10 @@ func ResolveMobileLayout(stored []MobileEntry, widgets []Widget) MobileLayout {
 		if exists[e.WidgetID] && !seen[e.WidgetID] {
 			seen[e.WidgetID] = true
 			e.Rows = min(max(e.Rows, 1), MaxWidgetRows)
+			if !e.Size.Valid() {
+				// A size from a newer version falls back to the column layout.
+				e.Size = SizeAuto
+			}
 			m.entries = append(m.entries, e)
 		}
 	}
@@ -97,6 +127,9 @@ func NewMobileLayout(entries []MobileEntry, widgets []Widget) ([]MobileEntry, er
 		}
 		if e.Rows < 1 || e.Rows > MaxWidgetRows {
 			return nil, kernel.NewValidationError("h", "The height must be between 1 and 24 rows.")
+		}
+		if !e.Size.Valid() {
+			return nil, kernel.NewValidationError("size", "The size must be small, medium, large or strip.")
 		}
 		seen[e.WidgetID] = true
 		out = append(out, e)

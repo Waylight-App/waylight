@@ -43,8 +43,12 @@ dashboard:
           at: { x: 0, y: 0, w: 4, h: 2 }
         - kind: bookmarks
           at: { x: 4, y: 0, w: 4, h: 4 }
-          phone: { order: 1, rows: 4 }
+          phone: { order: 1, rows: 4, size: medium }
 ```
+
+`phone.size` is optional: `small`, `medium`, `large` or `strip` place the
+widget on the phone grid ([dashboard](dashboard.md#the-phone-layout)); without
+it the widget takes the full width.
 
 Things are referred to by name, not by internal IDs, and lists keep their order. Exporting, applying and exporting again gives exactly the same file, so a diff in Git only shows what you really changed.
 

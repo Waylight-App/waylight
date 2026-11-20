@@ -31,7 +31,7 @@ func toTabResponse(ctx context.Context, t domain.Tab, widgets []domain.Widget) T
 	res.MobileCustom = mobile.Custom()
 	res.Mobile = []MobileView{}
 	for _, e := range mobile.Entries() {
-		res.Mobile = append(res.Mobile, MobileView{WidgetID: e.WidgetID, Hidden: e.Hidden, Rows: e.Rows})
+		res.Mobile = append(res.Mobile, MobileView{WidgetID: e.WidgetID, Hidden: e.Hidden, Rows: e.Rows, Size: string(e.Size)})
 	}
 	return res
 }

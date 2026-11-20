@@ -37,6 +37,8 @@ type MobileView struct {
 	WidgetID string
 	Hidden   bool
 	Rows     int
+	// Size is "small", "medium", "large", "strip" or empty (#585).
+	Size string
 }
 
 // TemplateResponse describes a tab template.
