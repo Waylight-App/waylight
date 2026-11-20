@@ -271,14 +271,15 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	}
 	registry.Register(dash)
 	scope.dashboard = dash
-	wireSmartSearch(registry, authModule.MayRead, log, clk)
+	wireSmartSearch(registry, authModule.MayRead, dash.WidgetConfig, log, clk)
 	return authModule, registry, nil
 }
 
 // wireSmartSearch hands the answer sources of the enabled modules to the
 // search module (ADR 0026), so no module imports another. A source answers
 // only accounts that may read its module's API (members, guests, policies).
-func wireSmartSearch(registry *modules.Registry, mayRead func(ctx context.Context, module string) bool, log *slog.Logger, clk kernel.Clock) {
+func wireSmartSearch(registry *modules.Registry, mayRead func(ctx context.Context, module string) bool,
+	widget func(ctx context.Context, kind string) map[string]any, log *slog.Logger, clk kernel.Clock) {
 	var sources []answers.Source
 	var target *search.Module
 	for _, m := range registry.All() {
@@ -290,7 +291,7 @@ func wireSmartSearch(registry *modules.Registry, mayRead func(ctx context.Contex
 		}
 	}
 	if target != nil {
-		target.SetAnswerSources(log, clk, mayRead, sources)
+		target.SetAnswerSources(search.AnswerDeps{Log: log, Clock: clk, MayUse: mayRead, Widget: widget, Sources: sources})
 	}
 }
 

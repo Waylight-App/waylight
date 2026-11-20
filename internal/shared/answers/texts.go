@@ -65,6 +65,8 @@ var common = Messages{
 		"minutes_ago":       "{n} min ago",
 		"hours_ago":         "{n} h ago",
 		"days_ago":          "{n} d ago",
+		"now":               "now",
+		"minutes":           "{n} min",
 	},
 	German: {
 		"which_title":       "Welcher?",
@@ -77,6 +79,8 @@ var common = Messages{
 		"minutes_ago":       "vor {n} Min.",
 		"hours_ago":         "vor {n} Std.",
 		"days_ago":          "vor {n} T.",
+		"now":               "jetzt",
+		"minutes":           "{n} Min.",
 	},
 }
 
@@ -122,6 +126,15 @@ func Ago(lang Lang, t, now time.Time) string {
 	default:
 		return common.T(lang, "days_ago", "n", int(math.Round(hours/24)))
 	}
+}
+
+// MinutesUntil writes "now" or "4 min" until at.
+func MinutesUntil(lang Lang, at, now time.Time) string {
+	m := int(math.Round(at.Sub(now).Minutes()))
+	if m <= 0 {
+		return common.T(lang, "now")
+	}
+	return common.T(lang, "minutes", "n", m)
 }
 
 var monthsEN = [12]string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}

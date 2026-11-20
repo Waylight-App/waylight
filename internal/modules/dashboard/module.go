@@ -161,5 +161,20 @@ func (m *Module) WidgetKindsOnTabs(ctx context.Context, tabIDs []string) ([]stri
 	return m.scope.WidgetKindsOnTabs(ctx, tabIDs)
 }
 
+// WidgetConfig returns the settings of the account's first widget of kind
+// (the smart search reads the transit stop from it, ADR 0026); nil when
+// there is none or the settings are no JSON object.
+func (m *Module) WidgetConfig(ctx context.Context, kind string) map[string]any {
+	raw, ok, err := m.scope.FirstWidgetConfig(ctx, kind)
+	if err != nil || !ok {
+		return nil
+	}
+	var cfg map[string]any
+	if json.Unmarshal([]byte(raw), &cfg) != nil {
+		return nil
+	}
+	return cfg
+}
+
 // TabIDs returns all tab ids (used for the display of an appliance, #140).
 func (m *Module) TabIDs(ctx context.Context) ([]string, error) { return m.scope.TabIDs(ctx) }

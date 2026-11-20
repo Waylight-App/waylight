@@ -32,6 +32,7 @@ type Module struct {
 type answerEngine struct {
 	sources []answers.Source
 	mayUse  func(ctx context.Context, module string) bool
+	widget  func(ctx context.Context, kind string) map[string]any
 	clock   kernel.Clock
 	log     *slog.Logger
 }
@@ -48,16 +49,27 @@ func (e *answerEngine) Answer(r *http.Request, query string, lang answers.Lang) 
 	}
 	ctx, cancel := context.WithTimeout(ctx, answerTimeout)
 	defer cancel()
-	return answers.NewEngine(e.log, allowed...).Answer(ctx, query, lang, e.clock.Now())
+	return answers.NewEngine(e.log, allowed...).WithWidgets(e.widget).Answer(ctx, query, lang, e.clock.Now())
 }
 
 // answerTimeout bounds one search; a slow source answers "not available".
 const answerTimeout = 5 * time.Second
 
+// AnswerDeps is what the smart search needs from the composition root.
+type AnswerDeps struct {
+	Log   *slog.Logger
+	Clock kernel.Clock
+	// MayUse decides per request whether a source's module may answer.
+	MayUse func(ctx context.Context, module string) bool
+	// Widget returns the settings of the account's first widget of a kind.
+	Widget  func(ctx context.Context, kind string) map[string]any
+	Sources []answers.Source
+}
+
 // SetAnswerSources installs the sources of the smart search (ADR 0026):
-// those of the enabled modules, filtered per request by mayUse.
-func (m *Module) SetAnswerSources(log *slog.Logger, clock kernel.Clock, mayUse func(ctx context.Context, module string) bool, sources []answers.Source) {
-	m.answers = &answerEngine{sources: sources, mayUse: mayUse, clock: clock, log: log}
+// those of the enabled modules, filtered per request by MayUse.
+func (m *Module) SetAnswerSources(d AnswerDeps) {
+	m.answers = &answerEngine{sources: d.Sources, mayUse: d.MayUse, widget: d.Widget, clock: d.Clock, log: d.Log}
 }
 
 // New builds the search module.

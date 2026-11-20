@@ -6,7 +6,9 @@ import (
 	"waylight/internal/modules"
 	"waylight/internal/modules/transit/adapter/controller"
 	"waylight/internal/modules/transit/adapter/gateway"
+	"waylight/internal/modules/transit/adapter/smartsearch"
 	"waylight/internal/modules/transit/usecase"
+	"waylight/internal/shared/answers"
 	"waylight/internal/shared/kernel"
 )
 
@@ -14,6 +16,7 @@ import (
 type Module struct {
 	modules.Base
 	handlers *controller.Handlers
+	uc       usecase.Transit
 }
 
 // New builds the transit module; apiURL points to a MOTIS instance.
@@ -21,7 +24,8 @@ func New(client *http.Client, apiURL string, clock kernel.Clock) *Module {
 	if apiURL == "" {
 		apiURL = gateway.DefaultURL
 	}
-	return &Module{handlers: controller.NewHandlers(usecase.NewTransit(gateway.NewMOTIS(client, apiURL), clock))}
+	uc := usecase.NewTransit(gateway.NewMOTIS(client, apiURL), clock)
+	return &Module{handlers: controller.NewHandlers(uc), uc: uc}
 }
 
 // Name implements modules.Module.
@@ -37,4 +41,10 @@ func (m *Module) WidgetKinds() []string { return []string{"transit"} }
 func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/transit/stops", m.handlers.Stops)
 	r.Protected("GET /api/transit/departures", m.handlers.Departures)
+}
+
+// AnswerSources implements answers.Provider: the departures of the smart
+// search (ADR 0026).
+func (m *Module) AnswerSources() []answers.Source {
+	return []answers.Source{smartsearch.New(m.uc)}
 }
