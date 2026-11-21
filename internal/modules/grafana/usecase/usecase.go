@@ -36,6 +36,8 @@ type Grafana interface {
 	Dashboards(ctx context.Context, query string) ([]domain.Dashboard, error)
 	Panels(ctx context.Context, uid string) ([]domain.Panel, error)
 	Render(ctx context.Context, r domain.RenderRequest) (domain.Image, error)
+	// PanelData are the panel's values without the image renderer (#579).
+	PanelData(ctx context.Context, r domain.DataRequest) (domain.PanelData, error)
 	// URL is the address of Grafana, for links; empty while not configured.
 	URL(ctx context.Context) string
 }
@@ -53,6 +55,7 @@ type Client interface {
 	Search(ctx context.Context, s domain.Settings, query string) ([]domain.Dashboard, error)
 	Panels(ctx context.Context, s domain.Settings, uid string) ([]domain.Panel, error)
 	Render(ctx context.Context, s domain.Settings, r domain.RenderRequest) (domain.Image, error)
+	PanelData(ctx context.Context, s domain.Settings, r domain.DataRequest) (domain.PanelData, error)
 }
 
 type grafana struct {
@@ -170,6 +173,24 @@ func (uc *grafana) Render(ctx context.Context, r domain.RenderRequest) (domain.I
 		return domain.Image{}, err
 	}
 	return uc.client.Render(ctx, s, r)
+}
+
+// PanelData implements Grafana. A missing dashboard or panel and a panel
+// without readable values keep their own error; anything else means Grafana
+// did not answer properly.
+func (uc *grafana) PanelData(ctx context.Context, r domain.DataRequest) (domain.PanelData, error) {
+	s, err := uc.repo.Load(ctx)
+	if err != nil {
+		return domain.PanelData{}, err
+	}
+	d, err := uc.client.PanelData(ctx, s, r)
+	switch {
+	case errors.Is(err, domain.ErrBadDashboard), errors.Is(err, domain.ErrNoData):
+		return domain.PanelData{}, err
+	case err != nil:
+		return domain.PanelData{}, domain.ErrUnreachable
+	}
+	return d, nil
 }
 
 // URL implements Grafana.

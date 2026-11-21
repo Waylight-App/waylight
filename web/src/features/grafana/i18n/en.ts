@@ -1,7 +1,8 @@
 /** English UI texts of the grafana feature (#574). */
 export const en = {
   'widget.grafana-panel.title': 'Grafana panel',
-  'widget.grafana-panel.description': 'One panel of a Grafana dashboard as an image.',
+  'widget.grafana-panel.description':
+    'One panel of a Grafana dashboard as an image, or its current values without the image renderer.',
   'widget.grafana-alerts.title': 'Grafana alerts',
   'widget.grafana-alerts.description': 'Firing and pending alerts of Grafana Alerting.',
   'settings.section.grafana': 'Grafana',
@@ -21,6 +22,8 @@ export const en = {
   'grafana.no_dashboards': 'No dashboards found.',
   'grafana.all_quiet': 'No alert is firing.',
   'grafana.pending': 'pending',
+  'grafana.loading_values': 'Loading values…',
+  'grafana.values_over': '{title} over the last {range}',
   'grafana.alert_list': 'Alert list',
 } as const;
 

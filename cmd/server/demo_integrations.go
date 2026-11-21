@@ -35,6 +35,7 @@ var demoSettings = []struct {
 	{"/api/space/settings", map[string]any{"launches": true, "picture": true}},
 	{"/api/gamedeals/settings", map[string]any{"steamId": demo.DemoSteamID, "country": "DE", "minDiscount": 20, "epic": true}},
 	{"/api/parcels/settings", map[string]any{"dhlApiKey": demo.DHLAPIKey, "hideDeliveredDays": 7}},
+	{"/api/grafana/settings", map[string]any{"url": demo.GrafanaURL, "token": "demo-only-token"}},
 }
 
 // apiClient sends requests through the app's handler as the signed-in demo

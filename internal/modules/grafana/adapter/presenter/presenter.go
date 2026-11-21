@@ -86,3 +86,41 @@ func Panels(list []domain.Panel) []PanelDTO {
 	}
 	return out
 }
+
+// PointDTO is one value; t is the time in Unix milliseconds, 0 when the
+// value has no time (a reduced value).
+type PointDTO struct {
+	T int64   `json:"t"`
+	V float64 `json:"v"`
+}
+
+// SeriesDTO is one line of a panel, oldest point first.
+type SeriesDTO struct {
+	Name   string     `json:"name"`
+	Points []PointDTO `json:"points"`
+}
+
+// PanelDataDTO is returned by GET /api/grafana/data/{uid}/{panel} (#579).
+type PanelDataDTO struct {
+	Title string `json:"title"`
+	// Unit is Grafana's unit id, e.g. "percent"; empty when the panel has none.
+	Unit     string      `json:"unit"`
+	Decimals *int        `json:"decimals,omitempty"`
+	Series   []SeriesDTO `json:"series"`
+}
+
+// PanelData maps the values of a panel.
+func PanelData(d domain.PanelData) PanelDataDTO {
+	out := PanelDataDTO{Title: d.Title, Unit: d.Unit, Decimals: d.Decimals, Series: make([]SeriesDTO, 0, len(d.Series))}
+	for _, s := range d.Series {
+		points := make([]PointDTO, len(s.Points))
+		for i, p := range s.Points {
+			if !p.Time.IsZero() {
+				points[i].T = p.Time.UnixMilli()
+			}
+			points[i].V = p.Value
+		}
+		out.Series = append(out.Series, SeriesDTO{Name: s.Name, Points: points})
+	}
+	return out
+}

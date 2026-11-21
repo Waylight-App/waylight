@@ -40,3 +40,35 @@ func TestParseAlertState(t *testing.T) {
 		t.Error("normal alerts are not shown")
 	}
 }
+
+func TestDownsampleKeepsTheNewestPoint(t *testing.T) {
+	points := make([]Point, 500)
+	for i := range points {
+		points[i].Value = float64(i)
+	}
+	got := Downsample(points, MaxPoints)
+	if len(got) != MaxPoints || got[0].Value != 0 || got[len(got)-1].Value != 499 {
+		t.Fatalf("got %d points, first %v, last %v", len(got), got[0].Value, got[len(got)-1].Value)
+	}
+	for i := 1; i < len(got); i++ {
+		if got[i].Value <= got[i-1].Value {
+			t.Fatalf("not in order at %d", i)
+		}
+	}
+	if short := Downsample(points[:10], MaxPoints); len(short) != 10 {
+		t.Fatalf("short series changed: %d", len(short))
+	}
+}
+
+func TestNewDataRequest(t *testing.T) {
+	r, err := NewDataRequest("node", 2, "")
+	if err != nil || r.Range != "6h" || r.PanelID != 2 {
+		t.Fatalf("got %+v %v", r, err)
+	}
+	if _, err := NewDataRequest("../x", 2, "6h"); err == nil {
+		t.Fatal("bad uid accepted")
+	}
+	if _, err := NewDataRequest("node", 2, "6x"); err == nil {
+		t.Fatal("bad range accepted")
+	}
+}

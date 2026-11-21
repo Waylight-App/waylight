@@ -62,6 +62,19 @@ func (h *Handlers) Panels(w http.ResponseWriter, r *http.Request) {
 	respond(w, r, presenter.Panels(list), err)
 }
 
+// PanelData handles GET /api/grafana/data/{uid}/{panel}?range: the panel's
+// values for a stat or sparkline when Grafana has no image renderer (#579).
+func (h *Handlers) PanelData(w http.ResponseWriter, r *http.Request) {
+	panel, _ := strconv.Atoi(r.PathValue("panel"))
+	req, err := domain.NewDataRequest(r.PathValue("uid"), panel, r.URL.Query().Get("range"))
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	d, err := h.uc.PanelData(r.Context(), req)
+	respond(w, r, presenter.PanelData(d), err)
+}
+
 // Render handles GET /api/grafana/render/{uid}/{panel}?width&height&range&theme:
 // the panel as PNG from Grafana's image renderer, so the browser never sees
 // the token.

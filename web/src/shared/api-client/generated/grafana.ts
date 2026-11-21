@@ -54,3 +54,30 @@ export interface PanelDTO {
   title: string;
   type: string;
 }
+/**
+ * PointDTO is one value; t is the time in Unix milliseconds, 0 when the
+ * value has no time (a reduced value).
+ */
+export interface PointDTO {
+  t: number /* int64 */;
+  v: number /* float64 */;
+}
+/**
+ * SeriesDTO is one line of a panel, oldest point first.
+ */
+export interface SeriesDTO {
+  name: string;
+  points: PointDTO[];
+}
+/**
+ * PanelDataDTO is returned by GET /api/grafana/data/{uid}/{panel} (#579).
+ */
+export interface PanelDataDTO {
+  title: string;
+  /**
+   * Unit is Grafana's unit id, e.g. "percent"; empty when the panel has none.
+   */
+  unit: string;
+  decimals?: number /* int */;
+  series: SeriesDTO[];
+}
