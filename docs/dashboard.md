@@ -63,14 +63,16 @@ size, so existing dashboards keep their look.
 Some compact views carry one quick action next to the short state, so the
 most common step needs no panel: habits tick off the next habit due today
 and to-dos tick off the most urgent one (overdue first, then the earliest due
-date). The button gives feedback at once; when the server refuses, its
+date). A smart home tile with one device shows its state and turns it on or
+off (or runs a button, script or scene) when actions are enabled for it with
+`SMARTHOME_ACTIONS_ENTITIES`. The button gives feedback at once; when the server refuses, its
 message is shown and nothing changes. Guests and kiosk displays do not see
 quick actions.
 
 Compact views exist for services and the status overview (*11 of 12
 running*, and which service is down), the backup status, drive health, the
-calendar (the next event), to-dos (the built-in list), habits and the focus
-timer. Widgets whose content is the point, such as the clock, bookmarks or
+calendar (the next event), to-dos (the built-in list), habits, the focus
+timer and smart home tiles with one device. Widgets whose content is the point, such as the clock, bookmarks or
 notes, show their full view at every size.
 
 You can put the same kind of widget on a tab more than once, for example two

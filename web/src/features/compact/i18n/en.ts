@@ -16,6 +16,7 @@ export const en = {
   'compact.example.calendar': 'Dentist · Today at 14:00',
   'compact.example.backup-status': 'Backup OK',
   'compact.example.diskhealth': '3 drives healthy',
+  'compact.example.smarthome': 'Coffee machine · Off',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

@@ -65,5 +65,23 @@ export function isAlarming(level: CompactLevel): boolean {
   return level === 'attention' || level === 'problem';
 }
 
+/**
+ * Where a widget's compact state comes from: a module, plus a query when
+ * the state depends on the widget's configuration (#614), such as the one
+ * device of a smart home tile ("smarthome?entity=switch.coffee").
+ */
+export function compactSource(module: string, params: Record<string, string> = {}): string {
+  const query = new URLSearchParams(params).toString();
+  return query ? `${module}?${query}` : module;
+}
+
+/** The API path of a compact source: GET /api/<module>/compact[?query]. */
+export function compactPath(source: string): string {
+  const i = source.indexOf('?');
+  const module = i < 0 ? source : source.slice(0, i);
+  const query = i < 0 ? '' : source.slice(i);
+  return `/api/${encodeURIComponent(module)}/compact${query}`;
+}
+
 /** How often compact states are read again. */
 export const COMPACT_REFRESH_MS = 60_000;

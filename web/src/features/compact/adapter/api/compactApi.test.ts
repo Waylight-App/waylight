@@ -21,6 +21,14 @@ describe('CompactApi (#595)', () => {
     });
   });
 
+  it('passes the query of a source that depends on the configuration (#614)', async () => {
+    const get = vi
+      .fn()
+      .mockResolvedValue({ title: { key: 'k', text: 'Coffee' }, level: 'none', updatedAt: '' });
+    await new CompactApi({ get } as unknown as HttpClient).state('smarthome?entity=switch.coffee');
+    expect(get).toHaveBeenCalledWith('/api/smarthome/compact?entity=switch.coffee');
+  });
+
   it('maps detail, an unknown level and an action with choices', () => {
     const state = toCompactState({
       title: { key: 'k', text: 'Office' },

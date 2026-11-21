@@ -250,6 +250,8 @@ func newHandler(a *app) http.Handler {
 		// they share its permission checks.
 		if c, ok := m.(modules.CompactProvider); ok {
 			mr.Protected(modules.CompactRoute(m.Name()), modules.CompactHandler(c))
+		} else if c, ok := m.(modules.CompactParamProvider); ok {
+			mr.Protected(modules.CompactRoute(m.Name()), modules.CompactParamHandler(c))
 		}
 	}
 	r.Protected("GET /api/modules", a.registry.Handler(frontendOnlyWidgetKinds))
