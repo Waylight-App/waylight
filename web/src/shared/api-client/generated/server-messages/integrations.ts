@@ -7,9 +7,13 @@ export const serverMessages = {
   srv_d960734b1f081510: "A credential has at most {max} fields.",
   srv_783587b0f09187ba: "A credential value must be at most {max} characters long.",
   srv_21f5be4823deec3c: "At most {max} connections can be saved.",
+  srv_99419ae88ff40fe8: "Fill in every required credential field.",
   srv_7441a46151ee9363: "The connection does not exist.",
   srv_08f7a91881c6888d: "The name must be between 1 and {max} characters long.",
+  srv_6647ccd9d57ef103: "The service does not expect this credential field.",
   srv_7d55a5e68a7c5904: "The service is not valid.",
+  srv_7733b67aac993bdb: "This connection cannot be checked while its module is switched off.",
+  srv_1dd91a0989e27e29: "This service cannot be connected.",
   srv_afd218c3b96ddb04: "Widgets still use this connection. Remove it anyway?",
 } as const;
 

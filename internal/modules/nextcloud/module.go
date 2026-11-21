@@ -23,13 +23,16 @@ type Module struct {
 	modules.Base
 	uc       usecase.Nextcloud
 	handlers *controller.Handlers
+	// specs are the services a named connection can reach (#610).
+	specs []modules.ConnectionSpec
 }
 
 // New builds the Nextcloud module; cipher encrypts the app password and
 // signIns (may be nil) hands over sign-ins of the setup assistant (#654).
 func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, signIns kernel.SignIns) *Module {
-	uc := usecase.NewNextcloud(gateway.NewSettingsRepository(db, cipher), gateway.NewAPI(client), clock, signIns)
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	api := gateway.NewAPI(client)
+	uc := usecase.NewNextcloud(gateway.NewSettingsRepository(db, cipher), api, clock, signIns)
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(api)}
 }
 
 // Name implements modules.Module.
@@ -61,3 +64,6 @@ func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus 
 	_, err := m.uc.Status(ctx)
 	return modules.StatusOf(err, domain.ErrNotConfigured)
 }
+
+// ConnectionSpecs implements modules.Connectable (#610).
+func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }

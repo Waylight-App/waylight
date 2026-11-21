@@ -34,16 +34,19 @@ type Module struct {
 	modules.Base
 	uc       usecase.SmartHome
 	handlers *controller.Handlers
+	// specs are the services a named connection can reach (#610).
+	specs []modules.ConnectionSpec
 }
 
 // New builds the smart home module (#49) with Home Assistant as provider.
 func New(cfg Config) *Module {
+	hass := gateway.NewHomeAssistant(cfg.Client)
 	uc := usecase.NewSmartHome(usecase.Deps{
-		Repo: gateway.NewSettingsRepository(cfg.DB, cfg.Cipher), Provider: gateway.NewHomeAssistant(cfg.Client),
+		Repo: gateway.NewSettingsRepository(cfg.DB, cfg.Cipher), Provider: hass,
 		Clock: cfg.Clock, Policy: domain.ActionPolicy{Allowed: cfg.ActionEntities}, Audit: cfg.Audit,
 		Renewer: newRenewer(cfg.Client, cfg.Clock.Now), SignIns: cfg.SignIns,
 	})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(hass)}
 }
 
 // Name implements modules.Module.
@@ -123,3 +126,6 @@ func (m *Module) Discovery() modules.DiscoverySpec {
 		ServiceTypes: []string{"_home-assistant._tcp"},
 	}
 }
+
+// ConnectionSpecs implements modules.Connectable (#610).
+func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }

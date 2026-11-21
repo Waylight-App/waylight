@@ -19,6 +19,8 @@ type Module struct {
 	modules.Base
 	uc       usecase.Media
 	handlers *controller.Handlers
+	// specs are the services a named connection can reach (#610).
+	specs []modules.ConnectionSpec
 }
 
 // New builds the media module (#61); cipher encrypts the stored token.
@@ -28,7 +30,7 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 		domain.ProviderPlex:     gateway.NewPlex(client),
 	}
 	uc := usecase.NewMedia(gateway.NewSettingsRepository(db, cipher), providers, clock)
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(providers)}
 }
 
 // Name implements modules.Module.
@@ -66,3 +68,6 @@ func (m *Module) Discovery() modules.DiscoverySpec {
 		Ports: []int{8096}, ProbePath: "/System/Info/Public", ProbeContains: `"ProductName":"Jellyfin Server"`,
 	}
 }
+
+// ConnectionSpecs implements modules.Connectable (#610).
+func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }

@@ -298,7 +298,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	}
 	// Connections name the widgets that use them, so they need the dashboard (#610).
 	if cfg.ModuleEnabled("integrations") {
-		registry.Register(integrations.New(db, secrets, connectionWidgets(dash), clk, ids))
+		registry.Register(integrations.New(db, secrets, modules.ConnectionSpecsOf(registry.All()), connectionWidgets(dash), clk, ids))
 	}
 	// The attention list asks the other modules, so it comes last (#599).
 	registry.Register(attention.New(registry.All(), ownWidgets(dash), authModule.MayRead, clk))

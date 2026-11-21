@@ -25,6 +25,8 @@ type Module struct {
 	modules.Base
 	uc       usecase.DNSFilter
 	handlers *controller.Handlers
+	// specs are the services a named connection can reach (#610).
+	specs []modules.ConnectionSpec
 }
 
 // Config are the dependencies of the module.
@@ -53,7 +55,7 @@ func New(c Config) *Module {
 	}
 	uc := usecase.NewDNSFilter(usecase.Deps{Repo: gateway.NewSettingsRepository(c.DB, c.Cipher), Providers: providers,
 		Pausable: pausable, Audit: c.Audit, Clock: c.Clock})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(providers)}
 }
 
 // Name implements modules.Module.
@@ -103,3 +105,6 @@ func (m *Module) Discovery() modules.DiscoverySpec {
 		Ports: []int{3000, 80}, ProbePath: "/login.html", ProbeContains: "AdGuard Home",
 	}
 }
+
+// ConnectionSpecs implements modules.Connectable (#610).
+func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }

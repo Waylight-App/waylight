@@ -8,7 +8,9 @@ import (
 	"strings"
 	"testing"
 
+	"waylight/internal/modules/integrations/domain"
 	"waylight/internal/modules/integrations/usecase"
+	"waylight/internal/shared/kernel"
 )
 
 type fakeUC struct {
@@ -50,5 +52,38 @@ func TestRemoveConfirm(t *testing.T) {
 		if rec.Code != http.StatusNoContent || confirmed != want {
 			t.Errorf("%q: %d %v", q, rec.Code, confirmed)
 		}
+	}
+}
+
+func (fakeUC) Check(_ context.Context, id string) error {
+	if id == "bad" {
+		return kernel.SetupFailure("Immich", kernel.ErrTargetAuth)
+	}
+	return nil
+}
+
+func (fakeUC) Services(context.Context) ([]domain.Spec, error) {
+	return []domain.Spec{{Service: "nextcloud", Title: "Nextcloud", Fields: []domain.Field{{Name: "username"}, {Name: "appPassword", Secret: true}}}}, nil
+}
+
+func TestCheck(t *testing.T) {
+	h := NewHandlers(fakeUC{})
+	for id, want := range map[string]int{"good": http.StatusNoContent, "bad": http.StatusUnprocessableEntity} {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPost, "/api/integrations/connections/"+id+"/check", nil)
+		req.SetPathValue("id", id)
+		h.Check(rec, req)
+		if rec.Code != want {
+			t.Errorf("%s: %d %s", id, rec.Code, rec.Body)
+		}
+	}
+}
+
+func TestServices(t *testing.T) {
+	rec := httptest.NewRecorder()
+	NewHandlers(fakeUC{}).Services(rec, httptest.NewRequest(http.MethodGet, "/api/integrations/services", nil))
+	want := `[{"service":"nextcloud","title":"Nextcloud","fields":[{"name":"username","secret":false,"optional":false},{"name":"appPassword","secret":true,"optional":false}]}]`
+	if rec.Code != http.StatusOK || strings.TrimSpace(rec.Body.String()) != want {
+		t.Fatalf("%d %s", rec.Code, rec.Body)
 	}
 }
