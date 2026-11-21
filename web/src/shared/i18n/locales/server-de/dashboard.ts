@@ -6,6 +6,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
+  // The location is not valid.
+  srv_2b0de21ed819b8f8: 'Der Ort ist ungültig.',
   // At most 10 rules per tab are supported.
   srv_9c62e19aa7e4b027: 'Pro Tab werden höchstens 10 Regeln unterstützt.',
   // At most 50 templates can be stored.

@@ -4,6 +4,8 @@ import {
   type Tab,
   type TabRule,
   type TabTemplate,
+  type BuiltinTemplate,
+  type TemplateLocation,
   validateBackground,
   validateRules,
   validateTabName,
@@ -149,6 +151,20 @@ export class DashboardUseCases {
 
   deleteTemplate(id: string): Promise<void> {
     return this.gateway.deleteTemplate(id);
+  }
+
+  /** The templates that ship with Waylight (#589); none without a server. */
+  async listBuiltinTemplates(): Promise<BuiltinTemplate[]> {
+    return (await this.gateway.listBuiltinTemplates?.()) ?? [];
+  }
+
+  /**
+   * Creates a tab from a built-in template, with its phone layout; the
+   * location fills its weather widgets.
+   */
+  createTabFromBuiltin(id: string, name: string, location?: TemplateLocation): Promise<Tab> {
+    if (!this.gateway.createTabFromBuiltin) return Promise.reject(new Error('templates need a server'));
+    return this.gateway.createTabFromBuiltin(id, name.trim(), location);
   }
 
   /** Creates a new tab from a template; the template name is used if name is empty. */

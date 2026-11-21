@@ -182,3 +182,20 @@ describe('DashboardUseCases', () => {
     expect(gateway.createTabFromTemplate).toHaveBeenCalledWith('t', '');
   });
 });
+
+describe('built-in templates (#589)', () => {
+  it('lists none and refuses to create without a server', async () => {
+    const { uc } = setup();
+    expect(await uc.listBuiltinTemplates()).toEqual([]);
+    await expect(uc.createTabFromBuiltin('family', '')).rejects.toThrow();
+  });
+
+  it('hands the template, a trimmed name and the location on', async () => {
+    const { gateway } = setup();
+    const create = vi.fn().mockResolvedValue(tab('f', 2));
+    const uc = new DashboardUseCases({ ...gateway, createTabFromBuiltin: create });
+    const loc = { lat: 53.1, lon: 8.2, label: 'Oldenburg' };
+    await uc.createTabFromBuiltin('family', ' Family ', loc);
+    expect(create).toHaveBeenCalledWith('family', 'Family', loc);
+  });
+});

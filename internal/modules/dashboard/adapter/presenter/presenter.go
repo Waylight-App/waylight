@@ -116,3 +116,34 @@ func Templates(ts []usecase.TemplateResponse) []TemplateDTO {
 	}
 	return out
 }
+
+// BuiltinWidgetDTO is a widget of a built-in template, for its preview.
+type BuiltinWidgetDTO struct {
+	Kind string `json:"kind"`
+	X    int    `json:"x"`
+	Y    int    `json:"y"`
+	W    int    `json:"w"`
+	H    int    `json:"h"`
+}
+
+// BuiltinTemplateDTO is a built-in tab template (#589); clients translate
+// the title by ID.
+type BuiltinTemplateDTO struct {
+	ID      string             `json:"id"`
+	Title   string             `json:"title"`
+	Needs   []string           `json:"needs"`
+	Widgets []BuiltinWidgetDTO `json:"widgets"`
+}
+
+// Builtins maps the built-in templates.
+func Builtins(list []usecase.BuiltinTemplate) []BuiltinTemplateDTO {
+	out := make([]BuiltinTemplateDTO, 0, len(list))
+	for _, t := range list {
+		d := BuiltinTemplateDTO{ID: t.ID, Title: t.Title, Needs: append([]string{}, t.Needs...), Widgets: make([]BuiltinWidgetDTO, 0, len(t.Tab.Widgets))}
+		for _, w := range t.Tab.Widgets {
+			d.Widgets = append(d.Widgets, BuiltinWidgetDTO{Kind: w.Kind, X: w.Rect.X, Y: w.Rect.Y, W: w.Rect.W, H: w.Rect.H})
+		}
+		out = append(out, d)
+	}
+	return out
+}

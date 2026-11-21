@@ -19,6 +19,7 @@ import (
 type Module struct {
 	modules.Base
 	modules.Transferable
+	builtin  *controller.BuiltinHandlers
 	handlers *controller.Handlers
 	deps     usecase.Deps
 	seed     usecase.SeedSampleData
@@ -50,6 +51,7 @@ func New(db *sql.DB, ids kernel.IDGenerator, clock kernel.Clock, widgetKinds []s
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
 		handlers: controller.NewHandlers(usecase.NewGetDashboard(deps), usecase.NewManageTabs(deps), usecase.NewManageWidgets(deps),
 			usecase.NewManageTemplates(deps)),
+		builtin:  controller.NewBuiltinHandlers(usecase.NewBuiltinTemplates(deps, builtinTemplates(), configfile.MergeConfig)),
 		deps:     deps,
 		seed:     usecase.NewSeedSampleData(deps, usecase.SampleLayout(string(weatherConfig))),
 		everyday: usecase.NewSeedSampleData(deps, usecase.EverydayLayout(string(weatherConfig))),
@@ -93,6 +95,7 @@ func (m *Module) ConfigRoutes() []string {
 		"PUT /api/dashboard/tabs/{id}/mobile-layout",
 		"DELETE /api/dashboard/tabs/{id}/mobile-layout",
 		"POST /api/dashboard/templates/{id}/tabs",
+		"POST /api/dashboard/templates/builtin/{id}/tabs",
 	}
 }
 
@@ -153,6 +156,8 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/dashboard/templates", h.SaveTemplate)
 	r.Protected("DELETE /api/dashboard/templates/{id}", h.DeleteTemplate)
 	r.Protected("POST /api/dashboard/templates/{id}/tabs", h.CreateTabFromTemplate)
+	r.Protected("GET /api/dashboard/templates/builtin", m.builtin.List)
+	r.Protected("POST /api/dashboard/templates/builtin/{id}/tabs", m.builtin.CreateTab)
 }
 
 // WidgetKindsOnTabs returns the widget kinds placed on the given tabs (used
@@ -182,4 +187,15 @@ func (m *Module) TabIDs(ctx context.Context) ([]string, error) { return m.scope.
 // OwnWidgets lists the widgets on the account's own tabs (#599).
 func (m *Module) OwnWidgets(ctx context.Context) ([]usecase.OwnWidget, error) {
 	return m.scope.OwnWidgets(ctx)
+}
+
+// builtinTemplates reads the templates that ship with Waylight (#589). The
+// files are embedded and checked by the tests, so a failure leaves only the
+// list empty.
+func builtinTemplates() []usecase.BuiltinTemplate {
+	list, err := configfile.Builtin()
+	if err != nil {
+		return nil
+	}
+	return list
 }

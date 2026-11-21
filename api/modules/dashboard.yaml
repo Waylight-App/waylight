@@ -119,6 +119,54 @@ paths:
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { tabId: { type: string }, name: { type: string, maxLength: 40 } } } } } }
       responses: { "201": { description: Created }, "404": { $ref: "#/components/responses/NotFound" }, "409": { description: Too many templates } }
+  /api/dashboard/templates/builtin:
+    get:
+      tags: [dashboard]
+      summary: "Templates that ship with Waylight (#589): family, homelab, wall tablet, work. Each names what it needs before applying (location) and its widgets with their cells for a preview; clients translate the title by id."
+      security: [{ session: [] }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [id, title, needs, widgets]
+                  properties:
+                    id: { type: string }
+                    title: { type: string }
+                    needs: { type: array, items: { type: string, enum: [location] } }
+                    widgets:
+                      type: array
+                      items: { type: object, required: [kind, x, y, w, h], properties: { kind: { type: string }, x: { type: integer }, y: { type: integer }, w: { type: integer }, h: { type: integer } } }
+  /api/dashboard/templates/builtin/{id}/tabs:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    post:
+      tags: [dashboard]
+      summary: "Create a tab from a built-in template with its phone layout (empty name = template name); widgets of disabled modules are skipped; location fills the weather widgets"
+      security: [{ session: [], csrf: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                location:
+                  type: object
+                  required: [lat, lon]
+                  properties:
+                    lat: { type: number, minimum: -90, maximum: 90 }
+                    lon: { type: number, minimum: -180, maximum: 180 }
+                    label: { type: string }
+                    placeId: { type: string, description: Saved place (#591) }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Tab" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
   /api/dashboard/templates/{id}:
     parameters: [{ $ref: "#/components/parameters/id" }]
     delete:

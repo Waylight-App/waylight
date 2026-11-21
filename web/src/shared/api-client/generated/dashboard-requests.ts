@@ -104,3 +104,25 @@ export interface SaveTemplateDTO {
   tabId: string;
   name: string;
 }
+/**
+ * BuiltinTabDTO is the body of POST /api/dashboard/templates/builtin/{id}/tabs.
+ */
+export interface BuiltinTabDTO {
+  /**
+   * Name of the new tab; empty uses the template's.
+   */
+  name: string;
+  /**
+   * Location fills the weather widgets; omitted leaves them to be set up.
+   */
+  location?: LocationDTO;
+}
+/**
+ * LocationDTO is a place for the weather widgets of a template.
+ */
+export interface LocationDTO {
+  lat: number /* float64 */;
+  lon: number /* float64 */;
+  label: string;
+  placeId: string;
+}
