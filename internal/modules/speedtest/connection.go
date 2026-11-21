@@ -2,6 +2,7 @@ package speedtest
 
 import (
 	"context"
+	"errors"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/speedtest/domain"
@@ -27,4 +28,17 @@ func connectionSpecs(source usecase.SpeedtestSource, clock kernel.Clock) []modul
 			return nil
 		},
 	}}
+}
+
+// savedConnections returns the module settings as a connection to copy;
+// the thresholds stay in the module.
+func savedConnections(ctx context.Context, repo usecase.SettingsRepository) ([]modules.SavedConnection, error) {
+	s, err := repo.Load(ctx)
+	if errors.Is(err, domain.ErrNotConfigured) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return []modules.SavedConnection{{Source: "speedtest", Service: "speedtest", URL: s.URL, Credential: map[string]string{"token": s.Token}}}, nil
 }

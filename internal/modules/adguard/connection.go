@@ -2,6 +2,7 @@ package adguard
 
 import (
 	"context"
+	"errors"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/adguard/domain"
@@ -35,4 +36,21 @@ func connectionSpecs(providers map[domain.Provider]usecase.DNSFilterProvider) []
 		})
 	}
 	return out
+}
+
+// savedConnections returns one connection per configured DNS filter.
+func savedConnections(ctx context.Context, repo usecase.SettingsRepository) ([]modules.SavedConnection, error) {
+	var out []modules.SavedConnection
+	for _, p := range []domain.Provider{domain.ProviderAdGuard, domain.ProviderPiHole} {
+		s, err := repo.Load(ctx, p)
+		if errors.Is(err, domain.ErrNotConfigured) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, modules.SavedConnection{Source: "adguard:" + string(p), Service: string(p), URL: s.URL,
+			Credential: map[string]string{"username": s.Username, "password": s.Password}})
+	}
+	return out, nil
 }

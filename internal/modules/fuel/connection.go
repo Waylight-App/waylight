@@ -2,6 +2,7 @@ package fuel
 
 import (
 	"context"
+	"errors"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/fuel/domain"
@@ -31,4 +32,17 @@ func connectionSpecs(provider usecase.FuelPriceProvider, apiURL string) []module
 			return nil
 		},
 	}}
+}
+
+// savedConnections returns the API key of the module settings as a
+// connection to copy; place, radius and favourites stay in the module.
+func savedConnections(ctx context.Context, repo usecase.SettingsRepository, apiURL string) ([]modules.SavedConnection, error) {
+	s, err := repo.Load(ctx)
+	if errors.Is(err, domain.ErrNotConfigured) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return []modules.SavedConnection{{Source: "fuel", Service: "tankerkoenig", URL: apiURL, Credential: map[string]string{"apiKey": s.APIKey}}}, nil
 }

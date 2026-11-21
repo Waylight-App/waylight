@@ -48,3 +48,24 @@ func ConnectionSpecsOf(all []Module) []ConnectionSpec {
 	}
 	return out
 }
+
+// SavedConnection is a connection a module keeps in its own settings from
+// before the integrations store (#610). The store copies it once; the
+// module's settings stay as they are.
+type SavedConnection struct {
+	// Source identifies the setting across restarts, e.g. "immich" or
+	// "arr:<instance ID>"; a source is copied at most once.
+	Source  string
+	Service string
+	// Name is the name of the copy; empty uses the product name.
+	Name       string
+	URL        string
+	Credential map[string]string
+}
+
+// ConnectionSource is implemented by Connectable modules that still keep
+// connection settings of their own. A module that is not configured
+// returns none; an error skips the module until the next run.
+type ConnectionSource interface {
+	SavedConnections(ctx context.Context) ([]SavedConnection, error)
+}
