@@ -561,16 +561,13 @@ export const en = {
   'auth.password_at_least_12_characters': 'Password (at least 12 characters)',
   'auth.repeat_password': 'Repeat password',
   'auth.create_account': 'Create account',
-  'auth.profile_question': 'What should your start page show?',
   'auth.profile_everyday': 'Everyday',
   'auth.profile_everyday_hint': 'Weather, calendar, to-dos, news',
   'auth.profile_homelab': 'Everyday and home network',
-  'auth.profile_homelab_hint': 'Also your own devices and services, for example NAS, Docker, Pi-hole',
-  'auth.profile_unsure':
-    'Not sure? Choose “Everyday”. You can change this at any time under Settings → Appearance.',
   'appearance.profile': 'The start page shows',
   'appearance.profile_hint': 'Only shows or hides widgets and settings; nothing is deleted.',
   'auth.welcome_to_waylight': 'Welcome to Waylight',
+  'auth.setup_intro': 'Set a password to finish the setup. The setup token is printed in the server log.',
   'auth.two_factor_authentication_is_on': 'Two-factor authentication is on.',
   'auth.store_these_recovery_codes_in_a':
     'Store these recovery codes in a safe place — each works once if you lose your phone. They are shown only now.',
