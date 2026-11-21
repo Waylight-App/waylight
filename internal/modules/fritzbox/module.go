@@ -25,13 +25,16 @@ type Module struct {
 	modules.Base
 	uc       usecase.FritzBox
 	handlers *controller.Handlers
+	// specs are the services a named connection can reach (#610).
+	specs []modules.ConnectionSpec
 }
 
 // New builds the FRITZ!Box module; cipher encrypts the password and loc is
 // the time zone of the call list.
 func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, loc *time.Location) *Module {
-	uc := usecase.NewFritzBox(gateway.NewSettingsRepository(db, cipher), gateway.NewBox(client, loc), clock)
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	box := gateway.NewBox(client, loc)
+	uc := usecase.NewFritzBox(gateway.NewSettingsRepository(db, cipher), box, clock)
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(box)}
 }
 
 // Name implements modules.Module.
@@ -80,3 +83,6 @@ func (m *Module) Discovery() modules.DiscoverySpec {
 		Ports: []int{49000}, ProbePath: "/tr64desc.xml", ProbeContains: "AVM",
 	}
 }
+
+// ConnectionSpecs implements modules.Connectable (#610).
+func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }

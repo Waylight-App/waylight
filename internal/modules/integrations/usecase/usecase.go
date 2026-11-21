@@ -13,7 +13,9 @@ import (
 type View struct {
 	ID, Service, Name, URL string
 	Fields                 []string
-	UsedBy                 []domain.Use
+	// Values holds the fields that are not secret, e.g. the user name.
+	Values map[string]string
+	UsedBy []domain.Use
 }
 
 // Input is what an admin enters for a new connection.
@@ -45,7 +47,25 @@ type Connections interface {
 	ReplaceCredential(ctx context.Context, id string, fields map[string]string) (View, error)
 	// Remove deletes a connection; one in use needs confirmed.
 	Remove(ctx context.Context, id string, confirmed bool) error
+	// Check tries the connection with the request the service's settings
+	// page makes before saving; nil means the service accepted it.
+	Check(ctx context.Context, id string) error
+	// Services lists the services a connection can be made to.
+	Services(ctx context.Context) ([]domain.Spec, error)
 }
+
+// CheckFunc tries an address and credential at the service (see
+// modules.ConnectionSpec.Check).
+type CheckFunc func(ctx context.Context, url string, credential map[string]string) error
+
+// Service is a spec with the check of the module that owns the service.
+type Service struct {
+	Spec  domain.Spec
+	Check CheckFunc
+}
+
+// ErrNoCheck answers a check of a service whose module is switched off.
+var ErrNoCheck = kernel.NewPublicError(kernel.ErrUnavailable, "This connection cannot be checked while its module is switched off.")
 
 // Repository persists connections with their credential encrypted (output
 // port, implemented in adapter/gateway).
@@ -68,14 +88,31 @@ type Deps struct {
 	// Widgets lists widgets with their connection; nil when the dashboard
 	// is not available, then no connection is in use.
 	Widgets func(ctx context.Context) ([]Widget, error)
-	Clock   kernel.Clock
-	IDs     kernel.IDGenerator
+	// Services are the services of the enabled modules; a connection can
+	// only be added for one of them.
+	Services []Service
+	Clock    kernel.Clock
+	IDs      kernel.IDGenerator
 }
 
-type uc struct{ d Deps }
+type uc struct {
+	d      Deps
+	specs  domain.Specs
+	checks map[string]CheckFunc
+}
 
 // New returns the use cases.
-func New(d Deps) Connections { return &uc{d: d} }
+func New(d Deps) Connections {
+	list := make([]domain.Spec, 0, len(d.Services))
+	checks := map[string]CheckFunc{}
+	for _, s := range d.Services {
+		list = append(list, s.Spec)
+		if s.Check != nil {
+			checks[s.Spec.Service] = s.Check
+		}
+	}
+	return &uc{d: d, specs: domain.NewSpecs(list), checks: checks}
+}
 
 func requireAdmin(ctx context.Context) error {
 	if !kernel.PrincipalFrom(ctx).IsAdmin() {
@@ -100,7 +137,7 @@ func (u *uc) List(ctx context.Context, service string) ([]View, error) {
 	out := make([]View, 0, len(list))
 	for _, c := range list {
 		if service == "" || c.Service == service {
-			out = append(out, view(c, uses[c.ID]))
+			out = append(out, u.view(c, uses[c.ID]))
 		}
 	}
 	return out, nil
@@ -118,11 +155,18 @@ func (u *uc) Add(ctx context.Context, in Input) (View, error) {
 	if len(list) >= domain.MaxConnections {
 		return View{}, domain.ErrTooMany
 	}
+	spec, ok := u.specs[in.Service]
+	if !ok {
+		return View{}, domain.ErrUnknownService
+	}
 	cred, err := domain.NewCredential(in.Credential)
 	if err != nil {
 		return View{}, err
 	}
-	c, err := domain.NewConnection(u.d.IDs.NewID(), in.Service, in.Name, in.URL, cred, u.d.Clock.Now())
+	if err := spec.CheckCredential(cred, true); err != nil {
+		return View{}, err
+	}
+	c, err := domain.NewConnection(u.d.IDs.NewID(), in.Service, in.Name, fixedURL(spec, in.URL), cred, u.d.Clock.Now())
 	if err != nil {
 		return View{}, err
 	}
@@ -132,7 +176,7 @@ func (u *uc) Add(ctx context.Context, in Input) (View, error) {
 	if err := u.d.Repo.Save(ctx, c); err != nil {
 		return View{}, fmt.Errorf("save connection: %w", err)
 	}
-	return view(c, nil), nil
+	return u.view(c, nil), nil
 }
 
 // Update implements Connections. A stored credential is never sent to a
@@ -146,12 +190,13 @@ func (u *uc) Update(ctx context.Context, id string, ch Change) (View, error) {
 		return View{}, err
 	}
 	oldURL := c.URL
-	if err := c.Change(ch.Name, ch.URL); err != nil {
+	spec := u.specs[c.Service] // zero for a switched-off module: no fixed address
+	if err := c.Change(ch.Name, fixedURL(spec, ch.URL)); err != nil {
 		return View{}, err
 	}
 	switch {
 	case ch.Credential != nil:
-		if c.Credential, err = domain.NewCredential(ch.Credential); err != nil {
+		if c.Credential, err = u.credential(c.Service, ch.Credential); err != nil {
 			return View{}, err
 		}
 	case len(c.Credential) > 0 && kernel.TargetChanged([]string{oldURL}, []string{c.URL}):
@@ -176,10 +221,61 @@ func (u *uc) ReplaceCredential(ctx context.Context, id string, fields map[string
 	if err != nil {
 		return View{}, err
 	}
-	if c.Credential, err = domain.NewCredential(fields); err != nil {
+	if c.Credential, err = u.credential(c.Service, fields); err != nil {
 		return View{}, err
 	}
 	return u.save(ctx, c)
+}
+
+// credential validates entered fields against the service's spec. A
+// connection of a service whose module is switched off keeps the general
+// rules only, so it stays editable.
+func (u *uc) credential(service string, fields map[string]string) (domain.Credential, error) {
+	cred, err := domain.NewCredential(fields)
+	if err != nil {
+		return nil, err
+	}
+	if spec, ok := u.specs[service]; ok {
+		if err := spec.CheckCredential(cred, true); err != nil {
+			return nil, err
+		}
+	}
+	return cred, nil
+}
+
+// Check implements Connections.
+func (u *uc) Check(ctx context.Context, id string) error {
+	if err := requireAdmin(ctx); err != nil {
+		return err
+	}
+	c, err := u.d.Repo.Get(ctx, id)
+	if err != nil {
+		return err
+	}
+	check, ok := u.checks[c.Service]
+	if !ok {
+		return ErrNoCheck
+	}
+	if err := u.specs[c.Service].CheckCredential(c.Credential, true); err != nil {
+		return err
+	}
+	return check(ctx, c.URL, c.Credential)
+}
+
+// Services implements Connections.
+func (u *uc) Services(ctx context.Context) ([]domain.Spec, error) {
+	if err := requireAdmin(ctx); err != nil {
+		return nil, err
+	}
+	return u.specs.Sorted(), nil
+}
+
+// fixedURL replaces the entered address of a service that has only one.
+func fixedURL(spec domain.Spec, entered string) string {
+	if spec.FixedURL != "" {
+		return spec.FixedURL
+	}
+	return entered
 }
 
 // Remove implements Connections.
@@ -213,7 +309,7 @@ func (u *uc) save(ctx context.Context, c domain.Connection) (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	return view(c, uses[c.ID]), nil
+	return u.view(c, uses[c.ID]), nil
 }
 
 // uses maps connection IDs to the widgets whose settings name them.
@@ -244,9 +340,14 @@ func taken(list []domain.Connection, c domain.Connection) bool {
 	return false
 }
 
-func view(c domain.Connection, uses []domain.Use) View {
+func (u *uc) view(c domain.Connection, uses []domain.Use) View {
 	if uses == nil {
 		uses = []domain.Use{}
 	}
-	return View{ID: c.ID, Service: c.Service, Name: c.Name, URL: c.URL, Fields: c.Credential.Fields(), UsedBy: uses}
+	// Without a spec every field counts as secret.
+	values := map[string]string{}
+	if spec, ok := u.specs[c.Service]; ok {
+		values = spec.Visible(c.Credential)
+	}
+	return View{ID: c.ID, Service: c.Service, Name: c.Name, URL: c.URL, Fields: c.Credential.Fields(), Values: values, UsedBy: uses}
 }

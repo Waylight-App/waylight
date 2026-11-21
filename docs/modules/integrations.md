@@ -11,6 +11,30 @@ This is the store and its API. Widgets and the settings pages of the
 integrations do not use it yet; their own settings stay as they are until
 they move to connections (#610).
 
+## Services
+
+Each integration module declares the services it reaches and the
+credential fields they need. `GET /api/integrations/services` lists them:
+
+| Service | Product | Fields (secret in bold, optional in italics) |
+| --- | --- | --- |
+| `adguard` | AdGuard Home | `username`, **`password`** |
+| `fritzbox` | FRITZ!Box | *`username`*, ***`password`*** |
+| `grafana` | Grafana | **`token`** |
+| `homeassistant` | Home Assistant | **`token`** |
+| `immich` | Immich | **`apiKey`** |
+| `jellyfin`, `plex` | Jellyfin, Plex | **`token`** |
+| `nextcloud` | Nextcloud | `username`, **`appPassword`** |
+| `pihole` | Pi-hole | *`username`*, **`password`** |
+| `proxmox` | Proxmox VE | `tokenId`, **`secret`**, *`fingerprint`* |
+| `sonarr`, `radarr`, `prowlarr` | Sonarr, Radarr, Prowlarr | **`apiKey`** |
+| `speedtest` | Speedtest Tracker | **`token`** |
+| `tankerkoenig` | Tankerkönig | **`apiKey`**; the address is fixed |
+
+A new connection must name one of these services and fill its required
+fields; fields the service does not know are refused. Connections of a
+service whose module is switched off stay in the list and editable.
+
 ## Rules
 
 - Only admins see and change connections; they belong to the instance.
@@ -18,7 +42,8 @@ they move to connections (#610).
   at most 100 connections.
 - The credential is a set of named fields (for example `apiKey`, or
   `username` and `password`), at most four. It is stored encrypted with
-  `SECRET_KEY` and never returned: the API only says which fields are set.
+  `SECRET_KEY`. Secret fields are never returned: the API says which fields
+  are set and shows the values of the others (`values`), such as a user name.
 - Moving a connection to another address needs the credential again, so a
   stored one is never sent to a new host.
 - Removing a connection that widgets name in their settings
@@ -26,6 +51,13 @@ they move to connections (#610).
   widgets these are.
 - If `SECRET_KEY` changes, the credentials can no longer be read. The list
   still opens and shows no fields; enter the credentials again.
+
+## Checking a connection
+
+`POST /api/integrations/connections/{id}/check` sends the request the
+service's settings page makes before saving, with the stored address and
+credential. It answers 204 when the service accepts it and otherwise the
+same message the settings page shows.
 
 ## Config as code
 
@@ -37,7 +69,8 @@ app, but credentials can still be entered.
 ## API
 
 `GET /api/integrations/connections` (optionally `?service=immich`)
-lists the connections with `fields` and `usedBy`; `POST /api/integrations/connections`,
+lists the connections with `fields`, `values` and `usedBy`;
+`GET /api/integrations/services` lists the services; `POST /api/integrations/connections`,
 `PUT /api/integrations/connections/{id}`,
 `PUT /api/integrations/connections/{id}/credential` and
 `DELETE /api/integrations/connections/{id}?confirm=true` change them. See
@@ -45,4 +78,5 @@ lists the connections with `fields` and `usedBy`; `POST /api/integrations/connec
 
 ## Outbound requests
 
-None.
+Only the check: one request to the connection's address, the same one the
+service's settings page makes.
