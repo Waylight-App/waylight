@@ -19,6 +19,20 @@ export interface InfoResponse {
    * right now, such as an ee/ feature whose licence key has expired (#307).
    */
   readOnly: string[];
+  /**
+   * Compact lists the modules with a compact state (#634), so clients such
+   * as the watch find them without a list of their own.
+   */
+  compact: CompactInfo[];
+}
+/**
+ * CompactInfo names a module's compact endpoint and the query parameters
+ * it takes (empty for most modules; the smart home device needs "entity").
+ */
+export interface CompactInfo {
+  module: string;
+  path: string;
+  params: string[];
 }
 /**
  * CompactText is a translatable text of a compact state (#597): clients

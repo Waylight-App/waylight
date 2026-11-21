@@ -12,6 +12,17 @@ type InfoResponse struct {
 	// ReadOnly names modules whose data stays readable but cannot be changed
 	// right now, such as an ee/ feature whose licence key has expired (#307).
 	ReadOnly []string `json:"readOnly"`
+	// Compact lists the modules with a compact state (#634), so clients such
+	// as the watch find them without a list of their own.
+	Compact []CompactInfo `json:"compact"`
+}
+
+// CompactInfo names a module's compact endpoint and the query parameters
+// it takes (empty for most modules; the smart home device needs "entity").
+type CompactInfo struct {
+	Module string   `json:"module"`
+	Path   string   `json:"path"`
+	Params []string `json:"params"`
 }
 
 // CompactText is a translatable text of a compact state (#597): clients
