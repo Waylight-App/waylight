@@ -8,7 +8,6 @@ export const serverMessages = {
   srv_d88ce767c858967e: "Nothing planned for today",
   srv_d2f70f839ca60227: "The dish does not exist.",
   srv_cd8bf9f8a954422f: "The dish must be between 1 and 120 characters long.",
-  srv_b429d991f10042c7: "The link must be a web address starting with http:// or https://.",
   srv_6d9cc506ee0c6722: "The meal must be breakfast, lunch, dinner or empty.",
   srv_9482b4086fdf3088: "Today: {dish}",
   srv_bdb37f2bc1177fca: "and {count} more",
