@@ -52,7 +52,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // The channel type must be gotify, webhook, email, slack, teams, app or browser.
   srv_f6f4dd11b19007a6: 'Der Kanaltyp muss gotify, webhook, email, slack, teams, app oder browser sein.',
   // Too many open notification streams; close a tab and try again.
-  srv_3cc4707e6d15f847: 'Zu viele offene Benachrichtigungs-Streams; schließe einen Tab und versuche es erneut.',
+  srv_3cc4707e6d15f847:
+    'Zu viele offene Benachrichtigungs-Streams; schließe einen Tab und versuche es erneut.',
   srv_582421b3bac9020d: 'Nur die Mobile-App kann sich für Push-Benachrichtigungen anmelden.',
   srv_37ea6c105ce8cb51: 'Nur die Mobile-App kann ihr Gerät abmelden.',
   srv_6c1d9ecca70c4817: 'Push-Benachrichtigungen an die App sind auf diesem Server ausgeschaltet.',
