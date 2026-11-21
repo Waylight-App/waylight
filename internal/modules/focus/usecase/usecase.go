@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"waylight/internal/modules/focus/domain"
@@ -18,6 +19,13 @@ type Focus interface {
 	WeeklyStats(ctx context.Context) ([]domain.Day, error)
 	// Prune deletes sessions older than the retention (job).
 	Prune(ctx context.Context) error
+	// Timer returns the account's timer; a phase that ran out is advanced
+	// and, for a focus phase, recorded as a session (#631).
+	Timer(ctx context.Context) (domain.Timer, error)
+	// ControlTimer starts, pauses, resets or skips the account's timer.
+	ControlTimer(ctx context.Context, action TimerAction) (domain.Timer, error)
+	// ConfigureTimer stores the phase lengths of the widget's settings.
+	ConfigureTimer(ctx context.Context, c domain.TimerConfig) (domain.Timer, error)
 }
 
 // Repository persists sessions (output port, implemented in
@@ -28,6 +36,13 @@ type Repository interface {
 	DeleteBefore(ctx context.Context, t time.Time) error
 }
 
+// TimerRepository keeps one timer per account (output port, implemented in
+// adapter/gateway). Timer reports false when the account has none yet.
+type TimerRepository interface {
+	Timer(ctx context.Context) (domain.Timer, bool, error)
+	SaveTimer(ctx context.Context, t domain.Timer) error
+}
+
 // Retention is how long sessions are kept.
 const Retention = 90 * 24 * time.Hour
 
@@ -35,12 +50,18 @@ const Retention = 90 * 24 * time.Hour
 // (nil = time.Local).
 type Deps struct {
 	Repo     Repository
+	Timers   TimerRepository
 	Clock    kernel.Clock
 	IDs      kernel.IDGenerator
 	Location *time.Location
 }
 
-type uc struct{ d Deps }
+type uc struct {
+	d Deps
+	// timerMu serialises reading, advancing and saving timers, so two
+	// devices that look at a finished phase at once record it only once.
+	timerMu sync.Mutex
+}
 
 // NewFocus returns the focus timer use cases.
 func NewFocus(d Deps) Focus {

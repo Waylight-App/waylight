@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { FocusDay } from '../domain/focus';
-import { type FocusGateway, FocusUseCases, type Notifier } from './focusUseCases';
+import { defaultFocusConfig, type FocusDay, initialState } from '../domain/focus';
+import { type FocusGateway, FocusUseCases, type Notifier, type TimerGateway } from './focusUseCases';
 
 class FakeGateway implements FocusGateway {
   recorded: [number, Date][] = [];
@@ -27,21 +27,33 @@ class FakeNotifier implements Notifier {
   }
 }
 
+const timers: TimerGateway & { calls: string[] } = {
+  calls: [],
+  async get(cfg) {
+    this.calls.push('get');
+    return initialState(cfg);
+  },
+  async control(action, cfg) {
+    this.calls.push(action);
+    return initialState(cfg);
+  },
+};
+
 describe('FocusUseCases', () => {
-  it('records sessions', async () => {
-    const gw = new FakeGateway();
-    const days = await new FocusUseCases(gw, new FakeNotifier('default')).record(25, new Date(0));
-    expect(gw.recorded).toEqual([[25, new Date(0)]]);
-    expect(days[0]?.minutes).toBe(25);
+  it('reads and controls the timer through its gateway', async () => {
+    const uc = new FocusUseCases(new FakeGateway(), new FakeNotifier('default'), timers);
+    await uc.timer(defaultFocusConfig);
+    await uc.control('start', defaultFocusConfig);
+    expect(timers.calls).toEqual(['get', 'start']);
   });
 
   it('notifies only when enabled and allowed', () => {
     const granted = new FakeNotifier('granted');
-    const uc = new FocusUseCases(new FakeGateway(), granted);
+    const uc = new FocusUseCases(new FakeGateway(), granted, timers);
     uc.notify(false, 'a', '');
     uc.notify(true, 'b', '');
     const denied = new FakeNotifier('denied');
-    new FocusUseCases(new FakeGateway(), denied).notify(true, 'c', '');
+    new FocusUseCases(new FakeGateway(), denied, timers).notify(true, 'c', '');
     expect(granted.shown).toEqual(['b']);
     expect(denied.shown).toEqual([]);
   });

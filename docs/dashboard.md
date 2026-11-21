@@ -63,7 +63,10 @@ size, so existing dashboards keep their look.
 Some compact views carry one quick action next to the short state, so the
 most common step needs no panel: habits tick off the next habit due today
 and to-dos tick off the most urgent one (overdue first, then the earliest due
-date). The button gives feedback at once; when the server refuses, its
+date). The focus timer offers **Start** or **Pause** and shows the running
+phase as *Focus · 12:40*; the timer is kept per account on the server, so
+the full widget, the compact view and your other devices show the same one.
+The button gives feedback at once; when the server refuses, its
 message is shown and nothing changes. Guests and kiosk displays do not see
 quick actions.
 

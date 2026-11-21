@@ -1,14 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
   applyConfig,
+  control,
   defaultFocusConfig as cfg,
   formatClock,
+  fromSnapshot,
   initialState,
   parseFocusConfig,
   parseState,
   pause,
   remaining,
   reset,
+  sameLengths,
   skip,
   start,
   tick,
@@ -96,5 +99,36 @@ describe('parsing', () => {
       left: 5 * MIN,
       total: 5 * MIN,
     });
+  });
+});
+
+describe('shared timer (#631)', () => {
+  it('applies controls like the buttons', () => {
+    const s = control(initialState(cfg), 'start', cfg, 0);
+    expect(s.endsAt).toBe(25 * MIN);
+    expect(control(s, 'pause', cfg, MIN).left).toBe(24 * MIN);
+    expect(control(s, 'skip', cfg, MIN).phase).toBe('short');
+    expect(control(s, 'reset', cfg, MIN).endsAt).toBeNull();
+  });
+
+  it('reads a snapshot relative to the browser clock', () => {
+    const snap = {
+      phase: 'short' as const,
+      done: 1,
+      running: true,
+      remainingMs: 1000,
+      totalMs: 5 * MIN,
+      config: { work: 25, short: 5, long: 15, longEvery: 4 },
+    };
+    expect(fromSnapshot(snap, 50)).toEqual({
+      phase: 'short',
+      done: 1,
+      endsAt: 1050,
+      left: 1000,
+      total: 5 * MIN,
+    });
+    expect(fromSnapshot({ ...snap, running: false }, 50).endsAt).toBeNull();
+    expect(sameLengths(snap.config, cfg)).toBe(true);
+    expect(sameLengths(snap.config, { ...cfg, longEvery: 2 })).toBe(false);
   });
 });

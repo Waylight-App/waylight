@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -34,6 +35,32 @@ func TestCompactStates(t *testing.T) {
 	c.json(http.MethodGet, "/api/focus/compact", nil, http.StatusOK, &state)
 	if state.Title.Text != "0 min focus today" || state.Level != "none" {
 		t.Fatalf("focus: %+v", state)
+	}
+	// The focus timer starts and pauses through its compact action (#631).
+	var focus struct {
+		Title  struct{ Text string } `json:"title"`
+		Action struct {
+			ID, Method, Path string
+		} `json:"action"`
+	}
+	for _, want := range []string{"focus.start", "focus.pause", "focus.start"} {
+		c.json(http.MethodGet, "/api/focus/compact", nil, http.StatusOK, &focus)
+		if focus.Action.ID != want {
+			t.Fatalf("focus action %+v, want %s", focus, want)
+		}
+		c.do(focus.Action.Method, focus.Action.Path, nil, http.StatusOK)
+	}
+	var timer struct {
+		Running bool   `json:"running"`
+		Phase   string `json:"phase"`
+	}
+	c.json(http.MethodGet, "/api/focus/timer", nil, http.StatusOK, &timer)
+	if !timer.Running || timer.Phase != "work" {
+		t.Fatalf("timer after start, pause, start: %+v", timer)
+	}
+	c.json(http.MethodGet, "/api/focus/compact", nil, http.StatusOK, &focus)
+	if !strings.HasPrefix(focus.Title.Text, "Focus · ") {
+		t.Fatalf("running title %q", focus.Title.Text)
 	}
 	for _, path := range []string{"/api/services/compact", "/api/backupmonitor/compact", "/api/diskhealth/compact", "/api/calendar/compact"} {
 		state.Title.Text, state.Level = "", ""
