@@ -139,6 +139,8 @@
     buttons[next]?.focus();
   }
 
+  /** Sections of the connections area that are not an integration of their own. */
+  const NOT_INTEGRATIONS = new Set(['tokens', 'attention', 'connections']);
   // Statuses of the area tiles: each source only for a viewer who may read it.
   let statuses = $state<Partial<Record<SettingsArea, AreaStatus>>>({});
   $effect(() => {
@@ -150,8 +152,9 @@
       channels: shown('notifications') ? () => container.notifications.channels() : undefined,
       backups: shown('backups') ? () => container.backup.list() : undefined,
       version: shown('about') ? () => container.system.version() : undefined,
-      connections: areas.find((a) => a.id === 'connections')?.sections.filter((s) => s.id !== 'tokens')
-        .length,
+      connections: areas
+        .find((a) => a.id === 'connections')
+        ?.sections.filter((s) => !NOT_INTEGRATIONS.has(s.id)).length,
     };
     const ids = areas.map((a) => a.id);
     let stale = false;
