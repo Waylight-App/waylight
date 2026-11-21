@@ -49,6 +49,7 @@
     redo: () => void;
     showTabBackground: (tabId: string, background: string) => void;
     selectTab: (id: string) => void;
+    openWidgetSettings: (tabId: string, widgetId: string) => void;
     openAddWidget: (query?: string) => void;
   }>();
   // The picker is loaded only when someone opens it (#116).
@@ -76,6 +77,10 @@
   /** Selects a tab by id and opens the widget picker, from the search (#476). */
   export function selectTab(id: string) {
     view?.selectTab(id);
+  }
+  /** Opens a widget's settings on its tab, from the attention list (#592). */
+  export function openWidgetSettings(tabId: string, widgetId: string) {
+    view?.openWidgetSettings(tabId, widgetId);
   }
   export function openAddWidget(query = '') {
     view?.openAddWidget(query);

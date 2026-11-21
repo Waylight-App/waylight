@@ -2,6 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_80cd4d1600527c40: "A Sonarr, Radarr or Prowlarr instance does not answer.",
   srv_e087fafa20933ecf: "At most {max} instances are supported.",
   srv_35314e09732db39d: "Choose Sonarr, Radarr or Prowlarr.",
   srv_b4411af5f4818c54: "Could not connect to {app}: {detail}",

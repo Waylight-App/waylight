@@ -11,6 +11,8 @@ import { AdGuardApi } from '../features/adguard/adapter/api/adguardApi';
 import { AdGuardUseCases } from '../features/adguard/usecase/adguardUseCases';
 import { FritzBoxApi } from '../features/fritzbox/adapter/api/fritzboxApi';
 import { FritzBoxUseCases } from '../features/fritzbox/usecase/fritzboxUseCases';
+import { AttentionApi } from '../features/attention/adapter/api/attentionApi';
+import { AttentionUseCases } from '../features/attention/usecase/attentionUseCases';
 import { NextcloudApi } from '../features/nextcloud/adapter/api/nextcloudApi';
 import { NextcloudUseCases } from '../features/nextcloud/usecase/nextcloudUseCases';
 import { ShoppingApi } from '../features/shopping/adapter/api/shoppingApi';
@@ -105,6 +107,8 @@ export interface Container extends Services {
   docker: DockerUseCases;
   adguard: AdGuardUseCases;
   nextcloud: NextcloudUseCases;
+  /** What needs the account's attention (#592). */
+  attention: AttentionUseCases;
   fritzbox: FritzBoxUseCases;
   wireguard: WireGuardUseCases;
   waste: WasteUseCases;
@@ -182,6 +186,7 @@ export function createContainer(onUnauthorized: () => void): Container {
     docker: new DockerUseCases(new DockerApi(http)),
     adguard: new AdGuardUseCases(new AdGuardApi(http)),
     nextcloud: new NextcloudUseCases(new NextcloudApi(http)),
+    attention: new AttentionUseCases(new AttentionApi(http)),
     fritzbox: new FritzBoxUseCases(new FritzBoxApi(http)),
     wireguard: new WireGuardUseCases(new WireGuardApi(http)),
     waste: new WasteUseCases(new WasteApi(http)),
