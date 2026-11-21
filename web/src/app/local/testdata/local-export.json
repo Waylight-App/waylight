@@ -68,7 +68,10 @@
           "greeting_name": "Sam",
           "greeting_moment": 0,
           "launcher": "both",
-          "profile": "everyday"
+          "profile": "everyday",
+          "text_size": "normal",
+          "high_contrast": 0,
+          "simple_view": 0
         }
       ]
     },

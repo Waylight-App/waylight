@@ -79,6 +79,13 @@ one for all tabs; the picker says so and offers to remove the tab's own
 background when you change the one for all tabs. **Default background**
 (or, for a tab, **Use the background of all tabs**) resets the choice.
 
+## Accessibility
+
+Text size, high contrast and a simple view for people with low vision or
+who find the full dashboard too busy are under *Accessibility* on the same
+page. [Accessibility](accessibility.md#options-for-each-account) describes
+what each option does.
+
 ## Greeting and top bar
 
 Below the top bar you can show a greeting that changes with the time of day

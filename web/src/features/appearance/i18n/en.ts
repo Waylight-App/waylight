@@ -34,6 +34,17 @@ export const en = {
   'appearance.background_invalid': 'Enter an http(s) address of an image.',
   'appearance.background_too_large': 'The picture is larger than 25 MB.',
   'dashboard.background_button': 'Background',
+  'appearance.accessibility': 'Accessibility',
+  'appearance.text_size': 'Text size',
+  'appearance.text_size_normal': 'Normal',
+  'appearance.text_size_large': 'Large',
+  'appearance.text_size_larger': 'Larger',
+  'appearance.high_contrast': 'High contrast',
+  'appearance.high_contrast_hint':
+    'Black and white with strong colours, for light and dark. Replaces the theme, accent colour and background while it is on.',
+  'appearance.simple_view': 'Simple view',
+  'appearance.simple_view_hint':
+    'One column with the short state of each widget, larger buttons and no edit mode. Switch it off here to edit the dashboard.',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

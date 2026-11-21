@@ -57,3 +57,25 @@ func TestShowAdvancedKeptWhenNotSent(t *testing.T) {
 		t.Fatal("not stored")
 	}
 }
+
+// TestAccessibilityKeptWhenNotSent: the options of #681 are stored, kept by
+// clients that do not send them, and a wrong text size is refused.
+func TestAccessibilityKeptWhenNotSent(t *testing.T) {
+	ctx := context.Background()
+	repo := &memRepo{}
+	on := true
+	update := NewUpdateAppearance(repo, nil)
+	got, err := update.Execute(ctx, UpdateAppearanceRequest{Theme: "system", TextSize: "larger", HighContrast: &on, SimpleView: &on})
+	if err != nil || got.TextSize != "larger" || !got.HighContrast || !got.SimpleView {
+		t.Fatalf("set: %+v %v", got, err)
+	}
+	if got, err := update.Execute(ctx, UpdateAppearanceRequest{Theme: "dark"}); err != nil || got.TextSize != "larger" || !got.HighContrast || !got.SimpleView {
+		t.Fatalf("an old client reset them: %+v %v", got, err)
+	}
+	if _, err := update.Execute(ctx, UpdateAppearanceRequest{Theme: "dark", TextSize: "huge"}); err == nil {
+		t.Fatal("unknown text size accepted")
+	}
+	if got, _ := NewGetAppearance(repo, nil).Execute(ctx); got.TextSize != "larger" || !got.SimpleView {
+		t.Fatalf("not stored: %+v", got)
+	}
+}

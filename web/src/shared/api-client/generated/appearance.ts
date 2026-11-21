@@ -35,6 +35,20 @@ export interface AppearanceDTO {
    */
   showAdvanced?: boolean;
   /**
+   * TextSize scales the whole interface (#681); empty on PUT keeps it.
+   */
+  textSize?: 'normal' | 'large' | 'larger';
+  /**
+   * HighContrast switches to the high-contrast colours of the scheme
+   * (#681); always sent in answers, omitted on PUT to keep the stored value.
+   */
+  highContrast?: boolean;
+  /**
+   * SimpleView shows one column of compact views without edit controls
+   * (#681); always sent in answers, omitted on PUT to keep the stored value.
+   */
+  simpleView?: boolean;
+  /**
    * ThemeLocked: the organisation set theme and accent colour (#305); a
    * change to them is ignored. Never read from a PUT.
    */

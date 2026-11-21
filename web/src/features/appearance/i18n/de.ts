@@ -37,4 +37,15 @@ export const de: Record<keyof typeof en, string> = {
   'appearance.background_invalid': 'Gib die http(s)-Adresse eines Bildes ein.',
   'appearance.background_too_large': 'Das Bild ist größer als 25 MB.',
   'dashboard.background_button': 'Hintergrund',
+  'appearance.accessibility': 'Barrierefreiheit',
+  'appearance.text_size': 'Schriftgröße',
+  'appearance.text_size_normal': 'Normal',
+  'appearance.text_size_large': 'Groß',
+  'appearance.text_size_larger': 'Größer',
+  'appearance.high_contrast': 'Hoher Kontrast',
+  'appearance.high_contrast_hint':
+    'Schwarz und Weiß mit kräftigen Farben, für hell und dunkel. Ersetzt Theme, Akzentfarbe und Hintergrund, solange es an ist.',
+  'appearance.simple_view': 'Einfache Ansicht',
+  'appearance.simple_view_hint':
+    'Eine Spalte mit dem kurzen Stand jedes Widgets, größere Schaltflächen und kein Bearbeitungsmodus. Zum Bearbeiten des Dashboards hier wieder ausschalten.',
 };

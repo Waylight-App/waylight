@@ -10,9 +10,14 @@ body {
   min-height: 100%;
 }
 
+/* The text size option scales rem, and with it most of the interface (#681). */
+html {
+  font-size: calc(100% * var(--text-scale));
+}
+
 body {
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.45;
   color: var(--color-text);
   background: var(--color-bg) var(--tab-background-image, var(--background-image)) center / cover fixed
@@ -120,6 +125,18 @@ textarea {
    sessions: guests and kiosk displays (#50). */
 html.read-only [data-action] {
   display: none !important;
+}
+
+/* Targets of at least 44 × 44 px in the simple view (WCAG 2.5.5, #681). */
+:root[data-simple] :is(.btn, .chip, select, input:not([type='checkbox'], [type='radio'])) {
+  min-height: 44px;
+}
+:root[data-simple] .btn-icon {
+  min-width: 44px;
+}
+:root[data-simple] :is(input[type='checkbox'], input[type='radio']) {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 /* Visible keyboard focus everywhere (WCAG 2.4.7, #113); components may style it further. */

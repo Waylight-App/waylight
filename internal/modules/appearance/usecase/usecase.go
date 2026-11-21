@@ -19,6 +19,10 @@ type AppearanceResponse struct {
 	Launcher        string
 	Profile         string
 	ShowAdvanced    bool
+	// TextSize, HighContrast and SimpleView are the accessibility options (#681).
+	TextSize     string
+	HighContrast bool
+	SimpleView   bool
 	// ThemeLocked: the organisation set theme and accent colour (#305).
 	ThemeLocked bool
 }
@@ -38,6 +42,17 @@ type UpdateAppearanceRequest struct {
 	// ShowAdvanced lists advanced settings (#602); nil keeps the stored value,
 	// so clients that do not know the switch never turn it off.
 	ShowAdvanced *bool
+	// TextSize, HighContrast and SimpleView are the accessibility options
+	// (#681). Empty or nil keeps the stored value, like ShowAdvanced.
+	TextSize     string
+	HighContrast *bool
+	SimpleView   *bool
+}
+
+// keepsStored reports whether the request leaves a stored value as it is,
+// so the stored appearance has to be read first.
+func (r UpdateAppearanceRequest) keepsStored() bool {
+	return r.Profile == "" || r.ShowAdvanced == nil || r.TextSize == "" || r.HighContrast == nil || r.SimpleView == nil
 }
 
 // GetAppearance returns the current preferences (input port).
@@ -60,7 +75,8 @@ type Repository interface {
 func toResponse(a domain.Appearance) AppearanceResponse {
 	return AppearanceResponse{Theme: string(a.Theme()), AccentColor: a.AccentColor(), BackgroundImage: a.BackgroundImage(), CustomCSS: a.CustomCSS(), Language: a.Language(),
 		GreetingName: a.GreetingName(), GreetingMoment: a.GreetingMoment(), Launcher: string(a.Launcher()), Profile: string(a.Profile()),
-		ShowAdvanced: a.ShowAdvanced()}
+		ShowAdvanced: a.ShowAdvanced(), TextSize: string(a.Accessibility().TextSize), HighContrast: a.Accessibility().HighContrast,
+		SimpleView: a.Accessibility().SimpleView}
 }
 
 type getAppearance struct {
@@ -118,25 +134,24 @@ func (uc *updateAppearance) Execute(ctx context.Context, req UpdateAppearanceReq
 	if err == nil {
 		err = a.SetLauncher(req.Launcher)
 	}
-	if err == nil && (req.Profile == "" || req.ShowAdvanced == nil) {
-		// Older clients send neither field; both then keep the stored value.
+	if err == nil && req.keepsStored() {
+		// Older clients do not send these fields; they keep the stored value.
 		stored, lerr := uc.repo.Load(ctx)
 		if lerr != nil {
 			return AppearanceResponse{}, fmt.Errorf("load appearance: %w", lerr)
 		}
-		if req.Profile == "" {
-			req.Profile = string(stored.Profile())
-		}
-		if req.ShowAdvanced == nil {
-			keep := stored.ShowAdvanced()
-			req.ShowAdvanced = &keep
-		}
+		req = withStored(req, stored)
 	}
 	if err == nil {
 		err = a.SetProfile(req.Profile)
 	}
 	if req.ShowAdvanced != nil {
 		a.SetShowAdvanced(*req.ShowAdvanced)
+	}
+	if err == nil {
+		var access domain.Accessibility
+		access, err = domain.NewAccessibility(req.TextSize, *req.HighContrast, *req.SimpleView)
+		a.SetAccessibility(access)
 	}
 	if err != nil {
 		return AppearanceResponse{}, err
@@ -147,4 +162,26 @@ func (uc *updateAppearance) Execute(ctx context.Context, req UpdateAppearanceReq
 	res := toResponse(a)
 	res.ThemeLocked = locked
 	return res, nil
+}
+
+// withStored fills the fields the request leaves out with the stored values.
+func withStored(req UpdateAppearanceRequest, stored domain.Appearance) UpdateAppearanceRequest {
+	access := stored.Accessibility()
+	if req.Profile == "" {
+		req.Profile = string(stored.Profile())
+	}
+	if req.ShowAdvanced == nil {
+		keep := stored.ShowAdvanced()
+		req.ShowAdvanced = &keep
+	}
+	if req.TextSize == "" {
+		req.TextSize = string(access.TextSize)
+	}
+	if req.HighContrast == nil {
+		req.HighContrast = &access.HighContrast
+	}
+	if req.SimpleView == nil {
+		req.SimpleView = &access.SimpleView
+	}
+	return req
 }

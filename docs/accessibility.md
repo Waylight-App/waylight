@@ -2,6 +2,31 @@
 
 Waylight aims for **WCAG 2.2 level AA** (#113). Everything can be used with a keyboard and a screen reader.
 
+## Options for each account
+
+**Settings → Appearance → Accessibility** has three options. They belong to
+the account that sets them: a household member who switches on large text
+does not change anybody else's dashboard, and a new member does not inherit
+the options of the admin.
+
+- **Text size:** *Normal*, *Large* (115 %) or *Larger* (130 %). Text and the
+  spacing around it grow together, so buttons and fields get bigger too. On
+  the free grid widgets keep their cells; a small tile whose full view no
+  longer fits switches to its compact view.
+- **High contrast:** black text on white, or white on black in the dark
+  scheme, with strong accent and status colours. Text reaches WCAG AAA
+  (7:1) on every surface. While it is on, it replaces the gallery theme, the
+  accent colour and the background picture; switching it off brings them
+  back.
+- **Simple view:** one column with the short state of each widget, larger
+  buttons and fields (at least 44 × 44 px) and no edit mode. Widgets with
+  nothing to show are left out. A widget that has no short state, such as
+  the clock or notes, shows its full view. The tabs and the search stay. To
+  change the dashboard, switch the simple view off again.
+
+The options are part of `GET /api/appearance` (`textSize`, `highContrast`,
+`simpleView`), so the mobile app can follow them.
+
 ## What is checked automatically
 
 - **axe-core in the Playwright suite** (`web/e2e/a11y.ts`) runs the WCAG 2.0–2.2 A/AA rules on:
@@ -16,6 +41,7 @@ Waylight aims for **WCAG 2.2 level AA** (#113). Everything can be used with a ke
 - **Contrast unit tests:**
   - The light and dark design tokens must reach 4.5:1 for text: normal and muted text on all surfaces, accent and status colours on surfaces, and text on accent (`web/src/shared/theme/tokens.test.ts`).
   - The same check runs for every built-in theme of the gallery (`TestBuiltinThemesMeetWCAGAA`).
+  - The high-contrast colours must reach 7:1 (WCAG AAA) for the same pairs, light and dark.
 - Components may only use colour tokens that exist. An undefined token would fall back to a colour with poor contrast, and a test catches it.
 
 ## Keyboard

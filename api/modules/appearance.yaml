@@ -120,6 +120,9 @@ schemas:
       greetingName: { type: string, maxLength: 40, description: Name used in the greeting; may be empty }
       launcher: { type: string, enum: [both, services, bookmarks] }
       profile: { type: string, enum: [everyday, homelab], description: "What the start page shows (#281): everyday hides home-server and network widgets and settings. Empty on PUT keeps the stored value" }
+      textSize: { type: string, enum: [normal, large, larger], description: "Scales the whole interface (#681). Empty or left out on PUT keeps the stored value" }
+      highContrast: { type: boolean, description: "High-contrast colours of the light or dark scheme (#681); replaces theme, accent colour and background. Left out on PUT keeps the stored value" }
+      simpleView: { type: boolean, description: "One column of compact views without edit controls (#681). Left out on PUT keeps the stored value" }
   ThemeFile:
     type: object
     additionalProperties: false

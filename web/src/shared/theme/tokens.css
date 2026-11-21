@@ -36,11 +36,16 @@
   --radius: 12px;
   --radius-small: 8px;
   --shadow: 0 1px 2px rgb(16 24 40 / 6%), 0 4px 12px rgb(16 24 40 / 6%);
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
+  /*
+   * Text size of the accessibility options (#681). The root font size and
+   * the spacing follow it, so the whole interface grows, not only the text.
+   */
+  --text-scale: 1;
+  --space-1: calc(4px * var(--text-scale));
+  --space-2: calc(8px * var(--text-scale));
+  --space-3: calc(12px * var(--text-scale));
+  --space-4: calc(16px * var(--text-scale));
+  --space-6: calc(24px * var(--text-scale));
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   /* The product wordmark; fixed, so it reads the same in every theme. */
@@ -72,4 +77,55 @@
   --color-warning: #f5c04e;
   --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 16px rgb(0 0 0 / 25%);
   color-scheme: dark;
+}
+
+:root[data-text-size='large'] {
+  --text-scale: 1.15;
+}
+
+:root[data-text-size='larger'] {
+  --text-scale: 1.3;
+}
+
+/*
+ * High contrast of the accessibility options (#681), for the light and the
+ * dark scheme. Text colours reach WCAG AAA (7:1) on every surface; a test
+ * checks it. The doubled :root outranks the tokens a gallery theme writes
+ * (:root:root[data-theme]), so the choice holds whatever theme is applied.
+ */
+:root:root:root[data-contrast='high'] {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0f0f0;
+  --color-border: #000000;
+  --color-text: #000000;
+  --color-text-muted: #2e2e2e;
+  --color-accent: #0039a6;
+  --color-accent-contrast: #ffffff;
+  --color-accent-text: #0039a6;
+  --color-danger: #a00000;
+  --color-success: #005a2c;
+  --color-warning: #6b4400;
+  --color-ok: var(--color-text-muted);
+  --color-widget-border: #000000;
+  --glow: none;
+  --page-gradient: none;
+  --background-image: none;
+  --widget-opacity: 1;
+}
+
+:root:root:root[data-contrast='high'][data-theme='dark'] {
+  --color-bg: #000000;
+  --color-surface: #000000;
+  --color-surface-2: #1a1a1a;
+  --color-border: #ffffff;
+  --color-text: #ffffff;
+  --color-text-muted: #e0e0e0;
+  --color-accent: #ffd400;
+  --color-accent-contrast: #000000;
+  --color-accent-text: #ffd400;
+  --color-danger: #ff8a8a;
+  --color-success: #5cff8d;
+  --color-warning: #ffd400;
+  --color-widget-border: #ffffff;
 }

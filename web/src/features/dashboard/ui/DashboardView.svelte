@@ -34,6 +34,7 @@
   import TextPrompt from './TextPrompt.svelte';
   import WidgetFrame from './WidgetFrame.svelte';
   import ZoneLayout from './ZoneLayout.svelte';
+  import { simpleLayout } from '../domain/simple';
   import { groupByZone, type Zone, zoneOf } from '../domain/zones';
 
   /** Props of the dashboard page. */
@@ -95,6 +96,8 @@
     systemZone?: boolean;
     /** Whether a widget has nothing to show; zoned tabs hide it outside edit mode (#619). */
     emptyWidget?: (widget: Widget) => boolean;
+    /** The simple view of the accessibility options (#681): one column, compact views only. */
+    simple?: boolean;
   }
 
   /** What the overview lines above the grid get. */
@@ -129,6 +132,7 @@
     overview,
     systemZone = true,
     emptyWidget = () => false,
+    simple = false,
   }: Props = $props();
 
   // Tabs whose status widgets are folded into the system summary (#593).
@@ -680,8 +684,9 @@
       (w) =>
         available.has(w.kind) &&
         !(folded && statusWidget(w)) &&
-        // The quiet look of zones (#619): a widget with nothing to show is left out.
-        !(zoned && !editing && emptyWidget(w)),
+        // The quiet look of zones (#619) and the simple view (#681): a widget
+        // with nothing to show is left out.
+        !((zoned || simple) && !editing && emptyWidget(w)),
     )}
     {#if overview && !editing}
       {@const tab = active}
@@ -726,7 +731,15 @@
         {/if}
       </WidgetFrame>
     {/snippet}
-    {#if zoned}
+    {#if simple && !editing}
+      <div class="simple" data-testid="simple-view">
+        {#each simpleLayout(visible, hasCompact) as entry (entry.widget.id)}
+          <div class="simple-item" class:full={entry.size === undefined} style:--rows={entry.rows}>
+            {@render frame(entry.widget, { onpointerdown: () => {} }, entry.size, false)}
+          </div>
+        {/each}
+      </div>
+    {:else if zoned}
       {@const tab = active}
       {@const phoneLayout = phone
         ? tab.mobileCustom
@@ -964,6 +977,20 @@
     display: flex;
     justify-content: flex-end;
     gap: var(--space-2);
+  }
+  /* One column with room to read (#681); compact tiles size to their content. */
+  .simple {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+  .simple-item {
+    min-height: 5rem;
+  }
+  .simple-item.full {
+    height: calc(var(--rows) * 3.5rem);
   }
   .empty {
     text-align: center;

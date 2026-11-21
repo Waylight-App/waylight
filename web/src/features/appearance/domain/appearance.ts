@@ -24,6 +24,35 @@ export interface Appearance {
   profile: StartProfile;
   /** Lists settings for developers and power users (#602); off by default. */
   showAdvanced?: boolean;
+  /** Scales the whole interface, text and spacing (#681). */
+  textSize?: TextSize;
+  /** High-contrast colours of the light or dark scheme (#681). */
+  highContrast?: boolean;
+  /** One column of compact views without edit controls (#681). */
+  simpleView?: boolean;
+}
+
+/** Text sizes of the accessibility options (#681). */
+export const TEXT_SIZES = ['normal', 'large', 'larger'] as const;
+export type TextSize = (typeof TEXT_SIZES)[number];
+
+/** Parses a text size from storage or the API; unknown values are normal. */
+export function parseTextSize(value: string | undefined): TextSize {
+  return TEXT_SIZES.find((s) => s === value) ?? 'normal';
+}
+
+/**
+ * Data attributes of the document root for the accessibility options
+ * (#681); tokens.css and base.css style them. An attribute that is not
+ * needed is undefined, so it is removed.
+ */
+export function accessibilityAttributes(a: Appearance): Record<string, string | undefined> {
+  const size = parseTextSize(a.textSize);
+  return {
+    'data-text-size': size === 'normal' ? undefined : size,
+    'data-contrast': a.highContrast ? 'high' : undefined,
+    'data-simple': a.simpleView ? 'true' : undefined,
+  };
 }
 
 /** Start-page profiles (#281). */
@@ -55,6 +84,9 @@ export const defaultAppearance: Appearance = {
  */
 export function cssVariables(a: Appearance): Record<string, string> {
   const vars: Record<string, string> = {};
+  // High contrast has its own checked colours; an own accent colour or a
+  // picture behind translucent cards would lower the contrast again (#681).
+  if (a.highContrast) return vars;
   if (/^#[0-9a-f]{6}$/i.test(a.accentColor)) vars['--color-accent'] = a.accentColor;
   const bg = backgroundCss(a.backgroundImage);
   if (bg) {
