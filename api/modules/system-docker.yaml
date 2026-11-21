@@ -37,6 +37,12 @@ paths:
       parameters: [{ name: hours, in: query, schema: { type: integer, minimum: 1, maximum: 24, default: 24 } }]
       responses:
         "200": { description: OK, content: { application/json: { schema: { type: array, items: { type: object, properties: { at: { type: string, format: date-time }, cpu: { type: number }, memory: { type: number }, disk: { type: number } } } } } } }
+  /api/docker/compact:
+    get:
+      tags: [docker]
+      summary: "Compact state of the widget (#638): running containers out of all, unhealthy or stopped ones as detail"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
   /api/docker/containers:
     get:
       tags: [docker]

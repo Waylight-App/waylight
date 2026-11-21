@@ -72,8 +72,10 @@ quick actions.
 Compact views exist for services and the status overview (*11 of 12
 running*, and which service is down), the backup status, drive health, the
 calendar (the next event), to-dos (the built-in list), habits, the focus
-timer, smart home tiles with one device and, with the `ee` features,
-presence (with chips for your own status). Widgets whose content is the point, such as the clock, bookmarks or
+timer, smart home tiles with one device, Docker (running containers), parcels
+(on the way and arriving today), the speed test (the latest measurement) and,
+with the `ee` features, presence (with chips for your own status).
+Widgets whose content is the point, such as the clock, bookmarks or
 notes, show their full view at every size.
 
 You can put the same kind of widget on a tab more than once, for example two
@@ -205,7 +207,10 @@ timer, with a level (none, ok, attention, problem). Small tiles and strips
 on the dashboard ([widget sizes](#widget-sizes)), the app's home screen
 widgets and the watch show it instead of the full widget; it is
 served at `GET /api/<module>/compact` with the same permissions as the
-module's other endpoints.
+module's other endpoints. `GET /api/modules` lists under `compact` which
+modules you may use have one, with the path and the query parameters it
+takes (the smart home device needs `?entity=`), so clients do not need a list
+of their own.
 
 ## Setting up a widget in place
 

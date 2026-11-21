@@ -28,4 +28,12 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_e4cd1895823b2401: 'Sendungsnummern bestehen aus 8 bis 35 Buchstaben und Ziffern.',
   // Check the mailbox every 5 minutes to 24 hours.
   srv_cee130f3904d48b7: 'Prüfe das Postfach alle 5 Minuten bis 24 Stunden.',
+  // No parcels on the way
+  srv_7bdfe10b53bb1afd: 'Keine Pakete unterwegs',
+  // {count} arriving today
+  srv_f571f5204b6ac82d: '{count} kommen heute',
+  // {count} on the way
+  srv_75a6a213ce2bf505: '{count} unterwegs',
+  // {count} with a problem
+  srv_2af79387a021fa8c: '{count} mit Problem',
 };

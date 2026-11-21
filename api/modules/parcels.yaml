@@ -2,6 +2,12 @@ tags:
   - name: parcels
 
 paths:
+  /api/parcels/compact:
+    get:
+      tags: [parcels]
+      summary: "Compact state of the widget (#638): parcels on the way and how many arrive today"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
   /api/parcels/settings:
     get:
       tags: [parcels]

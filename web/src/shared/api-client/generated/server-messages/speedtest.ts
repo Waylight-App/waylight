@@ -3,9 +3,13 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_d05b6c7e6905729f: "An API token with the results:read scope is required.",
+  srv_a61c7e4a9008bf06: "No results yet",
+  srv_62fe3060b9aa0039: "Ping {ping} ms",
   srv_6f32001a15a15c4d: "Speedtest Tracker is not configured yet.",
+  srv_91cee62ab90d375e: "Speedtest Tracker is not reachable",
   srv_cfc88a9871753350: "Speedtest Tracker is not reachable.",
   srv_eb4a741553ab9379: "Thresholds must be between 0 and 100000 Mbit/s.",
+  srv_4a2ff384785102fb: "{down} ↓ · {up} ↑ Mbit/s",
 } as const;
 
 /** Key of a backend message. */

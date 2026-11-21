@@ -67,3 +67,17 @@ func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus 
 }
 
 var errUnreachable = kernel.NewPublicError(kernel.ErrUnavailable, "Speedtest Tracker is not reachable.")
+
+// compactHistoryHours is the shortest history Results accepts; the compact
+// view only needs the latest measurement.
+const compactHistoryHours = 1
+
+// CompactState implements modules.CompactProvider (#638): the latest
+// measurement.
+func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
+	v, err := m.uc.Results(ctx, compactHistoryHours)
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	return usecase.CompactState(v), nil
+}
