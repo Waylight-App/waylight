@@ -121,4 +121,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Der Lizenzschlüssel ist abgelaufen oder deckt weniger Konten ab, als diese Instanz hat. Die Daten bleiben lesbar, Änderungen brauchen einen gültigen Schlüssel.',
   // The service does not answer.
   srv_d4a77dfc8f36f361: 'Der Dienst antwortet nicht.',
+  // The link is not an http(s) web address.
+  srv_b429d991f10042c7: 'Der Link muss eine Webadresse sein, die mit http:// oder https:// beginnt.',
 };

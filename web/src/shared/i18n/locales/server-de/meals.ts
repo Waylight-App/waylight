@@ -15,7 +15,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // The dish must be between 1 and 120 characters long.
   srv_cd8bf9f8a954422f: 'Das Gericht muss zwischen 1 und 120 Zeichen lang sein.',
   // The link must be a web address starting with http:// or https://.
-  srv_b429d991f10042c7: 'Der Link muss eine Webadresse sein, die mit http:// oder https:// beginnt.',
   // The meal must be breakfast, lunch, dinner or empty.
   srv_6d9cc506ee0c6722: 'Die Mahlzeit muss Frühstück, Mittagessen, Abendessen oder leer sein.',
   // Today: {dish}

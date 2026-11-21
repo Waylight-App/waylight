@@ -31,6 +31,7 @@ export const serverMessages = {
   srv_23575e607ab8d86b: "The guest does not exist.",
   srv_48527dc59bd9b8f6: "The key is not accepted. Was it copied completely?",
   srv_28cc0a1c84155db5: "The licence key has expired or covers fewer accounts than this instance has; the data stays readable, but changes need a valid key.",
+  srv_b429d991f10042c7: "The link must be a web address starting with http:// or https://.",
   srv_a81a70289d9d44d1: "The name must be at most 40 characters long.",
   srv_71604d59e2455245: "The name must be between 1 and 60 characters long.",
   srv_9f138e811fd44724: "The name must have between 1 and 60 characters.",
