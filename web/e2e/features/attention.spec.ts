@@ -27,9 +27,11 @@ test('a widget without its setting shows up under Needs your attention (#592)', 
   await badge.click();
   const settings = page.getByRole('dialog', { name: 'Settings' });
   await expect(settings.getByRole('heading', { name: /Not set up yet/ })).toBeVisible();
-  await expect(settings.getByText('Choose a stop for the departures.')).toBeVisible();
+  // Other specs may leave departures widgets too; take the one on this tab.
+  const entry = settings.getByRole('listitem').filter({ hasText: 'On tab Commute' });
+  await expect(entry.getByText('Choose a stop for the departures.')).toBeVisible();
 
   // Its action opens the widget's own settings on its tab.
-  await settings.getByRole('button', { name: 'Set up: Departures' }).click();
+  await entry.getByRole('button', { name: 'Set up: Departures' }).click();
   await expect(page.getByRole('dialog', { name: 'Departures settings' })).toBeVisible();
 });
