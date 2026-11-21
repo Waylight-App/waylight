@@ -224,6 +224,17 @@
     if (tabs.some((tab) => tab.id === id)) select(id);
   }
 
+  /**
+   * Selects the widget's tab and opens its settings, e.g. from the
+   * needs-your-attention list (#592); does nothing for an unknown widget.
+   */
+  export function openWidgetSettings(tabId: string, widgetId: string) {
+    const widget = tabs.find((tab) => tab.id === tabId)?.widgets.find((w) => w.id === widgetId);
+    if (!widget) return;
+    select(tabId);
+    if (hasSettings(widget.kind)) dialog = { kind: 'settings', widget };
+  }
+
   /** Selects the n-th tab (0-based), e.g. from the 1–9 shortcuts (#95). */
   export function selectTabAt(index: number) {
     const tab = tabs[index];

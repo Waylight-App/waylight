@@ -1,6 +1,7 @@
 package speedtest
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"waylight/internal/modules"
 	"waylight/internal/modules/speedtest/adapter/controller"
 	"waylight/internal/modules/speedtest/adapter/gateway"
+	"waylight/internal/modules/speedtest/domain"
 	"waylight/internal/modules/speedtest/usecase"
 	"waylight/internal/shared/kernel"
 )
@@ -53,3 +55,15 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 func (m *Module) Jobs() []modules.Job {
 	return []modules.Job{{Name: "speedtest.refresh", Interval: refreshInterval, Run: m.uc.Refresh}}
 }
+
+// ConnectionStatus implements modules.StatusReporter (#592): the results
+// the job keeps say whether the last refresh reached Speedtest Tracker.
+func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus {
+	v, err := m.uc.Results(ctx, 1)
+	if err == nil && v.Error != "" {
+		err = errUnreachable
+	}
+	return modules.StatusOf(err, domain.ErrNotConfigured)
+}
+
+var errUnreachable = kernel.NewPublicError(kernel.ErrUnavailable, "Speedtest Tracker is not reachable.")
