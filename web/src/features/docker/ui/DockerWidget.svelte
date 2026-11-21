@@ -211,7 +211,7 @@
     flex: none;
   }
   .ok {
-    background: var(--color-success);
+    background: var(--color-ok);
   }
   .warning {
     background: var(--color-warning);
@@ -220,6 +220,6 @@
     background: var(--color-danger);
   }
   .off {
-    background: var(--color-text-muted);
+    background: var(--color-border);
   }
 </style>

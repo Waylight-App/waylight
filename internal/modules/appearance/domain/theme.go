@@ -18,6 +18,7 @@ import (
 var ThemeTokens = []string{
 	"--color-bg", "--color-surface", "--color-surface-2", "--color-border", "--color-text", "--color-text-muted",
 	"--color-accent", "--color-accent-contrast", "--color-accent-text", "--color-danger", "--color-success", "--color-warning",
+	"--color-ok", "--color-widget-border",
 	"--radius", "--radius-small",
 	"--font-sans", "--font-display", "--shadow", "--shadow-pop", "--glow", "--page-gradient",
 }

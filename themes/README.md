@@ -24,7 +24,7 @@ They are embedded in the binary, so adding a theme is one JSON file.
 - **id:** 2–40 characters `a-z`, `0-9`, `-`. It is also the file name (`nord.json`).
 - **scheme:** `light` or `dark`. Applying the theme switches to that scheme, so native controls and scrollbars match. Left out in a theme with variants (below).
 - **tokens:** only the design tokens of [`web/src/shared/theme/tokens.css`](../web/src/shared/theme/tokens.css), each with a fixed syntax:
-  - colors as `#rgb` or `#rrggbb`: `--color-bg`, `--color-surface`, `--color-surface-2`, `--color-border`, `--color-text`, `--color-text-muted`, `--color-accent`, `--color-accent-contrast`, `--color-accent-text`, `--color-danger`, `--color-success`, `--color-warning`;
+  - colors as `#rgb` or `#rrggbb`: `--color-bg`, `--color-surface`, `--color-surface-2`, `--color-border`, `--color-text`, `--color-text-muted`, `--color-accent`, `--color-accent-contrast`, `--color-accent-text`, `--color-danger`, `--color-success`, `--color-warning`, `--color-ok`, `--color-widget-border`;
   - radii as `0px`–`32px`: `--radius`, `--radius-small`;
   - fonts by keyword, never by file or URL: `--font-sans`, `--font-display` take `system`, `figtree`, `fraunces` or `serif`. Figtree and Fraunces ship with the app;
   - shadows: `--shadow` (cards) and `--shadow-pop` (menus and panels) take one to three layers of `x y blur [spread] #rrggbb[aa]`, for example `0 1px 2px #1b22381a`. `none` is not allowed because focus rings add to these shadows; `0 0 0 #00000000` draws nothing;

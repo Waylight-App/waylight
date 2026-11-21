@@ -672,6 +672,7 @@
         : 'full'}
       <WidgetFrame
         title={titles.get(widget.kind) ?? widget.kind}
+        icon={widgetIcon(widget.kind)}
         editing={editingTab}
         {handle}
         chromeless={chromeless(widget.kind)}

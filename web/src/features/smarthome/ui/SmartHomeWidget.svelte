@@ -115,7 +115,8 @@
     flex-direction: column;
     gap: var(--space-1);
     padding: var(--space-2);
-    border: 1px solid var(--color-border);
+    border: 1px solid transparent;
+    background: var(--color-surface-2);
     border-radius: var(--radius, 8px);
   }
   .tiles li.on {

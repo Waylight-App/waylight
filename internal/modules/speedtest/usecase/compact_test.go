@@ -16,7 +16,10 @@ func TestCompactState(t *testing.T) {
 	if s := CompactState(ResultsView{Latest: m, Error: "timeout"}); s.Level != kernel.CompactAttention || s.Detail.String() != "Speedtest Tracker is not reachable" {
 		t.Fatalf("error: %+v", s)
 	}
-	if s := CompactState(ResultsView{}); s.Title.String() != "No results yet" {
+	if s := CompactState(ResultsView{}); s.Title.String() != "No results yet" || !s.Empty {
 		t.Fatalf("empty: %+v", s)
+	}
+	if s := CompactState(ResultsView{Error: "timeout"}); s.Empty || s.Level != kernel.CompactAttention {
+		t.Fatalf("unreachable without results stays visible: %+v", s)
 	}
 }

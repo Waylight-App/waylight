@@ -129,6 +129,8 @@ nothing else, so changing a token changes every place that uses it.
 | `--color-accent-contrast` | Text on the accent fill |
 | `--color-accent-text` | The accent as text or icon colour on surfaces: links, highlighted values, the current day. Follows `--color-accent` unless set. Set it when the accent is light, such as yellow or amber, which reads well as a fill but not as text on a light card |
 | `--color-danger`, `--color-success`, `--color-warning` | Status colours, also used as text |
+| `--color-ok` | Marks for a healthy state, such as the dot of a service that runs. Follows `--color-text-muted`, so only problems (`--color-danger`) and things that need a look (`--color-warning`) stand out; set a green here if you prefer one |
+| `--color-widget-border` | Outline of widget cards, `transparent` by default. Cards are told apart by spacing, background and shadow; the high-contrast theme draws a white line |
 | `--radius`, `--radius-small` | Corner radius of cards; of buttons and inputs |
 | `--shadow`, `--shadow-pop` | Shadow of cards; of menus and panels that float above the page |
 | `--glow` | A soft light around the widget area, `none` by default |

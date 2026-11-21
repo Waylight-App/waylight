@@ -33,6 +33,7 @@ func CompactState(list []ServiceView, now time.Time) kernel.CompactState {
 	switch {
 	case total == 0:
 		state.Title = kernel.NewText("No services yet")
+		state.Empty = true
 		return state
 	case offline == 0 && online == total:
 		state.Level = kernel.CompactOK

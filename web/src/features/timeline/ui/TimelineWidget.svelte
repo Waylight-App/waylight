@@ -104,7 +104,7 @@
     border-color: var(--color-danger);
   }
   .event.info {
-    border-color: var(--color-success);
+    border-color: var(--color-ok);
   }
   time {
     font-variant-numeric: tabular-nums;

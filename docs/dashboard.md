@@ -196,8 +196,15 @@ zones stack, one widget below the other.
 
 Only admins see the System zone; members and guests see Today and My things.
 Outside edit mode a zoned tab stays quiet: widgets with nothing to show, such
-as a calendar without upcoming events or a to-do list with nothing open, are
-left out until there is something to show again.
+as a calendar without upcoming events, a to-do list with nothing open, no
+parcels on the way or a services widget without services, are left out until
+there is something to show again. A widget whose source cannot be reached
+stays, so the problem is seen.
+
+Every widget names itself the same way: its icon and title in one header,
+with the edit buttons at the end of that line in edit mode. Colour is kept
+for what needs action. A running service or a healthy drive gets a neutral
+mark; amber means something needs a look and red means a problem.
 
 ## Widget status
 

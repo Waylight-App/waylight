@@ -167,10 +167,10 @@
     height: 10px;
     border-radius: 50%;
     flex: none;
-    background: var(--color-text-muted);
+    background: var(--color-border);
   }
   .dot.online {
-    background: var(--color-success);
+    background: var(--color-ok);
   }
   .dot.offline {
     background: var(--color-danger);

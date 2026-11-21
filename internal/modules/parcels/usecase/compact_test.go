@@ -19,10 +19,13 @@ func TestCompactState(t *testing.T) {
 		t.Fatalf("%+v", s)
 	}
 	failed := domain.Parcel{Status: domain.Status{Code: domain.StatusFailure}}
+	if s.Empty {
+		t.Fatalf("parcels on the way are not empty: %+v", s)
+	}
 	if s := CompactState([]domain.Parcel{arriving, failed}, now, time.UTC); s.Level != kernel.CompactAttention || s.Detail.String() != "1 with a problem" {
 		t.Fatalf("failure: %+v", s)
 	}
-	if s := CompactState([]domain.Parcel{delivered}, now, time.UTC); s.Title.String() != "No parcels on the way" || *s.Count != 0 {
+	if s := CompactState([]domain.Parcel{delivered}, now, time.UTC); s.Title.String() != "No parcels on the way" || *s.Count != 0 || !s.Empty {
 		t.Fatalf("none: %+v", s)
 	}
 }

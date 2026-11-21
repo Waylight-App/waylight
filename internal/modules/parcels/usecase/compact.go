@@ -31,6 +31,7 @@ func CompactState(list []domain.Parcel, now time.Time, loc *time.Location) kerne
 	state.Count = kernel.IntPtr(onTheWay)
 	if onTheWay == 0 {
 		state.Title = kernel.NewText("No parcels on the way")
+		state.Empty = true
 		return state
 	}
 	state.Title = kernel.NewTextf("{count} on the way", "count", onTheWay)

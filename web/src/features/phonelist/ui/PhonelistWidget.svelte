@@ -250,7 +250,6 @@
     align-items: baseline;
     gap: 0 var(--space-2);
     padding: var(--space-1) 0;
-    border-bottom: 1px solid var(--color-border, rgba(127, 127, 127, 0.2));
   }
   .who {
     flex: 1 1 10rem;
