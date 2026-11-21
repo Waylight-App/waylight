@@ -62,4 +62,8 @@ export interface CompactResponse {
   count?: number /* int */;
   updatedAt: string /* RFC 3339 */;
   action?: CompactAction;
+  /**
+   * Empty is true when the widget has nothing to show (#619).
+   */
+  empty?: boolean;
 }

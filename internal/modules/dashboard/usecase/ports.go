@@ -27,6 +27,8 @@ type ManageTabs interface {
 	Reorder(ctx context.Context, req ReorderTabsRequest) error
 	// SetBackground sets the tab's background image ("" = global one).
 	SetBackground(ctx context.Context, tabID, background string) (TabResponse, error)
+	// SetZones lays the tab out in zones or in the free grid (#619).
+	SetZones(ctx context.Context, tabID string, on bool) (TabResponse, error)
 	// SetRules sets the rules that open the tab by default (#71).
 	SetRules(ctx context.Context, tabID string, rules []domain.RuleInput) (TabResponse, error)
 	// SaveMobileLayout stores the phone layout of a tab (#92).

@@ -143,7 +143,23 @@ drives healthy*. **Collapse** folds the status widgets into that line and
 **Show all** brings them back. The choice is remembered per tab in this
 browser; in edit mode all widgets are shown.
 
-Zones that group a tab into *Today*, *My things* and *System* follow in #619.
+## Zones
+
+A tab can be laid out in three zones instead of the free grid: **Today**
+(clock, weather, calendar, waste collection, to-dos), **My things** and
+**System** (server and network widgets). Switch them on in edit mode with
+**Zones** in the bar at the bottom; the setting is stored with the tab.
+
+Each widget falls into a zone by its kind. To put it somewhere else, pick
+another zone in the menu next to its size in edit mode. Within a zone the
+widgets keep their size and follow the order they had in the free grid, so
+switching zones off again brings back the old layout unchanged. On phones the
+zones stack, one widget below the other.
+
+Only admins see the System zone; members and guests see Today and My things.
+Outside edit mode a zoned tab stays quiet: widgets with nothing to show, such
+as a calendar without upcoming events or a to-do list with nothing open, are
+left out until there is something to show again.
 
 ## Widget status
 

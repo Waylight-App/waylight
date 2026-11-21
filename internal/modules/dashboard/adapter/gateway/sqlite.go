@@ -62,7 +62,7 @@ func ownedTabs(ctx context.Context) (string, []any) {
 // ListTabs returns the tabs the principal may see, ordered by position.
 func (r *Repository) ListTabs(ctx context.Context) ([]domain.Tab, error) {
 	cond, args := r.visibleTabs(ctx)
-	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position, background, rules, mobile_layout, owner_id, visibility FROM dashboard_tabs WHERE `+cond+` ORDER BY position, name`, args...) //nolint:gosec // cond comes from sqlutil with bound arguments
+	rows, err := r.db.QueryContext(ctx, `SELECT id, name, position, background, rules, mobile_layout, zones, owner_id, visibility FROM dashboard_tabs WHERE `+cond+` ORDER BY position, name`, args...) //nolint:gosec // cond comes from sqlutil with bound arguments
 	if err != nil {
 		return nil, fmt.Errorf("query tabs: %w", err)
 	}
@@ -72,11 +72,12 @@ func (r *Repository) ListTabs(ctx context.Context) ([]domain.Tab, error) {
 		var id, name, bg, rules, owner, vis string
 		var mobile sql.NullString
 		var pos int
-		if err := rows.Scan(&id, &name, &pos, &bg, &rules, &mobile, &owner, &vis); err != nil {
+		var zoned bool
+		if err := rows.Scan(&id, &name, &pos, &bg, &rules, &mobile, &zoned, &owner, &vis); err != nil {
 			return nil, fmt.Errorf("scan tab: %w", err)
 		}
 		tabs = append(tabs, domain.RestoreTab(id, name, pos, bg).WithRules(decodeRules(rules)).WithMobile(decodeMobile(mobile)).
-			WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(vis)}))
+			WithZones(zoned).WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(vis)}))
 	}
 	return tabs, rows.Err()
 }
@@ -86,9 +87,10 @@ func (r *Repository) GetTab(ctx context.Context, id string) (domain.Tab, error) 
 	var name, bg, rules, owner, vis string
 	var mobile sql.NullString
 	var pos int
+	var zoned bool
 	cond, args := r.visibleTabs(ctx)
-	err := r.db.QueryRowContext(ctx, `SELECT name, position, background, rules, mobile_layout, owner_id, visibility FROM dashboard_tabs WHERE id = ? AND `+cond, append([]any{id}, args...)...).
-		Scan(&name, &pos, &bg, &rules, &mobile, &owner, &vis)
+	err := r.db.QueryRowContext(ctx, `SELECT name, position, background, rules, mobile_layout, zones, owner_id, visibility FROM dashboard_tabs WHERE id = ? AND `+cond, append([]any{id}, args...)...).
+		Scan(&name, &pos, &bg, &rules, &mobile, &zoned, &owner, &vis)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Tab{}, domain.ErrTabNotFound
 	}
@@ -96,7 +98,7 @@ func (r *Repository) GetTab(ctx context.Context, id string) (domain.Tab, error) 
 		return domain.Tab{}, fmt.Errorf("select tab: %w", err)
 	}
 	return domain.RestoreTab(id, name, pos, bg).WithRules(decodeRules(rules)).WithMobile(decodeMobile(mobile)).
-		WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(vis)}), nil
+		WithZones(zoned).WithAccess(kernel.Access{Owner: owner, Visibility: kernel.Visibility(vis)}), nil
 }
 
 // OwnTabs lists the principal's own tabs with their visibility, for sharing
@@ -138,8 +140,8 @@ func (r *Repository) SetTabVisibility(ctx context.Context, id string, v kernel.V
 
 // CreateTab inserts a private tab owned by the principal of ctx.
 func (r *Repository) CreateTab(ctx context.Context, t domain.Tab) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background, rules, mobile_layout, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-		t.ID(), t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()),
+	_, err := r.db.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background, rules, mobile_layout, zones, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		t.ID(), t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()), t.Zoned(),
 		kernel.PrincipalFrom(ctx).AccountID, string(kernel.Private))
 	if err != nil {
 		return fmt.Errorf("insert tab: %w", err)
@@ -150,8 +152,8 @@ func (r *Repository) CreateTab(ctx context.Context, t domain.Tab) error {
 // UpdateTab stores name and position of a tab.
 func (r *Repository) UpdateTab(ctx context.Context, t domain.Tab) error {
 	cond, args := ownedTabs(ctx)
-	res, err := r.db.ExecContext(ctx, `UPDATE dashboard_tabs SET name = ?, position = ?, background = ?, rules = ?, mobile_layout = ? WHERE id = ? AND `+cond, //nolint:gosec // cond comes from sqlutil with bound arguments
-		append([]any{t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()), t.ID()}, args...)...)
+	res, err := r.db.ExecContext(ctx, `UPDATE dashboard_tabs SET name = ?, position = ?, background = ?, rules = ?, mobile_layout = ?, zones = ? WHERE id = ? AND `+cond, //nolint:gosec // cond comes from sqlutil with bound arguments
+		append([]any{t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()), t.Zoned(), t.ID()}, args...)...)
 	if err != nil {
 		return fmt.Errorf("update tab: %w", err)
 	}
@@ -184,15 +186,15 @@ func (r *Repository) SaveTabOrder(ctx context.Context, tabs []domain.Tab) error 
 	})
 }
 
-const widgetColumns = `id, tab_id, kind, x, y, w, h, config, size`
+const widgetColumns = `id, tab_id, kind, x, y, w, h, config, size, zone`
 
 func scanWidget(s interface{ Scan(...any) error }) (domain.Widget, error) {
-	var id, tabID, kind, config, size string
+	var id, tabID, kind, config, size, zone string
 	var rect domain.Rect
-	if err := s.Scan(&id, &tabID, &kind, &rect.X, &rect.Y, &rect.W, &rect.H, &config, &size); err != nil {
+	if err := s.Scan(&id, &tabID, &kind, &rect.X, &rect.Y, &rect.W, &rect.H, &config, &size, &zone); err != nil {
 		return domain.Widget{}, err
 	}
-	return domain.RestoreWidget(id, tabID, kind, rect, config, domain.Size(size)), nil
+	return domain.RestoreWidget(id, tabID, kind, rect, config, domain.Size(size)).WithZone(domain.Zone(zone)), nil
 }
 
 func (r *Repository) queryWidgets(ctx context.Context, query string, args ...any) ([]domain.Widget, error) {
@@ -248,9 +250,9 @@ func (r *Repository) CreateWidget(ctx context.Context, w domain.Widget) error {
 	rect := w.Rect()
 	cond, args := ownedTabs(ctx)
 	//nolint:gosec // cond comes from sqlutil with bound arguments
-	res, err := r.db.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
+	res, err := r.db.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 		WHERE EXISTS (SELECT 1 FROM dashboard_tabs WHERE id = ? AND `+cond+`)`,
-		append([]any{w.ID(), w.TabID(), w.Kind(), rect.X, rect.Y, rect.W, rect.H, w.Config(), string(w.Size()), w.TabID()}, args...)...)
+		append([]any{w.ID(), w.TabID(), w.Kind(), rect.X, rect.Y, rect.W, rect.H, w.Config(), string(w.Size()), string(w.Zone()), w.TabID()}, args...)...)
 	if err != nil {
 		return fmt.Errorf("insert widget: %w", err)
 	}
@@ -264,8 +266,8 @@ func (r *Repository) CreateWidget(ctx context.Context, w domain.Widget) error {
 func (r *Repository) UpdateWidget(ctx context.Context, w domain.Widget) error {
 	rect := w.Rect()
 	cond, args := ownedTabs(ctx)
-	_, err := r.db.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ?, config = ?, size = ? WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
-		append([]any{rect.X, rect.Y, rect.W, rect.H, w.Config(), string(w.Size()), w.ID()}, args...)...)
+	_, err := r.db.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ?, config = ?, size = ?, zone = ? WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
+		append([]any{rect.X, rect.Y, rect.W, rect.H, w.Config(), string(w.Size()), string(w.Zone()), w.ID()}, args...)...)
 	if err != nil {
 		return fmt.Errorf("update widget: %w", err)
 	}
@@ -278,8 +280,8 @@ func (r *Repository) SaveWidgetRects(ctx context.Context, widgets []domain.Widge
 	return r.inTx(ctx, func(tx *sql.Tx) error {
 		for _, w := range widgets {
 			rect := w.Rect()
-			if _, err := tx.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ?, size = ? WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
-				append([]any{rect.X, rect.Y, rect.W, rect.H, string(w.Size()), w.ID()}, args...)...); err != nil {
+			if _, err := tx.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ?, size = ?, zone = ? WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
+				append([]any{rect.X, rect.Y, rect.W, rect.H, string(w.Size()), string(w.Zone()), w.ID()}, args...)...); err != nil {
 				return fmt.Errorf("update widget rect: %w", err)
 			}
 		}
@@ -327,10 +329,10 @@ func (r *Repository) ReplaceAll(ctx context.Context, tabs []domain.Tab, widgets 
 		for _, t := range tabs {
 			// The upsert only takes over a tab of the same owner; an ID of
 			// someone else's tab is refused instead of moved.
-			res, err := tx.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background, rules, mobile_layout, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+			res, err := tx.ExecContext(ctx, `INSERT INTO dashboard_tabs (id, name, position, background, rules, mobile_layout, zones, owner_id, visibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 				ON CONFLICT (id) DO UPDATE SET name = excluded.name, position = excluded.position, background = excluded.background,
-				rules = excluded.rules, mobile_layout = excluded.mobile_layout WHERE dashboard_tabs.owner_id = excluded.owner_id`,
-				t.ID(), t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()), owner, string(kernel.Private))
+				rules = excluded.rules, mobile_layout = excluded.mobile_layout, zones = excluded.zones WHERE dashboard_tabs.owner_id = excluded.owner_id`,
+				t.ID(), t.Name(), t.Position(), t.Background(), encodeRules(t.Rules()), encodeMobile(t.Mobile()), t.Zoned(), owner, string(kernel.Private))
 			if err != nil {
 				return fmt.Errorf("upsert tab: %w", err)
 			}
@@ -340,8 +342,8 @@ func (r *Repository) ReplaceAll(ctx context.Context, tabs []domain.Tab, widgets 
 		}
 		for _, w := range widgets {
 			rc := w.Rect()
-			if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-				w.ID(), w.TabID(), w.Kind(), rc.X, rc.Y, rc.W, rc.H, w.Config(), string(w.Size())); err != nil {
+			if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				w.ID(), w.TabID(), w.Kind(), rc.X, rc.Y, rc.W, rc.H, w.Config(), string(w.Size()), string(w.Zone())); err != nil {
 				return fmt.Errorf("insert widget: %w", err)
 			}
 		}

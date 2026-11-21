@@ -79,6 +79,11 @@ func (uc *manageWidgets) SaveLayout(ctx context.Context, req SaveLayoutRequest) 
 				return err
 			}
 		}
+		if p.Zone != nil {
+			if err := w.MoveToZone(domain.Zone(*p.Zone)); err != nil {
+				return err
+			}
+		}
 		changed = append(changed, w)
 	}
 	if err := uc.deps.Widgets.SaveWidgetRects(ctx, changed); err != nil {

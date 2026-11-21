@@ -13,6 +13,7 @@ import type {
   TabNameDTO,
   TabOrderDTO,
   TabRulesDTO,
+  TabZonesDTO,
   MobileLayoutDTO,
   WidgetConfigDTO,
 } from '../../../../shared/api-client/generated/dashboard-requests';
@@ -20,10 +21,12 @@ import type { Dashboard, Tab, TabRule, TabTemplate, Widget, WidgetConfig } from 
 import type { LayoutItem, Rect } from '../../domain/layout';
 import { type MobileItem, type MobileSize, sizeCells } from '../../domain/mobile';
 import { parseSize, type WidgetSize } from '../../domain/sizes';
+import { parseZone, type Zone } from '../../domain/zones';
 import type { DashboardGateway } from '../../usecase/ports';
 
 const toWidget = (dto: WidgetDTO): Widget => {
   const size = parseSize(dto.size);
+  const zone = parseZone(dto.zone);
   return {
     id: dto.id,
     tabId: dto.tabId,
@@ -34,6 +37,7 @@ const toWidget = (dto: WidgetDTO): Widget => {
     w: dto.w,
     h: dto.h,
     ...(size ? { size } : {}),
+    ...(zone ? { zone } : {}),
   };
 };
 
@@ -58,6 +62,7 @@ const toTab = (dto: TabDTO): Tab => ({
   // Older servers do not send it; every tab was the viewer's own then.
   mine: dto.mine ?? true,
   mobileCustom: dto.mobileCustom ?? false,
+  zoned: dto.zoned ?? false,
 });
 
 /** DashboardGateway backed by the REST API. */
@@ -125,6 +130,18 @@ export class DashboardApi implements DashboardGateway {
     return toTab(
       await this.http.put<TabDTO>(`/api/dashboard/tabs/${encodeURIComponent(tabId)}/background`, body),
     );
+  }
+
+  async setZones(tabId: string, enabled: boolean): Promise<Tab> {
+    const body: TabZonesDTO = { enabled };
+    return toTab(await this.http.put<TabDTO>(`/api/dashboard/tabs/${encodeURIComponent(tabId)}/zones`, body));
+  }
+
+  moveToZone(widget: Widget, zone: Zone | undefined): Promise<void> {
+    // Only this widget is listed, so the others keep their places and zones.
+    const { id, x, y, w, h } = widget;
+    const body: LayoutDTO = { items: [{ id, x, y, w, h, zone: zone ?? '' }] };
+    return this.http.put(`/api/dashboard/tabs/${encodeURIComponent(widget.tabId)}/layout`, body);
   }
 
   async setRules(tabId: string, rules: TabRule[]): Promise<Tab> {

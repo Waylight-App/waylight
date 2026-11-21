@@ -25,6 +25,7 @@ export const serverMessages = {
   srv_fbdc8d1ab5c933c9: "The widget must fit into the 12-column grid.",
   srv_a164605f887b18d7: "The widget type is invalid.",
   srv_9dfec97d8d360b86: "The width must be between 1 and 12 columns.",
+  srv_c4a72fe92b6c1f4a: "The zone must be today, mine or system.",
   srv_63543557e19be101: "This widget type is not available.",
 } as const;
 

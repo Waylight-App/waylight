@@ -29,14 +29,18 @@ type ConfigWidget struct {
 	Config string
 	// Size is the web size (#595); empty for a freely sized tile.
 	Size string
+	// Zone is today, mine or system on a zoned tab (#619); empty = by kind.
+	Zone string
 }
 
 // ConfigTab is a tab with its widgets in reading order.
 type ConfigTab struct {
 	Name       string
 	Background string
-	Rules      []domain.RuleInput
-	Widgets    []ConfigWidget
+	// Zones lays the tab out in zones instead of the free grid (#619).
+	Zones   bool
+	Rules   []domain.RuleInput
+	Widgets []ConfigWidget
 }
 
 // ConfigRepository adds the atomic replacement of all tabs and widgets.
@@ -96,13 +100,13 @@ func (uc *config) Export(ctx context.Context) ([]ConfigTab, error) {
 				phone[e.WidgetID] = &ConfigPhone{Order: i + 1, Rows: e.Rows, Hidden: e.Hidden, Size: string(e.Size)}
 			}
 		}
-		ct := ConfigTab{Name: t.Name(), Background: t.Background()}
+		ct := ConfigTab{Name: t.Name(), Background: t.Background(), Zones: t.Zoned()}
 		for _, r := range t.Rules() {
 			from, to := r.Range()
 			ct.Rules = append(ct.Rules, domain.RuleInput{Days: r.Days(), From: from, To: to, Networks: r.Networks()})
 		}
 		for _, w := range ws {
-			ct.Widgets = append(ct.Widgets, ConfigWidget{Kind: w.Kind(), Rect: w.Rect(), Phone: phone[w.ID()], Config: w.Config(), Size: string(w.Size())})
+			ct.Widgets = append(ct.Widgets, ConfigWidget{Kind: w.Kind(), Rect: w.Rect(), Phone: phone[w.ID()], Config: w.Config(), Size: string(w.Size()), Zone: string(w.Zone())})
 		}
 		out = append(out, ct)
 	}
@@ -159,7 +163,7 @@ func (uc *config) buildTab(id string, pos int, ct ConfigTab) (domain.Tab, []doma
 	if err != nil {
 		return domain.Tab{}, nil, err
 	}
-	tab = tab.WithRules(rules)
+	tab = tab.WithRules(rules).WithZones(ct.Zones)
 	type placed struct {
 		order int
 		entry domain.MobileEntry
@@ -181,6 +185,9 @@ func (uc *config) buildTab(id string, pos int, ct ConfigTab) (domain.Tab, []doma
 			return domain.Tab{}, nil, err
 		}
 		if err := w.Resize(domain.Size(cw.Size)); err != nil {
+			return domain.Tab{}, nil, err
+		}
+		if err := w.MoveToZone(domain.Zone(cw.Zone)); err != nil {
 			return domain.Tab{}, nil, err
 		}
 		widgets = append(widgets, w)

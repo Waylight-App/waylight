@@ -12,7 +12,7 @@ func TestCompactState(t *testing.T) {
 	ev := func(summary string, start time.Time, d time.Duration, allDay bool) EventView {
 		return EventView{Summary: summary, Start: start, End: start.Add(d), AllDay: allDay}
 	}
-	if s := CompactState(AgendaResponse{}, now, time.UTC); s.Title.String() != "No upcoming events" || s.Level != kernel.CompactNone {
+	if s := CompactState(AgendaResponse{}, now, time.UTC); s.Title.String() != "No upcoming events" || s.Level != kernel.CompactNone || !s.Empty {
 		t.Fatalf("empty: %+v", s)
 	}
 	cases := []struct {

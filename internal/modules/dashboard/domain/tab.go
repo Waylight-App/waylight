@@ -18,6 +18,8 @@ type Tab struct {
 	background string
 	rules      []TabRule
 	mobile     []MobileEntry
+	// zoned lays the tab out in zones instead of the free grid (#619).
+	zoned bool
 	// access is the owner and visibility (ADR 0018). A tab an admin shares
 	// with a group is a team tab (#295): the group sees it read-only.
 	access kernel.Access
@@ -39,6 +41,16 @@ func (t Tab) Mobile() []MobileEntry { return t.mobile }
 // NewMobileLayout or restored); nil resets it to the derived layout.
 func (t Tab) WithMobile(m []MobileEntry) Tab {
 	t.mobile = m
+	return t
+}
+
+// Zoned reports whether the tab is laid out in zones (#619).
+func (t Tab) Zoned() bool { return t.zoned }
+
+// WithZones returns the tab with zones switched on or off. The widgets keep
+// their grid places, so switching back restores the free grid unchanged.
+func (t Tab) WithZones(on bool) Tab {
+	t.zoned = on
 	return t
 }
 
