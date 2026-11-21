@@ -78,3 +78,12 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 func (m *Module) Jobs() []modules.Job {
 	return []modules.Job{{Name: "adguard.refresh", Interval: refreshInterval, Run: m.uc.Refresh}}
 }
+
+// Discovery implements modules.Discoverable (#627) for AdGuard Home, whose
+// login page is public; Pi-hole is entered by hand.
+func (m *Module) Discovery() modules.DiscoverySpec {
+	return modules.DiscoverySpec{
+		Service: "AdGuard Home", Images: []string{"adguardhome"}, Hostnames: []string{"adguard", "adguardhome"},
+		Ports: []int{3000, 80}, ProbePath: "/login.html", ProbeContains: "AdGuard Home",
+	}
+}
