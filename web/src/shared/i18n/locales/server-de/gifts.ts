@@ -15,4 +15,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_279687ba82800dcf: 'Die Notiz darf höchstens 500 Zeichen lang sein.',
   // {count} gift ideas
   srv_8bc0d4ea1b74675e: '{count} Geschenkideen',
+  // Your private gift ideas per person, with the next birthday first.
+  srv_02d5db601114ecd2: 'Deine privaten Geschenkideen pro Person, der nächste Geburtstag zuerst.',
+  // Add an idea with a person and a title. Nobody else sees your ideas, not even an administrator.
+  srv_64314a328c6293f4:
+    'Lege eine Idee mit Person und Titel an. Niemand sonst sieht deine Ideen, auch kein Administrator.',
 };

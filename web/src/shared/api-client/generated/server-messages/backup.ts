@@ -2,6 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_53a5dffad3c27719: "A traffic light that says whether your newest backup is as recent as the schedule promises.",
   srv_6a02ee04f1083e2c: "Backup older than expected",
   srv_d0f41247027c6d48: "Backups all good",
   srv_4bba6d234928bd07: "Between 1 and 365 backups can be kept.",
@@ -10,6 +11,7 @@ export const serverMessages = {
   srv_771c68846be5456c: "Last backup {time}",
   srv_9a9b8a508d5dcf82: "No backup yet",
   srv_7f26dde75768b4ec: "No off-site backup target is configured.",
+  srv_e6445a9fd56b56f5: "Nothing to set up. Open Settings → Backups to schedule backups or run one now.",
   srv_2fa2f3b7606fee5e: "Only the owner can restore backups in the browser.",
   srv_ad9909a46d053d7b: "The backup could not be received: {detail}",
   srv_1a3955e489757321: "The backup does not exist.",

@@ -3,9 +3,11 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_0a92f9012467690f: "A dish may have at most 40 ingredients.",
+  srv_81b91af7e128ddd1: "A week of dishes with recipe links and ingredients.",
   srv_3691a82b79866d12: "An ingredient may be at most 100 characters long.",
   srv_ec7d3b103e184fbc: "Ask for 1 to 42 days.",
   srv_d88ce767c858967e: "Nothing planned for today",
+  srv_616c7908260482ba: "Plan a dish with the plus next to a day and list its ingredients. With the shopping list on, one click adds them to it.",
   srv_d2f70f839ca60227: "The dish does not exist.",
   srv_cd8bf9f8a954422f: "The dish must be between 1 and 120 characters long.",
   srv_6d9cc506ee0c6722: "The meal must be breakfast, lunch, dinner or empty.",
