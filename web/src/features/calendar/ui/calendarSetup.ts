@@ -1,13 +1,17 @@
 import { intlLocale, t } from '../../../shared/i18n';
-import type { SetupDescriptor } from '../../../shared/setup/setup';
+import type { FoundService, SetupDescriptor } from '../../../shared/setup/setup';
 import type { CalendarUseCases } from '../usecase/calendarUseCases';
 
 /**
  * The setup assistant of the calendar widget for Nextcloud (#588), as
  * data: the server address instead of each calendar's CalDAV URL.
  */
-export function calendarSetup(calendar: CalendarUseCases): SetupDescriptor {
+export function calendarSetup(
+  calendar: CalendarUseCases,
+  discover?: () => Promise<FoundService[]>,
+): SetupDescriptor {
   return {
+    discover,
     service: t('calendar.setup_service'),
     fields: [
       {

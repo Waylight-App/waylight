@@ -248,7 +248,7 @@ const legacyDefinitions: WidgetDefinition[] = [
     compactExample: () => t('compact.example.calendar'),
     view: lazy(
       () => import('../features/calendar/ui/CalendarWidget.svelte'),
-      (config, c) => ({ config, calendar: c.calendar }),
+      (config, c) => ({ config, calendar: c.calendar, discover: () => c.discovery.find('calendar') }),
     ),
     settings: lazy(
       () => import('../features/calendar/ui/CalendarWidgetSettings.svelte'),

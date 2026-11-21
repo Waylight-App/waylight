@@ -1,12 +1,16 @@
 import { t } from '../../../shared/i18n';
 import { formatCount } from '../../../shared/ui/format';
-import type { SetupDescriptor } from '../../../shared/setup/setup';
+import type { FoundService, SetupDescriptor } from '../../../shared/setup/setup';
 import { thumbnailUrl } from '../domain/immich';
 import type { ImmichUseCases } from '../usecase/immichUseCases';
 
 /** The setup assistant of the Immich widget (#588), as data. */
-export function immichSetup(immich: ImmichUseCases): SetupDescriptor {
+export function immichSetup(
+  immich: ImmichUseCases,
+  discover?: () => Promise<FoundService[]>,
+): SetupDescriptor {
   return {
+    discover,
     service: 'Immich',
     fields: [
       {

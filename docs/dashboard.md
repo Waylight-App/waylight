@@ -149,7 +149,10 @@ A widget whose service is not connected yet shows one sentence and a
 **Set up** button. The setup runs inside the widget in three steps:
 
 1. **Address.** Enter where the service runs, for example
-   `http://192.168.178.20:2283` for Immich.
+   `http://192.168.178.20:2283` for Immich. For admins Waylight first looks
+   for the service in the home network and offers what it found
+   ("Immich found at http://172.18.0.5:2283"); entering an address by hand
+   always works.
 2. **Credential.** The widget lists the steps in the service's own words,
    for example *Account Settings → API Keys → New API Key* in Immich, and
    *Open Immich* takes you to that page in a new tab. Paste the key or token.
@@ -168,6 +171,19 @@ an app password; Waylight finds your calendars itself. Immich and Home
 Assistant are set up for the whole instance, so only admins see *Set up*
 there; every account can connect its own calendar. The settings pages stay
 the place to change a connection later.
+
+### How services are found
+
+Waylight looks only when a setup opens, never in the background. It checks
+Docker containers whose image belongs to the service (when the docker
+module can read the Docker API), the names the service usually has in a
+home network such as `homeassistant.local`, and the service's default port
+on the gateway. Only private addresses (RFC 1918, ULA) that `ALLOWED_CIDRS`
+also allows are tried, on a fixed port per service and at most twelve
+requests per search; ports are never scanned. Each address must answer like
+the service (Immich's ping, Home Assistant's manifest, Nextcloud's
+`status.php`) before it is offered. Results are kept for three minutes and
+not stored. Discovery in the local network by mDNS is not part of this yet.
 
 ## What needs your attention
 
