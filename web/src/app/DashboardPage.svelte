@@ -109,12 +109,10 @@
 
   /** One source per module: the services and status overview widgets share theirs. */
   function statusSources(widgets: Widget[]): { widgetId: string; module: string; title: string }[] {
-    const seen = new Set<string>();
     const out: { widgetId: string; module: string; title: string }[] = [];
     for (const w of widgets) {
       const module = compactModule(w);
-      if (!module || seen.has(module)) continue;
-      seen.add(module);
+      if (!module || out.some((o) => o.module === module)) continue;
       out.push({ widgetId: w.id, module, title: definitionFor(w.kind)?.type.title ?? w.kind });
     }
     return out;
