@@ -19,11 +19,12 @@ page describes.
 
 You need Docker with the Compose plugin. The repository is only used for
 `compose.yaml`, the example configuration and a few optional helper scripts;
-the image itself comes from `ghcr.io/itadori26/waylight` (amd64 and
-arm64).
+the image itself comes from `ghcr.io/waylight-app/waylight` (amd64 and
+arm64). The previous name `ghcr.io/itadori26/waylight` stays available as an
+alias with the same tags.
 
 ```sh
-git clone https://github.com/itadori26/waylight.git
+git clone https://github.com/Waylight-App/waylight.git
 cd waylight
 cp .env.example .env
 sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$(openssl rand -base64 32)|" .env

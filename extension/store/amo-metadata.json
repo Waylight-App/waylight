@@ -8,10 +8,10 @@
     "en-US": "Waylight is a self-hosted start page in the spirit of iGoogle: widgets on tabs for the weather, your calendar, to-dos and the state of your home server.\n\nThis add-on shows your own Waylight on every new tab and adds “Save page to Waylight” to the toolbar and the context menu.\n\nYou need a running Waylight server; enter its address in the add-on's options. The add-on talks only to that address. It reads the URL and title of a tab only when you click “Save page”, injects nothing into websites and sends nothing to the developers or third parties.",
     "de": "Waylight ist eine selbst gehostete Startseite im Stil von iGoogle: Widgets auf Tabs für Wetter, Kalender, To-dos und den Zustand deines Heimservers.\n\nDieses Add-on zeigt dein eigenes Waylight in jedem neuen Tab und ergänzt „Seite in Waylight speichern“ in der Symbolleiste und im Kontextmenü.\n\nDu brauchst einen laufenden Waylight-Server; seine Adresse trägst du in den Einstellungen des Add-ons ein. Das Add-on spricht nur mit dieser Adresse. Es liest URL und Titel eines Tabs nur, wenn du auf „Seite speichern“ klickst, verändert keine Websites und sendet nichts an die Entwickler oder Dritte."
   },
-  "homepage": { "en-US": "https://github.com/itadori26/waylight" },
-  "support_url": { "en-US": "https://github.com/itadori26/waylight/issues" },
+  "homepage": { "en-US": "https://github.com/Waylight-App/waylight" },
+  "support_url": { "en-US": "https://github.com/Waylight-App/waylight/issues" },
   "privacy_policy": {
-    "en-US": "The add-on stores only the address of your Waylight server, in the browser's extension storage. When you click “Save page”, it sends the URL and title of that tab to your own Waylight server and nowhere else. It checks whether your server is reachable when a new tab opens. It collects no analytics and sends nothing to the developers or any third party. Full text: https://github.com/itadori26/waylight/blob/main/docs/extension-privacy.md"
+    "en-US": "The add-on stores only the address of your Waylight server, in the browser's extension storage. When you click “Save page”, it sends the URL and title of that tab to your own Waylight server and nowhere else. It checks whether your server is reachable when a new tab opens. It collects no analytics and sends nothing to the developers or any third party. Full text: https://github.com/Waylight-App/waylight/blob/main/docs/extension-privacy.md"
   },
   "version": { "license": "MIT" }
 }

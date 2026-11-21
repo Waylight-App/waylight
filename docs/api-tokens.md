@@ -30,8 +30,8 @@ curl -X POST -H "Authorization: Bearer th_…" -H "Content-Type: application/jso
   -d '{"title":"Milch kaufen"}' http://192.168.178.115:8090/api/todos
 ```
 
-All endpoints are described in OpenAPI: [`api/openapi.base.yaml`](https://github.com/itadori26/waylight/blob/main/api/openapi.base.yaml)
-plus one fragment per module in [`api/modules/`](https://github.com/itadori26/waylight/tree/main/api/modules); `make openapi` merges
+All endpoints are described in OpenAPI: [`api/openapi.base.yaml`](https://github.com/Waylight-App/waylight/blob/main/api/openapi.base.yaml)
+plus one fragment per module in [`api/modules/`](https://github.com/Waylight-App/waylight/tree/main/api/modules); `make openapi` merges
 them into `dist/openapi.yaml`.
 
 ## Example: iOS Shortcut "Add to-do"

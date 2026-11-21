@@ -5,8 +5,17 @@
  * 1 must keep working while the core changes.
  */
 
-/** Version of this contract; the loader refuses other versions. */
-export const PLUGIN_API_VERSION = 1;
+/**
+ * Version of this contract. Version 2 added compact views of plugin widgets
+ * and translations of the plugin's backend messages (#632).
+ */
+export const PLUGIN_API_VERSION = 2;
+
+/**
+ * Oldest version the loader still accepts: later versions only add optional
+ * fields, so a plugin built against it keeps working.
+ */
+export const MIN_PLUGIN_API_VERSION = 1;
 
 /** Access to a licensed feature, as GET /api/licence/features reports it. */
 export type FeatureLevel = 'full' | 'read' | 'none';
@@ -46,6 +55,15 @@ export interface Mountable {
 /** A text in every language the plugin supports; English is the fallback. */
 export type Texts = { en: string } & Record<string, string>;
 
+/**
+ * Where a plugin widget's compact view reads its short state:
+ * GET /api/<module>/compact with params as the query (#595, #614).
+ */
+export interface PluginCompactSource {
+  module: string;
+  params?: Record<string, string>;
+}
+
 /** A widget kind contributed by a plugin. */
 export interface PluginWidget {
   kind: string;
@@ -63,6 +81,13 @@ export interface PluginWidget {
   view: Mountable;
   /** Receives { config, onsave(config) }. */
   settings?: Mountable;
+  /**
+   * The compact state source for a configuration, shown in small and strip
+   * tiles; undefined keeps the full view at every size. Since version 2.
+   */
+  compact?: (config: Record<string, unknown>) => PluginCompactSource | undefined;
+  /** Example of the compact view for the size previews of the picker (#596). Since version 2. */
+  compactExample?: Texts;
 }
 
 /** A section of the settings dialog contributed by a plugin. */
@@ -122,6 +147,12 @@ export interface WaylightPlugin {
   settings: PluginSection[];
   /** Commands for the search field (#453); optional. */
   searchActions?: PluginSearchAction[];
+  /**
+   * Translations of the plugin's backend messages (errors and compact
+   * states) by language and message key, e.g. { de: { srv_…: '…' } }.
+   * English needs none: the server sends it. Since version 2.
+   */
+  serverMessages?: Record<string, Record<string, string>>;
 }
 
 /** Picks the text for a language, falling back to English. */

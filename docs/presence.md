@@ -31,6 +31,11 @@ The widget lists everyone, or the members of one group chosen in its
 settings, sorted by status and name, with the counts per status at the
 bottom. It refreshes every 30 seconds while the page is visible.
 
+In a small or strip tile the widget shows its compact view: *3 in the
+office · 2 at home*, the number away below, and **Office**, **Home** and
+**Away** as chips for your own status, the current one selected. Guests,
+kiosk displays and an expired licence key get the counts without chips.
+
 ## Switching it off
 
 Admins can switch presence off for everyone in *Settings → Presence*. While
@@ -44,5 +49,6 @@ can set a status.
 | --- | --- | --- |
 | GET | `/api/presence?group=` | Today's `day`, `people` (`accountId`, `name`, `status` of `office`, `home`, `away` or `""`, `source` of `self`, `absence` or `none`, `returnOn`), `counts` and `mine` (`null` for guests and kiosk displays). Without `group`, everyone. |
 | PUT | `/api/presence/me` | `{status, returnOn}`; `status` `""` clears it |
+| GET | `/api/presence/compact?group=` | Compact state of the widget: counts in the office and at home, the number away, and the own status as chips (`action` with `choices`) |
 | GET | `/api/presence/settings` | `{enabled}` |
 | PUT | `/api/presence/settings` | `{enabled}`; admins only |

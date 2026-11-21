@@ -1,6 +1,6 @@
 # Waylight
 
-[![CI](https://github.com/itadori26/waylight/actions/workflows/ci.yml/badge.svg)](https://github.com/itadori26/waylight/actions/workflows/ci.yml)
+[![CI](https://github.com/Waylight-App/waylight/actions/workflows/ci.yml/badge.svg)](https://github.com/Waylight-App/waylight/actions/workflows/ci.yml)
 
 A self-hosted start page in the spirit of iGoogle. Arrange widgets on tabs:
 the weather, your calendar, to-dos and the next train next to the state of
@@ -51,7 +51,7 @@ The screenshots are taken from a demo instance with every release
 With Docker and the Compose plugin:
 
 ```sh
-git clone https://github.com/itadori26/waylight.git
+git clone https://github.com/Waylight-App/waylight.git
 cd waylight
 cp .env.example .env
 sed -i "s|^SECRET_KEY=.*|SECRET_KEY=$(openssl rand -base64 32)|" .env
@@ -90,11 +90,11 @@ The [documentation](docs/index.md) is organised by what you want to do:
 Contributions are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) covers the
 setup, the rules for pull requests, new modules and translations. Planned
 work is on the [roadmap](ROADMAP.md); the changelog of every version is in
-the [release notes](https://github.com/itadori26/waylight/releases), which
+the [release notes](https://github.com/Waylight-App/waylight/releases), which
 the release pipeline writes from the merged pull requests. Issues labelled
-[good first issue](https://github.com/itadori26/waylight/labels/good%20first%20issue)
+[good first issue](https://github.com/Waylight-App/waylight/labels/good%20first%20issue)
 name the files and tests to touch and are a good way in. Questions and
-ideas go to [Discussions](https://github.com/itadori26/waylight/discussions).
+ideas go to [Discussions](https://github.com/Waylight-App/waylight/discussions).
 Please follow the [Code of Conduct](CODE_OF_CONDUCT.md), and report security
 problems as described in [SECURITY.md](SECURITY.md).
 

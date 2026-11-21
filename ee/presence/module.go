@@ -10,6 +10,7 @@ import (
 	"context"
 	"database/sql"
 	"io/fs"
+	"net/url"
 	"time"
 
 	"waylight/ee/licence"
@@ -75,6 +76,16 @@ func (m *Module) WidgetKinds() []string { return []string{"presence"} }
 func (m *Module) Jobs() []modules.Job {
 	return []modules.Job{{Name: "presence.prune", Interval: pruneInterval, Run: m.svc.Prune}}
 }
+
+// CompactStateFor implements modules.CompactParamProvider (#632): the
+// counts of the widget's group, chosen with ?group= (empty: everyone), with
+// the viewer's status as chips while the licence allows changes.
+func (m *Module) CompactStateFor(ctx context.Context, params url.Values) (kernel.CompactState, error) {
+	return m.svc.Compact(ctx, params.Get("group"), m.Access(ctx) == modules.AccessFull)
+}
+
+// CompactParams implements modules.CompactParamProvider.
+func (m *Module) CompactParams() []string { return []string{"group"} }
 
 // RegisterRoutes implements modules.Module.
 func (m *Module) RegisterRoutes(r modules.Router) {

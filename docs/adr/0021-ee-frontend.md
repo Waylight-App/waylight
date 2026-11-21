@@ -47,10 +47,16 @@ the ones that are switched off.
   keywords and lists the action under *Actions*. Guests get none, and an
   action whose feature is not fully licensed is left out, since it could
   only fail.
-- The contract grows by optional fields only. `apiVersion` changes only for
-  a breaking change, which the loader then refuses; a plugin built against
-  an older contract keeps loading, and an older core ignores fields it does
-  not know.
+- The contract grows by optional fields only. `apiVersion` goes up when
+  fields are added (version 2: compact views of plugin widgets and German
+  texts of the plugin's backend messages, #632); the loader accepts every
+  version from 1 up to its own, so a plugin built against an older contract
+  keeps loading, and an older core ignores fields it does not know.
+- A plugin widget can name the source of its compact view (`compact`), and a
+  plugin can bring translations of its backend messages (`serverMessages`).
+  `make generate` writes the English catalogue of the `ee/` messages into
+  `ee/web/src/generated/`, next to the German texts in `ee/web/src/serverDe.ts`,
+  so the core's catalogue never lists them.
 
 ### Loading
 

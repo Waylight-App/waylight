@@ -31,7 +31,7 @@ Demo mode refuses to start when
 docker run -d --name waylight-demo -p 8090:8090 \
   -e DEMO_MODE=true -e SECRET_KEY="$(openssl rand -base64 32)" \
   -e ALLOWED_CIDRS=0.0.0.0/0 \
-  ghcr.io/itadori26/waylight:latest
+  ghcr.io/waylight-app/waylight:latest
 ```
 
 Put it behind a reverse proxy with HTTPS (`COOKIE_SECURE=true`,

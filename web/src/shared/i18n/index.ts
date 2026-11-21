@@ -4,6 +4,7 @@ export {
   loadLanguage,
   locale,
   registerFeatureMessages,
+  registerServerMessages,
   serverMessage,
   setLanguage,
   t,

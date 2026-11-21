@@ -100,7 +100,7 @@ func (s *Service) SetRetention(ctx context.Context, days int) error {
 		return err
 	}
 	if err := domain.ValidRetention(days); err != nil {
-		return kernel.NewPublicError(kernel.ErrInvalid, err.Error())
+		return err
 	}
 	return s.d.Store.SetRetention(ctx, days)
 }

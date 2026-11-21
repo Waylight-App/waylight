@@ -14,7 +14,7 @@ import (
 
 // SchemaURL is the published JSON Schema of waylight.yaml; editors with
 // the YAML language server validate the file against it.
-const SchemaURL = "https://raw.githubusercontent.com/itadori26/waylight/main/docs/schema/waylight.v1.schema.json"
+const SchemaURL = "https://raw.githubusercontent.com/Waylight-App/waylight/main/docs/schema/waylight.v1.schema.json"
 
 // YAMLCodec implements usecase.ConfigCodec (#88).
 type YAMLCodec struct{}
