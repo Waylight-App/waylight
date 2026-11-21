@@ -19,6 +19,8 @@ type Widget struct {
 	kind   string
 	rect   Rect
 	config string
+	// size decides the web view (#595); empty for a freely sized tile.
+	size Size
 }
 
 // NewWidget creates a widget after validating kind and configuration.
@@ -33,9 +35,13 @@ func NewWidget(id, tabID, kind string, rect Rect, config string) (Widget, error)
 	return w, nil
 }
 
-// RestoreWidget rebuilds a widget from persisted state.
-func RestoreWidget(id, tabID, kind string, rect Rect, config string) Widget {
-	return Widget{id: id, tabID: tabID, kind: kind, rect: rect, config: config}
+// RestoreWidget rebuilds a widget from persisted state. A size this
+// version does not know falls back to a freely sized tile.
+func RestoreWidget(id, tabID, kind string, rect Rect, config string, size Size) Widget {
+	if !size.Valid() {
+		size = SizeAuto
+	}
+	return Widget{id: id, tabID: tabID, kind: kind, rect: rect, config: config, size: size}
 }
 
 // ID returns the identifier.
@@ -65,5 +71,18 @@ func (w *Widget) Configure(config string) error {
 	return nil
 }
 
+// Size returns the widget size on the web grid; empty for a freely sized tile.
+func (w Widget) Size() Size { return w.size }
+
 // Place moves and resizes the widget.
 func (w *Widget) Place(r Rect) { w.rect = r }
+
+// Resize sets the widget size (#595). The rectangle is placed separately,
+// because the client fits the size into the grid around it.
+func (w *Widget) Resize(s Size) error {
+	if !s.Valid() {
+		return kernel.NewValidationError("size", "The size must be small, medium, large or strip.")
+	}
+	w.size = s
+	return nil
+}

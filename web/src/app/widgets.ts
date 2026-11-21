@@ -182,6 +182,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 5 },
     },
     icon: 'check',
+    // The compact state counts the built-in list; a connected list has none.
+    compact: (config) => (config['source'] ? undefined : 'todos'),
     view: lazy(
       () => import('../features/todos/ui/TodosWidget.svelte'),
       (config, c) => ({

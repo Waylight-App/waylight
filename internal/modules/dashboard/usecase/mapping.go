@@ -10,7 +10,7 @@ import (
 
 func toWidgetResponse(w domain.Widget) WidgetResponse {
 	r := w.Rect()
-	return WidgetResponse{ID: w.ID(), TabID: w.TabID(), Kind: w.Kind(), X: r.X, Y: r.Y, W: r.W, H: r.H, Config: w.Config()}
+	return WidgetResponse{ID: w.ID(), TabID: w.TabID(), Kind: w.Kind(), X: r.X, Y: r.Y, W: r.W, H: r.H, Config: w.Config(), Size: string(w.Size())}
 }
 
 func toTabResponse(ctx context.Context, t domain.Tab, widgets []domain.Widget) TabResponse {

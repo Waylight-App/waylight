@@ -13,6 +13,7 @@ import {
 } from '../domain/dashboard';
 import { collides, findFreeSpot, type LayoutItem, sameLayout } from '../domain/layout';
 import type { MobileItem } from '../domain/mobile';
+import { sizeRect, type WidgetSize } from '../domain/sizes';
 import type { DashboardGateway } from './ports';
 
 /** Error for input rejected before it reaches the backend. */
@@ -59,14 +60,20 @@ export class DashboardUseCases {
     return ordered;
   }
 
-  /** Adds a widget of the given type at the first free spot of the tab. */
+  /**
+   * Adds a widget of the given type at the first free spot of the tab:
+   * with a size (#595) in that size's cells, otherwise as a freely sized
+   * tile of the type's default size.
+   */
   addWidget(
     tab: Tab,
     type: WidgetType,
     config: WidgetConfig = structuredClone(type.defaultConfig ?? {}),
+    size?: WidgetSize,
   ): Promise<Widget> {
-    const rect = findFreeSpot(tab.widgets, type.defaultSize.w, type.defaultSize.h);
-    return this.gateway.addWidget(tab.id, type.kind, rect, config);
+    const cells = size ? sizeRect(size) : type.defaultSize;
+    const rect = findFreeSpot(tab.widgets, cells.w, cells.h);
+    return this.gateway.addWidget(tab.id, type.kind, rect, config, size);
   }
 
   /** Stores a new configuration for a widget. */
@@ -83,7 +90,7 @@ export class DashboardUseCases {
   /** Copies a widget (kind, size and configuration) to the first free spot of its tab. */
   duplicateWidget(tab: Tab, widget: Widget): Promise<Widget> {
     const rect = findFreeSpot(tab.widgets, widget.w, widget.h);
-    return this.gateway.addWidget(tab.id, widget.kind, rect, structuredClone(widget.config));
+    return this.gateway.addWidget(tab.id, widget.kind, rect, structuredClone(widget.config), widget.size);
   }
 
   /**
@@ -97,7 +104,7 @@ export class DashboardUseCases {
     const rect = free
       ? { x: widget.x, y: widget.y, w: widget.w, h: widget.h }
       : findFreeSpot(others, widget.w, widget.h);
-    return this.gateway.addWidget(tab.id, widget.kind, rect, structuredClone(widget.config));
+    return this.gateway.addWidget(tab.id, widget.kind, rect, structuredClone(widget.config), widget.size);
   }
 
   /** Sets the background image of a tab ("" = global background). */

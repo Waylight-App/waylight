@@ -26,13 +26,17 @@ func TestRepositoryRoundTrip(t *testing.T) {
 	if err != nil || got.Rect() != rect || got.Config() != `{"a":1}` {
 		t.Fatalf("round trip failed: %+v %v", got, err)
 	}
+	if got.Size() != domain.SizeAuto {
+		t.Fatalf("new widget has size %q", got.Size())
+	}
 	moved, _ := domain.NewRect(0, 0, 12, 1)
 	got.Place(moved)
+	_ = got.Resize(domain.SizeStrip)
 	if err := repo.SaveWidgetRects(ctx, []domain.Widget{got}); err != nil {
 		t.Fatal(err)
 	}
-	if again, _ := repo.GetWidget(ctx, "w1"); again.Rect() != moved {
-		t.Fatalf("rect not saved: %+v", again.Rect())
+	if again, _ := repo.GetWidget(ctx, "w1"); again.Rect() != moved || again.Size() != domain.SizeStrip {
+		t.Fatalf("rect or size not saved: %+v %q", again.Rect(), again.Size())
 	}
 	if err := repo.DeleteTab(ctx, "t1"); err != nil {
 		t.Fatal(err)
