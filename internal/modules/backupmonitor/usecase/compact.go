@@ -18,6 +18,7 @@ func CompactState(list []SourceView, now time.Time, loc *time.Location) kernel.C
 	state := kernel.CompactState{Level: kernel.CompactNone, UpdatedAt: now}
 	if len(list) == 0 {
 		state.Title = kernel.NewText("No backups yet")
+		state.Empty = true
 		return state
 	}
 	var failed, overdue, waiting []string

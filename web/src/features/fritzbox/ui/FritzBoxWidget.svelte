@@ -102,7 +102,7 @@
     background: var(--color-danger);
   }
   .dot.on {
-    background: var(--color-success);
+    background: var(--color-ok);
   }
   .rates {
     display: flex;

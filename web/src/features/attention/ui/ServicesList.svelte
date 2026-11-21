@@ -127,7 +127,7 @@
     background: var(--color-border);
   }
   li[data-state='ok'] .dot {
-    background: var(--color-success, #2e9d55);
+    background: var(--color-ok);
   }
   li[data-state='failing'] .dot {
     background: var(--color-danger);

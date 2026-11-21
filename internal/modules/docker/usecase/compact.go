@@ -21,6 +21,8 @@ func CompactState(res ListResponse) kernel.CompactState {
 		state.Detail = kernel.NewTextf("{count} unhealthy", "count", res.Unhealthy)
 	case res.Stopped > 0:
 		state.Detail = kernel.NewTextf("{count} stopped", "count", res.Stopped)
+	case res.Total == 0:
+		state.Empty = true
 	}
 	return state
 }

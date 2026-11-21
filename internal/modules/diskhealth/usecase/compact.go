@@ -14,6 +14,7 @@ func CompactState(disks []domain.Disk, now time.Time) kernel.CompactState {
 	state := kernel.CompactState{Level: kernel.CompactNone, UpdatedAt: now}
 	if len(disks) == 0 {
 		state.Title = kernel.NewText("No drive reports yet")
+		state.Empty = true
 		return state
 	}
 	var critical, warning []string

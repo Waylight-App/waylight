@@ -93,10 +93,10 @@
     height: 9px;
     border-radius: 50%;
     flex: none;
-    background: var(--color-text-muted);
+    background: var(--color-border);
   }
   .dot.on {
-    background: var(--color-success);
+    background: var(--color-ok);
   }
   @container widget (max-width: 260px) {
     .traffic {

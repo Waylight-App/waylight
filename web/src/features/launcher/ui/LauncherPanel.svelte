@@ -298,10 +298,10 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--color-text-muted);
+    background: var(--color-border);
   }
   [data-state='online'] .dot {
-    background: var(--color-success, #2e9d55);
+    background: var(--color-ok);
   }
   [data-state='offline'] .dot {
     background: var(--color-danger);

@@ -15,6 +15,7 @@
     "--color-danger": "#ff6b6b",
     "--color-success": "#5cff8d",
     "--color-warning": "#ffd400",
+    "--color-widget-border": "#ffffff",
     "--radius": "4px",
     "--radius-small": "2px"
   }

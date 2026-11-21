@@ -13,11 +13,11 @@ func TestCompactState(t *testing.T) {
 	disk := func(dev string, s domain.Status) domain.Disk {
 		return domain.Disk{Report: domain.Report{Device: dev}, Status: s}
 	}
-	if s := CompactState(nil, now); s.Level != kernel.CompactNone || s.Title.String() != "No drive reports yet" {
+	if s := CompactState(nil, now); s.Level != kernel.CompactNone || s.Title.String() != "No drive reports yet" || !s.Empty {
 		t.Fatalf("empty: %+v", s)
 	}
 	s := CompactState([]domain.Disk{disk("/dev/sda", domain.StatusOK), disk("/dev/sdb", domain.StatusOK)}, now)
-	if s.Level != kernel.CompactOK || s.Title.String() != "2 drives healthy" {
+	if s.Level != kernel.CompactOK || s.Title.String() != "2 drives healthy" || s.Empty {
 		t.Fatalf("healthy: %+v", s)
 	}
 	s = CompactState([]domain.Disk{disk("/dev/sda", domain.StatusWarning), disk("/dev/sdb", domain.StatusOK)}, now)

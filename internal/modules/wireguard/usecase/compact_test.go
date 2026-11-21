@@ -16,7 +16,10 @@ func TestCompactState(t *testing.T) {
 	if s := CompactState(v); s.Level != kernel.CompactAttention || s.Detail.String() != "The export is out of date" {
 		t.Fatalf("stale: %+v", s)
 	}
-	if s := CompactState(ListView{}); s.Title.String() != "No peers" {
+	if s := CompactState(ListView{}); s.Title.String() != "No peers" || !s.Empty {
 		t.Fatalf("empty: %+v", s)
+	}
+	if s := CompactState(ListView{Stale: true}); s.Empty {
+		t.Fatalf("a stale export stays visible: %+v", s)
 	}
 }

@@ -836,7 +836,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--color-success, #2e9d55);
+    background: var(--color-ok);
   }
   .status[data-kind='offline'] {
     color: var(--color-danger);

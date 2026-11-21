@@ -139,10 +139,10 @@
     width: 0.6rem;
     height: 0.6rem;
     border-radius: 50%;
-    background: var(--color-text-muted);
+    background: var(--color-border);
   }
   .dot.online {
-    background: var(--color-success);
+    background: var(--color-ok);
   }
   .dot.offline {
     background: var(--color-danger);
@@ -159,7 +159,7 @@
     background: var(--color-border, rgba(127, 127, 127, 0.25));
   }
   .bar.good {
-    background: var(--color-success);
+    background: var(--color-ok);
   }
   .bar.degraded {
     background: var(--color-warning);

@@ -142,8 +142,7 @@
     padding: 0;
   }
   li {
-    padding: 4px 0;
-    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-1) 0;
     display: flex;
     flex-direction: column;
   }

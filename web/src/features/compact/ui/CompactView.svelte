@@ -11,14 +11,18 @@
     isAlarming,
   } from '../domain/compact';
   import type { CompactUseCases } from '../usecase/compactUseCases';
+  import WidgetHeader from '../../../shared/ui/WidgetHeader.svelte';
+  import type { IconName } from '../../../shared/ui/icons/paths';
 
   /** Props of a compact widget view (#595): the widget's short state in one or two lines. */
   interface Props {
     compact: CompactUseCases;
     /** Compact source of the state (see compactSource): GET /api/<module>/compact[?query]. */
     module: string;
-    /** Name of the widget, shown as a small label above the state. */
+    /** Name of the widget, shown in the widget header above the state. */
     title: string;
+    /** Icon of the widget kind, shown before the name. */
+    icon?: IconName;
     /** One line for strip tiles instead of label, state and detail on separate lines. */
     strip?: boolean;
     /** Reports every loaded state, e.g. for the detail panel or the attention line. */
@@ -26,7 +30,7 @@
     /** Offers the state's quick action (#598); off for guests and kiosk displays. */
     actions?: boolean;
   }
-  let { compact, module, title, strip = false, onstate, actions = false }: Props = $props();
+  let { compact, module, title, icon, strip = false, onstate, actions = false }: Props = $props();
 
   let current = $state<CompactState | null>(null);
   let error = $state('');
@@ -76,7 +80,7 @@
 </script>
 
 <div class="compact" class:strip data-level={level} data-testid="compact-view">
-  <span class="label">{title}</span>
+  <div class="label"><WidgetHeader {title} {icon} /></div>
   {#if current}
     <span class="state">
       {#if isAlarming(level)}
@@ -167,13 +171,12 @@
     pointer-events: auto;
   }
   .label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-text-muted);
+    min-width: 0;
   }
-  .label,
+  .strip .label {
+    flex: none;
+    max-width: 50%;
+  }
   .state,
   .detail {
     overflow: hidden;

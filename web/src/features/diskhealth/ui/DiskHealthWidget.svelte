@@ -91,7 +91,6 @@
   }
   .disk {
     padding: var(--space-1) 0;
-    border-bottom: 1px solid var(--color-border, rgba(127, 127, 127, 0.2));
   }
   .head {
     display: flex;
@@ -107,10 +106,10 @@
     width: 0.6em;
     height: 0.6em;
     border-radius: 50%;
-    background: var(--color-text-muted);
+    background: var(--color-border);
   }
   .status-ok .dot {
-    background: var(--color-success);
+    background: var(--color-ok);
   }
   .status-warning .dot {
     background: var(--color-warning);

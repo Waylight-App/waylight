@@ -174,11 +174,11 @@
     width: 0.6em;
     height: 0.6em;
     border-radius: 50%;
-    background: var(--color-success);
+    background: var(--color-ok);
     flex: none;
   }
   .dot.off {
-    background: var(--color-text-muted);
+    background: var(--color-border);
   }
   .small {
     font-size: 0.8em;

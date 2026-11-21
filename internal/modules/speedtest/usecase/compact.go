@@ -19,6 +19,8 @@ func CompactState(v ResultsView) kernel.CompactState {
 	m := v.Latest
 	if m == nil {
 		state.Title = kernel.NewText("No results yet")
+		// An unreachable tracker still shows, so the problem is seen.
+		state.Empty = v.Error == ""
 		return state
 	}
 	state.Title = kernel.NewTextf("{down} ↓ · {up} ↑ Mbit/s",

@@ -13,12 +13,13 @@ func CompactState(v ListView) kernel.CompactState {
 		Count:     kernel.IntPtr(v.Online),
 		UpdatedAt: v.UpdatedAt,
 	}
-	if len(v.Peers) == 0 {
-		state.Title = kernel.NewText("No peers")
-	}
 	if v.Stale {
 		state.Level = kernel.CompactAttention
 		state.Detail = kernel.NewText("The export is out of date")
+	}
+	if len(v.Peers) == 0 {
+		state.Title = kernel.NewText("No peers")
+		state.Empty = !v.Stale
 	}
 	return state
 }

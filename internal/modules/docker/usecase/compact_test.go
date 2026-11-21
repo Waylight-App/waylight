@@ -17,7 +17,13 @@ func TestCompactState(t *testing.T) {
 	if s := CompactState(ListResponse{Total: 3, Running: 3, Error: "refused"}); s.Level != kernel.CompactAttention || s.Detail.String() != "Docker is not reachable" {
 		t.Fatalf("unreachable: %+v", s)
 	}
-	if s := CompactState(ListResponse{Total: 2, Running: 2}); s.Detail.Template != "" {
+	if s := CompactState(ListResponse{Total: 2, Running: 2}); s.Detail.Template != "" || s.Empty {
 		t.Fatalf("all running: %+v", s)
+	}
+	if s := CompactState(ListResponse{}); !s.Empty {
+		t.Fatalf("no containers: %+v", s)
+	}
+	if s := CompactState(ListResponse{Error: "refused"}); s.Empty {
+		t.Fatalf("unreachable stays visible: %+v", s)
 	}
 }

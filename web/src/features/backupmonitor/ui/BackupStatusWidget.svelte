@@ -83,13 +83,13 @@
     height: 9px;
     border-radius: 50%;
     flex: none;
-    background: var(--color-text-muted);
+    background: var(--color-border);
   }
   .dot.running {
-    background: var(--color-accent);
+    background: var(--color-text);
   }
   .dot.ok {
-    background: var(--color-success);
+    background: var(--color-ok);
   }
   .dot.overdue {
     background: var(--color-warning);

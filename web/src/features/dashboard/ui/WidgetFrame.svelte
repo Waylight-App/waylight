@@ -1,12 +1,16 @@
 <script lang="ts">
   import { t } from '../../../shared/i18n';
   import type { Snippet } from 'svelte';
+  import WidgetHeader from '../../../shared/ui/WidgetHeader.svelte';
+  import type { IconName } from '../../../shared/ui/icons/paths';
   import { WIDGET_SIZES, type WidgetSize } from '../domain/sizes';
   import { ZONES, type Zone } from '../domain/zones';
 
   /** Props of the card that wraps every widget. */
   interface Props {
     title: string;
+    /** Icon of the widget kind, shown before the title. */
+    icon?: IconName;
     editing: boolean;
     /** Spread onto the title bar so it acts as drag handle in edit mode. */
     handle: { onpointerdown: (e: PointerEvent) => void };
@@ -36,6 +40,7 @@
   }
   let {
     title,
+    icon,
     editing,
     handle,
     onsettings,
@@ -65,6 +70,66 @@
   });
 </script>
 
+{#snippet editActions()}
+  {#if onsize}
+    <select
+      class="input size"
+      aria-label={t('dashboard.widget_size', { name: title })}
+      title={t('dashboard.widget_size', { name: title })}
+      value={size ?? ''}
+      onpointerdown={(e) => e.stopPropagation()}
+      onchange={(e) => onsize((e.currentTarget.value || undefined) as WidgetSize | undefined)}
+    >
+      <option value="">{t('dashboard.size_free')}</option>
+      {#each WIDGET_SIZES as s (s.size)}
+        <option value={s.size}>{t(`dashboard.mobile_size_${s.size}`)}</option>
+      {/each}
+    </select>
+  {/if}
+  {#if onzone}
+    <select
+      class="input size"
+      aria-label={t('dashboard.widget_zone', { name: title })}
+      title={t('dashboard.widget_zone', { name: title })}
+      value={zone}
+      onpointerdown={(e) => e.stopPropagation()}
+      onchange={(e) => onzone(e.currentTarget.value as Zone)}
+    >
+      {#each ZONES as z (z)}
+        <option value={z}>{t(`dashboard.zone_${z}`)}</option>
+      {/each}
+    </select>
+  {/if}
+  {#if onsettings}
+    <button
+      class="btn btn-icon"
+      type="button"
+      aria-label={t('dashboard.widget_settings')}
+      title={t('dashboard.widget_settings')}
+      onpointerdown={(e) => e.stopPropagation()}
+      onclick={onsettings}>⚙</button
+    >
+  {/if}
+  {#if onduplicate}
+    <button
+      class="btn btn-icon"
+      type="button"
+      aria-label={t('dashboard.duplicate_widget')}
+      title={t('dashboard.duplicate_widget')}
+      onpointerdown={(e) => e.stopPropagation()}
+      onclick={onduplicate}>⧉</button
+    >
+  {/if}
+  <button
+    class="btn btn-icon"
+    type="button"
+    aria-label={t('dashboard.remove_widget')}
+    title={t('dashboard.remove_widget')}
+    onpointerdown={(e) => e.stopPropagation()}
+    onclick={ondelete}>✕</button
+  >
+{/snippet}
+
 <article
   class="widget card"
   class:chromeless={chromeless && !editing}
@@ -75,68 +140,7 @@
     <!-- Dragging is pointer-only; settings and remove buttons stay keyboard accessible. -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <header class:draggable={editing} onpointerdown={handle.onpointerdown}>
-      <h3>{title}</h3>
-      {#if editing}
-        <span class="actions">
-          {#if onsize}
-            <select
-              class="input size"
-              aria-label={t('dashboard.widget_size', { name: title })}
-              title={t('dashboard.widget_size', { name: title })}
-              value={size ?? ''}
-              onpointerdown={(e) => e.stopPropagation()}
-              onchange={(e) => onsize((e.currentTarget.value || undefined) as WidgetSize | undefined)}
-            >
-              <option value="">{t('dashboard.size_free')}</option>
-              {#each WIDGET_SIZES as s (s.size)}
-                <option value={s.size}>{t(`dashboard.mobile_size_${s.size}`)}</option>
-              {/each}
-            </select>
-          {/if}
-          {#if onzone}
-            <select
-              class="input size"
-              aria-label={t('dashboard.widget_zone', { name: title })}
-              title={t('dashboard.widget_zone', { name: title })}
-              value={zone}
-              onpointerdown={(e) => e.stopPropagation()}
-              onchange={(e) => onzone(e.currentTarget.value as Zone)}
-            >
-              {#each ZONES as z (z)}
-                <option value={z}>{t(`dashboard.zone_${z}`)}</option>
-              {/each}
-            </select>
-          {/if}
-          {#if onsettings}
-            <button
-              class="btn btn-icon"
-              type="button"
-              aria-label={t('dashboard.widget_settings')}
-              title={t('dashboard.widget_settings')}
-              onpointerdown={(e) => e.stopPropagation()}
-              onclick={onsettings}>⚙</button
-            >
-          {/if}
-          {#if onduplicate}
-            <button
-              class="btn btn-icon"
-              type="button"
-              aria-label={t('dashboard.duplicate_widget')}
-              title={t('dashboard.duplicate_widget')}
-              onpointerdown={(e) => e.stopPropagation()}
-              onclick={onduplicate}>⧉</button
-            >
-          {/if}
-          <button
-            class="btn btn-icon"
-            type="button"
-            aria-label={t('dashboard.remove_widget')}
-            title={t('dashboard.remove_widget')}
-            onpointerdown={(e) => e.stopPropagation()}
-            onclick={ondelete}>✕</button
-          >
-        </span>
-      {/if}
+      <WidgetHeader {title} {icon} action={editing ? editActions : undefined} />
     </header>
   {/if}
   <div class="content" bind:this={content}><div class="body">{@render children()}</div></div>
@@ -161,6 +165,8 @@
     flex-direction: column;
     overflow: hidden;
     opacity: var(--widget-opacity);
+    /* Cards stand apart by spacing, surface and shadow, not by lines (#672). */
+    border-color: var(--color-widget-border);
   }
   .widget.chromeless {
     background: transparent;
@@ -168,25 +174,14 @@
     box-shadow: none;
   }
   header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     padding: var(--space-2) var(--space-3) 0;
     min-height: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   header.draggable {
     cursor: grab;
-  }
-  h3 {
-    margin: 0;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-text-muted);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   /* The content area is a size container: widgets size text and layout
      relative to their own box (cqi/cqh/cqmin, @container widget …) instead

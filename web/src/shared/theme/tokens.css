@@ -22,6 +22,17 @@
   --color-danger: #c93434;
   --color-success: #18794e;
   --color-warning: #9a6200;
+  /*
+   * Healthy status marks such as an online dot. Neutral by default, so a
+   * dashboard where all is well stays calm and colour is left for attention
+   * (warning) and problems (danger) (#672). A theme may set a green.
+   */
+  --color-ok: var(--color-text-muted);
+  /*
+   * Outline of widget cards. Cards are told apart by spacing, surface and
+   * shadow, so there is none by default; a high-contrast theme draws one.
+   */
+  --color-widget-border: transparent;
   --radius: 12px;
   --radius-small: 8px;
   --shadow: 0 1px 2px rgb(16 24 40 / 6%), 0 4px 12px rgb(16 24 40 / 6%);

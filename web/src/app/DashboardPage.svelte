@@ -246,6 +246,7 @@
           ...compactView.props(widget.config, container),
           module,
           title: def.type.title,
+          icon: def.icon,
           strip: opts.strip,
           // Guests and kiosk displays only look (#50).
           actions: !container.auth.guest,
