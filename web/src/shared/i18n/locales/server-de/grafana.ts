@@ -6,8 +6,6 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
-  // Could not connect to Grafana: {detail}
-  srv_6a8ea4229e4ff1a3: 'Verbindung zu Grafana fehlgeschlagen: {detail}',
   // Grafana cannot render this panel as an image; install the Grafana image renderer.
   srv_8ff75b8c58539e49:
     'Grafana kann dieses Panel nicht als Bild ausgeben; installiere den Grafana Image Renderer.',
