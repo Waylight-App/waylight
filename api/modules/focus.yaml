@@ -2,6 +2,12 @@ tags:
   - name: focus
 
 paths:
+  /api/focus/compact:
+    get:
+      tags: [focus]
+      summary: "Compact state of the widget (#597): Focus minutes today"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
   /api/focus/stats:
     get:
       tags: [focus]

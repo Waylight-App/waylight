@@ -246,6 +246,11 @@ func newHandler(a *app) http.Handler {
 			mr = modules.ManagedRouter(mr, c.ConfigRoutes())
 		}
 		m.RegisterRoutes(mr)
+		// Compact widget states (#597) live under the module's own prefix so
+		// they share its permission checks.
+		if c, ok := m.(modules.CompactProvider); ok {
+			mr.Protected(modules.CompactRoute(m.Name()), modules.CompactHandler(c))
+		}
 	}
 	r.Protected("GET /api/modules", a.registry.Handler(frontendOnlyWidgetKinds))
 	r.Handle("GET /healthz", router.HealthCheck(a.db.PingContext))

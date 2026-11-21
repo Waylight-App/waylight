@@ -6,6 +6,8 @@ import (
 	"io/fs"
 	"time"
 
+	"waylight/internal/modules/focus/domain"
+
 	"waylight/internal/modules"
 	"waylight/internal/modules/focus/adapter/controller"
 	"waylight/internal/modules/focus/adapter/gateway"
@@ -20,13 +22,14 @@ type Module struct {
 	modules.Transferable
 	handlers *controller.Handlers
 	uc       usecase.Focus
+	clock    kernel.Clock
 }
 
 // New builds the focus timer module.
 func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator) *Module {
 	deps := usecase.Deps{Repo: gateway.NewRepository(db), Clock: clock, IDs: ids}
 	uc := usecase.NewFocus(deps)
-	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, deps) }, Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, handlers: controller.NewHandlers(uc), uc: uc}
+	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, deps) }, Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, handlers: controller.NewHandlers(uc), uc: uc, clock: clock}
 }
 
 // Name implements modules.Module.
@@ -50,4 +53,23 @@ func (m *Module) Jobs() []modules.Job {
 func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/focus/stats", m.handlers.Stats)
 	r.Protected("POST /api/focus/sessions", m.handlers.Record)
+}
+
+// CompactState implements modules.CompactProvider (#597): today's focus
+// time; it is neither good nor bad, so the level stays none.
+func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
+	days, err := m.uc.WeeklyStats(ctx)
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	var today domain.Day
+	if len(days) > 0 {
+		today = days[len(days)-1]
+	}
+	state := kernel.CompactState{Level: kernel.CompactNone, UpdatedAt: m.clock.Now(),
+		Title: kernel.NewTextf("{minutes} min focus today", "minutes", today.Minutes)}
+	if today.Sessions > 0 {
+		state.Detail = kernel.NewTextf("{count} sessions", "count", today.Sessions)
+	}
+	return state, nil
 }

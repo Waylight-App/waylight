@@ -26,19 +26,21 @@ import "waylight/internal/shared/kernel"
 var A = kernel.NewPublicError(kernel.ErrInvalid, "Plain " +
 	"message.")
 var B = kernel.NewValidationErrorf("f", "At most {max}.", "max", 3)
+var C = kernel.NewTextf("{n} open", "n", 2)
 
 func bad(s string) error { return kernel.NewPublicError(kernel.ErrInvalid, "Bad "+s) }
+func badText(s string) kernel.Text { return kernel.NewText(s) }
 `
 	writeFile(t, filepath.Join(dir, "x.go"), src)
 	messages, _, problems, err := collect([]string{dir})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(messages) != 2 || len(problems) != 1 || !strings.Contains(problems[0], "x.go:9") {
+	if len(messages) != 3 || len(problems) != 2 || !strings.Contains(problems[0], "x.go:10") || !strings.Contains(problems[1], "x.go:11") {
 		t.Fatalf("%v %v", messages, problems)
 	}
 	out := string(render(messages))
-	if !strings.Contains(out, `"Plain message."`) || !strings.Contains(out, "ServerMessageKey") {
+	if !strings.Contains(out, `"Plain message."`) || !strings.Contains(out, `"{n} open"`) || !strings.Contains(out, "ServerMessageKey") {
 		t.Fatal(out)
 	}
 }

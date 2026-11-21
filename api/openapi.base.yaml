@@ -76,6 +76,42 @@ components:
     TooManyRequests: { description: Too many failed attempts, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
     Unavailable: { description: Upstream service unavailable, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
   schemas:
+    CompactText:
+      type: object
+      required: [key, text]
+      description: "A translatable text of a compact state (#597): look up key, fill in params, fall back to text"
+      properties:
+        key: { type: string }
+        text: { type: string, description: English text with the parameters filled in }
+        params: { type: object, additionalProperties: { type: string } }
+    CompactState:
+      type: object
+      required: [title, level, updatedAt]
+      description: "The short state of a module's widget (#597), the same for the compact web view, the app's small tiles, home screen widgets and the watch"
+      properties:
+        title: { $ref: "#/components/schemas/CompactText" }
+        detail: { $ref: "#/components/schemas/CompactText" }
+        level: { type: string, enum: [none, ok, attention, problem], description: "Clients colour only attention and problem" }
+        count: { type: integer, description: Optional number for badges }
+        updatedAt: { type: string, format: date-time }
+        action:
+          type: object
+          description: "The one primary action (#598): the request to send, or one request per choice"
+          properties:
+            id: { type: string }
+            label: { $ref: "#/components/schemas/CompactText" }
+            method: { type: string }
+            path: { type: string }
+            body: { type: object }
+            choices:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: string }
+                  label: { $ref: "#/components/schemas/CompactText" }
+                  body: { type: object }
+                  selected: { type: boolean }
     ErrorBody:
       type: object
       required: [error]

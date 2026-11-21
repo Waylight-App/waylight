@@ -2,6 +2,12 @@ tags:
   - name: habits
 
 paths:
+  /api/habits/compact:
+    get:
+      tags: [habits]
+      summary: "Compact state of the widget (#597): Habits done today out of all"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
   /api/habits:
     get:
       tags: [habits]
