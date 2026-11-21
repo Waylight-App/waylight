@@ -58,6 +58,9 @@
 
   const registered = $derived(registeredSections.find((s) => s.id === id));
   let guestTabs = $state<{ id: string; name: string }[]>([]);
+  // The wall tablet assistant (#680); the kiosk list is rebuilt after it created a display.
+  let tabletAssistant = $state(false);
+  let kioskList = $state(0);
   $effect(() => {
     if (!container.auth.guest) container.dashboard.load().then((tabs) => (guestTabs = tabs));
   });
@@ -107,8 +110,31 @@
   {/await}
 {:else if id === 'kiosks'}
   {#await import('../features/auth/ui/KiosksSettings.svelte') then { default: KiosksSettings }}
-    <KiosksSettings auth={container.auth} tabs={guestTabs} />
+    {#key kioskList}
+      <KiosksSettings auth={container.auth} tabs={guestTabs} onassistant={() => (tabletAssistant = true)} />
+    {/key}
   {/await}
+  {#if tabletAssistant}
+    {#await import('./kiosk/WallTabletAssistant.svelte') then { default: WallTabletAssistant }}
+      <WallTabletAssistant
+        {container}
+        tabs={guestTabs}
+        searchPlaces={modules.has('weather')
+          ? async (q) =>
+              (await container.weather.searchPlaces(q)).map((p) => ({
+                label: [p.name, p.region, p.country].filter(Boolean).join(', '),
+                lat: p.lat,
+                lon: p.lon,
+              }))
+          : undefined}
+        oncreated={() => {
+          kioskList++;
+          void container.dashboard.load().then((tabs) => (guestTabs = tabs));
+        }}
+        onclose={() => (tabletAssistant = false)}
+      />
+    {/await}
+  {/if}
 {:else if id === 'timeline'}
   <TimelineSettings timeline={container.timeline} />
 {:else if id === 'briefing'}

@@ -150,6 +150,7 @@ export interface KioskRequestDTO {
   rotateSeconds: number /* int */;
   nightFrom: string;
   nightTo: string;
+  largeText: boolean;
 }
 /**
  * KioskLoginDTO is the body of POST /api/auth/kiosk/login.

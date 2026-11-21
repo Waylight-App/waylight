@@ -113,6 +113,7 @@ const toKiosk = (d: KioskDTO): KioskDisplay => ({
   rotateSeconds: d.rotateSeconds,
   nightFrom: d.nightFrom,
   nightTo: d.nightTo,
+  largeText: d.largeText,
   createdAt: new Date(d.createdAt),
   lastUsedAt: d.lastUsedAt ? new Date(d.lastUsedAt) : null,
 });

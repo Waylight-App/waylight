@@ -36,8 +36,8 @@ func TestKioskLifecycle(t *testing.T) {
 	if _, _, err := kiosks.Create(ctx, KioskInput{Name: "flur", Tabs: []string{"home"}, RotateSeconds: 3}); !errors.Is(err, kernel.ErrInvalid) {
 		t.Fatal("rotation too fast", err)
 	}
-	k, token, err := kiosks.Create(ctx, KioskInput{Name: "flur", Tabs: []string{"home"}, RotateSeconds: 60, NightFrom: "22:00", NightTo: "06:00"})
-	if err != nil || token == "" || k.Options.RotateSeconds != 60 {
+	k, token, err := kiosks.Create(ctx, KioskInput{Name: "flur", Tabs: []string{"home"}, RotateSeconds: 60, NightFrom: "22:00", NightTo: "06:00", LargeText: true})
+	if err != nil || token == "" || k.Options.RotateSeconds != 60 || !k.Options.LargeText {
 		t.Fatalf("%+v %q %v", k, token, err)
 	}
 	if repo.m[k.ID].TokenHash == domain.TokenHash(token) {

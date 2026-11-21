@@ -15,6 +15,32 @@ export const en = {
   'ai_summary.truncated': 'Only the beginning of the text was summarised.',
   'ai_summary.summarise_item': 'Summarise {title}',
   'kiosk.fullscreen': 'Full screen',
+  'tablet.title': 'Set up a wall tablet',
+  'tablet.open': 'Set up a wall tablet …',
+  'tablet.intro':
+    'A tablet on the wall shows your family screen without anyone signing in. Choose what it shows; you can change everything later under Kiosk displays.',
+  'tablet.name': 'Name of the tablet',
+  'tablet.what': 'What the tablet shows',
+  'tablet.from_template':
+    'A new tab from the Wall tablet template: large clock, weather, calendar and departures',
+  'tablet.existing_tabs': 'Tabs I already have',
+  'tablet.weather_hint': 'The weather needs a place; you can also set it later in the widget.',
+  'tablet.weather_for': 'Weather for {place}',
+  'tablet.use_location': 'Use my location',
+  'tablet.my_location': 'My location',
+  'tablet.location_failed': 'The location is not available. Search for a place instead.',
+  'tablet.search_place': 'Search a place',
+  'tablet.search': 'Search',
+  'tablet.large_text': 'Large text, readable from across the room',
+  'tablet.night': 'Dim the screen at night',
+  'tablet.create': 'Set up the tablet',
+  'tablet.ready': 'The tablet “{name}” is ready.',
+  'tablet.step_browser':
+    'On the tablet, scan the code with the camera or open the link below in the browser.',
+  'tablet.step_app':
+    'With the Waylight app: choose “Use as wall display” and scan the code or paste the link.',
+  'tablet.step_fullscreen': 'In the browser, tap “Full screen” once; the screen then stays on.',
+  'auth.kiosk_large_text': 'Large text',
   'settings.section.full_version': 'What you get with a server',
   'full_version.short':
     'This is the browser-only version. Services, Docker, parcels, notifications and sync come with a server or the Raspberry Pi image.',

@@ -270,6 +270,10 @@ export interface KioskOptionsDTO {
    */
   nightFrom: string;
   nightTo: string;
+  /**
+   * LargeText enlarges the text of the display (#680).
+   */
+  largeText: boolean;
 }
 /**
  * KioskDTO is a kiosk display in GET /api/auth/kiosks.

@@ -3,8 +3,9 @@
   import { inNightWindow, type KioskOptions } from '../../features/auth/domain/auth';
 
   /**
-   * Kiosk display behaviour (#50): no controls, optional tab rotation and
-   * night dimming, full screen, screen kept awake, cursor hidden when idle.
+   * Kiosk display behaviour (#50): no controls, optional tab rotation,
+   * night dimming and large text, full screen, screen kept awake, cursor
+   * hidden when idle.
    */
   interface Props {
     loadOptions: () => Promise<KioskOptions>;
@@ -14,7 +15,7 @@
   }
   let { loadOptions, tabCount, activeIndex, selectTabAt }: Props = $props();
 
-  let options = $state<KioskOptions>({ rotateSeconds: 0, nightFrom: '', nightTo: '' });
+  let options = $state<KioskOptions>({ rotateSeconds: 0, nightFrom: '', nightTo: '', largeText: false });
   let now = $state(new Date());
   let fullscreen = $state(typeof document !== 'undefined' && !!document.fullscreenElement);
   const night = $derived(inNightWindow(now, options.nightFrom, options.nightTo));
@@ -29,6 +30,11 @@
   $effect(() => {
     document.documentElement.classList.add('kiosk');
     return () => document.documentElement.classList.remove('kiosk', 'kiosk-idle');
+  });
+
+  $effect(() => {
+    document.documentElement.classList.toggle('kiosk-large', options.largeText);
+    return () => document.documentElement.classList.remove('kiosk-large');
   });
 
   $effect(() => {
@@ -118,6 +124,10 @@
   :global(html.kiosk .hero .pill),
   :global(html.kiosk [data-action]) {
     display: none !important;
+  }
+  /* Large text (#680): everything sized in rem grows with the root. */
+  :global(html.kiosk-large) {
+    font-size: 125%;
   }
   :global(html.kiosk-idle),
   :global(html.kiosk-idle *) {

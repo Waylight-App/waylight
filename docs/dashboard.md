@@ -124,8 +124,10 @@ placed, including the phone layout. Widgets with a compact view start small
 or as a strip; status widgets in the System zone feed the attention line.
 Templates with a weather widget ask for a location first (search or *Use my
 location*; *Set it up later* skips it). Widgets that need a service or a
-setting show *Set up* or what is missing. Kiosk mode and night dimming for a
-wall tablet are set on the kiosk display itself.
+setting show *Set up* or what is missing. Kiosk mode, night dimming and large
+text for a wall tablet are set on the kiosk display itself;
+[Set up a wall tablet](accounts.md#setting-up-a-wall-tablet) does both in
+one go.
 
 With sample data, a template replaces the example tabs; the example to-dos,
 notes, bookmarks and services stay. *Keep the example dashboard* keeps the

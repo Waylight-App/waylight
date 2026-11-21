@@ -15,6 +15,32 @@ export const de: Record<BaseMessageKey, string> = {
   'ai_summary.truncated': 'Nur der Anfang des Textes wurde zusammengefasst.',
   'ai_summary.summarise_item': '{title} zusammenfassen',
   'kiosk.fullscreen': 'Vollbild',
+  'tablet.title': 'Wandtablet einrichten',
+  'tablet.open': 'Wandtablet einrichten …',
+  'tablet.intro':
+    'Ein Tablet an der Wand zeigt euren Familienbildschirm, ohne dass sich jemand anmeldet. Wähle, was es zeigt; alles lässt sich später unter Kiosk-Anzeigen ändern.',
+  'tablet.name': 'Name des Tablets',
+  'tablet.what': 'Was das Tablet zeigt',
+  'tablet.from_template':
+    'Ein neuer Tab aus der Vorlage Wandtablet: große Uhr, Wetter, Kalender und Abfahrten',
+  'tablet.existing_tabs': 'Tabs, die ich schon habe',
+  'tablet.weather_hint': 'Das Wetter braucht einen Ort; du kannst ihn auch später im Widget festlegen.',
+  'tablet.weather_for': 'Wetter für {place}',
+  'tablet.use_location': 'Meinen Standort verwenden',
+  'tablet.my_location': 'Mein Standort',
+  'tablet.location_failed': 'Der Standort ist nicht verfügbar. Suche stattdessen einen Ort.',
+  'tablet.search_place': 'Ort suchen',
+  'tablet.search': 'Suchen',
+  'tablet.large_text': 'Große Schrift, lesbar quer durch den Raum',
+  'tablet.night': 'Bildschirm nachts dimmen',
+  'tablet.create': 'Tablet einrichten',
+  'tablet.ready': 'Das Tablet „{name}“ ist bereit.',
+  'tablet.step_browser':
+    'Scanne den Code auf dem Tablet mit der Kamera oder öffne den Link unten im Browser.',
+  'tablet.step_app':
+    'Mit der Waylight-App: „Als Wandbildschirm nutzen“ wählen und den Code scannen oder den Link einfügen.',
+  'tablet.step_fullscreen': 'Im Browser einmal auf „Vollbild“ tippen; der Bildschirm bleibt dann an.',
+  'auth.kiosk_large_text': 'Große Schrift',
   'settings.section.full_version': 'Was ein Server dazubringt',
   'full_version.short':
     'Das ist die Version nur im Browser. Dienste, Docker, Pakete, Benachrichtigungen und Sync gibt es mit einem Server oder dem Raspberry-Pi-Image.',

@@ -118,6 +118,7 @@ type KioskRequestDTO struct {
 	RotateSeconds int      `json:"rotateSeconds"`
 	NightFrom     string   `json:"nightFrom"`
 	NightTo       string   `json:"nightTo"`
+	LargeText     bool     `json:"largeText"`
 }
 
 // KioskLoginDTO is the body of POST /api/auth/kiosk/login.

@@ -38,6 +38,7 @@ type KioskInput struct {
 	RotateSeconds int
 	NightFrom     string
 	NightTo       string
+	LargeText     bool
 }
 
 // Kiosks manages kiosk displays (input port). The management is owner
@@ -113,6 +114,7 @@ func (uc *kiosks) Create(ctx context.Context, in KioskInput) (KioskView, string,
 		return KioskView{}, "", domain.ErrTooManyKiosks
 	}
 	opts, err := domain.NewKioskOptions(in.RotateSeconds, in.NightFrom, in.NightTo)
+	opts.LargeText = in.LargeText
 	if err != nil {
 		return KioskView{}, "", err
 	}
@@ -158,6 +160,7 @@ func (uc *kiosks) Update(ctx context.Context, id string, in KioskInput) (KioskVi
 		return KioskView{}, err
 	}
 	opts, err := domain.NewKioskOptions(in.RotateSeconds, in.NightFrom, in.NightTo)
+	opts.LargeText = in.LargeText
 	if err != nil {
 		return KioskView{}, err
 	}

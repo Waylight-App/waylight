@@ -368,6 +368,8 @@ type KioskOptionsDTO struct {
 	// NightFrom and NightTo ("HH:MM", display time) dim the screen.
 	NightFrom string `json:"nightFrom"`
 	NightTo   string `json:"nightTo"`
+	// LargeText enlarges the text of the display (#680).
+	LargeText bool `json:"largeText"`
 }
 
 // KioskDTO is a kiosk display in GET /api/auth/kiosks.
