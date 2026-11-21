@@ -5,7 +5,6 @@ export const serverMessages = {
   srv_084af9ca0c7d167d: "A long-lived access token is required.",
   srv_0f4d7732f2cd4899: "Actions are not enabled for this entity (SMARTHOME_ACTIONS_ENTITIES).",
   srv_3a4c7bf887ab6487: "At most {max} entities per widget.",
-  srv_789dca50a23c7cb8: "Could not connect to Home Assistant: {detail}",
   srv_bcbabc6a08a54107: "Home Assistant is not configured yet.",
   srv_dc90aa2a1e0a5f62: "Home Assistant is not reachable.",
   srv_af1423afec138ad6: "Home Assistant rejected the action: {detail}",

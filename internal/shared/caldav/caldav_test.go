@@ -28,6 +28,11 @@ func TestDiscover(t *testing.T) {
 	if _, err := c.Discover(context.Background(), Account{URL: srv.URL + caldavtest.Root, Username: "anna", Password: "wrong"}); !errors.Is(err, ErrUnauthorized) {
 		t.Fatal(err)
 	}
+	// The same account holds an event calendar next to the task list.
+	events, err := c.DiscoverEvents(context.Background(), Account{URL: srv.URL + caldavtest.Root, Username: srv.User, Password: srv.Password})
+	if err != nil || len(events) != 1 || events[0].Name != "Persönlich" {
+		t.Fatalf("events: %+v %v", events, err)
+	}
 }
 
 func TestObjects(t *testing.T) {

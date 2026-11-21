@@ -6,6 +6,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
+  // The account has no calendar at this address.
+  srv_6f0585956c2b489f: 'Das Konto hat unter dieser Adresse keinen Kalender.',
   // At most 10 calendars are supported.
   srv_326bb72e415244d3: 'Es werden höchstens 10 Kalender unterstützt.',
   // Events can be at most one year long.

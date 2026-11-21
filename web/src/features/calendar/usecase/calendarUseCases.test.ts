@@ -5,6 +5,7 @@ const gateway = () =>
   ({
     settings: vi.fn(),
     saveSettings: vi.fn(),
+    connect: vi.fn(),
     events: vi.fn(),
     range: vi.fn(),
     create: vi.fn(),

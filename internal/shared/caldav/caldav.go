@@ -296,7 +296,8 @@ func (c Client) Delete(ctx context.Context, a Account, name string) error {
 	return StatusError(res)
 }
 
-// Collection is a task list found by Discover.
+// Collection is a task list found by Discover or a calendar found by
+// DiscoverEvents.
 type Collection struct {
 	URL  string
 	Name string
@@ -312,6 +313,19 @@ const propfindCollections = `<?xml version="1.0" encoding="utf-8"?>
 // server root or DAV endpoint (via current-user-principal and
 // calendar-home-set), a calendar home, or a list itself.
 func (c Client) Discover(ctx context.Context, a Account) ([]Collection, error) {
+	return c.discover(ctx, a, "VTODO")
+}
+
+// DiscoverEvents finds the event calendars of the account the same way, so
+// a person can enter the server address instead of every calendar's URL
+// (#588).
+func (c Client) DiscoverEvents(ctx context.Context, a Account) ([]Collection, error) {
+	return c.discover(ctx, a, "VEVENT")
+}
+
+// discover lists the calendar collections that hold the component (VTODO,
+// VEVENT).
+func (c Client) discover(ctx context.Context, a Account, component string) ([]Collection, error) {
 	base, err := url.Parse(a.URL)
 	if err != nil {
 		return nil, fmt.Errorf("parse URL: %w", err)
@@ -337,7 +351,7 @@ func (c Client) Discover(ctx context.Context, a Account) ([]Collection, error) {
 	var out []Collection
 	for _, r := range ms.Responses {
 		for _, ps := range r.Propstats {
-			if ps.ResourceType.Calendar == nil || !supportsTodos(ps.Components.Comps) {
+			if ps.ResourceType.Calendar == nil || !supports(ps.Components.Comps, component) {
 				continue
 			}
 			u := base.ResolveReference(&url.URL{Path: hrefPath(r.Href)}).String()
@@ -375,16 +389,16 @@ func homeAndPrincipal(ms multistatus) (home, principal string) {
 	return home, principal
 }
 
-// supportsTodos is true when the list holds VTODOs; a server that does
-// not say which components it supports allows all of them.
-func supportsTodos(comps []struct {
+// supports reports whether a collection holds the component; a server that
+// does not say which components it supports allows all of them.
+func supports(comps []struct {
 	Name string `xml:"name,attr"`
-}) bool {
+}, component string) bool {
 	if len(comps) == 0 {
 		return true
 	}
 	for _, c := range comps {
-		if strings.EqualFold(c.Name, "VTODO") {
+		if strings.EqualFold(c.Name, component) {
 			return true
 		}
 	}

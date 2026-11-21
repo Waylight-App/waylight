@@ -22,6 +22,12 @@ export const en = {
     'Create the token in Home Assistant under your profile → Security → Long-lived access tokens. It is stored encrypted and never shown again.',
   'smarthome.actions_hint':
     'Switches and buttons stay read-only unless SMARTHOME_ACTIONS_ENTITIES lists their entity IDs.',
+  'smarthome.setup_step_profile': 'Open Home Assistant and click your user name at the bottom left.',
+  'smarthome.setup_step_security': 'Open the Security tab and scroll down to Long-lived access tokens.',
+  'smarthome.setup_step_create': 'Press Create token, name it Waylight and press OK.',
+  'smarthome.setup_step_copy': 'Copy the token and paste it below; Home Assistant shows it only once.',
+  'smarthome.setup_token': 'Access token',
+  'smarthome.setup_entities': '{n} entities found',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

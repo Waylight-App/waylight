@@ -13,6 +13,15 @@ export interface SettingsInputDTO {
   password: string;
 }
 /**
+ * ConnectInputDTO is the body of POST /api/calendar/connect (#588): the
+ * server address, user name and app password.
+ */
+export interface ConnectInputDTO {
+  server: string;
+  username: string;
+  password: string;
+}
+/**
  * NewEventDTO is the body of POST /api/calendar/events. Timed events use
  * RFC 3339 instants; all-day events use dates (YYYY-MM-DD) with an
  * inclusive end date.

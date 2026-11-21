@@ -6,6 +6,17 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
+  // Nothing answers at this address. Is the service running?
+  srv_8a17d4cf0faa9d18: 'Unter dieser Adresse antwortet nichts. Läuft der Dienst?',
+  // The certificate is not trusted. Use the http:// address in your home network, or give the service a certificate this server trusts.
+  srv_32f1f2343e831224:
+    'Dem Zertifikat wird nicht vertraut. Nutze im Heimnetz die http://-Adresse oder gib dem Dienst ein Zertifikat, dem dieser Server vertraut.',
+  // The key is not accepted. Was it copied completely?
+  srv_48527dc59bd9b8f6: 'Der Schlüssel wird nicht akzeptiert. Wurde er vollständig kopiert?',
+  // This address does not speak https. Try it with http://.
+  srv_b22ef860827fa826: 'Diese Adresse spricht kein https. Versuche es mit http://.',
+  // This is not {service}. Something else runs at this address.
+  srv_3cfc83de58917c87: 'Das ist nicht {service}. Unter dieser Adresse läuft etwas anderes.',
   // Connections to this address are not allowed.
   srv_607f6c84226cd658: 'Verbindungen zu dieser Adresse sind nicht erlaubt.',
   // Enter a time like 07:00.

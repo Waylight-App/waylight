@@ -44,7 +44,7 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 	sharing.repo, sharing.accounts = subs, accounts
 	uc := usecase.NewCalendar(usecase.Deps{
 		Shared: subs, SharedAccounts: accounts, SharingOn: sharing.on,
-		Repo: gateway.NewSettingsRepository(db, cipher), Source: caldav, Writer: caldav,
+		Repo: gateway.NewSettingsRepository(db, cipher), Source: caldav, Writer: caldav, Finder: caldav,
 		Subscriptions: subs, Feeds: gateway.NewFeed(client, loc, clock.Now),
 		IDs: ids, Clock: clock,
 		Accounts: accounts, API: gateway.NewAccountAPI(client), OAuth: newOAuthPort(client, publicURL, clock.Now),
@@ -68,6 +68,7 @@ func (m *Module) WidgetKinds() []string { return []string{"calendar"} }
 func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/calendar/settings", m.handlers.Settings)
 	r.Protected("PUT /api/calendar/settings", m.handlers.SaveSettings)
+	r.Protected("POST /api/calendar/connect", m.handlers.Connect)
 	r.Protected("GET /api/calendar/events", m.handlers.Events)
 	r.Protected("POST /api/calendar/events", m.handlers.CreateEvent)
 	r.Protected("GET /api/calendar/subscriptions", m.subs.List)

@@ -42,6 +42,22 @@ func (h *Handlers) SaveSettings(w http.ResponseWriter, r *http.Request) {
 	httpapi.WriteJSON(w, http.StatusOK, presenter.Settings(res))
 }
 
+// Connect handles POST /api/calendar/connect: find, check and save the
+// calendars of an account from its server address (#588).
+func (h *Handlers) Connect(w http.ResponseWriter, r *http.Request) {
+	var dto ConnectInputDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	res, err := h.uc.Connect(r.Context(), usecase.ConnectInput{Server: dto.Server, Username: dto.Username, Password: dto.Password})
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Connect(res))
+}
+
 // Events handles GET /api/calendar/events?days=… or ?from=…&to=… (RFC 3339).
 func (h *Handlers) Events(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()

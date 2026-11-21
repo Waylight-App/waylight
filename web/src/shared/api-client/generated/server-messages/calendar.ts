@@ -17,6 +17,7 @@ export const serverMessages = {
   srv_f5627673a11b56bd: "Please choose one of the configured calendars.",
   srv_b71f32ebd27a0b6a: "Please enter a valid start and end.",
   srv_a4d2757d3ca7d004: "Please enter at least one calendar URL.",
+  srv_6f0585956c2b489f: "The account has no calendar at this address.",
   srv_0756151be3234993: "The account is not connected (any more).",
   srv_124d16b34844185b: "The account needs to be signed in again.",
   srv_3e73df212f6df359: "The calendar server is not reachable.",

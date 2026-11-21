@@ -8,6 +8,14 @@ type SettingsInputDTO struct {
 	Password     string   `json:"password"`
 }
 
+// ConnectInputDTO is the body of POST /api/calendar/connect (#588): the
+// server address, user name and app password.
+type ConnectInputDTO struct {
+	Server   string `json:"server"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 // NewEventDTO is the body of POST /api/calendar/events. Timed events use
 // RFC 3339 instants; all-day events use dates (YYYY-MM-DD) with an
 // inclusive end date.

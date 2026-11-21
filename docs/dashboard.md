@@ -143,6 +143,32 @@ widgets and the watch show it instead of the full widget; it is
 served at `GET /api/<module>/compact` with the same permissions as the
 module's other endpoints.
 
+## Setting up a widget in place
+
+A widget whose service is not connected yet shows one sentence and a
+**Set up** button. The setup runs inside the widget in three steps:
+
+1. **Address.** Enter where the service runs, for example
+   `http://192.168.178.20:2283` for Immich.
+2. **Credential.** The widget lists the steps in the service's own words,
+   for example *Account Settings → API Keys → New API Key* in Immich, and
+   *Open Immich* takes you to that page in a new tab. Paste the key or token.
+3. **Check.** Waylight tries the connection before it saves anything. When
+   it works you see real data (the number of photos and three of today's
+   memories, a few entities of Home Assistant, the calendars found and your
+   next events) and press *Done*.
+
+When the check fails, the message says why and what to try: the key was not
+accepted, nothing answers at the address, something other than the expected
+service answers there, or the certificate is not trusted.
+
+The assistant exists for Immich, Home Assistant and the Nextcloud calendar
+so far. For the calendar you enter the Nextcloud address, your user name and
+an app password; Waylight finds your calendars itself. Immich and Home
+Assistant are set up for the whole instance, so only admins see *Set up*
+there; every account can connect its own calendar. The settings pages stay
+the place to change a connection later.
+
 ## What needs your attention
 
 Waylight keeps a list of what needs your attention: widgets on your own tabs

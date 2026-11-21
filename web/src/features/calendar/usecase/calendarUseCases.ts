@@ -23,10 +23,18 @@ export interface Agenda {
   error: string;
 }
 
+/** The outcome of connecting by server address (#588). */
+export interface CalendarConnection {
+  calendars: { url: string; name: string }[];
+  /** The next few events, for the setup preview. */
+  next: CalendarEvent[];
+}
+
 /** Output port: calendar backend. */
 export interface CalendarGateway {
   settings(): Promise<CalendarSettings>;
   saveSettings(urls: string[], username: string, password: string): Promise<CalendarSettings>;
+  connect(server: string, username: string, password: string): Promise<CalendarConnection>;
   events(days: number): Promise<Agenda>;
   range(from: Date, to: Date): Promise<Agenda>;
   create(input: {
@@ -71,6 +79,11 @@ export class CalendarUseCases {
       .map((u) => u.trim())
       .filter(Boolean);
     return this.gateway.saveSettings(list, username.trim(), password);
+  }
+
+  /** Finds, checks and saves the calendars of an account from its server address (#588). */
+  connect(server: string, username: string, password: string): Promise<CalendarConnection> {
+    return this.gateway.connect(server.trim(), username.trim(), password);
   }
 
   events(days: number): Promise<Agenda> {
