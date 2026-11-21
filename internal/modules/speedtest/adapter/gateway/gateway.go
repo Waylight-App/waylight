@@ -135,9 +135,9 @@ func (a *API) Results(ctx context.Context, s domain.Settings, since time.Time) (
 	switch res.StatusCode {
 	case http.StatusOK:
 	case http.StatusUnauthorized, http.StatusForbidden:
-		return nil, fmt.Errorf("%w: Speedtest Tracker answered %s", kernel.ErrTargetAuth, res.Status) //nolint:staticcheck // product name
+		return nil, fmt.Errorf("%w: Speedtest Tracker answered %s", kernel.ErrTargetAuth, res.Status)
 	case http.StatusNotFound:
-		return nil, fmt.Errorf("%w: Speedtest Tracker answered %s", kernel.ErrTargetWrongService, res.Status) //nolint:staticcheck // product name
+		return nil, fmt.Errorf("%w: Speedtest Tracker answered %s", kernel.ErrTargetWrongService, res.Status)
 	default:
 		return nil, fmt.Errorf("Speedtest Tracker answered %s", res.Status) //nolint:staticcheck // product name
 	}
