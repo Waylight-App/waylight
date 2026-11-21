@@ -4,10 +4,11 @@
 package domain
 
 import (
-	"errors"
 	"slices"
 	"strings"
 	"time"
+
+	"waylight/internal/shared/kernel"
 )
 
 // Settings are the policies as admins set them.
@@ -29,7 +30,7 @@ const (
 )
 
 // ErrInvalid explains settings outside the limits.
-var ErrInvalid = errors.New("minimum password length must be 0 or 12 to 64, session length 0 to 2160 hours")
+var ErrInvalid = kernel.NewPublicError(kernel.ErrInvalid, "The minimum password length must be 0 or 12 to 64, the session length 0 to 2160 hours.")
 
 // Validate checks the limits and normalises the module list.
 func (s Settings) Validate() (Settings, error) {

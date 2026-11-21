@@ -1,22 +1,17 @@
 <script lang="ts">
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
-  import { untrack } from 'svelte';
+  import { usePolling } from '../../../shared/refresh';
   import {
-    applyConfig,
+    control,
     type FocusDay,
     formatClock,
     initialState,
     isRunning,
     parseFocusConfig,
-    parseState,
-    pause,
     type Phase,
     remaining,
-    reset,
-    skip,
-    start,
-    tick,
+    type TimerAction,
     type TimerState,
   } from '../domain/focus';
   import type { FocusUseCases } from '../usecase/focusUseCases';
@@ -28,66 +23,87 @@
   }
   let { focus, config }: Props = $props();
 
-  const STORAGE_KEY = 'waylight-focus-timer';
+  /**
+   * How often the timer is read again, so a start or pause from the compact
+   * view or another device shows up here (#631).
+   */
+  const SYNC_MS = 15_000;
   const cfg = $derived(parseFocusConfig(config));
 
-  function restore(): TimerState {
-    const c = parseFocusConfig(config);
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? parseState(JSON.parse(raw), c) : initialState(c);
-    } catch {
-      return initialState(c);
-    }
-  }
-
-  let timer = $state<TimerState>(restore());
+  // svelte-ignore state_referenced_locally
+  let timer = $state<TimerState>(initialState(parseFocusConfig(config)));
   let now = $state(Date.now());
   let week = $state<FocusDay[]>([]);
   let error = $state('');
 
-  function save(s: TimerState) {
-    timer = s;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-    } catch {
-      // Private mode: the timer still works until the page is closed.
-    }
-  }
-
-  // Changed durations apply to a phase that has not been started yet.
-  $effect(() => {
-    const next = applyConfig(
-      untrack(() => timer),
-      cfg,
-    );
-    if (next !== untrack(() => timer)) save(next);
-  });
-
   const phaseLabel = (p: Phase) => t(`focus.phase.${p}`);
 
-  async function finished(phase: Phase, at: number) {
+  async function finished(phase: Phase) {
     focus.notify(cfg.notify, t('focus.notify_title', { phase: phaseLabel(phase) }), t('focus.notify_body'));
     if (phase !== 'work') return;
+    // The finished session was recorded where the timer lives.
     try {
-      week = await focus.record(cfg.work, new Date(at));
-      error = '';
+      week = await focus.stats();
     } catch (err) {
       error = errorMessage(err);
     }
   }
 
-  function step() {
-    now = Date.now();
-    const r = tick(timer, cfg, now);
-    if (r.finished) {
-      save(r.state);
-      void finished(r.finished.phase, r.finished.at);
+  /**
+   * Takes a state read from the timer. When the shown phase had run out and
+   * the timer moved on, the end is announced, whichever read noticed it.
+   */
+  function adopt(next: TimerState) {
+    const before = timer;
+    timer = next;
+    error = '';
+    if (
+      isRunning(before) &&
+      remaining(before, Date.now()) === 0 &&
+      !isRunning(next) &&
+      next.phase !== before.phase
+    ) {
+      void finished(before.phase);
     }
   }
 
+  async function load() {
+    try {
+      adopt(await focus.timer(cfg));
+    } catch (err) {
+      error = errorMessage(err);
+      throw err;
+    }
+  }
+
+  // Reading cfg inside load makes changed settings read the timer again.
+  const poll = usePolling();
+  $effect(() => poll(load, SYNC_MS));
+
+  async function act(action: TimerAction) {
+    // Shown at once; the answer replaces it.
+    timer = control(timer, action, cfg, Date.now());
+    try {
+      adopt(await focus.control(action, cfg));
+    } catch (err) {
+      error = errorMessage(err);
+      void load().catch(() => undefined);
+    }
+  }
+
+  let ending = false;
+  /** Counts down and reads the timer once the phase has run out. */
+  function step() {
+    now = Date.now();
+    if (ending || !isRunning(timer) || remaining(timer, now) > 0) return;
+    ending = true;
+    load()
+      .catch(() => undefined)
+      .finally(() => (ending = false));
+  }
+
   // A one-second tick only while running; the end is computed from the
-  // stored timestamp, so a throttled background tab still ends correctly.
+  // end time, so a throttled background tab still ends correctly.
   $effect(() => {
     if (!isRunning(timer)) return;
     step();
@@ -124,16 +140,12 @@
   </p>
   <div class="controls">
     {#if isRunning(timer)}
-      <button class="btn btn-primary" type="button" onclick={() => save(pause(timer, Date.now()))}
-        >{t('focus.pause')}</button
-      >
+      <button class="btn btn-primary" type="button" onclick={() => act('pause')}>{t('focus.pause')}</button>
     {:else}
-      <button class="btn btn-primary" type="button" onclick={() => save(start(timer, Date.now()))}
-        >{t('focus.start')}</button
-      >
+      <button class="btn btn-primary" type="button" onclick={() => act('start')}>{t('focus.start')}</button>
     {/if}
-    <button class="btn" type="button" onclick={() => save(reset(timer, cfg))}>{t('focus.reset')}</button>
-    <button class="btn" type="button" onclick={() => save(skip(timer, cfg))}>{t('focus.skip')}</button>
+    <button class="btn" type="button" onclick={() => act('reset')}>{t('focus.reset')}</button>
+    <button class="btn" type="button" onclick={() => act('skip')}>{t('focus.skip')}</button>
   </div>
   {#if error}<p class="error">{error}</p>{/if}
   {#if week.length > 0}

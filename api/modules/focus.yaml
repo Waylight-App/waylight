@@ -5,7 +5,7 @@ paths:
   /api/focus/compact:
     get:
       tags: [focus]
-      summary: "Compact state of the widget (#597): Focus minutes today"
+      summary: "Compact state of the widget (#597): the running timer with Pause, or focus minutes today with Start (#631)"
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
   /api/focus/stats:
@@ -17,7 +17,7 @@ paths:
   /api/focus/sessions:
     post:
       tags: [focus]
-      summary: Record a finished focus phase (the running timer lives in the browser; breaks are not recorded); answers with the updated week
+      summary: Record a finished focus phase from a timer that runs in the browser (local mode); breaks are not recorded; answers with the updated week
       security: [{ session: [], csrf: [] }]
       requestBody:
         required: true
@@ -32,8 +32,57 @@ paths:
       responses:
         "201": { description: Recorded, content: { application/json: { schema: { $ref: "#/components/schemas/FocusWeek" } } } }
         "422": { $ref: "#/components/responses/Invalid" }
+  /api/focus/timer:
+    get:
+      tags: [focus]
+      summary: "The account's focus timer (#631); a phase that ran out is advanced and a finished focus phase recorded"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/FocusTimer" } } } }
+  /api/focus/timer/config:
+    put:
+      tags: [focus]
+      summary: Store the widget's phase lengths; a phase that was not started yet takes the new length
+      security: [{ session: [], csrf: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FocusTimerConfig" }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/FocusTimer" } } } }
+        "403": { description: Guests and kiosk displays have no timer of their own }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/focus/timer/{action}:
+    post:
+      tags: [focus]
+      summary: Start, pause, reset or skip the timer
+      security: [{ session: [], csrf: [] }]
+      parameters:
+        - { name: action, in: path, required: true, schema: { type: string, enum: [start, pause, reset, skip] } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/FocusTimer" } } } }
+        "403": { description: Guests and kiosk displays have no timer of their own }
+        "422": { $ref: "#/components/responses/Invalid" }
 
 schemas:
+  FocusTimerConfig:
+    type: object
+    required: [work, short, long, longEvery]
+    properties:
+      work: { type: integer, minimum: 1, maximum: 180, description: Minutes }
+      short: { type: integer, minimum: 1, maximum: 180, description: Minutes }
+      long: { type: integer, minimum: 1, maximum: 180, description: Minutes }
+      longEvery: { type: integer, minimum: 1, maximum: 12, description: Focus sessions before a long break }
+  FocusTimer:
+    type: object
+    required: [phase, done, running, remainingMs, totalMs, config]
+    properties:
+      phase: { type: string, enum: [work, short, long] }
+      done: { type: integer, description: Focus sessions finished in the current cycle }
+      running: { type: boolean }
+      remainingMs: { type: integer, description: Time left when the answer was written; relative, so client clocks may differ }
+      totalMs: { type: integer, description: Full length of the phase }
+      config: { $ref: "#/components/schemas/FocusTimerConfig" }
   FocusWeek:
     type: object
     required: [days]

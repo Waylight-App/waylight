@@ -5,7 +5,8 @@ import type { SearchAction } from '../searchActions';
 import type { SettingsSection } from '../settingsKit';
 import type { WidgetDefinition } from '../widgetKit';
 import { PLUGIN_API_VERSION, type WaylightPlugin } from './api';
-import { loadPlugins } from './loader';
+import { loadPlugins, supportedVersion } from './loader';
+import { serverMessage, setLanguage } from '../../shared/i18n';
 
 const auth = { owner: true, admin: true, member: false, guest: false } as AuthUseCases;
 const mountable = { mount: vi.fn(() => () => undefined) };
@@ -139,5 +140,48 @@ describe('loadPlugins', () => {
     it('still loads a plugin built before search actions existed', async () => {
       expect(await load(auth, plugin)).toEqual([]);
     });
+  });
+});
+
+describe('compact views and backend texts of plugins (#632)', () => {
+  const routes = { '/api/plugins': { plugins: ['/ee/plugin.js'] } };
+  const withCompact: WaylightPlugin = {
+    ...plugin,
+    widgets: [
+      {
+        kind: 'presence',
+        feature: 'presence',
+        category: 'everyday',
+        title: { en: 'Presence' },
+        description: { en: '' },
+        defaultSize: { w: 4, h: 4 },
+        icon: 'activity',
+        view: mountable,
+        compact: (config) =>
+          config['group'] ? { module: 'presence', params: { group: String(config['group']) } } : undefined,
+        compactExample: { en: '3 in the office', de: '3 im Büro' },
+      },
+    ],
+    serverMessages: { de: { srv_plugin_test: 'Plugin-Text {n}' } },
+  };
+
+  it('maps the compact source and registers the translations', async () => {
+    const targets = { widgets: [] as WidgetDefinition[], sections: [] as SettingsSection[] };
+    await loadPlugins(http(routes), auth, targets, () => Promise.resolve({ plugin: withCompact }));
+    const widget = targets.widgets[0];
+    expect(widget?.compact?.({ group: 'team a' })).toBe('presence?group=team+a');
+    expect(widget?.compact?.({})).toBeUndefined();
+    expect(widget?.compactExample?.()).toBe('3 in the office');
+    setLanguage('de');
+    expect(serverMessage('srv_plugin_test', { n: '2' })).toBe('Plugin-Text 2');
+    setLanguage('en');
+  });
+
+  it('loads plugins of every supported version and no others', () => {
+    expect(supportedVersion(1)).toBe(true);
+    expect(supportedVersion(PLUGIN_API_VERSION)).toBe(true);
+    expect(supportedVersion(0)).toBe(false);
+    expect(supportedVersion(PLUGIN_API_VERSION + 1)).toBe(false);
+    expect(supportedVersion('2')).toBe(false);
   });
 });

@@ -114,7 +114,7 @@ func (uc *speedtest) SaveSettings(ctx context.Context, in SettingsInput) (Settin
 	}
 	list, err := uc.source.Results(ctx, s, uc.clock.Now().Add(-HistoryRange))
 	if err != nil {
-		return SettingsView{}, kernel.TargetFailure(kernel.ErrInvalid, err)
+		return SettingsView{}, kernel.SetupFailure("Speedtest Tracker", err)
 	}
 	if err := uc.repo.Save(ctx, s); err != nil {
 		return SettingsView{}, fmt.Errorf("save settings: %w", err)

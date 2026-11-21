@@ -33,4 +33,4 @@ Firefox shows these data types when you install the add-on: *browsing activity* 
 
 ## Questions
 
-Open an issue at [github.com/itadori26/waylight](https://github.com/itadori26/waylight/issues).
+Open an issue at [github.com/Waylight-App/waylight](https://github.com/Waylight-App/waylight/issues).

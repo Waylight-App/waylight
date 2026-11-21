@@ -19,7 +19,7 @@ modules in detail.
 | Shopping list (`shopping`) | Lists kept on Waylight, shareable with a group or everyone and exportable as text or `.ics`, or a CalDAV task list the household already uses in its task app. See [shopping](modules/shopping.md). |
 | Phone list (`phonelist`) | A searchable directory of names, roles, teams, phone numbers and e-mail addresses, maintained by admins; the search field answers "phone <name>". [Details](modules/phonelist.md) |
 | Countdowns (`countdown`) | Days left until exams, holidays or deadlines, highlighted when the date is close. |
-| Focus timer (`focus`) | Pomodoro timer that keeps running in background tabs, with an optional browser notification and a count of finished sessions per day. |
+| Focus timer (`focus`) | Pomodoro timer kept per account on the server, so every device and the compact view show the same timer (in the extension's local mode it stays in the browser), with an optional browser notification and a count of finished sessions per day. |
 | Habits (`habits`) | Daily habits or habits on chosen weekdays, checked off with one tap, with current and best streak and a four-week heatmap. |
 | Read later (`readlater`) | Saves a clean reader copy of a page with its images, so it stays readable when the original disappears. [Details](modules/readlater.md) |
 | Drop zone (`drop`) | Moves text, links and files up to 25 MB between your devices; items expire after one hour, a day or a week. [Details](modules/drop.md) |
@@ -35,7 +35,7 @@ modules in detail.
 | Places (`places`) | Places entered once by address search or browser location and chosen by the weather, rain radar and fuel price settings; Settings shows which widgets use each one. [Details](modules/places.md) |
 | Clock (`clock`) | Time and date, optionally in another time zone. |
 | Daily briefing (`briefing`) | Weather warnings, failures since last evening, offline services, due to-dos, appointments and waste collection in one widget, optionally pushed at a set time each morning. |
-| Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export, and a built-in catalogue of news sources by topic and language (Settings → Feeds → Browse catalogue; no outside request until you subscribe; [format](https://github.com/itadori26/waylight/blob/main/web/src/features/rss/catalogue/README.md)). |
+| Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export, and a built-in catalogue of news sources by topic and language (Settings → Feeds → Browse catalogue; no outside request until you subscribe; [format](https://github.com/Waylight-App/waylight/blob/main/web/src/features/rss/catalogue/README.md)). |
 | Public transport (`transit`) | Next departures of a stop with real-time delays, via [Transitous](https://transitous.org). |
 | Waste collection (`waste`) | Collection dates from your municipality's ICS calendar, by link or uploaded file; tomorrow's bin is highlighted. |
 | Holidays (`holidays`) | Public holidays of a German state, computed locally, and school holidays from an ICS link. [Details](modules/holidays.md) |

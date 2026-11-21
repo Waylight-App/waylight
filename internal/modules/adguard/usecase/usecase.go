@@ -181,7 +181,7 @@ func (uc *dnsFilter) SaveSettings(ctx context.Context, in SettingsInput) (Settin
 	}
 	stats, err := uc.providers[p].Stats(ctx, s)
 	if err != nil {
-		return SettingsView{}, kernel.TargetFailure(kernel.ErrInvalid, err)
+		return SettingsView{}, kernel.SetupFailure(p.Title(), err)
 	}
 	if err := uc.repo.Save(ctx, s); err != nil {
 		return SettingsView{}, fmt.Errorf("save settings: %w", err)

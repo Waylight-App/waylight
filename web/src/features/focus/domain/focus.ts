@@ -164,3 +164,49 @@ export interface FocusDay {
   sessions: number;
   minutes: number;
 }
+
+/** A control of the timer (#631). */
+export type TimerAction = 'start' | 'pause' | 'reset' | 'skip';
+
+/** Applies a control to a local timer, as the server does for a shared one. */
+export function control(s: TimerState, action: TimerAction, cfg: FocusConfig, now: number): TimerState {
+  switch (action) {
+    case 'start':
+      return start(s, now);
+    case 'pause':
+      return pause(s, now);
+    case 'reset':
+      return reset(s, cfg);
+    case 'skip':
+      return skip(s, cfg);
+  }
+}
+
+/** The timer as the server reports it (#631): the time left is relative to the answer. */
+export interface TimerSnapshot {
+  phase: Phase;
+  done: number;
+  running: boolean;
+  remainingMs: number;
+  totalMs: number;
+  config: Pick<FocusConfig, 'work' | 'short' | 'long' | 'longEvery'>;
+}
+
+/**
+ * The state a snapshot stands for at now (the browser's clock), so a device
+ * whose clock is off still ends the phase on time.
+ */
+export function fromSnapshot(s: TimerSnapshot, now: number): TimerState {
+  return {
+    phase: s.phase,
+    done: s.done,
+    endsAt: s.running ? now + s.remainingMs : null,
+    left: s.remainingMs,
+    total: s.totalMs,
+  };
+}
+
+/** Whether a snapshot already uses the widget's phase lengths. */
+export function sameLengths(a: TimerSnapshot['config'], b: FocusConfig): boolean {
+  return a.work === b.work && a.short === b.short && a.long === b.long && a.longEvery === b.longEvery;
+}

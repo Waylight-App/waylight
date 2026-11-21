@@ -44,7 +44,7 @@ with the current page, the link you right-clicked or the selected text.
 It works in Chrome, Edge and Firefox:
 
 1. Download `waylight-extension-<version>.zip` from the
-   [latest release](https://github.com/itadori26/waylight/releases/latest)
+   [latest release](https://github.com/Waylight-App/waylight/releases/latest)
    and unzip it.
 2. Load it:
    - **Chrome and Edge:** open `chrome://extensions`, switch on

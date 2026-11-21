@@ -12,11 +12,11 @@ checks); this guide explains *why* they exist.
 ## 0. Setup (≈ 5 min)
 
 ```sh
-git clone https://github.com/itadori26/waylight.git && cd waylight
+git clone https://github.com/Waylight-App/waylight.git && cd waylight
 make deps && make ci
 ```
 
-See [CONTRIBUTING.md](https://github.com/itadori26/waylight/blob/main/CONTRIBUTING.md#development-setup-about-10-minutes)
+See [CONTRIBUTING.md](https://github.com/Waylight-App/waylight/blob/main/CONTRIBUTING.md#development-setup-about-10-minutes)
 for running the app with hot reload.
 
 ## 1. The dependency rule in one picture
@@ -249,7 +249,7 @@ dependency or a justification, budgets green — see
 ## Checklist for a new integration
 
 When the widget talks to another system (see the
-[integrations roadmap #91](https://github.com/itadori26/waylight/issues/91)):
+[integrations roadmap #91](https://github.com/Waylight-App/waylight/issues/91)):
 
 - [ ] Domain types describe what the widget shows, not the vendor's JSON
 - [ ] The use case depends on a provider **port**; the vendor client is a gateway adapter

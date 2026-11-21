@@ -54,7 +54,7 @@ for the Waylight equivalents.
 Not yet. Settings that change what the server may do are environment
 variables ([configuration](configuration.md)); everything else is set in the
 browser. Configuration as code is planned in
-[#88](https://github.com/itadori26/waylight/issues/88). Until then, the
+[#88](https://github.com/Waylight-App/waylight/issues/88). Until then, the
 [JSON export](backups.md#export-and-import) gives you a readable copy of
 everything.
 
@@ -62,7 +62,7 @@ everything.
 
 If the service has a JSON API, the [JSON widget](modules/apiwidget.md) can
 probably show what you need. Otherwise open a feature request in the
-[issue tracker](https://github.com/itadori26/waylight/issues), or write a
+[issue tracker](https://github.com/Waylight-App/waylight/issues), or write a
 module yourself with the [developer guide](developer-guide.md); a simple one
 takes an afternoon.
 
@@ -74,4 +74,4 @@ under the MIT licence. Features for teams are planned in a separate directory,
 needs a licence key, and the code never becomes MIT
 ([ADR 0020](adr/0020-ee-stays-proprietary.md)). Nothing that exists today moves there.
 Planned work is on the
-[roadmap](https://github.com/itadori26/waylight/blob/main/ROADMAP.md).
+[roadmap](https://github.com/Waylight-App/waylight/blob/main/ROADMAP.md).

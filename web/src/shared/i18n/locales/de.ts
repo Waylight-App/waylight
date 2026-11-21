@@ -1482,6 +1482,23 @@ export const de: Record<BaseMessageKey, string> = {
   'speedtest.min_up': 'Benachrichtigen unter Upload (Mbit/s, 0 = aus)',
   'speedtest.threshold_hint':
     'Das Token wird verschlüsselt gespeichert und nie wieder angezeigt. Die Schwellenwerte werden mit dem neuesten Ergebnis verglichen.',
+  'adguard.setup_username': 'Benutzername',
+  'adguard.setup_password': 'Passwort',
+  'adguard.setup_app_password': 'App-Passwort (leer, wenn Pi-hole kein Passwort hat)',
+  'adguard.setup_step_adguard_login':
+    'Gib Benutzername und Passwort ein, mit denen du dich an der Weboberfläche von AdGuard Home anmeldest.',
+  'adguard.setup_step_pihole_open':
+    'Öffne Pi-hole und gehe zu Settings → Web interface / API; schalte auf Expert um.',
+  'adguard.setup_step_pihole_create': 'Klicke Configure app password und dann Enable new app password.',
+  'adguard.setup_step_pihole_copy':
+    'Kopiere das App-Passwort und füge es unten ein; Pi-hole zeigt es nur einmal.',
+  'adguard.setup_found': '{queries} Anfragen, {percent} % blockiert',
+  'speedtest.setup_token': 'API-Token',
+  'speedtest.setup_step_open':
+    'Öffne Speedtest Tracker, melde dich als Admin an und öffne API Tokens im Benutzermenü.',
+  'speedtest.setup_step_create': 'Lege ein Token namens Waylight mit der Berechtigung results:read an.',
+  'speedtest.setup_step_copy': 'Kopiere das Token und füge es unten ein; es wird nur einmal angezeigt.',
+  'speedtest.setup_latest': 'Letztes Ergebnis: ↓ {down} Mbit/s, ↑ {up} Mbit/s',
   'docker.update_available': 'Update verfügbar',
   'docker.update_available_for': 'Update verfügbar für {name}',
   'docker.newer_tag': 'Neuere Version {tag} verfügbar',

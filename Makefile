@@ -85,8 +85,8 @@ smoke: build ## Run the Playwright smoke test against a fresh instance
 
 .PHONY: check-generated
 check-generated: generate ## Fail if generated files are out of date
-	@test -z "$$(git status --porcelain -- $(WEB)/src/shared/api-client/generated)" || \
-		{ git status --short -- $(WEB)/src/shared/api-client/generated; echo "generated files are out of date: run make generate"; exit 1; }
+	@test -z "$$(git status --porcelain -- $(WEB)/src/shared/api-client/generated ee/web/src/generated)" || \
+		{ git status --short -- $(WEB)/src/shared/api-client/generated ee/web/src/generated; echo "generated files are out of date: run make generate"; exit 1; }
 
 .PHONY: test-deploy
 test-deploy: ## Test the server deploy script with stubbed git and docker (#211)

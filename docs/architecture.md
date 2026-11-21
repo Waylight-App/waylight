@@ -134,8 +134,8 @@ other; `src/app` wires them.
 ## API
 
 The HTTP API is described in OpenAPI 3.1: a shared base
-([`api/openapi.base.yaml`](https://github.com/itadori26/waylight/blob/main/api/openapi.base.yaml)) and one fragment per module
-([`api/modules/`](https://github.com/itadori26/waylight/tree/main/api/modules)), merged by `make openapi` into
+([`api/openapi.base.yaml`](https://github.com/Waylight-App/waylight/blob/main/api/openapi.base.yaml)) and one fragment per module
+([`api/modules/`](https://github.com/Waylight-App/waylight/tree/main/api/modules)), merged by `make openapi` into
 `dist/openapi.yaml` (also a build artifact of every CI run). TypeScript types for all DTOs are generated from the Go
 presenter and request DTOs with tygo (`make generate`).
 

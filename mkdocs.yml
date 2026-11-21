@@ -6,7 +6,7 @@
 #   pip install zensical && zensical serve
 site_name: waylight
 site_description: A self-hosted start page for your everyday life and your home server.
-repo_url: https://github.com/itadori26/waylight
+repo_url: https://github.com/Waylight-App/waylight
 edit_uri: edit/main/docs/
 docs_dir: docs
 
@@ -120,7 +120,7 @@ nav:
   - Security:
       - Security model: security-model.md
       - Outbound requests: outbound-requests.md
-      - Security policy: https://github.com/itadori26/waylight/blob/main/SECURITY.md
+      - Security policy: https://github.com/Waylight-App/waylight/blob/main/SECURITY.md
   - Develop:
       - Development setup: development.md
       - Developer guide: developer-guide.md
@@ -149,5 +149,5 @@ nav:
           - "ADR 0019: Extension without a server": adr/0019-extension-without-server.md
           - "ADR 0020: ee/ stays proprietary": adr/0020-ee-stays-proprietary.md
           - "ADR 0025: Push relay for the mobile app": adr/0025-push-relay.md
-      - Contributing: https://github.com/itadori26/waylight/blob/main/CONTRIBUTING.md
-      - Roadmap: https://github.com/itadori26/waylight/blob/main/ROADMAP.md
+      - Contributing: https://github.com/Waylight-App/waylight/blob/main/CONTRIBUTING.md
+      - Roadmap: https://github.com/Waylight-App/waylight/blob/main/ROADMAP.md

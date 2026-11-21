@@ -69,7 +69,7 @@
   {/if}
   <p class="muted">
     <a
-      href="https://github.com/itadori26/waylight/blob/main/docs/security-model.md#wireguard-export"
+      href="https://github.com/Waylight-App/waylight/blob/main/docs/security-model.md#wireguard-export"
       target="_blank"
       rel="noopener noreferrer">{t('common.why_extra_step')}</a
     >

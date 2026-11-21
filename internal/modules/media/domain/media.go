@@ -18,6 +18,14 @@ const (
 	ProviderPlex     Provider = "plex"
 )
 
+// Title is the product name of the provider.
+func (p Provider) Title() string {
+	if p == ProviderPlex {
+		return "Plex"
+	}
+	return "Jellyfin"
+}
+
 // ErrNotConfigured is returned while no media server is configured.
 var ErrNotConfigured = kernel.NewPublicError(kernel.ErrNotFound, "The media server is not configured yet.")
 
