@@ -3,6 +3,7 @@
   import Icon from '../shared/ui/icons/Icon.svelte';
   import type { AreaInfo, SettingsArea } from './settingsNav';
   import type { AreaStatus } from './settingsStatus';
+  import { attention } from './attention.svelte';
 
   /** Props of the settings start page (#600). */
   interface Props {
@@ -16,6 +17,14 @@
   }
   let { areas, statuses, recent, onarea, onsection }: Props = $props();
 </script>
+
+<!-- What stopped working or is not set up yet (#592), above everything else. -->
+{#if attention.count > 0}
+  <button type="button" class="attention" onclick={() => onsection('attention')}>
+    <span class="dot" aria-hidden="true"></span>
+    {attention.count === 1 ? t('attention.badge_one') : t('attention.badge', { n: attention.count })}
+  </button>
+{/if}
 
 <ul class="tiles" aria-label={t('settings.areas')}>
   {#each areas as a (a.id)}
@@ -52,6 +61,28 @@
 {/if}
 
 <style>
+  .attention {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    color: inherit;
+    background: color-mix(in srgb, var(--color-warning) 18%, transparent);
+    border: 1px solid var(--color-warning);
+    border-radius: var(--radius-small);
+    cursor: pointer;
+  }
+  .attention .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-warning);
+  }
   .tiles,
   .recent {
     list-style: none;
