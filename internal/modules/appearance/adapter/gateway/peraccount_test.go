@@ -77,6 +77,29 @@ func TestShowAdvancedIsNotInherited(t *testing.T) {
 	}
 }
 
+// TestAccessibilityIsPersonal: the accessibility options (#681) are stored
+// per account and not inherited from the admin's appearance.
+func TestAccessibilityIsPersonal(t *testing.T) {
+	repo := NewRepository(dbtest.Open(t, "appearance", Migrations()))
+	admin := kernel.WithPrincipal(context.Background(), kernel.AdminPrincipal())
+	anna := kernel.WithPrincipal(context.Background(), kernel.Principal{AccountID: "anna", Role: "member"})
+	access, err := domain.NewAccessibility("large", true, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a := domain.Default()
+	a.SetAccessibility(access)
+	if err := repo.Save(admin, a); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := repo.Load(admin); got.Accessibility() != access {
+		t.Fatalf("admin: %+v", got.Accessibility())
+	}
+	if got, _ := repo.Load(anna); got.Accessibility() != (domain.Accessibility{TextSize: domain.TextNormal}) {
+		t.Fatalf("anna inherited the admin's options: %+v", got.Accessibility())
+	}
+}
+
 // Migration 0008 keeps the single row as the owner's.
 func TestAppearanceMigrationKeepsTheRow(t *testing.T) {
 	ctx := context.Background()

@@ -10,7 +10,12 @@
   import MaintenanceBanner from '../features/notifications/ui/MaintenanceBanner.svelte';
   import { setLanguage, t } from '../shared/i18n';
   import { tick } from 'svelte';
-  import { type Appearance, cssVariables, defaultAppearance } from '../features/appearance';
+  import {
+    type Appearance,
+    accessibilityAttributes,
+    cssVariables,
+    defaultAppearance,
+  } from '../features/appearance';
   import { errorMessage } from '../shared/api-client/http';
   import { applyTheme } from '../shared/theme/theme';
   import type { Container } from './container';
@@ -237,6 +242,11 @@
   let dashboardState = $state<{ tabs: Tab[]; activeId: string }>({ tabs: [], activeId: '' });
   // CONFIG_FILE can own the dashboard; then the layout is read-only (#88).
   let dashboardManaged = $state(false);
+  // The simple view has no edit controls (#681).
+  const simpleView = $derived(!!appearance.simpleView);
+  $effect(() => {
+    if (simpleView) editing = false;
+  });
   $effect(() => {
     // Config as code and the appliance are the admin's business (ADR 0018).
     if (!modules?.has('transfer') || !container.auth.admin) return;
@@ -327,7 +337,7 @@
               display: ['E'],
               label: 'shortcuts.edit',
               run: () => {
-                if (!dashboardManaged) editing = !editing;
+                if (!dashboardManaged && !simpleView) editing = !editing;
               },
             }),
           ]),
@@ -394,6 +404,18 @@
 
   $effect(() => applyTheme(shownLook.theme));
   $effect(() => setLanguage(shownLook.language));
+
+  // Accessibility options (#681): text size, high contrast and the simple
+  // view are attributes of the root, so tokens.css and base.css apply them.
+  $effect(() => {
+    const root = document.documentElement;
+    const attrs = accessibilityAttributes(appearance);
+    for (const [name, value] of Object.entries(attrs)) {
+      if (value === undefined) root.removeAttribute(name);
+      else root.setAttribute(name, value);
+    }
+    return () => Object.keys(attrs).forEach((name) => root.removeAttribute(name));
+  });
 
   $effect(() => {
     const root = document.documentElement;
@@ -540,12 +562,12 @@
     },
     settings: (section) => ((settingsSection = section), (settingsOpen = true)),
     get addWidget() {
-      return container.auth.guest || dashboardManaged
+      return container.auth.guest || dashboardManaged || simpleView
         ? undefined
         : (query: string) => ((editing = true), dashboard?.openAddWidget(query));
     },
     get edit() {
-      return container.auth.guest || dashboardManaged ? undefined : () => (editing = true);
+      return container.auth.guest || dashboardManaged || simpleView ? undefined : () => (editing = true);
     },
     shortcuts: () => (shortcutHelp = true),
     get tour() {
@@ -657,7 +679,7 @@
     <AccountMenu
       initial={accountInitial}
       {editing}
-      canEdit={!container.auth.guest}
+      canEdit={!container.auth.guest && !simpleView}
       editLocked={dashboardManaged ? t('app.edit_managed') : ''}
       onedit={() => (editing = !editing)}
       onsettings={() => ((settingsSection = undefined), (settingsOpen = true))}
@@ -732,7 +754,8 @@
       profile={appearance.profile}
       tabBarTarget="header-tabs"
       onstate={(tabs, activeId) => (dashboardState = { tabs, activeId })}
-      onedit={container.auth.guest || dashboardManaged ? undefined : () => (editing = true)}
+      onedit={container.auth.guest || dashboardManaged || simpleView ? undefined : () => (editing = true)}
+      {simpleView}
       globalBackground={appearance.backgroundImage}
       onappearance={(a) => (appearance = a)}
       ondone={() => (editing = false)}

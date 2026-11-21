@@ -33,6 +33,8 @@
     globalBackground?: string;
     /** Reports a global background saved from the dashboard. */
     onappearance?: (a: Appearance) => void;
+    /** The simple view of the accessibility options (#681). */
+    simpleView?: boolean;
   }
   let {
     container,
@@ -45,6 +47,7 @@
     ondone,
     globalBackground = '',
     onappearance,
+    simpleView = false,
   }: Props = $props();
 
   let view = $state<{
@@ -120,15 +123,17 @@
     return definitionFor(widget.kind)?.compact?.(widget.config);
   }
 
-  // Zoned tabs hide widgets with nothing to show (#619). Whether a widget is
-  // empty is part of its module's compact state, so the modules of the
-  // active zoned tab are asked in the background.
+  // Zoned tabs and the simple view hide widgets with nothing to show (#619,
+  // #681). Whether a widget is empty is part of its module's compact state,
+  // so the modules of the active tab are asked in the background.
   let shown = $state<Tab | undefined>();
   const emptyModules = new SvelteSet<string>();
-  const zonedModules = $derived(
-    shown?.zoned ? [...new Set(shown.widgets.flatMap((w) => compactModule(w) ?? []))].sort() : [],
+  const quietModules = $derived(
+    shown && (shown.zoned || simpleView)
+      ? [...new Set(shown.widgets.flatMap((w) => compactModule(w) ?? []))].sort()
+      : [],
   );
-  const zonedKey = $derived(zonedModules.join(','));
+  const quietKey = $derived(quietModules.join(','));
   async function loadEmpty(modules: string[]) {
     const results = await Promise.allSettled(modules.map((m) => container.compact.state(m)));
     results.forEach((r, i) => {
@@ -140,8 +145,8 @@
   }
   const poll = usePolling();
   $effect(() => {
-    if (zonedKey === '') return;
-    const modules = zonedKey.split(',');
+    if (quietKey === '') return;
+    const modules = quietKey.split(',');
     return poll(() => loadEmpty(modules), COMPACT_REFRESH_MS);
   });
   function reportState(tabs: Tab[], activeId: string) {
@@ -199,6 +204,7 @@
   statusWidget={(widget) => !!definitionFor(widget.kind)?.alerts && compactModule(widget) !== undefined}
   compactExample={container.localMode ? undefined : (kind) => definitionFor(kind)?.compactExample?.()}
   systemZone={container.localMode || container.auth.admin}
+  simple={simpleView}
   emptyWidget={(widget) => {
     const module = compactModule(widget);
     return module !== undefined && emptyModules.has(module);

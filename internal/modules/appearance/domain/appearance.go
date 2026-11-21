@@ -42,6 +42,54 @@ type Appearance struct {
 	profile        Profile
 	// showAdvanced lists settings for developers and power users (#602).
 	showAdvanced bool
+	// access holds the account's accessibility options (#681).
+	access Accessibility
+}
+
+// TextSize scales the whole interface, text and spacing (#681).
+type TextSize string
+
+// Text sizes; normal is the default.
+const (
+	TextNormal TextSize = "normal"
+	TextLarge  TextSize = "large"
+	TextLarger TextSize = "larger"
+)
+
+// Accessibility holds the options for people with low vision or who find
+// the full dashboard overwhelming (#681). They belong to one account and
+// are never inherited from another one.
+type Accessibility struct {
+	TextSize TextSize
+	// HighContrast replaces the colours with a high-contrast variant of the
+	// light or dark scheme.
+	HighContrast bool
+	// SimpleView shows one column of compact views without edit controls.
+	SimpleView bool
+}
+
+// NewAccessibility validates the options; an empty text size is normal.
+func NewAccessibility(textSize string, highContrast, simpleView bool) (Accessibility, error) {
+	switch TextSize(textSize) {
+	case "":
+		textSize = string(TextNormal)
+	case TextNormal, TextLarge, TextLarger:
+	default:
+		return Accessibility{}, kernel.NewValidationError("textSize", "The text size must be normal, large or larger.")
+	}
+	return Accessibility{TextSize: TextSize(textSize), HighContrast: highContrast, SimpleView: simpleView}, nil
+}
+
+// SetAccessibility sets the accessibility options.
+func (a *Appearance) SetAccessibility(acc Accessibility) { a.access = acc }
+
+// Accessibility returns the accessibility options; the zero value of a
+// fresh appearance reads as normal text without other options.
+func (a Appearance) Accessibility() Accessibility {
+	if a.access.TextSize == "" {
+		a.access.TextSize = TextNormal
+	}
+	return a.access
 }
 
 // Profile says what the start page is about (#281): everyday topics only,
@@ -162,7 +210,7 @@ func (a Appearance) WithScheme(theme Theme, accentColor string) (Appearance, err
 		return Appearance{}, err
 	}
 	b.language, b.greetingName, b.greetingMoment, b.launcher, b.profile = a.language, a.greetingName, a.greetingMoment, a.launcher, a.profile
-	b.showAdvanced = a.showAdvanced
+	b.showAdvanced, b.access = a.showAdvanced, a.access
 	return b, nil
 }
 

@@ -20,6 +20,9 @@ export function appearanceExport(a: Appearance): ExportTables {
         greeting_moment: a.greetingMoment ? 1 : 0,
         launcher: a.launcher,
         profile: a.profile,
+        text_size: a.textSize ?? 'normal',
+        high_contrast: a.highContrast ? 1 : 0,
+        simple_view: a.simpleView ? 1 : 0,
       },
     ],
   };

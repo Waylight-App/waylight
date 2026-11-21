@@ -24,6 +24,14 @@ type AppearanceDTO struct {
 	// ShowAdvanced lists settings for developers and power users (#602);
 	// always sent in answers, omitted on PUT to keep the stored value.
 	ShowAdvanced *bool `json:"showAdvanced,omitempty"`
+	// TextSize scales the whole interface (#681); empty on PUT keeps it.
+	TextSize string `json:"textSize,omitempty" tstype:"'normal' | 'large' | 'larger'"`
+	// HighContrast switches to the high-contrast colours of the scheme
+	// (#681); always sent in answers, omitted on PUT to keep the stored value.
+	HighContrast *bool `json:"highContrast,omitempty"`
+	// SimpleView shows one column of compact views without edit controls
+	// (#681); always sent in answers, omitted on PUT to keep the stored value.
+	SimpleView *bool `json:"simpleView,omitempty"`
 	// ThemeLocked: the organisation set theme and accent colour (#305); a
 	// change to them is ignored. Never read from a PUT.
 	ThemeLocked bool `json:"themeLocked,omitempty"`
@@ -33,7 +41,7 @@ type AppearanceDTO struct {
 func Appearance(r usecase.AppearanceResponse) AppearanceDTO {
 	return AppearanceDTO{Theme: r.Theme, AccentColor: r.AccentColor, BackgroundImage: r.BackgroundImage, CustomCSS: r.CustomCSS, Language: r.Language,
 		GreetingName: r.GreetingName, GreetingMoment: r.GreetingMoment, Launcher: r.Launcher, Profile: r.Profile, ThemeLocked: r.ThemeLocked,
-		ShowAdvanced: &r.ShowAdvanced}
+		ShowAdvanced: &r.ShowAdvanced, TextSize: r.TextSize, HighContrast: &r.HighContrast, SimpleView: &r.SimpleView}
 }
 
 // ThemeDTO is a gallery theme.

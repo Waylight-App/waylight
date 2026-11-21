@@ -78,6 +78,12 @@ func TestStyleKeepsPersonalSettings(t *testing.T) {
 		t.Fatal(err)
 	}
 	a.SetGreetingMoment(true)
+	a.SetShowAdvanced(true)
+	access, err := NewAccessibility("larger", true, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a.SetAccessibility(access)
 	styled, err := a.WithStyle("/* waylight theme: x */", ThemeDark, "")
 	if err != nil {
 		t.Fatal(err)
@@ -87,8 +93,25 @@ func TestStyleKeepsPersonalSettings(t *testing.T) {
 		t.Fatal(err)
 	}
 	for name, b := range map[string]Appearance{"style": styled, "scheme": schemed} {
-		if b.Profile() != ProfileEveryday || b.GreetingName() != "Alex" || !b.GreetingMoment() {
+		if b.Profile() != ProfileEveryday || b.GreetingName() != "Alex" || !b.GreetingMoment() || !b.ShowAdvanced() || b.Accessibility() != access {
 			t.Errorf("%s: %+v", name, b)
 		}
+	}
+}
+
+func TestAccessibility(t *testing.T) {
+	if got := Default().Accessibility(); got != (Accessibility{TextSize: TextNormal}) {
+		t.Fatalf("default: %+v", got)
+	}
+	for _, size := range []string{"", "normal", "large", "larger"} {
+		if _, err := NewAccessibility(size, false, false); err != nil {
+			t.Errorf("%q: %v", size, err)
+		}
+	}
+	if acc, _ := NewAccessibility("", false, false); acc.TextSize != TextNormal {
+		t.Errorf("empty text size is normal: %+v", acc)
+	}
+	if _, err := NewAccessibility("huge", false, false); err == nil {
+		t.Error("unknown text size accepted")
 	}
 }

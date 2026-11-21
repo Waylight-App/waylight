@@ -2,7 +2,7 @@
   import { backgroundCss } from '../../../shared/theme/background';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
-  import type { Appearance } from '../domain/appearance';
+  import { type Appearance, parseTextSize, TEXT_SIZES } from '../domain/appearance';
   import type { AppearanceUseCases } from '../usecase/appearanceUseCases';
   import ThemeGallery from './ThemeGallery.svelte';
 
@@ -18,7 +18,7 @@
   let { appearance, current, onchange, advanced = true }: Props = $props();
 
   // svelte-ignore state_referenced_locally
-  let form = $state<Appearance>({ ...current });
+  let form = $state<Appearance>({ ...current, textSize: parseTextSize(current.textSize) });
   let error = $state('');
   let saved = $state(false);
   let picking = $state(false);
@@ -114,6 +114,27 @@
       >
     </span>
   </div>
+  <fieldset class="access" id="settings-accessibility">
+    <legend>{t('appearance.accessibility')}</legend>
+    <label class="field">
+      <span>{t('appearance.text_size')}</span>
+      <select class="input" bind:value={form.textSize}>
+        {#each TEXT_SIZES as size (size)}
+          <option value={size}>{t(`appearance.text_size_${size}`)}</option>
+        {/each}
+      </select>
+    </label>
+    <label class="check">
+      <input type="checkbox" bind:checked={form.highContrast} aria-describedby="high-contrast-hint" />
+      <span>{t('appearance.high_contrast')}</span>
+    </label>
+    <p class="muted small hint" id="high-contrast-hint">{t('appearance.high_contrast_hint')}</p>
+    <label class="check">
+      <input type="checkbox" bind:checked={form.simpleView} aria-describedby="simple-view-hint" />
+      <span>{t('appearance.simple_view')}</span>
+    </label>
+    <p class="muted small hint" id="simple-view-hint">{t('appearance.simple_view_hint')}</p>
+  </fieldset>
   {#if advanced || current.customCss.trim() !== ''}
     <label class="field">
       <span>{t('appearance.custom_css_override_variables_such_as')}</span>
@@ -178,5 +199,18 @@
   .small {
     font-size: 0.85em;
     margin: 0;
+  }
+  .access {
+    margin: 0 0 var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+  }
+  .access legend {
+    padding: 0 var(--space-1);
+    font-weight: 600;
+  }
+  .hint {
+    margin: 0 0 var(--space-2);
   }
 </style>

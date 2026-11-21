@@ -7,7 +7,7 @@ import type {
   ThemeDTO,
 } from '../../../../shared/api-client/generated/appearance';
 import type { BackgroundLibrary, UploadedBackground } from '../../domain/backgrounds';
-import type { Appearance } from '../../domain/appearance';
+import { type Appearance, parseTextSize } from '../../domain/appearance';
 import type { ThemeGallery, ThemeInfo } from '../../domain/themes';
 import type { AppearanceGateway } from '../../usecase/appearanceUseCases';
 
@@ -23,6 +23,9 @@ const toAppearance = (d: AppearanceDTO): Appearance => ({
   profile: d.profile === 'everyday' ? 'everyday' : 'homelab',
   themeLocked: d.themeLocked ?? false,
   showAdvanced: d.showAdvanced ?? false,
+  textSize: parseTextSize(d.textSize),
+  highContrast: d.highContrast ?? false,
+  simpleView: d.simpleView ?? false,
 });
 
 /** AppearanceGateway backed by the REST API. */

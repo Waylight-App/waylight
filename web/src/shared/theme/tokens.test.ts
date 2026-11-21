@@ -42,37 +42,69 @@ function contrast(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-describe('contrast of the light and dark tokens (#113)', () => {
-  const css = readFileSync(join(__dirname, 'tokens.css'), 'utf8');
-  const split = css.indexOf(":root[data-theme='dark']");
-  const read = (block: string) =>
-    Object.fromEntries(
-      [...block.matchAll(/(--color-[a-z0-9-]+):\s*(#[0-9a-f]{3,6})\b/gi)].map((m) => [m[1], m[2]]),
+/** Colour tokens of every rule in tokens.css, by selector. */
+function blocks(css: string): Map<string, Record<string, string>> {
+  const out = new Map<string, Record<string, string>>();
+  const plain = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  for (const [, selector = '', body = ''] of plain.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+    out.set(
+      selector.trim(),
+      Object.fromEntries(
+        [...body.matchAll(/(--color-[a-z0-9-]+):\s*(#[0-9a-f]{3,6})\b/gi)].map((m) => [m[1], m[2]]),
+      ),
     );
-  const light = read(css.slice(0, split));
-  const dark = { ...light, ...read(css.slice(split)) };
+  }
+  return out;
+}
+
+const pairs: [string, string[]][] = [
+  ['--color-text', ['--color-bg', '--color-surface', '--color-surface-2']],
+  ['--color-text-muted', ['--color-bg', '--color-surface', '--color-surface-2']],
+  ['--color-accent-text', ['--color-surface', '--color-surface-2']],
+  ['--color-danger', ['--color-surface', '--color-surface-2']],
+  ['--color-success', ['--color-surface', '--color-surface-2']],
+  ['--color-warning', ['--color-surface', '--color-surface-2']],
+  ['--color-accent-contrast', ['--color-accent']],
+];
+
+function failing(t: Record<string, string>, min: number): string[] {
+  return pairs.flatMap(([fg, bgs]) =>
+    bgs
+      .map((bg) => [bg, contrast(t[fg] ?? '#000', t[bg] ?? '#fff')] as const)
+      .filter(([, c]) => c < min)
+      .map(([bg, c]) => `${fg} on ${bg}: ${c.toFixed(2)}`),
+  );
+}
+
+const rules = blocks(readFileSync(join(__dirname, 'tokens.css'), 'utf8'));
+const light = rules.get(':root') ?? {};
+const dark = { ...light, ...rules.get(":root[data-theme='dark']") };
+
+describe('contrast of the light and dark tokens (#113)', () => {
   // --color-accent-text is var(--color-accent) unless a theme sets it (#504).
   const schemes = {
-    light: { ...light, '--color-accent-text': light['--color-accent'] },
-    dark: { ...dark, '--color-accent-text': dark['--color-accent'] },
+    light: { ...light, '--color-accent-text': light['--color-accent'] ?? '' },
+    dark: { ...dark, '--color-accent-text': dark['--color-accent'] ?? '' },
   };
-  const pairs: [string, string[]][] = [
-    ['--color-text', ['--color-bg', '--color-surface', '--color-surface-2']],
-    ['--color-text-muted', ['--color-bg', '--color-surface', '--color-surface-2']],
-    ['--color-accent-text', ['--color-surface', '--color-surface-2']],
-    ['--color-danger', ['--color-surface', '--color-surface-2']],
-    ['--color-success', ['--color-surface', '--color-surface-2']],
-    ['--color-warning', ['--color-surface', '--color-surface-2']],
-    ['--color-accent-contrast', ['--color-accent']],
-  ];
 
   it.each(Object.entries(schemes))('%s meets WCAG AA (4.5:1) for text', (_name, t) => {
-    const failing = pairs.flatMap(([fg, bgs]) =>
-      bgs
-        .map((bg) => [bg, contrast(t[fg] ?? '#000', t[bg] ?? '#fff')] as const)
-        .filter(([, c]) => c < 4.5)
-        .map(([bg, c]) => `${fg} on ${bg}: ${c.toFixed(2)}`),
-    );
-    expect(failing).toEqual([]);
+    expect(failing(t, 4.5)).toEqual([]);
+  });
+});
+
+describe('contrast of the high-contrast tokens (#681)', () => {
+  const highLight = rules.get(":root:root:root[data-contrast='high']") ?? {};
+  const highDark = { ...highLight, ...rules.get(":root:root:root[data-contrast='high'][data-theme='dark']") };
+
+  it('sets every colour the checks need', () => {
+    for (const t of [highLight, highDark])
+      for (const [fg, bgs] of pairs) for (const name of [fg, ...bgs]) expect(t[name], name).toBeDefined();
+  });
+
+  it.each([
+    ['light', highLight],
+    ['dark', highDark],
+  ])('%s meets WCAG AAA (7:1) for text', (_name, t) => {
+    expect(failing(t, 7)).toEqual([]);
   });
 });
