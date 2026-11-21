@@ -1449,6 +1449,22 @@ export const en = {
   'speedtest.min_up': 'Notify below upload (Mbit/s, 0 = off)',
   'speedtest.threshold_hint':
     'The token is stored encrypted and never shown again. Thresholds are checked against the latest result.',
+  'adguard.setup_username': 'User name',
+  'adguard.setup_password': 'Password',
+  'adguard.setup_app_password': 'App password (empty if Pi-hole has no password)',
+  'adguard.setup_step_adguard_login':
+    'Enter the user name and password you sign in to the AdGuard Home web interface with.',
+  'adguard.setup_step_pihole_open':
+    'Open Pi-hole and go to Settings → Web interface / API; switch to Expert.',
+  'adguard.setup_step_pihole_create': 'Press Configure app password and then Enable new app password.',
+  'adguard.setup_step_pihole_copy': 'Copy the app password and paste it below; Pi-hole shows it only once.',
+  'adguard.setup_found': '{queries} queries, {percent} % blocked',
+  'speedtest.setup_token': 'API token',
+  'speedtest.setup_step_open':
+    'Open Speedtest Tracker, sign in as admin and open API Tokens in the user menu.',
+  'speedtest.setup_step_create': 'Create a token named Waylight with the ability results:read.',
+  'speedtest.setup_step_copy': 'Copy the token and paste it below; it is shown only once.',
+  'speedtest.setup_latest': 'Latest result: ↓ {down} Mbit/s, ↑ {up} Mbit/s',
   'docker.update_available': 'Update available',
   'docker.update_available_for': 'Update available for {name}',
   'docker.newer_tag': 'Newer version {tag} available',

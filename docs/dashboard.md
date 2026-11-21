@@ -229,9 +229,12 @@ accepted, nothing answers at the address, something other than the expected
 service answers there, or the certificate is not trusted.
 
 The assistant exists for Immich, Home Assistant, the Nextcloud calendar,
-Nextcloud, Grafana and Proxmox VE so far. Proxmox usually runs with a
-self-signed certificate; pin it under Settings → Proxmox VE, the assistant
-does not ask for the fingerprint. For the calendar you enter the Nextcloud address, your user name and
+Nextcloud, Grafana, Proxmox VE, Sonarr, Radarr and Prowlarr, Jellyfin and
+Plex, AdGuard Home, Pi-hole and Speedtest Tracker so far. Where one widget
+covers several products, the address step asks which one runs there. Proxmox
+usually runs with a self-signed certificate; pin it under Settings → Proxmox
+VE, the assistant does not ask for the fingerprint. Speedtest thresholds stay
+off until you set them under Settings → Speedtest Tracker. For the calendar you enter the Nextcloud address, your user name and
 an app password; Waylight finds your calendars itself. Immich and Home
 Assistant are set up for the whole instance, so only admins see *Set up*
 there; every account can connect its own calendar. The settings pages stay

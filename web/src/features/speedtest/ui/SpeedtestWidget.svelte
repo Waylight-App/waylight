@@ -1,4 +1,6 @@
 <script lang="ts">
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { speedtestSetup } from './speedtestSetup';
   import { usePolling } from '../../../shared/refresh';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
@@ -17,9 +19,14 @@
   let data = $state<SpeedResults | null>(null);
   let error = $state('');
   let missing = $state(false);
+  // Bumped after the setup assistant saved, so the effect loads again.
+  let reload = $state(0);
+  // svelte-ignore state_referenced_locally
+  const setup = speedtestSetup(speedtest);
 
   $effect(() => {
     const hours = range;
+    void reload;
     const load = () =>
       speedtest
         .results(hours)
@@ -33,8 +40,10 @@
   });
 </script>
 
-{#if error && !data}
-  <p class={missing ? 'muted' : 'error'}>{error}</p>
+{#if missing && !data}
+  <SetupInPlace text={error} descriptor={setup} instance ondone={() => reload++} />
+{:else if error && !data}
+  <p class="error">{error}</p>
 {:else if data}
   {#if data.latest}
     <div class="latest">

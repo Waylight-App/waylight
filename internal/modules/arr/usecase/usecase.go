@@ -127,7 +127,7 @@ func (uc *arr) DeleteInstance(ctx context.Context, id string) error {
 
 func (uc *arr) save(ctx context.Context, in domain.Instance) (InstanceView, error) {
 	if err := uc.d.Providers[in.App].Check(ctx, in); err != nil {
-		return InstanceView{}, kernel.NewPublicErrorf(kernel.ErrInvalid, "Could not connect to {app}: {detail}", "app", in.App.Title(), "detail", err.Error())
+		return InstanceView{}, kernel.SetupFailure(in.App.Title(), err)
 	}
 	if err := uc.d.Repo.Save(ctx, in); err != nil {
 		return InstanceView{}, fmt.Errorf("save instance: %w", err)

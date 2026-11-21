@@ -23,6 +23,10 @@ export const en = {
   'arr.delete': 'Delete {name}',
   'arr.invalid_url': 'The URL must start with http:// or https://.',
   'arr.key_required': 'Please enter the API key.',
+  'arr.setup_api_key': 'API key',
+  'arr.setup_step_open': 'Open the app and go to Settings → General.',
+  'arr.setup_step_copy': 'Copy the API key under Security and paste it below.',
+  'arr.setup_found': '{upcoming} upcoming, {queue} downloads',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

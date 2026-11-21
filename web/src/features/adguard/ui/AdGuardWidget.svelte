@@ -1,5 +1,6 @@
 <script lang="ts">
-  import EmptyState from '../../../shared/ui/EmptyState.svelte';
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { adguardSetup } from './adguardSetup';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -23,6 +24,9 @@
   let { adguard, config }: Props = $props();
   const provider = $derived(parseWidgetConfig(config).provider);
   const poll = usePolling();
+  const setup = $derived(adguardSetup(adguard, provider));
+  // Bumped after the setup assistant saved, so the effect loads again.
+  let reload = $state(0);
 
   const POLL_MS = 60_000;
   let stats = $state<AdGuardStats | null>(null);
@@ -62,6 +66,7 @@
   }
 
   $effect(() => {
+    void reload;
     const load = () =>
       adguard
         .stats(provider)
@@ -76,10 +81,20 @@
 </script>
 
 {#if unconfigured}
-  <EmptyState
-    text={t('adguard.connect_under_settings', { name: providerName(provider) })}
-    section="adguard"
-  />
+  {#key provider}
+    <SetupInPlace
+      text={t('adguard.connect_under_settings', { name: providerName(provider) })}
+      descriptor={setup}
+      instance
+      ondone={() => {
+        reload++;
+        void adguard
+          .settings(provider)
+          .then((s) => (canPause = s.configured && s.canPause))
+          .catch(() => undefined);
+      }}
+    />
+  {/key}
 {:else if error && !stats}
   <p class="error">{error}</p>
 {:else if stats}
