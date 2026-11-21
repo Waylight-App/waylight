@@ -51,4 +51,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // Nothing to set up. Open Settings → Backups to schedule backups or run one now.
   srv_e6445a9fd56b56f5:
     'Es gibt nichts einzurichten. Unter Einstellungen → Sicherungen planst du Sicherungen oder startest gleich eine.',
+  // Confirm that the current data will be replaced.
+  srv_506b0c1275fcfbcd: 'Bitte bestätigen, dass die aktuellen Daten ersetzt werden.',
+  // The current data could not be saved as a safety copy, so nothing was restored. Check the free disk space.
+  srv_6553cb293510ae71:
+    'Die aktuellen Daten konnten nicht als Sicherheitskopie gespeichert werden, deshalb wurde nichts wiederhergestellt. Bitte den freien Speicherplatz prüfen.',
 };

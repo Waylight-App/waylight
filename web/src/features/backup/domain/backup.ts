@@ -30,24 +30,56 @@ export interface RemoteSettingsInput {
 /** Where a restored backup comes from. */
 export type RestoreSource = 'local' | 'remote' | 'upload';
 
-/** A restore request; password (and code with 2FA) are re-entered. */
+/**
+ * A restore request; password (and code with 2FA) are re-entered and the
+ * owner confirms that the current data will be replaced.
+ */
 export interface RestoreRequest {
   password: string;
   code: string;
+  confirmed: boolean;
   source: RestoreSource;
   name?: string;
   file?: File;
 }
+
+/** The server takes this exact word as the confirmation. */
+const CONFIRM_WORD = 'replace';
 
 /** Builds the multipart body; the file must come last (it is streamed). */
 export function restoreForm(req: RestoreRequest): FormData {
   const form = new FormData();
   form.append('password', req.password);
   form.append('code', req.code.trim());
+  if (req.confirmed) form.append('confirm', CONFIRM_WORD);
   form.append('source', req.source);
   if (req.name) form.append('name', req.name);
   if (req.file) form.append('file', req.file);
   return form;
+}
+
+/** Why a backup cannot be restored, as the server says it. */
+export interface RestoreProblem {
+  message: string;
+  messageKey: string;
+  params?: Record<string, string>;
+}
+
+/** What a stored backup contains, checked before a restore (#677). */
+export interface BackupPreview {
+  file: BackupFile;
+  restorable: boolean;
+  problem: RestoreProblem | null;
+  modules: number;
+  tabs: number;
+  widgets: number;
+  /** Schema updates the next start applies to an older backup. */
+  updates: number;
+}
+
+/** The answer to a restore: the backup that holds the state before it. */
+export interface RestoreResult {
+  safetyCopy: BackupFile;
 }
 
 /** Traffic light of the backups (#677), judged by the server. */

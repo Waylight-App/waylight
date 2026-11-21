@@ -45,3 +45,34 @@ export interface RemoteSettingsDTO {
   hasPassword: boolean;
   retention: number /* int */;
 }
+
+//////////
+// source: restore.go
+
+/**
+ * RestoredDTO answers POST /api/backups/restore (#677).
+ */
+export interface RestoredDTO {
+  status: string;
+  safetyCopy: FileDTO;
+}
+/**
+ * ProblemDTO is why a backup cannot be restored, as a translatable message.
+ */
+export interface ProblemDTO {
+  message: string;
+  messageKey: string;
+  params?: { [key: string]: string};
+}
+/**
+ * PreviewDTO answers GET /api/backups/{name}/preview (#677).
+ */
+export interface PreviewDTO {
+  file: FileDTO;
+  restorable: boolean;
+  problem?: ProblemDTO;
+  modules: number /* int */;
+  tabs: number /* int */;
+  widgets: number /* int */;
+  updates: number /* int */;
+}

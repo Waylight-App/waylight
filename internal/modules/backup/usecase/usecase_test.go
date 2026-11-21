@@ -87,3 +87,26 @@ func TestBackups(t *testing.T) {
 	}
 	_ = rc.Close()
 }
+
+// The safety copy before a restore is an ordinary backup that keeps every
+// existing one, so the backup chosen for the restore cannot be pruned.
+func TestSafetyCopyPrunesNothing(t *testing.T) {
+	ctx := context.Background()
+	c := &clk{t: time.Date(2026, 11, 21, 3, 0, 0, 0, time.UTC)}
+	store := &memStore{files: map[string]domain.File{}}
+	policy, _ := domain.NewPolicy(24*time.Hour, 1)
+	uploads := 0
+	uc := NewBackups(policy, &fakeSnap{store: store, clock: c}, store, c,
+		WithAfterBackup(func(context.Context, FileView) { uploads++ }))
+	if _, err := uc.BackupNow(ctx); err != nil {
+		t.Fatal(err)
+	}
+	// In the same second as the backup: the copy moves to the next second.
+	f, err := uc.SafetyCopy(ctx)
+	if err != nil || f.Name != domain.FileName(c.t.Add(time.Second)) {
+		t.Fatalf("safety copy: %+v %v", f, err)
+	}
+	if len(store.files) != 2 || uploads != 1 {
+		t.Fatalf("files %d, uploads %d", len(store.files), uploads)
+	}
+}

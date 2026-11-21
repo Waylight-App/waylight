@@ -1,9 +1,11 @@
 import type {
   BackupFile,
+  BackupPreview,
   BackupStatus,
   RemoteSettings,
   RemoteSettingsInput,
   RestoreRequest,
+  RestoreResult,
 } from '../domain/backup';
 
 /** Output port: backup backend. */
@@ -15,7 +17,8 @@ export interface BackupGateway {
   testRemote(input: RemoteSettingsInput): Promise<void>;
   disableRemote(): Promise<void>;
   listRemote(): Promise<BackupFile[]>;
-  restore(req: RestoreRequest): Promise<void>;
+  restore(req: RestoreRequest): Promise<RestoreResult>;
+  preview(name: string): Promise<BackupPreview>;
   status(): Promise<BackupStatus>;
 }
 
@@ -65,8 +68,16 @@ export class BackupUseCases {
     return newestFirst(await this.gateway.listRemote());
   }
 
-  /** Restores a backup; the server restarts afterwards. */
-  restore(req: RestoreRequest): Promise<void> {
+  /** Checks a local backup before it is restored (#677). */
+  preview(name: string): Promise<BackupPreview> {
+    return this.gateway.preview(name);
+  }
+
+  /**
+   * Restores a backup; the server saves the current state as a safety copy
+   * first and restarts afterwards.
+   */
+  restore(req: RestoreRequest): Promise<RestoreResult> {
     return this.gateway.restore(req);
   }
 }

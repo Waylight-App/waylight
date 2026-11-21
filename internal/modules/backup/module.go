@@ -88,7 +88,7 @@ func New(cfg Config, db *sql.DB, clock kernel.Clock) (*Module, error) {
 	if cfg.Swapper != nil && cfg.Reauth != nil && cfg.Restart != nil {
 		restorer := usecase.NewRestorer(usecase.RestoreDeps{Store: store, Remote: gateway.NewWebDAV(cfg.Client),
 			RemoteCfg: gateway.NewRemoteSettingsRepository(db, cfg.Cipher), Inspector: gateway.NewInspector(db),
-			Swapper: cfg.Swapper, Reauth: cfg.Reauth, Alerts: cfg.Alerts, Restart: cfg.Restart})
+			Swapper: cfg.Swapper, Reauth: cfg.Reauth, Safety: uc, Alerts: cfg.Alerts, Restart: cfg.Restart})
 		m.restore = controller.NewRestoreHandlers(restorer, MaxRestoreBytes)
 	}
 	return m, nil
@@ -115,6 +115,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/backups/remote/test", m.remote.Test)
 	if m.restore != nil {
 		r.Protected("POST /api/backups/restore", m.restore.Restore)
+		r.Protected("GET /api/backups/{name}/preview", m.restore.Preview)
 	}
 	r.Protected("GET /api/backups/{name}", m.handlers.Download)
 }

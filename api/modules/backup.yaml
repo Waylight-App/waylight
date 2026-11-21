@@ -158,6 +158,14 @@ paths:
       summary: "Compact state of the backup health widget (#677); owner only"
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
+  /api/backups/{name}/preview:
+    get:
+      tags: [backup]
+      summary: "Check a stored backup before restoring it (#677): integrity, version, tabs, widgets, modules and the schema updates the next start would apply; read-only, owner only"
+      parameters: [{ name: name, in: path, required: true, schema: { type: string, pattern: '^waylight-\d{8}-\d{6}\.db$' } }]
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/BackupPreview" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/backups/{name}:
     get:
       tags: [backup]
@@ -195,9 +203,11 @@ paths:
       tags: [backup]
       summary: Restore a backup and restart (owner only; password and 2FA code are re-checked)
       description: >
-        multipart/form-data with password, code, source (local | remote | upload), name (local/remote) and, last, file
-        (upload). The file is validated (integrity, waylight schema not newer than the running version) before the
-        swap is scheduled; the previous database is kept as waylight.db.before-restore.
+        multipart/form-data with password, code, confirm (must be "replace"), source (local | remote | upload), name
+        (local/remote) and, last, file (upload). The file is validated (integrity, waylight schema not newer than the
+        running version) before anything changes. The current state is then saved as a new backup (the safety copy,
+        returned as safetyCopy) and the swap is scheduled; the previous database file is also kept as
+        waylight.db.before-restore.
       requestBody:
         required: true
         content:
@@ -207,14 +217,16 @@ paths:
               properties:
                 password: { type: string }
                 code: { type: string }
+                confirm: { type: string, enum: [replace] }
                 source: { type: string, enum: [local, remote, upload] }
                 name: { type: string }
                 file: { type: string, format: binary }
       responses:
-        "202": { description: Restore scheduled, the server restarts }
+        "202": { description: "Restore scheduled, the server restarts: {status: restarting, safetyCopy: BackupFile}" }
         "401": { description: Wrong password or code }
-        "403": { description: Guests and API tokens cannot restore }
-        "422": { description: Not a valid or too new backup }
+        "403": { description: Only the owner's own session can restore }
+        "422": { description: Not confirmed, or not a valid or too new backup }
+        "502": { description: The safety copy could not be written; nothing changed }
 
 schemas:
   BackupStatus:
@@ -230,4 +242,19 @@ schemas:
       error: { type: string }
       offsiteFailedAt: { type: [string, "null"], format: date-time }
       offsiteError: { type: string }
+  BackupPreview:
+    type: object
+    required: [file, restorable, problem, modules, tabs, widgets, updates]
+    properties:
+      file: { $ref: "#/components/schemas/BackupFile" }
+      restorable: { type: boolean }
+      problem:
+        description: Why the backup cannot be restored; null when it can
+        oneOf:
+          - type: "null"
+          - { type: object, properties: { message: { type: string }, messageKey: { type: string }, params: { type: object, additionalProperties: { type: string } } } }
+      modules: { type: integer }
+      tabs: { type: integer }
+      widgets: { type: integer }
+      updates: { type: integer, description: Schema updates applied on the next start because the backup is older }
   BackupFile: { type: object, properties: { name: { type: string }, size: { type: integer }, createdAt: { type: string, format: date-time } } }

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"time"
@@ -28,6 +29,7 @@ type Backups interface {
 	Open(ctx context.Context, name string) (io.ReadCloser, FileView, error)
 	// Status returns the traffic light of the backups (#677).
 	Status(ctx context.Context) (StatusView, error)
+	SafetyCopier
 }
 
 // Snapshotter writes a consistent copy of the live database (output port).
@@ -114,13 +116,28 @@ func (uc *backups) BackupNow(ctx context.Context) (FileView, error) {
 	return f, nil
 }
 
+// SafetyCopy implements SafetyCopier: a backup of the current state before
+// a restore. It prunes nothing and skips the off-site upload, which the
+// restart right after it would cut off.
+func (uc *backups) SafetyCopy(ctx context.Context) (FileView, error) {
+	return uc.snapshot(ctx, uc.clock.Now())
+}
+
 func (uc *backups) backup(ctx context.Context, now time.Time) (FileView, error) {
-	name := domain.FileName(now)
+	f, err := uc.snapshot(ctx, now)
+	if err != nil {
+		return FileView{}, err
+	}
+	return f, uc.prune(ctx)
+}
+
+func (uc *backups) snapshot(ctx context.Context, now time.Time) (FileView, error) {
+	name, err := uc.freeName(now)
+	if err != nil {
+		return FileView{}, err
+	}
 	if err := uc.snap.SnapshotTo(ctx, uc.store.Path(name)); err != nil {
 		return FileView{}, fmt.Errorf("create backup: %w", err)
-	}
-	if err := uc.prune(ctx); err != nil {
-		return FileView{}, err
 	}
 	rc, f, err := uc.store.Open(name)
 	if err != nil {
@@ -128,6 +145,28 @@ func (uc *backups) backup(ctx context.Context, now time.Time) (FileView, error) 
 	}
 	_ = rc.Close()
 	return toView(f), nil
+}
+
+// maxNameShift bounds the search for a free file name.
+const maxNameShift = 60
+
+// freeName returns the file name for a backup taken at now. Names have
+// second precision, so a backup right after another one (a restore's safety
+// copy after "Back up now") moves to the next free second instead of
+// failing on the existing file.
+func (uc *backups) freeName(now time.Time) (string, error) {
+	for i := range maxNameShift {
+		name := domain.FileName(now.Add(time.Duration(i) * time.Second))
+		rc, _, err := uc.store.Open(name)
+		if errors.Is(err, domain.ErrBackupNotFound) {
+			return name, nil
+		}
+		if err != nil {
+			return "", fmt.Errorf("check backup name: %w", err)
+		}
+		_ = rc.Close()
+	}
+	return "", errors.New("no free backup file name")
 }
 
 func (uc *backups) prune(ctx context.Context) error {
