@@ -78,6 +78,8 @@
      * that watches nothing).
      */
     notifyAction?: (widget: Widget) => (() => void) | undefined;
+    /** Example of a kind's compact view for the size previews of the picker (#596). */
+    compactExample?: (kind: string) => string | undefined;
   }
   let {
     uc,
@@ -98,6 +100,7 @@
     hasCompact = () => false,
     detailPanel = true,
     notifyAction = () => undefined,
+    compactExample,
   }: Props = $props();
 
   // The widget whose full view the detail panel shows, and the tile that opened it.
@@ -359,12 +362,12 @@
     if (tab) onlayout(setItemSize(layoutCells(tab.widgets), widget.id, size));
   }
 
-  function addWidget(type: WidgetType) {
+  function addWidget(type: WidgetType, size?: WidgetSize) {
     const tab = active;
     if (!tab) return;
     dialog = null;
     run(async () => {
-      const widget = await uc.addWidget(tab, type);
+      const widget = await uc.addWidget(tab, type, undefined, size);
       replaceTab({ ...tab, widgets: [...tab.widgets, widget] });
       record({ type: 'add', widget });
       if (hasSettings(type.kind)) dialog = { kind: 'settings', widget };
@@ -702,6 +705,7 @@
     types={widgetTypes}
     icon={widgetIcon}
     onpick={addWidget}
+    {compactExample}
     onclose={() => (dialog = null)}
     footer={pickerFooter}
   />

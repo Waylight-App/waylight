@@ -6,19 +6,49 @@
   import Modal from '../../../shared/ui/Modal.svelte';
   import { groupByCategory, moveFocus, searchWidgetTypes } from '../domain/catalog';
   import type { WidgetType } from '../domain/dashboard';
+  import { isCompactSize, WIDGET_SIZES, type WidgetSize } from '../domain/sizes';
 
   /** Props of the widget picker (#104). */
   interface Props {
     types: WidgetType[];
     icon: (kind: string) => IconName | undefined;
-    onpick: (type: WidgetType) => void;
+    /** Adds a widget: freely sized in its default size, or in a chosen size (#596). */
+    onpick: (type: WidgetType, size?: WidgetSize) => void;
+    /**
+     * Example of a widget's compact view for the size previews, e.g.
+     * "3 open · 1 overdue"; undefined for widgets without one, which show
+     * their full view at every size. Example data, so previews work before
+     * the widget is set up.
+     */
+    compactExample?: (kind: string) => string | undefined;
     onclose: () => void;
     /** Shown below the tiles, e.g. what a server adds in local mode (#291). */
     footer?: Snippet;
     /** Text the search starts with, e.g. "weather" from "add widget weather" (#476). */
     initialQuery?: string;
   }
-  let { types, icon, onpick, onclose, footer, initialQuery = '' }: Props = $props();
+  let {
+    types,
+    icon,
+    onpick,
+    onclose,
+    footer,
+    initialQuery = '',
+    compactExample = () => undefined,
+  }: Props = $props();
+
+  // The widget whose sizes are shown instead of the list (#596).
+  let sizing = $state<WidgetType | null>(null);
+  let sizeStep = $state<HTMLElement>();
+  $effect(() => {
+    if (sizing) sizeStep?.querySelector<HTMLButtonElement>('button.preview')?.focus();
+  });
+
+  /** What a size shows of a widget: its compact example, or the full view. */
+  function previewText(type: WidgetType, size: WidgetSize): string {
+    const example = compactExample(type.kind);
+    return example !== undefined && isCompactSize(size) ? example : t('picker.full_view');
+  }
 
   // svelte-ignore state_referenced_locally
   let query = $state(initialQuery);
@@ -29,7 +59,7 @@
   const tiles: HTMLButtonElement[][] = [];
 
   $effect(() => {
-    search?.focus();
+    if (!sizing) search?.focus();
   });
 
   function focusTile(c: number, r: number) {
@@ -63,55 +93,102 @@
 </script>
 
 <Modal title={t('dashboard.add_widget_2')} {onclose} size="wide">
-  <div class="picker">
-    <input
-      class="input search"
-      type="search"
-      bind:this={search}
-      bind:value={query}
-      onkeydown={onSearchKey}
-      placeholder={t('picker.search')}
-      aria-label={t('picker.search')}
-      aria-controls="widget-picker-grid"
-    />
-    <p class="sr-only" role="status" aria-live="polite">{t('picker.count', { count: matches.length })}</p>
-    {#if groups.length === 0}
-      <p class="muted empty">{t('picker.no_match', { query })}</p>
-    {:else}
-      <div class="columns" id="widget-picker-grid" role="group" aria-label={t('picker.widgets')}>
-        {#each groups as g, c (g.category)}
-          <section class="column" aria-labelledby="picker-cat-{g.category}">
-            <h3 id="picker-cat-{g.category}">{t(`picker.category.${g.category}`)}</h3>
-            <ul>
-              {#each g.types as type, r (type.kind)}
-                {@const ic = icon(type.kind)}
-                <li>
-                  <button
-                    class="tile"
-                    type="button"
-                    bind:this={
-                      () => tiles[c]?.[r],
-                      (el) => {
-                        tiles[c] ??= [];
-                        if (el) tiles[c][r] = el;
-                      }
-                    }
-                    onclick={() => onpick(type)}
-                    onkeydown={(e) => onTileKey(e, c, r)}
-                  >
-                    {#if ic}<span class="icon"><Icon name={ic} size={28} /></span>{/if}
-                    <strong>{type.title}</strong>
-                    <span class="desc">{type.description}</span>
-                  </button>
-                </li>
-              {/each}
-            </ul>
-          </section>
-        {/each}
+  {#if sizing}
+    {@const type = sizing}
+    {@const ic = icon(type.kind)}
+    <div class="sizes" bind:this={sizeStep}>
+      <div class="sizes-head">
+        <button class="btn" type="button" onclick={() => (sizing = null)}>← {t('picker.back')}</button>
+        <h3 id="picker-size-title">{t('picker.choose_size', { name: type.title })}</h3>
       </div>
-    {/if}
-    {#if footer}{@render footer()}{/if}
-  </div>
+      <ul class="previews" aria-labelledby="picker-size-title">
+        {#each WIDGET_SIZES as s (s.size)}
+          {@const text = previewText(type, s.size)}
+          {@const label = t(`dashboard.mobile_size_${s.size}`)}
+          <li>
+            <button
+              class="preview"
+              type="button"
+              aria-label={t('picker.size_preview', { size: label, preview: text })}
+              onclick={() => onpick(type, s.size)}
+            >
+              <span class="frame" style:--w={s.w} style:--h={s.h} aria-hidden="true">
+                {#if isCompactSize(s.size) && compactExample(type.kind) !== undefined}
+                  <span class="mini-title">{type.title}</span>
+                  <span class="mini-state">{text}</span>
+                {:else}
+                  {#if ic}<span class="mini-icon"><Icon name={ic} size={18} /></span>{/if}
+                  <span class="skeleton"></span>
+                  <span class="skeleton short"></span>
+                {/if}
+              </span>
+              <strong>{label}</strong>
+              <span class="desc">{text}</span>
+            </button>
+          </li>
+        {/each}
+      </ul>
+      <button class="btn" type="button" onclick={() => onpick(type)}>{t('picker.default_size')}</button>
+    </div>
+  {:else}
+    <div class="picker">
+      <input
+        class="input search"
+        type="search"
+        bind:this={search}
+        bind:value={query}
+        onkeydown={onSearchKey}
+        placeholder={t('picker.search')}
+        aria-label={t('picker.search')}
+        aria-controls="widget-picker-grid"
+      />
+      <p class="sr-only" role="status" aria-live="polite">{t('picker.count', { count: matches.length })}</p>
+      {#if groups.length === 0}
+        <p class="muted empty">{t('picker.no_match', { query })}</p>
+      {:else}
+        <div class="columns" id="widget-picker-grid" role="group" aria-label={t('picker.widgets')}>
+          {#each groups as g, c (g.category)}
+            <section class="column" aria-labelledby="picker-cat-{g.category}">
+              <h3 id="picker-cat-{g.category}">{t(`picker.category.${g.category}`)}</h3>
+              <ul>
+                {#each g.types as type, r (type.kind)}
+                  {@const ic = icon(type.kind)}
+                  <li>
+                    <button
+                      class="tile"
+                      type="button"
+                      bind:this={
+                        () => tiles[c]?.[r],
+                        (el) => {
+                          tiles[c] ??= [];
+                          if (el) tiles[c][r] = el;
+                        }
+                      }
+                      onclick={() => onpick(type)}
+                      onkeydown={(e) => onTileKey(e, c, r)}
+                    >
+                      {#if ic}<span class="icon"><Icon name={ic} size={28} /></span>{/if}
+                      <strong>{type.title}</strong>
+                      <span class="desc">{type.description}</span>
+                    </button>
+                    <!-- A click on the tile adds the widget at once; this opens the size previews. -->
+                    <button
+                      class="sizes-button"
+                      type="button"
+                      aria-label={t('picker.choose_size', { name: type.title })}
+                      title={t('picker.choose_size', { name: type.title })}
+                      onclick={() => (sizing = type)}>⊞</button
+                    >
+                  </li>
+                {/each}
+              </ul>
+            </section>
+          {/each}
+        </div>
+      {/if}
+      {#if footer}{@render footer()}{/if}
+    </div>
+  {/if}
 </Modal>
 
 <style>
@@ -154,6 +231,7 @@
     width: 100%;
     min-height: 4.5rem;
     padding: var(--space-2);
+    padding-right: 36px;
     text-align: left;
     border: 1px solid var(--color-border, rgba(127, 127, 127, 0.3));
     border-radius: var(--radius-small);
@@ -189,6 +267,114 @@
     -webkit-line-clamp: 2;
     line-clamp: 2;
     -webkit-box-orient: vertical;
+  }
+  li {
+    position: relative;
+  }
+  .sizes-button {
+    position: absolute;
+    top: var(--space-1);
+    right: var(--space-1);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-small);
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+  .sizes-button:hover,
+  .sizes-button:focus-visible {
+    color: var(--color-accent-text);
+    background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  }
+  .sizes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+  .sizes-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .sizes-head h3 {
+    margin: 0;
+    font-size: 1rem;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--color-text);
+  }
+  .previews {
+    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  .preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    width: 100%;
+    height: 100%;
+    padding: var(--space-2);
+    text-align: left;
+    border: 1px solid var(--color-border, rgba(127, 127, 127, 0.3));
+    border-radius: var(--radius-small);
+    background: var(--color-surface-2);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  .preview:hover {
+    border-color: var(--color-accent);
+  }
+  .preview:focus-visible {
+    outline: 2px solid var(--color-accent-text);
+    outline-offset: 2px;
+  }
+  /* The tile drawn in the proportions of its cells: a column is about one
+     and a half times as wide as a row is high. */
+  .frame {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: calc(var(--w) / 6 * 100%);
+    aspect-ratio: calc(var(--w) * 1.5) / var(--h);
+    max-height: 120px;
+    padding: 6px;
+    overflow: hidden;
+    border: 1px solid var(--color-border, rgba(127, 127, 127, 0.3));
+    border-radius: var(--radius-small);
+    background: var(--color-surface);
+    font-size: 0.7rem;
+  }
+  .mini-title {
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    font-size: 0.6rem;
+  }
+  .mini-title,
+  .mini-state {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mini-state {
+    font-weight: 600;
+  }
+  .mini-icon {
+    display: flex;
+    color: var(--color-accent-text);
+  }
+  .skeleton {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-border, rgba(127, 127, 127, 0.3));
+  }
+  .skeleton.short {
+    width: 60%;
   }
   .empty {
     text-align: center;
