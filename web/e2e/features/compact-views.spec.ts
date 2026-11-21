@@ -14,8 +14,10 @@ test('a small tile shows the compact view and opens the details (#595)', async (
   await page.getByRole('button', { name: '+ Add widget' }).click();
   await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('to-do');
   await page.getByRole('button', { name: /^To-dos/ }).click();
-  const settings = page.getByRole('dialog', { name: /To-dos/ });
-  if (await settings.isVisible()) await settings.getByRole('button', { name: 'Save', exact: true }).click();
+  // The settings form opens right after adding; wait for it before going on.
+  const settings = page.getByRole('dialog', { name: 'To-dos settings' });
+  await settings.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(settings).toHaveCount(0);
   await page.getByRole('combobox', { name: 'Size of To-dos' }).selectOption('small');
   await account(page, 'Done');
 
