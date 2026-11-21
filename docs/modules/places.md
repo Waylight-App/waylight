@@ -5,7 +5,7 @@ browser's location, and choose it in every widget that needs a location.
 
 ## Using places
 
-Open **Settings → Connections & places**. Under *Places*, search for an
+Open **Settings → Connections & services → Places**. There, search for an
 address or town, or press *Use my location*, give the place a name such as
 "Home" and save it. Each place shows which widgets use it; you can rename or
 remove it there. Removing a place that widgets use asks first and names

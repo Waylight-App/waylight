@@ -27,3 +27,15 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 	}
 	httpapi.WriteJSON(w, http.StatusOK, presenter.List(items))
 }
+
+// Connections handles GET /api/attention/connections; ?refresh=true asks
+// the services again.
+func (h *Handlers) Connections(w http.ResponseWriter, r *http.Request) {
+	fresh, _ := strconv.ParseBool(r.URL.Query().Get("refresh"))
+	list, err := h.uc.Connections(r.Context(), fresh)
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Connections(list))
+}

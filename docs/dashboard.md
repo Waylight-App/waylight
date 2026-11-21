@@ -160,6 +160,17 @@ reference). A service's state is kept for two minutes; *Check again* and
 closing the settings after a change ask the services right away
 (`?refresh=true`).
 
+## Services and places
+
+**Settings → Connections & services** has two pages. *Services* lists every
+service your widgets connect to with its state: connected, with a problem
+(and the cause), or not set up yet. Each entry names the widgets that use it
+and opens the service's settings; *Check all again* asks every service right
+away. Admins see all services of the instance; other accounts see their own
+connections and the instance services their widgets depend on. *Places*
+holds the places you entered once for weather, rain radar and fuel prices
+(see [Places](modules/places.md)).
+
 ## Related pages
 
 - [Feature overview](features.md): every widget and what it can do.

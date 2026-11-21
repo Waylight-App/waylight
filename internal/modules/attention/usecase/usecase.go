@@ -1,7 +1,9 @@
 package usecase
 
 import (
+	"cmp"
 	"context"
+	"slices"
 	"sync"
 	"time"
 
@@ -47,6 +49,9 @@ type Attention interface {
 	// fresh asks the services again instead of answering from the kept
 	// statuses, for a "Check again" a person just pressed.
 	List(ctx context.Context, fresh bool) ([]domain.Item, error)
+	// Connections returns every integration that reports a connection and
+	// the account may see, whatever its state (#591).
+	Connections(ctx context.Context, fresh bool) ([]domain.Connection, error)
 }
 
 // statusTimeout bounds one status call; a source that takes longer counts
@@ -143,6 +148,52 @@ func (a *attention) List(ctx context.Context, fresh bool) ([]domain.Item, error)
 		items = []domain.Item{}
 	}
 	return items, nil
+}
+
+func (a *attention) Connections(ctx context.Context, fresh bool) ([]domain.Connection, error) {
+	p := kernel.PrincipalFrom(ctx)
+	if p.AccountID == "" || p.IsGuest() || p.IsKiosk() || p.IsToken() || p.IsSystem() {
+		return []domain.Connection{}, nil
+	}
+	widgets, err := a.d.Widgets(ctx)
+	if err != nil {
+		return nil, err
+	}
+	used := map[string][]domain.WidgetRef{}
+	for _, w := range widgets {
+		if src := a.byKind[w.Kind]; src != nil {
+			used[src.Module] = append(used[src.Module], domain.WidgetRef{ID: w.ID, TabID: w.TabID, Kind: w.Kind})
+		}
+	}
+	var shown []*Source
+	for i := range a.d.Sources {
+		src := &a.d.Sources[i]
+		if src.Status == nil || !a.mayRead(ctx, src.Module) {
+			continue
+		}
+		// Instance connections are the admins' business; members see one
+		// only when a widget of theirs depends on it.
+		if src.Instance && !p.IsAdmin() && len(used[src.Module]) == 0 {
+			continue
+		}
+		shown = append(shown, src)
+	}
+	// Every service is asked at once, so the page waits for the slowest
+	// one (bounded by statusTimeout), not for their sum.
+	out := make([]domain.Connection, len(shown))
+	var wg sync.WaitGroup
+	for i, src := range shown {
+		wg.Go(func() {
+			st := a.status(ctx, p, src, fresh)
+			if st.State == "" {
+				st.State = domain.StateOK
+			}
+			out[i] = domain.Connection{Integration: src.Module, Instance: src.Instance, Status: st, Widgets: used[src.Module]}
+		})
+	}
+	wg.Wait()
+	slices.SortFunc(out, func(x, y domain.Connection) int { return cmp.Compare(x.Integration, y.Integration) })
+	return out, nil
 }
 
 func (a *attention) mayRead(ctx context.Context, module string) bool {

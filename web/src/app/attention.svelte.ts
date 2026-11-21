@@ -40,6 +40,16 @@ export function integrationName(integration: string): string {
   return handlers?.nameOf(integration) ?? integration;
 }
 
+/** The settings section of an integration, once the shell is ready. */
+export function sectionFor(integration: string): string | undefined {
+  return handlers?.sectionOf(integration);
+}
+
+/** Opens a settings section through the shell. */
+export function openSection(section: string): void {
+  handlers?.openSettings(section);
+}
+
 /** Name of a tab, to say where a widget is. */
 export function tabName(tabId: string): string | undefined {
   return handlers?.tabName(tabId);
