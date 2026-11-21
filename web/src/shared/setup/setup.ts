@@ -4,6 +4,7 @@
  * shared component renders it, so a new integration adds data, not UI.
  */
 import { getContext, setContext } from 'svelte';
+import type { FullAutoFill } from 'svelte/elements';
 import type { MessageKey } from '../i18n';
 
 /** Which step of the assistant a field belongs to. */
@@ -16,7 +17,7 @@ export interface SetupField {
   stage: SetupStage;
   type: 'url' | 'text' | 'password';
   placeholder?: string;
-  autocomplete?: string;
+  autocomplete?: FullAutoFill;
 }
 
 /** What the check shows after a working connection: real data. */

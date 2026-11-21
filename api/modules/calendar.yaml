@@ -16,6 +16,37 @@ paths:
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CalendarSettings" } } } }
         "422": { $ref: "#/components/responses/Invalid" }
+  /api/calendar/connect:
+    post:
+      tags: [calendar]
+      summary: "Setup assistant (#588): find the event calendars of an account from the server address (CalDAV discovery), check and save them; answers with the calendars and the next three events. Errors name the cause (key not accepted, nothing answers, not the expected service, untrusted certificate)."
+      security: [{ session: [], csrf: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [server, username, password]
+              properties:
+                server: { type: string, description: "Server root or DAV address, e.g. https://cloud.example.com" }
+                username: { type: string }
+                password: { type: string, description: App password }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [settings, calendars, next]
+                properties:
+                  settings: { $ref: "#/components/schemas/CalendarSettings" }
+                  calendars:
+                    type: array
+                    items: { type: object, required: [url, name], properties: { url: { type: string }, name: { type: string } } }
+                  next: { type: array, items: { type: object }, description: "Up to three events, shaped like Agenda.events" }
+        "422": { $ref: "#/components/responses/Invalid" }
   /api/calendar/events:
     get:
       tags: [calendar]

@@ -8,7 +8,7 @@ import (
 	"net"
 )
 
-// ErrTargetWrongService: the address answered, but not the way the expected
+// ErrTargetWrongService means the address answered, but not the way the expected
 // service does (an HTML page, a different API). Gateways wrap it when a
 // response cannot be decoded (#588).
 var ErrTargetWrongService = errors.New("another service answers at this address")

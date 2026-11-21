@@ -159,11 +159,11 @@ type Deps struct {
 	Writer         EventWriter
 	// Finder lets the setup assistant connect by server address; nil
 	// leaves only the form with calendar addresses.
-	Finder CalendarFinder
-	Subscriptions  SubscriptionRepository
-	Feeds          FeedSource
-	IDs            kernel.IDGenerator
-	Clock          kernel.Clock
+	Finder        CalendarFinder
+	Subscriptions SubscriptionRepository
+	Feeds         FeedSource
+	IDs           kernel.IDGenerator
+	Clock         kernel.Clock
 	// Accounts, API and OAuth connect Google and Microsoft calendars
 	// (#282); without them no account can be connected.
 	Accounts AccountRepository
