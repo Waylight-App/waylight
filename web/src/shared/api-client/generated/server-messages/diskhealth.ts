@@ -3,6 +3,14 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_6bf218ac119ae629: "No S.M.A.R.T. export found. Run scripts/smart-export.sh on the host (see docs/host-integrations.md).",
+  srv_f724ce57caa5bee3: "No drive reports yet",
+  srv_a8b97fb3f9f0cd6b: "Some reports are out of date",
+  srv_26f374c0a67c8c36: "{count} of {total} drives failing",
+  srv_2ac49ee2d1d4b8bc: "{count} of {total} drives need a look",
+  srv_ccd2d42e76e2629c: "{device} has warnings",
+  srv_fdd6ac3006cff821: "{device} is failing",
+  srv_4886a197fd6d3ced: "{healthy} of {total} drives healthy",
+  srv_4590f8e90f51cb7d: "{total} drives healthy",
 } as const;
 
 /** Key of a backend message. */

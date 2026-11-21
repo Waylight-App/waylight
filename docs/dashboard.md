@@ -38,7 +38,11 @@ Small tiles and strips show its compact view, one or two lines such as
 *3 open · 1 overdue*, and a click on the tile opens the full widget in a
 panel at the side of the screen (a sheet from the bottom on phones). `Escape`
 or the close button closes the panel and puts the focus back on the tile.
-Kiosk displays show the compact view without the panel.
+Below the widget the panel offers *Edit widget* when you may change the tab
+and the widget has settings, and for widgets that watch something that can
+fail (services, backups, drives) admins get *Notify me when this fails*,
+which opens the notification settings. Kiosk displays show the compact view
+without the panel.
 
 When a narrow window makes a medium or large tile too small for its full
 view, the widget switches to its compact view instead of cutting its content
@@ -50,7 +54,9 @@ the menu turns a widget back into a freely sized tile, which always shows the
 full widget. Widgets placed before sizes existed stay free until you pick a
 size, so existing dashboards keep their look.
 
-Compact views exist for to-dos (the built-in list), habits and the focus
+Compact views exist for services and the status overview (*11 of 12
+running*, and which service is down), the backup status, drive health, the
+calendar (the next event), to-dos (the built-in list), habits and the focus
 timer. Widgets whose content is the point, such as the clock, bookmarks or
 notes, show their full view at every size.
 

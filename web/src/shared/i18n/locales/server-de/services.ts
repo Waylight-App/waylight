@@ -26,4 +26,12 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_c64f8cf81797f821: 'Unbekannte Abgleichsregel.',
   // Each service name can be used only once in the file.
   srv_2ad35206dae11b67: 'Jeder Dienstname darf in der Datei nur einmal vorkommen.',
+  // No services yet
+  srv_e40289b4499ed164: 'Noch keine Dienste',
+  // {count} services down
+  srv_ac66b193c5335c18: '{count} Dienste ausgefallen',
+  // {name} is down
+  srv_09bd02ddefc751e8: '{name} ist ausgefallen',
+  // {online} of {total} running
+  srv_85ec6321e77d0b4a: '{online} von {total} laufen',
 };

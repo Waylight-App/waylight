@@ -5,7 +5,8 @@ import (
 	"testing"
 )
 
-// TestCompactStates: the compact state of to-dos, habits and focus (#597).
+// TestCompactStates: the compact state of to-dos, habits and focus (#597)
+// and of services, backups, drives and the calendar (#594).
 func TestCompactStates(t *testing.T) {
 	up := fakeUpstream(t)
 	srv := newTestServer(t, up.URL)
@@ -33,5 +34,12 @@ func TestCompactStates(t *testing.T) {
 	c.json(http.MethodGet, "/api/focus/compact", nil, http.StatusOK, &state)
 	if state.Title.Text != "0 min focus today" || state.Level != "none" {
 		t.Fatalf("focus: %+v", state)
+	}
+	for _, path := range []string{"/api/services/compact", "/api/backupmonitor/compact", "/api/diskhealth/compact", "/api/calendar/compact"} {
+		state.Title.Text, state.Level = "", ""
+		c.json(http.MethodGet, path, nil, http.StatusOK, &state)
+		if state.Title.Key == "" || state.Title.Text == "" || state.Level == "" {
+			t.Fatalf("%s: %+v", path, state)
+		}
 	}
 }
