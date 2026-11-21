@@ -60,6 +60,13 @@ the menu turns a widget back into a freely sized tile, which always shows the
 full widget. Widgets placed before sizes existed stay free until you pick a
 size, so existing dashboards keep their look.
 
+Some compact views carry one quick action next to the short state, so the
+most common step needs no panel: habits tick off the next habit due today
+and to-dos tick off the most urgent one (overdue first, then the earliest due
+date). The button gives feedback at once; when the server refuses, its
+message is shown and nothing changes. Guests and kiosk displays do not see
+quick actions.
+
 Compact views exist for services and the status overview (*11 of 12
 running*, and which service is down), the backup status, drive health, the
 calendar (the next event), to-dos (the built-in list), habits and the focus

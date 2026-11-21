@@ -159,6 +159,8 @@
           module,
           title: def.type.title,
           strip: opts.strip,
+          // Guests and kiosk displays only look (#50).
+          actions: !container.auth.guest,
         }}
         scheduler={container.refresh}
         label={def.type.title}

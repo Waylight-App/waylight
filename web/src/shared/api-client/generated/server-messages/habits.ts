@@ -2,6 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_1422d60397354b62: "Done: {name}",
   srv_3ae46504f4002e93: "No habits yet",
   srv_a1fc697b9fe6467c: "Only today and yesterday can be checked off.",
   srv_f37ac2a179a60cc1: "The habit does not exist.",

@@ -14,4 +14,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_3ae46504f4002e93: 'Noch keine Gewohnheiten',
   // {done} of {total} today
   srv_47c68f21f5a3748b: '{done} von {total} heute',
+  // Done: {name}
+  srv_1422d60397354b62: 'Erledigt: {name}',
 };

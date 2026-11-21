@@ -4,6 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"io/fs"
+	"net/http"
+	"net/url"
+	"time"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/habits/adapter/controller"
@@ -74,5 +77,25 @@ func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) 
 			state.Level = kernel.CompactOK
 		}
 	}
+	state.Action = nextHabitAction(list)
 	return state, nil
+}
+
+// nextHabitAction ticks off the first habit that is due today and still
+// open (#598); nil when there is none.
+func nextHabitAction(list []usecase.HabitView) *kernel.CompactAction {
+	for _, h := range list {
+		cells := h.Stats.Heatmap
+		if h.Stats.DoneToday || len(cells) == 0 || !cells[len(cells)-1].Due {
+			continue
+		}
+		return &kernel.CompactAction{
+			ID:     "habits.toggle",
+			Label:  kernel.NewTextf("Done: {name}", "name", h.Habit.Name),
+			Method: http.MethodPost,
+			Path:   "/api/habits/" + url.PathEscape(h.Habit.ID) + "/toggle",
+			Body:   map[string]any{"date": cells[len(cells)-1].Day.Format(time.DateOnly)},
+		}
+	}
+	return nil
 }

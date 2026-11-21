@@ -42,4 +42,23 @@ export class CompactApi implements CompactGateway {
   async state(module: string): Promise<CompactState> {
     return toCompactState(await this.http.get<CompactResponse>(`/api/${encodeURIComponent(module)}/compact`));
   }
+
+  async send(method: string, path: string, body?: Record<string, unknown>): Promise<void> {
+    switch (method) {
+      case 'POST':
+        await this.http.post(path, body);
+        return;
+      case 'PUT':
+        await this.http.put(path, body);
+        return;
+      case 'PATCH':
+        await this.http.patch(path, body);
+        return;
+      case 'DELETE':
+        await this.http.delete(path);
+        return;
+      default:
+        throw new Error(`unsupported method ${method}`);
+    }
+  }
 }
