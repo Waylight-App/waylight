@@ -124,6 +124,7 @@ func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) 
 	state.Title = kernel.NewTextf("{count} open", "count", open)
 	if open == 0 {
 		state.Title = kernel.NewText("Nothing to do")
+		state.Empty = true
 	}
 	if overdue > 0 {
 		state.Level = kernel.CompactAttention

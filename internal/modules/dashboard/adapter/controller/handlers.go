@@ -140,7 +140,7 @@ func (h *Handlers) SaveLayout(w http.ResponseWriter, r *http.Request) {
 	}
 	req := usecase.SaveLayoutRequest{TabID: r.PathValue("id"), Placements: make([]usecase.WidgetPlacement, 0, len(dto.Items))}
 	for _, it := range dto.Items {
-		req.Placements = append(req.Placements, usecase.WidgetPlacement{WidgetID: it.ID, X: it.X, Y: it.Y, W: it.W, H: it.H, Size: it.Size})
+		req.Placements = append(req.Placements, usecase.WidgetPlacement{WidgetID: it.ID, X: it.X, Y: it.Y, W: it.W, H: it.H, Size: it.Size, Zone: it.Zone})
 	}
 	if err := h.widgets.SaveLayout(r.Context(), req); err != nil {
 		httpapi.WriteDomainError(w, r, err)
@@ -182,6 +182,21 @@ func (h *Handlers) SetBackground(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res, err := h.tabs.SetBackground(r.Context(), r.PathValue("id"), dto.Background)
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Tab(res))
+}
+
+// SetZones handles PUT /api/dashboard/tabs/{id}/zones.
+func (h *Handlers) SetZones(w http.ResponseWriter, r *http.Request) {
+	var dto TabZonesDTO
+	if err := httpapi.DecodeJSON(w, r, &dto); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	res, err := h.tabs.SetZones(r.Context(), r.PathValue("id"), dto.Enabled)
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return

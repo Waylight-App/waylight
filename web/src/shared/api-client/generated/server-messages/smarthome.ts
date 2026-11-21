@@ -5,12 +5,22 @@ export const serverMessages = {
   srv_084af9ca0c7d167d: "A long-lived access token is required.",
   srv_0f4d7732f2cd4899: "Actions are not enabled for this entity (SMARTHOME_ACTIONS_ENTITIES).",
   srv_3a4c7bf887ab6487: "At most {max} entities per widget.",
+  srv_ea2866d2e8547dcb: "Choose one entity for the compact view.",
   srv_bcbabc6a08a54107: "Home Assistant is not configured yet.",
   srv_dc90aa2a1e0a5f62: "Home Assistant is not reachable.",
   srv_af1423afec138ad6: "Home Assistant rejected the action: {detail}",
+  srv_302cbb19bf9a174a: "Off",
+  srv_091d5807b5b33550: "On",
+  srv_9fbbc819fe7e66aa: "Run",
   srv_d26f0cb52cfa0948: "The URL must look like http://homeassistant.local:8123.",
   srv_2ef3700ca8a09eac: "The entity does not exist.",
   srv_a6715a41424b56f8: "This entity has no action; only switches and buttons can be used.",
+  srv_de736af382a428ab: "Turn off",
+  srv_6bb329b249dd1ee7: "Turn on",
+  srv_43e9aef7aa01fca9: "Unavailable",
+  srv_393ba5b6e23583b4: "{name}",
+  srv_c7c0c20a29ee6976: "{state}",
+  srv_4f14b24d395337a4: "{state} {unit}",
 } as const;
 
 /** Key of a backend message. */

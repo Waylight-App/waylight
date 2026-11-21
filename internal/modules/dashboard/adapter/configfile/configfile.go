@@ -19,10 +19,12 @@ type Section struct {
 
 // Tab is one tab with its widgets.
 type Tab struct {
-	Name       string   `yaml:"name"`
-	Background string   `yaml:"background,omitempty"`
-	Rules      []Rule   `yaml:"rules,omitempty"`
-	Widgets    []Widget `yaml:"widgets"`
+	Name       string `yaml:"name"`
+	Background string `yaml:"background,omitempty"`
+	// Zones lays the tab out in Today, My things and System (#619).
+	Zones   bool     `yaml:"zones,omitempty"`
+	Rules   []Rule   `yaml:"rules,omitempty"`
+	Widgets []Widget `yaml:"widgets"`
 }
 
 // Rule opens the tab by default on these weekdays (0 = Sunday), in this
@@ -39,7 +41,9 @@ type Widget struct {
 	Kind string `yaml:"kind"`
 	At   Rect   `yaml:"at,flow"`
 	// Size is small, medium, large or strip on the web grid (#595).
-	Size   string         `yaml:"size,omitempty"`
+	Size string `yaml:"size,omitempty"`
+	// Zone is today, mine or system on a tab with zones (#619).
+	Zone   string         `yaml:"zone,omitempty"`
 	Phone  *Phone         `yaml:"phone,omitempty,flow"`
 	Config map[string]any `yaml:"config,omitempty"`
 }
@@ -68,7 +72,7 @@ var errConfig = kernel.NewValidationError("config", "A widget config must be a m
 func FromTabs(tabs []usecase.ConfigTab) (*Section, error) {
 	out := &Section{Tabs: []Tab{}}
 	for _, t := range tabs {
-		ct := Tab{Name: t.Name, Background: t.Background, Widgets: []Widget{}}
+		ct := Tab{Name: t.Name, Background: t.Background, Zones: t.Zones, Widgets: []Widget{}}
 		for _, r := range t.Rules {
 			ct.Rules = append(ct.Rules, Rule{Days: r.Days, From: r.From, To: r.To, Networks: r.Networks})
 		}
@@ -82,7 +86,7 @@ func FromTabs(tabs []usecase.ConfigTab) (*Section, error) {
 			if len(cfg) == 0 {
 				cfg = nil
 			}
-			cw := Widget{Kind: w.Kind, At: Rect(w.Rect), Size: w.Size, Config: cfg}
+			cw := Widget{Kind: w.Kind, At: Rect(w.Rect), Size: w.Size, Zone: w.Zone, Config: cfg}
 			if w.Phone != nil {
 				cw.Phone = &Phone{Order: w.Phone.Order, Rows: w.Phone.Rows, Hidden: w.Phone.Hidden, Size: w.Phone.Size}
 			}
@@ -97,7 +101,7 @@ func FromTabs(tabs []usecase.ConfigTab) (*Section, error) {
 func (s Section) ToTabs() ([]usecase.ConfigTab, error) {
 	out := make([]usecase.ConfigTab, 0, len(s.Tabs))
 	for _, t := range s.Tabs {
-		ct := usecase.ConfigTab{Name: t.Name, Background: t.Background}
+		ct := usecase.ConfigTab{Name: t.Name, Background: t.Background, Zones: t.Zones}
 		for _, r := range t.Rules {
 			ct.Rules = append(ct.Rules, domain.RuleInput{Days: r.Days, From: r.From, To: r.To, Networks: r.Networks})
 		}
@@ -110,7 +114,7 @@ func (s Section) ToTabs() ([]usecase.ConfigTab, error) {
 				}
 				cfg = string(b)
 			}
-			cw := usecase.ConfigWidget{Kind: w.Kind, Rect: domain.Rect(w.At), Size: w.Size, Config: cfg}
+			cw := usecase.ConfigWidget{Kind: w.Kind, Rect: domain.Rect(w.At), Size: w.Size, Zone: w.Zone, Config: cfg}
 			if w.Phone != nil {
 				cw.Phone = &usecase.ConfigPhone{Order: w.Phone.Order, Rows: w.Phone.Rows, Hidden: w.Phone.Hidden, Size: w.Phone.Size}
 			}

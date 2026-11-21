@@ -5,14 +5,17 @@
   import { changedAgo, type Entity, isOn, parseWidgetConfig, stateText } from '../domain/smarthome';
   import type { SmarthomeUseCases } from '../usecase/smarthomeUseCases';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import type { FoundService } from '../../../shared/setup/setup';
   import { smarthomeSetup } from './smarthomeSetup';
 
   /** Props of the smart home widget (#49). */
   interface Props {
     smarthome: SmarthomeUseCases;
     config: Record<string, unknown>;
+    /** Services found in the home network for the setup (#590). */
+    discover?: () => Promise<FoundService[]>;
   }
-  let { smarthome, config }: Props = $props();
+  let { smarthome, config, discover }: Props = $props();
   const poll = usePolling();
 
   const POLL_MS = 30_000;
@@ -38,7 +41,7 @@
     return poll(load, POLL_MS);
   });
   // svelte-ignore state_referenced_locally
-  const setup = smarthomeSetup(smarthome);
+  const setup = smarthomeSetup(smarthome, discover);
 
   async function act(e: Entity) {
     const question = e.action === 'press' ? 'smarthome.confirm_press' : 'smarthome.confirm_toggle';

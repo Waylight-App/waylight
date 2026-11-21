@@ -50,6 +50,8 @@ type SmartHome interface {
 	States(ctx context.Context, ids []string) ([]EntityView, error)
 	// Act toggles or presses an allow-listed entity.
 	Act(ctx context.Context, id string) error
+	// Compact is the compact state of one entity and the entity itself (#614).
+	Compact(ctx context.Context, id string) (kernel.CompactState, EntityView, error)
 }
 
 // SettingsRepository persists the settings (output port). Load returns

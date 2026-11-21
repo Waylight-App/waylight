@@ -71,6 +71,7 @@ func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) 
 	case len(list) == 0:
 		state.Title = kernel.NewText("No habits yet")
 		state.Count = nil
+		state.Empty = true
 	default:
 		state.Title = kernel.NewTextf("{done} of {total} today", "done", done, "total", len(list))
 		if done == len(list) {

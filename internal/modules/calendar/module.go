@@ -102,10 +102,19 @@ const compactDays = 14
 func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
 	agenda, err := m.uc.Upcoming(ctx, compactDays)
 	if errors.Is(err, domain.ErrNotConfigured) {
-		return kernel.CompactState{Level: kernel.CompactNone, UpdatedAt: m.clock.Now(), Title: kernel.NewText("No calendar set up")}, nil
+		return kernel.CompactState{Level: kernel.CompactNone, UpdatedAt: m.clock.Now(), Title: kernel.NewText("No calendar set up"), Empty: true}, nil
 	}
 	if err != nil {
 		return kernel.CompactState{}, err
 	}
 	return usecase.CompactState(agenda, m.clock.Now(), m.loc), nil
+}
+
+// Discovery implements modules.Discoverable (#590) for the Nextcloud
+// calendar setup: status.php names the product without a login.
+func (m *Module) Discovery() modules.DiscoverySpec {
+	return modules.DiscoverySpec{
+		Service: "Nextcloud", Images: []string{"nextcloud"}, Hostnames: []string{"nextcloud", "nextcloud.local"},
+		Ports: []int{80, 8080}, ProbePath: "/status.php", ProbeContains: `"productname":"Nextcloud"`,
+	}
 }

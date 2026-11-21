@@ -10,11 +10,11 @@ import (
 
 func toWidgetResponse(w domain.Widget) WidgetResponse {
 	r := w.Rect()
-	return WidgetResponse{ID: w.ID(), TabID: w.TabID(), Kind: w.Kind(), X: r.X, Y: r.Y, W: r.W, H: r.H, Config: w.Config(), Size: string(w.Size())}
+	return WidgetResponse{ID: w.ID(), TabID: w.TabID(), Kind: w.Kind(), X: r.X, Y: r.Y, W: r.W, H: r.H, Config: w.Config(), Size: string(w.Size()), Zone: string(w.Zone())}
 }
 
 func toTabResponse(ctx context.Context, t domain.Tab, widgets []domain.Widget) TabResponse {
-	res := TabResponse{ID: t.ID(), Name: t.Name(), Position: t.Position(), Background: t.Background(), Widgets: []WidgetResponse{}, Rules: []RuleView{},
+	res := TabResponse{ID: t.ID(), Name: t.Name(), Position: t.Position(), Background: t.Background(), Zoned: t.Zoned(), Widgets: []WidgetResponse{}, Rules: []RuleView{},
 		Mine: t.Access().Owner == "" || t.Access().Mine(kernel.PrincipalFrom(ctx)), Visibility: string(t.Access().Visibility)}
 	for _, r := range t.Rules() {
 		from, to := r.Range()

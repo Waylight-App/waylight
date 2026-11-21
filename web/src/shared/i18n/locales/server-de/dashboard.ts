@@ -46,6 +46,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_a164605f887b18d7: 'Der Widget-Typ ist ungültig.',
   // The width must be between 1 and 12 columns.
   srv_9dfec97d8d360b86: 'Die Breite muss zwischen 1 und 12 Spalten liegen.',
+  // The zone must be today, mine or system.
+  srv_c4a72fe92b6c1f4a: 'Der Bereich muss today, mine oder system sein.',
   // This widget type is not available.
   srv_63543557e19be101: 'Dieser Widget-Typ ist nicht verfügbar.',
   // A widget config must be a mapping of settings.

@@ -21,4 +21,5 @@ export const de: Record<keyof typeof en, string> = {
   'compact.example.docker': '11 von 12 laufen · 1 gestoppt',
   'compact.example.parcels': '2 unterwegs · 1 kommt heute',
   'compact.example.speedtest': '250 ↓ · 40 ↑ Mbit/s',
+  'compact.example.smarthome': 'Kaffeemaschine · Aus',
 };

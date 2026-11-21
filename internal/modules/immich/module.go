@@ -54,3 +54,12 @@ func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus 
 	_, err := m.uc.Overview(ctx)
 	return modules.StatusOf(err, domain.ErrNotConfigured)
 }
+
+// Discovery implements modules.Discoverable (#590): Immich answers its
+// ping without a key.
+func (m *Module) Discovery() modules.DiscoverySpec {
+	return modules.DiscoverySpec{
+		Service: "Immich", Images: []string{"immich-server"}, Hostnames: []string{"immich-server", "immich_server", "immich.local"},
+		Ports: []int{2283}, ProbePath: "/api/server/ping", ProbeContains: "pong",
+	}
+}

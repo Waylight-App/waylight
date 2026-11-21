@@ -13,6 +13,7 @@ const tab = (id: string, position: number, widgets: Tab['widgets'] = []): Tab =>
   mobile: [],
   mobileCustom: false,
   mine: true,
+  zoned: false,
 });
 
 function setup() {
@@ -28,6 +29,8 @@ function setup() {
     deleteWidget: vi.fn(),
     setBackground: vi.fn(),
     setRules: vi.fn().mockResolvedValue(tab('a', 0)),
+    setZones: vi.fn().mockResolvedValue({ ...tab('a', 0), zoned: true }),
+    moveToZone: vi.fn().mockResolvedValue(undefined),
     saveMobileLayout: vi.fn().mockResolvedValue(tab('a', 0)),
     resetMobileLayout: vi.fn().mockResolvedValue(tab('a', 0)),
     listTemplates: vi.fn(),
@@ -63,6 +66,17 @@ describe('DashboardUseCases', () => {
       uc.setRules('a', [{ days: [], from: '07:00', to: '', networks: [] }]),
     ).rejects.toBeInstanceOf(DashboardValidationError);
     expect(gateway.setRules).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the zone of a restored or duplicated widget (#619)', async () => {
+    const { uc, gateway } = setup();
+    const created = { id: 'w9', tabId: 'a', kind: 'notes', config: {}, x: 0, y: 0, w: 4, h: 3 };
+    gateway.addWidget.mockResolvedValue(created);
+    const moved = { ...created, id: 'w2', zone: 'system' as const };
+    expect(await uc.restoreWidget(tab('a', 0), moved)).toEqual({ ...created, zone: 'system' });
+    expect(gateway.moveToZone).toHaveBeenCalledWith(created, 'system');
+    await uc.duplicateWidget(tab('a', 0), { ...created, id: 'w3' });
+    expect(gateway.moveToZone).toHaveBeenCalledTimes(1);
   });
 
   it('restores a deleted widget at its old place or the first free spot (#93)', async () => {

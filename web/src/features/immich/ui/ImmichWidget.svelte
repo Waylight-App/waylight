@@ -7,14 +7,17 @@
   import { type ImmichOverview, parseWidgetConfig, thumbnailUrl } from '../domain/immich';
   import type { ImmichUseCases } from '../usecase/immichUseCases';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import type { FoundService } from '../../../shared/setup/setup';
   import { immichSetup } from './immichSetup';
 
   /** Props of the Immich widget (#85). */
   interface Props {
     immich: ImmichUseCases;
     config: Record<string, unknown>;
+    /** Services found in the home network for the setup (#590). */
+    discover?: () => Promise<FoundService[]>;
   }
-  let { immich, config }: Props = $props();
+  let { immich, config, discover }: Props = $props();
   const poll = usePolling();
   const cfg = $derived(parseWidgetConfig(config));
 
@@ -34,7 +37,7 @@
       });
   $effect(() => poll(load, POLL_MS));
   // svelte-ignore state_referenced_locally
-  const setup = immichSetup(immich);
+  const setup = immichSetup(immich, discover);
 </script>
 
 {#if unconfigured}

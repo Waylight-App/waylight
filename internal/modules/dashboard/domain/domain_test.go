@@ -84,3 +84,23 @@ func TestWidgetSize(t *testing.T) {
 		t.Fatalf("restored unknown size = %q, want free", got)
 	}
 }
+
+func TestWidgetZone(t *testing.T) {
+	r, _ := NewRect(0, 0, 3, 2)
+	w, _ := NewWidget("1", "t", "services", r, "")
+	if w.Zone() != ZoneAuto {
+		t.Fatalf("new widget zone = %q, want by kind", w.Zone())
+	}
+	if err := w.MoveToZone(ZoneSystem); err != nil || w.Zone() != ZoneSystem {
+		t.Fatalf("move to system: %q %v", w.Zone(), err)
+	}
+	if err := w.MoveToZone("attic"); err == nil || w.Zone() != ZoneSystem {
+		t.Fatalf("unknown zone accepted: %q %v", w.Zone(), err)
+	}
+	if got := w.WithZone("attic").Zone(); got != ZoneAuto {
+		t.Fatalf("restored unknown zone = %q, want by kind", got)
+	}
+	if tab := RestoreTab("t", "Home", 0, ""); tab.Zoned() || !tab.WithZones(true).Zoned() {
+		t.Fatal("zones switch")
+	}
+}

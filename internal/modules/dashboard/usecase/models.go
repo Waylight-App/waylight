@@ -30,6 +30,8 @@ type TabResponse struct {
 	// it is shown read-only. Visibility is private, everyone or group:<id>.
 	Mine       bool
 	Visibility string
+	// Zoned lays the tab out in zones instead of the free grid (#619).
+	Zoned bool
 }
 
 // MobileView is one widget of the phone layout.
@@ -58,6 +60,8 @@ type WidgetResponse struct {
 	W, H   int
 	Config string
 	Size   string
+	// Zone is today, mine or system; empty while the client picks one by kind (#619).
+	Zone string
 }
 
 // CreateTabRequest is the input of ManageTabs.Create.
@@ -101,6 +105,8 @@ type WidgetPlacement struct {
 	X, Y     int
 	W, H     int
 	Size     *string
+	// Zone moves the widget to a zone of a zoned tab (#619); nil keeps it.
+	Zone *string
 }
 
 // SaveLayoutRequest stores the positions of the widgets of one tab.

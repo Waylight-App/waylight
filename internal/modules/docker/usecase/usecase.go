@@ -21,6 +21,9 @@ type ContainerView struct {
 	ID, Name, Image, State, Status, Health, Project string
 	Created                                         time.Time
 	Labels                                          map[string]string
+	// Ports and Addresses let other modules find services by container (#590).
+	Ports     []domain.Port
+	Addresses []string
 }
 
 // ListResponse is the cached container list.
@@ -78,6 +81,7 @@ func (uc *containers) Refresh(ctx context.Context) error {
 		res.Containers = append(res.Containers, ContainerView{
 			ID: c.ID, Name: c.Name, Image: c.Image, State: c.State, Status: c.Status,
 			Health: string(c.Health()), Project: c.Project, Created: c.Created, Labels: c.Labels,
+			Ports: c.Ports, Addresses: c.Addresses,
 		})
 	}
 	uc.cached = &res

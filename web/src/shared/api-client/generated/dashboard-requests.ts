@@ -50,6 +50,11 @@ export interface PlacementDTO {
    * empty for a freely sized tile. Omitted keeps the stored size.
    */
   size?: string;
+  /**
+   * Zone moves the widget to a zone of a zoned tab (#619): today, mine,
+   * system, or empty for the default by kind. Omitted keeps the stored zone.
+   */
+  zone?: string;
 }
 /**
  * LayoutDTO is the body of PUT /api/dashboard/tabs/{id}/layout.
@@ -63,6 +68,12 @@ export interface LayoutDTO {
  */
 export interface TabBackgroundDTO {
   background: string;
+}
+/**
+ * TabZonesDTO is the body of PUT /api/dashboard/tabs/{id}/zones (#619).
+ */
+export interface TabZonesDTO {
+  enabled: boolean;
 }
 /**
  * TabRuleDTO is one default-tab rule (#71).

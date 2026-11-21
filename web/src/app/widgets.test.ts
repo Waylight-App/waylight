@@ -40,6 +40,10 @@ describe('widget registry (#116)', () => {
     });
     // A connected to-do list has no compact state on the server.
     expect(definitionFor('todos')?.compact?.({ source: 'caldav-1' })).toBeUndefined();
+    // A smart home tile has a compact view with exactly one device (#614).
+    const smarthome = definitionFor('smarthome')?.compact;
+    expect(smarthome?.({ entities: ['switch.coffee'] })).toBe('smarthome?entity=switch.coffee');
+    expect(smarthome?.({ entities: ['switch.coffee', 'light.desk'] })).toBeUndefined();
   });
 
   it('gives every compact view an example for the size previews (#596)', () => {
