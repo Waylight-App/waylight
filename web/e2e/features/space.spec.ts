@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { account, password, openSettings } from '../support';
 
 test.describe('space widget', () => {
   // The service worker would answer the API itself; page.route only sees requests without it.
@@ -59,8 +59,7 @@ test.describe('space widget', () => {
     await page.getByLabel('Password').fill(password);
     await page.getByRole('button', { name: 'Log in' }).click();
     await expect(page.getByTestId('dashboard')).toBeVisible();
-    await account(page, 'Settings');
-    await page.getByRole('button', { name: 'Space', exact: true }).click();
+    await openSettings(page, 'Dashboard & widgets', 'Space');
     await page.getByLabel('Show rocket launches (Launch Library 2)').check();
     await page.getByLabel('Show the Astronomy Picture of the Day (NASA)').check();
     await page.getByRole('button', { name: 'Save', exact: true }).click();

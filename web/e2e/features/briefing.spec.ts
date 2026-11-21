@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { account, password, openSettings } from '../support';
 
 test('the daily briefing sums up the day and leads to the source widget (#52)', async ({ page }) => {
   await page.goto('/');
@@ -27,8 +27,7 @@ test('the daily briefing sums up the day and leads to the source widget (#52)', 
   await expect(page.locator('[data-widget-id].flash')).toContainText('Milch kaufen');
 
   // Hiding the section in the settings removes it from the widget.
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Daily briefing', exact: true }).click();
+  await openSettings(page, 'Dashboard & widgets', 'Daily briefing');
   await page.getByRole('checkbox', { name: 'To-dos' }).uncheck();
   await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByText('Saved.', { exact: true })).toBeVisible();

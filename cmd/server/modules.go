@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"log/slog"
 	"net/http"
 	"os"
@@ -33,6 +34,8 @@ import (
 	"waylight/internal/modules/notifications"
 	"waylight/internal/modules/onboarding"
 	"waylight/internal/modules/parcels"
+	"waylight/internal/modules/places"
+	placesuc "waylight/internal/modules/places/usecase"
 	"waylight/internal/modules/proxmox"
 	"waylight/internal/modules/rss"
 	"waylight/internal/modules/search"
@@ -273,6 +276,10 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	}
 	registry.Register(dash)
 	scope.dashboard = dash
+	// Places name the widgets that use them, so they need the dashboard (#591).
+	if cfg.ModuleEnabled("places") {
+		registry.Register(places.New(db, placeWidgets(dash), clk, ids))
+	}
 	// The attention list asks the other modules, so it comes last (#599).
 	registry.Register(attention.New(registry.All(), ownWidgets(dash), authModule.MayRead, clk))
 	wireSmartSearch(registry, authModule.MayRead, dash.WidgetConfig, log, clk)
@@ -587,6 +594,28 @@ func ownWidgets(dash *dashboard.Module) attention.Widgets {
 		out := make([]attentionuc.Widget, 0, len(own))
 		for _, w := range own {
 			out = append(out, attentionuc.Widget{ID: w.ID, TabID: w.TabID, Kind: w.Kind, Config: w.Config})
+		}
+		return out, nil
+	}
+}
+
+// placeWidgets adapts the dashboard's widgets on the account's own tabs to
+// the places module (#591), so neither module imports the other.
+func placeWidgets(dash *dashboard.Module) places.Widgets {
+	return func(ctx context.Context) ([]placesuc.Widget, error) {
+		own, err := dash.OwnWidgets(ctx)
+		if err != nil {
+			return nil, err
+		}
+		out := make([]placesuc.Widget, 0, len(own))
+		for _, w := range own {
+			// Widgets name their place in their settings (#591); settings
+			// that are not JSON name none.
+			var cfg struct {
+				PlaceID string `json:"placeId"`
+			}
+			_ = json.Unmarshal([]byte(w.Config), &cfg)
+			out = append(out, placesuc.Widget{ID: w.ID, TabID: w.TabID, Kind: w.Kind, PlaceID: cfg.PlaceID})
 		}
 		return out, nil
 	}

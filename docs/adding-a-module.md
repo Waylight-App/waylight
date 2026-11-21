@@ -87,11 +87,16 @@ example.
     `web/src/app/services/quotes.ts` (the service in the container),
     `web/src/app/widgets/quotes.ts` (the widget, its picker category and
     icon) and, if the module has settings, `web/src/app/settings/quotes.ts`.
-    Answers in the quick search go into `web/src/app/search/quotes.ts`.
+    A settings section without an `area` lands in *Connections & services*;
+    set `area` (`account`, `appearance`, `notifications`, `dashboard`,
+    `people`, `data` or `system`) when the section is about something else,
+    for example `dashboard` for settings that only change what a widget
+    shows. Answers in the quick search go into `web/src/app/search/quotes.ts`.
 
 12. **Browser test**, `web/e2e/features/quotes.spec.ts`, if the widget does
     something worth clicking through. Import `account` and `password` from
-    `../support` and log in at the start; the account already exists,
+    `../support` and log in at the start; `openSettings(page, area, section)`
+    opens a settings section by the names on screen; the account already exists,
     because the `setup` project runs first. Leave shared state as you found
     it, or work on a tab of your own, since all specs use one server. The
     file is new, so it never conflicts with other open pull requests.

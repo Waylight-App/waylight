@@ -4,7 +4,7 @@ export const section = defineSettingsSection({
   id: 'device',
   label: 'settings.section.device',
   module: 'device',
-  group: 'general',
+  area: 'system',
   load: () => import('../../features/device/ui/DeviceSettings.svelte').then((m) => m.default),
   props: (c) => ({ device: c.device }),
 });

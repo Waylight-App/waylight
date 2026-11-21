@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password, totp } from './support';
+import { account, password, totp, openSettings } from './support';
 
 test('two-factor authentication can be enabled and is required at login', async ({ page }) => {
   await page.goto('/');
@@ -7,8 +7,7 @@ test('two-factor authentication can be enabled and is required at login', async 
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page.getByTestId('dashboard')).toBeVisible();
 
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Account', exact: true }).click();
+  await openSettings(page, 'My account', 'Account');
   await page.getByRole('button', { name: 'Set up two-factor authentication' }).click();
   await expect(page.getByAltText('QR code for the authenticator app')).toBeVisible();
   const secret = (await page.getByRole('dialog').locator('code').textContent()) ?? '';

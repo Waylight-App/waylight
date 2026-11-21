@@ -6,7 +6,7 @@ export const section = defineSettingsSection({
   id: 'phonelist',
   label: 'settings.section.phonelist',
   module: 'phonelist',
-  group: 'content',
+  area: 'dashboard',
   load: () => import('../../features/phonelist/ui/PhonelistSettings.svelte').then((m) => m.default),
   props: (c) => ({ phonelist: c.phonelist }),
 });

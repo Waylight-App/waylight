@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { account, password, openSettings } from '../support';
 
 test('a shopping list on Waylight works without CalDAV and can be exported (#471)', async ({ page }) => {
   await page.goto('/');
@@ -34,8 +34,7 @@ test('a shopping list on Waylight works without CalDAV and can be exported (#471
   await expect(page.getByRole('checkbox', { name: 'Milk' })).toBeChecked();
 
   // A second list brings up the choice in the widget.
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Shopping list', exact: true }).click();
+  await openSettings(page, 'Dashboard & widgets', 'Shopping list');
   await expect(page.getByRole('heading', { name: 'Lists on Waylight' })).toBeVisible();
   await page.getByPlaceholder('Name of the new list').fill('Hardware store');
   await page.getByRole('button', { name: 'Create list' }).click();

@@ -10,6 +10,8 @@
     type PollenType,
   } from '../domain/weather';
   import type { WeatherUseCases } from '../usecase/weatherUseCases';
+  import PlacePicker from '../../../shared/places/PlacePicker.svelte';
+  import { placeIdOf, type SavedPlace, type SavedPlaces } from '../../../shared/places/places';
 
   /** Props of the weather widget settings. */
   interface Props {
@@ -18,13 +20,17 @@
     onsave: (config: Record<string, unknown>) => Promise<void>;
     /** The radar widget only needs a location. */
     mode?: 'forecast' | 'radar';
+    /** Saved places to choose from (#591); omitted where there are none. */
+    places?: SavedPlaces;
   }
-  let { weather, config, onsave, mode = 'forecast' }: Props = $props();
+  let { weather, config, onsave, mode = 'forecast', places }: Props = $props();
 
   // svelte-ignore state_referenced_locally
   const initial = parseWeatherConfig(config);
   let selected = $state(initial ? { lat: initial.lat, lon: initial.lon } : null);
   let label = $state(initial?.label ?? '');
+  // svelte-ignore state_referenced_locally
+  let placeId = $state(placeIdOf(config));
   let days = $state(initial?.days ?? 3);
   let showWarnings = $state(initial?.warnings ?? true);
   // Pollen and UV index (#56): off until a region or city is chosen.
@@ -67,6 +73,15 @@
   function choose(p: Place) {
     selected = { lat: p.lat, lon: p.lon };
     label = p.name;
+    placeId = '';
+    results = [];
+  }
+
+  function pick(p: SavedPlace | null) {
+    placeId = p?.id ?? '';
+    if (!p) return;
+    selected = { lat: p.lat, lon: p.lon };
+    label = p.name;
     results = [];
   }
 
@@ -78,10 +93,19 @@
     const health = showHealth
       ? { pollenRegion, uvCity, pollenTypes }
       : { pollenRegion: 0, uvCity: '', pollenTypes: [] };
-    onsave({ ...selected, label: label.trim(), days, warnings: showWarnings, ...health });
+    const place = placeId ? { placeId } : {};
+    onsave({ ...selected, ...place, label: label.trim(), days, warnings: showWarnings, ...health });
   }
 </script>
 
+{#if places}
+  <PlacePicker
+    {places}
+    value={placeId}
+    current={selected ? { name: label, label: '', ...selected } : null}
+    onpick={pick}
+  />
+{/if}
 <form onsubmit={find} class="search">
   <input
     class="input"
@@ -99,9 +123,13 @@
   </ul>
 {/if}
 {#if selected}
-  <p class="muted">
-    {t('weather.location', { value: selected.lat.toFixed(2), value2: selected.lon.toFixed(2) })}
-  </p>
+  <!-- Coordinates come from the place or the search; shown only on request (#591). -->
+  <details>
+    <summary class="muted">{t('places.advanced')}</summary>
+    <p class="muted">
+      {t('weather.location', { value: selected.lat.toFixed(2), value2: selected.lon.toFixed(2) })}
+    </p>
+  </details>
 {/if}
 <label class="field">
   <span>{t('weather.label')}</span>

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { password, openSettings } from '../support';
 
 test('the waste calendar can be uploaded as an ICS file and removed (#153)', async ({ page }) => {
   await page.goto('/');
@@ -16,8 +16,7 @@ test('the waste calendar can be uploaded as an ICS file and removed (#153)', asy
     `BEGIN:VEVENT\r\nUID:${uid}\r\nSUMMARY:${summary}\r\nDTSTART;VALUE=DATE:${day}\r\nEND:VEVENT\r\n`;
   const ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\n${event('1', 'Biotonne', ymd(1))}${event('2', 'Papier', ymd(9))}END:VCALENDAR\r\n`;
 
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Waste', exact: true }).click();
+  await openSettings(page, 'Dashboard & widgets', 'Waste');
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   // The radios are styled as a segmented control; the label is what gets clicked.
