@@ -46,6 +46,17 @@ export const iconPaths = {
   gauge: ['M4 18a8 8 0 1 1 16 0', 'M12 18l4-6', 'M12 18h.01'],
   // A handset, for the phone list (#300).
   phone: ['M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2'],
+  // The areas of the settings start page (#600).
+  user: ['M12 4a4 4 0 1 0 0 8a4 4 0 1 0 0-8', 'M4 21a8 8 0 0 1 16 0'],
+  users: [
+    'M9 5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0-7',
+    'M2 20a7 7 0 0 1 14 0',
+    'M16 5.5a3.5 3.5 0 0 1 0 6.5',
+    'M18 14a6 6 0 0 1 4 6',
+  ],
+  bell: ['M6 16V11a6 6 0 0 1 12 0v5l2 2H4z', 'M10 21h4'],
+  plug: ['M9 3v5M15 3v5', 'M6 8h12v3a6 6 0 0 1-12 0z', 'M12 17v4'],
+  info: ['M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18', 'M12 11v6', 'M12 7.5h.01'],
 } as const;
 
 export type IconName = keyof typeof iconPaths;

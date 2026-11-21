@@ -1,5 +1,5 @@
 import type { MessageKey } from '../shared/i18n';
-import type { SettingsGroup } from './settingsNav';
+import type { SettingsArea } from './settingsNav';
 
 /**
  * The sections of the settings dialog and who sees which (#261, #294).
@@ -10,7 +10,8 @@ export interface CatalogSection {
   id: string;
   label: MessageKey;
   module?: string;
-  group?: SettingsGroup;
+  /** Task area on the settings start page (#600); default "connections". */
+  area?: SettingsArea;
   homelab?: boolean;
   /** A plugin's own label (ADR 0021). */
   title?: () => string;
@@ -18,51 +19,60 @@ export interface CatalogSection {
   plugin?: boolean;
 }
 
-// The sections built into the dialog, with their topic (#261). Features
-// add theirs from src/app/settings (#193) and choose the group there.
+// The sections built into the dialog. Each belongs to exactly one task area
+// of the start page (#600); sections without one are connections. Features
+// add theirs from src/app/settings (#193) and choose the area there.
 export const OWN_SECTIONS: CatalogSection[] = [
-  { id: 'appearance', label: 'settings.section.appearance', module: 'appearance', group: 'general' },
-  { id: 'search', label: 'settings.section.search', module: 'search', group: 'general' },
+  // My account: sign-in, second factor, sessions.
+  { id: 'account', label: 'settings.section.account', area: 'account' },
+  // Appearance & language.
+  { id: 'appearance', label: 'settings.section.appearance', module: 'appearance', area: 'appearance' },
+  // Notifications: every channel, the phone and the web interface.
   {
     id: 'notifications',
     label: 'settings.section.notifications',
     module: 'notifications',
-    group: 'general',
+    area: 'notifications',
   },
-  { id: 'forecast', label: 'settings.section.forecast', module: 'system', group: 'general', homelab: true },
-  { id: 'services', label: 'settings.section.services', module: 'services', group: 'content' },
-  { id: 'feeds', label: 'settings.section.feeds', module: 'rss', group: 'content' },
-  { id: 'folders', label: 'settings.section.bookmark_folders', module: 'bookmarks', group: 'content' },
-  { id: 'calendar', label: 'settings.section.calendar', module: 'calendar', group: 'content' },
-  { id: 'briefing', label: 'settings.section.briefing', module: 'briefing', group: 'content' },
-  { id: 'timeline', label: 'settings.section.timeline', module: 'timeline', group: 'content' },
-  { id: 'shopping', label: 'settings.section.shopping', module: 'shopping', group: 'content' },
-  { id: 'waste', label: 'settings.section.waste', module: 'waste', group: 'content' },
-  { id: 'parcels', label: 'settings.section.parcels', module: 'parcels', group: 'content' },
-  { id: 'transfer', label: 'settings.section.transfer', module: 'transfer', group: 'content' },
+  // Dashboard & widgets: what the start page shows.
+  { id: 'search', label: 'settings.section.search', module: 'search', area: 'dashboard' },
+  { id: 'feeds', label: 'settings.section.feeds', module: 'rss', area: 'dashboard' },
+  { id: 'folders', label: 'settings.section.bookmark_folders', module: 'bookmarks', area: 'dashboard' },
+  { id: 'calendar', label: 'settings.section.calendar', module: 'calendar', area: 'dashboard' },
+  { id: 'briefing', label: 'settings.section.briefing', module: 'briefing', area: 'dashboard' },
+  { id: 'timeline', label: 'settings.section.timeline', module: 'timeline', area: 'dashboard' },
+  { id: 'shopping', label: 'settings.section.shopping', module: 'shopping', area: 'dashboard' },
+  { id: 'waste', label: 'settings.section.waste', module: 'waste', area: 'dashboard' },
+  { id: 'parcels', label: 'settings.section.parcels', module: 'parcels', area: 'dashboard' },
+  // Connections & services: the self-hosted services and every integration.
+  { id: 'services', label: 'settings.section.services', module: 'services', area: 'connections' },
   { id: 'adguard', label: 'settings.section.adguard', module: 'adguard', homelab: true },
   { id: 'speedtest', label: 'settings.section.speedtest', module: 'speedtest', homelab: true },
   { id: 'docker-updates', label: 'settings.section.docker_updates', module: 'docker', homelab: true },
   { id: 'nextcloud', label: 'settings.section.nextcloud', module: 'nextcloud', homelab: true },
   { id: 'fritzbox', label: 'settings.section.fritzbox', module: 'fritzbox', homelab: true },
   { id: 'wireguard', label: 'settings.section.wireguard', module: 'wireguard', homelab: true },
-  { id: 'backups', label: 'settings.section.backups', module: 'backup', group: 'data' },
+  { id: 'tokens', label: 'settings.section.tokens', area: 'connections' },
+  // People & access: who else uses this instance and how.
+  { id: 'members', label: 'settings.section.members', area: 'people' },
+  { id: 'invites', label: 'settings.section.invites', area: 'people' },
+  { id: 'guests', label: 'settings.section.guests', area: 'people' },
+  { id: 'kiosks', label: 'settings.section.kiosks', area: 'people' },
+  // Data & backup.
+  { id: 'backups', label: 'settings.section.backups', module: 'backup', area: 'data' },
   {
     id: 'backupmonitor',
     label: 'settings.section.backupmonitor',
     module: 'backupmonitor',
-    group: 'data',
+    area: 'data',
     homelab: true,
   },
-  { id: 'account', label: 'settings.section.account', group: 'account' },
-  { id: 'tokens', label: 'settings.section.tokens', group: 'account' },
-  { id: 'guests', label: 'settings.section.guests', group: 'account' },
-  { id: 'members', label: 'settings.section.members', group: 'account' },
-  { id: 'invites', label: 'settings.section.invites', group: 'account' },
-  { id: 'kiosks', label: 'settings.section.kiosks', group: 'account' },
-  { id: 'security-log', label: 'settings.section.security_log', group: 'account' },
-  { id: 'about', label: 'settings.section.about', module: 'system', group: 'about' },
-  { id: 'full-version', label: 'settings.section.full_version', group: 'about' },
+  { id: 'transfer', label: 'settings.section.transfer', module: 'transfer', area: 'data' },
+  // System & info.
+  { id: 'about', label: 'settings.section.about', module: 'system', area: 'system' },
+  { id: 'forecast', label: 'settings.section.forecast', module: 'system', area: 'system', homelab: true },
+  { id: 'security-log', label: 'settings.section.security_log', area: 'system' },
+  { id: 'full-version', label: 'settings.section.full_version', area: 'system' },
 ];
 
 /** What decides whether a section is shown. */

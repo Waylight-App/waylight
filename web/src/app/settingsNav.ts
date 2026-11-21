@@ -1,44 +1,79 @@
 import type { MessageKey } from '../shared/i18n';
+import type { IconName } from '../shared/ui/icons/paths';
 
-/** Topics of the settings navigation (#261), in display order. */
-export type SettingsGroup =
-  'general' | 'content' | 'integrations' | 'data' | 'account' | 'organisation' | 'about';
+/**
+ * The eight task areas of the settings (#600), in display order. Sections
+ * are sorted by what someone wants to do, not by the technology behind
+ * them, so an integration and its widget settings are found in one place.
+ */
+export type SettingsArea =
+  'account' | 'appearance' | 'notifications' | 'dashboard' | 'connections' | 'people' | 'data' | 'system';
 
-export const SETTINGS_GROUPS: readonly { id: SettingsGroup; label: MessageKey }[] = [
-  { id: 'general', label: 'settings.group.general' },
-  { id: 'content', label: 'settings.group.content' },
-  { id: 'integrations', label: 'settings.group.integrations' },
-  { id: 'data', label: 'settings.group.data' },
-  { id: 'account', label: 'settings.group.account' },
-  // Sections of the ee/ plugin (ADR 0021); empty without it, so not shown.
-  { id: 'organisation', label: 'settings.group.organisation' },
-  { id: 'about', label: 'settings.group.about' },
+export interface AreaInfo {
+  id: SettingsArea;
+  label: MessageKey;
+  /** One line on the start page that says what the area holds. */
+  hint: MessageKey;
+  icon: IconName;
+}
+
+export const SETTINGS_AREAS: readonly AreaInfo[] = [
+  { id: 'account', label: 'settings.area.account', hint: 'settings.area.account_hint', icon: 'user' },
+  { id: 'appearance', label: 'settings.area.appearance', hint: 'settings.area.appearance_hint', icon: 'sun' },
+  {
+    id: 'notifications',
+    label: 'settings.area.notifications',
+    hint: 'settings.area.notifications_hint',
+    icon: 'bell',
+  },
+  { id: 'dashboard', label: 'settings.area.dashboard', hint: 'settings.area.dashboard_hint', icon: 'grid' },
+  {
+    id: 'connections',
+    label: 'settings.area.connections',
+    hint: 'settings.area.connections_hint',
+    icon: 'plug',
+  },
+  { id: 'people', label: 'settings.area.people', hint: 'settings.area.people_hint', icon: 'users' },
+  { id: 'data', label: 'settings.area.data', hint: 'settings.area.data_hint', icon: 'archive' },
+  { id: 'system', label: 'settings.area.system', hint: 'settings.area.system_hint', icon: 'info' },
 ];
 
-/** Sections without a group are integrations (most new modules are). */
-export const DEFAULT_GROUP: SettingsGroup = 'integrations';
+/**
+ * Sections without an area are integrations: most new modules connect a
+ * service, so a feature only names its area when it is something else.
+ */
+export const DEFAULT_AREA: SettingsArea = 'connections';
 
-export interface NavGroup<T> {
-  id: SettingsGroup;
-  label: MessageKey;
+const AREA_IDS = new Set<string>(SETTINGS_AREAS.map((a) => a.id));
+
+/** Whether a value names an area; plugins pass plain strings. */
+export function isSettingsArea(value: unknown): value is SettingsArea {
+  return typeof value === 'string' && AREA_IDS.has(value);
+}
+
+/** The area a section belongs to. */
+export const areaOf = (s: { area?: SettingsArea }): SettingsArea => s.area ?? DEFAULT_AREA;
+
+export interface NavArea<T> extends AreaInfo {
   sections: T[];
 }
 
 /**
- * Sorts sections into their groups, in group order; empty groups are left
- * out. Within a group the given order is kept, except integrations, which
- * are sorted by their (translated) name because there are many.
+ * Sorts sections into their areas, in area order; areas without a visible
+ * section are left out, so nobody sees an area they cannot use. Within an
+ * area the given order is kept, except connections, which are sorted by
+ * their (translated) name because there are many.
  */
-export function groupSections<T extends { group?: SettingsGroup }>(
+export function groupByArea<T extends { area?: SettingsArea }>(
   sections: readonly T[],
   name: (s: T) => string,
   locale?: string,
-): NavGroup<T>[] {
-  return SETTINGS_GROUPS.map((g) => {
-    const own = sections.filter((s) => (s.group ?? DEFAULT_GROUP) === g.id);
-    if (g.id === 'integrations') own.sort((a, b) => name(a).localeCompare(name(b), locale));
-    return { ...g, sections: own };
-  }).filter((g) => g.sections.length > 0);
+): NavArea<T>[] {
+  return SETTINGS_AREAS.map((a) => {
+    const own = sections.filter((s) => areaOf(s) === a.id);
+    if (a.id === 'connections') own.sort((x, y) => name(x).localeCompare(name(y), locale));
+    return { ...a, sections: own };
+  }).filter((a) => a.sections.length > 0);
 }
 
 /** Index to focus after a key in a vertical list of count entries, or null. */
@@ -55,4 +90,12 @@ export function moveFocus(key: string, index: number, count: number): number | n
       return count - 1;
   }
   return null;
+}
+
+/** How many shortcuts "Recently changed" offers. */
+export const RECENT_LIMIT = 3;
+
+/** The recent list after a change in section id: newest first, no repeats. */
+export function pushRecent(recent: readonly string[], id: string, limit = RECENT_LIMIT): string[] {
+  return [id, ...recent.filter((r) => r !== id)].slice(0, limit);
 }
