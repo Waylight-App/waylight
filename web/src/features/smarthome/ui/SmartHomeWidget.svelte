@@ -4,6 +4,8 @@
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
   import { changedAgo, type Entity, isOn, parseWidgetConfig, stateText } from '../domain/smarthome';
   import type { SmarthomeUseCases } from '../usecase/smarthomeUseCases';
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { smarthomeSetup } from './smarthomeSetup';
 
   /** Props of the smart home widget (#49). */
   interface Props {
@@ -35,6 +37,8 @@
     void ids;
     return poll(load, POLL_MS);
   });
+  // svelte-ignore state_referenced_locally
+  const setup = smarthomeSetup(smarthome);
 
   async function act(e: Entity) {
     const question = e.action === 'press' ? 'smarthome.confirm_press' : 'smarthome.confirm_toggle';
@@ -52,7 +56,12 @@
 </script>
 
 {#if unconfigured}
-  <p class="muted">{t('smarthome.connect_under_settings')}</p>
+  <SetupInPlace
+    text={t('smarthome.connect_under_settings')}
+    descriptor={setup}
+    instance
+    ondone={() => void load().catch(() => undefined)}
+  />
 {:else if ids.length === 0}
   <p class="muted">{t('smarthome.choose_entities')}</p>
 {:else if error && !entities}

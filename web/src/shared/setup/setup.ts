@@ -1,0 +1,92 @@
+/**
+ * The setup assistant of a widget (#588): each integration describes its
+ * setup as data (fields, credential steps, a deep link and a check) and the
+ * shared component renders it, so a new integration adds data, not UI.
+ */
+import { getContext, setContext } from 'svelte';
+import type { MessageKey } from '../i18n';
+
+/** Which step of the assistant a field belongs to. */
+export type SetupStage = 'address' | 'credential';
+
+/** One input of the assistant. */
+export interface SetupField {
+  key: string;
+  label: MessageKey;
+  stage: SetupStage;
+  type: 'url' | 'text' | 'password';
+  placeholder?: string;
+  autocomplete?: string;
+}
+
+/** What the check shows after a working connection: real data. */
+export interface SetupPreview {
+  /** Short lines such as "12,340 photos" or "Calendars: Personal, Work". */
+  lines: string[];
+  /** Up to three image URLs, e.g. thumbnails. */
+  images?: string[];
+}
+
+/** An address found in the home network (#590). */
+export interface FoundService {
+  url: string;
+  /** Where it was found, e.g. "Docker container immich_server". */
+  hint: string;
+}
+
+/** Everything the assistant needs to know about one integration. */
+export interface SetupDescriptor {
+  /** Product name in its own spelling, e.g. "Immich". */
+  service: string;
+  fields: SetupField[];
+  /** Numbered steps to get the credential, in the service's own wording. */
+  steps: MessageKey[];
+  /** The service page where the credential is created, from the address. */
+  credentialPage?: (address: string) => string | null;
+  /**
+   * Saves the connection after the server checked it and returns the
+   * preview; a failure throws an error whose message names the cause.
+   */
+  check: (values: Record<string, string>) => Promise<SetupPreview>;
+  /** Services of this kind found in the home network; optional (#590). */
+  discover?: () => Promise<FoundService[]>;
+}
+
+/** The value of the first address field, normalised for links. */
+export function addressOf(d: SetupDescriptor, values: Record<string, string>): string {
+  const field = d.fields.find((f) => f.stage === 'address');
+  return field ? (values[field.key] ?? '').trim().replace(/\/+$/, '') : '';
+}
+
+/** Whether every field of a stage is filled in. */
+export function stageComplete(
+  d: SetupDescriptor,
+  stage: SetupStage,
+  values: Record<string, string>,
+): boolean {
+  return d.fields.filter((f) => f.stage === stage).every((f) => (values[f.key] ?? '').trim() !== '');
+}
+
+/**
+ * Who may set up what in place: instance integrations need an admin,
+ * personal ones any account that is not a guest. The shell provides it;
+ * without it (tests, the extension's local mode) widgets offer no setup.
+ */
+export interface SetupRights {
+  admin: boolean;
+  guest: boolean;
+}
+
+const key = Symbol('setup-rights');
+
+/** Called once by the shell. */
+export function provideSetupRights(rights: SetupRights): void {
+  setContext(key, rights);
+}
+
+/** Whether the viewer may set up an integration of the given kind here. */
+export function useMaySetUp(instance: boolean): boolean {
+  const r = getContext<SetupRights | undefined>(key);
+  if (!r || r.guest) return false;
+  return instance ? r.admin : true;
+}

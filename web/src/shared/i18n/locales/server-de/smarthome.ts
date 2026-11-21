@@ -12,8 +12,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_0f4d7732f2cd4899: 'Aktionen sind für diese Entität nicht aktiviert (SMARTHOME_ACTIONS_ENTITIES).',
   // At most {max} entities per widget.
   srv_3a4c7bf887ab6487: 'Höchstens {max} Entitäten pro Widget.',
-  // Could not connect to Home Assistant: {detail}
-  srv_789dca50a23c7cb8: 'Verbindung zu Home Assistant fehlgeschlagen: {detail}',
   // Home Assistant is not configured yet.
   srv_bcbabc6a08a54107: 'Home Assistant ist noch nicht eingerichtet.',
   // Home Assistant is not reachable.

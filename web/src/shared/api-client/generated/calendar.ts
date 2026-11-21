@@ -53,3 +53,19 @@ export interface SubscriptionDTO {
   color: string;
   refreshMinutes: number /* int */;
 }
+/**
+ * FoundCalendarDTO is a calendar the setup assistant found.
+ */
+export interface FoundCalendarDTO {
+  url: string;
+  name: string;
+}
+/**
+ * ConnectDTO is the answer of POST /api/calendar/connect: the saved
+ * settings, the calendars found and the next events for the preview.
+ */
+export interface ConnectDTO {
+  settings: SettingsDTO;
+  calendars: FoundCalendarDTO[];
+  next: EventDTO[];
+}

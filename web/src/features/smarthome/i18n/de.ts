@@ -24,4 +24,10 @@ export const de: Record<keyof typeof en, string> = {
     'Lege das Token in Home Assistant unter Profil → Sicherheit → Langlebige Zugriffstoken an. Es wird verschlüsselt gespeichert und nie wieder angezeigt.',
   'smarthome.actions_hint':
     'Schalter und Taster bleiben schreibgeschützt, solange SMARTHOME_ACTIONS_ENTITIES ihre Entitäts-IDs nicht auflistet.',
+  'smarthome.setup_step_profile': 'Öffne Home Assistant und klicke unten links auf deinen Benutzernamen.',
+  'smarthome.setup_step_security': 'Öffne den Reiter Sicherheit und scrolle zu Langlebige Zugangstoken.',
+  'smarthome.setup_step_create': 'Klicke Token erstellen, nenne es Waylight und bestätige mit OK.',
+  'smarthome.setup_step_copy': 'Kopiere das Token und füge es unten ein; Home Assistant zeigt es nur einmal.',
+  'smarthome.setup_token': 'Zugangstoken',
+  'smarthome.setup_entities': '{n} Entitäten gefunden',
 };
