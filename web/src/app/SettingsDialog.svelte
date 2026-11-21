@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { intlLocale, t } from '../shared/i18n';
+  import { intlLocale, type MessageKey, t, textsIn } from '../shared/i18n';
+  import { isTyping } from '../shared/shortcuts/registry';
   import { tick } from 'svelte';
   import { areaOf, groupByArea, moveFocus, type SettingsArea } from './settingsNav';
   import { registeredSections } from './settingsSections';
@@ -9,6 +10,9 @@
   import type { Appearance } from '../features/appearance';
   import Modal from '../shared/ui/Modal.svelte';
   import SettingsHome from './SettingsHome.svelte';
+  import SettingsSearch from './SettingsSearch.svelte';
+  import { buildIndex, type SettingsHit } from './settingsSearch';
+  import { highlightField } from './settingsHighlight';
   import SettingsSectionView from './SettingsSectionView.svelte';
   import type { Container } from './container';
 
@@ -171,13 +175,52 @@
     if (current.kind === 'section') recentIds = rememberChange(current.id);
   }
 
+  // The settings search (#601) finds areas, sections and fields in English
+  // and German whatever the UI language; the catalogues load on first use.
+  let otherTexts = $state<((key: MessageKey) => string)[]>([]);
+  async function loadSearchTexts() {
+    try {
+      otherTexts = await Promise.all([textsIn('en'), textsIn('de')]);
+    } catch {
+      // Offline: the search still works in the UI language.
+    }
+  }
+  const index = $derived(
+    buildIndex(areas, {
+      ui: t,
+      others: otherTexts,
+      sectionName: nameOf,
+      // A plugin's section brings its own labels through keywords.
+      sectionLabel: (s) => (s.title ? undefined : s.label),
+    }),
+  );
+  let search = $state<{ focus: () => void }>();
+
+  async function pick(hit: SettingsHit) {
+    if (hit.kind === 'area') return openArea(hit.area);
+    await go({ kind: 'section', id: hit.section });
+    if (hit.field && content) await highlightField(content, hit.field);
+  }
+
+  /** "/" focuses the search from anywhere in the dialog, as on the dashboard. */
+  async function slash(e: KeyboardEvent) {
+    if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey || isTyping(e.target)) return;
+    e.preventDefault();
+    if (current.kind !== 'home') {
+      view = { kind: 'home' };
+      await tick();
+    }
+    search?.focus();
+  }
+
   const title = $derived(
     currentSection ? nameOf(currentSection) : currentArea ? t(currentArea.label) : t('settings.overview'),
   );
 </script>
 
 <Modal title={t('app.settings')} size="wide" {onclose}>
-  <div class="layout">
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="layout" onkeydown={slash}>
     <nav class="areas" aria-label={t('settings.areas')} bind:this={nav}>
       <button
         type="button"
@@ -233,6 +276,7 @@
       {/if}
       <h3 class="title" tabindex="-1" bind:this={heading}>{title}</h3>
       {#if current.kind === 'home'}
+        <SettingsSearch bind:this={search} {index} onfirstuse={loadSearchTexts} onpick={pick} />
         <SettingsHome {areas} {statuses} {recent} onarea={openArea} onsection={openSection} />
       {:else if current.kind === 'area' && currentArea}
         <p class="muted">{t(currentArea.hint)}</p>
@@ -338,6 +382,13 @@
   }
   .back {
     display: none;
+  }
+  /* A field found by the search (#601), marked for a moment. */
+  .content :global(.settings-found) {
+    outline: 2px solid var(--color-accent-text);
+    outline-offset: 4px;
+    border-radius: var(--radius-small);
+    transition: outline-color 0.3s;
   }
   /* Phones: one page at a time with a back link instead of the area column. */
   @media (max-width: 640px) {

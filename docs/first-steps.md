@@ -48,7 +48,9 @@ Calendars use CalDAV, which Nextcloud, iCloud (with an app password),
 Fastmail, Radicale and most other calendar servers speak. The settings open
 on an overview of eight areas, from *My account* to *System & info*; each tile
 says what it holds and, where it can, how things stand, for example how many
-notification channels are on or when the last backup ran. Open Settings →
+notification channels are on or when the last backup ran. The search field
+at the top (press `/`) finds areas, sections and single settings by name, in
+English and German, for example *Passwort* or *Immich*. Open Settings →
 *Dashboard & widgets* → Calendar and enter the address of each calendar (one per line), your user
 name and an app password. In Nextcloud you find a calendar's address in its
 menu under *Copy private link*. Read-only ICS links, such as a school

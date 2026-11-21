@@ -90,6 +90,8 @@ function toSection(s: PluginSection, context: PluginContext): SettingsSection {
     label: 'settings.plugin_section',
     title: () => pick(s.label, locale()),
     area: isSettingsArea(s.area) ? s.area : PLUGIN_AREA,
+    // The label in every language the plugin ships, for the settings search.
+    keywords: Object.values(s.label),
     adminOnly: s.adminOnly,
     plugin: true,
     load: () => Promise.resolve((locked() ? LockedFeature : PluginHost) as never),

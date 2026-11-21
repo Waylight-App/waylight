@@ -15,27 +15,67 @@ export interface AreaInfo {
   /** One line on the start page that says what the area holds. */
   hint: MessageKey;
   icon: IconName;
+  /** Words that lead to the area in the settings search, English and German (#601). */
+  keywords: readonly string[];
 }
 
 export const SETTINGS_AREAS: readonly AreaInfo[] = [
-  { id: 'account', label: 'settings.area.account', hint: 'settings.area.account_hint', icon: 'user' },
-  { id: 'appearance', label: 'settings.area.appearance', hint: 'settings.area.appearance_hint', icon: 'sun' },
+  {
+    id: 'account',
+    label: 'settings.area.account',
+    hint: 'settings.area.account_hint',
+    icon: 'user',
+    keywords: ['profile', 'security', 'profil', 'konto', 'sicherheit'],
+  },
+  {
+    id: 'appearance',
+    label: 'settings.area.appearance',
+    hint: 'settings.area.appearance_hint',
+    icon: 'sun',
+    keywords: ['look', 'design', 'aussehen', 'darstellung'],
+  },
   {
     id: 'notifications',
     label: 'settings.area.notifications',
     hint: 'settings.area.notifications_hint',
     icon: 'bell',
+    keywords: ['push', 'alerts', 'mitteilungen'],
   },
-  { id: 'dashboard', label: 'settings.area.dashboard', hint: 'settings.area.dashboard_hint', icon: 'grid' },
+  {
+    id: 'dashboard',
+    label: 'settings.area.dashboard',
+    hint: 'settings.area.dashboard_hint',
+    icon: 'grid',
+    keywords: ['widgets', 'start page', 'startseite', 'inhalte'],
+  },
   {
     id: 'connections',
     label: 'settings.area.connections',
     hint: 'settings.area.connections_hint',
     icon: 'plug',
+    keywords: ['integrations', 'services', 'apps', 'integrationen', 'dienste', 'zugänge'],
   },
-  { id: 'people', label: 'settings.area.people', hint: 'settings.area.people_hint', icon: 'users' },
-  { id: 'data', label: 'settings.area.data', hint: 'settings.area.data_hint', icon: 'archive' },
-  { id: 'system', label: 'settings.area.system', hint: 'settings.area.system_hint', icon: 'info' },
+  {
+    id: 'people',
+    label: 'settings.area.people',
+    hint: 'settings.area.people_hint',
+    icon: 'users',
+    keywords: ['users', 'family', 'team', 'benutzer', 'familie', 'personen'],
+  },
+  {
+    id: 'data',
+    label: 'settings.area.data',
+    hint: 'settings.area.data_hint',
+    icon: 'archive',
+    keywords: ['backup', 'export', 'import', 'sicherung', 'daten'],
+  },
+  {
+    id: 'system',
+    label: 'settings.area.system',
+    hint: 'settings.area.system_hint',
+    icon: 'info',
+    keywords: ['about', 'version', 'licence', 'license', 'über', 'lizenz'],
+  },
 ];
 
 /**

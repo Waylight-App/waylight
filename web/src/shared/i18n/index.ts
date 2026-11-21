@@ -7,6 +7,7 @@ export {
   serverMessage,
   setLanguage,
   t,
+  textsIn,
   type MessageKey,
 } from './i18n.svelte';
 export type { Locale, MessageParams } from './format';
