@@ -51,7 +51,7 @@ func TestListCollectsWidgetsAndConnections(t *testing.T) {
 		},
 	})
 
-	items, err := uc.List(ctxAs("member"))
+	items, err := uc.List(ctxAs("member"), false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func TestListCollectsWidgetsAndConnections(t *testing.T) {
 
 	// Admins also see broken instance connections without a widget, but not
 	// integrations that were never set up.
-	items, _ = uc.List(ctxAs("admin"))
+	items, _ = uc.List(ctxAs("admin"), false)
 	ids := map[string]bool{}
 	for _, it := range items {
 		ids[it.ID] = true
@@ -86,14 +86,25 @@ func TestListCollectsWidgetsAndConnections(t *testing.T) {
 	// Since stays while the problem lasts.
 	first := items[0].Since
 	c.now = c.now.Add(time.Minute)
-	items, _ = uc.List(ctxAs("admin"))
+	items, _ = uc.List(ctxAs("admin"), false)
 	if !items[0].Since.Equal(first) {
 		t.Fatal("since must not move")
 	}
 	c.now = c.now.Add(statusTTL)
-	_, _ = uc.List(ctxAs("admin"))
+	_, _ = uc.List(ctxAs("admin"), false)
 	if immichCalls != 2 {
 		t.Fatalf("asked again after the TTL: %d", immichCalls)
+	}
+
+	// A fresh list asks again, but not right after the last answer.
+	_, _ = uc.List(ctxAs("admin"), true)
+	if immichCalls != 2 {
+		t.Fatalf("fresh right after an answer: %d", immichCalls)
+	}
+	c.now = c.now.Add(freshAfter)
+	_, _ = uc.List(ctxAs("admin"), true)
+	if immichCalls != 3 {
+		t.Fatalf("fresh after freshAfter: %d", immichCalls)
 	}
 }
 
@@ -103,7 +114,7 @@ func TestListIsEmptyForReadOnlyAccounts(t *testing.T) {
 		return nil, nil
 	}})
 	for _, role := range []string{"guest", "kiosk", "token"} {
-		items, err := uc.List(ctxAs(role))
+		items, err := uc.List(ctxAs(role), false)
 		if err != nil || items == nil || len(items) != 0 {
 			t.Fatalf("%s: %v %v", role, items, err)
 		}
@@ -118,13 +129,13 @@ func TestListRespectsModuleAccessAndErrors(t *testing.T) {
 		Widgets: func(context.Context) ([]Widget, error) { return []Widget{{ID: "w", Kind: "immich"}}, nil },
 		Sources: []Source{{Module: "immich", Kinds: []string{"immich"}, Status: failing(&calls)}},
 	})
-	if items, _ := uc.List(ctxAs("member")); len(items) != 0 || calls != 0 {
+	if items, _ := uc.List(ctxAs("member"), false); len(items) != 0 || calls != 0 {
 		t.Fatalf("a module the account may not use is left out: %+v", items)
 	}
 	broken := New(Deps{Clock: &clock{}, Widgets: func(context.Context) ([]Widget, error) {
 		return nil, errors.New("db")
 	}})
-	if _, err := broken.List(ctxAs("member")); err == nil {
+	if _, err := broken.List(ctxAs("member"), false); err == nil {
 		t.Fatal("widget errors are returned")
 	}
 }
@@ -139,7 +150,7 @@ func TestSlowSourceCountsAsNotAnswering(t *testing.T) {
 		}}},
 	}).(*attention)
 	start := time.Now()
-	items, _ := uc.List(ctxAs("member"))
+	items, _ := uc.List(ctxAs("member"), false)
 	if len(items) != 1 || items[0].Action != domain.ActionCheck {
 		t.Fatalf("%+v", items)
 	}

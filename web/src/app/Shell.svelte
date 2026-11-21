@@ -9,6 +9,7 @@
   import SyncStatus from './offline/SyncStatus.svelte';
   import MaintenanceBanner from '../features/notifications/ui/MaintenanceBanner.svelte';
   import { setLanguage, t } from '../shared/i18n';
+  import { tick } from 'svelte';
   import { type Appearance, cssVariables, defaultAppearance } from '../features/appearance';
   import { errorMessage } from '../shared/api-client/http';
   import { applyTheme } from '../shared/theme/theme';
@@ -17,9 +18,12 @@
   import DashboardPage from './DashboardPage.svelte';
   import { branding } from './branding/branding.svelte';
   import { loadPlugins } from './plugins/loader';
-  import { widgetDefinitions } from './widgets';
+  import { definitionFor, widgetDefinitions } from './widgets';
   import { searchActions } from './searchActions';
   import { registeredSections } from './settingsSections';
+  import { OWN_SECTIONS } from './settingsCatalog';
+  import { attention, setAttentionHandlers } from './attention.svelte';
+  import AttentionBadge from '../features/attention/ui/AttentionBadge.svelte';
   import { provideOpenSettings } from '../shared/ui/settingsLink';
   import { attachShortcuts } from '../shared/shortcuts';
   import Icon from '../shared/ui/icons/Icon.svelte';
@@ -73,6 +77,7 @@
   let dashboard = $state<{
     selectTabAt: (index: number) => void;
     selectTab: (id: string) => void;
+    openWidgetSettings: (tabId: string, widgetId: string) => void;
     openAddWidget: (query?: string) => void;
     undo: () => void;
     redo: () => void;
@@ -104,6 +109,74 @@
     url.searchParams.delete('settings');
     history.replaceState(history.state, '', url.pathname + url.search + url.hash);
   });
+  /**
+   * Opens the settings at a section. An open dialog keeps the section it
+   * opened with, so it is closed and opened again.
+   */
+  async function openSettingsAt(section: string) {
+    if (settingsOpen) {
+      settingsOpen = false;
+      await tick();
+    }
+    settingsSection = section;
+    settingsOpen = true;
+  }
+
+  // The attention list (#592): the dot in the top bar and Settings → Needs
+  // your attention. Guests, kiosk displays and the local mode can fix
+  // nothing, so they never ask.
+  const attentionOn = $derived(
+    !!modules?.has('attention') && !container.auth.guest && !container.auth.kiosk && !container.localMode,
+  );
+  $effect(() => {
+    if (!attentionOn) return;
+    attention.attach(container.attention);
+    void attention.refresh();
+    const poll = () => {
+      if (!document.hidden) void attention.refresh();
+    };
+    const id = setInterval(poll, 60_000);
+    document.addEventListener('visibilitychange', poll);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', poll);
+      attention.attach(null);
+    };
+  });
+  setAttentionHandlers({
+    openWidget: (tabId, widgetId) => {
+      settingsOpen = false;
+      dashboard?.openWidgetSettings(tabId, widgetId);
+    },
+    openSettings: (section) => void openSettingsAt(section),
+    sectionOf: (integration) =>
+      [...OWN_SECTIONS, ...registeredSections].find((s) => s.module === integration && s.id !== 'attention')
+        ?.id,
+    nameOf: (integration) => {
+      const s = [...OWN_SECTIONS, ...registeredSections].find(
+        (x) => x.module === integration && x.id !== 'attention',
+      );
+      if (s) return s.title?.() ?? t(s.label);
+      return definitionFor(integration)?.type.title ?? integration;
+    },
+    tabName: (tabId) => dashboardState.tabs.find((tab) => tab.id === tabId)?.name,
+  });
+  // A changed widget may have got its missing setting: look again shortly
+  // after the dashboard changed, without asking the services.
+  $effect(() => {
+    void dashboardState.tabs;
+    if (!attentionOn) return;
+    const id = setTimeout(() => void attention.refresh(), 1_000);
+    return () => clearTimeout(id);
+  });
+
+  function closeSettings() {
+    settingsOpen = false;
+    // A connection may have been fixed in the settings: ask its service
+    // again, but only when something was broken.
+    if (attentionOn && attention.count > 0) void attention.check();
+  }
+
   let launcherOpen = $state<Segment | null>(null);
   let launcherTrigger = $state<HTMLButtonElement>();
   let serviceStatus = $state<ReturnType<typeof statusSummary>>({ kind: 'none', offline: 0 });
@@ -457,6 +530,9 @@
     />
   </div>
   <div class="right">
+    {#if attentionOn}
+      <AttentionBadge state={attention} onopen={() => void openSettingsAt('attention')} />
+    {/if}
     {#if serviceStatus.kind !== 'none'}
       <button
         type="button"
@@ -581,7 +657,7 @@
       onappearance={(a) => (appearance = a)}
       onrestarttour={modules.has('onboarding') ? restartTour : undefined}
       section={settingsSection}
-      onclose={() => (settingsOpen = false)}
+      onclose={closeSettings}
     />
   {/await}
 {/if}
