@@ -22,6 +22,8 @@ export interface Appearance {
   launcher: 'both' | 'services' | 'bookmarks';
   /** What the start page shows (#281): everyday topics, or also the home network. */
   profile: StartProfile;
+  /** Lists settings for developers and power users (#602); off by default. */
+  showAdvanced?: boolean;
 }
 
 /** Start-page profiles (#281). */

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { intlLocale, type MessageKey, t, textsIn } from '../shared/i18n';
   import { isTyping } from '../shared/shortcuts/registry';
+  import { errorMessage } from '../shared/api-client/http';
   import { tick } from 'svelte';
   import { areaOf, groupByArea, moveFocus, type SettingsArea } from './settingsNav';
   import { registeredSections } from './settingsSections';
@@ -45,18 +46,47 @@
   /** Display name of a section: a plugin's own label or the translated key. */
   const nameOf = (s: Section) => s.title?.() ?? t(s.label);
   const sections: Section[] = [...OWN_SECTIONS, ...registeredSections];
-  const visible = $derived(
-    visibleSections(sections, {
-      modules,
-      dataKinds,
-      profile: appearance.profile,
-      localMode: container.localMode,
-      guest: container.auth.guest,
-      member: container.auth.member,
-      admin: container.auth.admin,
-      owner: container.auth.owner,
-    }),
+
+  /**
+   * Advanced settings (#602) are listed while the account switched them on.
+   * A link straight to an advanced section (docs, search command) shows
+   * them for this visit without changing the stored choice.
+   */
+  let visitAdvanced = $state(sections.some((s) => s.id === section && s.advanced));
+  const advanced = $derived(!!appearance.showAdvanced || visitAdvanced);
+  const viewer = $derived({
+    modules,
+    dataKinds,
+    profile: appearance.profile,
+    localMode: container.localMode,
+    guest: container.auth.guest,
+    member: container.auth.member,
+    admin: container.auth.admin,
+    owner: container.auth.owner,
+  });
+  const visible = $derived(visibleSections(sections, { ...viewer, advanced }));
+  /** The switch is offered only to accounts that have something advanced to show and may save it. */
+  const canSwitchAdvanced = $derived(
+    !container.auth.guest &&
+      !container.auth.kiosk &&
+      visibleSections(sections, { ...viewer, advanced: true }).some(
+        (s) => s.advanced || (s.advancedFields?.length ?? 0) > 0,
+      ),
   );
+  let advancedError = $state('');
+  let savingAdvanced = $state(false);
+  async function setAdvanced(on: boolean) {
+    savingAdvanced = true;
+    advancedError = '';
+    try {
+      onappearance(await container.appearance.save({ ...appearance, showAdvanced: on }));
+      visitAdvanced = false;
+    } catch (err) {
+      advancedError = errorMessage(err);
+    } finally {
+      savingAdvanced = false;
+    }
+  }
   const areas = $derived(groupByArea(visible, nameOf, intlLocale()));
 
   /**
@@ -195,6 +225,7 @@
       sectionName: nameOf,
       // A plugin's section brings its own labels through keywords.
       sectionLabel: (s) => (s.title ? undefined : s.label),
+      advanced,
     }),
   );
   let search = $state<{ focus: () => void }>();
@@ -281,6 +312,22 @@
       {#if current.kind === 'home'}
         <SettingsSearch bind:this={search} {index} onfirstuse={loadSearchTexts} onpick={pick} />
         <SettingsHome {areas} {statuses} {recent} onarea={openArea} onsection={openSection} />
+        {#if canSwitchAdvanced}
+          <div class="advanced">
+            <label class="switch">
+              <input
+                type="checkbox"
+                checked={!!appearance.showAdvanced}
+                disabled={savingAdvanced}
+                aria-describedby="settings-advanced-hint"
+                onchange={(e) => setAdvanced(e.currentTarget.checked)}
+              />
+              <span>{t('settings.advanced.label')}</span>
+            </label>
+            <p class="muted" id="settings-advanced-hint">{t('settings.advanced.hint')}</p>
+            {#if advancedError}<p class="error" role="alert">{advancedError}</p>{/if}
+          </div>
+        {/if}
       {:else if current.kind === 'area' && currentArea}
         <p class="muted">{t(currentArea.hint)}</p>
         <ul class="list">
@@ -300,6 +347,7 @@
           {appearance}
           {onappearance}
           {onrestarttour}
+          {advanced}
         />
       {/if}
     </section>
@@ -385,6 +433,21 @@
   }
   .back {
     display: none;
+  }
+  .advanced {
+    margin-top: var(--space-6);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+  }
+  .advanced p {
+    margin: var(--space-1) 0 0;
+    font-size: 0.85rem;
+  }
+  .switch {
+    display: inline-flex;
+    gap: var(--space-2);
+    align-items: center;
+    cursor: pointer;
   }
   /* A field found by the search (#601), marked for a moment. */
   .content :global(.settings-found) {

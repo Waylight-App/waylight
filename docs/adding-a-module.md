@@ -93,7 +93,10 @@ example.
     for example `dashboard` for settings that only change what a widget
     shows. `keywords` (English and German synonyms) and `fields` (message
     keys of headings or labels inside the section) make the section and its
-    settings findable in the settings search. Answers in the quick search go into `web/src/app/search/quotes.ts`.
+    settings findable in the settings search. Mark a section for developers
+    and power users with `advanced: true`; it is then listed only while the
+    account shows advanced settings. Forms read `advanced` from the
+    settings context to hide single advanced fields. Answers in the quick search go into `web/src/app/search/quotes.ts`.
 
 12. **Browser test**, `web/e2e/features/quotes.spec.ts`, if the widget does
     something worth clicking through. Import `account` and `password` from

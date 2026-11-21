@@ -34,6 +34,7 @@ export interface IndexSection {
   id: string;
   keywords?: readonly string[];
   fields?: readonly MessageKey[];
+  advancedFields?: readonly MessageKey[];
 }
 
 /** Translations the index needs: the UI language and the other languages. */
@@ -45,6 +46,8 @@ export interface IndexTexts<S extends IndexSection> {
   /** Display name of a section (plugins have their own labels). */
   sectionName: (s: S) => string;
   sectionLabel: (s: S) => MessageKey | undefined;
+  /** Whether advanced fields are shown and so findable (#602). */
+  advanced?: boolean;
 }
 
 /** Lower case without accents, so "Zugange" finds "Zugänge" and "e-mail" finds "E-Mail". */
@@ -84,7 +87,7 @@ export function buildIndex<S extends IndexSection>(
           normalise,
         ),
       });
-      for (const f of s.fields ?? []) {
+      for (const f of [...(s.fields ?? []), ...(texts.advanced ? (s.advancedFields ?? []) : [])]) {
         const title = texts.ui(f);
         entries.push({
           kind: 'field',

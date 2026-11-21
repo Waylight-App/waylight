@@ -75,12 +75,12 @@ describe('loadPlugins', () => {
     expect(branding?.id).toBe('plugin-branding');
     expect(branding?.title?.()).toBe('Branding');
     expect(branding?.adminOnly).toBe(true);
-    expect(branding?.props({} as never, { modules: new Set() })).toEqual({
+    expect(branding?.props({} as never, { modules: new Set(), advanced: false })).toEqual({
       title: 'Branding',
       description: 'Own name and colours',
     });
     // A section without a feature is always open.
-    expect(licence?.props({} as never, { modules: new Set() })).toMatchObject({ mountable });
+    expect(licence?.props({} as never, { modules: new Set(), advanced: false })).toMatchObject({ mountable });
   });
 
   it('skips a plugin built for another API version', async () => {

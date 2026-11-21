@@ -51,8 +51,10 @@
     appearance: Appearance;
     onappearance: (a: Appearance) => void;
     onrestarttour?: () => void;
+    /** Whether advanced fields are shown (#602). */
+    advanced: boolean;
   }
-  let { id, container, modules, appearance, onappearance, onrestarttour }: Props = $props();
+  let { id, container, modules, appearance, onappearance, onrestarttour, advanced }: Props = $props();
 
   const registered = $derived(registeredSections.find((s) => s.id === id));
   let guestTabs = $state<{ id: string; name: string }[]>([]);
@@ -62,7 +64,12 @@
 </script>
 
 {#if id === 'appearance'}
-  <AppearanceSettings appearance={container.appearance} current={appearance} onchange={onappearance} />
+  <AppearanceSettings
+    appearance={container.appearance}
+    current={appearance}
+    onchange={onappearance}
+    {advanced}
+  />
 {:else if id === 'search'}
   <SearchSettings search={container.search} keywordTargets={() => keywordTargets(container, modules)} />
   <CaptureBookmarklet />
@@ -139,7 +146,7 @@
   <AdGuardSettings adguard={container.adguard} />
 {:else if registered}
   {#await registered.load() then Section}
-    <Section {...registered.props(container, { modules })} />
+    <Section {...registered.props(container, { modules, advanced })} />
   {/await}
 {:else if id === 'notifications'}
   <NotificationSettings notifications={container.notifications} />

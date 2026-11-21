@@ -5,7 +5,9 @@ without a browser session: iOS Shortcuts, Home Assistant, cron jobs.
 
 ## Create a token
 
-Settings → **API tokens** → choose a name, the access per module (*read* or
+API tokens are an advanced setting: turn on **Show advanced settings** at
+the bottom of the settings overview once, then open Settings → *Connections
+& services* → **API tokens** and choose a name, the access per module (*read* or
 *read & write*) and optionally an expiry. The token (`th_…`) is shown **once**
 — copy it into your automation. Only its hash is stored; it can be revoked
 at any time, and its last use (time and IP) is shown in the list and logged
