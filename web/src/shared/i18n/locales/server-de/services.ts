@@ -34,4 +34,16 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_09bd02ddefc751e8: '{name} ist ausgefallen',
   // {online} of {total} running
   srv_85ec6321e77d0b4a: '{online} von {total} laufen',
+  // A status page of your services: uptime over the last days and current or past outages.
+  srv_65797128a11803b4:
+    'Eine Statusseite deiner Dienste: Verfügbarkeit der letzten Tage und aktuelle oder vergangene Ausfälle.',
+  // Add services in Settings under Services, or let Waylight find them on your network. Containers with Waylight labels appear by themselves.
+  srv_8838681c99377be8:
+    'Füge Dienste in den Einstellungen unter Dienste hinzu oder lass Waylight sie in deinem Netz finden. Container mit Waylight-Labels erscheinen von selbst.',
+  // It uses the services you added in Settings under Services; there is nothing else to set up.
+  srv_e02aa2085e4c6961:
+    'Es nutzt die Dienste aus den Einstellungen unter Dienste; sonst ist nichts einzurichten.',
+  // Tiles for your own services with their online status, response time and certificate warnings.
+  srv_82c86b04ef996a5a:
+    'Kacheln für deine eigenen Dienste mit Online-Status, Antwortzeit und Zertifikatswarnungen.',
 };

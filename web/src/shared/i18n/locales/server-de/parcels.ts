@@ -36,4 +36,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_75a6a213ce2bf505: '{count} unterwegs',
   // {count} with a problem
   srv_2af79387a021fa8c: '{count} mit Problem',
+  // Add a tracking number with the plus button in the widget. For live DHL status, an admin adds a free DHL key in Settings under Parcels.
+  srv_4117622a00c2859d:
+    'Füge eine Sendungsnummer mit dem Plus-Knopf im Widget hinzu. Für den aktuellen DHL-Status hinterlegt ein Admin einen kostenlosen DHL-Schlüssel in den Einstellungen unter Pakete.',
+  // Your parcels and where they are right now.
+  srv_66694ebba095803e: 'Deine Pakete und wo sie gerade sind.',
 };

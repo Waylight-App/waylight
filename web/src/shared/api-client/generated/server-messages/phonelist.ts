@@ -2,6 +2,8 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_35c0395bf946b8e1: "A phone list of names, roles and numbers that you can search.",
+  srv_0617246d6c6460cf: "An admin adds the entries in Settings under Phone list. Open the widget settings to group the list by team.",
   srv_76ebaaaec60f0726: "Enter a phone number or an e-mail address.",
   srv_b7746e5bbafdfc41: "Please enter a phone number with digits, spaces and + ( ) / . - only.",
   srv_9f747d541533b228: "The name must be between 1 and 100 characters long.",

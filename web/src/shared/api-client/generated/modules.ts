@@ -81,3 +81,19 @@ export interface CompactResponse {
    */
   empty?: boolean;
 }
+/**
+ * HelpResponse is the DTO of GET /api/help/widgets (#678).
+ */
+export interface HelpResponse {
+  widgets: WidgetHelpInfo[];
+}
+/**
+ * WidgetHelpInfo is the help of one widget kind; clients translate the
+ * texts like those of a compact state.
+ */
+export interface WidgetHelpInfo {
+  kind: string;
+  shows: CompactText;
+  setUp: CompactText;
+  docsUrl: string;
+}

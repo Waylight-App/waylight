@@ -22,4 +22,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_4548096ca54179fb: 'Heute {count} Aufgaben',
   // {title} ({name})
   srv_bd31a1ae5c8ba411: '{title} ({name})',
+  // Recurring household chores that the people on the list take turns with.
+  srv_22129ec15fc8bc33:
+    'Wiederkehrende Aufgaben im Haushalt, die sich die Personen auf der Liste abwechselnd teilen.',
+  // Add a chore with New chore, set how often it repeats and list the people who take turns. Tick it off when it is done.
+  srv_eeae591ee786a12e:
+    'Lege mit „Neue Aufgabe“ eine Aufgabe an, stelle ein, wie oft sie wiederkehrt, und trage die Personen ein, die sich abwechseln. Hake sie ab, wenn sie erledigt ist.',
 };

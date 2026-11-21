@@ -14,4 +14,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_54b6e0f5f98286bf: 'Das Land muss ein zweistelliger Code wie DE sein.',
   // The minimum discount must be between 0 and 100 %.
   srv_f32556d4b742441a: 'Der Mindestrabatt muss zwischen 0 und 100 % liegen.',
+  // Discounts on games on your Steam wishlist and free games on the Epic Games Store.
+  srv_29bda4cba6f2bd51: 'Rabatte auf Spiele deiner Steam-Wunschliste und Gratisspiele im Epic Games Store.',
+  // The free games need no setup. For wishlist discounts, enter your Steam profile in Settings under Game deals.
+  srv_4044350fdb7a73ec:
+    'Die Gratisspiele brauchen keine Einrichtung. Für Rabatte auf der Wunschliste gib dein Steam-Profil in den Einstellungen unter Spiele-Angebote ein.',
 };

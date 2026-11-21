@@ -3,7 +3,9 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_987624bba2ac796c: "At most {max} artists can be followed.",
+  srv_44ca48d69e755ae0: "Follow artists in Settings under New releases.",
   srv_f9e4cfbeb07400ea: "MusicBrainz is not reachable.",
+  srv_750f3131063df0b9: "New albums and singles of the artists you follow.",
   srv_cfe2240227cb188a: "The artist ID is not a MusicBrainz ID.",
   srv_d3b1108c6fe0b7c0: "The artist name must be between 1 and 200 characters long.",
   srv_6e79db37847b991c: "The cover does not exist.",

@@ -12,4 +12,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_4a2cd38168dace16: 'Die Prognosewarnung muss zwischen 1 und 365 Tagen liegen.',
   // The forecast window must be between 3 and 90 days.
   srv_57fd7519663b39c9: 'Das Prognosefenster muss zwischen 3 und 90 Tagen liegen.',
+  // How busy the server is: processor, memory, disks, temperature and how long it has been running.
+  srv_593e88b1242b6e90:
+    'Wie ausgelastet der Server ist: Prozessor, Arbeitsspeicher, Festplatten, Temperatur und wie lange er schon läuft.',
+  // Nothing to set up; it shows the machine Waylight runs on.
+  srv_a3f31a0950eeec3a: 'Nichts einzurichten; es zeigt den Rechner, auf dem Waylight läuft.',
 };

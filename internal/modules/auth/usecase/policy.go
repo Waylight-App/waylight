@@ -30,8 +30,8 @@ type Policy struct {
 
 // alwaysForMembers are modules a member cannot work without, so a policy can
 // never take them away. "modules" is the core's /api/modules, which tells the
-// interface what to show.
-var alwaysForMembers = []string{"auth", "dashboard", "appearance", "onboarding", "search", "licence", "modules"}
+// interface what to show, and "help" its in-app help (#678).
+var alwaysForMembers = []string{"auth", "dashboard", "appearance", "onboarding", "search", "licence", "modules", "help"}
 
 // MemberMayUse reports whether members may use a module.
 func (p Policy) MemberMayUse(module string) bool {

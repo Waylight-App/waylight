@@ -35,6 +35,8 @@
     onappearance?: (a: Appearance) => void;
     /** The simple view of the accessibility options (#681). */
     simpleView?: boolean;
+    /** Opens the short help of a widget kind (#678). */
+    onhelp?: (kind: string) => void;
   }
   let {
     container,
@@ -48,6 +50,7 @@
     globalBackground = '',
     onappearance,
     simpleView = false,
+    onhelp,
   }: Props = $props();
 
   let view = $state<{
@@ -191,6 +194,7 @@
   widgetTypes={types}
   widgetIcon={iconFor}
   hasSettings={(kind) => !!definitionFor(kind)?.settings}
+  {onhelp}
   chromeless={(kind) => !!definitionFor(kind)?.chromeless}
   {tabBarTarget}
   onstate={reportState}

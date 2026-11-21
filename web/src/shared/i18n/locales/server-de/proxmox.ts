@@ -28,4 +28,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_d0a400a5e85d849b: '{offline} von {total} Knoten offline',
   // {running} of {total} guests running
   srv_4f02e7bfc777a185: '{running} von {total} Gästen laufen',
+  // Choose Set up in the widget and enter the Proxmox address and a read-only access key.
+  srv_672f8bd456e5433c:
+    'Wähle Einrichten im Widget und gib die Proxmox-Adresse und einen Zugangsschlüssel nur zum Lesen ein.',
+  // Your Proxmox server: load and which virtual machines and containers are running.
+  srv_e61ddc7b22aca465:
+    'Dein Proxmox-Server: Auslastung und welche virtuellen Maschinen und Container laufen.',
 };

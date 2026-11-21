@@ -4,11 +4,13 @@
 export const serverMessages = {
   srv_64c6ae0369f82879: "At most {max} favourite stations.",
   srv_c2ead036ac61a265: "Choose E5, E10 or Diesel.",
+  srv_d334b719da70accd: "Choose Set up in the widget and enter your free key from Tankerkönig, then pick a place.",
   srv_3c850049c1f29436: "Could not load fuel prices: {detail}",
   srv_7c971af06beb10fb: "Every favourite needs a station ID and a name.",
   srv_b8ffa62b5ed7e47e: "Fuel prices are not configured yet.",
   srv_4df94a98701c6c20: "Please choose a location.",
   srv_90e0ffa88b068f72: "The API key must look like 00000000-0000-0000-0000-000000000002.",
+  srv_dcbb4c177adb7a32: "The cheapest open petrol stations near a place in Germany, or your favourites.",
   srv_2542e39dc33a11c6: "The fuel price service is not reachable.",
   srv_e4facbe924cb2c30: "The place name is too long.",
   srv_ad1457baee3bb1c1: "The radius must be between 1 and 25 km.",

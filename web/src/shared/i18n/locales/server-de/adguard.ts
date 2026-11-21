@@ -29,4 +29,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_15a7ef0c4caf3d1d: '{count} von {total} Anfragen',
   // {percent} % blocked
   srv_f388457dcac53d65: '{percent} % blockiert',
+  // Choose Set up in the widget and enter the address and password of your AdGuard Home or Pi-hole.
+  srv_9403d5143205448f:
+    'Wähle Einrichten im Widget und gib Adresse und Passwort deines AdGuard Home oder Pi-hole ein.',
+  // How many requests AdGuard Home or Pi-hole blocked today, and whether blocking is on.
+  srv_b49765dc7af314cb:
+    'Wie viele Anfragen AdGuard Home oder Pi-hole heute blockiert hat und ob das Blockieren an ist.',
 };

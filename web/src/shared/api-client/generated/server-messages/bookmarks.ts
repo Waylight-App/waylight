@@ -3,6 +3,7 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_350d099c21ede260: "A bookmark can have at most 10 tags.",
+  srv_0fd8a74b81e99db0: "Add links with the plus button or type \"b\" and a link into the search. Open the widget settings to show only one folder.",
   srv_c40eff143d7c40cd: "At most {max} bookmarks can be imported at once.",
   srv_443fe1a26653a369: "Each bookmarks entry is either a bookmark with url or a folder with bookmarks, not both.",
   srv_593595f23054b9e4: "Each folder name can be used only once in the file.",
@@ -19,6 +20,7 @@ export const serverMessages = {
   srv_c64f54da73ed8e20: "The icon must be a PNG, ICO, JPEG, GIF or WebP image of at most 64 KB.",
   srv_8dec33ac27b43136: "The page could not be read.",
   srv_1fd35c867febde72: "The title must be at most 200 characters long.",
+  srv_f2f1b3752718ef15: "Your links, sorted into folders and tags.",
 } as const;
 
 /** Key of a backend message. */

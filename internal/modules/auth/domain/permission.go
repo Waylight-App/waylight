@@ -13,8 +13,9 @@ var guestSelfService = []string{"/api/auth/logout", "/api/auth/password", "/api/
 // guestReadable are read endpoints every guest needs to render the page.
 // /api/search is the web search of the search field, which is part of every
 // page since the search widget was removed (#221); it only redirects to the
-// search engine, the search settings stay closed.
-var guestReadable = []string{"/api/dashboard", "/api/modules", "/api/appearance", "/api/auth/status", "/api/search"}
+// search engine, the search settings stay closed. The help (#678) explains
+// the widgets the guest sees and links the public documentation.
+var guestReadable = []string{"/api/dashboard", "/api/modules", "/api/appearance", "/api/auth/status", "/api/search", "/api/help/widgets", "/api/help/docs"}
 
 // GuestReach is what a guest's tabs open up: the modules whose widgets are on
 // them, minus the routes a module reserves for a widget kind that is not

@@ -45,4 +45,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_0b6056a8bbfbd827: 'Das letzte Backup ist fehlgeschlagen',
   // The off-site copy failed
   srv_4ad084d71a9bd861: 'Die externe Kopie ist fehlgeschlagen',
+  // A traffic light that says whether your newest backup is as recent as the schedule promises.
+  srv_53a5dffad3c27719:
+    'Eine Ampel, die zeigt, ob deine neueste Sicherung so aktuell ist, wie der Zeitplan es verspricht.',
+  // Nothing to set up. Open Settings → Backups to schedule backups or run one now.
+  srv_e6445a9fd56b56f5:
+    'Es gibt nichts einzurichten. Unter Einstellungen → Sicherungen planst du Sicherungen oder startest gleich eine.',
 };

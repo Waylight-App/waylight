@@ -6,6 +6,7 @@ export const serverMessages = {
   srv_4668b7fe22c08fca: "At most 5 accounts can be connected.",
   srv_f74740ac20c25101: "At most {max} calendar subscriptions are supported.",
   srv_2fff1508d4ce6e8a: "Choose Google or Microsoft.",
+  srv_fd7b8fbc6ef366eb: "Choose Set up in the widget to connect Nextcloud or another calendar server, or add a Google or Microsoft account or a calendar link in Settings under Calendar.",
   srv_97f22fc39ea1794a: "Could not load the ICS calendar: {detail}",
   srv_38ba62864162fcec: "Events can be at most one year long.",
   srv_92fe9be68e4fbeb4: "No calendar is configured yet.",
@@ -32,6 +33,7 @@ export const serverMessages = {
   srv_3ae5f0c83c31dbca: "Today at {time}",
   srv_44ef1526bf1d8106: "Tomorrow",
   srv_289edcea27d3bdd2: "Tomorrow at {time}",
+  srv_f66c0a14f5ab7a89: "Your appointments as an agenda, a month or both side by side.",
   srv_ac92ff8f414a83b9: "from and to must be RFC 3339 timestamps.",
   srv_981efd4748b03a23: "{title}",
 } as const;

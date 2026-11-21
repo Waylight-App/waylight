@@ -2,12 +2,14 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_df3d1d090d91e1fa: "Add birthdays in Settings under Birthdays, import a contacts file or connect an address book.",
   srv_5c7e3fc688c672ff: "At most 2000 birthdays can be stored.",
   srv_edef2011ce880fc5: "Enter a valid date (day and month; the year is optional).",
   srv_e2cd3de79cef3345: "Enter the time as HH:MM.",
   srv_83cfa49329c60bec: "The birthday does not exist (any more).",
   srv_703e13ba2a8ad5b7: "The file contains no contacts with a birthday (vCard, .vcf).",
   srv_0ac00605de9a88c1: "The name must have between 1 and 100 characters.",
+  srv_5b1ecee92864e5b0: "The next birthdays and how old everyone turns.",
   srv_b6cfe14b52beec78: "The vCard file must be at most 5 MB.",
   srv_3200c6dd1c3ff975: "This birthday comes from the connected address book; change or remove it there.",
 } as const;

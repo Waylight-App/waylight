@@ -27,4 +27,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_8680771d11b72ed2: 'Die Datei ist kein Pocket-Export (CSV mit title, url, time_added, status).',
   // The file is not an Instapaper export (CSV with URL, Title, Folder, Timestamp).
   srv_6ef3ce3f6d300835: 'Die Datei ist kein Instapaper-Export (CSV mit URL, Title, Folder, Timestamp).',
+  // Pages you saved to read later, kept as a clean copy.
+  srv_64fbda78c8b6dd6d: 'Seiten, die du für später gespeichert hast, als aufgeräumte Kopie.',
+  // Paste a link into the widget or save it with the browser extension.
+  srv_46ef7a627ad13a19: 'Füge einen Link ins Widget ein oder speichere ihn mit der Browser-Erweiterung.',
 };

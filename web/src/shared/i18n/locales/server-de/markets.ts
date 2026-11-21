@@ -10,4 +10,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_0d35c0616158d25f: 'Höchstens 12 Einträge pro Widget.',
   // Use fx:USD for currencies or stooq:aapl.us for shares, indices and crypto.
   srv_6588144872adfafb: 'Nutze fx:USD für Währungen oder stooq:aapl.us für Aktien, Indizes und Krypto.',
+  // Currencies, shares, indices and crypto you watch, with today's change.
+  srv_267f2af943cabca6:
+    'Währungen, Aktien, Indizes und Kryptowährungen, die du beobachtest, mit der heutigen Veränderung.',
+  // Open the widget settings and add what you want to follow. No account or key is needed.
+  srv_01d678c622b6648f:
+    'Öffne die Widget-Einstellungen und füge hinzu, was du verfolgen willst. Ein Konto oder Schlüssel ist nicht nötig.',
 };

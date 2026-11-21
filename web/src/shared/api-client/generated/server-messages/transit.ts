@@ -3,9 +3,11 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_21a0df256f4c1358: "Choose a stop for the departures.",
+  srv_dbe3dcee5dba6d56: "Open the widget settings and search for your stop.",
   srv_1307228afc94de09: "Please choose a place with valid coordinates.",
   srv_d92a0962a35bc0f4: "Please choose a stop in the widget settings.",
   srv_83a3bc209358c090: "The departure information is not available right now.",
+  srv_4ad5e5fba3fd0310: "The next departures from a bus or train stop, with delays.",
 } as const;
 
 /** Key of a backend message. */

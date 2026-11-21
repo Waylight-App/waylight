@@ -2,6 +2,8 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_e6e08c61b58d330d: "How many days are left until a date, such as a holiday or a deadline.",
+  srv_2934b1f9d47467ca: "Open the widget settings and add a date with a name.",
   srv_1532da22068d27c4: "The countdown does not exist.",
   srv_28a208881a6ef97d: "The title must be between 1 and 120 characters long.",
   srv_1bef734e6f2cdc94: "graceDays must be a number.",

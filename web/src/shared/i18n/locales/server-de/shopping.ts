@@ -27,4 +27,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Der Eintrag wurde gleichzeitig in einer anderen App geändert. Bitte erneut versuchen.',
   // The shopping list is not configured yet.
   srv_7d7ee048ea53fd65: 'Die Einkaufsliste ist noch nicht eingerichtet.',
+  // A shopping list you can share with your household.
+  srv_f06f10baf368c13a: 'Eine Einkaufsliste, die du mit deinem Haushalt teilen kannst.',
+  // Add items right in the widget. Choose Set up to use a task list from your calendar server instead.
+  srv_bde9981046aeac46:
+    'Füge Einträge direkt im Widget hinzu. Wähle Einrichten, um stattdessen eine Aufgabenliste deines Kalenderservers zu nutzen.',
 };

@@ -2,6 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_4117622a00c2859d: "Add a tracking number with the plus button in the widget. For live DHL status, an admin adds a free DHL key in Settings under Parcels.",
   srv_5343c52cdf9d2afd: "At most 30 parcels can be tracked.",
   srv_cee130f3904d48b7: "Check the mailbox every 5 minutes to 24 hours.",
   srv_24f489be60f9182b: "DHL does not know this tracking number (yet).",
@@ -14,6 +15,7 @@ export const serverMessages = {
   srv_f35b41c22f1a21c2: "The parcel does not exist.",
   srv_06ef324c0db01986: "This carrier is not supported.",
   srv_e4cd1895823b2401: "Tracking numbers consist of 8 to 35 letters and digits.",
+  srv_66694ebba095803e: "Your parcels and where they are right now.",
   srv_f571f5204b6ac82d: "{count} arriving today",
   srv_75a6a213ce2bf505: "{count} on the way",
   srv_2af79387a021fa8c: "{count} with a problem",

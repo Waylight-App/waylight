@@ -4,11 +4,13 @@
 export const serverMessages = {
   srv_80cd4d1600527c40: "A Sonarr, Radarr or Prowlarr instance does not answer.",
   srv_e087fafa20933ecf: "At most {max} instances are supported.",
+  srv_f1bc61893833e7cb: "Choose Set up in the widget, pick the app and enter its address and key.",
   srv_35314e09732db39d: "Choose Sonarr, Radarr or Prowlarr.",
   srv_e7b97389eba1653e: "No Sonarr, Radarr or Prowlarr instance is configured yet.",
   srv_7a0dfb1a22ec0b96: "The API key is required (Settings → General).",
   srv_f850721911b29bc6: "The URL must look like http://192.168.1.2:8989.",
   srv_c8e8fb2032a453cc: "The instance does not exist.",
+  srv_2c28b0f9e10b3a43: "Upcoming episodes and films, downloads in progress and warnings from Sonarr, Radarr or Prowlarr.",
 } as const;
 
 /** Key of a backend message. */

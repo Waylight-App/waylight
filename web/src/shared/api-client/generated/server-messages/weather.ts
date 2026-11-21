@@ -2,6 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_194aeb9844f81b54: "A rain radar map of the last and next hours around a place in Germany.",
   srv_079ecf8df23a0daf: "Clear sky",
   srv_0d9429b1a019413e: "Dense drizzle",
   srv_aa17e4cc0cbb8ecd: "Drizzle",
@@ -15,6 +16,8 @@ export const serverMessages = {
   srv_9f8d7b03da2db18b: "Light rain",
   srv_fd8baefca48339ea: "Light snow",
   srv_5ae1ab5870ccaffa: "Mainly clear",
+  srv_25ba727a1f2b2d3d: "Open the widget settings and pick a saved place or search for one. No account or key is needed.",
+  srv_7b93225b8681a679: "Open the widget settings and pick the place the map should centre on.",
   srv_74a09b179be18310: "Overcast",
   srv_c72683131dff0339: "Partly cloudy",
   srv_990b607e23145ec7: "Please enter between 2 and 100 characters.",
@@ -24,6 +27,7 @@ export const serverMessages = {
   srv_8300b224ee074d12: "Snow",
   srv_852f4060b58e9e0e: "Snow grains",
   srv_5184b87cd74a5e31: "Snow showers",
+  srv_fef0c29ef6184c8d: "The forecast for a place: today, the next hours and days, and in Germany official weather warnings.",
   srv_3f60e80ed2350494: "The latitude must be between -90 and 90.",
   srv_39566e8cbb1ec35d: "The longitude must be between -180 and 180.",
   srv_cb30f7793468eebc: "The pollen and UV forecasts are not available right now.",

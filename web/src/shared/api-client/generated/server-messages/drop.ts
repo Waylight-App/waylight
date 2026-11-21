@@ -3,7 +3,9 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_763ad0ee1e861149: "Choose 1 hour, 24 hours or 7 days.",
+  srv_699407f4dd40994f: "Drop something into the widget on one device and open it on another. There is nothing to set up.",
   srv_992a3c76b72d1b0a: "Enter some text or a link.",
+  srv_6c1dd18a11888a9a: "Text, links and files you send between your devices; they disappear after a while.",
   srv_b7ede1495726d216: "The drop zone is full (200 MB, 100 items). Delete items first.",
   srv_ed9b451f9d66eaa7: "The file is empty.",
   srv_7fe59f42ecfd9d12: "The file must be at most 25 MB.",

@@ -70,4 +70,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_981efd4748b03a23: '{title}',
   // No calendar set up
   srv_fabbc2a837e8964d: 'Kein Kalender eingerichtet',
+  // Choose Set up in the widget to connect Nextcloud or another calendar server, or add a Google or Microsoft account or a calendar link in Settings under Calendar.
+  srv_fd7b8fbc6ef366eb:
+    'Wähle Einrichten im Widget, um Nextcloud oder einen anderen Kalenderserver zu verbinden, oder füge in den Einstellungen unter Kalender ein Google- oder Microsoft-Konto oder einen Kalender-Link hinzu.',
+  // Your appointments as an agenda, a month or both side by side.
+  srv_f66c0a14f5ab7a89: 'Deine Termine als Liste, als Monat oder beides nebeneinander.',
 };

@@ -3,10 +3,12 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_4959ed52f3185d86: "A picture must be at most 25 MB.",
+  srv_63e5853951784541: "Open the widget settings to upload pictures, choose the album and how long each picture stays.",
   srv_869ef2e39243a811: "The album name must have between 1 and 40 characters.",
   srv_3a266f56f76134ba: "The order must list every picture of the album exactly once.",
   srv_98c9fc1eaba891b7: "The photo storage is full (300 MB or 2000 pictures). Delete pictures first.",
   srv_164729afbb572b99: "The picture does not exist (any more).",
+  srv_64f1f22cfb8682ac: "Your own pictures, one after another.",
 } as const;
 
 /** Key of a backend message. */

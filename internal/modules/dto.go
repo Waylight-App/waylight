@@ -65,3 +65,17 @@ type CompactResponse struct {
 	// Empty is true when the widget has nothing to show (#619).
 	Empty bool `json:"empty,omitempty"`
 }
+
+// HelpResponse is the DTO of GET /api/help/widgets (#678).
+type HelpResponse struct {
+	Widgets []WidgetHelpInfo `json:"widgets"`
+}
+
+// WidgetHelpInfo is the help of one widget kind; clients translate the
+// texts like those of a compact state.
+type WidgetHelpInfo struct {
+	Kind    string      `json:"kind"`
+	Shows   CompactText `json:"shows"`
+	SetUp   CompactText `json:"setUp"`
+	DocsURL string      `json:"docsUrl"`
+}

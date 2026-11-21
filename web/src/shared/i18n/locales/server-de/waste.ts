@@ -30,4 +30,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_f99233086a1b64de: 'Die Datei ist kein gültiger ICS-Kalender: {detail}',
   // The file is not an ICS calendar (text/calendar).
   srv_cd2e73645a4c1388: 'Die Datei ist kein ICS-Kalender (text/calendar).',
+  // In Settings under Waste, add the calendar link of your town or upload its calendar file.
+  srv_b9aa684ac85a4949:
+    'Füge in den Einstellungen unter Abfall den Kalender-Link deiner Gemeinde hinzu oder lade ihre Kalenderdatei hoch.',
+  // The next waste collection dates; the bin due tomorrow is highlighted.
+  srv_6aba34252885b085: 'Die nächsten Abfuhrtermine; die Tonne von morgen ist hervorgehoben.',
 };

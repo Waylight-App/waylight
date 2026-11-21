@@ -14,4 +14,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_21a0df256f4c1358: 'Wähle eine Haltestelle für die Abfahrten.',
   // Please choose a place with valid coordinates.
   srv_1307228afc94de09: 'Bitte wähle einen Ort mit gültigen Koordinaten.',
+  // Open the widget settings and search for your stop.
+  srv_dbe3dcee5dba6d56: 'Öffne die Widget-Einstellungen und suche deine Haltestelle.',
+  // The next departures from a bus or train stop, with delays.
+  srv_4ad5e5fba3fd0310: 'Die nächsten Abfahrten an einer Bus- oder Bahnhaltestelle, mit Verspätungen.',
 };

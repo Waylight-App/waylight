@@ -3,6 +3,7 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_54022920e535da37: "Backup OK",
+  srv_8706d83e48cb5271: "In Settings under Backup monitoring, add a job and let it call its secret link after each run.",
   srv_dca29003ab21344d: "Last success {time}",
   srv_4efa152402f99eaf: "No backups yet",
   srv_24356b769e2a8258: "The backup source does not exist.",
@@ -11,6 +12,7 @@ export const serverMessages = {
   srv_761ff31914abb39c: "The maximum age must be between 1 hour and 60 days.",
   srv_564c3b1fecfb1093: "Use a cron expression with five fields, e.g. 0 3 * * * (daily at 03:00).",
   srv_122bbf8d15074197: "Waiting for the first run",
+  srv_4dc4f6b65d55e8ad: "Whether your backups and scheduled jobs ran on time and without errors.",
   srv_690e8b1d63e37e2e: "{count} of {total} failed",
   srv_8ede15696ca60c31: "{count} of {total} overdue",
   srv_44460b43e14f12f1: "{name} failed",

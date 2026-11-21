@@ -24,4 +24,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_10b16244e1d3f16b: 'Das Semester muss zwischen 1 und 20 liegen (oder leer sein).',
   // The total must be between 1 and 600 ECTS.
   srv_3cf2faced978b8cd: 'Die Gesamtzahl muss zwischen 1 und 600 ECTS liegen.',
+  // Add your courses in Settings under Study progress.
+  srv_f5c5ccaa0dff0885: 'Füge deine Module in den Einstellungen unter Studienfortschritt hinzu.',
+  // Your progress through your studies: credits, semesters and average grade.
+  srv_5ba66275b73b8dea: 'Dein Fortschritt im Studium: Leistungspunkte, Semester und Notenschnitt.',
 };

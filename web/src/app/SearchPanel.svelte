@@ -28,6 +28,9 @@
   import { type CommandMatch, matchCommands, parseCommandQuery } from '../features/search/domain/commands';
   import { buildCommands, type CommandHandlers } from './appCommands';
   import { parseHelpQuery } from '../features/search/domain/help';
+  import { isQuestion } from '../features/help/domain/help';
+  import type { HelpTopic } from '../features/help';
+  import { definitionFor } from './widgets';
   import { buildHelp } from './searchHelp';
   import SearchHelp from './SearchHelp.svelte';
   import { detectAddress, displayAddress } from '../features/search/domain/address';
@@ -219,6 +222,38 @@
   });
   // Commands of plugins (#453); the loader registers none for guests.
   const pluginActions = $derived(command || commandOnly ? [] : matchActions(searchActions, query));
+  // Plain questions ("How do I add a calendar?") find widget help and
+  // documentation pages (#678); the local mode has no server to ask.
+  let helpTopics = $state<HelpTopic[]>([]);
+  $effect(() => {
+    const q = query;
+    if (command || container.localMode || !isQuestion(q)) {
+      helpTopics = [];
+      return;
+    }
+    let stale = false;
+    const describe = (kind: string) => {
+      const type = definitionFor(kind)?.type;
+      return type ? { title: type.title, keywords: type.keywords } : undefined;
+    };
+    container.help
+      .answer(q, describe)
+      .then((topics) => {
+        if (!stale) helpTopics = topics;
+      })
+      .catch(() => {});
+    return () => {
+      stale = true;
+    };
+  });
+
+  /** Opens a help topic: the widget's help in the app, else the documentation page. */
+  function openHelp(topic: HelpTopic) {
+    if (topic.kind && commandHandlers?.widgetHelp) commandHandlers.widgetHelp(topic.kind);
+    else window.open(topic.url, '_blank', 'noopener');
+    ondone();
+  }
+
   const rowGroups = $derived(
     buildRows({
       command,
@@ -227,6 +262,7 @@
       web: modules.has('search') && query.trim() !== '' && !commandOnly,
       actions: pluginActions,
       commands: commandMatches,
+      help: helpTopics,
       keyword,
       address,
       bangs,
@@ -580,6 +616,8 @@
         return;
       case 'result':
         return void choose(row.item);
+      case 'help':
+        return openHelp(row.topic);
       case 'web':
         return searchWeb();
     }
@@ -726,6 +764,13 @@
                   {:else if row.kind === 'command'}
                     <span class="title">{commands?.title(row.match.spec)}</span>
                     {#if row.match.spec.shortcut}<kbd>{row.match.spec.shortcut}</kbd>{/if}
+                  {:else if row.kind === 'help'}
+                    <span class="title">{row.topic.title}{row.topic.kind ? '' : ' ↗'}</span>
+                    <span class="muted detail"
+                      >{row.topic.kind
+                        ? row.topic.detail
+                        : `${t('help.docs_page')} · ${row.topic.detail}`}</span
+                    >
                   {:else if row.kind === 'plugin'}
                     <span class="title">{row.action.title()}</span>
                     {#if row.action.detail()}<span class="muted detail">{row.action.detail()}</span>{/if}

@@ -45,4 +45,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_6a2a422643619241: 'Schwellwerte müssen Zahlen sein.',
   // Units must be at most 12 characters long.
   srv_fe9ef3e59d3ce637: 'Einheiten dürfen höchstens 12 Zeichen lang sein.',
+  // Open the widget settings, enter the address and pick the values to show.
+  srv_cba004fb20f26597:
+    'Öffne die Widget-Einstellungen, gib die Adresse ein und wähle die Werte, die angezeigt werden.',
+  // Values from any web address that answers with JSON, such as a sensor or a counter.
+  srv_ac90feac1cda6b07:
+    'Werte von einer beliebigen Webadresse, die mit JSON antwortet, etwa von einem Sensor oder Zähler.',
 };

@@ -2,7 +2,9 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_264ed58603336ca1: "Nothing to set up; events appear as the other widgets report them.",
   srv_2367e29c6edb5841: "The retention must be between 1 and 365 days.",
+  srv_500c79b769d06a25: "What happened when: outages, recoveries, failed backups and security events.",
 } as const;
 
 /** Key of a backend message. */

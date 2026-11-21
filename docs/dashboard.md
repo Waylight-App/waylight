@@ -246,6 +246,19 @@ modules you may use have one, with the path and the query parameters it
 takes (the smart home device needs `?entity=`), so clients do not need a list
 of their own.
 
+## Help on a widget
+
+Every widget has a `?` in its title bar; it shows on hover, on touch screens
+always, and in edit mode next to the other buttons. It opens a short help:
+what the widget shows, how to set it up and a link to the matching page of
+this documentation. Kiosk displays do not show it.
+
+The server owns these texts, so the web interface and the app say the same.
+`GET /api/help/widgets` lists the help of every widget kind you can see,
+each text as a key with the English text like a compact state, and
+`GET /api/help/docs` serves the index of this documentation that the search
+uses for questions ([asking a question](search.md#asking-a-question)).
+
 ## Setting up a widget in place
 
 A widget whose service is not connected yet shows one sentence and a

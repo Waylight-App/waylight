@@ -77,6 +77,14 @@ import (
 // frontendOnlyWidgetKinds are widgets that need no backend module.
 var frontendOnlyWidgetKinds = []string{"clock"}
 
+// frontendOnlyHelp is the help of the frontend-only widget kinds (#678).
+var frontendOnlyHelp = []modules.WidgetHelp{{
+	Kind:  "clock",
+	Shows: kernel.NewText("The time and date, optionally in another time zone."),
+	SetUp: kernel.NewText("Open the widget settings to pick a time zone, a 12-hour clock, seconds, the date or the week number."),
+	Docs:  "features/#information",
+}}
+
 // healthCheckTimeout bounds a single service status check.
 const healthCheckTimeout = 5 * time.Second
 

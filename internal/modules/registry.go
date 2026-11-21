@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"waylight/internal/shared/httpapi"
-	"waylight/internal/shared/kernel"
 )
 
 // Router lets a module register its HTTP handlers. Patterns use the Go 1.22+
@@ -170,13 +169,8 @@ func (r *Registry) Handler(staticKinds []string) http.HandlerFunc {
 			ReadOnly:    []string{},
 			Compact:     []CompactInfo{},
 		}
-		member := kernel.PrincipalFrom(req.Context()).Role == "member"
-		for _, m := range r.modules {
-			access := accessOf(req.Context(), m)
-			if access == AccessNone || (member && r.memberMayUse != nil && !r.memberMayUse(req.Context(), m.Name())) {
-				continue
-			}
-			if access == AccessRead {
+		for _, m := range r.visible(req.Context()) {
+			if accessOf(req.Context(), m) == AccessRead {
 				res.ReadOnly = append(res.ReadOnly, m.Name())
 			}
 			res.Modules = append(res.Modules, m.Name())

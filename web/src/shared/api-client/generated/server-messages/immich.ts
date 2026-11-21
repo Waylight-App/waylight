@@ -2,11 +2,13 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_2c8c36393c90cc6f: "Choose Set up in the widget and enter the address of Immich and a key you create in its settings.",
   srv_b1e270c3a3b1cc7b: "Immich is not configured yet.",
   srv_5f51c1adae96a94e: "Immich is not reachable.",
   srv_80ac49019fb5bed8: "The API key is required.",
   srv_ce1e99b3a7ab0a0d: "The URL must look like http://192.168.1.2:2283.",
   srv_6493a23b37be9677: "The thumbnail does not exist.",
+  srv_96f0e81eb11e30d2: "Your Immich photo library and the photos taken on this day in past years.",
 } as const;
 
 /** Key of a backend message. */

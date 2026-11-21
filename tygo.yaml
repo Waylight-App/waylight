@@ -13,6 +13,9 @@ packages:
   - path: "waylight/internal/modules"
     output_path: "web/src/shared/api-client/generated/modules.ts"
     include_files: ["dto.go"]
+  - path: "waylight/internal/shared/docsindex"
+    output_path: "web/src/shared/api-client/generated/docsindex.ts"
+    include_files: ["docsindex.go"]
   - path: "waylight/internal/shared/httpapi"
     output_path: "web/src/shared/api-client/generated/httpapi.ts"
     include_files: ["errors.go"]

@@ -70,4 +70,16 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_60e5e8ca070c80f3: 'Heftige Schauer',
   // {temp}°
   srv_d72ab051081647bd: '{temp}°',
+  // A rain radar map of the last and next hours around a place in Germany.
+  srv_194aeb9844f81b54:
+    'Eine Regenradar-Karte der letzten und nächsten Stunden rund um einen Ort in Deutschland.',
+  // Open the widget settings and pick a saved place or search for one. No account or key is needed.
+  srv_25ba727a1f2b2d3d:
+    'Öffne die Widget-Einstellungen und wähle einen gespeicherten Ort oder suche einen. Ein Konto oder Schlüssel ist nicht nötig.',
+  // Open the widget settings and pick the place the map should centre on.
+  srv_7b93225b8681a679:
+    'Öffne die Widget-Einstellungen und wähle den Ort, um den die Karte zentriert sein soll.',
+  // The forecast for a place: today, the next hours and days, and in Germany official weather warnings.
+  srv_fef0c29ef6184c8d:
+    'Die Vorhersage für einen Ort: heute, die nächsten Stunden und Tage und in Deutschland die amtlichen Wetterwarnungen.',
 };

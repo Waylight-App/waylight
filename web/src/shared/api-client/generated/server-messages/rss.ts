@@ -2,12 +2,14 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_1c0e995e6000585f: "Add feeds in Settings under Feeds, or pick news sources from the built-in catalogue there.",
   srv_9684d4c2e31b6d2f: "The OPML file is larger than 2 MB.",
   srv_bbec0c13348226e8: "The feed URL must start with http:// or https://.",
   srv_4dfea8484179a15f: "The feed could not be loaded: {detail}",
   srv_5065a34cb1180bb7: "The feed does not exist.",
   srv_0d8148b3ba698407: "The file is not an OPML subscription list.",
   srv_fd944f7eadfdb070: "The item does not exist.",
+  srv_145eb10e901d3d27: "The newest articles of the news feeds you follow.",
   srv_d6a88cffb18a9963: "You are already subscribed to this feed.",
   srv_668a30f80af88b85: "this is not a valid RSS, Atom or JSON feed",
 } as const;

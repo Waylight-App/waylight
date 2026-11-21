@@ -21,4 +21,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_9482b4086fdf3088: 'Heute: {dish}',
   // and {count} more
   srv_bdb37f2bc1177fca: 'und {count} weitere',
+  // A week of dishes with recipe links and ingredients.
+  srv_81b91af7e128ddd1: 'Eine Woche Gerichte mit Rezeptlinks und Zutaten.',
+  // Plan a dish with the plus next to a day and list its ingredients. With the shopping list on, one click adds them to it.
+  srv_616c7908260482ba:
+    'Plane ein Gericht mit dem Plus neben einem Tag und trage die Zutaten ein. Ist die Einkaufsliste aktiv, setzt ein Klick sie darauf.',
 };
