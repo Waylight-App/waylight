@@ -1,0 +1,66 @@
+# OpenAPI fragment of the places module (#591).
+tags:
+  - name: places
+
+paths:
+  /api/places:
+    get:
+      tags: [places]
+      summary: "Saved places visible to the account, each with the widgets on the account's own tabs that take their location from it (widget settings with placeId)"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/SavedPlace" } } } } }
+    post:
+      tags: [places]
+      summary: Save a place (at most 50 per account)
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SavedPlaceInput" } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/SavedPlace" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/places/{id}:
+    put:
+      tags: [places]
+      summary: Rename or move one of the account's places
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SavedPlaceInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/SavedPlace" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+    delete:
+      tags: [places]
+      summary: "Delete one of the account's places; widgets that used it keep the coordinates they copied"
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      responses:
+        "204": { description: Deleted }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+schemas:
+  SavedPlaceInput:
+    type: object
+    required: [name, lat, lon]
+    properties:
+      name: { type: string, maxLength: 80, description: "What the person calls it, e.g. Home" }
+      label: { type: string, maxLength: 200, description: Address line from the search }
+      lat: { type: number, minimum: -90, maximum: 90 }
+      lon: { type: number, minimum: -180, maximum: 180 }
+  SavedPlace:
+    type: object
+    required: [id, name, label, lat, lon, usedBy]
+    properties:
+      id: { type: string }
+      name: { type: string }
+      label: { type: string }
+      lat: { type: number }
+      lon: { type: number }
+      usedBy:
+        type: array
+        items:
+          type: object
+          required: [widgetId, tabId, kind]
+          properties:
+            widgetId: { type: string }
+            tabId: { type: string }
+            kind: { type: string }

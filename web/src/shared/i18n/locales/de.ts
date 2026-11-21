@@ -784,6 +784,11 @@ export const de: Record<BaseMessageKey, string> = {
   'clock.unknown_time_zone': 'Unbekannte Zeitzone. Verwende einen IANA-Namen wie Europe/Berlin.',
   'notifications.saved_test_sent': 'Gespeichert. Eine Testnachricht wurde gesendet.',
   'common.saved': 'Gespeichert.',
+  // Gespeicherte Orte in Widget-Einstellungen (#591).
+  'places.saved_place': 'Gespeicherter Ort',
+  'places.other_location': 'Anderer Ort …',
+  'places.save_as_place': 'Als Ort speichern',
+  'places.advanced': 'Erweitert',
   'parcels.confirm_stop': '„{name}“ nicht mehr verfolgen?',
   'dashboard.confirm_remove_widget': 'Widget „{name}“ entfernen?',
   'dashboard.confirm_delete_tab': 'Tab „{name}“ samt allen Widgets löschen?',

@@ -54,7 +54,7 @@ const legacyDefinitions: WidgetDefinition[] = [
     ),
     settings: lazy(
       () => import('../features/weather/ui/WeatherSettings.svelte'),
-      (config, c) => ({ config, weather: c.weather }),
+      (config, c) => ({ config, weather: c.weather, places: c.places }),
     ),
   },
   {
@@ -81,6 +81,7 @@ const legacyDefinitions: WidgetDefinition[] = [
         config,
         weather: c.weather,
         mode: 'radar' as const,
+        places: c.places,
       }),
     ),
   },
