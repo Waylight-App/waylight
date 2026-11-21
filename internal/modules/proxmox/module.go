@@ -38,16 +38,19 @@ type Module struct {
 	handlers *controller.Handlers
 	// specs are the services a named connection can reach (#610).
 	specs []modules.ConnectionSpec
+	// repo reads the settings the integrations store copies (#610).
+	repo usecase.SettingsRepository
 }
 
 // New builds the Proxmox module (#84).
 func New(cfg Config) *Module {
 	api := gateway.NewAPI(cfg.Client, cfg.Pinned)
+	repo := gateway.NewSettingsRepository(cfg.DB, cfg.Cipher)
 	uc := usecase.NewProxmox(usecase.Deps{
-		Repo: gateway.NewSettingsRepository(cfg.DB, cfg.Cipher), Client: api,
+		Repo: repo, Client: api,
 		Clock: cfg.Clock, Policy: domain.ActionPolicy{Allowed: cfg.ActionGuests}, Audit: cfg.Audit,
 	})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(api)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), repo: repo, specs: connectionSpecs(api)}
 }
 
 // Name implements modules.Module.
@@ -99,3 +102,8 @@ var errUnreachable = kernel.NewPublicError(kernel.ErrUnavailable, "Proxmox VE is
 
 // ConnectionSpecs implements modules.Connectable (#610).
 func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }
+
+// SavedConnections implements modules.ConnectionSource (#610).
+func (m *Module) SavedConnections(ctx context.Context) ([]modules.SavedConnection, error) {
+	return savedConnections(ctx, m.repo)
+}

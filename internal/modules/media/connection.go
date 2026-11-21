@@ -2,6 +2,7 @@ package media
 
 import (
 	"context"
+	"errors"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/media/domain"
@@ -32,4 +33,17 @@ func connectionSpecs(providers map[domain.Provider]usecase.MediaServerProvider) 
 		})
 	}
 	return out
+}
+
+// savedConnections returns the media server of the module settings as a
+// connection of its provider's service.
+func savedConnections(ctx context.Context, repo usecase.SettingsRepository) ([]modules.SavedConnection, error) {
+	s, err := repo.Load(ctx)
+	if errors.Is(err, domain.ErrNotConfigured) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return []modules.SavedConnection{{Source: "media", Service: string(s.Provider), URL: s.URL, Credential: map[string]string{"token": s.Token}}}, nil
 }

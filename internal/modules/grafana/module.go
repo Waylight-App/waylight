@@ -24,13 +24,16 @@ type Module struct {
 	uc       usecase.Grafana
 	// specs are the services a named connection can reach (#610).
 	specs []modules.ConnectionSpec
+	// repo reads the settings the integrations store copies (#610).
+	repo usecase.SettingsRepository
 }
 
 // New builds the Grafana module (#574); cipher encrypts the token.
 func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock) *Module {
 	api := gateway.NewAPI(client)
-	uc := usecase.New(gateway.NewSettingsRepository(db, cipher), api, clock)
-	return &Module{handlers: controller.NewHandlers(uc), uc: uc, specs: connectionSpecs(api)}
+	repo := gateway.NewSettingsRepository(db, cipher)
+	uc := usecase.New(repo, api, clock)
+	return &Module{handlers: controller.NewHandlers(uc), uc: uc, repo: repo, specs: connectionSpecs(api)}
 }
 
 // Name implements modules.Module.
@@ -93,3 +96,8 @@ func (m *Module) Discovery() modules.DiscoverySpec {
 
 // ConnectionSpecs implements modules.Connectable (#610).
 func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }
+
+// SavedConnections implements modules.ConnectionSource (#610).
+func (m *Module) SavedConnections(ctx context.Context) ([]modules.SavedConnection, error) {
+	return savedConnections(ctx, m.repo)
+}

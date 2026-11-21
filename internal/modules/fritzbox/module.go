@@ -27,14 +27,17 @@ type Module struct {
 	handlers *controller.Handlers
 	// specs are the services a named connection can reach (#610).
 	specs []modules.ConnectionSpec
+	// repo reads the settings the integrations store copies (#610).
+	repo usecase.SettingsRepository
 }
 
 // New builds the FRITZ!Box module; cipher encrypts the password and loc is
 // the time zone of the call list.
 func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, loc *time.Location) *Module {
 	box := gateway.NewBox(client, loc)
-	uc := usecase.NewFritzBox(gateway.NewSettingsRepository(db, cipher), box, clock)
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(box)}
+	repo := gateway.NewSettingsRepository(db, cipher)
+	uc := usecase.NewFritzBox(repo, box, clock)
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), repo: repo, specs: connectionSpecs(box)}
 }
 
 // Name implements modules.Module.
@@ -86,3 +89,8 @@ func (m *Module) Discovery() modules.DiscoverySpec {
 
 // ConnectionSpecs implements modules.Connectable (#610).
 func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }
+
+// SavedConnections implements modules.ConnectionSource (#610).
+func (m *Module) SavedConnections(ctx context.Context) ([]modules.SavedConnection, error) {
+	return savedConnections(ctx, m.repo)
+}

@@ -4,6 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"io/fs"
+	"log/slog"
+	"maps"
+	"slices"
+	"time"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/integrations/adapter/configfile"
@@ -25,14 +29,92 @@ type Module struct {
 	modules.Base
 	handlers *controller.Handlers
 	config   usecase.Config
+	copier   usecase.Copier
+	sources  []modules.ConnectionSource
+	managed  func() bool
+	log      *slog.Logger
 }
 
-// New builds the integrations module (#610); cipher encrypts credentials,
-// specs are the services of the enabled modules (modules.ConnectionSpecsOf).
-func New(db *sql.DB, cipher gateway.Cipher, specs []modules.ConnectionSpec, widgets Widgets, clock kernel.Clock, ids kernel.IDGenerator) *Module {
-	repo := gateway.NewRepository(db, cipher)
-	uc := usecase.New(usecase.Deps{Repo: repo, Widgets: widgets, Services: services(specs), Clock: clock, IDs: ids})
-	return &Module{handlers: controller.NewHandlers(uc), config: usecase.NewConfig(repo, clock, ids)}
+// Deps are the dependencies of the module.
+type Deps struct {
+	DB *sql.DB
+	// Cipher encrypts credentials with SECRET_KEY.
+	Cipher gateway.Cipher
+	// Modules are the other enabled modules: their connection specs and
+	// the settings to copy (modules.Connectable, modules.ConnectionSource).
+	Modules []modules.Module
+	Widgets Widgets
+	// Managed reports whether config as code owns the integrations
+	// section; copies wait while it does, so the file stays the only
+	// source of the connection list. Nil means never.
+	Managed func() bool
+	Log     *slog.Logger
+	Clock   kernel.Clock
+	IDs     kernel.IDGenerator
+}
+
+// New builds the integrations module (#610).
+func New(d Deps) *Module {
+	repo := gateway.NewRepository(d.DB, d.Cipher)
+	svc := services(modules.ConnectionSpecsOf(d.Modules))
+	uc := usecase.New(usecase.Deps{Repo: repo, Widgets: d.Widgets, Services: svc, Clock: d.Clock, IDs: d.IDs})
+	m := &Module{handlers: controller.NewHandlers(uc), config: usecase.NewConfig(repo, d.Clock, d.IDs),
+		copier: usecase.NewCopier(repo, svc, d.Clock, d.IDs), managed: d.Managed, log: d.Log}
+	for _, o := range d.Modules {
+		if s, ok := o.(modules.ConnectionSource); ok {
+			m.sources = append(m.sources, s)
+		}
+	}
+	return m
+}
+
+// copyInterval is how often settings saved in a module after the first
+// run are looked for; a run without anything new only reads the settings.
+const copyInterval = time.Hour
+
+// Jobs implements modules.Module: copy the module settings into
+// connections, at start and then hourly (#610).
+func (m *Module) Jobs() []modules.Job {
+	return []modules.Job{{Name: "integrations-copy-settings", Interval: copyInterval, Run: m.copySettings}}
+}
+
+// copySettings reads the settings of every module and copies the new ones.
+// A module whose settings cannot be read (e.g. after a SECRET_KEY change)
+// is skipped until the next run. Only sources and reasons are logged,
+// never a credential.
+func (m *Module) copySettings(ctx context.Context) error {
+	if m.managed != nil && m.managed() {
+		return nil
+	}
+	var saved []usecase.Saved
+	for _, src := range m.sources {
+		list, err := src.SavedConnections(ctx)
+		if err != nil {
+			m.log.WarnContext(ctx, "integrations: module settings not readable, not copied", "module", moduleName(src), "err", err)
+			continue
+		}
+		for _, s := range list {
+			saved = append(saved, usecase.Saved{Source: s.Source, Service: s.Service, Name: s.Name, URL: s.URL, Credential: s.Credential})
+		}
+	}
+	res, err := m.copier.Copy(ctx, saved)
+	if err != nil {
+		return err
+	}
+	if len(res.Copied) > 0 {
+		m.log.InfoContext(ctx, "integrations: copied module settings into connections; the module settings stay in use", "sources", res.Copied)
+	}
+	for _, src := range slices.Sorted(maps.Keys(res.Skipped)) {
+		m.log.WarnContext(ctx, "integrations: module settings not copied, will try again", "source", src, "reason", res.Skipped[src])
+	}
+	return nil
+}
+
+func moduleName(src modules.ConnectionSource) string {
+	if n, ok := src.(interface{ Name() string }); ok {
+		return n.Name()
+	}
+	return "unknown"
 }
 
 // services converts the module specs into the ports of the use cases, so
