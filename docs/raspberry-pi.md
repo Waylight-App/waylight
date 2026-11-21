@@ -23,7 +23,7 @@ Install [Raspberry Pi Imager](https://www.raspberrypi.com/software/) (version
 **Recommended — Imager knows the image and offers its customisation:**
 
 1. *App Options → Content Repository → Use custom URL*, enter
-   `https://github.com/itadori26/waylight/releases/latest/download/os_list.json`
+   `https://github.com/Waylight-App/waylight/releases/latest/download/os_list.json`
 2. Choose your device, then **Waylight** as operating system, then the SD
    card.
 3. In the customisation step set at least a user and password, and Wi-Fi if
@@ -31,7 +31,7 @@ Install [Raspberry Pi Imager](https://www.raspberrypi.com/software/) (version
 
 **Alternative — "Use custom" with the downloaded file:** download
 `waylight-<version>-raspberrypi-arm64.img.xz` from the
-[latest release](https://github.com/itadori26/waylight/releases/latest),
+[latest release](https://github.com/Waylight-App/waylight/releases/latest),
 check it against the `.sha256` file and write it with *Use custom*. Imager may
 not offer its customisation for a local file, so use Ethernet and add a user
 later on the console if you need one. Waylight itself needs no user
@@ -42,7 +42,7 @@ not changed since (#138), verify its signed build provenance with the GitHub
 CLI:
 
 ```sh
-gh attestation verify waylight-<version>-raspberrypi-arm64.img.xz -R itadori26/waylight
+gh attestation verify waylight-<version>-raspberrypi-arm64.img.xz -R Waylight-App/waylight
 ```
 
 The release also carries the image's SPDX SBOM
@@ -134,7 +134,7 @@ The image and the display mode are built and checked in CI, but have not yet
 been measured on real hardware: idle memory and CPU on a Pi Zero 2 W and a
 Pi 4, and the kiosk display on a Pi 4/5 with HDMI and the official touch
 display. If you run Waylight on a Pi, a short report in
-[#361](https://github.com/itadori26/waylight/issues/361) helps; the numbers
+[#361](https://github.com/Waylight-App/waylight/issues/361) helps; the numbers
 will be added here.
 
 ## Troubleshooting

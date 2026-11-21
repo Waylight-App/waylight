@@ -40,7 +40,7 @@ way it does.
 ## Getting help
 
 Questions and ideas belong in
-[GitHub Discussions](https://github.com/itadori26/waylight/discussions),
-bugs in the [issue tracker](https://github.com/itadori26/waylight/issues).
+[GitHub Discussions](https://github.com/Waylight-App/waylight/discussions),
+bugs in the [issue tracker](https://github.com/Waylight-App/waylight/issues).
 Please report security problems privately, as described in the
-[security policy](https://github.com/itadori26/waylight/blob/main/SECURITY.md).
+[security policy](https://github.com/Waylight-App/waylight/blob/main/SECURITY.md).

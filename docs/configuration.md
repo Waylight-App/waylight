@@ -14,7 +14,7 @@ Where the variables go depends on how you installed Waylight:
 | Docker Compose | `.env` next to `compose.yaml` | `sudo docker compose up -d` |
 | Debian package, Raspberry Pi image | `/etc/waylight/waylight.env` | `sudo systemctl restart waylight` |
 
-The fully commented [`.env.example`](https://github.com/itadori26/waylight/blob/main/.env.example)
+The fully commented [`.env.example`](https://github.com/Waylight-App/waylight/blob/main/.env.example)
 is the starting point. Only `SECRET_KEY` is required; the package and the Pi
 image generate it on the first start.
 

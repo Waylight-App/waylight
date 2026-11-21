@@ -1,7 +1,7 @@
 # Updates and rollback
 
 New releases are listed with their changes on the
-[releases page](https://github.com/itadori26/waylight/releases). Settings →
+[releases page](https://github.com/Waylight-App/waylight/releases). Settings →
 About shows the version you run and, if you turn on the update check, whether
 a newer one exists. The check asks the GitHub API at most once a day.
 
@@ -18,6 +18,12 @@ sudo docker compose up -d
 
 `git pull` keeps `compose.yaml` and the helper scripts current; your `.env`
 is not tracked and stays as it is.
+
+**Image name.** Releases are published as `ghcr.io/waylight-app/waylight`.
+The previous name `ghcr.io/itadori26/waylight` stays as an alias: every
+release is pushed there too, with the same tags and the same digest, so an
+installation that still pulls the old name keeps updating. After `git pull`,
+`compose.yaml` uses the new name.
 
 **Pin a version** by setting `WAYLIGHT_VERSION=1.2.3` in `.env` and
 running `sudo docker compose up -d`. You then update only when you change
@@ -51,7 +57,7 @@ The container image carries an SBOM and a build provenance record, which you
 can inspect with:
 
 ```sh
-docker buildx imagetools inspect ghcr.io/itadori26/waylight:1.2.3 \
+docker buildx imagetools inspect ghcr.io/waylight-app/waylight:1.2.3 \
   --format '{{ json .Provenance }}'
 ```
 

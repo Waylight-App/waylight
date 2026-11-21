@@ -120,7 +120,7 @@ if [ -f "$keyring" ]; then
 	install -m 0644 "$keyring" "$root/usr/share/keyrings/waylight-archive-keyring.asc"
 	cat >"$root/etc/apt/sources.list.d/waylight.sources" <<SOURCES
 Types: deb
-URIs: ${APT_REPOSITORY_URL:-https://itadori26.github.io/waylight/apt}
+URIs: ${APT_REPOSITORY_URL:-https://waylight-app.github.io/waylight/apt}
 Suites: stable
 Components: main
 Signed-By: /usr/share/keyrings/waylight-archive-keyring.asc
