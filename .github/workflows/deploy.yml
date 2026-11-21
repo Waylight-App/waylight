@@ -30,7 +30,8 @@ jobs:
       github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
     environment: production
-    timeout-minutes: 15
+    # Room for one running deploy (build, backup, switch) plus our own.
+    timeout-minutes: 30
     steps:
       - name: Open the VPN tunnel to the server
         env:
@@ -62,8 +63,24 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           printf '%s\n' "$KNOWN_HOSTS" >~/.ssh/known_hosts
           # The server ignores everything but this request (forced command).
-          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
-            -o ConnectTimeout=20 -o ServerAliveInterval=15 -p "$PORT" "$SSH_USER@$HOST" "deploy $SHA"
+          request() {
+            ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
+              -o ConnectTimeout=20 -o ServerAliveInterval=15 -p "$PORT" "$SSH_USER@$HOST" "deploy $SHA"
+          }
+          # Exit code 3 means an earlier deploy still holds the server's lock
+          # (merges in quick succession). Wait for it instead of failing, so
+          # the newest commit is not left undeployed; give up after 20 minutes.
+          # Every other exit code fails the run at once.
+          deadline=$((SECONDS + 1200))
+          until request; do
+            status=$?
+            if [[ $status -ne 3 || $SECONDS -ge $deadline ]]; then
+              rm -f ~/.ssh/deploy_key
+              exit "$status"
+            fi
+            echo "Another deploy is running; asking again in 30 seconds."
+            sleep 30
+          done
           rm -f ~/.ssh/deploy_key
       - name: Close the tunnel
         if: always()
