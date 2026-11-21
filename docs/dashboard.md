@@ -95,6 +95,32 @@ In edit mode you can:
 
 `1` to `9` switch to the first nine tabs.
 
+## Templates
+
+On the first sign-in, while the dashboard is still empty, Waylight asks
+**What do you use Waylight for?** and offers four templates, each with a
+small preview of its layout and the widgets it contains:
+
+| Template | Widgets |
+| --- | --- |
+| Family | Calendar, weather, shopping list, waste collection, birthdays |
+| Homelab | Services, containers, backups, drive health, bookmarks |
+| Work | Today's events, to-dos, focus timer, mail, notes |
+| Wall tablet | Large clock, weather, calendar, departures |
+
+A template creates a tab with its widgets placed, including the phone
+layout. Templates with a weather widget ask for a location first (search or
+*Use my location*; *Set it up later* skips it). Widgets that need a service
+or a setting show *Set up* or what is missing. *Start with an empty
+dashboard* closes the question. Kiosk mode and night dimming for a wall
+tablet are set on the kiosk display itself.
+
+The same templates appear when you create a tab (**+ Tab**), above your own
+saved templates. They are YAML files in the format of the `dashboard`
+section of [waylight.yaml](config-as-code.md), one tab each, under
+`internal/modules/dashboard/adapter/configfile/templates/`; the tests check
+that each one parses and only uses widgets the server knows.
+
 ## Opening a tab by default
 
 Normally the dashboard opens the first tab. With **Open by default** you can
@@ -203,8 +229,10 @@ When the check fails, the message says why and what to try: the key was not
 accepted, nothing answers at the address, something other than the expected
 service answers there, or the certificate is not trusted.
 
-The assistant exists for Immich, Home Assistant and the Nextcloud calendar
-so far. For the calendar you enter the Nextcloud address, your user name and
+The assistant exists for Immich, Home Assistant, the Nextcloud calendar,
+Nextcloud, Grafana and Proxmox VE so far. Proxmox usually runs with a
+self-signed certificate; pin it under Settings → Proxmox VE, the assistant
+does not ask for the fingerprint. For the calendar you enter the Nextcloud address, your user name and
 an app password; Waylight finds your calendars itself. Immich and Home
 Assistant are set up for the whole instance, so only admins see *Set up*
 there; every account can connect its own calendar. The settings pages stay

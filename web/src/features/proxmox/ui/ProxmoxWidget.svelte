@@ -1,4 +1,6 @@
 <script lang="ts">
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { proxmoxSetup } from './proxmoxSetup';
   import { usePolling } from '../../../shared/refresh';
   import { type MessageKey, t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -20,6 +22,8 @@
     config: Record<string, unknown>;
   }
   let { proxmox, config }: Props = $props();
+  // svelte-ignore state_referenced_locally
+  const setup = proxmoxSetup(proxmox);
   const poll = usePolling();
 
   const POLL_MS = 30_000;
@@ -66,7 +70,12 @@
 </script>
 
 {#if unconfigured}
-  <p class="muted">{t('proxmox.connect_under_settings')}</p>
+  <SetupInPlace
+    text={t('proxmox.connect_under_settings')}
+    descriptor={setup}
+    instance
+    ondone={() => void load().catch(() => undefined)}
+  />
 {:else if error && !status}
   <p class="error">{error}</p>
 {:else if status}

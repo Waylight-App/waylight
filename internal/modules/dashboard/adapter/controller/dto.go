@@ -92,3 +92,19 @@ type SaveTemplateDTO struct {
 	TabID string `json:"tabId"`
 	Name  string `json:"name"`
 }
+
+// BuiltinTabDTO is the body of POST /api/dashboard/templates/builtin/{id}/tabs.
+type BuiltinTabDTO struct {
+	// Name of the new tab; empty uses the template's.
+	Name string `json:"name"`
+	// Location fills the weather widgets; omitted leaves them to be set up.
+	Location *LocationDTO `json:"location,omitempty"`
+}
+
+// LocationDTO is a place for the weather widgets of a template.
+type LocationDTO struct {
+	Lat     float64 `json:"lat"`
+	Lon     float64 `json:"lon"`
+	Label   string  `json:"label"`
+	PlaceID string  `json:"placeId"`
+}

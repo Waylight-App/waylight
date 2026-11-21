@@ -314,6 +314,12 @@
     if (hasSettings(widget.kind)) dialog = { kind: 'settings', widget };
   }
 
+  /** Shows a tab created outside the view, e.g. from a template on first start (#589). */
+  export function addTab(tab: Tab) {
+    tabs = [...tabs, tab];
+    select(tab.id);
+  }
+
   /** Selects the n-th tab (0-based), e.g. from the 1–9 shortcuts (#95). */
   export function selectTabAt(index: number) {
     const tab = tabs[index];

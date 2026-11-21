@@ -1,0 +1,21 @@
+# Homelab: the state of a home server at a glance (#589).
+id: homelab
+title: Homelab
+tab:
+  name: Homelab
+  widgets:
+    - kind: services
+      at: { x: 0, y: 0, w: 6, h: 5 }
+      phone: { order: 1, rows: 5 }
+    - kind: docker
+      at: { x: 6, y: 0, w: 6, h: 5 }
+      phone: { order: 2, rows: 5 }
+    - kind: backup-status
+      at: { x: 0, y: 5, w: 4, h: 3 }
+      phone: { order: 3, rows: 3 }
+    - kind: diskhealth
+      at: { x: 4, y: 5, w: 4, h: 3 }
+      phone: { order: 4, rows: 3 }
+    - kind: bookmarks
+      at: { x: 8, y: 5, w: 4, h: 3 }
+      phone: { order: 5, rows: 3 }

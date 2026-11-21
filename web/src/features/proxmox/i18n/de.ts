@@ -32,4 +32,14 @@ export const de: Record<keyof typeof en, string> = {
     'Lege auf einem Proxmox-Knoten ein schreibgeschütztes API-Token an (Rolle PVEAuditor) und trage Token-ID und Secret unten ein.',
   'proxmox.actions_hint':
     'Starten und Herunterfahren bleiben aus, solange PROXMOX_ACTIONS_GUESTS die Gast-IDs nicht auflistet und das Token sie nicht schalten darf (VM.PowerMgmt).',
+  'proxmox.setup_token_id': 'Token-ID',
+  'proxmox.setup_secret': 'Secret',
+  'proxmox.setup_step_open': 'Öffne Proxmox VE und gehe zu Rechenzentrum → Berechtigungen → API-Token.',
+  'proxmox.setup_step_add':
+    'Klicke Hinzufügen, wähle einen Benutzer, benenne das Token und nimm den Haken bei Privilegientrennung heraus oder gib dem Token eine eigene Rolle.',
+  'proxmox.setup_step_role':
+    'Das Token braucht Lesezugriff (PVEAuditor) auf /; Starten und Herunterfahren brauchen zusätzlich VM.PowerMgmt.',
+  'proxmox.setup_step_copy':
+    'Kopiere Token-ID und Secret und füge sie unten ein; das Secret wird nur einmal angezeigt.',
+  'proxmox.setup_found': '{nodes} Knoten, {guests} Gäste',
 };

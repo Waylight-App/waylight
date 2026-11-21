@@ -113,11 +113,14 @@ func (a *API) get(ctx context.Context, s domain.Settings, path string, auth bool
 		return err
 	}
 	defer res.Body.Close()
+	if res.StatusCode == http.StatusNotFound {
+		return fmt.Errorf("%w: %w", kernel.ErrTargetWrongService, httpStatusError{code: res.StatusCode})
+	}
 	if res.StatusCode != http.StatusOK {
 		return httpStatusError{code: res.StatusCode}
 	}
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxResponseBytes)).Decode(v); err != nil {
-		return fmt.Errorf("decode response: %w", err)
+		return fmt.Errorf("%w: %w", kernel.ErrTargetWrongService, err)
 	}
 	return nil
 }

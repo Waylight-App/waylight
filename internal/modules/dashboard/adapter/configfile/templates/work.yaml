@@ -1,0 +1,23 @@
+# Work: the working day in one tab (#589).
+id: work
+title: Work
+tab:
+  name: Work
+  widgets:
+    - kind: calendar
+      at: { x: 0, y: 0, w: 4, h: 5 }
+      phone: { order: 1, rows: 4 }
+      config: { view: agenda, days: 1 }
+    - kind: todos
+      at: { x: 4, y: 0, w: 4, h: 5 }
+      phone: { order: 2, rows: 5 }
+    - kind: focus
+      at: { x: 8, y: 0, w: 4, h: 3 }
+      phone: { order: 3, rows: 3, size: medium }
+    - kind: mail
+      at: { x: 8, y: 3, w: 4, h: 4 }
+      phone: { order: 4, rows: 4 }
+    - kind: notes
+      at: { x: 0, y: 5, w: 8, h: 4 }
+      phone: { order: 5, rows: 4 }
+      config: { scope: pinned }

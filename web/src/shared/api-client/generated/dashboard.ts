@@ -97,3 +97,23 @@ export interface TemplateDTO {
   widgets: number /* int */;
   kinds: string[];
 }
+/**
+ * BuiltinWidgetDTO is a widget of a built-in template, for its preview.
+ */
+export interface BuiltinWidgetDTO {
+  kind: string;
+  x: number /* int */;
+  y: number /* int */;
+  w: number /* int */;
+  h: number /* int */;
+}
+/**
+ * BuiltinTemplateDTO is a built-in tab template (#589); clients translate
+ * the title by ID.
+ */
+export interface BuiltinTemplateDTO {
+  id: string;
+  title: string;
+  needs: string[];
+  widgets: BuiltinWidgetDTO[];
+}

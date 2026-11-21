@@ -25,6 +25,12 @@ export const en = {
   'grafana.loading_values': 'Loading values…',
   'grafana.values_over': '{title} over the last {range}',
   'grafana.alert_list': 'Alert list',
+  'grafana.setup_token': 'Service account token',
+  'grafana.setup_step_open': 'Open Grafana and go to Administration → Users and access → Service accounts.',
+  'grafana.setup_step_add': 'Press Add service account, name it Waylight and give it the role Viewer.',
+  'grafana.setup_step_token': 'Press Add service account token and then Generate token.',
+  'grafana.setup_step_copy': 'Copy the token and paste it below; Grafana shows it only once.',
+  'grafana.setup_alerts': '{n} alerts firing or pending',
 } as const;
 
 declare module '../../../shared/i18n/registry' {
