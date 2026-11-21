@@ -1,13 +1,21 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
-import type { FileDTO, RemoteSettingsDTO, StatusDTO } from '../../../../shared/api-client/generated/backup';
+import type {
+  FileDTO,
+  PreviewDTO,
+  RemoteSettingsDTO,
+  RestoredDTO,
+  StatusDTO,
+} from '../../../../shared/api-client/generated/backup';
 import type { RemoteSettingsInputDTO } from '../../../../shared/api-client/generated/backup-requests';
 import {
   type BackupFile,
   type BackupHealth,
+  type BackupPreview,
   type BackupStatus,
   type RemoteSettings,
   type RemoteSettingsInput,
   type RestoreRequest,
+  type RestoreResult,
   restoreForm,
 } from '../../domain/backup';
 import type { BackupGateway } from '../../usecase/backupUseCases';
@@ -62,7 +70,21 @@ export class BackupApi implements BackupGateway {
     };
   }
 
-  async restore(req: RestoreRequest): Promise<void> {
-    await this.http.postForm<unknown>('/api/backups/restore', restoreForm(req));
+  async preview(name: string): Promise<BackupPreview> {
+    const d = await this.http.get<PreviewDTO>(`/api/backups/${encodeURIComponent(name)}/preview`);
+    return {
+      file: toFile(d.file),
+      restorable: d.restorable,
+      problem: d.problem ?? null,
+      modules: d.modules,
+      tabs: d.tabs,
+      widgets: d.widgets,
+      updates: d.updates,
+    };
+  }
+
+  async restore(req: RestoreRequest): Promise<RestoreResult> {
+    const d = await this.http.postForm<RestoredDTO>('/api/backups/restore', restoreForm(req));
+    return { safetyCopy: toFile(d.safetyCopy) };
   }
 }

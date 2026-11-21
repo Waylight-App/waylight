@@ -16,6 +16,7 @@ describe('BackupUseCases', () => {
       listRemote: vi.fn(),
       restore: vi.fn(),
       status: vi.fn(),
+      preview: vi.fn(),
     } satisfies BackupGateway;
     expect((await new BackupUseCases(gateway).list()).map((f) => f.name)).toEqual(['b', 'a']);
   });

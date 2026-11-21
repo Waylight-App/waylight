@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type BackupStatus, dayWord, downloadUrl, healthLine } from './backup';
+import { type BackupStatus, dayWord, downloadUrl, healthLine, restoreForm } from './backup';
 
 describe('downloadUrl', () => {
   it('encodes the file name', () => {
@@ -48,5 +48,26 @@ describe('dayWord', () => {
     expect(dayWord(new Date(2026, 10, 21, 3, 0), now)).toBe('today');
     expect(dayWord(new Date(2026, 10, 20, 23, 0), now)).toBe('yesterday');
     expect(dayWord(new Date(2026, 10, 19, 23, 0), now)).toBe('earlier');
+  });
+});
+
+describe('restoreForm', () => {
+  const base = {
+    password: 'pw',
+    code: ' 123 456 ',
+    source: 'local' as const,
+    name: 'waylight-20261111-030000.db',
+  };
+
+  it('sends the confirmation word only when the owner confirmed', () => {
+    expect(restoreForm({ ...base, confirmed: true }).get('confirm')).toBe('replace');
+    expect(restoreForm({ ...base, confirmed: false }).get('confirm')).toBeNull();
+  });
+
+  it('puts the file last, after every text field', () => {
+    const file = new File(['x'], 'backup.db');
+    const keys = [...restoreForm({ ...base, source: 'upload', confirmed: true, file }).keys()];
+    expect(keys.at(-1)).toBe('file');
+    expect(restoreForm({ ...base, confirmed: true }).get('code')).toBe('123 456');
   });
 });

@@ -1593,9 +1593,26 @@ export const de: Record<BaseMessageKey, string> = {
   'backup.disable_offsite': 'Externe Kopien beenden',
   'backup.remote_backups': 'Externe Backups',
   'backup.restore': 'Backup wiederherstellen',
-  'backup.restore_hint':
-    'Die aktuellen Daten werden ersetzt und Waylight startet neu (Docker startet es automatisch wieder). Die bisherige Datenbank bleibt als waylight.db.before-restore erhalten. Backups einer neueren Version lassen sich nicht wiederherstellen.',
-  'backup.restore_source': 'Backup',
+  'backup.restore_intro':
+    'Wähle ein Backup, prüfe seinen Inhalt und bestätige mit deinem Passwort. Waylight startet danach mit dem Backup neu; Docker und systemd starten es von selbst wieder.',
+  'backup.restore_step_pick': '1. Backup auswählen',
+  'backup.restore_step_check': '2. Prüfen',
+  'backup.restore_step_confirm': '3. Bestätigen',
+  'backup.preview_checking': 'Backup wird geprüft …',
+  'backup.preview_ok': 'Das Backup ist intakt und passt zu dieser Waylight-Version.',
+  'backup.preview_contents': 'Inhalt: Tabs {tabs}, Widgets {widgets}, Module mit Daten {modules}.',
+  'backup.preview_updates':
+    'Es stammt von einer älteren Version; der nächste Start bringt es auf den aktuellen Stand ({count} Datenbank-Updates). Das ist so vorgesehen.',
+  'backup.preview_on_confirm':
+    'Waylight prüft dieses Backup, wenn du bestätigst. Ist es beschädigt oder von einer neueren Version, ändert sich nichts.',
+  'backup.restore_warning_since':
+    'Alles, was sich nach {date} geändert hat, wird durch dieses Backup ersetzt: für alle Konten, nicht nur deins.',
+  'backup.restore_warning':
+    'Alle aktuellen Daten werden durch dieses Backup ersetzt: für alle Konten, nicht nur deins.',
+  'backup.restore_safety':
+    'Vorher speichert Waylight den aktuellen Stand als neues Backup. Überlegst du es dir anders, stellst du diese Sicherheitskopie genauso wieder her.',
+  'backup.restore_understood': 'Ich habe verstanden, dass die aktuellen Daten ersetzt werden',
+  'backup.restore_started': 'Der aktuelle Stand wurde als Backup vom {date} gespeichert (Sicherheitskopie).',
   'backup.source_upload': 'Datei hochladen',
   'backup.source_local': 'Lokal: {date}',
   'backup.source_remote': 'Extern: {date}',
@@ -1603,7 +1620,6 @@ export const de: Record<BaseMessageKey, string> = {
   'backup.confirm_password': 'Dein Passwort',
   'backup.confirm_code': 'Zwei-Faktor-Code (falls aktiviert)',
   'backup.restore_now': 'Wiederherstellen und neu starten',
-  'backup.restore_confirm': 'Alle aktuellen Daten durch dieses Backup ersetzen?',
   'backup.restoring': 'Wird wiederhergestellt …',
   'backup.restarting':
     'Das Backup wird wiederhergestellt; Waylight startet neu. Die Seite lädt in wenigen Sekunden neu.',

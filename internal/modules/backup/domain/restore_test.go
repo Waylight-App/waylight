@@ -24,3 +24,18 @@ func TestValidateRestore(t *testing.T) {
 		}
 	}
 }
+
+func TestPreviewRestore(t *testing.T) {
+	current := []Migration{{"auth", "0001"}, {"auth", "0002"}, {"todos", "0001"}}
+	older := BackupInfo{Integrity: "ok", Migrations: []Migration{{"auth", "0001"}}, Tabs: 2, Widgets: 9}
+	p := PreviewRestore(older, current)
+	if p.Problem != nil || p.Modules != 1 || p.Updates != 2 || p.Tabs != 2 || p.Widgets != 9 {
+		t.Fatalf("older backup: %+v", p)
+	}
+	if p := PreviewRestore(BackupInfo{Integrity: "ok", Migrations: current}, current); p.Problem != nil || p.Updates != 0 || p.Modules != 2 {
+		t.Fatalf("same version: %+v", p)
+	}
+	if p := PreviewRestore(BackupInfo{Integrity: "broken", Migrations: current}, current); !errors.Is(p.Problem, ErrCorrupt) {
+		t.Fatalf("corrupt: %+v", p)
+	}
+}

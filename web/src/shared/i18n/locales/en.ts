@@ -1558,9 +1558,25 @@ export const en = {
   'backup.disable_offsite': 'Stop off-site copies',
   'backup.remote_backups': 'Off-site backups',
   'backup.restore': 'Restore a backup',
-  'backup.restore_hint':
-    'The current data is replaced and Waylight restarts (Docker starts it again automatically). The previous database is kept as waylight.db.before-restore. Backups from a newer version cannot be restored.',
-  'backup.restore_source': 'Backup',
+  'backup.restore_intro':
+    'Pick a backup, check what it contains and confirm with your password. Waylight then restarts with the backup; Docker and systemd start it again on their own.',
+  'backup.restore_step_pick': '1. Choose a backup',
+  'backup.restore_step_check': '2. Check it',
+  'backup.restore_step_confirm': '3. Confirm',
+  'backup.preview_checking': 'Checking the backup…',
+  'backup.preview_ok': 'The backup is intact and fits this version of Waylight.',
+  'backup.preview_contents': 'Contents: tabs {tabs}, widgets {widgets}, modules with data {modules}.',
+  'backup.preview_updates':
+    'It was made by an older version, so the next start brings it up to date ({count} database updates). That is expected.',
+  'backup.preview_on_confirm':
+    'Waylight checks this backup when you confirm. Nothing changes if it is damaged or comes from a newer version.',
+  'backup.restore_warning_since':
+    'Everything that changed after {date} is replaced by this backup: for every account, not only yours.',
+  'backup.restore_warning': 'All current data is replaced by this backup: for every account, not only yours.',
+  'backup.restore_safety':
+    'Before that, Waylight saves the current state as a new backup. If you change your mind, restore that safety copy the same way.',
+  'backup.restore_understood': 'I understand that the current data will be replaced',
+  'backup.restore_started': 'The current state was saved as the backup of {date} (safety copy).',
   'backup.source_upload': 'Upload a file',
   'backup.source_local': 'Local: {date}',
   'backup.source_remote': 'Off-site: {date}',
@@ -1568,7 +1584,6 @@ export const en = {
   'backup.confirm_password': 'Your password',
   'backup.confirm_code': 'Two-factor code (if enabled)',
   'backup.restore_now': 'Restore and restart',
-  'backup.restore_confirm': 'Replace all current data with this backup?',
   'backup.restoring': 'Restoring…',
   'backup.restarting': 'The backup is being restored; Waylight restarts. The page reloads in a few seconds.',
   'backup.health.ok': 'Last backup {when}, all good',

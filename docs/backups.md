@@ -55,16 +55,31 @@ sudo docker run --rm -v waylight-data:/data -v "$PWD":/backup alpine \
 
 ## Restore in the web interface
 
-Settings → Backups → *Restore a backup*:
+Only the owner can restore a backup, and only from their own browser
+session: admins, members, guests and API tokens cannot. Settings → Backups →
+*Restore a backup* walks you through three steps.
 
-1. Pick a local or off-site backup, or upload a file.
-2. Enter your password, and your two-factor code if it is on.
-3. Waylight checks the file before touching anything: it must be an intact
-   SQLite database with a Waylight schema that is not newer than the
-   running version.
-4. The current database is kept as `waylight.db.before-restore`, the
-   backup takes its place, and Waylight restarts. Docker and systemd start
-   it again with the restored data.
+1. **Choose a backup.** Every local and off-site backup is listed with its
+   date and size. You can also upload a `.db` file you downloaded earlier.
+2. **Check it.** For a local backup Waylight shows right away whether the
+   file is intact and fits the running version, and how many tabs, widgets
+   and modules with data it holds. An older backup is fine: the missing
+   database updates run on the next start. Off-site backups and uploads are
+   checked the same way when you confirm, before anything changes.
+3. **Confirm.** Tick that you understand the current data will be replaced,
+   for every account, then enter your password and your two-factor code if
+   it is on.
+
+Waylight then saves the current state as a new backup, the **safety copy**,
+and tells you its date. If you change your mind after the restore, restore
+that safety copy the same way. If the safety copy cannot be written, for
+example because the disk is full, nothing is restored.
+
+Finally Waylight restarts; Docker and systemd start it again with the
+restored data. The database file from before is also kept next to the new
+one as `waylight.db.before-restore` until the next restore. Changes made
+between the safety copy and the restart, a matter of seconds, are only in
+that file.
 
 ## Restore without the web interface
 

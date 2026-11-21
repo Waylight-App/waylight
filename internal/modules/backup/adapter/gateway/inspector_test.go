@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"bytes"
 	"context"
 	"os"
 	"path/filepath"
@@ -51,4 +52,60 @@ func TestInspector(t *testing.T) {
 	if err := db.QueryRow(`SELECT COUNT(*) FROM pragma_database_list WHERE name = 'restore_check'`).Scan(&n); err != nil || n != 0 {
 		t.Fatalf("still attached: %d %v", n, err)
 	}
+}
+
+// A stored backup is inspected in place, so the inspector must not touch
+// it: same bytes afterwards and no journal files next to it, even for a
+// copy of a database in WAL mode and a path that needs escaping.
+func TestInspectorLeavesTheFileUntouched(t *testing.T) {
+	ctx := context.Background()
+	db := dbtest.Open(t, "backup", Migrations())
+	for _, q := range []string{
+		`PRAGMA journal_mode = WAL`,
+		`INSERT INTO schema_migrations (module, version, applied_at) VALUES ('auth', '0001', '2026-01-01T00:00:00Z')`,
+		`CREATE TABLE dashboard_tabs (id TEXT PRIMARY KEY)`,
+		`CREATE TABLE dashboard_widgets (id TEXT PRIMARY KEY)`,
+		`INSERT INTO dashboard_tabs VALUES ('home'), ('work')`,
+		`INSERT INTO dashboard_widgets VALUES ('a'), ('b'), ('c')`,
+	} {
+		if _, err := db.Exec(q); err != nil {
+			t.Fatalf("%s: %v", q, err)
+		}
+	}
+	dir := filepath.Join(t.TempDir(), "my backups #1")
+	if err := os.MkdirAll(dir, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(dir, "waylight-20261121-030000.db")
+	if err := NewSnapshotter(db).SnapshotTo(ctx, path); err != nil {
+		t.Fatal(err)
+	}
+	before, _ := os.ReadFile(path)
+
+	info, err := NewInspector(db).Inspect(ctx, path)
+	if err != nil || info.Integrity != "ok" || info.Tabs != 2 || info.Widgets != 3 {
+		t.Fatalf("inspect: %+v %v", info, err)
+	}
+	after, _ := os.ReadFile(path)
+	if !bytes.Equal(before, after) {
+		t.Fatal("the backup file changed")
+	}
+	entries, _ := os.ReadDir(dir)
+	if len(entries) != 1 {
+		t.Fatalf("files next to the backup: %v", entries)
+	}
+
+	// The attach itself refuses writes.
+	conn, err := db.Conn(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	if _, err := conn.ExecContext(ctx, `ATTACH DATABASE ? AS ro_check`, readOnlyURI(path)); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := conn.ExecContext(ctx, `CREATE TABLE ro_check.x (y)`); err == nil {
+		t.Fatal("a write to the attached backup succeeded")
+	}
+	_, _ = conn.ExecContext(ctx, `DETACH DATABASE ro_check`)
 }

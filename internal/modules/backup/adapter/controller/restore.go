@@ -7,12 +7,17 @@ import (
 	"net/http"
 	"strings"
 
+	"waylight/internal/modules/backup/adapter/presenter"
 	"waylight/internal/modules/backup/usecase"
 	"waylight/internal/shared/httpapi"
 )
 
 // maxFieldBytes limits the text fields of the restore form.
 const maxFieldBytes = 1024
+
+// confirmValue is what the confirm field must say: a deliberate word, so a
+// stray checkbox value or a replayed old form does not count as a yes.
+const confirmValue = "replace"
 
 // RestoreHandlers serves POST /api/backups/restore (#46).
 type RestoreHandlers struct {
@@ -26,8 +31,8 @@ func NewRestoreHandlers(uc usecase.Restorer, maxBytes int64) *RestoreHandlers {
 }
 
 // Restore handles POST /api/backups/restore as multipart/form-data with the
-// fields password, code, source (local|remote|upload), name and, last, the
-// file. The file is streamed straight to the staging area; no temporary
+// fields password, code, confirm ("replace"), source (local|remote|upload),
+// name and, last, the file. The file is streamed straight to the staging area; no temporary
 // files are written elsewhere (the container's root file system is
 // read-only).
 func (h *RestoreHandlers) Restore(w http.ResponseWriter, r *http.Request) {
@@ -72,11 +77,24 @@ func (h *RestoreHandlers) Restore(w http.ResponseWriter, r *http.Request) {
 			req.Source = usecase.RestoreSource(value)
 		case "name":
 			req.Name = value
+		case "confirm":
+			req.Confirmed = value == confirmValue
 		}
 	}
-	if err := h.uc.Restore(r.Context(), req); err != nil {
+	res, err := h.uc.Restore(r.Context(), req)
+	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
-	httpapi.WriteJSON(w, http.StatusAccepted, map[string]string{"status": "restarting"})
+	httpapi.WriteJSON(w, http.StatusAccepted, presenter.Restored(res))
+}
+
+// Preview handles GET /api/backups/{name}/preview.
+func (h *RestoreHandlers) Preview(w http.ResponseWriter, r *http.Request) {
+	res, err := h.uc.Preview(r.Context(), r.PathValue("name"))
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Preview(res))
 }
