@@ -115,7 +115,8 @@ test('status widgets fold into the system summary and come back (#593)', async (
   ] as const) {
     await page.getByRole('button', { name: '+ Add widget' }).click();
     await page.getByRole('searchbox', { name: 'Search widgets…' }).fill(query);
-    await page.getByRole('button', { name }).first().click();
+    // Inside the picker: the top bar has a "Services and bookmarks" button as well.
+    await page.getByRole('dialog', { name: 'Add widget' }).getByRole('button', { name }).first().click();
   }
   await account(page, 'Done');
 
