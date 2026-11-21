@@ -10,6 +10,7 @@ import (
 
 	"waylight/internal/modules/fuel/domain"
 	"waylight/internal/platform/database/dbtest"
+	"waylight/internal/shared/kernel"
 )
 
 const key = "00000000-0000-0000-0000-000000000002"
@@ -71,8 +72,8 @@ func TestTankerkoenig(t *testing.T) {
 		t.Fatalf("prices: %+v %v", prices, err)
 	}
 	s.APIKey = "00000000-0000-0000-0000-000000000009"
-	if _, err := tk.Around(context.Background(), s); err == nil || !strings.Contains(err.Error(), "apikey") {
-		t.Fatalf("provider message: %v", err)
+	if _, err := tk.Around(context.Background(), s); !errors.Is(err, kernel.ErrTargetAuth) || !strings.Contains(err.Error(), "apikey") {
+		t.Fatalf("a refused key must wrap kernel.ErrTargetAuth and keep the message: %v", err)
 	}
 }
 

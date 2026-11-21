@@ -115,11 +115,11 @@ func (uc *fritzbox) SaveSettings(ctx context.Context, in SettingsInput) (Setting
 		return SettingsView{}, err
 	}
 	if _, _, err := uc.box.WAN(ctx, s); err != nil {
-		return SettingsView{}, kernel.TargetFailure(kernel.ErrInvalid, err)
+		return SettingsView{}, kernel.SetupFailure("FRITZ!Box", err)
 	}
 	if s.HasLogin() {
 		if _, err := uc.box.Calls(ctx, s, 1); err != nil {
-			return SettingsView{}, kernel.TargetFailure(kernel.ErrInvalid, err)
+			return SettingsView{}, kernel.SetupFailure("FRITZ!Box", err)
 		}
 	}
 	if err := uc.repo.Save(ctx, s); err != nil {

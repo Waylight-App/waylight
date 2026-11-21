@@ -19,7 +19,8 @@ export const widgets: WidgetDefinition[] = [
     icon: 'gauge',
     view: lazy(
       () => import('../../features/fuel/ui/FuelWidget.svelte'),
-      (config, c) => ({ config, fuel: c.fuel }),
+      // The setup assistant finds the place with the weather module's search.
+      (config, c) => ({ config, fuel: c.fuel, searchPlaces: (q: string) => c.weather.searchPlaces(q) }),
     ),
     settings: lazy(
       () => import('../../features/fuel/ui/FuelWidgetSettings.svelte'),
