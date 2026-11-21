@@ -15,7 +15,9 @@ automates exactly that, with a backup before and a rollback after.
 3. `scripts/deploy/waylight-deploy` runs as root on the server:
    - checks the request (exactly `deploy` plus 40 hex characters, and the commit
      must be part of `origin/main`), takes a lock so only one deploy runs, and
-     stops if the stack checkout has local changes;
+     stops if the stack checkout has local changes. While the lock is taken it
+     answers with exit code 3; the workflow then asks again every 30 seconds
+     for up to 20 minutes, so merges in quick succession all get deployed;
    - builds the image from a separate worktree **while the old version keeps
      running**: a failing build changes nothing;
    - stops the service, copies the data volume to
