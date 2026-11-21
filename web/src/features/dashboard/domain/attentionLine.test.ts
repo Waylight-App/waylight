@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type AttentionItem, attentionEntries, byUrgency, sourceEntry } from './attention';
+import { byUrgency, type ListedProblem, listedEntries, sourceEntry, uniqueSources } from './attentionLine';
 
 const source = { widgetId: 'w1', module: 'services', title: 'Services' };
 
@@ -18,23 +18,26 @@ describe('attention line (#593)', () => {
 
   it('puts problems first and keeps the tab order within a level', () => {
     const e = (id: string, level: 'attention' | 'problem') => ({ id, level, title: id, text: '' });
-    expect(
-      byUrgency([e('a', 'attention'), e('b', 'problem'), e('c', 'attention'), e('d', 'problem')]).map(
-        (x) => x.id,
-      ),
-    ).toEqual(['b', 'd', 'a', 'c']);
+    const ordered = byUrgency([e('a', 'attention'), e('b', 'problem'), e('c', 'attention'), e('d', 'problem')]);
+    expect(ordered.map((x) => x.id)).toEqual(['b', 'd', 'a', 'c']);
   });
 
   it('takes failing connections of this tab or of no tab, not missing setup', () => {
-    const items: AttentionItem[] = [
-      { id: '1', kind: 'connection', title: 'Immich', reason: 'Sign in again', widgetId: 'w9', tabId: 't1' },
-      { id: '2', kind: 'connection', title: 'Mail', reason: 'No answer', tabId: 't2' },
-      { id: '3', kind: 'setup', title: 'Weather', reason: 'Choose a place', tabId: 't1' },
-      { id: '4', kind: 'connection', title: 'Calendar', reason: 'Password refused' },
+    const items: ListedProblem[] = [
+      { id: '1', kind: 'connection', title: 'Immich', text: 'Sign in again', widgetId: 'w9', tabId: 't1' },
+      { id: '2', kind: 'connection', title: 'Mail', text: 'No answer', tabId: 't2' },
+      { id: '3', kind: 'setup', title: 'Weather', text: 'Choose a place', tabId: 't1' },
+      { id: '4', kind: 'connection', title: 'Calendar', text: 'Password refused' },
     ];
-    expect(attentionEntries(items, 't1')).toEqual([
+    expect(listedEntries(items, 't1')).toEqual([
       { id: 'attention:1', level: 'problem', title: 'Immich', text: 'Sign in again', widgetId: 'w9' },
       { id: 'attention:4', level: 'problem', title: 'Calendar', text: 'Password refused' },
     ]);
+  });
+
+  it('keeps one source per module', () => {
+    const overview = { widgetId: 'w2', module: 'services', title: 'Status overview' };
+    const backup = { widgetId: 'w3', module: 'backupmonitor', title: 'Backups' };
+    expect(uniqueSources([source, overview, backup])).toEqual([source, backup]);
   });
 });

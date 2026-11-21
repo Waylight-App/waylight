@@ -1496,6 +1496,8 @@ export const en = {
   'dashboard.widget_size': 'Size of {name}',
   'dashboard.size_free': 'Free size',
   'dashboard.open_details': '{name}: show details',
+  'dashboard.attention_more': 'and {count} more',
+  'dashboard.attention_view': 'View',
   'dashboard.edit_widget': 'Edit widget',
   'dashboard.notify_on_failure': 'Notify me when this fails',
   'dashboard.mobile_moved': '“{name}” moved to position {position}.',
