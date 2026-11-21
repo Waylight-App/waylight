@@ -288,6 +288,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 6 },
     },
     icon: 'box',
+    compact: () => 'docker',
+    compactExample: () => t('compact.example.docker'),
     view: lazy(
       () => import('../features/docker/ui/DockerWidget.svelte'),
       (config, c) => ({ config, docker: c.docker }),
@@ -456,6 +458,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 4 },
     },
     icon: 'package',
+    compact: () => 'parcels',
+    compactExample: () => t('compact.example.parcels'),
     view: lazy(
       () => import('../features/parcels/ui/ParcelsWidget.svelte'),
       (_config, c) => ({ parcels: c.parcels }),
@@ -538,6 +542,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 3, h: 4 },
     },
     icon: 'gauge',
+    compact: () => 'speedtest',
+    compactExample: () => t('compact.example.speedtest'),
     view: lazy(
       () => import('../features/speedtest/ui/SpeedtestWidget.svelte'),
       (_config, c) => ({ speedtest: c.speedtest }),

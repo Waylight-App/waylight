@@ -133,6 +133,16 @@ func (m *Module) Containers(ctx context.Context) ([]usecase.ContainerView, error
 	return res.Containers, nil
 }
 
+// CompactState implements modules.CompactProvider (#638): running
+// containers and what needs a look.
+func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
+	res, err := m.uc.List(ctx)
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	return usecase.CompactState(res), nil
+}
+
 // AnswerSources implements answers.Provider: the docker answers of the smart
 // search (ADR 0026).
 func (m *Module) AnswerSources() []answers.Source {

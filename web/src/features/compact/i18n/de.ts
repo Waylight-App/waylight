@@ -18,4 +18,7 @@ export const de: Record<keyof typeof en, string> = {
   'compact.example.calendar': 'Zahnarzt · Heute um 14:00',
   'compact.example.backup-status': 'Sicherung OK',
   'compact.example.diskhealth': '3 Laufwerke gesund',
+  'compact.example.docker': '11 von 12 laufen · 1 gestoppt',
+  'compact.example.parcels': '2 unterwegs · 1 kommt heute',
+  'compact.example.speedtest': '250 ↓ · 40 ↑ Mbit/s',
 };

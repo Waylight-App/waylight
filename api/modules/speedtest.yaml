@@ -2,6 +2,12 @@ tags:
   - name: speedtest
 
 paths:
+  /api/speedtest/compact:
+    get:
+      tags: [speedtest]
+      summary: "Compact state of the widget (#638): download and upload of the latest measurement with the ping"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
   /api/speedtest/settings:
     get:
       tags: [speedtest]

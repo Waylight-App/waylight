@@ -22,4 +22,12 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // The image update check is disabled. Enable it in Settings → Docker updates.
   srv_c9b09323ab5702c6:
     'Die Prüfung auf Image-Updates ist ausgeschaltet. Sie lässt sich unter Einstellungen → Docker-Updates einschalten.',
+  // Docker is not reachable
+  srv_789f61f53fa5ac29: 'Docker ist nicht erreichbar',
+  // {count} stopped
+  srv_da9839ea10b35eed: '{count} gestoppt',
+  // {count} unhealthy
+  srv_2a91fd7383166bf0: '{count} nicht gesund',
+  // {running} of {total} running
+  srv_19f48a82e61c671a: '{running} von {total} laufen',
 };
