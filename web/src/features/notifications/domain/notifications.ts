@@ -60,7 +60,7 @@ export interface NotificationPolicy {
 /** An additional delivery channel (#87); the secret is never returned. */
 export interface Channel {
   id: string;
-  kind: 'gotify' | 'webhook' | 'email' | 'slack' | 'teams' | 'app';
+  kind: 'gotify' | 'webhook' | 'email' | 'slack' | 'teams' | 'app' | 'browser';
   name: string;
   enabled: boolean;
   minSeverity: Severity;

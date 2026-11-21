@@ -27,7 +27,7 @@ paths:
       responses: { "200": { description: OK } }
     post:
       tags: [notifications]
-      summary: "Add a channel with minimum importance and optional alert types; kind gotify, webhook, email, slack (secret = https://hooks.slack.com/services/… URL) or teams (secret = https:// address of a Teams Workflows webhook)"
+      summary: "Add a channel with minimum importance and optional alert types; kind gotify, webhook, email, slack (secret = https://hooks.slack.com/services/… URL), teams (secret = https:// address of a Teams Workflows webhook), app (mobile app, #564) or browser (live in the open web interface, #583)"
       responses: { "200": { description: Created } }
   /api/notifications/channels/{id}:
     put:
@@ -66,6 +66,12 @@ paths:
       summary: Stop push notifications to one phone
       parameters: [{ name: session, in: path, required: true, schema: { type: string } }]
       responses: { "204": { description: Removed } }
+  /api/notifications/stream:
+    get:
+      tags: [notifications]
+      summary: "Live notifications of the browser channel as Server-Sent Events (#583): event `notification` with data {title, body, severity, type, at}; `Last-Event-ID` replays missed events from a backlog of 50; comment pings every 25 s; the stream ends after 15 minutes and the browser reconnects. Admins only"
+      parameters: [{ name: Last-Event-ID, in: header, required: false, schema: { type: string } }]
+      responses: { "200": { description: "text/event-stream" }, "403": { description: Not an admin }, "503": { description: Too many open streams } }
   /api/notifications/maintenance:
     get:
       tags: [notifications]

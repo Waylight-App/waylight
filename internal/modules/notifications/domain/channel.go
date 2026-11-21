@@ -139,8 +139,8 @@ func (c *Channel) Validate() error {
 			return kernel.NewValidationError("secret", "Paste the Slack webhook URL; it starts with https://hooks.slack.com/services/.")
 		}
 		c.Secret, c.URL = hook, ""
-	case ChannelApp:
-		// The devices carry everything a message needs.
+	case ChannelApp, ChannelBrowser:
+		// The devices and open streams carry everything a message needs.
 		c.URL, c.Secret = "", ""
 	case ChannelTeams:
 		hook := strings.TrimSpace(c.Secret)
@@ -150,7 +150,7 @@ func (c *Channel) Validate() error {
 		}
 		c.Secret, c.URL = u.String(), ""
 	default:
-		return kernel.NewValidationError("kind", "The channel type must be gotify, webhook, email, slack, teams or app.")
+		return kernel.NewValidationError("kind", "The channel type must be gotify, webhook, email, slack, teams, app or browser.")
 	}
 	return nil
 }

@@ -25,7 +25,8 @@ Under *More channels* you can add:
   body, so the receiver can check that it came from Waylight;
 - **e-mail** through an SMTP server;
 - **Slack**, through an incoming webhook;
-- **Microsoft Teams**, through a Workflows webhook.
+- **Microsoft Teams**, through a Workflows webhook;
+- **Waylight app** and **web interface**, described below.
 
 All channel secrets are stored encrypted with `SECRET_KEY`. For Slack and
 Teams the webhook address itself is the secret: it is never shown again
@@ -83,6 +84,25 @@ the Apple Push Notification service. Waylight encrypts every message for
 the phone before it leaves the server, so the relay cannot read it
 ([ADR 0025](adr/0025-push-relay.md)). Set `PUSH_RELAY_URL=off` to turn the
 channel off.
+
+### Web interface
+
+The channel **Web interface** shows notifications live in Waylight while a
+tab is open: as a message in the corner of the page and, once you allow it
+with *Allow system notifications*, as a notification of the operating
+system while no Waylight tab is in view. Like the app, it is for accounts
+with admin rights.
+
+The browser keeps one connection to your Waylight server and nothing else
+is involved: no Web Push, so no push service of Google, Mozilla or Apple.
+Several tabs share that connection. If it drops, the browser reconnects
+and gets the notifications it missed, up to the last 50; notifications
+sent while no tab was open are not shown later. Use one of the other
+channels for those.
+
+If Waylight runs behind a reverse proxy, the proxy must not buffer
+`/api/notifications/stream`. Waylight sends `X-Accel-Buffering: no`, which
+nginx honours; Caddy and Traefik stream by default.
 
 ## What you are notified about
 

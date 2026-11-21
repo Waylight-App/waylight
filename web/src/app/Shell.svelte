@@ -4,6 +4,7 @@
   import { rememberLook } from './branding/lastLook';
   import type { CommandHandlers } from './appCommands';
   import { hasStoredTimers, timerAlerts } from './timerAlerts.svelte';
+  import { liveAlerts } from './liveAlerts.svelte';
   import LiveRegion from '../shared/a11y/LiveRegion.svelte';
   import SyncStatus from './offline/SyncStatus.svelte';
   import MaintenanceBanner from '../features/notifications/ui/MaintenanceBanner.svelte';
@@ -243,6 +244,42 @@
   // but only when some are stored, so other pages do not pay for the code.
   // svelte-ignore state_referenced_locally
   if (!container.auth.kiosk && hasStoredTimers()) void import('./timers');
+
+  // Live notifications of the browser channel (#583): admins only, and
+  // only when such a channel is on, so other accounts open no stream.
+  $effect(() => {
+    if (!modules?.has('notifications') || !container.auth.admin || container.auth.kiosk) return;
+    let stop: (() => void) | undefined;
+    let cancelled = false;
+    container.notifications
+      .channels()
+      .then(async (channels) => {
+        if (cancelled || !channels.some((c) => c.kind === 'browser' && c.enabled)) return;
+        const [{ startLiveNotifications }, { addLiveAlert }] = await Promise.all([
+          import('../features/notifications/adapter/live/liveStream'),
+          import('./liveAlerts.svelte'),
+        ]);
+        if (cancelled) return;
+        stop = startLiveNotifications((n, leader) => {
+          addLiveAlert(n);
+          // One system notification per notification: from the tab that
+          // holds the stream, and only while no Waylight tab is in view.
+          if (
+            leader &&
+            document.hidden &&
+            typeof Notification !== 'undefined' &&
+            Notification.permission === 'granted'
+          ) {
+            new Notification(n.title, { body: n.body, tag: `waylight-${n.at}` });
+          }
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+      stop?.();
+    };
+  });
 
   let offline = $state(!navigator.onLine);
 
@@ -501,6 +538,9 @@
   {/await}
 {/if}
 <LiveRegion />
+{#if liveAlerts.list.length}
+  {#await import('./LiveToasts.svelte') then { default: LiveToasts }}<LiveToasts />{/await}
+{/if}
 {#if timerAlerts.list.length}
   {#await import('./TimerToasts.svelte') then { default: TimerToasts }}<TimerToasts />{/await}
 {/if}
