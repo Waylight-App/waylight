@@ -82,7 +82,6 @@ func (r *Repository) Between(ctx context.Context, from, to time.Time) ([]domain.
 // Get implements usecase.Repository.
 func (r *Repository) Get(ctx context.Context, id string) (domain.Entry, error) {
 	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
-	//nolint:gosec // the condition comes from sqlutil with bound arguments
 	e, err := scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM meals_entries WHERE id = ? AND `+cond, append([]any{id}, args...)...))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Entry{}, domain.ErrNotFound
