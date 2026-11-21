@@ -30,6 +30,11 @@ export interface AppearanceDTO {
    */
   profile: 'everyday' | 'homelab';
   /**
+   * ShowAdvanced lists settings for developers and power users (#602);
+   * always sent in answers, omitted on PUT to keep the stored value.
+   */
+  showAdvanced?: boolean;
+  /**
    * ThemeLocked: the organisation set theme and accent colour (#305); a
    * change to them is ignored. Never read from a PUT.
    */

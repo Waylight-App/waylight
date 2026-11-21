@@ -98,7 +98,9 @@ service tiles, your bookmarks or both; choose which under *Appearance*.
 
 ## Custom CSS
 
-For changes the settings do not cover, *Custom CSS* applies your own styles
+The field appears once **Show advanced settings** is on (at the bottom of
+the settings overview), or when you already have custom CSS. For changes
+the settings do not cover, *Custom CSS* applies your own styles
 on top of the theme. The dashboard's design tokens are CSS variables such as
 `--color-accent` and `--radius`; overriding them survives updates better than styling
 individual elements, whose class names can change between releases.

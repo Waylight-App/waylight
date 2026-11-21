@@ -52,6 +52,31 @@ func TestAppearancePerAccount(t *testing.T) {
 	}
 }
 
+// TestShowAdvancedIsNotInherited: a member who starts from the admin's
+// appearance does not get the admin's advanced settings (#602).
+func TestShowAdvancedIsNotInherited(t *testing.T) {
+	repo := NewRepository(dbtest.Open(t, "appearance", Migrations()))
+	admin := kernel.WithPrincipal(context.Background(), kernel.AdminPrincipal())
+	anna := kernel.WithPrincipal(context.Background(), kernel.Principal{AccountID: "anna", Role: "member"})
+	a := domain.Default()
+	a.SetShowAdvanced(true)
+	if err := repo.Save(admin, a); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := repo.Load(admin); !got.ShowAdvanced() {
+		t.Fatal("admin: not stored")
+	}
+	if got, _ := repo.Load(anna); got.ShowAdvanced() {
+		t.Fatal("anna inherited the admin's advanced settings")
+	}
+	if err := repo.Save(anna, a); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := repo.Load(anna); !got.ShowAdvanced() {
+		t.Fatal("anna: not stored")
+	}
+}
+
 // Migration 0008 keeps the single row as the owner's.
 func TestAppearanceMigrationKeepsTheRow(t *testing.T) {
 	ctx := context.Background()

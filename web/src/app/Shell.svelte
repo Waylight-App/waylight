@@ -524,6 +524,7 @@
       member: container.auth.member,
       admin: container.auth.admin,
       owner: container.auth.owner,
+      advanced: appearance.showAdvanced,
     }),
   };
 

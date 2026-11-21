@@ -1048,6 +1048,9 @@ export const de: Record<BaseMessageKey, string> = {
   'settings.search.kind_area': 'Bereich',
   'settings.search.kind_section': 'Abschnitt',
   'settings.search.kind_field': 'Einstellung',
+  'settings.advanced.label': 'Erweiterte Einstellungen anzeigen',
+  'settings.advanced.hint':
+    'API-Tokens, JSON-APIs, die Ressourcenprognose und eigenes CSS. Gilt für dein Konto.',
   'settings.recent': 'Zuletzt geändert',
   'settings.area.account': 'Mein Konto',
   'settings.area.account_hint': 'Name, Passwort, Passkeys, Zwei-Faktor und Sitzungen',

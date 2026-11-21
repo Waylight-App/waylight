@@ -24,6 +24,21 @@ func (f fakeUC) List(_ context.Context, fresh bool) ([]domain.Item, error) {
 	return f.items, nil
 }
 
+func (f fakeUC) Connections(context.Context, bool) ([]domain.Connection, error) {
+	return []domain.Connection{{Integration: "immich", Instance: true, Status: domain.Status{State: domain.StateOK},
+		Widgets: []domain.WidgetRef{{ID: "w1", TabID: "t1", Kind: "immich"}}}}, nil
+}
+
+func TestConnections(t *testing.T) {
+	rec := httptest.NewRecorder()
+	NewHandlers(fakeUC{}).Connections(rec, httptest.NewRequest(http.MethodGet, "/api/attention/connections", nil))
+	var got []presenter.ConnectionDTO
+	if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil || len(got) != 1 || got[0].State != "ok" ||
+		got[0].Reason != nil || len(got[0].Widgets) != 1 {
+		t.Fatalf("%s %v", rec.Body.String(), err)
+	}
+}
+
 func TestList(t *testing.T) {
 	since := time.Unix(1_800_000_000, 0)
 	h := NewHandlers(fakeUC{items: []domain.Item{{

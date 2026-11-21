@@ -1026,6 +1026,9 @@ export const en = {
   'settings.search.kind_area': 'Area',
   'settings.search.kind_section': 'Section',
   'settings.search.kind_field': 'Setting',
+  'settings.advanced.label': 'Show advanced settings',
+  'settings.advanced.hint':
+    'API tokens, JSON APIs, the resource forecast and custom CSS. Saved for your account.',
   'settings.recent': 'Recently changed',
   'settings.area.account': 'My account',
   'settings.area.account_hint': 'Name, password, passkeys, two-factor and sessions',

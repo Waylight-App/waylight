@@ -2,9 +2,8 @@ import { defineSettingsSection } from '../settingsKit';
 import { definitionFor } from '../widgets';
 import { placeLabel } from '../../features/weather/domain/weather';
 
-// Connections & places (#591): places entered once for every widget that
-// needs a location. The settings start page (#600) shows it as the area
-// "Connections & services".
+// Places (#591): entered once for every widget that needs a location. It
+// sits in the area Connections & services next to the service list.
 export const section = defineSettingsSection({
   id: 'connections',
   label: 'settings.section.connections',

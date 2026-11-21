@@ -12,8 +12,10 @@
     current: Appearance;
     /** Called with the saved preferences so the app can apply them. */
     onchange: (a: Appearance) => void;
+    /** Shows the advanced fields (#602); custom CSS that is set stays visible anyway. */
+    advanced?: boolean;
   }
-  let { appearance, current, onchange }: Props = $props();
+  let { appearance, current, onchange, advanced = true }: Props = $props();
 
   // svelte-ignore state_referenced_locally
   let form = $state<Appearance>({ ...current });
@@ -112,10 +114,12 @@
       >
     </span>
   </div>
-  <label class="field">
-    <span>{t('appearance.custom_css_override_variables_such_as')}</span>
-    <textarea class="input css" bind:value={form.customCss} rows="6" spellcheck="false"></textarea>
-  </label>
+  {#if advanced || current.customCss.trim() !== ''}
+    <label class="field">
+      <span>{t('appearance.custom_css_override_variables_such_as')}</span>
+      <textarea class="input css" bind:value={form.customCss} rows="6" spellcheck="false"></textarea>
+    </label>
+  {/if}
   {#if error}<p class="error" role="alert">{error}</p>{/if}
   {#if saved}<p class="muted">Saved.</p>{/if}
   <button class="btn btn-primary" type="submit">{t('appearance.save_appearance')}</button>

@@ -18,6 +18,7 @@ type AppearanceResponse struct {
 	GreetingMoment  bool
 	Launcher        string
 	Profile         string
+	ShowAdvanced    bool
 	// ThemeLocked: the organisation set theme and accent colour (#305).
 	ThemeLocked bool
 }
@@ -34,6 +35,9 @@ type UpdateAppearanceRequest struct {
 	Launcher        string
 	// Profile is "everyday" or "homelab" (#281); empty keeps the stored one.
 	Profile string
+	// ShowAdvanced lists advanced settings (#602); nil keeps the stored value,
+	// so clients that do not know the switch never turn it off.
+	ShowAdvanced *bool
 }
 
 // GetAppearance returns the current preferences (input port).
@@ -55,7 +59,8 @@ type Repository interface {
 
 func toResponse(a domain.Appearance) AppearanceResponse {
 	return AppearanceResponse{Theme: string(a.Theme()), AccentColor: a.AccentColor(), BackgroundImage: a.BackgroundImage(), CustomCSS: a.CustomCSS(), Language: a.Language(),
-		GreetingName: a.GreetingName(), GreetingMoment: a.GreetingMoment(), Launcher: string(a.Launcher()), Profile: string(a.Profile())}
+		GreetingName: a.GreetingName(), GreetingMoment: a.GreetingMoment(), Launcher: string(a.Launcher()), Profile: string(a.Profile()),
+		ShowAdvanced: a.ShowAdvanced()}
 }
 
 type getAppearance struct {
@@ -113,16 +118,25 @@ func (uc *updateAppearance) Execute(ctx context.Context, req UpdateAppearanceReq
 	if err == nil {
 		err = a.SetLauncher(req.Launcher)
 	}
-	if err == nil {
-		profile := req.Profile
-		if profile == "" { // older clients do not send it
-			stored, lerr := uc.repo.Load(ctx)
-			if lerr != nil {
-				return AppearanceResponse{}, fmt.Errorf("load appearance: %w", lerr)
-			}
-			profile = string(stored.Profile())
+	if err == nil && (req.Profile == "" || req.ShowAdvanced == nil) {
+		// Older clients send neither field; both then keep the stored value.
+		stored, lerr := uc.repo.Load(ctx)
+		if lerr != nil {
+			return AppearanceResponse{}, fmt.Errorf("load appearance: %w", lerr)
 		}
-		err = a.SetProfile(profile)
+		if req.Profile == "" {
+			req.Profile = string(stored.Profile())
+		}
+		if req.ShowAdvanced == nil {
+			keep := stored.ShowAdvanced()
+			req.ShowAdvanced = &keep
+		}
+	}
+	if err == nil {
+		err = a.SetProfile(req.Profile)
+	}
+	if req.ShowAdvanced != nil {
+		a.SetShowAdvanced(*req.ShowAdvanced)
 	}
 	if err != nil {
 		return AppearanceResponse{}, err

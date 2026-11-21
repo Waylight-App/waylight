@@ -11,6 +11,8 @@ import type { SettingsArea } from './settingsNav';
 export interface SettingsContext {
   /** Enabled backend modules. */
   modules: ReadonlySet<string>;
+  /** Whether advanced fields are shown (#602); a form hides its advanced fields otherwise. */
+  advanced: boolean;
 }
 
 /** One section of the settings dialog, with its component loaded on demand. */
@@ -33,6 +35,10 @@ export interface SettingsSection {
   keywords?: readonly string[];
   /** Labels of fields or headings inside the section the search finds (#601). */
   fields?: readonly MessageKey[];
+  /** For developers and power users (#602): hidden until the account shows advanced settings. */
+  advanced?: boolean;
+  /** Fields that count as advanced; searchable only while shown (#602). */
+  advancedFields?: readonly MessageKey[];
   load: () => Promise<Component<Record<string, unknown>>>;
   props: (container: Container, context: SettingsContext) => Record<string, unknown>;
 }
@@ -49,6 +55,8 @@ export function defineSettingsSection<P extends object>(def: {
   homelab?: boolean;
   keywords?: readonly string[];
   fields?: readonly MessageKey[];
+  advanced?: boolean;
+  advancedFields?: readonly MessageKey[];
   load: () => Promise<Component<P>>;
   props: (container: Container, context: SettingsContext) => P;
 }): SettingsSection {
