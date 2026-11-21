@@ -65,9 +65,39 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 }
 
 // CompactStateFor implements modules.CompactParamProvider (#614): the
-// device of a smart home tile with one entity, chosen with ?entity=.
+// device of a smart home tile with one entity, chosen with ?entity=, with a
+// toggle or press as quick action while actions are enabled for it.
 func (m *Module) CompactStateFor(ctx context.Context, params url.Values) (kernel.CompactState, error) {
-	return m.uc.Compact(ctx, params.Get("entity"))
+	state, e, err := m.uc.Compact(ctx, params.Get("entity"))
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	state.Action = compactAction(e)
+	return state, nil
+}
+
+// compactAction is the request behind the entity's action, labelled with
+// what it does in the current state; nil when the entity has no action.
+func compactAction(e usecase.EntityView) *kernel.CompactAction {
+	var label kernel.Text
+	switch e.Action {
+	case domain.ActionToggle:
+		label = kernel.NewText("Turn on")
+		if e.State == "on" {
+			label = kernel.NewText("Turn off")
+		}
+	case domain.ActionPress:
+		label = kernel.NewText("Run")
+	default:
+		return nil
+	}
+	return &kernel.CompactAction{
+		ID:     "smarthome." + string(e.Action),
+		Label:  label,
+		Method: http.MethodPost,
+		// Entity IDs match [a-z0-9_.], so they need no escaping in a path.
+		Path: "/api/smarthome/entities/" + e.ID + "/action",
+	}
 }
 
 // CompactParams implements modules.CompactParamProvider.
