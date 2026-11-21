@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -59,9 +60,9 @@ func TestImmich(t *testing.T) {
 	ctx := context.Background()
 	repo, client := &memRepo{}, &fakeImmich{}
 	c := &movingClock{now: time.Date(2026, 11, 12, 10, 0, 0, 0, time.UTC)}
-	uc := NewImmich(repo, client, c)
+	uc := NewImmich(repo, client, nil, c)
 
-	if _, err := uc.Overview(ctx); !errors.Is(err, domain.ErrNotConfigured) {
+	if _, err := uc.Overview(ctx, ""); !errors.Is(err, domain.ErrNotConfigured) {
 		t.Fatalf("not configured: %v", err)
 	}
 	if _, err := uc.SaveSettings(ctx, SettingsInput{URL: "http://immich", APIKey: "bad"}); !errors.Is(err, kernel.ErrInvalid) || repo.s != nil {
@@ -70,33 +71,79 @@ func TestImmich(t *testing.T) {
 	if _, err := uc.SaveSettings(ctx, SettingsInput{URL: "http://immich", APIKey: "key"}); err != nil {
 		t.Fatal(err)
 	}
-	o, err := uc.Overview(ctx)
+	o, err := uc.Overview(ctx, "")
 	if err != nil || o.Stats.Photos != 100 || o.Version != "1.120.0" || len(o.Memories[0].AssetIDs) != domain.MaxMemoryAssets {
 		t.Fatalf("overview: %+v %v", o, err)
 	}
 	calls := client.statsCalls
-	_, _ = uc.Overview(ctx)
+	_, _ = uc.Overview(ctx, "")
 	if client.statsCalls != calls {
 		t.Fatal("cached within the TTL")
 	}
 	c.now = c.now.Add(14 * time.Hour) // next day: memories change
-	_, _ = uc.Overview(ctx)
+	_, _ = uc.Overview(ctx, "")
 	if client.statsCalls != calls+1 {
 		t.Fatal("a new day loads new memories")
 	}
 
-	if _, err := uc.Thumbnail(ctx, asset); err != nil || len(client.thumbs) != 1 {
+	if _, err := uc.Thumbnail(ctx, "", asset); err != nil || len(client.thumbs) != 1 {
 		t.Fatalf("thumbnail of a memory: %v", err)
 	}
 	for _, id := range []string{"00000000-0000-0000-0000-000000000000", "../api/users"} {
-		if _, err := uc.Thumbnail(ctx, id); !errors.Is(err, domain.ErrThumbnailNotFound) {
+		if _, err := uc.Thumbnail(ctx, "", id); !errors.Is(err, domain.ErrThumbnailNotFound) {
 			t.Errorf("%q: only memory assets are proxied, got %v", id, err)
 		}
 	}
 
 	client.noMemories = true
 	c.now = c.now.Add(overviewTTL)
-	if o, err := uc.Overview(ctx); err != nil || len(o.Memories) != 0 {
+	if o, err := uc.Overview(ctx, ""); err != nil || len(o.Memories) != 0 {
 		t.Fatalf("a key without memory.read still shows statistics: %+v %v", o, err)
+	}
+}
+
+// conns resolves "office" to another Immich; everything else fails, like a
+// missing copy or a connection of another service.
+type conns struct{}
+
+func (conns) Settings(_ context.Context, id string) (domain.Settings, error) {
+	if id == "office" {
+		return domain.Settings{URL: "http://office", APIKey: "key"}, nil
+	}
+	return domain.Settings{}, errors.New("no usable connection")
+}
+
+// recordingClient remembers which Immich was asked.
+type recordingClient struct {
+	fakeImmich
+	urls []string
+}
+
+func (r *recordingClient) Stats(ctx context.Context, s domain.Settings) (domain.LibraryStats, error) {
+	r.urls = append(r.urls, s.URL)
+	return r.fakeImmich.Stats(ctx, s)
+}
+
+func TestOverviewThroughConnection(t *testing.T) {
+	ctx := context.Background()
+	repo := &memRepo{s: &domain.Settings{URL: "http://home", APIKey: "key"}}
+	client := &recordingClient{}
+	uc := NewImmich(repo, client, conns{}, &movingClock{now: time.Date(2026, 11, 12, 10, 0, 0, 0, time.UTC)})
+	for _, id := range []string{"office", "", "missing"} {
+		if _, err := uc.Overview(ctx, id); err != nil {
+			t.Fatalf("%q: %v", id, err)
+		}
+	}
+	// "missing" falls back to the module settings, cached on its own key.
+	if want := []string{"http://office", "http://home", "http://home"}; strings.Join(client.urls, " ") != strings.Join(want, " ") {
+		t.Fatalf("asked %v, want %v", client.urls, want)
+	}
+	_, _ = uc.Overview(ctx, "office")
+	if len(client.urls) != 3 {
+		t.Fatal("each connection is cached")
+	}
+	repo.s = nil
+	if _, err := uc.Overview(ctx, "office"); err != nil {
+		t.Fatalf("a connection works without module settings: %v", err)
 	}
 }

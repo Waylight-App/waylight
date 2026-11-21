@@ -251,7 +251,8 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	// switches them on; without ee/ nothing ever does.
 	tabSharing := dashboard.NewSharing()
 	// Modules from cmd/server/module_<name>.go (#193).
-	registerSelfRegistered(moduleDeps{cfg: cfg, db: db, clock: clk, ids: ids, out: out, sink: sink,
+	connections := &modules.LateResolver{}
+	registerSelfRegistered(moduleDeps{cfg: cfg, db: db, clock: clk, ids: ids, out: out, sink: sink, connections: connections,
 		alerts: alerts, auth: authModule, registry: registry, wikiSources: &wiki.MemberSources{},
 		notifications: notificationsModule, tabSharing: tabSharing, calendarSharing: calendarSharing})
 	if cfg.ModuleEnabled("backup") && !cfg.DemoMode {
@@ -287,8 +288,10 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	}
 	// Connections name the widgets that use them, so they need the dashboard (#610).
 	if cfg.ModuleEnabled("integrations") {
-		registry.Register(integrations.New(integrations.Deps{DB: db, Cipher: secrets, Modules: registry.All(), Widgets: connectionWidgets(dash),
-			Managed: func() bool { return managedSections(registry)["integrations"] }, Log: log, Clock: clk, IDs: ids}))
+		im := integrations.New(integrations.Deps{DB: db, Cipher: secrets, Modules: registry.All(), Widgets: connectionWidgets(dash),
+			Managed: func() bool { return managedSections(registry)["integrations"] }, Log: log, Clock: clk, IDs: ids})
+		registry.Register(im)
+		connections.Set(im)
 	}
 	// The attention list asks the other modules, so it comes last (#599).
 	registry.Register(attention.New(registry.All(), ownWidgets(dash), authModule.MayRead, clk))

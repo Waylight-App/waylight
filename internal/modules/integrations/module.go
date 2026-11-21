@@ -27,6 +27,8 @@ type Widgets func(ctx context.Context) ([]usecase.Widget, error)
 // credentials, and connections without them are of no use.
 type Module struct {
 	modules.Base
+	repo     usecase.Repository
+	specs    domain.Specs
 	handlers *controller.Handlers
 	config   usecase.Config
 	copier   usecase.Copier
@@ -58,7 +60,11 @@ func New(d Deps) *Module {
 	repo := gateway.NewRepository(d.DB, d.Cipher)
 	svc := services(modules.ConnectionSpecsOf(d.Modules))
 	uc := usecase.New(usecase.Deps{Repo: repo, Widgets: d.Widgets, Services: svc, Clock: d.Clock, IDs: d.IDs})
-	m := &Module{handlers: controller.NewHandlers(uc), config: usecase.NewConfig(repo, d.Clock, d.IDs),
+	specs := make([]domain.Spec, 0, len(svc))
+	for _, s := range svc {
+		specs = append(specs, s.Spec)
+	}
+	m := &Module{repo: repo, specs: domain.NewSpecs(specs), handlers: controller.NewHandlers(uc), config: usecase.NewConfig(repo, d.Clock, d.IDs),
 		copier: usecase.NewCopier(repo, svc, d.Clock, d.IDs), managed: d.Managed, log: d.Log}
 	for _, o := range d.Modules {
 		if s, ok := o.(modules.ConnectionSource); ok {
@@ -183,4 +189,20 @@ func (m *Module) ApplyConfig(ctx context.Context, section any) error {
 		return modules.ErrConfigType
 	}
 	return m.config.Apply(ctx, s.List())
+}
+
+// ResolveConnection implements modules.ConnectionResolver: the address and
+// credential of a connection of the service. A connection of another
+// service, or one whose credential is incomplete (e.g. no longer readable
+// after a SECRET_KEY change), answers modules.ErrNoConnection, so the
+// module falls back to its own settings.
+func (m *Module) ResolveConnection(ctx context.Context, service, id string) (modules.ResolvedConnection, error) {
+	c, err := m.repo.Get(ctx, id)
+	if err != nil || c.Service != service {
+		return modules.ResolvedConnection{}, modules.ErrNoConnection
+	}
+	if spec, ok := m.specs[service]; !ok || spec.CheckCredential(c.Credential, true) != nil {
+		return modules.ResolvedConnection{}, modules.ErrNoConnection
+	}
+	return modules.ResolvedConnection{URL: c.URL, Credential: maps.Clone(c.Credential)}, nil
 }

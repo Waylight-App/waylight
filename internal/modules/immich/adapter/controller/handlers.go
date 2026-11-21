@@ -42,9 +42,9 @@ func (h *Handlers) SaveSettings(w http.ResponseWriter, r *http.Request) {
 	httpapi.WriteJSON(w, http.StatusOK, presenter.Settings(res))
 }
 
-// Overview handles GET /api/immich/overview.
+// Overview handles GET /api/immich/overview[?connection=<id>].
 func (h *Handlers) Overview(w http.ResponseWriter, r *http.Request) {
-	res, err := h.uc.Overview(r.Context())
+	res, err := h.uc.Overview(r.Context(), r.URL.Query().Get("connection"))
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
@@ -52,10 +52,10 @@ func (h *Handlers) Overview(w http.ResponseWriter, r *http.Request) {
 	httpapi.WriteJSON(w, http.StatusOK, presenter.Overview(res))
 }
 
-// Thumbnail handles GET /api/immich/thumbnails/{id}: memories are proxied,
+// Thumbnail handles GET /api/immich/thumbnails/{id}[?connection=<id>]: memories are proxied,
 // so the browser never talks to Immich or sees the API key.
 func (h *Handlers) Thumbnail(w http.ResponseWriter, r *http.Request) {
-	t, err := h.uc.Thumbnail(r.Context(), r.PathValue("id"))
+	t, err := h.uc.Thumbnail(r.Context(), r.URL.Query().Get("connection"), r.PathValue("id"))
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return

@@ -11,6 +11,19 @@ This is the store and its API. Widgets and the settings pages of the
 integrations do not use it yet; their own settings stay as they are until
 they move to connections (#610).
 
+## Reading through a connection
+
+Modules that read through connections take the connection a widget chose
+(`?connection=<id>` on their read endpoints). While that connection does
+not exist, belongs to another service or lacks a required field (for
+example after a `SECRET_KEY` change), the module uses its own settings as
+before. Saving in a module's settings page still writes the module
+settings only.
+
+| Module | Read endpoints |
+| --- | --- |
+| Immich | `GET /api/immich/overview`, `GET /api/immich/thumbnails/{id}` |
+
 ## Copy of the module settings
 
 At start and then every hour, the settings of the integration modules are
