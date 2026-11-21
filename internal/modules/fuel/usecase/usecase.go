@@ -98,6 +98,9 @@ func (uc *fuel) SaveSettings(ctx context.Context, in SettingsInput) (SettingsVie
 		s.Favourites = old.Favourites
 	}
 	if _, err := uc.provider.Around(ctx, s); err != nil {
+		if errors.Is(err, kernel.ErrTargetAuth) {
+			return SettingsView{}, kernel.SetupFailure("Tankerkönig", err)
+		}
 		return SettingsView{}, kernel.NewPublicErrorf(kernel.ErrInvalid, "Could not load fuel prices: {detail}", "detail", err.Error())
 	}
 	return uc.save(ctx, s)

@@ -19,6 +19,19 @@ export const en = {
   'fritzbox.call.outgoing': 'outgoing',
   'fritzbox.call.rejected': 'rejected',
   'fritzbox.call.active': 'active',
+  'fritzbox.setup_username': 'FRITZ!Box user',
+  'fritzbox.setup_password': 'Password',
+  'fritzbox.setup_step_network':
+    'Open the FRITZ!Box, go to Home Network → Network → Network Settings and tick Allow access for applications and Transmit status information over UPnP.',
+  'fritzbox.setup_step_user':
+    'For the line speed and the call list: under System → FRITZ!Box Users add a user Waylight with the right FRITZ!Box Settings.',
+  'fritzbox.setup_step_user_calls':
+    'Under System → FRITZ!Box Users add a user Waylight with the rights FRITZ!Box Settings and Voice messages, faxes, FRITZ!App Fon and call list.',
+  'fritzbox.setup_step_enter_optional': 'Enter that user and its password below, or leave both empty.',
+  'fritzbox.setup_step_enter': 'Enter that user and its password below.',
+  'fritzbox.setup_online': 'Online, external address {ip}',
+  'fritzbox.setup_offline': 'The FRITZ!Box answers; the internet connection is down.',
+  'fritzbox.setup_calls': '{n} recent calls',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

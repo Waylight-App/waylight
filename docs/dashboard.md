@@ -243,11 +243,17 @@ service answers there, or the certificate is not trusted.
 
 The assistant exists for Immich, Home Assistant, the Nextcloud calendar,
 Nextcloud, Grafana, Proxmox VE, Sonarr, Radarr and Prowlarr, Jellyfin and
-Plex, AdGuard Home, Pi-hole and Speedtest Tracker so far. Where one widget
+Plex, AdGuard Home, Pi-hole, Speedtest Tracker, the FRITZ!Box, fuel prices
+and a CalDAV task list for the shopping list. Where one widget
 covers several products, the address step asks which one runs there. Proxmox
 usually runs with a self-signed certificate; pin it under Settings → Proxmox
 VE, the assistant does not ask for the fingerprint. Speedtest thresholds stay
-off until you set them under Settings → Speedtest Tracker. For the calendar you enter the Nextcloud address, your user name and
+off until you set them under Settings → Speedtest Tracker. The FRITZ!Box internet
+widget works without a FRITZ!Box user (status over UPnP); the call list
+needs one. Fuel prices ask for a place instead of an address and find it
+with the place search of the weather module; radius (5 km) and fuel (E10)
+are changed in the settings. The shopping list offers the CalDAV assistant
+next to creating a list on Waylight, for every account that is not a guest. For the calendar you enter the Nextcloud address, your user name and
 an app password; Waylight finds your calendars itself. Immich and Home
 Assistant are set up for the whole instance, so only admins see *Set up*
 there; every account can connect its own calendar. The settings pages stay

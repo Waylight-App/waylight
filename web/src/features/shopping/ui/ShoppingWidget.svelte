@@ -1,4 +1,6 @@
 <script lang="ts">
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { shoppingSetup } from './shoppingSetup';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -17,6 +19,8 @@
   }
   let { shopping }: Props = $props();
   const poll = usePolling();
+  // svelte-ignore state_referenced_locally
+  const setup = shoppingSetup(shopping);
 
   const POLL_MS = 60_000;
   let overview = $state<ShoppingOverview>({ lists: [], caldav: false, current: '' });
@@ -147,6 +151,14 @@
     <button class="btn" type="submit" disabled={busy}>{t('shopping.create_list')}</button>
   </form>
   {#if error}<p class="error small" role="alert">{error}</p>{/if}
+  {#if !overview.caldav}
+    <SetupInPlace
+      text={t('shopping.setup_hint')}
+      descriptor={setup}
+      instance={false}
+      ondone={() => void load().catch(() => undefined)}
+    />
+  {/if}
 {:else}
   {#if choices > 1}
     <label class="pick"
