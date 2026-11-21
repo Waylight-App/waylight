@@ -769,6 +769,11 @@ export const en = {
   'clock.unknown_time_zone': 'Unknown time zone. Use an IANA name such as Europe/Berlin.',
   'notifications.saved_test_sent': 'Saved. A test message was sent.',
   'common.saved': 'Saved.',
+  // Saved places in widget settings (#591).
+  'places.saved_place': 'Saved place',
+  'places.other_location': 'Another location…',
+  'places.save_as_place': 'Save as a place',
+  'places.advanced': 'Advanced',
   'parcels.confirm_stop': 'Stop tracking “{name}”?',
   'dashboard.confirm_remove_widget': 'Remove the widget “{name}”?',
   'dashboard.confirm_delete_tab': 'Delete the tab “{name}” and all its widgets?',
