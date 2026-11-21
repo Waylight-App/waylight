@@ -139,8 +139,13 @@ func TestRestoreEndToEnd(t *testing.T) {
 		var out []string
 		for rows.Next() {
 			var title string
-			_ = rows.Scan(&title)
+			if err := rows.Scan(&title); err != nil {
+				t.Fatal(err)
+			}
 			out = append(out, title)
+		}
+		if err := rows.Err(); err != nil {
+			t.Fatal(err)
 		}
 		return out
 	}
