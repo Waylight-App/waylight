@@ -39,7 +39,7 @@ func badText(s string) kernel.Text { return kernel.NewText(s) }
 	if len(messages) != 3 || len(problems) != 2 || !strings.Contains(problems[0], "x.go:10") || !strings.Contains(problems[1], "x.go:11") {
 		t.Fatalf("%v %v", messages, problems)
 	}
-	out := string(render(messages))
+	out := string(render(messages, coreTranslations))
 	if !strings.Contains(out, `"Plain message."`) || !strings.Contains(out, `"{n} open"`) || !strings.Contains(out, "ServerMessageKey") {
 		t.Fatal(out)
 	}

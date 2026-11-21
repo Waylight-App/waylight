@@ -4,8 +4,9 @@
 package domain
 
 import (
-	"errors"
 	"time"
+
+	"waylight/internal/shared/kernel"
 )
 
 // Entry is one recorded change: who, when, what kind of change on which
@@ -28,7 +29,7 @@ const (
 )
 
 // ErrRetention is a retention outside the limits.
-var ErrRetention = errors.New("the retention must be 0 (keep for good) or between 30 and 3650 days")
+var ErrRetention = kernel.NewPublicError(kernel.ErrInvalid, "The retention must be 0 (keep for good) or between 30 and 3650 days.")
 
 // ValidRetention checks a retention period.
 func ValidRetention(days int) error {

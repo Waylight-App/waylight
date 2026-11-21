@@ -70,7 +70,7 @@ func (s *Service) Save(ctx context.Context, in domain.Settings) (domain.Settings
 	}
 	set, err := in.Validate()
 	if err != nil {
-		return domain.Settings{}, kernel.NewPublicError(kernel.ErrInvalid, err.Error())
+		return domain.Settings{}, err
 	}
 	if err := s.d.Store.Save(ctx, set); err != nil {
 		return domain.Settings{}, fmt.Errorf("save policies: %w", err)

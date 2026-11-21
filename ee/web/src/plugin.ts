@@ -15,6 +15,8 @@ import { texts as teamTabTexts } from './teamtabs/texts';
 import PresenceSection from './presence/PresenceSection.svelte';
 import { texts as presenceTexts } from './presence/texts';
 import { presenceSearchActions } from './presence/searchActions';
+import { parseConfig as parsePresenceConfig } from './presence/presence';
+import { serverDe } from './serverDe';
 import { lazyMountable, mountable } from './lib/mountable';
 
 export const plugin: WaylightPlugin = {
@@ -53,6 +55,13 @@ export const plugin: WaylightPlugin = {
       defaultSize: { w: 4, h: 5 },
       icon: 'activity',
       view: lazyMountable(() => import('./presence/PresenceWidget.svelte')),
+      // Small and strip tiles show the group's counts with the own status as chips (#632).
+      compact: (config) => {
+        const { group } = parsePresenceConfig(config);
+        const params: Record<string, string> = group ? { group } : {};
+        return { module: 'presence', params };
+      },
+      compactExample: presenceTexts.compact_example ?? { en: '' },
       settings: lazyMountable<{
         config?: Record<string, unknown>;
         onsave: (config: Record<string, unknown>) => void;
@@ -115,4 +124,6 @@ export const plugin: WaylightPlugin = {
     },
   ],
   searchActions: [...presenceSearchActions()],
+  // German texts of the ee/ backend messages; the server sends English.
+  serverMessages: { de: serverDe },
 };

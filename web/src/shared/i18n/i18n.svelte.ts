@@ -93,13 +93,21 @@ export type { MessageKey };
  */
 export function serverMessage(key: string | undefined, params?: Record<string, string>): string | undefined {
   // The server already answers in English; translations are loaded lazily.
-  if (!key || state.locale !== 'de' || !serverCatalogue.de) return undefined;
-  const template = serverCatalogue.de[key];
+  if (!key || state.locale !== 'de') return undefined;
+  const template = serverCatalogue.de?.[key] ?? pluginServerMessages.de?.[key];
   return template === undefined ? undefined : formatMessage(template, params);
 }
 
 /** Lazily loaded backend message translations (not in the initial bundle, ADR 0011). */
 const serverCatalogue: { de?: Record<string, string> } = {};
+
+/** Backend message translations a plugin brings for its own modules (#632). */
+const pluginServerMessages: Record<string, Record<string, string>> = {};
+
+/** Adds a plugin's translations of its backend messages for one language. */
+export function registerServerMessages(language: string, texts: Record<string, string>): void {
+  pluginServerMessages[language] = { ...pluginServerMessages[language], ...texts };
+}
 
 /** Loads the backend message translations of the active language. */
 export async function loadServerMessages(): Promise<void> {
