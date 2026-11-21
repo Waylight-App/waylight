@@ -22,8 +22,7 @@
   import { searchActions } from './searchActions';
   import { registeredSections } from './settingsSections';
   import { OWN_SECTIONS } from './settingsCatalog';
-  import { attention, setAttentionHandlers } from './attention.svelte';
-  import AttentionBadge from '../features/attention/ui/AttentionBadge.svelte';
+  import type { AttentionState } from '../features/attention/ui/attentionState.svelte';
   import { provideOpenSettings } from '../shared/ui/settingsLink';
   import { attachShortcuts } from '../shared/shortcuts';
   import Icon from '../shared/ui/icons/Icon.svelte';
@@ -128,45 +127,62 @@
   const attentionOn = $derived(
     !!modules?.has('attention') && !container.auth.guest && !container.auth.kiosk && !container.localMode,
   );
+  // Loaded only where it is used, so the extension's local mode and guests
+  // do not carry it (ADR 0011).
+  let attention = $state<AttentionState | null>(null);
   $effect(() => {
     if (!attentionOn) return;
-    attention.attach(container.attention);
-    void attention.refresh();
-    const poll = () => {
-      if (!document.hidden) void attention.refresh();
-    };
-    const id = setInterval(poll, 60_000);
-    document.addEventListener('visibilitychange', poll);
+    let cancelled = false;
+    let stop = () => {};
+    void import('./attention.svelte').then((m) => {
+      if (cancelled) return;
+      m.setAttentionHandlers(attentionHandlers);
+      const state = m.attention;
+      state.attach(container.attention);
+      attention = state;
+      void state.refresh();
+      const poll = () => {
+        if (!document.hidden) void state.refresh();
+      };
+      const id = setInterval(poll, 60_000);
+      document.addEventListener('visibilitychange', poll);
+      stop = () => {
+        clearInterval(id);
+        document.removeEventListener('visibilitychange', poll);
+        state.attach(null);
+      };
+    });
     return () => {
-      clearInterval(id);
-      document.removeEventListener('visibilitychange', poll);
-      attention.attach(null);
+      cancelled = true;
+      stop();
+      attention = null;
     };
   });
-  setAttentionHandlers({
-    openWidget: (tabId, widgetId) => {
+  const attentionHandlers = {
+    openWidget: (tabId: string, widgetId: string) => {
       settingsOpen = false;
       dashboard?.openWidgetSettings(tabId, widgetId);
     },
-    openSettings: (section) => void openSettingsAt(section),
-    sectionOf: (integration) =>
+    openSettings: (section: string) => void openSettingsAt(section),
+    sectionOf: (integration: string) =>
       [...OWN_SECTIONS, ...registeredSections].find((s) => s.module === integration && s.id !== 'attention')
         ?.id,
-    nameOf: (integration) => {
+    nameOf: (integration: string) => {
       const s = [...OWN_SECTIONS, ...registeredSections].find(
         (x) => x.module === integration && x.id !== 'attention',
       );
       if (s) return s.title?.() ?? t(s.label);
       return definitionFor(integration)?.type.title ?? integration;
     },
-    tabName: (tabId) => dashboardState.tabs.find((tab) => tab.id === tabId)?.name,
-  });
+    tabName: (tabId: string) => dashboardState.tabs.find((tab) => tab.id === tabId)?.name,
+  } satisfies import('./attention.svelte').AttentionHandlers;
   // A changed widget may have got its missing setting: look again shortly
   // after the dashboard changed, without asking the services.
   $effect(() => {
     void dashboardState.tabs;
-    if (!attentionOn) return;
-    const id = setTimeout(() => void attention.refresh(), 1_000);
+    const state = attention;
+    if (!state) return;
+    const id = setTimeout(() => void state.refresh(), 1_000);
     return () => clearTimeout(id);
   });
 
@@ -174,7 +190,7 @@
     settingsOpen = false;
     // A connection may have been fixed in the settings: ask its service
     // again, but only when something was broken.
-    if (attentionOn && attention.count > 0) void attention.check();
+    if (attention && attention.count > 0) void attention.check();
   }
 
   let launcherOpen = $state<Segment | null>(null);
@@ -530,8 +546,11 @@
     />
   </div>
   <div class="right">
-    {#if attentionOn}
-      <AttentionBadge state={attention} onopen={() => void openSettingsAt('attention')} />
+    {#if attention && attention.count > 0}
+      {@const state = attention}
+      {#await import('../features/attention/ui/AttentionBadge.svelte') then { default: AttentionBadge }}
+        <AttentionBadge {state} onopen={() => void openSettingsAt('attention')} />
+      {/await}
     {/if}
     {#if serviceStatus.kind !== 'none'}
       <button
