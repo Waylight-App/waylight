@@ -23,6 +23,7 @@ const tab = (id: string, widgets: Widget[]): Tab => ({
   mobile: [],
   mobileCustom: false,
   mine: true,
+  zoned: false,
 });
 
 describe('showTabBar', () => {

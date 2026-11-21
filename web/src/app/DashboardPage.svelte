@@ -9,6 +9,9 @@
   import { useOpenSettings } from '../shared/ui/settingsLink';
   import { type StatusSource, uniqueSources } from '../features/dashboard/domain/attentionLine';
   import { categoryShown, type StartProfile } from '../features/appearance/domain/appearance';
+  import { COMPACT_REFRESH_MS } from '../features/compact/domain/compact';
+  import { usePolling } from '../shared/refresh';
+  import { SvelteSet } from 'svelte/reactivity';
 
   /** Props of the dashboard page. */
   interface Props {
@@ -52,6 +55,7 @@
     selectTab: (id: string) => void;
     openWidgetSettings: (tabId: string, widgetId: string) => void;
     openAddWidget: (query?: string) => void;
+    addTab: (tab: Tab) => void;
   }>();
   // The picker is loaded only when someone opens it (#116).
   let pickerTab = $state<Tab | null>(null);
@@ -83,6 +87,10 @@
   export function openWidgetSettings(tabId: string, widgetId: string) {
     view?.openWidgetSettings(tabId, widgetId);
   }
+  /** Shows a tab created from a template on first start (#589). */
+  export function addTab(tab: Tab) {
+    view?.addTab(tab);
+  }
   export function openAddWidget(query = '') {
     view?.openAddWidget(query);
   }
@@ -105,6 +113,35 @@
   function compactModule(widget: Widget): string | undefined {
     if (container.localMode) return undefined;
     return definitionFor(widget.kind)?.compact?.(widget.config);
+  }
+
+  // Zoned tabs hide widgets with nothing to show (#619). Whether a widget is
+  // empty is part of its module's compact state, so the modules of the
+  // active zoned tab are asked in the background.
+  let shown = $state<Tab | undefined>();
+  const emptyModules = new SvelteSet<string>();
+  const zonedModules = $derived(
+    shown?.zoned ? [...new Set(shown.widgets.flatMap((w) => compactModule(w) ?? []))].sort() : [],
+  );
+  const zonedKey = $derived(zonedModules.join(','));
+  async function loadEmpty(modules: string[]) {
+    const results = await Promise.allSettled(modules.map((m) => container.compact.state(m)));
+    results.forEach((r, i) => {
+      const module = modules[i];
+      if (!module || r.status !== 'fulfilled') return;
+      if (r.value.empty) emptyModules.add(module);
+      else emptyModules.delete(module);
+    });
+  }
+  const poll = usePolling();
+  $effect(() => {
+    if (zonedKey === '') return;
+    const modules = zonedKey.split(',');
+    return poll(() => loadEmpty(modules), COMPACT_REFRESH_MS);
+  });
+  function reportState(tabs: Tab[], activeId: string) {
+    shown = tabs.find((t) => t.id === activeId);
+    onstate?.(tabs, activeId);
   }
 
   // The lines above the grid load with the first tab that shows them (#593).
@@ -146,7 +183,7 @@
   hasSettings={(kind) => !!definitionFor(kind)?.settings}
   chromeless={(kind) => !!definitionFor(kind)?.chromeless}
   {tabBarTarget}
-  {onstate}
+  onstate={reportState}
   {onedit}
   {ondone}
   onbackground={container.auth.guest ? undefined : (tab) => (pickerTab = tab)}
@@ -156,6 +193,11 @@
   {notifyAction}
   statusWidget={(widget) => !!definitionFor(widget.kind)?.alerts && compactModule(widget) !== undefined}
   compactExample={container.localMode ? undefined : (kind) => definitionFor(kind)?.compactExample?.()}
+  systemZone={container.localMode || container.auth.admin}
+  emptyWidget={(widget) => {
+    const module = compactModule(widget);
+    return module !== undefined && emptyModules.has(module);
+  }}
 >
   {#snippet content(widget: Widget)}
     {@const def = definitionFor(widget.kind)}

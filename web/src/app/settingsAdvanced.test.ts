@@ -4,6 +4,8 @@ import { type CatalogSection, OWN_SECTIONS, type SectionViewer, visibleSections 
 import { registeredSections } from './settingsSections';
 import { groupByArea } from './settingsNav';
 import { buildIndex, searchSettings } from './settingsSearch';
+import { advancedProblem } from './settingsAdvancedHint';
+import type { AttentionItem } from '../features/attention/domain/attention';
 
 const all: CatalogSection[] = [...OWN_SECTIONS, ...registeredSections];
 const owner = (advanced?: boolean): SectionViewer => ({
@@ -66,5 +68,39 @@ describe('advanced settings (#602)', () => {
     expect(search(true, 'api tokens')).toContain('API tokens');
     expect(search(false, 'custom css')).toEqual([]);
     expect(search(true, 'custom css')).toContain('Custom CSS');
+  });
+});
+
+describe('hint for a hidden advanced section with a problem (#622)', () => {
+  const failing = (integration: string, kind: AttentionItem['kind'] = 'connection'): AttentionItem => ({
+    id: `${integration}-${kind}`,
+    kind,
+    integration,
+    reason: { message: 'down', messageKey: 'srv_x' },
+    since: new Date(0),
+    action: kind === 'connection' ? 'fix' : 'choose',
+  });
+  const sections = visibleSections(all, owner(true));
+  const hint = (over: Partial<Parameters<typeof advancedProblem>[0]> = {}) =>
+    advancedProblem({ items: [failing('apiwidget')], sections, showAdvanced: false, admin: true, ...over })
+      ?.id;
+
+  it('points at the advanced section whose connection fails', () => {
+    expect(hint()).toBe('apiwidget');
+  });
+
+  it('stays away while advanced settings are shown or for non-admins', () => {
+    expect(hint({ showAdvanced: true })).toBeUndefined();
+    expect(hint({ admin: false })).toBeUndefined();
+  });
+
+  it('ignores problems outside advanced sections and entries still to set up', () => {
+    expect(hint({ items: [failing('weather')] })).toBeUndefined();
+    expect(hint({ items: [failing('apiwidget', 'setup')] })).toBeUndefined();
+    expect(hint({ items: [] })).toBeUndefined();
+  });
+
+  it('only offers sections the viewer may open', () => {
+    expect(hint({ sections: visibleSections(all, { ...owner(true), modules: new Set() }) })).toBeUndefined();
   });
 });

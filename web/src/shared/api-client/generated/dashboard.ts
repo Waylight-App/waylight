@@ -47,6 +47,10 @@ export interface TabDTO {
    */
   mine: boolean;
   visibility: string;
+  /**
+   * Zoned lays the tab out in zones instead of the free grid (#619).
+   */
+  zoned: boolean;
 }
 /**
  * MobileItemDTO places a widget in the phone layout.
@@ -78,6 +82,11 @@ export interface WidgetDTO {
    * freely sized tile (#595).
    */
   size?: string;
+  /**
+   * Zone is today, mine or system on a zoned tab; omitted while the
+   * client picks one by kind (#619).
+   */
+  zone?: string;
 }
 /**
  * TemplateDTO describes a tab template.
@@ -87,4 +96,24 @@ export interface TemplateDTO {
   name: string;
   widgets: number /* int */;
   kinds: string[];
+}
+/**
+ * BuiltinWidgetDTO is a widget of a built-in template, for its preview.
+ */
+export interface BuiltinWidgetDTO {
+  kind: string;
+  x: number /* int */;
+  y: number /* int */;
+  w: number /* int */;
+  h: number /* int */;
+}
+/**
+ * BuiltinTemplateDTO is a built-in tab template (#589); clients translate
+ * the title by ID.
+ */
+export interface BuiltinTemplateDTO {
+  id: string;
+  title: string;
+  needs: string[];
+  widgets: BuiltinWidgetDTO[];
 }

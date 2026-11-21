@@ -50,6 +50,11 @@ export interface PlacementDTO {
    * empty for a freely sized tile. Omitted keeps the stored size.
    */
   size?: string;
+  /**
+   * Zone moves the widget to a zone of a zoned tab (#619): today, mine,
+   * system, or empty for the default by kind. Omitted keeps the stored zone.
+   */
+  zone?: string;
 }
 /**
  * LayoutDTO is the body of PUT /api/dashboard/tabs/{id}/layout.
@@ -63,6 +68,12 @@ export interface LayoutDTO {
  */
 export interface TabBackgroundDTO {
   background: string;
+}
+/**
+ * TabZonesDTO is the body of PUT /api/dashboard/tabs/{id}/zones (#619).
+ */
+export interface TabZonesDTO {
+  enabled: boolean;
 }
 /**
  * TabRuleDTO is one default-tab rule (#71).
@@ -103,4 +114,26 @@ export interface MobileLayoutDTO {
 export interface SaveTemplateDTO {
   tabId: string;
   name: string;
+}
+/**
+ * BuiltinTabDTO is the body of POST /api/dashboard/templates/builtin/{id}/tabs.
+ */
+export interface BuiltinTabDTO {
+  /**
+   * Name of the new tab; empty uses the template's.
+   */
+  name: string;
+  /**
+   * Location fills the weather widgets; omitted leaves them to be set up.
+   */
+  location?: LocationDTO;
+}
+/**
+ * LocationDTO is a place for the weather widgets of a template.
+ */
+export interface LocationDTO {
+  lat: number /* float64 */;
+  lon: number /* float64 */;
+  label: string;
+  placeId: string;
 }

@@ -285,6 +285,42 @@ func TestTemplatesAndBackground(t *testing.T) {
 	}
 }
 
+func TestZones(t *testing.T) {
+	deps, repo := newDeps("clock", "notes")
+	tabs, widgets, tpls := NewManageTabs(deps), NewManageWidgets(deps), NewManageTemplates(deps)
+	home, _ := tabs.Create(ctx, CreateTabRequest{Name: "Home"})
+	w, _ := widgets.Add(ctx, AddWidgetRequest{TabID: home.ID, Kind: "notes", W: 3, H: 2})
+	res, err := tabs.SetZones(ctx, home.ID, true)
+	if err != nil || !res.Zoned {
+		t.Fatalf("zones on: %+v %v", res, err)
+	}
+	system := "system"
+	err = widgets.SaveLayout(ctx, SaveLayoutRequest{TabID: home.ID, Placements: []WidgetPlacement{{WidgetID: w.ID, W: 3, H: 2, Zone: &system}}})
+	if err != nil || repo.widgets[w.ID].Zone() != domain.ZoneSystem {
+		t.Fatalf("zone not stored: %q %v", repo.widgets[w.ID].Zone(), err)
+	}
+	// Moving without a zone keeps it; an unknown zone is refused.
+	err = widgets.SaveLayout(ctx, SaveLayoutRequest{TabID: home.ID, Placements: []WidgetPlacement{{WidgetID: w.ID, X: 3, W: 3, H: 2}}})
+	if err != nil || repo.widgets[w.ID].Zone() != domain.ZoneSystem {
+		t.Fatalf("zone lost on move: %q %v", repo.widgets[w.ID].Zone(), err)
+	}
+	attic := "attic"
+	if err := widgets.SaveLayout(ctx, SaveLayoutRequest{TabID: home.ID, Placements: []WidgetPlacement{{WidgetID: w.ID, W: 3, H: 2, Zone: &attic}}}); err == nil {
+		t.Fatal("an unknown zone must be rejected")
+	}
+	tpl, _ := tpls.SaveTab(ctx, home.ID, "Zoned")
+	copied, err := tpls.CreateTab(ctx, tpl.ID, "")
+	if err != nil || len(copied.Widgets) != 1 || copied.Widgets[0].Zone != "system" {
+		t.Fatalf("template lost the zone: %+v %v", copied, err)
+	}
+	if res, err := tabs.SetZones(ctx, home.ID, false); err != nil || res.Zoned {
+		t.Fatalf("zones off: %+v %v", res, err)
+	}
+	if _, err := tabs.SetZones(ctx, "nope", true); !errors.Is(err, domain.ErrTabNotFound) {
+		t.Fatalf("unknown tab: %v", err)
+	}
+}
+
 type fixedClock time.Time
 
 func (c fixedClock) Now() time.Time { return time.Time(c) }

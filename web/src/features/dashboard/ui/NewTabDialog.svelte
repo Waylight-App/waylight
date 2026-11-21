@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { t } from '../../../shared/i18n';
+  import { t, type MessageKey } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import Modal from '../../../shared/ui/Modal.svelte';
-  import type { Tab, TabTemplate } from '../domain/dashboard';
+  import type { BuiltinTemplate, Tab, TabTemplate } from '../domain/dashboard';
   import type { DashboardUseCases } from '../usecase/dashboardUseCases';
 
   /** Props of the dialog that creates a tab, optionally from a template. */
@@ -16,19 +16,43 @@
   let name = $state('');
   let templateId = $state('');
   let templates = $state<TabTemplate[]>([]);
+  let builtins = $state<BuiltinTemplate[]>([]);
   let error = $state('');
+
+  // Built-in templates (#589) are offered next to the account's own; their
+  // ids carry a prefix so the two never collide.
+  const BUILTIN = 'builtin:';
+  const builtinTitle = (tpl: BuiltinTemplate) => {
+    const key = `templates.${tpl.id}` as MessageKey;
+    const text = t(key);
+    return text === key ? tpl.title : text;
+  };
 
   $effect(() => {
     uc.listTemplates()
       .then((t) => (templates = t))
       .catch(() => {}); // the dialog works without templates
+    uc.listBuiltinTemplates()
+      .then((b) => (builtins = b))
+      .catch(() => {});
   });
+
+  function create(): Promise<Tab> {
+    if (templateId.startsWith(BUILTIN)) {
+      const tpl = builtins.find((b) => BUILTIN + b.id === templateId);
+      return uc.createTabFromBuiltin(
+        templateId.slice(BUILTIN.length),
+        name || (tpl ? builtinTitle(tpl) : ''),
+      );
+    }
+    return templateId ? uc.createTabFromTemplate(templateId, name) : uc.createTab(name);
+  }
 
   async function submit(e: SubmitEvent) {
     e.preventDefault();
     error = '';
     try {
-      const tab = templateId ? await uc.createTabFromTemplate(templateId, name) : await uc.createTab(name);
+      const tab = await create();
       oncreated(tab);
       onclose();
     } catch (err) {
@@ -55,10 +79,17 @@
       <!-- svelte-ignore a11y_autofocus -->
       <input class="input" bind:value={name} autofocus required={!templateId} maxlength="40" />
     </label>
-    {#if templates.length}
+    {#if templates.length || builtins.length}
       <fieldset>
         <legend>{t('dashboard.start_from')}</legend>
         <label><input type="radio" bind:group={templateId} value="" /> {t('dashboard.empty_tab')}</label>
+        {#each builtins as tpl (tpl.id)}
+          <label
+            ><input type="radio" bind:group={templateId} value={BUILTIN + tpl.id} />
+            {builtinTitle(tpl)}
+            <span class="muted">{t('dashboard.widgets', { widgets: tpl.widgets.length })}</span></label
+          >
+        {/each}
         {#each templates as tpl (tpl.id)}
           <div class="tpl">
             <label

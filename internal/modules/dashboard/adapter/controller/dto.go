@@ -39,6 +39,9 @@ type PlacementDTO struct {
 	// Size sets the widget size (#595): small, medium, large, strip, or
 	// empty for a freely sized tile. Omitted keeps the stored size.
 	Size *string `json:"size,omitempty"`
+	// Zone moves the widget to a zone of a zoned tab (#619): today, mine,
+	// system, or empty for the default by kind. Omitted keeps the stored zone.
+	Zone *string `json:"zone,omitempty"`
 }
 
 // LayoutDTO is the body of PUT /api/dashboard/tabs/{id}/layout.
@@ -50,6 +53,11 @@ type LayoutDTO struct {
 // an empty background uses the global one.
 type TabBackgroundDTO struct {
 	Background string `json:"background"`
+}
+
+// TabZonesDTO is the body of PUT /api/dashboard/tabs/{id}/zones (#619).
+type TabZonesDTO struct {
+	Enabled bool `json:"enabled"`
 }
 
 // TabRuleDTO is one default-tab rule (#71).
@@ -83,4 +91,20 @@ type MobileLayoutDTO struct {
 type SaveTemplateDTO struct {
 	TabID string `json:"tabId"`
 	Name  string `json:"name"`
+}
+
+// BuiltinTabDTO is the body of POST /api/dashboard/templates/builtin/{id}/tabs.
+type BuiltinTabDTO struct {
+	// Name of the new tab; empty uses the template's.
+	Name string `json:"name"`
+	// Location fills the weather widgets; omitted leaves them to be set up.
+	Location *LocationDTO `json:"location,omitempty"`
+}
+
+// LocationDTO is a place for the weather widgets of a template.
+type LocationDTO struct {
+	Lat     float64 `json:"lat"`
+	Lon     float64 `json:"lon"`
+	Label   string  `json:"label"`
+	PlaceID string  `json:"placeId"`
 }

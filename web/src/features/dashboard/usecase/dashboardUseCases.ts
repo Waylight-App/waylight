@@ -4,6 +4,8 @@ import {
   type Tab,
   type TabRule,
   type TabTemplate,
+  type BuiltinTemplate,
+  type TemplateLocation,
   validateBackground,
   validateRules,
   validateTabName,
@@ -14,6 +16,7 @@ import {
 import { collides, findFreeSpot, type LayoutItem, sameLayout } from '../domain/layout';
 import type { MobileItem } from '../domain/mobile';
 import { sizeRect, type WidgetSize } from '../domain/sizes';
+import type { Zone } from '../domain/zones';
 import type { DashboardGateway } from './ports';
 
 /** Error for input rejected before it reaches the backend. */
@@ -90,11 +93,22 @@ export class DashboardUseCases {
   /** Copies a widget (kind, size and configuration) to the first free spot of its tab. */
   duplicateWidget(tab: Tab, widget: Widget): Promise<Widget> {
     const rect = findFreeSpot(tab.widgets, widget.w, widget.h);
-    return this.gateway.addWidget(tab.id, widget.kind, rect, structuredClone(widget.config), widget.size);
+    return this.keepZone(
+      widget,
+      this.gateway.addWidget(tab.id, widget.kind, rect, structuredClone(widget.config), widget.size),
+    );
+  }
+
+  /** A copy lands in the zone of its original, which may differ from its kind's (#619). */
+  private async keepZone(original: Widget, created: Promise<Widget>): Promise<Widget> {
+    const widget = await created;
+    if (!original.zone) return widget;
+    await this.gateway.moveToZone(widget, original.zone);
+    return { ...widget, zone: original.zone };
   }
 
   /**
-   * Re-creates a deleted widget with its kind, size and configuration
+   * Re-creates a deleted widget with its kind, size, zone and configuration
    * (undo, #93): at its old position, or the first free spot if that is
    * taken now. The new widget has a new ID.
    */
@@ -104,7 +118,10 @@ export class DashboardUseCases {
     const rect = free
       ? { x: widget.x, y: widget.y, w: widget.w, h: widget.h }
       : findFreeSpot(others, widget.w, widget.h);
-    return this.gateway.addWidget(tab.id, widget.kind, rect, structuredClone(widget.config), widget.size);
+    return this.keepZone(
+      widget,
+      this.gateway.addWidget(tab.id, widget.kind, rect, structuredClone(widget.config), widget.size),
+    );
   }
 
   /** Sets the background image of a tab ("" = global background). */
@@ -125,6 +142,16 @@ export class DashboardUseCases {
     const problem = validateRules(clean);
     if (problem) throw new DashboardValidationError(problem);
     return this.gateway.setRules(tabId, clean);
+  }
+
+  /** Lays a tab out in zones or in the free grid again (#619). */
+  setZones(tabId: string, enabled: boolean): Promise<Tab> {
+    return this.gateway.setZones(tabId, enabled);
+  }
+
+  /** Moves a widget to a zone of its tab; undefined lets its kind decide again. */
+  moveToZone(widget: Widget, zone: Zone | undefined): Promise<void> {
+    return this.gateway.moveToZone(widget, zone);
   }
 
   /** Stores the phone layout of a tab (#92). */
@@ -149,6 +176,20 @@ export class DashboardUseCases {
 
   deleteTemplate(id: string): Promise<void> {
     return this.gateway.deleteTemplate(id);
+  }
+
+  /** The templates that ship with Waylight (#589); none without a server. */
+  async listBuiltinTemplates(): Promise<BuiltinTemplate[]> {
+    return (await this.gateway.listBuiltinTemplates?.()) ?? [];
+  }
+
+  /**
+   * Creates a tab from a built-in template, with its phone layout; the
+   * location fills its weather widgets.
+   */
+  createTabFromBuiltin(id: string, name: string, location?: TemplateLocation): Promise<Tab> {
+    if (!this.gateway.createTabFromBuiltin) return Promise.reject(new Error('templates need a server'));
+    return this.gateway.createTabFromBuiltin(id, name.trim(), location);
   }
 
   /** Creates a new tab from a template; the template name is used if name is empty. */

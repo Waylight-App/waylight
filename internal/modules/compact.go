@@ -3,6 +3,7 @@ package modules
 import (
 	"context"
 	"net/http"
+	"net/url"
 
 	"waylight/internal/shared/httpapi"
 	"waylight/internal/shared/kernel"
@@ -13,6 +14,15 @@ import (
 // same permission checks as the rest of the module's API.
 type CompactProvider interface {
 	CompactState(ctx context.Context) (kernel.CompactState, error)
+}
+
+// CompactParamProvider is implemented by modules whose compact state
+// depends on the widget's configuration (#614), such as the one device of a
+// smart home tile. The platform passes the query of the compact endpoint;
+// CompactParams names the parameters a client may send.
+type CompactParamProvider interface {
+	CompactStateFor(ctx context.Context, params url.Values) (kernel.CompactState, error)
+	CompactParams() []string
 }
 
 // CompactRoute is the pattern of a module's compact state endpoint.
@@ -30,13 +40,26 @@ func CompactHandler(p CompactProvider) http.HandlerFunc {
 	}
 }
 
+// CompactParamHandler answers GET /api/<module>/compact?<params> with the
+// provider's state for those parameters.
+func CompactParamHandler(p CompactParamProvider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		state, err := p.CompactStateFor(r.Context(), r.URL.Query())
+		if err != nil {
+			httpapi.WriteDomainError(w, r, err)
+			return
+		}
+		httpapi.WriteJSON(w, http.StatusOK, NewCompactResponse(state))
+	}
+}
+
 // NewCompactResponse converts a compact state into its DTO.
 func NewCompactResponse(s kernel.CompactState) CompactResponse {
 	level := s.Level
 	if level == "" {
 		level = kernel.CompactNone
 	}
-	res := CompactResponse{Title: compactText(s.Title), Level: string(level), Count: s.Count, UpdatedAt: s.UpdatedAt}
+	res := CompactResponse{Title: compactText(s.Title), Level: string(level), Count: s.Count, UpdatedAt: s.UpdatedAt, Empty: s.Empty}
 	if s.Detail.Template != "" {
 		d := compactText(s.Detail)
 		res.Detail = &d

@@ -76,6 +76,10 @@ type CompactState struct {
 	// Action is the one primary action of the compact view (#598); nil when
 	// the widget offers none.
 	Action *CompactAction
+	// Empty says the widget has nothing to show (no upcoming events, no
+	// habits, nothing to do). Zoned dashboards hide such widgets instead of
+	// showing an empty card (#619); the title still reads well on its own.
+	Empty bool
 }
 
 // CompactAction is a request the client sends when the action is used, so

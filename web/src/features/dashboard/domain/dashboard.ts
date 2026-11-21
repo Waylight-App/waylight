@@ -3,6 +3,7 @@ import type { WidgetCategory } from './catalog';
 import { t } from '../../../shared/i18n';
 import type { LayoutItem } from './layout';
 import type { MobileItem } from './mobile';
+import type { Zone } from './zones';
 
 /** Opaque widget configuration owned by the widget's feature. */
 export type WidgetConfig = Record<string, unknown>;
@@ -12,6 +13,8 @@ export interface Widget extends LayoutItem {
   tabId: string;
   kind: string;
   config: WidgetConfig;
+  /** Zone on a zoned tab (#619); undefined while it follows the kind. */
+  zone?: Zone;
 }
 
 /** A dashboard tab with its widgets. */
@@ -30,6 +33,8 @@ export interface Tab {
   mobileCustom: boolean;
   /** False for a team tab someone shared with the viewer (#295): read-only. */
   mine: boolean;
+  /** Laid out in zones instead of the free grid (#619). */
+  zoned: boolean;
 }
 
 /**
@@ -109,6 +114,33 @@ export interface Dashboard {
 }
 
 /** A saved tab layout new tabs can be created from. */
+/** A template that ships with Waylight (#589). */
+export interface BuiltinTemplate {
+  id: string;
+  /** English title; clients show the translated one by id. */
+  title: string;
+  /** What the onboarding asks before applying it. */
+  needs: 'location'[];
+  /** Widgets with their cells, for the layout preview. */
+  widgets: { kind: string; x: number; y: number; w: number; h: number }[];
+}
+
+/** A location for the weather widgets of a template. */
+export interface TemplateLocation {
+  lat: number;
+  lon: number;
+  label: string;
+  placeId?: string;
+}
+
+/**
+ * The grid rows a template's preview needs: the lowest bottom edge of its
+ * widgets, at least one.
+ */
+export function previewRows(t: Pick<BuiltinTemplate, 'widgets'>): number {
+  return Math.max(1, ...t.widgets.map((w) => w.y + w.h));
+}
+
 export interface TabTemplate {
   id: string;
   name: string;

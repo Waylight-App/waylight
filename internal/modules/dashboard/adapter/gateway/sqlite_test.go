@@ -32,11 +32,18 @@ func TestRepositoryRoundTrip(t *testing.T) {
 	moved, _ := domain.NewRect(0, 0, 12, 1)
 	got.Place(moved)
 	_ = got.Resize(domain.SizeStrip)
+	_ = got.MoveToZone(domain.ZoneToday)
 	if err := repo.SaveWidgetRects(ctx, []domain.Widget{got}); err != nil {
 		t.Fatal(err)
 	}
-	if again, _ := repo.GetWidget(ctx, "w1"); again.Rect() != moved || again.Size() != domain.SizeStrip {
-		t.Fatalf("rect or size not saved: %+v %q", again.Rect(), again.Size())
+	if again, _ := repo.GetWidget(ctx, "w1"); again.Rect() != moved || again.Size() != domain.SizeStrip || again.Zone() != domain.ZoneToday {
+		t.Fatalf("rect, size or zone not saved: %+v %q %q", again.Rect(), again.Size(), again.Zone())
+	}
+	if err := repo.UpdateTab(ctx, tab.WithZones(true)); err != nil {
+		t.Fatal(err)
+	}
+	if zoned, _ := repo.GetTab(ctx, "t1"); !zoned.Zoned() {
+		t.Fatal("zones not saved")
 	}
 	if err := repo.DeleteTab(ctx, "t1"); err != nil {
 		t.Fatal(err)

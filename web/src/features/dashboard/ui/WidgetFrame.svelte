@@ -2,6 +2,7 @@
   import { t } from '../../../shared/i18n';
   import type { Snippet } from 'svelte';
   import { WIDGET_SIZES, type WidgetSize } from '../domain/sizes';
+  import { ZONES, type Zone } from '../domain/zones';
 
   /** Props of the card that wraps every widget. */
   interface Props {
@@ -26,6 +27,9 @@
     /** Size of the tile (#595); with onsize the edit bar offers a size menu. */
     size?: WidgetSize;
     onsize?: (size: WidgetSize | undefined) => void;
+    /** Zone of the tile on a zoned tab (#619); with onzone the edit bar offers a zone menu. */
+    zone?: Zone;
+    onzone?: (zone: Zone) => void;
     /** Reports the size of the content box, so the view can fall back to compact. */
     onbox?: (width: number, height: number) => void;
     children: Snippet;
@@ -42,6 +46,8 @@
     onopen,
     size,
     onsize,
+    zone,
+    onzone,
     onbox,
     children,
   }: Props = $props();
@@ -84,6 +90,20 @@
               <option value="">{t('dashboard.size_free')}</option>
               {#each WIDGET_SIZES as s (s.size)}
                 <option value={s.size}>{t(`dashboard.mobile_size_${s.size}`)}</option>
+              {/each}
+            </select>
+          {/if}
+          {#if onzone}
+            <select
+              class="input size"
+              aria-label={t('dashboard.widget_zone', { name: title })}
+              title={t('dashboard.widget_zone', { name: title })}
+              value={zone}
+              onpointerdown={(e) => e.stopPropagation()}
+              onchange={(e) => onzone(e.currentTarget.value as Zone)}
+            >
+              {#each ZONES as z (z)}
+                <option value={z}>{t(`dashboard.zone_${z}`)}</option>
               {/each}
             </select>
           {/if}

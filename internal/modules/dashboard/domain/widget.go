@@ -21,6 +21,8 @@ type Widget struct {
 	config string
 	// size decides the web view (#595); empty for a freely sized tile.
 	size Size
+	// zone places the widget on a zoned tab (#619); empty = by kind.
+	zone Zone
 }
 
 // NewWidget creates a widget after validating kind and configuration.
@@ -85,4 +87,28 @@ func (w *Widget) Resize(s Size) error {
 	}
 	w.size = s
 	return nil
+}
+
+// Zone returns the zone the widget was moved to; empty while the client
+// places it by kind.
+func (w Widget) Zone() Zone { return w.zone }
+
+// MoveToZone moves the widget to a zone of a zoned tab (#619); empty hands
+// the choice back to the client's default by kind.
+func (w *Widget) MoveToZone(z Zone) error {
+	if !z.Valid() {
+		return errInvalidZone()
+	}
+	w.zone = z
+	return nil
+}
+
+// WithZone returns the widget restored with a stored zone. A zone this
+// version does not know falls back to the default by kind.
+func (w Widget) WithZone(z Zone) Widget {
+	if !z.Valid() {
+		z = ZoneAuto
+	}
+	w.zone = z
+	return w
 }

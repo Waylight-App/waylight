@@ -87,6 +87,7 @@
     selectTab: (id: string) => void;
     openWidgetSettings: (tabId: string, widgetId: string) => void;
     openAddWidget: (query?: string) => void;
+    addTab: (tab: Tab) => void;
     undo: () => void;
     redo: () => void;
   }>();
@@ -428,11 +429,36 @@
         !container.auth.guest &&
         info.modules.has('onboarding') &&
         (await container.onboarding.shouldShowTour())
-      )
-        setTimeout(startTour, 600);
+      ) {
+        // A fresh dashboard first offers the templates (#589); the tour
+        // follows once one is chosen or skipped.
+        if (!container.localMode && (await freshDashboard())) choosingTemplate = true;
+        else setTimeout(startTour, 600);
+      }
     } catch (err) {
       error = errorMessage(err);
     }
+  }
+
+  let choosingTemplate = $state(false);
+
+  /**
+   * Whether the dashboard is still as setup left it: one tab with at most
+   * the default widget. Sample data or an applied waylight.yaml count as
+   * already set up.
+   */
+  async function freshDashboard(): Promise<boolean> {
+    try {
+      const tabs = await container.dashboard.load();
+      return tabs.length <= 1 && tabs.every((tab) => tab.widgets.length <= 1);
+    } catch {
+      return false;
+    }
+  }
+
+  function templateChosen() {
+    choosingTemplate = false;
+    setTimeout(startTour, 600);
   }
 
   function startTour() {
@@ -694,6 +720,25 @@
 {#if shortcutHelp}
   {#await import('./ShortcutsDialog.svelte') then { default: ShortcutsDialog }}
     <ShortcutsDialog shortcuts={container.shortcuts.all()} onclose={() => (shortcutHelp = false)} />
+  {/await}
+{/if}
+
+{#if choosingTemplate}
+  {#await import('../features/dashboard/ui/TemplatePicker.svelte') then { default: TemplatePicker }}
+    <TemplatePicker
+      uc={container.dashboard}
+      widgetName={(kind) => definitionFor(kind)?.type.title ?? kind}
+      searchPlaces={modules?.has('weather')
+        ? async (q) =>
+            (await container.weather.searchPlaces(q)).map((p) => ({
+              label: [p.name, p.region, p.country].filter(Boolean).join(', '),
+              lat: p.lat,
+              lon: p.lon,
+            }))
+        : undefined}
+      oncreated={(tab) => dashboard?.addTab(tab)}
+      onclose={templateChosen}
+    />
   {/await}
 {/if}
 

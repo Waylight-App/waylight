@@ -10,6 +10,7 @@ export const serverMessages = {
   srv_560f31f8940f8cfc: "Rules need weekdays 0–6, times like 07:30 and networks like 192.168.178.0/24.",
   srv_0d5b9b677899722e: "The height must be between 1 and 24 rows.",
   srv_fd5437e3a5a60614: "The last tab cannot be deleted.",
+  srv_2b0de21ed819b8f8: "The location is not valid.",
   srv_3364239a85507862: "The new order must contain every tab exactly once.",
   srv_088ff184c130f97e: "The row is out of range.",
   srv_015f5dd8d336931d: "The size must be small, medium, large or strip.",
@@ -25,6 +26,7 @@ export const serverMessages = {
   srv_fbdc8d1ab5c933c9: "The widget must fit into the 12-column grid.",
   srv_a164605f887b18d7: "The widget type is invalid.",
   srv_9dfec97d8d360b86: "The width must be between 1 and 12 columns.",
+  srv_c4a72fe92b6c1f4a: "The zone must be today, mine or system.",
   srv_63543557e19be101: "This widget type is not available.",
 } as const;
 

@@ -63,17 +63,19 @@ size, so existing dashboards keep their look.
 Some compact views carry one quick action next to the short state, so the
 most common step needs no panel: habits tick off the next habit due today
 and to-dos tick off the most urgent one (overdue first, then the earliest due
-date). The focus timer offers **Start** or **Pause** and shows the running
-phase as *Focus · 12:40*; the timer is kept per account on the server, so
-the full widget, the compact view and your other devices show the same one.
-The button gives feedback at once; when the server refuses, its
+date). A smart home tile with one device shows its state and turns it on or
+off (or runs a button, script or scene) when actions are enabled for it with
+`SMARTHOME_ACTIONS_ENTITIES`. The focus timer offers **Start** or **Pause**
+and shows the running phase as *Focus · 12:40*; the timer is kept per
+account on the server, so the full widget, the compact view and your other
+devices show the same one. The button gives feedback at once; when the server refuses, its
 message is shown and nothing changes. Guests and kiosk displays do not see
 quick actions.
 
 Compact views exist for services and the status overview (*11 of 12
 running*, and which service is down), the backup status, drive health, the
-calendar (the next event), to-dos (the built-in list), habits and the focus
-timer. Widgets whose content is the point, such as the clock, bookmarks or
+calendar (the next event), to-dos (the built-in list), habits, the focus
+timer and smart home tiles with one device. Widgets whose content is the point, such as the clock, bookmarks or
 notes, show their full view at every size.
 
 You can put the same kind of widget on a tab more than once, for example two
@@ -94,6 +96,32 @@ In edit mode you can:
 - move tabs left and right, rename and delete them.
 
 `1` to `9` switch to the first nine tabs.
+
+## Templates
+
+On the first sign-in, while the dashboard is still empty, Waylight asks
+**What do you use Waylight for?** and offers four templates, each with a
+small preview of its layout and the widgets it contains:
+
+| Template | Widgets |
+| --- | --- |
+| Family | Calendar, weather, shopping list, waste collection, birthdays |
+| Homelab | Services, containers, backups, drive health, bookmarks |
+| Work | Today's events, to-dos, focus timer, mail, notes |
+| Wall tablet | Large clock, weather, calendar, departures |
+
+A template creates a tab with its widgets placed, including the phone
+layout. Templates with a weather widget ask for a location first (search or
+*Use my location*; *Set it up later* skips it). Widgets that need a service
+or a setting show *Set up* or what is missing. *Start with an empty
+dashboard* closes the question. Kiosk mode and night dimming for a wall
+tablet are set on the kiosk display itself.
+
+The same templates appear when you create a tab (**+ Tab**), above your own
+saved templates. They are YAML files in the format of the `dashboard`
+section of [waylight.yaml](config-as-code.md), one tab each, under
+`internal/modules/dashboard/adapter/configfile/templates/`; the tests check
+that each one parses and only uses widgets the server knows.
 
 ## Opening a tab by default
 
@@ -146,7 +174,23 @@ drives healthy*. **Collapse** folds the status widgets into that line and
 **Show all** brings them back. The choice is remembered per tab in this
 browser; in edit mode all widgets are shown.
 
-Zones that group a tab into *Today*, *My things* and *System* follow in #619.
+## Zones
+
+A tab can be laid out in three zones instead of the free grid: **Today**
+(clock, weather, calendar, waste collection, to-dos), **My things** and
+**System** (server and network widgets). Switch them on in edit mode with
+**Zones** in the bar at the bottom; the setting is stored with the tab.
+
+Each widget falls into a zone by its kind. To put it somewhere else, pick
+another zone in the menu next to its size in edit mode. Within a zone the
+widgets keep their size and follow the order they had in the free grid, so
+switching zones off again brings back the old layout unchanged. On phones the
+zones stack, one widget below the other.
+
+Only admins see the System zone; members and guests see Today and My things.
+Outside edit mode a zoned tab stays quiet: widgets with nothing to show, such
+as a calendar without upcoming events or a to-do list with nothing open, are
+left out until there is something to show again.
 
 ## Widget status
 
@@ -171,7 +215,10 @@ A widget whose service is not connected yet shows one sentence and a
 **Set up** button. The setup runs inside the widget in three steps:
 
 1. **Address.** Enter where the service runs, for example
-   `http://192.168.178.20:2283` for Immich.
+   `http://192.168.178.20:2283` for Immich. For admins Waylight first looks
+   for the service in the home network and offers what it found
+   ("Immich found at http://172.18.0.5:2283"); entering an address by hand
+   always works.
 2. **Credential.** The widget lists the steps in the service's own words,
    for example *Account Settings → API Keys → New API Key* in Immich, and
    *Open Immich* takes you to that page in a new tab. Paste the key or token.
@@ -184,12 +231,27 @@ When the check fails, the message says why and what to try: the key was not
 accepted, nothing answers at the address, something other than the expected
 service answers there, or the certificate is not trusted.
 
-The assistant exists for Immich, Home Assistant and the Nextcloud calendar
-so far. For the calendar you enter the Nextcloud address, your user name and
+The assistant exists for Immich, Home Assistant, the Nextcloud calendar,
+Nextcloud, Grafana and Proxmox VE so far. Proxmox usually runs with a
+self-signed certificate; pin it under Settings → Proxmox VE, the assistant
+does not ask for the fingerprint. For the calendar you enter the Nextcloud address, your user name and
 an app password; Waylight finds your calendars itself. Immich and Home
 Assistant are set up for the whole instance, so only admins see *Set up*
 there; every account can connect its own calendar. The settings pages stay
 the place to change a connection later.
+
+### How services are found
+
+Waylight looks only when a setup opens, never in the background. It checks
+Docker containers whose image belongs to the service (when the docker
+module can read the Docker API), the names the service usually has in a
+home network such as `homeassistant.local`, and the service's default port
+on the gateway. Only private addresses (RFC 1918, ULA) that `ALLOWED_CIDRS`
+also allows are tried, on a fixed port per service and at most twelve
+requests per search; ports are never scanned. Each address must answer like
+the service (Immich's ping, Home Assistant's manifest, Nextcloud's
+`status.php`) before it is offered. Results are kept for three minutes and
+not stored. Discovery in the local network by mDNS is not part of this yet.
 
 ## What needs your attention
 

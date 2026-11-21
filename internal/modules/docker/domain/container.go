@@ -30,6 +30,16 @@ type Container struct {
 	Created time.Time
 	// Labels are the container labels (used by service discovery, #78).
 	Labels map[string]string
+	// Ports are the TCP ports the container exposes, and Addresses its IPs
+	// in the Docker networks; the widget setup finds services by them (#590).
+	Ports     []Port
+	Addresses []string
+}
+
+// Port is an exposed TCP port; Public is 0 when it is not published on the
+// host.
+type Port struct {
+	Private, Public int
 }
 
 // Health derives the health check state from the status text.

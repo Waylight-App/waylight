@@ -88,6 +88,7 @@ func (uc *manageTemplates) CreateTab(ctx context.Context, templateID, name strin
 		}
 		// An unknown size leaves the tile freely sized, like a stale kind above.
 		_ = w.Resize(tw.Size)
+		_ = w.MoveToZone(tw.Zone)
 		widgets = append(widgets, w)
 	}
 	if err := uc.deps.Templates.CreateTabWithWidgets(ctx, tab, widgets); err != nil {

@@ -24,4 +24,24 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_2ef3700ca8a09eac: 'Die Entität existiert nicht.',
   // This entity has no action; only switches and buttons can be used.
   srv_a6715a41424b56f8: 'Diese Entität hat keine Aktion; nur Schalter und Taster lassen sich bedienen.',
+  // Choose one entity for the compact view.
+  srv_ea2866d2e8547dcb: 'Wähle eine Entität für die kompakte Ansicht.',
+  // Off
+  srv_302cbb19bf9a174a: 'Aus',
+  // On
+  srv_091d5807b5b33550: 'An',
+  // Run
+  srv_9fbbc819fe7e66aa: 'Ausführen',
+  // Turn off
+  srv_de736af382a428ab: 'Ausschalten',
+  // Turn on
+  srv_6bb329b249dd1ee7: 'Einschalten',
+  // Unavailable
+  srv_43e9aef7aa01fca9: 'Nicht verfügbar',
+  // {name}
+  srv_393ba5b6e23583b4: '{name}',
+  // {state}
+  srv_c7c0c20a29ee6976: '{state}',
+  // {state} {unit}
+  srv_4f14b24d395337a4: '{state} {unit}',
 };

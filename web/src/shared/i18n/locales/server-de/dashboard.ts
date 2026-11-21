@@ -6,6 +6,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
+  // The location is not valid.
+  srv_2b0de21ed819b8f8: 'Der Ort ist ungültig.',
   // At most 10 rules per tab are supported.
   srv_9c62e19aa7e4b027: 'Pro Tab werden höchstens 10 Regeln unterstützt.',
   // At most 50 templates can be stored.
@@ -46,6 +48,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_a164605f887b18d7: 'Der Widget-Typ ist ungültig.',
   // The width must be between 1 and 12 columns.
   srv_9dfec97d8d360b86: 'Die Breite muss zwischen 1 und 12 Spalten liegen.',
+  // The zone must be today, mine or system.
+  srv_c4a72fe92b6c1f4a: 'Der Bereich muss today, mine oder system sein.',
   // This widget type is not available.
   srv_63543557e19be101: 'Dieser Widget-Typ ist nicht verfügbar.',
   // A widget config must be a mapping of settings.

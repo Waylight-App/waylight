@@ -32,6 +32,8 @@
   import TabRulesDialog from './TabRulesDialog.svelte';
   import TextPrompt from './TextPrompt.svelte';
   import WidgetFrame from './WidgetFrame.svelte';
+  import ZoneLayout from './ZoneLayout.svelte';
+  import { groupByZone, type Zone, zoneOf } from '../domain/zones';
 
   /** Props of the dashboard page. */
   interface Props {
@@ -88,6 +90,10 @@
      * they are folded into the summary, `view` shows a widget.
      */
     overview?: Snippet<[Overview]>;
+    /** Whether the viewer sees the System zone of zoned tabs; admins only (#619). */
+    systemZone?: boolean;
+    /** Whether a widget has nothing to show; zoned tabs hide it outside edit mode (#619). */
+    emptyWidget?: (widget: Widget) => boolean;
   }
 
   /** What the overview lines above the grid get. */
@@ -120,6 +126,8 @@
     compactExample,
     statusWidget = () => false,
     overview,
+    systemZone = true,
+    emptyWidget = () => false,
   }: Props = $props();
 
   // Tabs whose status widgets are folded into the system summary (#593).
@@ -256,6 +264,25 @@
     });
   }
   const titles = $derived(new Map(widgetTypes.map((t) => [t.kind, t.title])));
+  const categories = $derived(new Map(widgetTypes.map((t) => [t.kind, t.category])));
+  const categoryOf = (kind: string) => categories.get(kind);
+
+  /** Switches the zone layout of a tab on or off (#619). */
+  function toggleZones(tab: Tab) {
+    run(async () => {
+      const saved = await uc.setZones(tab.id, !tab.zoned);
+      const current = tabOf(tab.id);
+      if (current) replaceTab({ ...current, zoned: saved.zoned });
+    });
+  }
+
+  /** Moves a widget to another zone of its tab (#619). */
+  function moveToZone(widget: Widget, zone: Zone) {
+    const tab = tabOf(widget.tabId);
+    if (!tab) return;
+    replaceTab({ ...tab, widgets: tab.widgets.map((w) => (w.id === widget.id ? { ...w, zone } : w)) });
+    run(() => uc.moveToZone(widget, zone));
+  }
   const available = $derived(new Set(widgetTypes.map((t) => t.kind)));
 
   function readStored(storage: () => Storage, key: string): string {
@@ -285,6 +312,12 @@
     if (!widget) return;
     select(tabId);
     if (hasSettings(widget.kind)) dialog = { kind: 'settings', widget };
+  }
+
+  /** Shows a tab created outside the view, e.g. from a template on first start (#589). */
+  export function addTab(tab: Tab) {
+    tabs = [...tabs, tab];
+    select(tab.id);
   }
 
   /** Selects the n-th tab (0-based), e.g. from the 1–9 shortcuts (#95). */
@@ -610,7 +643,14 @@
   {#if active}
     {@const status = active.widgets.filter((w) => available.has(w.kind) && statusWidget(w))}
     {@const folded = collapsedTabs.has(active.id) && !editing && status.length > 0}
-    {@const visible = active.widgets.filter((w) => available.has(w.kind) && !(folded && statusWidget(w)))}
+    {@const zoned = active.zoned}
+    {@const visible = active.widgets.filter(
+      (w) =>
+        available.has(w.kind) &&
+        !(folded && statusWidget(w)) &&
+        // The quiet look of zones (#619): a widget with nothing to show is left out.
+        !(zoned && !editing && emptyWidget(w)),
+    )}
     {#if overview && !editing}
       {@const tab = active}
       {@render overview({
@@ -639,6 +679,8 @@
         onopen={view === 'compact' && detailPanel ? (opener) => (detail = { widget, opener }) : undefined}
         size={widget.size}
         onsize={sizable ? (s) => setSize(widget, s) : undefined}
+        zone={zoned ? zoneOf(widget, categoryOf(widget.kind)) : undefined}
+        onzone={zoned ? (z) => moveToZone(widget, z) : undefined}
         onbox={(w, h) => onbox(widget.id, w, h)}
         onsettings={hasSettings(widget.kind) ? () => (dialog = { kind: 'settings', widget }) : undefined}
         ondelete={() => removeWidget(widget)}
@@ -651,7 +693,28 @@
         {/if}
       </WidgetFrame>
     {/snippet}
-    {#if phone}
+    {#if zoned}
+      {@const tab = active}
+      {@const phoneLayout = phone
+        ? tab.mobileCustom
+          ? resolveMobile(tab.mobile, visible)
+          : deriveMobile(visible)
+        : []}
+      {@const phoneSizes = new Map(phoneLayout.map((e) => [e.id, e.size]))}
+      <ZoneLayout
+        groups={groupByZone(visible, categoryOf, { system: systemZone, keepEmpty: editingTab })}
+        editing={editingTab}
+      >
+        {#snippet item(widget: Widget)}
+          {@render frame(
+            widget,
+            { onpointerdown: () => {} },
+            phone ? phoneSizes.get(widget.id) : widget.size,
+            !phone,
+          )}
+        {/snippet}
+      </ZoneLayout>
+    {:else if phone}
       {@const tab = active}
       {@const layout = tab.mobileCustom ? resolveMobile(tab.mobile, visible) : deriveMobile(visible)}
       {@const phoneSizes = new Map(layout.map((e) => [e.id, e.size]))}
@@ -700,6 +763,13 @@
           {@const tab = active}
           <button class="btn" type="button" onclick={() => openBackground(tab)}
             >{t('dashboard.background_button')}</button
+          >
+          <button
+            class="btn"
+            type="button"
+            aria-pressed={tab.zoned}
+            title={t('dashboard.zones_hint')}
+            onclick={() => toggleZones(tab)}>{t('dashboard.zones_button')}</button
           >
         {/if}
         <button class="btn" type="button" disabled={!canUndo} onclick={undo} aria-keyshortcuts="Control+Z"

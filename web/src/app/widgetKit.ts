@@ -28,10 +28,11 @@ export interface WidgetDefinition {
   /** Settings form; it additionally receives an `onsave(config)` prop. */
   settings?: Renderer;
   /**
-   * The module whose compact state (GET /api/<module>/compact, #597) the
-   * widget's compact view shows in small and strip tiles (#595), or
-   * undefined when this configuration has none. Widgets without it keep
-   * their full view at every size.
+   * The source of the compact state (GET /api/<module>/compact, #597) the
+   * widget's compact view shows in small and strip tiles (#595): the module,
+   * with a query when the state depends on the configuration (compactSource,
+   * #614), or undefined when this configuration has none. Widgets without
+   * it keep their full view at every size.
    */
   compact?: (config: Config) => string | undefined;
   /** Example of the compact view for the size previews of the picker (#596). */
