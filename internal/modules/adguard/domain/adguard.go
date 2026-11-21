@@ -19,6 +19,14 @@ const (
 // Providers lists every supported provider.
 var Providers = []Provider{ProviderAdGuard, ProviderPiHole}
 
+// Title is the product name of the provider.
+func (p Provider) Title() string {
+	if p == ProviderPiHole {
+		return "Pi-hole"
+	}
+	return "AdGuard Home"
+}
+
 // ParseProvider maps a request value to a provider; empty means AdGuard
 // Home, which keeps widgets and API clients from before #83 working.
 func ParseProvider(raw string) (Provider, error) {

@@ -5,7 +5,6 @@ export const serverMessages = {
   srv_80cd4d1600527c40: "A Sonarr, Radarr or Prowlarr instance does not answer.",
   srv_e087fafa20933ecf: "At most {max} instances are supported.",
   srv_35314e09732db39d: "Choose Sonarr, Radarr or Prowlarr.",
-  srv_b4411af5f4818c54: "Could not connect to {app}: {detail}",
   srv_e7b97389eba1653e: "No Sonarr, Radarr or Prowlarr instance is configured yet.",
   srv_7a0dfb1a22ec0b96: "The API key is required (Settings → General).",
   srv_f850721911b29bc6: "The URL must look like http://192.168.1.2:8989.",

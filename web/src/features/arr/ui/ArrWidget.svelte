@@ -1,4 +1,6 @@
 <script lang="ts">
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { arrSetup } from './arrSetup';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -23,24 +25,27 @@
   const day = (d: Date) =>
     d.toLocaleDateString(intlLocale(), { weekday: 'short', day: 'numeric', month: 'short' });
 
-  $effect(() =>
-    poll(
-      () =>
-        arr
-          .overview()
-          .then((o) => ((overview = o), (error = ''), (unconfigured = false)))
-          .catch((err) => {
-            unconfigured = err instanceof ApiError && err.status === 404;
-            error = errorMessage(err);
-            throw err;
-          }),
-      POLL_MS,
-    ),
-  );
+  const load = () =>
+    arr
+      .overview()
+      .then((o) => ((overview = o), (error = ''), (unconfigured = false)))
+      .catch((err) => {
+        unconfigured = err instanceof ApiError && err.status === 404;
+        error = errorMessage(err);
+        throw err;
+      });
+  $effect(() => poll(load, POLL_MS));
+  // svelte-ignore state_referenced_locally
+  const setup = arrSetup(arr);
 </script>
 
 {#if unconfigured}
-  <p class="muted">{t('arr.connect_under_settings')}</p>
+  <SetupInPlace
+    text={t('arr.connect_under_settings')}
+    descriptor={setup}
+    instance
+    ondone={() => void load().catch(() => undefined)}
+  />
 {:else if error && !overview}
   <p class="error">{error}</p>
 {:else if overview}

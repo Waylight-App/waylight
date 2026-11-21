@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"waylight/internal/modules/adguard/domain"
+	"waylight/internal/shared/kernel"
 )
 
 //go:embed migrations/*.sql
@@ -159,11 +160,25 @@ func (a *API) get(ctx context.Context, s domain.Settings, path string, dst any) 
 		return fmt.Errorf("request failed: %w", err)
 	}
 	defer res.Body.Close()
-	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("AdGuard Home answered %s", res.Status)
+	if err := statusError(res); err != nil {
+		return err
 	}
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxResponseBytes)).Decode(dst); err != nil {
-		return fmt.Errorf("unexpected response from AdGuard Home: %w", err)
+		return fmt.Errorf("%w: %w", kernel.ErrTargetWrongService, err)
 	}
 	return nil
+}
+
+// statusError maps an AdGuard Home answer other than 200 to the target
+// errors the setup assistant explains (#618).
+func statusError(res *http.Response) error {
+	switch res.StatusCode {
+	case http.StatusOK:
+		return nil
+	case http.StatusUnauthorized, http.StatusForbidden:
+		return fmt.Errorf("%w: AdGuard Home answered %s", kernel.ErrTargetAuth, res.Status)
+	case http.StatusNotFound:
+		return fmt.Errorf("%w: AdGuard Home answered %s", kernel.ErrTargetWrongService, res.Status)
+	}
+	return fmt.Errorf("AdGuard Home answered %s", res.Status)
 }

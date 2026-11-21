@@ -5,7 +5,9 @@
   import {
     addressOf,
     type FoundService,
+    initialValues,
     type SetupDescriptor,
+    type SetupField,
     type SetupPreview,
     type SetupStage,
     stageComplete,
@@ -25,7 +27,8 @@
 
   type Stage = SetupStage | 'done';
   let stage = $state<Stage>('address');
-  let values = $state<Record<string, string>>({});
+  // svelte-ignore state_referenced_locally
+  let values = $state<Record<string, string>>(initialValues(d));
   let error = $state('');
   let checking = $state(false);
   let preview = $state<SetupPreview | null>(null);
@@ -34,7 +37,9 @@
 
   const index = $derived(stage === 'address' ? 1 : stage === 'credential' ? 2 : 3);
   const fieldsOf = (s: SetupStage) => d.fields.filter((f) => f.stage === s);
-  const link = $derived(stage === 'credential' ? (d.credentialPage?.(addressOf(d, values)) ?? null) : null);
+  const link = $derived(
+    stage === 'credential' ? (d.credentialPage?.(addressOf(d, values), values) ?? null) : null,
+  );
 
   // Services found in the home network are offered first (#590); the
   // assistant works the same without them.
@@ -78,6 +83,26 @@
   }
 </script>
 
+{#snippet input(f: SetupField)}
+  <label class="field">
+    <span>{t(f.label)}</span>
+    {#if f.type === 'choice'}
+      <select class="input" bind:value={values[f.key]} required>
+        {#each f.options ?? [] as o (o.value)}<option value={o.value}>{o.label}</option>{/each}
+      </select>
+    {:else}
+      <input
+        class="input"
+        type={f.type}
+        placeholder={f.placeholder}
+        autocomplete={f.autocomplete ?? (f.type === 'password' ? 'new-password' : 'off')}
+        bind:value={values[f.key]}
+        required={!f.optional}
+      />
+    {/if}
+  </label>
+{/snippet}
+
 <section class="setup" aria-labelledby="setup-heading">
   <p class="muted step">{t('setup.step', { n: index, total: 3 })}</p>
   <h4 id="setup-heading" tabindex="-1" bind:this={heading}>
@@ -104,19 +129,7 @@
       </ul>
     {/if}
     <form onsubmit={next}>
-      {#each fieldsOf('address') as f (f.key)}
-        <label class="field">
-          <span>{t(f.label)}</span>
-          <input
-            class="input"
-            type={f.type}
-            placeholder={f.placeholder}
-            autocomplete={f.autocomplete ?? 'off'}
-            bind:value={values[f.key]}
-            required
-          />
-        </label>
-      {/each}
+      {#each fieldsOf('address') as f (f.key)}{@render input(f)}{/each}
       <button class="btn btn-primary" type="submit">{t('setup.next')}</button>
     </form>
   {:else if stage === 'credential'}
@@ -129,19 +142,7 @@
       >
     {/if}
     <form onsubmit={check}>
-      {#each fieldsOf('credential') as f (f.key)}
-        <label class="field">
-          <span>{t(f.label)}</span>
-          <input
-            class="input"
-            type={f.type}
-            placeholder={f.placeholder}
-            autocomplete={f.autocomplete ?? (f.type === 'password' ? 'new-password' : 'off')}
-            bind:value={values[f.key]}
-            required
-          />
-        </label>
-      {/each}
+      {#each fieldsOf('credential') as f (f.key)}{@render input(f)}{/each}
       {#if error}<p class="error" role="alert">{error}</p>{/if}
       <div class="actions">
         <button class="btn" type="button" onclick={() => go('address')}>{t('setup.back')}</button>

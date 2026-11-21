@@ -34,7 +34,7 @@ func NewPiHole(client *http.Client) *PiHole {
 }
 
 // errPassword is reported when the login fails.
-var errPassword = errors.New("the password was rejected by Pi-hole")
+var errPassword = fmt.Errorf("%w: the password was rejected by Pi-hole", kernel.ErrTargetAuth)
 
 // errUnauthorized marks a 401 answer that a fresh session may fix.
 var errUnauthorized = fmt.Errorf("%w: Pi-hole answered 401", kernel.ErrTargetAuth)
@@ -195,11 +195,13 @@ func (p *PiHole) do(req *http.Request, dst any) error {
 	switch {
 	case res.StatusCode == http.StatusUnauthorized:
 		return errUnauthorized
+	case res.StatusCode == http.StatusNotFound:
+		return fmt.Errorf("%w: Pi-hole answered %s", kernel.ErrTargetWrongService, res.Status)
 	case res.StatusCode != http.StatusOK:
 		return fmt.Errorf("unexpected answer from Pi-hole: %s", res.Status)
 	}
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxResponseBytes)).Decode(dst); err != nil {
-		return fmt.Errorf("unexpected response from Pi-hole (is it version 6 or newer?): %w", err)
+		return fmt.Errorf("%w: is it Pi-hole 6 or newer? %w", kernel.ErrTargetWrongService, err)
 	}
 	return nil
 }

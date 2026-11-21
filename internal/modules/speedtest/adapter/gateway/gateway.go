@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"waylight/internal/modules/speedtest/domain"
+	"waylight/internal/shared/kernel"
 )
 
 //go:embed migrations/*.sql
@@ -131,14 +132,20 @@ func (a *API) Results(ctx context.Context, s domain.Settings, since time.Time) (
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
 	defer res.Body.Close()
-	if res.StatusCode != http.StatusOK {
+	switch res.StatusCode {
+	case http.StatusOK:
+	case http.StatusUnauthorized, http.StatusForbidden:
+		return nil, fmt.Errorf("%w: Speedtest Tracker answered %s", kernel.ErrTargetAuth, res.Status)
+	case http.StatusNotFound:
+		return nil, fmt.Errorf("%w: Speedtest Tracker answered %s", kernel.ErrTargetWrongService, res.Status)
+	default:
 		return nil, fmt.Errorf("Speedtest Tracker answered %s", res.Status) //nolint:staticcheck // product name
 	}
 	var payload struct {
 		Data []result `json:"data"`
 	}
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxResponseBytes)).Decode(&payload); err != nil {
-		return nil, fmt.Errorf("unexpected response from Speedtest Tracker: %w", err)
+		return nil, fmt.Errorf("%w: %w", kernel.ErrTargetWrongService, err)
 	}
 	out := make([]domain.Measurement, 0, len(payload.Data))
 	for _, r := range payload.Data {

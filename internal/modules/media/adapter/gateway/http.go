@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"waylight/internal/modules/media/domain"
+	"waylight/internal/shared/kernel"
 )
 
 const (
@@ -25,7 +26,7 @@ func getJSON(ctx context.Context, client *http.Client, s domain.Settings, path s
 	}
 	defer res.Body.Close()
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxJSONBytes)).Decode(dst); err != nil {
-		return fmt.Errorf("unexpected response from the media server: %w", err)
+		return fmt.Errorf("%w: %w", kernel.ErrTargetWrongService, err)
 	}
 	return nil
 }
@@ -67,7 +68,10 @@ func get(ctx context.Context, client *http.Client, url string, auth func(*http.R
 		return res, nil
 	case http.StatusUnauthorized, http.StatusForbidden:
 		_ = res.Body.Close()
-		return nil, fmt.Errorf("the API key or token was rejected (%s)", res.Status)
+		return nil, fmt.Errorf("%w: the API key or token was rejected (%s)", kernel.ErrTargetAuth, res.Status)
+	case http.StatusNotFound:
+		_ = res.Body.Close()
+		return nil, fmt.Errorf("%w: %s", kernel.ErrTargetWrongService, res.Status)
 	default:
 		_ = res.Body.Close()
 		return nil, fmt.Errorf("unexpected answer from the media server: %s", res.Status)

@@ -12,8 +12,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_e087fafa20933ecf: 'Höchstens {max} Instanzen werden unterstützt.',
   // Choose Sonarr, Radarr or Prowlarr.
   srv_35314e09732db39d: 'Wähle Sonarr, Radarr oder Prowlarr.',
-  // Could not connect to {app}: {detail}
-  srv_b4411af5f4818c54: 'Verbindung zu {app} fehlgeschlagen: {detail}',
   // No Sonarr, Radarr or Prowlarr instance is configured yet.
   srv_e7b97389eba1653e: 'Noch keine Sonarr-, Radarr- oder Prowlarr-Instanz eingerichtet.',
   // The API key is required (Settings → General).
