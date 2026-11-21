@@ -3,6 +3,8 @@ package weather
 import (
 	"context"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	"waylight/internal/modules"
@@ -68,3 +70,21 @@ func (m *Module) Jobs() []modules.Job {
 func (m *Module) Warnings(ctx context.Context, lat, lon float64) ([]domain.Warning, error) {
 	return m.warnings.Warnings(ctx, lat, lon)
 }
+
+// CompactStateFor implements modules.CompactParamProvider (#641): the
+// current weather at the widget's location, given as ?lat=&lon=.
+func (m *Module) CompactStateFor(ctx context.Context, params url.Values) (kernel.CompactState, error) {
+	lat, errLat := strconv.ParseFloat(params.Get("lat"), 64)
+	lon, errLon := strconv.ParseFloat(params.Get("lon"), 64)
+	if errLat != nil || errLon != nil {
+		return kernel.CompactState{}, kernel.NewValidationError("lat", "Latitude and longitude are required.")
+	}
+	f, err := m.uc.GetForecast(ctx, usecase.ForecastRequest{Lat: lat, Lon: lon})
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	return usecase.CompactState(f), nil
+}
+
+// CompactParams implements modules.CompactParamProvider.
+func (m *Module) CompactParams() []string { return []string{"lat", "lon"} }

@@ -73,7 +73,11 @@ Compact views exist for services and the status overview (*11 of 12
 running*, and which service is down), the backup status, drive health, the
 calendar (the next event), to-dos (the built-in list), habits, the focus
 timer, smart home tiles with one device, Docker (running containers), parcels
-(on the way and arriving today) and the speed test (the latest measurement).
+(on the way and arriving today), the speed test (the latest measurement),
+Proxmox (running guests), the DNS filter (share of blocked queries),
+WireGuard (connected peers), the weather (temperature and sky at the
+widget's location) and electricity prices (the current price and when the
+cheapest hours begin).
 Widgets whose content is the point, such as the clock, bookmarks or
 notes, show their full view at every size.
 

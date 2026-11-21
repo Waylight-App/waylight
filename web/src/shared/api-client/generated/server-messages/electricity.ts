@@ -2,8 +2,14 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_f44c3b908996ef0f: "Cheap from {time}",
+  srv_5ae21e1163e76e98: "Cheap now",
+  srv_8ef85f0e320a5c28: "Cheap tomorrow from {time}",
   srv_0f6238acbb3eb2f8: "Choose a supported bidding zone (DE-LU or AT).",
   srv_0e1d3194c692037c: "No electricity prices were published for today yet.",
+  srv_46d62be6e252d98a: "No price for this hour",
+  srv_0096b59b55372fb3: "Prices could not be updated",
+  srv_d7cd175f61b1223d: "{price} ct now",
 } as const;
 
 /** Key of a backend message. */

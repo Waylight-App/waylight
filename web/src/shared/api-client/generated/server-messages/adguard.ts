@@ -2,12 +2,17 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_71fcd40efaa8ff27: "Blocking is off",
+  srv_43efb7d828a46638: "Blocking paused",
   srv_0c0b1a4d7e09267c: "Pause for 5, 30 or 60 minutes.",
   srv_6af65a6080fe6b52: "Pausing is switched off for this DNS filter. Allow it with DNS_PAUSE_PROVIDERS on the server.",
+  srv_c24326f62f32176b: "The DNS filter is not reachable",
   srv_4a327952321d8a3f: "The DNS filter is not reachable.",
   srv_fcbb5bbe636e4559: "This DNS filter is not configured yet.",
   srv_1a87cc7977ed4993: "Unknown DNS filter, use adguard or pihole.",
   srv_ed3a053401c9b56a: "Username and password are required.",
+  srv_15a7ef0c4caf3d1d: "{count} of {total} queries",
+  srv_f388457dcac53d65: "{percent} % blocked",
 } as const;
 
 /** Key of a backend message. */

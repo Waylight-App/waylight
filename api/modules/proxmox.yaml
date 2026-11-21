@@ -2,6 +2,12 @@ tags:
   - name: proxmox
 
 paths:
+  /api/proxmox/compact:
+    get:
+      tags: [proxmox]
+      summary: "Compact state of the widget (#641): running guests, with offline nodes as detail"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
   /api/proxmox/settings:
     get:
       tags: [proxmox]

@@ -82,4 +82,14 @@ func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus 
 	return modules.StatusOf(err, domain.ErrNotConfigured)
 }
 
+// CompactState implements modules.CompactProvider (#641): running guests
+// and whether a node or the API needs a look.
+func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
+	v, err := m.uc.Status(ctx)
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	return usecase.CompactState(v), nil
+}
+
 var errUnreachable = kernel.NewPublicError(kernel.ErrUnavailable, "Proxmox VE is not reachable.")

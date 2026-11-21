@@ -22,4 +22,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_3d3a9008e1d23718: 'Das Token-Secret ist erforderlich.',
   // Unknown action, use start or shutdown.
   srv_048731d99c865141: 'Unbekannte Aktion, verwende start oder shutdown.',
+  // Proxmox VE is not reachable
+  srv_310b2c277042df51: 'Proxmox VE ist nicht erreichbar',
+  // {offline} of {total} nodes offline
+  srv_d0a400a5e85d849b: '{offline} von {total} Knoten offline',
+  // {running} of {total} guests running
+  srv_4f02e7bfc777a185: '{running} von {total} Gästen laufen',
 };
