@@ -24,11 +24,21 @@ type TabScope interface {
 	// order and then top to bottom; tabs others share with it are left out
 	// because only their owner can change them (#599).
 	OwnWidgets(ctx context.Context) ([]OwnWidget, error)
+	// InstanceWidgets lists the widgets on every tab of the instance, of
+	// every account, for instance-wide lookups such as which widgets use a
+	// connection (#610). Mine marks the tabs of the account of ctx.
+	InstanceWidgets(ctx context.Context) ([]InstanceWidget, error)
 }
 
 // OwnWidget is a widget as OwnWidgets returns it.
 type OwnWidget struct {
 	ID, TabID, Kind, Config string
+}
+
+// InstanceWidget is a widget as InstanceWidgets returns it.
+type InstanceWidget struct {
+	OwnWidget
+	Mine bool
 }
 
 type tabScope struct{ deps Deps }
@@ -110,6 +120,31 @@ func (uc *tabScope) OwnWidgets(ctx context.Context) ([]OwnWidget, error) {
 				out = append(out, OwnWidget{ID: w.ID(), TabID: w.TabID(), Kind: w.Kind(), Config: w.Config()})
 			}
 		}
+	}
+	return out, nil
+}
+
+// InstanceWidgets implements TabScope. It reads as the system, which sees
+// every account's tabs; callers only pass on IDs, kinds and settings
+// fields they need, never tab titles of other accounts.
+func (uc *tabScope) InstanceWidgets(ctx context.Context) ([]InstanceWidget, error) {
+	p := kernel.PrincipalFrom(ctx)
+	sys := kernel.WithPrincipal(ctx, kernel.Principal{AccountID: kernel.SystemAccountID, Role: "system"})
+	tabs, err := uc.deps.Tabs.ListTabs(sys)
+	if err != nil {
+		return nil, fmt.Errorf("list tabs: %w", err)
+	}
+	widgets, err := uc.deps.Widgets.ListWidgets(sys)
+	if err != nil {
+		return nil, fmt.Errorf("list widgets: %w", err)
+	}
+	mine := map[string]bool{}
+	for _, t := range tabs {
+		mine[t.ID()] = t.Access().Mine(p)
+	}
+	out := make([]InstanceWidget, 0, len(widgets))
+	for _, w := range widgets {
+		out = append(out, InstanceWidget{OwnWidget: OwnWidget{ID: w.ID(), TabID: w.TabID(), Kind: w.Kind(), Config: w.Config()}, Mine: mine[w.TabID()]})
 	}
 	return out, nil
 }

@@ -150,6 +150,7 @@ func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
 func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/integrations/services", m.handlers.Services)
 	r.Protected("GET /api/integrations/connections", m.handlers.List)
+	r.Protected("GET /api/integrations/choices", m.handlers.Choices)
 	r.Protected("POST /api/integrations/connections/{id}/check", m.handlers.Check)
 	r.Protected("POST /api/integrations/connections", m.handlers.Add)
 	r.Protected("PUT /api/integrations/connections/{id}", m.handlers.Update)

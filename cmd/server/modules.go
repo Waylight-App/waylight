@@ -658,23 +658,28 @@ func placeWidgets(dash *dashboard.Module) places.Widgets {
 	}
 }
 
-// connectionWidgets adapts the dashboard's widgets on the account's own tabs
+// connectionWidgets adapts the widgets on every tab of the instance
 // to the integrations module (#610), so neither module imports the other.
 func connectionWidgets(dash *dashboard.Module) integrations.Widgets {
 	return func(ctx context.Context) ([]integrationsuc.Widget, error) {
-		own, err := dash.OwnWidgets(ctx)
+		all, err := dash.InstanceWidgets(ctx)
 		if err != nil {
 			return nil, err
 		}
-		out := make([]integrationsuc.Widget, 0, len(own))
-		for _, w := range own {
-			// Widgets name their connection in their settings; settings that
-			// are not JSON name none.
+		out := make([]integrationsuc.Widget, 0, len(all))
+		for _, w := range all {
+			// Widgets name their connection in their settings, the *arr
+			// widget possibly several; settings that are not JSON name none.
 			var cfg struct {
-				ConnectionID string `json:"connectionId"`
+				ConnectionID  string   `json:"connectionId"`
+				ConnectionIDs []string `json:"connectionIds"`
 			}
 			_ = json.Unmarshal([]byte(w.Config), &cfg)
-			out = append(out, integrationsuc.Widget{ID: w.ID, TabID: w.TabID, Kind: w.Kind, ConnectionID: cfg.ConnectionID})
+			ids := cfg.ConnectionIDs
+			if cfg.ConnectionID != "" {
+				ids = append(ids, cfg.ConnectionID)
+			}
+			out = append(out, integrationsuc.Widget{ID: w.ID, TabID: w.TabID, Kind: w.Kind, ConnectionIDs: ids, Mine: w.Mine})
 		}
 		return out, nil
 	}

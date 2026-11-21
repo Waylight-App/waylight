@@ -197,6 +197,11 @@ func (m *Module) OwnWidgets(ctx context.Context) ([]usecase.OwnWidget, error) {
 	return m.scope.OwnWidgets(ctx)
 }
 
+// InstanceWidgets lists the widgets on every tab of the instance (#610).
+func (m *Module) InstanceWidgets(ctx context.Context) ([]usecase.InstanceWidget, error) {
+	return m.scope.InstanceWidgets(ctx)
+}
+
 // builtinTemplates reads the templates that ship with Waylight (#589). The
 // files are embedded and checked by the tests, so a failure leaves only the
 // list empty.

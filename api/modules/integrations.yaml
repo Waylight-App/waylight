@@ -13,7 +13,7 @@ paths:
   /api/integrations/connections:
     get:
       tags: [integrations]
-      summary: "Named connections of the instance (admins only), each with the widgets that name it in their settings (connectionId); credentials are never returned, only which fields are set"
+      summary: "Named connections of the instance (admins only), each with the widgets on any tab of the instance that name it in their settings (connectionId or connectionIds); credentials are never returned, only which fields are set"
       parameters:
         - { name: service, in: query, required: false, schema: { type: string }, description: Only connections of this service, e.g. immich }
       responses:
@@ -29,6 +29,15 @@ paths:
         "403": { description: Admins only, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
         "409": { description: "Name taken, or the connection is in use", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
         "422": { $ref: "#/components/responses/Invalid" }
+  /api/integrations/choices:
+    get:
+      tags: [integrations]
+      summary: "Connections a widget can choose (every signed-in account that edits widgets): ID, service and name, no address or credential"
+      parameters:
+        - { name: service, in: query, required: false, schema: { type: string }, description: Only connections of this service, e.g. immich }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/ConnectionChoice" } } } } }
+        "403": { description: Guests, kiosk displays and API tokens, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
   /api/integrations/connections/{id}:
     put:
       tags: [integrations]
@@ -138,8 +147,16 @@ schemas:
         type: array
         items:
           type: object
-          required: [widgetId, tabId, kind]
+          required: [widgetId, tabId, kind, mine]
           properties:
             widgetId: { type: string }
             tabId: { type: string }
             kind: { type: string }
+            mine: { type: boolean, description: "The widget is on a tab of the signed-in account; other accounts' tabs are not named" }
+  ConnectionChoice:
+    type: object
+    required: [id, service, name]
+    properties:
+      id: { type: string }
+      service: { type: string }
+      name: { type: string }

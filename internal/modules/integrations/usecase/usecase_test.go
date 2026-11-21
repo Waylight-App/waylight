@@ -100,7 +100,7 @@ func TestOnlyAdmins(t *testing.T) {
 }
 
 func TestAddListAndNames(t *testing.T) {
-	uc, repo := newUC([]Widget{{ID: "w1", TabID: "t1", Kind: "immich", ConnectionID: "a"}, {ID: "w2", TabID: "t1", Kind: "notes"}})
+	uc, repo := newUC([]Widget{{ID: "w1", TabID: "t1", Kind: "immich", ConnectionIDs: []string{"a"}, Mine: true}, {ID: "w2", TabID: "t1", Kind: "notes"}})
 	ctx := admin()
 	home, err := uc.Add(ctx, Input{Service: "immich", Name: "Home", URL: "http://192.168.178.20:2283", Credential: map[string]string{"apiKey": "secret"}})
 	if err != nil || home.ID != "a" || !slices.Equal(home.Fields, []string{"apiKey"}) {
@@ -117,7 +117,7 @@ func TestAddListAndNames(t *testing.T) {
 		t.Fatalf("the name may repeat across services: %v", err)
 	}
 	list, err := uc.List(ctx, "immich")
-	if err != nil || len(list) != 1 || len(list[0].UsedBy) != 1 || list[0].UsedBy[0].WidgetID != "w1" || len(list[0].Values) != 0 {
+	if err != nil || len(list) != 1 || len(list[0].UsedBy) != 1 || list[0].UsedBy[0].WidgetID != "w1" || !list[0].UsedBy[0].Mine || len(list[0].Values) != 0 {
 		t.Fatalf("%+v %v", list, err)
 	}
 	all, _ := uc.List(ctx, "")
@@ -147,7 +147,7 @@ func TestUpdateKeepsTheCredentialOnlyAtTheSameAddress(t *testing.T) {
 }
 
 func TestRemoveInUseAsksFirst(t *testing.T) {
-	uc, repo := newUC([]Widget{{ID: "w1", TabID: "t1", Kind: "immich", ConnectionID: "a"}})
+	uc, repo := newUC([]Widget{{ID: "w1", TabID: "t1", Kind: "immich", ConnectionIDs: []string{"a"}}})
 	ctx := admin()
 	_, _ = uc.Add(ctx, Input{Service: "immich", Name: "Home", URL: "http://h", Credential: key})
 	_, _ = uc.Add(ctx, Input{Service: "immich", Name: "Spare", URL: "http://s", Credential: key})
@@ -281,5 +281,37 @@ func TestConfigRoundTripKeepsIDsAndCredentials(t *testing.T) {
 	}
 	if len(repo.m) != len(before) {
 		t.Fatal("a refused section must change nothing")
+	}
+}
+
+func TestChoicesForWidgetPickers(t *testing.T) {
+	uc, _ := newUC([]Widget{{ID: "w1", TabID: "t9", Kind: "arr", ConnectionIDs: []string{"a", "b"}}})
+	ctx := admin()
+	if _, err := uc.Add(ctx, Input{Service: "immich", Name: "Home", URL: "http://h", Credential: key}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := uc.Add(ctx, Input{Service: "proxmox", Name: "Lab", URL: "https://pve:8006",
+		Credential: map[string]string{"tokenId": "w@pve!d", "secret": "s"}}); err != nil {
+		t.Fatal(err)
+	}
+	member := kernel.WithPrincipal(context.Background(), kernel.Principal{AccountID: "m", Role: "member"})
+	list, err := uc.Choices(member, "immich")
+	if err != nil || len(list) != 1 || list[0] != (Choice{ID: "a", Service: "immich", Name: "Home"}) {
+		t.Fatalf("a member sees the names of a service's connections: %+v %v", list, err)
+	}
+	if all, _ := uc.Choices(member, ""); len(all) != 2 {
+		t.Fatalf("every service: %+v", all)
+	}
+	guest := kernel.WithPrincipal(context.Background(), kernel.Principal{AccountID: "g", Role: "guest"})
+	if _, err := uc.Choices(guest, ""); !errors.Is(err, kernel.ErrForbidden) {
+		t.Fatalf("guests do not edit widgets: %v", err)
+	}
+	// A widget naming several connections uses each of them; one on another
+	// account's tab is not marked as mine.
+	views, _ := uc.List(ctx, "")
+	for _, v := range views {
+		if len(v.UsedBy) != 1 || v.UsedBy[0].Mine {
+			t.Fatalf("%s: %+v", v.Name, v.UsedBy)
+		}
 	}
 }
