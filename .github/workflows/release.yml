@@ -1,7 +1,8 @@
 name: Release
 
 # A tag vX.Y.Z builds multi-arch images, pushes them to GHCR, smoke-tests the
-# arm64 image under QEMU, attaches an SBOM and publishes a GitHub release with
+# arm64 image under QEMU, attaches an SBOM, copies the image to the legacy
+# name and publishes a GitHub release with
 # notes generated from Conventional Commits (scripts/release-notes.sh). The
 # native .deb packages (amd64, arm64) and the Raspberry Pi image are attached
 # to the same release.
@@ -13,7 +14,12 @@ permissions:
   contents: read
 
 env:
-  IMAGE: ghcr.io/${{ github.repository }}
+  # Registry names must be lowercase, so the name is spelled out instead of
+  # derived from github.repository (Waylight-App/waylight).
+  IMAGE: ghcr.io/waylight-app/waylight
+  # Name used before the repository moved to the organisation. Existing
+  # installations pull it, so every release is copied there as well.
+  LEGACY_IMAGE: ghcr.io/itadori26/waylight
 
 jobs:
   image:
@@ -64,6 +70,34 @@ jobs:
             test "$out" = "${{ steps.version.outputs.version }}"
           done
 
+  # Copies the pushed manifest list unchanged (same digest, SBOM and
+  # provenance included) to the legacy name. A separate job, so a failure here
+  # shows up as a red job without holding back the release itself.
+  legacy-image:
+    runs-on: ubuntu-latest
+    needs: image
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy the image to the legacy name
+        env:
+          VERSION: ${{ needs.image.outputs.version }}
+          DIGEST: ${{ needs.image.outputs.digest }}
+        run: |
+          docker buildx imagetools create \
+            -t "$LEGACY_IMAGE:$VERSION" -t "$LEGACY_IMAGE:${VERSION%.*}" -t "$LEGACY_IMAGE:latest" \
+            "$IMAGE@$DIGEST"
+          copied=$(docker buildx imagetools inspect "$LEGACY_IMAGE:$VERSION" | awk '/^Digest:/ { print $2; exit }')
+          echo "$LEGACY_IMAGE:$VERSION -> $copied"
+          test "$copied" = "$DIGEST"
+
   release:
     runs-on: ubuntu-latest
     needs: image
@@ -85,7 +119,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sh scripts/release-notes.sh "$GITHUB_REF_NAME" > notes.md
-          printf '\n### Container image\n\n```\n%s:%s\n```\n' "$IMAGE" "${{ needs.image.outputs.version }}" >> notes.md
+          printf '\n### Container image\n\n```\n%s:%s\n```\n\nAlso available under the previous name `%s`.\n' \
+            "$IMAGE" "${{ needs.image.outputs.version }}" "$LEGACY_IMAGE" >> notes.md
           gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md \
             "waylight-${{ needs.image.outputs.version }}.spdx.json"
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/itadori26/waylight/main/docs/schema/waylight.v1.schema.json",
+  "$id": "https://raw.githubusercontent.com/Waylight-App/waylight/main/docs/schema/waylight.v1.schema.json",
   "title": "waylight.yaml",
   "description": "Settings of a waylight instance as code (version 1). Sections are optional: a missing section is left alone, a present one replaces the settings of its module. Any string may contain ${NAME} to read the environment variable NAME; $${NAME} writes a literal ${NAME}.",
   "type": "object",

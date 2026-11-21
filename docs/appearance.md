@@ -51,7 +51,7 @@ adds one somebody shared with you. Themes set colours, corner radii, shadows
 and one of the fonts that come with the app, each in a fixed format. They
 cannot load fonts, images or scripts, so a theme file from a stranger cannot
 track you or hide parts of the page. The
-[theme format](https://github.com/itadori26/waylight/blob/main/themes/README.md)
+[theme format](https://github.com/Waylight-App/waylight/blob/main/themes/README.md)
 explains how to write one and how to contribute it.
 
 ## Background image

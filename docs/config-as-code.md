@@ -19,7 +19,7 @@ The file never contains passwords, API tokens or other secrets, and nothing that
 A short example:
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/itadori26/waylight/main/docs/schema/waylight.v1.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Waylight-App/waylight/main/docs/schema/waylight.v1.schema.json
 version: 1
 appearance:
   theme: dark
@@ -106,7 +106,7 @@ Variables only work inside text values. A number such as a widget's coordinates 
 
 ## Editor support
 
-The first line of an exported file points to a [JSON Schema](https://raw.githubusercontent.com/itadori26/waylight/main/docs/schema/waylight.v1.schema.json). Editors with the YAML language server, such as VS Code with the Red Hat YAML extension, use it to complete keys and mark mistakes while you type. Widget settings (`config`) are free-form there, because each widget defines its own; the server checks them when the file is applied.
+The first line of an exported file points to a [JSON Schema](https://raw.githubusercontent.com/Waylight-App/waylight/main/docs/schema/waylight.v1.schema.json). Editors with the YAML language server, such as VS Code with the Red Hat YAML extension, use it to complete keys and mark mistakes while you type. Widget settings (`config`) are free-form there, because each widget defines its own; the server checks them when the file is applied.
 
 ## Managed mode
 

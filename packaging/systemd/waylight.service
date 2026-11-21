@@ -1,6 +1,6 @@
 [Unit]
 Description=waylight self-hosted start page
-Documentation=https://github.com/itadori26/waylight/blob/main/docs/native-install.md
+Documentation=https://github.com/Waylight-App/waylight/blob/main/docs/native-install.md
 Wants=network-online.target
 After=network-online.target
 

@@ -13,7 +13,7 @@
   let { variant }: Props = $props();
 
   const DISMISSED_KEY = 'waylight.fullVersionHintDismissed';
-  const docs = 'https://github.com/itadori26/waylight/blob/main/docs/';
+  const docs = 'https://github.com/Waylight-App/waylight/blob/main/docs/';
   const serverGuide = `${docs}getting-started.md`;
   const piGuide = `${docs}raspberry-pi.md`;
   const privacy = `${docs}extension-privacy.md`;
