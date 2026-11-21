@@ -16,9 +16,11 @@
     subtitle?: string;
     /** Logo and name above the card (#513); without it the card stands alone. */
     brand?: Brand;
+    /** Lamp logo centred above the title (#653); decorative, the title names the card. */
+    logo?: boolean;
     children: Snippet;
   }
-  let { title, subtitle, brand, children }: Props = $props();
+  let { title, subtitle, brand, logo = false, children }: Props = $props();
 </script>
 
 <main>
@@ -37,6 +39,7 @@
        shadow: a comma list with "none" would void both. -->
   <div class="frame">
     <section class="card">
+      {#if logo}<div class="logo"><WaylightMark size={48} /></div>{/if}
       <h1>{title}</h1>
       {#if subtitle}<p class="muted">{subtitle}</p>{/if}
       {@render children()}
@@ -68,6 +71,12 @@
   h1 {
     margin: 0 0 var(--space-2);
     font-size: 1.6rem;
+  }
+  .logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-3);
+    color: var(--color-accent-text);
   }
   .brand {
     display: flex;

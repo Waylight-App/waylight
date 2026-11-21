@@ -29,8 +29,7 @@ import type { TwoFactorEnrollment, TwoFactorStatus } from '../domain/twoFactor';
 /** Output port: talks to the authentication backend. */
 export interface AuthGateway {
   status(): Promise<AuthStatus>;
-  /** profile: what the start page shows (#281). */
-  setup(setupToken: string, password: string, profile?: 'everyday' | 'homelab'): Promise<Session>;
+  setup(setupToken: string, password: string): Promise<Session>;
   /** Returns a challenge instead of a session when a passkey is registered. */
   login(password: string, code?: string, username?: string): Promise<Session | SecondFactorChallenge>;
   passkeyLogin(ticket: string, assertion: PasskeyAssertion): Promise<Session>;

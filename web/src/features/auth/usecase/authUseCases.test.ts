@@ -251,10 +251,9 @@ describe('AuthUseCases', () => {
   it('trims the setup token and stores the new csrf token', async () => {
     const { uc, gateway, csrf } = setup();
     await uc.setup('  token  ', 'long-enough-password', 'long-enough-password');
-    expect(gateway.setup).toHaveBeenCalledWith('token', 'long-enough-password', 'everyday'); // safe default (#281)
+    // No profile: the setup leaves the start-page profile at its stored default (#655).
+    expect(gateway.setup).toHaveBeenCalledWith('token', 'long-enough-password');
     expect(csrf.setCsrfToken).toHaveBeenCalledWith('csrf-1');
-    await uc.setup('token', 'long-enough-password', 'long-enough-password', 'homelab');
-    expect(gateway.setup).toHaveBeenLastCalledWith('token', 'long-enough-password', 'homelab');
   });
 
   it('rejects an empty login password', async () => {
