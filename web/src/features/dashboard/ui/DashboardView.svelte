@@ -320,6 +320,15 @@
     select(tab.id);
   }
 
+  /**
+   * Loads the tabs again, e.g. after the template choice on first start
+   * replaced the example tabs (#670), and selects the given tab.
+   */
+  export async function reload(selectId?: string) {
+    await load();
+    if (selectId) selectTab(selectId);
+  }
+
   /** Selects the n-th tab (0-based), e.g. from the 1–9 shortcuts (#95). */
   export function selectTabAt(index: number) {
     const tab = tabs[index];
