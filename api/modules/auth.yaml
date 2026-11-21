@@ -261,7 +261,7 @@ schemas:
     type: object
     required: [code, expiresAt]
     properties:
-      code: { type: string }
+      code: { type: string, description: "Codes for the QR code have eight characters of Crockford's base32 with a dash (7KQ2-M9XD); redemption ignores case, spaces and dashes" }
       expiresAt: { type: string, format: date-time }
   LoginRequest:
     type: object

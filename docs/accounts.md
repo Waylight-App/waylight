@@ -240,8 +240,10 @@ To sign a phone in:
 
 1. Open *Settings → Mobile app* in the browser and choose
    **Show pairing code**.
-2. Scan the QR code with the app. The code works once and for five
-   minutes; **New code** replaces it.
+2. Scan the QR code with the app. On a device without a camera, such as
+   the Wear OS watch app, type the eight-character code shown below the
+   QR code instead; case and the dash do not matter. The code works once
+   and for five minutes; **New code** replaces it.
 
 The app can also sign in with the password and, if set up, the code of the
 authenticator app, or open Waylight's sign-in page in the browser of the

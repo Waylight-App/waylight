@@ -74,7 +74,12 @@ func TestPairingCodeIsRedeemedOnce(t *testing.T) {
 	if !code.ExpiresAt.Equal(e.clock.now.Add(domain.PairingCodeTTL)) {
 		t.Fatalf("expiry %v", code.ExpiresAt)
 	}
-	req := AppSessionRequest{PairingCode: code.Code, Device: "iPhone", Login: LoginRequest{ClientKey: "ip"}}
+	if len(code.Code) != 9 || code.Code[4] != '-' {
+		t.Fatalf("code %q is not short", code.Code)
+	}
+	// Typed on a watch: lower case, without the dash.
+	typed := strings.ToLower(strings.ReplaceAll(code.Code, "-", ""))
+	req := AppSessionRequest{PairingCode: typed, Device: "iPhone", Login: LoginRequest{ClientKey: "ip"}}
 	res, err := uc.Create(context.Background(), req)
 	if err != nil || !strings.HasPrefix(res.Token, domain.AppSessionTokenPrefix) {
 		t.Fatalf("pair: %+v, %v", res, err)
