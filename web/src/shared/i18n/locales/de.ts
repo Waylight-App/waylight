@@ -232,6 +232,9 @@ export const de: Record<BaseMessageKey, string> = {
   // Mitgelieferte Tab-Vorlagen (#589).
   'templates.title': 'Wofür nutzt du Waylight?',
   'templates.intro': 'Wähle einen Start; jedes Widget lässt sich später ändern.',
+  'templates.intro_sample':
+    'Wähle einen Start; er ersetzt das Beispiel-Dashboard. Die Beispiel-To-dos, -Notizen und -Lesezeichen bleiben, und jedes Widget lässt sich später ändern.',
+  'templates.keep_sample': 'Beispiel-Dashboard behalten',
   'templates.family': 'Familie',
   'templates.homelab': 'Homelab',
   'templates.work': 'Arbeit',

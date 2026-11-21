@@ -35,6 +35,8 @@ export interface Tab {
   mine: boolean;
   /** Laid out in zones instead of the free grid (#619). */
   zoned: boolean;
+  /** An example tab of the setup that the template choice replaces (#670). */
+  sample?: boolean;
 }
 
 /**

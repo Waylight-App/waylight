@@ -226,6 +226,9 @@ export const en = {
   // Built-in tab templates (#589).
   'templates.title': 'What do you use Waylight for?',
   'templates.intro': 'Pick a start; you can change every widget later.',
+  'templates.intro_sample':
+    'Pick a start; it replaces the example dashboard. Your example to-dos, notes and bookmarks stay, and you can change every widget later.',
+  'templates.keep_sample': 'Keep the example dashboard',
   'templates.family': 'Family',
   'templates.homelab': 'Homelab',
   'templates.work': 'Work',

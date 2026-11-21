@@ -192,6 +192,19 @@ export class DashboardUseCases {
     return this.gateway.createTabFromBuiltin(id, name.trim(), location);
   }
 
+  /**
+   * Removes the example tabs the setup created (#670), when a template
+   * replaces them or the user starts empty.
+   */
+  async discardSample(): Promise<void> {
+    await this.gateway.discardSample?.();
+  }
+
+  /** Keeps the example tabs of the setup as ordinary tabs (#670). */
+  async keepSample(): Promise<void> {
+    await this.gateway.keepSample?.();
+  }
+
   /** Creates a new tab from a template; the template name is used if name is empty. */
   createTabFromTemplate(templateId: string, name: string): Promise<Tab> {
     if (name.trim() !== '') this.assertTabName(name);

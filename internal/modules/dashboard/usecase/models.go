@@ -32,6 +32,8 @@ type TabResponse struct {
 	Visibility string
 	// Zoned lays the tab out in zones instead of the free grid (#619).
 	Zoned bool
+	// Sample marks an example tab from the setup (#670).
+	Sample bool
 }
 
 // MobileView is one widget of the phone layout.
