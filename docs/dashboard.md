@@ -167,14 +167,24 @@ module's other endpoints.
 Waylight keeps a list of what needs your attention: widgets on your own tabs
 that miss a setting (a departures widget without a stop) and services behind
 your widgets that are not set up or stopped answering (Immich, Home
-Assistant, Nextcloud, Grafana, the FRITZ!Box for now). Admins also see
+Assistant, Nextcloud, Grafana, the FRITZ!Box, Proxmox, the media server,
+Sonarr/Radarr/Prowlarr and Speedtest Tracker for now). Admins also see
 broken connections of the instance that none of their widgets use. Shared
 tabs of others and integrations you never set up are left out. Each entry
 names one thing to do, such as *choose a stop* or *check again*.
 
-The web interface and the app read the list from `GET /api/attention`
-(see the API reference). A service's state is checked at most every two
-minutes, so a fixed problem can take that long to disappear.
+In the web interface a dot with the number of entries appears in the top
+bar as soon as something needs you; it is hidden while everything works.
+It opens **Settings → Needs your attention**, which lists what stopped
+working first and what is not set up yet below. The button next to an entry
+opens the widget's own settings on its tab, opens the integration's
+settings, or asks the service again. The list updates by itself while the
+page is open, so a fixed entry disappears without reloading.
+
+The app reads the same list from `GET /api/attention` (see the API
+reference). A service's state is kept for two minutes; *Check again* and
+closing the settings after a change ask the services right away
+(`?refresh=true`).
 
 ## Related pages
 

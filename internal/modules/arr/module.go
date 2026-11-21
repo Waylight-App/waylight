@@ -1,6 +1,7 @@
 package arr
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
@@ -16,6 +17,7 @@ import (
 // Module wires the *arr rings and implements modules.Module.
 type Module struct {
 	modules.Base
+	uc       usecase.Arr
 	handlers *controller.Handlers
 }
 
@@ -28,7 +30,7 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 		},
 		Clock: clock, IDs: ids,
 	})
-	return &Module{handlers: controller.NewHandlers(uc)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
 }
 
 // Name implements modules.Module.
@@ -51,3 +53,17 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("DELETE /api/arr/instances/{id}", m.handlers.Delete)
 	r.Protected("GET /api/arr/overview", m.handlers.Overview)
 }
+
+// ConnectionStatus implements modules.StatusReporter (#592): the cached
+// overview names the instances that did not answer.
+func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus {
+	o, err := m.uc.Overview(ctx)
+	if err == nil && len(o.Errors) > 0 {
+		err = errInstanceDown
+	}
+	return modules.StatusOf(err, domain.ErrNotConfigured)
+}
+
+// errInstanceDown is the reason when one of several instances fails; the
+// widget names which one.
+var errInstanceDown = kernel.NewPublicError(kernel.ErrUnavailable, "A Sonarr, Radarr or Prowlarr instance does not answer.")

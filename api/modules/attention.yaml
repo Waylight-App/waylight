@@ -6,6 +6,11 @@ paths:
     get:
       tags: [attention]
       summary: "What needs the signed-in account's attention (#599): widgets on its own tabs that miss a setting, and connections of their modules that are not set up or stopped working; admins also get broken instance connections that no widget of theirs uses. Failures first, then setups, oldest first. Guests, kiosk displays and API tokens get an empty list. Statuses are kept for two minutes."
+      parameters:
+        - name: refresh
+          in: query
+          description: "true asks the services again instead of answering from the kept statuses (for Check again); a status younger than ten seconds is still reused"
+          schema: { type: boolean, default: false }
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/AttentionList" } } } }
 

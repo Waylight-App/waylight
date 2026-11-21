@@ -1,6 +1,7 @@
 package media
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
@@ -16,6 +17,7 @@ import (
 // Module wires the media server rings and implements modules.Module.
 type Module struct {
 	modules.Base
+	uc       usecase.Media
 	handlers *controller.Handlers
 }
 
@@ -26,7 +28,7 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 		domain.ProviderPlex:     gateway.NewPlex(client),
 	}
 	uc := usecase.NewMedia(gateway.NewSettingsRepository(db, cipher), providers, clock)
-	return &Module{handlers: controller.NewHandlers(uc)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
 }
 
 // Name implements modules.Module.
@@ -47,4 +49,11 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/media/settings", m.handlers.SaveSettings)
 	r.Protected("GET /api/media/overview", m.handlers.Overview)
 	r.Protected("GET /api/media/posters/{id}", m.handlers.Poster)
+}
+
+// ConnectionStatus implements modules.StatusReporter (#592): the overview
+// the widget shows tells whether the media server answers; it is cached.
+func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus {
+	_, err := m.uc.Overview(ctx)
+	return modules.StatusOf(err, domain.ErrNotConfigured)
 }
