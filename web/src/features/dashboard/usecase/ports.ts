@@ -1,4 +1,13 @@
-import type { Dashboard, Tab, TabRule, TabTemplate, Widget, WidgetConfig } from '../domain/dashboard';
+import type {
+  Dashboard,
+  Tab,
+  TabRule,
+  TabTemplate,
+  Widget,
+  WidgetConfig,
+  BuiltinTemplate,
+  TemplateLocation,
+} from '../domain/dashboard';
 import type { LayoutItem, Rect } from '../domain/layout';
 import type { MobileItem } from '../domain/mobile';
 import type { WidgetSize } from '../domain/sizes';
@@ -34,4 +43,7 @@ export interface DashboardGateway {
   saveTemplate(tabId: string, name: string): Promise<TabTemplate>;
   deleteTemplate(id: string): Promise<void>;
   createTabFromTemplate(templateId: string, name: string): Promise<Tab>;
+  /** Built-in templates (#589); absent where there is no server. */
+  listBuiltinTemplates?(): Promise<BuiltinTemplate[]>;
+  createTabFromBuiltin?(id: string, name: string, location?: TemplateLocation): Promise<Tab>;
 }

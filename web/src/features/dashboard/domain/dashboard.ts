@@ -114,6 +114,33 @@ export interface Dashboard {
 }
 
 /** A saved tab layout new tabs can be created from. */
+/** A template that ships with Waylight (#589). */
+export interface BuiltinTemplate {
+  id: string;
+  /** English title; clients show the translated one by id. */
+  title: string;
+  /** What the onboarding asks before applying it. */
+  needs: 'location'[];
+  /** Widgets with their cells, for the layout preview. */
+  widgets: { kind: string; x: number; y: number; w: number; h: number }[];
+}
+
+/** A location for the weather widgets of a template. */
+export interface TemplateLocation {
+  lat: number;
+  lon: number;
+  label: string;
+  placeId?: string;
+}
+
+/**
+ * The grid rows a template's preview needs: the lowest bottom edge of its
+ * widgets, at least one.
+ */
+export function previewRows(t: Pick<BuiltinTemplate, 'widgets'>): number {
+  return Math.max(1, ...t.widgets.map((w) => w.y + w.h));
+}
+
 export interface TabTemplate {
   id: string;
   name: string;

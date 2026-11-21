@@ -3,12 +3,14 @@ import type {
   DashboardDTO,
   TabDTO,
   TemplateDTO,
+  BuiltinTemplateDTO,
   WidgetDTO,
 } from '../../../../shared/api-client/generated/dashboard';
 import type {
   AddWidgetDTO,
   LayoutDTO,
   SaveTemplateDTO,
+  BuiltinTabDTO,
   TabBackgroundDTO,
   TabNameDTO,
   TabOrderDTO,
@@ -17,7 +19,16 @@ import type {
   MobileLayoutDTO,
   WidgetConfigDTO,
 } from '../../../../shared/api-client/generated/dashboard-requests';
-import type { Dashboard, Tab, TabRule, TabTemplate, Widget, WidgetConfig } from '../../domain/dashboard';
+import type {
+  BuiltinTemplate,
+  Dashboard,
+  Tab,
+  TabRule,
+  TabTemplate,
+  TemplateLocation,
+  Widget,
+  WidgetConfig,
+} from '../../domain/dashboard';
 import type { LayoutItem, Rect } from '../../domain/layout';
 import { type MobileItem, type MobileSize, sizeCells } from '../../domain/mobile';
 import { parseSize, type WidgetSize } from '../../domain/sizes';
@@ -175,6 +186,23 @@ export class DashboardApi implements DashboardGateway {
 
   deleteTemplate(id: string): Promise<void> {
     return this.http.delete(`/api/dashboard/templates/${encodeURIComponent(id)}`);
+  }
+
+  async listBuiltinTemplates(): Promise<BuiltinTemplate[]> {
+    const list = await this.http.get<BuiltinTemplateDTO[]>('/api/dashboard/templates/builtin');
+    return list.map((t) => ({
+      id: t.id,
+      title: t.title,
+      needs: t.needs.filter((n): n is 'location' => n === 'location'),
+      widgets: t.widgets.map((w) => ({ ...w })),
+    }));
+  }
+
+  async createTabFromBuiltin(id: string, name: string, location?: TemplateLocation): Promise<Tab> {
+    const body: BuiltinTabDTO = { name, location: location ? { placeId: '', ...location } : undefined };
+    return toTab(
+      await this.http.post<TabDTO>(`/api/dashboard/templates/builtin/${encodeURIComponent(id)}/tabs`, body),
+    );
   }
 
   async createTabFromTemplate(templateId: string, name: string): Promise<Tab> {

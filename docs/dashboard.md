@@ -94,6 +94,32 @@ In edit mode you can:
 
 `1` to `9` switch to the first nine tabs.
 
+## Templates
+
+On the first sign-in, while the dashboard is still empty, Waylight asks
+**What do you use Waylight for?** and offers four templates, each with a
+small preview of its layout and the widgets it contains:
+
+| Template | Widgets |
+| --- | --- |
+| Family | Calendar, weather, shopping list, waste collection, birthdays |
+| Homelab | Services, containers, backups, drive health, bookmarks |
+| Work | Today's events, to-dos, focus timer, mail, notes |
+| Wall tablet | Large clock, weather, calendar, departures |
+
+A template creates a tab with its widgets placed, including the phone
+layout. Templates with a weather widget ask for a location first (search or
+*Use my location*; *Set it up later* skips it). Widgets that need a service
+or a setting show *Set up* or what is missing. *Start with an empty
+dashboard* closes the question. Kiosk mode and night dimming for a wall
+tablet are set on the kiosk display itself.
+
+The same templates appear when you create a tab (**+ Tab**), above your own
+saved templates. They are YAML files in the format of the `dashboard`
+section of [waylight.yaml](config-as-code.md), one tab each, under
+`internal/modules/dashboard/adapter/configfile/templates/`; the tests check
+that each one parses and only uses widgets the server knows.
+
 ## Opening a tab by default
 
 Normally the dashboard opens the first tab. With **Open by default** you can
