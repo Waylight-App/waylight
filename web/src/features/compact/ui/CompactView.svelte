@@ -15,7 +15,7 @@
   /** Props of a compact widget view (#595): the widget's short state in one or two lines. */
   interface Props {
     compact: CompactUseCases;
-    /** Module that serves the state at GET /api/<module>/compact. */
+    /** Compact source of the state (see compactSource): GET /api/<module>/compact[?query]. */
     module: string;
     /** Name of the widget, shown as a small label above the state. */
     title: string;

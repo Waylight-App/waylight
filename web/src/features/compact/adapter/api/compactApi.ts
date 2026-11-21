@@ -4,7 +4,13 @@ import type {
   CompactResponse,
   CompactText as CompactTextDTO,
 } from '../../../../shared/api-client/generated/modules';
-import { type CompactAction, type CompactState, type CompactText, parseLevel } from '../../domain/compact';
+import {
+  type CompactAction,
+  compactPath,
+  type CompactState,
+  type CompactText,
+  parseLevel,
+} from '../../domain/compact';
 import type { CompactGateway } from '../../usecase/compactUseCases';
 
 const toText = (d: CompactTextDTO): CompactText => ({ key: d.key, text: d.text, params: d.params ?? {} });
@@ -39,8 +45,8 @@ export function toCompactState(d: CompactResponse): CompactState {
 export class CompactApi implements CompactGateway {
   constructor(private readonly http: HttpClient) {}
 
-  async state(module: string): Promise<CompactState> {
-    return toCompactState(await this.http.get<CompactResponse>(`/api/${encodeURIComponent(module)}/compact`));
+  async state(source: string): Promise<CompactState> {
+    return toCompactState(await this.http.get<CompactResponse>(compactPath(source)));
   }
 
   async send(method: string, path: string, body?: Record<string, unknown>): Promise<void> {

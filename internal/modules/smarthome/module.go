@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"io/fs"
 	"net/http"
+	"net/url"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/smarthome/adapter/controller"
@@ -62,6 +63,15 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/smarthome/states", m.handlers.States)
 	r.Protected("POST /api/smarthome/entities/{id}/action", m.handlers.Act)
 }
+
+// CompactStateFor implements modules.CompactParamProvider (#614): the
+// device of a smart home tile with one entity, chosen with ?entity=.
+func (m *Module) CompactStateFor(ctx context.Context, params url.Values) (kernel.CompactState, error) {
+	return m.uc.Compact(ctx, params.Get("entity"))
+}
+
+// CompactParams implements modules.CompactParamProvider.
+func (m *Module) CompactParams() []string { return []string{"entity"} }
 
 // ConnectionStatus implements modules.StatusReporter (#599): the entity
 // list the widget shows tells whether Home Assistant answers.

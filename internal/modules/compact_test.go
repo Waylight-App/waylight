@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 	"time"
 
@@ -60,5 +61,30 @@ func TestCompactHandler(t *testing.T) {
 	}
 	if CompactRoute("todos") != "GET /api/todos/compact" {
 		t.Fatal(CompactRoute("todos"))
+	}
+}
+
+type paramFake struct{}
+
+func (paramFake) CompactStateFor(_ context.Context, p url.Values) (kernel.CompactState, error) {
+	if p.Get("entity") == "" {
+		return kernel.CompactState{}, kernel.NewValidationError("entity", "missing")
+	}
+	return kernel.CompactState{Title: kernel.NewTextf("{name}", "name", p.Get("entity"))}, nil
+}
+
+func (paramFake) CompactParams() []string { return []string{"entity"} }
+
+func TestCompactParamHandler(t *testing.T) {
+	rec := httptest.NewRecorder()
+	CompactParamHandler(paramFake{})(rec, httptest.NewRequest(http.MethodGet, "/api/x/compact?entity=switch.coffee", nil))
+	var got CompactResponse
+	if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil || rec.Code != http.StatusOK || got.Title.Text != "switch.coffee" {
+		t.Fatalf("%d %+v %v", rec.Code, got, err)
+	}
+	rec = httptest.NewRecorder()
+	CompactParamHandler(paramFake{})(rec, httptest.NewRequest(http.MethodGet, "/api/x/compact", nil))
+	if rec.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("missing parameter answered %d", rec.Code)
 	}
 }

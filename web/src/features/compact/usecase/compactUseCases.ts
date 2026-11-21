@@ -2,7 +2,8 @@ import type { CompactAction, CompactChoice, CompactState } from '../domain/compa
 
 /** Output port: the compact states of the modules and their actions. */
 export interface CompactGateway {
-  state(module: string): Promise<CompactState>;
+  /** The state of a compact source (see compactSource). */
+  state(source: string): Promise<CompactState>;
   /** Sends the request an action describes (#598). */
   send(method: string, path: string, body?: Record<string, unknown>): Promise<void>;
 }
@@ -14,9 +15,9 @@ const ACTION_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 export class CompactUseCases {
   constructor(private readonly gateway: CompactGateway) {}
 
-  /** The short state of a module's widget. */
-  state(module: string): Promise<CompactState> {
-    return this.gateway.state(module);
+  /** The short state of a widget, from its compact source (see compactSource). */
+  state(source: string): Promise<CompactState> {
+    return this.gateway.state(source);
   }
 
   /**
