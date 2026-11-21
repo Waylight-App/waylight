@@ -29,6 +29,10 @@ export interface SettingsSection {
   adminOnly?: boolean;
   /** Contributed by a plugin (ADR 0021): members see it unless adminOnly. */
   plugin?: boolean;
+  /** Other words people use for it, in English and German (#601). */
+  keywords?: readonly string[];
+  /** Labels of fields or headings inside the section the search finds (#601). */
+  fields?: readonly MessageKey[];
   load: () => Promise<Component<Record<string, unknown>>>;
   props: (container: Container, context: SettingsContext) => Record<string, unknown>;
 }
@@ -43,6 +47,8 @@ export function defineSettingsSection<P extends object>(def: {
   module?: string;
   area?: SettingsArea;
   homelab?: boolean;
+  keywords?: readonly string[];
+  fields?: readonly MessageKey[];
   load: () => Promise<Component<P>>;
   props: (container: Container, context: SettingsContext) => P;
 }): SettingsSection {

@@ -90,14 +90,20 @@ const TAB_WORDS = ['tab', 'reiter', 'seite', 'page'];
 
 /**
  * A deep link for every settings section the account may open, built from
- * the settings navigation (#261) so the list is not kept twice.
+ * the settings navigation (#261) so the list is not kept twice. The
+ * section's keywords are the ones the settings search uses (#601), so
+ * "settings password" finds the account here as well.
  */
 export function settingsCommands(sections: readonly CatalogSection[]): CommandSpec[] {
   return sections.map((s) => {
     const name = s.title?.() ?? t(s.label);
+    const keywords = s.keywords ?? [];
     return {
       id: `settings.${s.id}`,
-      terms: { de: ['einstellungen', name], en: ['settings', s.id.replace(/-/g, ' ')] },
+      terms: {
+        de: ['einstellungen', name, ...keywords],
+        en: ['settings', s.id.replace(/-/g, ' '), ...keywords],
+      },
       role: 'everyone',
       handler: 'settings',
       arg: s.id,

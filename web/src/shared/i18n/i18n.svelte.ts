@@ -49,6 +49,18 @@ export async function loadLanguage(): Promise<void> {
   await loadServerMessages();
 }
 
+/**
+ * Texts of one language regardless of the active one, e.g. so the settings
+ * search finds "Passwort" in an English interface (#601). Loads that
+ * catalogue on first use; the UI language stays as it is.
+ */
+export async function textsIn(language: Locale): Promise<(key: MessageKey) => string> {
+  if (language === 'de') german ??= await merged((await import('./locales/de')).de, featureLoaders?.de);
+  else english ??= await merged((await import('./locales/en')).en, featureLoaders?.en);
+  const catalog = language === 'de' ? german : english;
+  return (key) => catalog?.[key] ?? english?.[key] ?? key;
+}
+
 async function merged(
   shared: object,
   features: (() => Promise<Record<string, string>>) | undefined,

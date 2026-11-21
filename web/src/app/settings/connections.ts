@@ -9,6 +9,7 @@ export const section = defineSettingsSection({
   id: 'connections',
   label: 'settings.section.connections',
   module: 'places',
+  keywords: ['places', 'location', 'address', 'orte', 'standort', 'adresse'],
   load: () => import('../../features/places').then((m) => m.PlacesManager),
   props: (c, ctx) => ({
     places: c.places,

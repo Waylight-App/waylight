@@ -17,6 +17,10 @@ export interface CatalogSection {
   title?: () => string;
   adminOnly?: boolean;
   plugin?: boolean;
+  /** Other words people use for it, in English and German (#601). */
+  keywords?: readonly string[];
+  /** Labels of fields or headings inside the section the search finds (#601). */
+  fields?: readonly MessageKey[];
 }
 
 // The sections built into the dialog. Each belongs to exactly one task area
@@ -24,18 +28,83 @@ export interface CatalogSection {
 // add theirs from src/app/settings (#193) and choose the area there.
 export const OWN_SECTIONS: CatalogSection[] = [
   // My account: sign-in, second factor, sessions.
-  { id: 'account', label: 'settings.section.account', area: 'account' },
+  {
+    id: 'account',
+    label: 'settings.section.account',
+    area: 'account',
+    keywords: [
+      'password',
+      'login',
+      'sign in',
+      'security',
+      'passwort',
+      'anmeldung',
+      'sicherheit',
+      '2fa',
+      'totp',
+    ],
+    fields: [
+      'app.two_factor_authentication',
+      'auth.passkeys',
+      'app.active_sessions',
+      'app.mobile_app',
+      'app.change_password',
+      'auth.reset_email_title',
+      'app.guided_tour',
+    ],
+  },
   // Appearance & language.
-  { id: 'appearance', label: 'settings.section.appearance', module: 'appearance', area: 'appearance' },
+  {
+    id: 'appearance',
+    label: 'settings.section.appearance',
+    module: 'appearance',
+    area: 'appearance',
+    keywords: ['dark', 'light', 'theme', 'colour', 'color', 'dunkel', 'hell', 'design', 'farbe', 'sprache'],
+    fields: [
+      'appearance.theme',
+      'appearance.gallery',
+      'appearance.accent_color',
+      'appearance.background_image',
+      'appearance.language',
+      'appearance.greeting_name',
+      'appearance.launcher',
+      'appearance.profile',
+    ],
+  },
   // Notifications: every channel, the phone and the web interface.
   {
     id: 'notifications',
     label: 'settings.section.notifications',
     module: 'notifications',
     area: 'notifications',
+    keywords: [
+      'push',
+      'alert',
+      'ntfy',
+      'gotify',
+      'e-mail',
+      'webhook',
+      'benachrichtigung',
+      'warnung',
+      'mitteilung',
+    ],
+    fields: [
+      'notifications.channels',
+      'notifications.notify_me_when',
+      'notifications.quiet_hours',
+      'notifications.maintenance',
+      'notifications.app_devices',
+    ],
   },
   // Dashboard & widgets: what the start page shows.
-  { id: 'search', label: 'settings.section.search', module: 'search', area: 'dashboard' },
+  {
+    id: 'search',
+    label: 'settings.section.search',
+    module: 'search',
+    area: 'dashboard',
+    keywords: ['search engine', 'bang', 'suchmaschine', 'suche'],
+    fields: ['search.search_field', 'search.own_keywords', 'quick.prefixes', 'search.history_heading'],
+  },
   { id: 'feeds', label: 'settings.section.feeds', module: 'rss', area: 'dashboard' },
   { id: 'folders', label: 'settings.section.bookmark_folders', module: 'bookmarks', area: 'dashboard' },
   { id: 'calendar', label: 'settings.section.calendar', module: 'calendar', area: 'dashboard' },
@@ -52,14 +121,39 @@ export const OWN_SECTIONS: CatalogSection[] = [
   { id: 'nextcloud', label: 'settings.section.nextcloud', module: 'nextcloud', homelab: true },
   { id: 'fritzbox', label: 'settings.section.fritzbox', module: 'fritzbox', homelab: true },
   { id: 'wireguard', label: 'settings.section.wireguard', module: 'wireguard', homelab: true },
-  { id: 'tokens', label: 'settings.section.tokens', area: 'connections' },
+  {
+    id: 'tokens',
+    label: 'settings.section.tokens',
+    area: 'connections',
+    keywords: ['api', 'token', 'key', 'schlüssel'],
+    fields: ['auth.new_token'],
+  },
   // People & access: who else uses this instance and how.
-  { id: 'members', label: 'settings.section.members', area: 'people' },
-  { id: 'invites', label: 'settings.section.invites', area: 'people' },
-  { id: 'guests', label: 'settings.section.guests', area: 'people' },
-  { id: 'kiosks', label: 'settings.section.kiosks', area: 'people' },
+  {
+    id: 'members',
+    label: 'settings.section.members',
+    area: 'people',
+    keywords: ['users', 'accounts', 'family', 'benutzer', 'konten', 'familie'],
+    fields: ['auth.new_member', 'auth.groups'],
+  },
+  { id: 'invites', label: 'settings.section.invites', area: 'people', fields: ['auth.new_invite'] },
+  { id: 'guests', label: 'settings.section.guests', area: 'people', fields: ['auth.new_guest'] },
+  {
+    id: 'kiosks',
+    label: 'settings.section.kiosks',
+    area: 'people',
+    keywords: ['kiosk', 'wall', 'tablet', 'display', 'wand', 'anzeige'],
+    fields: ['auth.kiosk_new'],
+  },
   // Data & backup.
-  { id: 'backups', label: 'settings.section.backups', module: 'backup', area: 'data' },
+  {
+    id: 'backups',
+    label: 'settings.section.backups',
+    module: 'backup',
+    area: 'data',
+    keywords: ['backup', 'restore', 'webdav', 'sicherung', 'wiederherstellen'],
+    fields: ['backup.offsite', 'backup.restore'],
+  },
   {
     id: 'backupmonitor',
     label: 'settings.section.backupmonitor',
@@ -67,9 +161,22 @@ export const OWN_SECTIONS: CatalogSection[] = [
     area: 'data',
     homelab: true,
   },
-  { id: 'transfer', label: 'settings.section.transfer', module: 'transfer', area: 'data' },
+  {
+    id: 'transfer',
+    label: 'settings.section.transfer',
+    module: 'transfer',
+    area: 'data',
+    keywords: ['export', 'import', 'json', 'yaml', 'homepage', 'homarr'],
+  },
   // System & info.
-  { id: 'about', label: 'settings.section.about', module: 'system', area: 'system' },
+  {
+    id: 'about',
+    label: 'settings.section.about',
+    module: 'system',
+    area: 'system',
+    keywords: ['version', 'update', 'release', 'aktualisierung'],
+    fields: ['system.update_check'],
+  },
   { id: 'forecast', label: 'settings.section.forecast', module: 'system', area: 'system', homelab: true },
   { id: 'security-log', label: 'settings.section.security_log', area: 'system' },
   { id: 'full-version', label: 'settings.section.full_version', area: 'system' },
