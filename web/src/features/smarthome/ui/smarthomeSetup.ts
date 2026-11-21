@@ -1,10 +1,14 @@
 import { t } from '../../../shared/i18n';
-import type { SetupDescriptor } from '../../../shared/setup/setup';
+import type { FoundService, SetupDescriptor } from '../../../shared/setup/setup';
 import type { SmarthomeUseCases } from '../usecase/smarthomeUseCases';
 
 /** The setup assistant of the Home Assistant widget (#588), as data. */
-export function smarthomeSetup(smarthome: SmarthomeUseCases): SetupDescriptor {
+export function smarthomeSetup(
+  smarthome: SmarthomeUseCases,
+  discover?: () => Promise<FoundService[]>,
+): SetupDescriptor {
   return {
+    discover,
     service: 'Home Assistant',
     fields: [
       {

@@ -19,7 +19,7 @@ export const widgets: WidgetDefinition[] = [
     icon: 'activity',
     view: lazy(
       () => import('../../features/smarthome/ui/SmartHomeWidget.svelte'),
-      (config, c) => ({ config, smarthome: c.smarthome }),
+      (config, c) => ({ config, smarthome: c.smarthome, discover: () => c.discovery.find('smarthome') }),
     ),
     settings: lazy(
       () => import('../../features/smarthome/ui/SmartHomeWidgetSettings.svelte'),

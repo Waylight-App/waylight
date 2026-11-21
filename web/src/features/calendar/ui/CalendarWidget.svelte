@@ -1,5 +1,6 @@
 <script lang="ts">
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import type { FoundService } from '../../../shared/setup/setup';
   import { calendarSetup } from './calendarSetup';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -14,8 +15,10 @@
   interface Props {
     calendar: CalendarUseCases;
     config: Record<string, unknown>;
+    /** Services found in the home network for the setup (#590). */
+    discover?: () => Promise<FoundService[]>;
   }
-  let { calendar, config }: Props = $props();
+  let { calendar, config, discover }: Props = $props();
   const poll = usePolling();
 
   const POLL_MS = 5 * 60 * 1000;
@@ -28,7 +31,7 @@
   let adding = $state<Date | null>(null);
   let reload = $state(0);
   // svelte-ignore state_referenced_locally
-  const setup = calendarSetup(calendar);
+  const setup = calendarSetup(calendar, discover);
 
   // The agenda list; the month and split views load their own months.
   $effect(() => {
