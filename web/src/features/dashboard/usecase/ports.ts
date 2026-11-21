@@ -2,6 +2,7 @@ import type { Dashboard, Tab, TabRule, TabTemplate, Widget, WidgetConfig } from 
 import type { LayoutItem, Rect } from '../domain/layout';
 import type { MobileItem } from '../domain/mobile';
 import type { WidgetSize } from '../domain/sizes';
+import type { Zone } from '../domain/zones';
 
 /** Output port: persistence of tabs and widgets. */
 export interface DashboardGateway {
@@ -23,6 +24,10 @@ export interface DashboardGateway {
   deleteWidget(id: string): Promise<void>;
   setBackground(tabId: string, background: string): Promise<Tab>;
   setRules(tabId: string, rules: TabRule[]): Promise<Tab>;
+  /** Lays a tab out in zones or in the free grid again (#619). */
+  setZones(tabId: string, enabled: boolean): Promise<Tab>;
+  /** Moves a widget to a zone; undefined lets its kind decide again. */
+  moveToZone(widget: Widget, zone: Zone | undefined): Promise<void>;
   saveMobileLayout(tabId: string, items: MobileItem[]): Promise<Tab>;
   resetMobileLayout(tabId: string): Promise<Tab>;
   listTemplates(): Promise<TabTemplate[]>;

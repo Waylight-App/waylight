@@ -30,6 +30,7 @@ func CompactState(agenda AgendaResponse, now time.Time, loc *time.Location) kern
 	}
 	if next == nil {
 		state.Title = kernel.NewText("No upcoming events")
+		state.Empty = true
 		return state
 	}
 	state.Title = kernel.NewTextf("{title}", "title", next.Summary)

@@ -36,7 +36,7 @@ func NewCompactResponse(s kernel.CompactState) CompactResponse {
 	if level == "" {
 		level = kernel.CompactNone
 	}
-	res := CompactResponse{Title: compactText(s.Title), Level: string(level), Count: s.Count, UpdatedAt: s.UpdatedAt}
+	res := CompactResponse{Title: compactText(s.Title), Level: string(level), Count: s.Count, UpdatedAt: s.UpdatedAt, Empty: s.Empty}
 	if s.Detail.Template != "" {
 		d := compactText(s.Detail)
 		res.Detail = &d

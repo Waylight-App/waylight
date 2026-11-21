@@ -94,6 +94,7 @@ components:
         level: { type: string, enum: [none, ok, attention, problem], description: "Clients colour only attention and problem" }
         count: { type: integer, description: Optional number for badges }
         updatedAt: { type: string, format: date-time }
+        empty: { type: boolean, description: "true = nothing to show (no upcoming events, no habits, nothing to do); zoned dashboards hide the widget" }
         action:
           type: object
           description: "The one primary action (#598): the request to send, or one request per choice"

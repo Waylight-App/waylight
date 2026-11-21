@@ -102,7 +102,7 @@ const compactDays = 14
 func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
 	agenda, err := m.uc.Upcoming(ctx, compactDays)
 	if errors.Is(err, domain.ErrNotConfigured) {
-		return kernel.CompactState{Level: kernel.CompactNone, UpdatedAt: m.clock.Now(), Title: kernel.NewText("No calendar set up")}, nil
+		return kernel.CompactState{Level: kernel.CompactNone, UpdatedAt: m.clock.Now(), Title: kernel.NewText("No calendar set up"), Empty: true}, nil
 	}
 	if err != nil {
 		return kernel.CompactState{}, err

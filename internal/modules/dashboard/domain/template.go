@@ -25,6 +25,7 @@ type TemplateWidget struct {
 	Rect   Rect
 	Config string
 	Size   Size
+	Zone   Zone
 }
 
 // Template is a saved tab layout that new tabs can be created from.
@@ -45,7 +46,7 @@ func NewTemplate(id, name string, widgets []Widget) (Template, error) {
 	}
 	t := Template{ID: id, Name: name, Widgets: make([]TemplateWidget, 0, len(widgets))}
 	for _, w := range widgets {
-		t.Widgets = append(t.Widgets, TemplateWidget{Kind: w.Kind(), Rect: w.Rect(), Config: w.Config(), Size: w.Size()})
+		t.Widgets = append(t.Widgets, TemplateWidget{Kind: w.Kind(), Rect: w.Rect(), Config: w.Config(), Size: w.Size(), Zone: w.Zone()})
 	}
 	return t, nil
 }

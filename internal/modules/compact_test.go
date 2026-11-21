@@ -52,6 +52,9 @@ func TestCompactHandler(t *testing.T) {
 	if empty.Level != "none" || empty.Detail != nil || empty.Action != nil {
 		t.Fatalf("%+v", empty)
 	}
+	if !NewCompactResponse(kernel.CompactState{Empty: true}).Empty {
+		t.Fatal("empty flag lost")
+	}
 
 	rec = httptest.NewRecorder()
 	CompactHandler(compactFake{err: kernel.ErrNotFound})(rec, httptest.NewRequest(http.MethodGet, "/", nil))
