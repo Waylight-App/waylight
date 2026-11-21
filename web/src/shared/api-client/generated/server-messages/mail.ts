@@ -2,7 +2,9 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_e7d2e0fa24ebe178: "Add a mailbox in Settings under Mail with the server name and your login.",
   srv_a6a19c77984be1a4: "At most 10 mail accounts can be added.",
+  srv_ef77a55fb4d8a210: "How many unread e-mails you have and the newest ones. Waylight only reads, it never sends or deletes.",
   srv_f2d32e363bfff9e9: "No mail account is set up yet.",
   srv_1cd466bb63b42a23: "The mail account does not exist (any more).",
 } as const;

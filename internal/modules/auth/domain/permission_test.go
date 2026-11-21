@@ -9,6 +9,8 @@ func TestGuestMayAccess(t *testing.T) {
 		method, path string
 		want         bool
 	}{
+		{"GET", "/api/help/widgets", true},
+		{"GET", "/api/help/docs", true},
 		{"GET", "/api/dashboard", true},
 		{"GET", "/api/notes", true},
 		{"GET", "/api/notes/abc", true},

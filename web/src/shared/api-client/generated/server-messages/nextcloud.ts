@@ -2,7 +2,9 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_ba751f38616f912b: "Choose Set up in the widget and sign in with Nextcloud, or enter its address and an app password.",
   srv_852391e96f8a11b2: "Nextcloud is not configured yet.",
+  srv_94a13471047e5554: "Your Nextcloud: version, your storage, and for admins free space, users and app updates.",
 } as const;
 
 /** Key of a backend message. */

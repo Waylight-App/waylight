@@ -4,6 +4,7 @@
 export const serverMessages = {
   srv_56aacb20f1f37331: "A certificate fingerprint needs an https:// URL.",
   srv_90d6536f1a9bc239: "Actions are not enabled for this guest (PROXMOX_ACTIONS_GUESTS).",
+  srv_672f8bd456e5433c: "Choose Set up in the widget and enter the Proxmox address and a read-only access key.",
   srv_d30d28cec1fe8a0e: "Proxmox VE is not configured yet.",
   srv_310b2c277042df51: "Proxmox VE is not reachable",
   srv_98db8603c1a1c4cd: "Proxmox VE is not reachable.",
@@ -11,6 +12,7 @@ export const serverMessages = {
   srv_aa22340e214f97da: "The token ID must look like monitor@pve!waylight.",
   srv_3d3a9008e1d23718: "The token secret is required.",
   srv_048731d99c865141: "Unknown action, use start or shutdown.",
+  srv_e61ddc7b22aca465: "Your Proxmox server: load and which virtual machines and containers are running.",
   srv_d0a400a5e85d849b: "{offline} of {total} nodes offline",
   srv_4f02e7bfc777a185: "{running} of {total} guests running",
 } as const;

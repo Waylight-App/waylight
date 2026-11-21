@@ -8,4 +8,9 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
 export const serverDe: Record<ServerMessageKey, string> = {
   // Could not load the school holidays: {detail}
   srv_e204fc52da15fb72: 'Die Schulferien konnten nicht geladen werden: {detail}',
+  // Open the widget settings and choose your German state. Add a calendar link for school holidays if you like.
+  srv_f5c1248ee358ad3c:
+    'Öffne die Widget-Einstellungen und wähle dein Bundesland. Für die Schulferien kannst du einen Kalender-Link hinzufügen.',
+  // The next public holidays and school holidays.
+  srv_b47665be8f2c2177: 'Die nächsten Feiertage und Schulferien.',
 };

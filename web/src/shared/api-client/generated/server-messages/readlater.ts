@@ -4,6 +4,8 @@
 export const serverMessages = {
   srv_cc69e38143dedd78: "Archived articles can be kept for 1 to 365 days, or forever (0).",
   srv_03b5b5f039e06831: "At most 2000 links can be imported at once.",
+  srv_64fbda78c8b6dd6d: "Pages you saved to read later, kept as a clean copy.",
+  srv_46ef7a627ad13a19: "Paste a link into the widget or save it with the browser extension.",
   srv_8eb81e2c9daffa7f: "The address is not a web page.",
   srv_b1c94bd379a22bbd: "The article does not exist.",
   srv_22fa6fd55903ce2e: "The export file must be at most 5 MB.",

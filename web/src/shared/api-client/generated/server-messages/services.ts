@@ -2,8 +2,11 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_65797128a11803b4: "A status page of your services: uptime over the last days and current or past outages.",
+  srv_8838681c99377be8: "Add services in Settings under Services, or let Waylight find them on your network. Containers with Waylight labels appear by themselves.",
   srv_1f3976061912504c: "Docker discovery needs the docker module to be enabled.",
   srv_2ad35206dae11b67: "Each service name can be used only once in the file.",
+  srv_e02aa2085e4c6961: "It uses the services you added in Settings under Services; there is nothing else to set up.",
   srv_591001f7788fb502: "No MAC address is stored for this service.",
   srv_e40289b4499ed164: "No services yet",
   srv_49713b674a89dd04: "The check URL must start with http:// or https://.",
@@ -12,6 +15,7 @@ export const serverMessages = {
   srv_c2aa1fabd915da16: "The interval must be between 1 and {max} minutes.",
   srv_a75b491a5e89aabe: "The new order must contain every service exactly once.",
   srv_df6166e3647fbc04: "The service does not exist.",
+  srv_82c86b04ef996a5a: "Tiles for your own services with their online status, response time and certificate warnings.",
   srv_c64f8cf81797f821: "Unknown merge rule.",
   srv_ac66b193c5335c18: "{count} services down",
   srv_09bd02ddefc751e8: "{name} is down",

@@ -22,4 +22,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_9684d4c2e31b6d2f: 'Die OPML-Datei ist größer als 2 MB.',
   // The file is not an OPML subscription list.
   srv_0d8148b3ba698407: 'Die Datei ist keine OPML-Abo-Liste.',
+  // Add feeds in Settings under Feeds, or pick news sources from the built-in catalogue there.
+  srv_1c0e995e6000585f:
+    'Füge Feeds in den Einstellungen unter Feeds hinzu oder wähle dort Nachrichtenquellen aus dem eingebauten Katalog.',
+  // The newest articles of the news feeds you follow.
+  srv_145eb10e901d3d27: 'Die neuesten Artikel der Feeds, denen du folgst.',
 };

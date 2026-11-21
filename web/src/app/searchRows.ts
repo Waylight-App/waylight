@@ -6,6 +6,7 @@ import type { CommandMatch } from '../features/search/domain/commands';
 import type { OwnKeyword } from '../features/search/domain/keywords';
 import type { Timer, TimerRequest } from '../features/search/domain/timer';
 import type { SearchAction } from './searchActions';
+import type { HelpTopic } from '../features/help';
 
 /**
  * Rows of the search panel below the hero field (#222), grouped like the
@@ -32,6 +33,8 @@ export type Row =
   | { kind: 'command'; id: string; match: CommandMatch }
   /** A command a plugin offers for the typed text (#453). */
   | { kind: 'plugin'; id: string; action: SearchAction }
+  /** Help that answers a question: a widget's help or a documentation page (#678). */
+  | { kind: 'help'; id: string; topic: HelpTopic }
   | { kind: 'web'; id: string };
 
 export interface RowGroup {
@@ -53,6 +56,8 @@ export interface RowInput {
   actions?: SearchAction[];
   /** App commands that match the text (#476). */
   commands?: CommandMatch[];
+  /** Help topics that answer the text when it reads as a question (#678). */
+  help?: HelpTopic[];
   /** The own keyword the text is exactly (#478). */
   keyword?: OwnKeyword | null;
   /** URL when the text is clearly an address (#475). */
@@ -139,6 +144,13 @@ export function buildRows(input: RowInput): RowGroup[] {
       id: 'commands',
       label: 'app.group.commands',
       rows: commands.map((match) => ({ kind: 'command', id: `command:${match.spec.id}`, match })),
+    });
+  const help = command ? [] : (input.help ?? []);
+  if (help.length > 0)
+    out.push({
+      id: 'help',
+      label: 'app.group.help',
+      rows: help.map((topic) => ({ kind: 'help', id: `help:${topic.id}`, topic })),
     });
   // A typed command wins over plugin actions; both are listed under actions.
   const actions: Row[] =

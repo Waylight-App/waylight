@@ -16,4 +16,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_192c651a50b6f91f: 'Die Version existiert nicht.',
   // The note was changed elsewhere in the meantime.
   srv_4fc5f1e95d5f8139: 'Die Notiz wurde inzwischen an anderer Stelle geändert.',
+  // One note or your pinned notes, written in Markdown.
+  srv_521ab760c6e901b7: 'Eine Notiz oder deine angehefteten Notizen, geschrieben in Markdown.',
+  // Type "n" and some text into the search to add a note, then pin it. Open the widget settings to choose which note it shows.
+  srv_c90584c7159a5524:
+    'Tippe „n“ und einen Text in die Suche, um eine Notiz anzulegen, und hefte sie an. In den Widget-Einstellungen wählst du, welche Notiz es zeigt.',
 };

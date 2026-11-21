@@ -88,6 +88,15 @@ describe('buildRows (#222)', () => {
     expect(rows(todo, [])).toEqual(['quick:capture']);
     expect(rows(restart, [])).toEqual(['actions:action']);
   });
+  it('lists help topics after the results and before the web row, unless a command was typed (#678)', () => {
+    const help = [{ id: 'widget:calendar', title: 'Calendar', detail: '', keywords: [], url: 'https://d/' }];
+    expect(
+      ids(buildRows({ command: null, alternative: null, groups: [bookmarks], web: true, help })),
+    ).toEqual(['bookmark:bookmark:b1', 'help:help:widget:calendar', 'web:web']);
+    expect(ids(buildRows({ command: todo, alternative: null, groups: [], web: false, help }))).toEqual([
+      'quick:capture',
+    ]);
+  });
   it('leaves out the web row without the search module and empty groups', () => {
     expect(
       buildRows({ command: null, alternative: null, groups: [{ ...bookmarks, items: [] }], web: false }),

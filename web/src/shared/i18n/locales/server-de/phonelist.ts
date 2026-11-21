@@ -22,4 +22,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_06810649bd9e2525: 'Das Team darf höchstens 60 Zeichen lang sein.',
   // This entry comes from the address book; change it there.
   srv_a10984d27954a094: 'Dieser Eintrag stammt aus dem Adressbuch; ändere ihn dort.',
+  // A phone list of names, roles and numbers that you can search.
+  srv_35c0395bf946b8e1: 'Eine durchsuchbare Telefonliste mit Namen, Rollen und Nummern.',
+  // An admin adds the entries in Settings under Phone list. Open the widget settings to group the list by team.
+  srv_0617246d6c6460cf:
+    'Ein Admin pflegt die Einträge in den Einstellungen unter Telefonliste. In den Widget-Einstellungen gruppierst du die Liste nach Team.',
 };

@@ -4,11 +4,13 @@
 export const serverMessages = {
   srv_865d0fdde8c133ca: "A password or access token is required for new registries.",
   srv_fc1c5d36ee0973d3: "Actions are not enabled for this container (DOCKER_ACTIONS / DOCKER_ACTIONS_CONTAINERS).",
+  srv_6fead9430bc4e22e: "An admin connects Waylight to Docker once, as the installation guide describes. Open the widget settings to choose which containers are shown.",
   srv_2ad8dffbd734017a: "At most 20 registries can be stored.",
   srv_789f61f53fa5ac29: "Docker is not reachable",
   srv_4ae76664f7b46c6b: "Each registry may only be listed once.",
   srv_e9bcefee5bd2a359: "Each registry needs a host name (e.g. ghcr.io) and a user name.",
   srv_1120b37481579f63: "The Docker API is not reachable. Does the socket proxy allow IMAGES=1?",
+  srv_0e68c0f80b18e068: "The containers on your server and whether they are running and healthy.",
   srv_c9b09323ab5702c6: "The image update check is disabled. Enable it in Settings → Docker updates.",
   srv_da9839ea10b35eed: "{count} stopped",
   srv_2a91fd7383166bf0: "{count} unhealthy",

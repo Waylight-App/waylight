@@ -44,6 +44,20 @@ paths:
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ModulesInfo" } } } }
         "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/help/widgets:
+    get:
+      tags: [platform]
+      summary: Short help of every widget kind the account can see (#678)
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/WidgetHelpList" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/help/docs:
+    get:
+      tags: [platform]
+      summary: Index of the documentation pages with title, summary and headings (#678)
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/DocsIndex" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
 
 components:
   securitySchemes:
@@ -77,6 +91,42 @@ components:
     TooManyRequests: { description: Too many failed attempts, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
     Unavailable: { description: Upstream service unavailable, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
   schemas:
+    WidgetHelpList:
+      type: object
+      required: [widgets]
+      properties:
+        widgets:
+          type: array
+          items:
+            type: object
+            required: [kind, shows, setUp, docsUrl]
+            properties:
+              kind: { type: string }
+              shows: { $ref: "#/components/schemas/CompactText" }
+              setUp: { $ref: "#/components/schemas/CompactText" }
+              docsUrl: { type: string, format: uri }
+    DocsIndex:
+      type: object
+      required: [baseUrl, pages]
+      properties:
+        baseUrl: { type: string, format: uri }
+        pages:
+          type: array
+          items:
+            type: object
+            required: [path, title, summary, sections]
+            properties:
+              path: { type: string, description: "Relative to baseUrl, e.g. modules/immich/" }
+              title: { type: string }
+              summary: { type: string }
+              sections:
+                type: array
+                items:
+                  type: object
+                  required: [title, anchor]
+                  properties:
+                    title: { type: string }
+                    anchor: { type: string }
     CompactText:
       type: object
       required: [key, text]

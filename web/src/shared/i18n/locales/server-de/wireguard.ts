@@ -17,4 +17,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_a7f77e98c90729a9: 'Der Export ist veraltet',
   // {online} of {total} peers connected
   srv_d94ddd59412dba1f: '{online} von {total} Peers verbunden',
+  // An admin lets the server write a small status file for Waylight; the guide explains the few steps.
+  srv_cdbedfe0b003df1c:
+    'Ein Admin lässt den Server eine kleine Statusdatei für Waylight schreiben; die Anleitung erklärt die wenigen Schritte.',
+  // The devices of your WireGuard VPN with their last connection and traffic.
+  srv_71783fa74430771b: 'Die Geräte deines WireGuard-VPN mit letzter Verbindung und Datenmenge.',
 };

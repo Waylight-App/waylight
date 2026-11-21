@@ -33,6 +33,7 @@ import (
 	"waylight/internal/platform/spa"
 	"waylight/internal/platform/webui"
 	"waylight/internal/platform/wol"
+	"waylight/internal/shared/docsindex"
 )
 
 // version is set at build time via -ldflags "-X main.version=...".
@@ -255,6 +256,8 @@ func newHandler(a *app) http.Handler {
 		}
 	}
 	r.Protected("GET /api/modules", a.registry.Handler(frontendOnlyWidgetKinds))
+	r.Protected("GET /api/help/widgets", a.registry.HelpHandler(frontendOnlyHelp))
+	r.Protected("GET /api/help/docs", docsindex.Handler(modules.DocsBaseURL))
 	r.Handle("GET /healthz", router.HealthCheck(a.db.PingContext))
 	var httpStats *metrics.HTTPStats
 	if a.cfg.MetricsEnabled {

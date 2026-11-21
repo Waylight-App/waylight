@@ -25,4 +25,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_4886a197fd6d3ced: '{healthy} von {total} Laufwerken gesund',
   // {total} drives healthy
   srv_4590f8e90f51cb7d: '{total} Laufwerke gesund',
+  // An admin lets the server write a small drive report for Waylight; the guide explains how.
+  srv_57fc0e5f72a9e72e:
+    'Ein Admin lässt den Server einen kleinen Laufwerksbericht für Waylight schreiben; die Anleitung erklärt, wie.',
+  // The health of your drives: overall verdict, temperature and wear.
+  srv_66292ac2160bbbe5: 'Der Zustand deiner Laufwerke: Gesamturteil, Temperatur und Verschleiß.',
 };

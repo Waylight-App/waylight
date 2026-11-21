@@ -26,4 +26,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_e4facbe924cb2c30: 'Der Ortsname ist zu lang.',
   // The radius must be between 1 and 25 km.
   srv_ad1457baee3bb1c1: 'Der Umkreis muss zwischen 1 und 25 km liegen.',
+  // Choose Set up in the widget and enter your free key from Tankerkönig, then pick a place.
+  srv_d334b719da70accd:
+    'Wähle Einrichten im Widget, gib deinen kostenlosen Schlüssel von Tankerkönig ein und wähle dann einen Ort.',
+  // The cheapest open petrol stations near a place in Germany, or your favourites.
+  srv_dcbb4c177adb7a32:
+    'Die günstigsten geöffneten Tankstellen in der Nähe eines Orts in Deutschland oder deine Favoriten.',
 };

@@ -50,6 +50,21 @@ not see anything that changes data.
 Add a word to narrow the list: `? wetter` or `help disk`. The hints that
 rotate in the empty search field come from the same list.
 
+### Asking a question
+
+Type a question the way you would ask a person, such as *How do I add a
+calendar?* or *Wie richte ich die Müllabfuhr ein?*. A text that ends with a
+question mark or starts with a question word gets a *Help* group: the
+widgets whose help answers it come first and open that help, followed by
+pages of this documentation, which open in a new browser tab. The search
+runs on your server against the short help of every widget and an index of
+the documentation (titles, the first paragraph and the headings of each
+page), so it works without an AI. Widget help is in English and German; the
+documentation is in English.
+
+When an AI is set up ([summaries](modules/summary.md)), a question that
+starts with `?` also offers *Ask the AI*.
+
 ## Web search
 
 DuckDuckGo is the default engine, so all of its

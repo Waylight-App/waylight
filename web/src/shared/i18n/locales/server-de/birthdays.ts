@@ -19,4 +19,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // This birthday comes from the connected address book; change or remove it there.
   srv_3200c6dd1c3ff975:
     'Dieser Geburtstag stammt aus dem verbundenen Adressbuch; ändere oder lösche ihn dort.',
+  // Add birthdays in Settings under Birthdays, import a contacts file or connect an address book.
+  srv_df3d1d090d91e1fa:
+    'Füge Geburtstage in den Einstellungen unter Geburtstage hinzu, importiere eine Kontaktdatei oder verbinde ein Adressbuch.',
+  // The next birthdays and how old everyone turns.
+  srv_5b1ecee92864e5b0: 'Die nächsten Geburtstage und wie alt alle werden.',
 };

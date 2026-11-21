@@ -42,4 +42,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Jeder Lesezeichen-Eintrag ist entweder ein Lesezeichen mit url oder ein Ordner mit Lesezeichen, nicht beides.',
   // Each folder name can be used only once in the file.
   srv_593595f23054b9e4: 'Jeder Ordnername darf in der Datei nur einmal vorkommen.',
+  // Add links with the plus button or type "b" and a link into the search. Open the widget settings to show only one folder.
+  srv_0fd8a74b81e99db0:
+    'Füge Links mit dem Plus-Knopf hinzu oder tippe „b“ und einen Link in die Suche. In den Widget-Einstellungen zeigst du nur einen Ordner.',
+  // Your links, sorted into folders and tags.
+  srv_f2f1b3752718ef15: 'Deine Links, sortiert in Ordner und Schlagwörter.',
 };

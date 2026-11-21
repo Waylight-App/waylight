@@ -34,4 +34,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_ae1c7f13b7c0c47f: 'Start',
   // Unknown timer action.
   srv_4aeb14eb94ebdd1c: 'Unbekannte Timer-Aktion.',
+  // A focus timer: work for a while, then take a short break.
+  srv_68bf687ab1701e2d: 'Ein Fokus-Timer: eine Weile arbeiten, dann eine kurze Pause.',
+  // Press start. Open the widget settings to change the work and break lengths.
+  srv_44b22cd219681124:
+    'Drück auf Start. In den Widget-Einstellungen änderst du die Länge von Arbeit und Pause.',
 };

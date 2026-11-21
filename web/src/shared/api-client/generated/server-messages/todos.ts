@@ -21,7 +21,9 @@ export const serverMessages = {
   srv_deed27849449d0b5: "The to-do must have between 1 and 300 characters.",
   srv_b4f6dd576f1534c2: "The to-do was changed elsewhere in the meantime.",
   srv_b8a4d7c2f106adb7: "This list does not support repeating to-dos or reminders.",
+  srv_18bdc8c24d205e82: "Type \"t\" and a task into the search to add one. Open the widget settings to show a connected task list instead.",
   srv_e28b70dde38477c1: "Unknown kind of to-do list.",
+  srv_51fb679e80a1dff3: "Your to-dos with due dates, or a task list from Nextcloud, Todoist or Microsoft To Do.",
   srv_fe19a87a4c31a1ac: "{count} open",
   srv_4fd610086ba2117c: "{count} overdue",
 } as const;

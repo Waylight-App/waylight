@@ -9,6 +9,7 @@ export const serverMessages = {
   srv_3aa18ca8aec1b0b1: "Every value needs a JSONPath of at most 200 characters.",
   srv_ed146afca70b6b18: "Every value needs a label of at most 40 characters.",
   srv_18b0ba190b19d73b: "Invalid JSONPath {path}: {detail}",
+  srv_cba004fb20f26597: "Open the widget settings, enter the address and pick the values to show.",
   srv_96e158ab8fbd211f: "The address is not in a private network. Allow public addresses for this endpoint to reach it.",
   srv_719bb42774762c3c: "The endpoint answered {status}.",
   srv_6e83c7041d0c7d02: "The endpoint did not answer within 10 seconds.",
@@ -21,6 +22,7 @@ export const serverMessages = {
   srv_04481dd132908420: "This header is set automatically and cannot be configured.",
   srv_6a2a422643619241: "Thresholds must be numbers.",
   srv_fe9ef3e59d3ce637: "Units must be at most 12 characters long.",
+  srv_ac90feac1cda6b07: "Values from any web address that answers with JSON, such as a sensor or a counter.",
 } as const;
 
 /** Key of a backend message. */

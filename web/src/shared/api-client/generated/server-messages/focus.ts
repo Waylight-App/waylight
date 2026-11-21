@@ -2,6 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_68bf687ab1701e2d: "A focus timer: work for a while, then take a short break.",
   srv_888252e2db1c2fca: "A long break follows every 1 to 12 sessions.",
   srv_0f85885a0017dc08: "A phase lasts between 1 and 180 minutes.",
   srv_e9ad8cf134079d79: "A session lasts between 1 and 180 minutes.",
@@ -10,6 +11,7 @@ export const serverMessages = {
   srv_372b1075533617de: "Only a signed-in account has its own focus timer.",
   srv_061cc20e3432dead: "Pause",
   srv_f896339e1166a799: "Paused · {time}",
+  srv_44b22cd219681124: "Press start. Open the widget settings to change the work and break lengths.",
   srv_c9c9fdc4f2ddf844: "Short break · {time}",
   srv_ae1c7f13b7c0c47f: "Start",
   srv_addb603b2e8d10d3: "The session must have ended within the last day.",

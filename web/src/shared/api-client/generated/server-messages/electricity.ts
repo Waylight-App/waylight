@@ -8,7 +8,9 @@ export const serverMessages = {
   srv_0f6238acbb3eb2f8: "Choose a supported bidding zone (DE-LU or AT).",
   srv_0e1d3194c692037c: "No electricity prices were published for today yet.",
   srv_46d62be6e252d98a: "No price for this hour",
+  srv_9d42ecd817b66e11: "Open the widget settings and choose your country. No account or key is needed.",
   srv_0096b59b55372fb3: "Prices could not be updated",
+  srv_2a91edfdb4c2047e: "The electricity market price per hour for today and tomorrow, with the cheapest hours marked.",
   srv_d7cd175f61b1223d: "{price} ct now",
 } as const;
 

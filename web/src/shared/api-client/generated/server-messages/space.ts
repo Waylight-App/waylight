@@ -3,10 +3,12 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_1725722a41c512af: "The NASA API key looks wrong.",
+  srv_7f04b43fbc8ab518: "The next rocket launches and NASA's astronomy picture of the day.",
   srv_374c6d77e754cb26: "The picture is not hosted by NASA.",
   srv_21a524286ae6e520: "The space data is not available right now.",
   srv_1b5d999910a8dd39: "This space source is switched off in the settings.",
   srv_9825ec9eef300ecf: "Today's picture is not an image.",
+  srv_d4b141b4193f3bcc: "Turn on launches or the picture in Settings under Space; nothing is fetched until then.",
 } as const;
 
 /** Key of a backend message. */

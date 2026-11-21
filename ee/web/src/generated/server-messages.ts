@@ -3,6 +3,7 @@
 /** English backend messages by kernel.MessageKey; translations live in ee/web/src/serverDe.ts. */
 export const serverMessages = {
   srv_fbe42a65e3ad4943: "A user with this userName exists.",
+  srv_303adda4a94b4849: "Admins and the chosen writer group post announcements in the widget; everyone else reads them.",
   srv_c053d6d39505436f: "An absence can span at most a year.",
   srv_8ca1f3ecca038f78: "An admin has to register Waylight at this service first.",
   srv_c8357fa440121c4e: "Ask for at most 62 days at once.",
@@ -19,6 +20,7 @@ export const serverMessages = {
   srv_b60b734a3a57d4a4: "Enter the first day as YYYY-MM-DD.",
   srv_5782d5d3e8d55376: "Enter the last day as YYYY-MM-DD.",
   srv_b8832da637636f2f: "Enter the secondary colour as #rrggbb.",
+  srv_6aa7a4f2906cf646: "Enter your own absences in the widget with the first and last day; admins can enter them for anyone.",
   srv_f7a2af3f0d1e9e65: "Guests, kiosk displays and API tokens cannot set a status.",
   srv_6abb1cd87fe0114e: "Home",
   srv_a954440392d2ad7a: "My status today",
@@ -33,6 +35,8 @@ export const serverMessages = {
   srv_fbe0ca8945677a77: "Only members and admins share calendars.",
   srv_ee68ac02d831018b: "Posting to Slack or Teams needs a licence key that includes chat apps.",
   srv_ccd005dcc1a12e3d: "Presence is switched off for this organisation.",
+  srv_1788bd63bbd6bd52: "Set your own status in the widget: Office, Home or Away. It lapses at midnight.",
+  srv_088ed1ea136189e6: "Short notices for everyone, such as \"The office is closed on Friday\".",
   srv_c200acf86457cbad: "The SCIM token is missing or wrong.",
   srv_aaa52af61ff9db08: "The absence does not exist.",
   srv_61500043207d04a0: "The announcement does not exist.",
@@ -58,6 +62,8 @@ export const serverMessages = {
   srv_ffec4a0bca44886e: "This service is not known.",
   srv_c7ca86deca0949d2: "Upload a PNG, JPEG or GIF of at most 2 MB; SVG is not accepted.",
   srv_6d4dbe9e11e463b2: "Upload a logo, a dark logo or a favicon.",
+  srv_220efcf41bcf3d97: "Who is away: on holiday, sick, working remotely or away for another reason.",
+  srv_c5642a0df2269657: "Who is in the office, working from home or away today.",
   srv_6f3071f3338510fa: "You can only enter and change your own absences.",
   srv_0786b209ec0f5bc7: "You may not write announcements.",
   srv_feb744876c8c61f1: "from and to must be dates (YYYY-MM-DD) or times (RFC 3339), limit a number.",

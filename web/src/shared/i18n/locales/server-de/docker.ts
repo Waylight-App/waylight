@@ -30,4 +30,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_2a91fd7383166bf0: '{count} nicht gesund',
   // {running} of {total} running
   srv_19f48a82e61c671a: '{running} von {total} laufen',
+  // An admin connects Waylight to Docker once, as the installation guide describes. Open the widget settings to choose which containers are shown.
+  srv_6fead9430bc4e22e:
+    'Ein Admin verbindet Waylight einmalig mit Docker, wie es die Installationsanleitung beschreibt. In den Widget-Einstellungen wählst du, welche Container angezeigt werden.',
+  // The containers on your server and whether they are running and healthy.
+  srv_0e68c0f80b18e068: 'Die Container auf deinem Server und ob sie laufen und gesund sind.',
 };

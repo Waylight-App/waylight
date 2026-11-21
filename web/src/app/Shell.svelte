@@ -1,6 +1,6 @@
 <script lang="ts">
   import WaylightMark from '../shared/ui/WaylightMark.svelte';
-  import { PRODUCT_NAME } from '../shared/product';
+  import { DOCS_URL, PRODUCT_NAME } from '../shared/product';
   import { rememberLook } from './branding/lastLook';
   import type { CommandHandlers } from './appCommands';
   import { hasStoredTimers, timerAlerts } from './timerAlerts.svelte';
@@ -501,6 +501,11 @@
   /** Whether the template choice replaces the example tabs of the setup (#670). */
   let sampleDashboard = $state(false);
 
+  // The widget kind whose help is open (#678): from a widget's "?" or a
+  // help result of the search. Kiosk displays offer neither.
+  let helpKind = $state<string | null>(null);
+  const showHelp = container.auth.kiosk ? undefined : (kind: string) => (helpKind = kind);
+
   /**
    * Whether the dashboard is still as setup left it: one tab with at most
    * the default widget ('empty'), or only the untouched example tabs of the
@@ -570,6 +575,7 @@
       return container.auth.guest || dashboardManaged || simpleView ? undefined : () => (editing = true);
     },
     shortcuts: () => (shortcutHelp = true),
+    widgetHelp: showHelp,
     get tour() {
       return modules?.has('onboarding') && !container.auth.guest ? restartTour : undefined;
     },
@@ -759,6 +765,7 @@
       globalBackground={appearance.backgroundImage}
       onappearance={(a) => (appearance = a)}
       ondone={() => (editing = false)}
+      onhelp={showHelp}
     />
   {/if}
 </main>
@@ -816,6 +823,19 @@
         {/if}
       {/snippet}
     </FirstStart>
+  {/await}
+{/if}
+
+{#if helpKind}
+  {@const kind = helpKind}
+  {#await import('../features/help/ui/WidgetHelpDialog.svelte') then { default: WidgetHelpDialog }}
+    <WidgetHelpDialog
+      name={definitionFor(kind)?.type.title ?? kind}
+      load={() => container.help.widget(kind)}
+      fallback={definitionFor(kind)?.type.description ?? ''}
+      docsUrl={DOCS_URL}
+      onclose={() => (helpKind = null)}
+    />
   {/await}
 {/if}
 

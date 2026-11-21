@@ -35,4 +35,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_654703b9e7d6cc6c: '{name} ist überfällig',
   // {total} backups OK
   srv_5533d9eb788ce382: '{total} Sicherungen OK',
+  // In Settings under Backup monitoring, add a job and let it call its secret link after each run.
+  srv_8706d83e48cb5271:
+    'Lege in den Einstellungen unter Backup-Überwachung eine Aufgabe an und lass sie nach jedem Lauf ihren geheimen Link aufrufen.',
+  // Whether your backups and scheduled jobs ran on time and without errors.
+  srv_4dc4f6b65d55e8ad: 'Ob deine Backups und geplanten Aufgaben pünktlich und ohne Fehler gelaufen sind.',
 };

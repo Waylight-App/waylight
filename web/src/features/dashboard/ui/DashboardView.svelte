@@ -52,6 +52,8 @@
     settings: Snippet<[Widget, (config: WidgetConfig) => Promise<void>]>;
     /** Whether a widget kind has a settings form. */
     hasSettings: (kind: string) => boolean;
+    /** Opens the short help of a widget kind (#678); without it no "?" is shown. */
+    onhelp?: (kind: string) => void;
     /** Whether a widget kind is rendered without card chrome outside edit mode. */
     chromeless: (kind: string) => boolean;
     /** Id of an element in the shell's top bar that hosts the tab bar (#167). */
@@ -116,6 +118,7 @@
     content,
     settings,
     hasSettings,
+    onhelp,
     chromeless,
     tabBarTarget = '',
     onstate,
@@ -721,6 +724,7 @@
         onzone={zoned ? (z) => moveToZone(widget, z) : undefined}
         onbox={(w, h) => onbox(widget.id, w, h)}
         onsettings={hasSettings(widget.kind) ? () => (dialog = { kind: 'settings', widget }) : undefined}
+        onhelp={onhelp ? () => onhelp(widget.kind) : undefined}
         ondelete={() => removeWidget(widget)}
         onduplicate={() => duplicateWidget(widget)}
       >

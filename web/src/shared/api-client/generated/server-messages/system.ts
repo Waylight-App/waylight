@@ -3,6 +3,8 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_b854584a505d6c89: "Host metrics are not available. Are /proc and /sys mounted?",
+  srv_593e88b1242b6e90: "How busy the server is: processor, memory, disks, temperature and how long it has been running.",
+  srv_a3f31a0950eeec3a: "Nothing to set up; it shows the machine Waylight runs on.",
   srv_4a2cd38168dace16: "The forecast warning must be between 1 and 365 days.",
   srv_57fd7519663b39c9: "The forecast window must be between 3 and 90 days.",
 } as const;

@@ -16,6 +16,8 @@
     handle: { onpointerdown: (e: PointerEvent) => void };
     /** Opens the widget settings; omitted for widgets without settings. */
     onsettings?: () => void;
+    /** Opens the short help of the widget kind (#678); omitted where none is offered. */
+    onhelp?: () => void;
     ondelete: () => void;
     /** Copies the widget including its configuration. */
     onduplicate?: () => void;
@@ -44,6 +46,7 @@
     editing,
     handle,
     onsettings,
+    onhelp,
     ondelete,
     onduplicate,
     chromeless = false,
@@ -130,6 +133,22 @@
   >
 {/snippet}
 
+{#snippet headerActions()}
+  {#if onhelp}
+    <button
+      class="btn btn-icon help"
+      class:editing
+      type="button"
+      aria-haspopup="dialog"
+      aria-label={t('dashboard.widget_help', { name: title })}
+      title={t('dashboard.widget_help', { name: title })}
+      onpointerdown={(e) => e.stopPropagation()}
+      onclick={onhelp}>?</button
+    >
+  {/if}
+  {#if editing}{@render editActions()}{/if}
+{/snippet}
+
 <article
   class="widget card"
   class:chromeless={chromeless && !editing}
@@ -140,7 +159,7 @@
     <!-- Dragging is pointer-only; settings and remove buttons stay keyboard accessible. -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <header class:draggable={editing} onpointerdown={handle.onpointerdown}>
-      <WidgetHeader {title} {icon} action={editing ? editActions : undefined} />
+      <WidgetHeader {title} {icon} action={onhelp || editing ? headerActions : undefined} />
     </header>
   {/if}
   <div class="content" bind:this={content}><div class="body">{@render children()}</div></div>
@@ -182,6 +201,23 @@
   }
   header.draggable {
     cursor: grab;
+  }
+  /* The help stays quiet until the card is hovered or the button focused,
+     so a dashboard of widgets does not show a row of question marks. */
+  .help {
+    color: var(--color-text-muted);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .widget:hover .help,
+  .help.editing,
+  .help:focus-visible {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .help {
+      opacity: 1;
+    }
   }
   /* The content area is a size container: widgets size text and layout
      relative to their own box (cqi/cqh/cqmin, @container widget …) instead

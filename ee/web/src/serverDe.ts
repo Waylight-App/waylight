@@ -137,4 +137,20 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_02edf4cd895e64fe: '{count} weg',
   // {office} in the office · {home} at home
   srv_4a4b587b0d9b29b5: '{office} im Büro · {home} im Homeoffice',
+  // Admins and the chosen writer group post announcements in the widget; everyone else reads them.
+  srv_303adda4a94b4849:
+    'Admins und die gewählte Schreibgruppe veröffentlichen Mitteilungen im Widget; alle anderen lesen sie.',
+  // Enter your own absences in the widget with the first and last day; admins can enter them for anyone.
+  srv_6aa7a4f2906cf646:
+    'Trage deine eigenen Abwesenheiten im Widget mit erstem und letztem Tag ein; Admins können sie für alle eintragen.',
+  // Set your own status in the widget: Office, Home or Away. It lapses at midnight.
+  srv_1788bd63bbd6bd52:
+    'Setze deinen eigenen Status im Widget: Büro, Homeoffice oder Weg. Er verfällt um Mitternacht.',
+  // Short notices for everyone, such as "The office is closed on Friday".
+  srv_088ed1ea136189e6: 'Kurze Mitteilungen für alle, etwa „Das Büro ist am Freitag geschlossen“.',
+  // Who is away: on holiday, sick, working remotely or away for another reason.
+  srv_220efcf41bcf3d97:
+    'Wer abwesend ist: im Urlaub, krank, mobil arbeitend oder aus einem anderen Grund weg.',
+  // Who is in the office, working from home or away today.
+  srv_c5642a0df2269657: 'Wer heute im Büro, im Homeoffice oder weg ist.',
 };

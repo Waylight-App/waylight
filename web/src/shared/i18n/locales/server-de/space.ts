@@ -16,4 +16,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_1b5d999910a8dd39: 'Diese Raumfahrt-Quelle ist in den Einstellungen ausgeschaltet.',
   // Today's picture is not an image.
   srv_9825ec9eef300ecf: 'Das heutige Bild ist kein Bild (z. B. ein Video).',
+  // The next rocket launches and NASA's astronomy picture of the day.
+  srv_7f04b43fbc8ab518: 'Die nächsten Raketenstarts und das Astronomiebild des Tages der NASA.',
+  // Turn on launches or the picture in Settings under Space; nothing is fetched until then.
+  srv_d4b141b4193f3bcc:
+    'Schalte Starts oder das Bild in den Einstellungen unter Raumfahrt ein; bis dahin wird nichts abgerufen.',
 };

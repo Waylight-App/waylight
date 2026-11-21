@@ -159,6 +159,8 @@ export interface CommandHandlers {
   addWidget?: (query: string) => void;
   edit?: () => void;
   shortcuts: () => void;
+  /** Opens the short help of a widget kind (#678); help results of the search use it. */
+  widgetHelp?: (kind: string) => void;
   tour?: () => void;
   logout: () => void;
   tab: (id: string) => void;

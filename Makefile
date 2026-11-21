@@ -27,6 +27,7 @@ generate: ## Generate TypeScript DTO types (tygo) and the backend message catalo
 	tygo generate --config .tygo.generated.yaml
 	rm -f .tygo.generated.yaml
 	go run ./scripts/servermessages
+	go test ./internal/shared/docsindex -run TestIndexUpToDate -update
 	cd $(WEB) && npx prettier --log-level warn --write src/shared/api-client/generated >/dev/null || true
 
 .PHONY: lint

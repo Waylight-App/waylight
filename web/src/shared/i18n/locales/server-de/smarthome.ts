@@ -47,4 +47,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_c7c0c20a29ee6976: '{state}',
   // {state} {unit}
   srv_4f14b24d395337a4: '{state} {unit}',
+  // Choose Set up in the widget and sign in with Home Assistant, then pick the devices.
+  srv_1927b63347fcbc61:
+    'Wähle Einrichten im Widget, melde dich mit Home Assistant an und wähle dann die Geräte.',
+  // Devices from Home Assistant as tiles, with their state and, if allowed, a switch.
+  srv_491401ddfbf37254:
+    'Geräte aus Home Assistant als Kacheln, mit ihrem Zustand und, wenn erlaubt, einem Schalter.',
 };

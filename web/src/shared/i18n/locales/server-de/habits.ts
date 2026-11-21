@@ -16,4 +16,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_47c68f21f5a3748b: '{done} von {total} heute',
   // Done: {name}
   srv_1422d60397354b62: 'Erledigt: {name}',
+  // Add habits in the widget and choose the days they are due; tap a habit to tick it off.
+  srv_cab91ffc01eefcb8:
+    'Füge Gewohnheiten im Widget hinzu und wähle die Tage, an denen sie fällig sind; tippe auf eine Gewohnheit, um sie abzuhaken.',
+  // Your daily habits with streaks: tick off what you did today.
+  srv_5b62b042bb03fd46: 'Deine täglichen Gewohnheiten mit Serien: hak ab, was du heute erledigt hast.',
 };

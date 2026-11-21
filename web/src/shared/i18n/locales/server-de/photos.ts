@@ -12,4 +12,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_98c9fc1eaba891b7: 'Der Fotospeicher ist voll (300 MB oder 2000 Bilder). Lösche zuerst Bilder.',
   // The picture does not exist (any more).
   srv_164729afbb572b99: 'Das Bild gibt es nicht (mehr).',
+  // Open the widget settings to upload pictures, choose the album and how long each picture stays.
+  srv_63e5853951784541:
+    'In den Widget-Einstellungen lädst du Bilder hoch und wählst das Album und wie lange jedes Bild bleibt.',
+  // Your own pictures, one after another.
+  srv_64f1f22cfb8682ac: 'Deine eigenen Bilder, eins nach dem anderen.',
 };

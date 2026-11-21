@@ -20,4 +20,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_05f4e0f511133638: 'Den Eintrag gibt es nicht oder er ist abgelaufen.',
   // The text must be at most 100 KB.
   srv_c4d9d288aedb26d3: 'Der Text darf höchstens 100 KB lang sein.',
+  // Drop something into the widget on one device and open it on another. There is nothing to set up.
+  srv_699407f4dd40994f:
+    'Leg etwas auf einem Gerät ins Widget und öffne es auf einem anderen. Es ist nichts einzurichten.',
+  // Text, links and files you send between your devices; they disappear after a while.
+  srv_6c1dd18a11888a9a:
+    'Texte, Links und Dateien, die du zwischen deinen Geräten schickst; sie verschwinden nach einer Weile.',
 };

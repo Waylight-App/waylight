@@ -3,6 +3,7 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_7093d7a65d86c391: "A passing grade lies between 1.0 and 4.0.",
+  srv_f5c5ccaa0dff0885: "Add your courses in Settings under Study progress.",
   srv_883d152943ffaea6: "At most 200 modules are supported.",
   srv_b8c816562d5fb309: "Choose open, in progress or passed.",
   srv_8924ee0e3c41840e: "ECTS must be between 0.5 and 60 in steps of 0.5.",
@@ -11,6 +12,7 @@ export const serverMessages = {
   srv_9e4c1266ed71da7b: "The module does not exist.",
   srv_10b16244e1d3f16b: "The semester must be between 1 and 20 (or empty).",
   srv_3cf2faced978b8cd: "The total must be between 1 and 600 ECTS.",
+  srv_5ba66275b73b8dea: "Your progress through your studies: credits, semesters and average grade.",
 } as const;
 
 /** Key of a backend message. */

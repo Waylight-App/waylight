@@ -18,4 +18,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_0096b59b55372fb3: 'Preise konnten nicht aktualisiert werden',
   // {price} ct now
   srv_d7cd175f61b1223d: '{price} ct jetzt',
+  // Open the widget settings and choose your country. No account or key is needed.
+  srv_9d42ecd817b66e11:
+    'Öffne die Widget-Einstellungen und wähle dein Land. Ein Konto oder Schlüssel ist nicht nötig.',
+  // The electricity market price per hour for today and tomorrow, with the cheapest hours marked.
+  srv_2a91edfdb4c2047e:
+    'Der Strom-Börsenpreis pro Stunde für heute und morgen, die günstigsten Stunden sind markiert.',
 };

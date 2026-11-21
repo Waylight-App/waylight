@@ -3,6 +3,8 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_e204fc52da15fb72: "Could not load the school holidays: {detail}",
+  srv_f5c1248ee358ad3c: "Open the widget settings and choose your German state. Add a calendar link for school holidays if you like.",
+  srv_b47665be8f2c2177: "The next public holidays and school holidays.",
 } as const;
 
 /** Key of a backend message. */

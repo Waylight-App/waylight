@@ -3,6 +3,8 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_acb1d2af2955f9e7: "Choose one of the offered leagues.",
+  srv_46802779e0dc7472: "Open the widget settings and choose a league and a team.",
+  srv_fbbaa2f9b927ab85: "The last result, next match and table position of your team, or the top of the table.",
   srv_daddecf23a5f7008: "The team does not play in this league this season.",
 } as const;
 

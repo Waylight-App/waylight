@@ -8,4 +8,10 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
 export const serverDe: Record<ServerMessageKey, string> = {
   // Nextcloud is not configured yet.
   srv_852391e96f8a11b2: 'Nextcloud ist noch nicht eingerichtet.',
+  // Choose Set up in the widget and sign in with Nextcloud, or enter its address and an app password.
+  srv_ba751f38616f912b:
+    'Wähle Einrichten im Widget und melde dich mit Nextcloud an oder gib die Adresse und ein App-Passwort ein.',
+  // Your Nextcloud: version, your storage, and for admins free space, users and app updates.
+  srv_94a13471047e5554:
+    'Deine Nextcloud: Version, dein Speicher und für Admins freier Platz, Benutzer und App-Updates.',
 };

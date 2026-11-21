@@ -2,6 +2,8 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_6f6a25b9fc67ac66: "A short morning summary: weather warnings, problems overnight, due to-dos, appointments and waste collection.",
+  srv_08b4856a2d3da6d6: "It collects what the other widgets know. In Settings under Daily briefing you can have it sent to you each morning.",
   srv_7ef0897648a1c97c: "Latitude must be between -90 and 90, longitude between -180 and 180.",
   srv_777fe9a31de38b1d: "Notifications are not enabled.",
 } as const;

@@ -125,4 +125,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_d4a77dfc8f36f361: 'Der Dienst antwortet nicht.',
   // The link is not an http(s) web address.
   srv_b429d991f10042c7: 'Der Link muss eine Webadresse sein, die mit http:// oder https:// beginnt.',
+  // Open the widget settings to pick a time zone, a 12-hour clock, seconds, the date or the week number.
+  srv_e13ad9b1d088bebf:
+    'In den Widget-Einstellungen wählst du Zeitzone, 12-Stunden-Uhr, Sekunden, Datum oder Kalenderwoche.',
+  // The time and date, optionally in another time zone.
+  srv_243981d781275d3a: 'Uhrzeit und Datum, auf Wunsch in einer anderen Zeitzone.',
 };
