@@ -18,7 +18,12 @@ describe('attention line (#593)', () => {
 
   it('puts problems first and keeps the tab order within a level', () => {
     const e = (id: string, level: 'attention' | 'problem') => ({ id, level, title: id, text: '' });
-    const ordered = byUrgency([e('a', 'attention'), e('b', 'problem'), e('c', 'attention'), e('d', 'problem')]);
+    const ordered = byUrgency([
+      e('a', 'attention'),
+      e('b', 'problem'),
+      e('c', 'attention'),
+      e('d', 'problem'),
+    ]);
     expect(ordered.map((x) => x.id)).toEqual(['b', 'd', 'a', 'c']);
   });
 

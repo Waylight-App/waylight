@@ -7,7 +7,7 @@
   import { definitionFor, iconFor, widgetDefinitions } from './widgets';
   import { lazy } from './widgetKit';
   import { useOpenSettings } from '../shared/ui/settingsLink';
-  import { compactText } from '../features/compact/domain/compact';
+  import { type StatusSource, uniqueSources } from '../features/dashboard/domain/attentionLine';
   import { categoryShown, type StartProfile } from '../features/appearance/domain/appearance';
 
   /** Props of the dashboard page. */
@@ -107,26 +107,17 @@
     return definitionFor(widget.kind)?.compact?.(widget.config);
   }
 
-  // The attention line and the system summary load with the first tab that
-  // shows them, not with the page (#593).
-  const loadAttentionLine = () => import('../features/attention/ui/AttentionLine.svelte');
-  const loadSystemSummary = () => import('../features/compact/ui/SystemSummary.svelte');
+  // The lines above the grid load with the first tab that shows them (#593).
+  const loadOverview = () => import('./DashboardOverview.svelte');
 
-  /** One source per module: the services and status overview widgets share theirs. */
-  function statusSources(widgets: Widget[]): { widgetId: string; module: string; title: string }[] {
-    const out: { widgetId: string; module: string; title: string }[] = [];
-    for (const w of widgets) {
-      const module = compactModule(w);
-      if (!module || out.some((o) => o.module === module)) continue;
-      out.push({ widgetId: w.id, module, title: definitionFor(w.kind)?.type.title ?? w.kind });
-    }
-    return out;
-  }
-
-  /** The attention line reads compact states through this port; it knows no compact feature. */
-  async function sourceState(module: string): Promise<{ level: string; text: string }> {
-    const s = await container.compact.state(module);
-    return { level: s.level, text: compactText(s.title) + (s.detail ? ` · ${compactText(s.detail)}` : '') };
+  /** The status widgets of a tab with the module of their compact state. */
+  function statusSources(widgets: Widget[]): StatusSource[] {
+    return uniqueSources(
+      widgets.flatMap((w) => {
+        const module = compactModule(w);
+        return module ? [{ widgetId: w.id, module, title: definitionFor(w.kind)?.type.title ?? w.kind }] : [];
+      }),
+    );
   }
 
   // Notifications are set up by admins in the settings (#594).
@@ -185,22 +176,16 @@
     view: (widgetId: string) => void;
   })}
     {@const sources = statusSources(o.status)}
-    <!-- Also without status widgets: connections that stopped working (#599) belong here too. -->
     {#if !container.localMode}
-      {#await loadAttentionLine() then { default: AttentionLine }}
-        <AttentionLine
-          attention={container.attention}
-          {sourceState}
+      {#await loadOverview() then { default: DashboardOverview }}
+        <DashboardOverview
+          compact={container.compact}
           tabId={o.tab.id}
           {sources}
+          collapsed={o.collapsed}
+          ontoggle={o.toggle}
           onview={o.view}
         />
-      {/await}
-    {/if}
-    <!-- One status widget needs no summary; two or more fold into one line. -->
-    {#if sources.length > 1}
-      {#await loadSystemSummary() then { default: SystemSummary }}
-        <SystemSummary compact={container.compact} {sources} collapsed={o.collapsed} ontoggle={o.toggle} />
       {/await}
     {/if}
   {/snippet}

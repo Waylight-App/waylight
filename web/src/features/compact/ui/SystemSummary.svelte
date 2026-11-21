@@ -1,8 +1,6 @@
 <script lang="ts">
   import { t } from '../../../shared/i18n';
-  import { usePolling } from '../../../shared/refresh';
-  import { COMPACT_REFRESH_MS, compactText, type CompactState, isAlarming } from '../domain/compact';
-  import type { CompactUseCases } from '../usecase/compactUseCases';
+  import { compactText, type CompactState, isAlarming } from '../domain/compact';
 
   /**
    * Props of the system summary (#593): the compact states of a tab's
@@ -10,43 +8,23 @@
    * in for the widgets themselves.
    */
   interface Props {
-    compact: CompactUseCases;
-    /** One entry per module; title is the widget's name. */
-    sources: { module: string; title: string }[];
+    /** One entry per module that has answered; title is the widget's name. */
+    items: { module: string; title: string; state: CompactState }[];
     /** Whether the status widgets are folded into this line. */
     collapsed: boolean;
     ontoggle: () => void;
   }
-  let { compact, sources, collapsed, ontoggle }: Props = $props();
-
-  let states = $state<Record<string, CompactState>>({});
-
-  async function load() {
-    const wanted = sources;
-    const results = await Promise.allSettled(wanted.map((s) => compact.state(s.module)));
-    const next: Record<string, CompactState> = {};
-    results.forEach((r, i) => {
-      const s = wanted[i];
-      if (s && r.status === 'fulfilled') next[s.module] = r.value;
-    });
-    states = next;
-  }
-
-  const poll = usePolling();
-  $effect(() => poll(load, COMPACT_REFRESH_MS));
+  let { items, collapsed, ontoggle }: Props = $props();
 </script>
 
 <div class="summary" data-testid="system-summary">
   <ul aria-label={t('compact.summary')}>
-    {#each sources as s (s.module)}
-      {@const state = states[s.module]}
-      {#if state}
-        <li data-level={state.level}>
-          {#if isAlarming(state.level)}<span class="dot" aria-hidden="true"></span>{/if}
-          <span class="name">{s.title}:</span>
-          {compactText(state.title)}
-        </li>
-      {/if}
+    {#each items as item (item.module)}
+      <li data-level={item.state.level}>
+        {#if isAlarming(item.state.level)}<span class="dot" aria-hidden="true"></span>{/if}
+        <span class="name">{item.title}:</span>
+        {compactText(item.state.title)}
+      </li>
     {/each}
   </ul>
   <button class="btn" type="button" aria-expanded={!collapsed} onclick={ontoggle}
