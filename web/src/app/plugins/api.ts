@@ -75,6 +75,12 @@ export interface PluginSection {
   description: Texts;
   /** Only admins see it. */
   adminOnly?: boolean;
+  /**
+   * Task area of the settings start page (#600): "account", "appearance",
+   * "notifications", "dashboard", "connections", "people", "data" or
+   * "system". Optional; unknown values and older plugins land in "people".
+   */
+  area?: string;
   view: Mountable;
 }
 

@@ -4,7 +4,7 @@ export const section = defineSettingsSection({
   id: 'todos',
   label: 'settings.section.todos',
   module: 'todos',
-  group: 'content',
+  area: 'dashboard',
   load: () => import('../../features/todos/ui/TodoSourcesSettings.svelte').then((m) => m.default),
   props: (c) => ({ sources: c.todoSources }),
 });

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { expectAccessible } from './a11y';
-import { account, password } from './support';
+import { account, password, openSettings } from './support';
 
 test('edit mode adds a tab and a widget', async ({ page }) => {
   await page.goto('/');
@@ -127,48 +127,49 @@ test('settings sections of self-registering features load on demand (#193)', asy
   await page.goto('/');
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Proxmox', exact: true }).click();
+  await openSettings(page, 'Connections & services', 'Proxmox');
   await expect(page.getByLabel('Proxmox VE URL')).toBeVisible();
 });
 
-test('settings: grouped navigation with keyboard and a list view on phones (#261)', async ({ page }) => {
+test('settings: start page with areas, keyboard navigation and phones (#600)', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page.getByTestId('dashboard')).toBeVisible();
   await account(page, 'Settings');
-  const nav = page.getByRole('navigation', { name: 'Settings sections' });
-  await expect(nav.getByRole('group', { name: 'Integrations' })).toBeVisible();
-  // A section in a group; the selected entry is marked.
-  await nav
-    .getByRole('group', { name: 'Integrations' })
-    .getByRole('button', { name: 'Proxmox', exact: true })
-    .click();
+  const dialog = page.getByRole('dialog', { name: 'Settings' });
+  const nav = dialog.getByRole('navigation', { name: 'Settings areas' });
+  // The start page lists the areas as tiles.
+  const tiles = dialog.getByRole('list', { name: 'Settings areas' });
+  await expect(tiles.getByRole('button', { name: /^Connections & services/ })).toBeVisible();
+  await tiles.getByRole('button', { name: /^Connections & services/ }).click();
+  await expect(dialog.getByRole('region', { name: 'Connections & services', exact: true })).toBeVisible();
+  // An area lists its sections; the open section is marked in the navigation.
+  await dialog.getByRole('region').getByRole('button', { name: 'Proxmox', exact: true }).click();
   await expect(page.getByLabel('Proxmox VE URL')).toBeVisible();
   await expect(nav.getByRole('button', { name: 'Proxmox', exact: true })).toHaveAttribute(
     'aria-current',
-    'true',
+    'page',
   );
   // Arrow keys move between entries, Enter selects.
-  await nav.getByRole('button', { name: 'Appearance', exact: true }).click();
+  await nav.getByRole('button', { name: 'Overview', exact: true }).click();
+  await nav.getByRole('button', { name: 'Overview', exact: true }).focus();
   await page.keyboard.press('ArrowDown');
-  await expect(nav.getByRole('button', { name: 'Search', exact: true })).toBeFocused();
+  await expect(nav.getByRole('button', { name: 'My account', exact: true })).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(nav.getByRole('button', { name: 'Search', exact: true })).toHaveAttribute(
-    'aria-current',
-    'true',
-  );
+  await expect(dialog.getByRole('region', { name: 'Account', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Close' }).click();
 
-  // Phones: first the list, then one section with a way back.
+  // Phones: one page at a time with a way back instead of the navigation.
   await page.setViewportSize({ width: 390, height: 844 });
   await account(page, 'Settings');
-  await nav.getByRole('button', { name: 'Search', exact: true }).click();
   await expect(nav).toBeHidden();
-  await page.getByRole('button', { name: 'All settings' }).click();
-  await expect(nav).toBeVisible();
-  await expect(nav.getByRole('button', { name: 'Search', exact: true })).toBeFocused();
+  await tiles.getByRole('button', { name: /^Dashboard & widgets/ }).click();
+  await dialog.getByRole('region').getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(dialog.getByRole('region', { name: 'Search', exact: true })).toBeVisible();
+  await dialog.getByRole('button', { name: '← Dashboard & widgets' }).click();
+  await dialog.getByRole('button', { name: '← Overview' }).click();
+  await expect(tiles).toBeVisible();
 });
 
 test('a guest sees only the shared tab and cannot edit', async ({ page }) => {
@@ -177,8 +178,7 @@ test('a guest sees only the shared tab and cannot edit', async ({ page }) => {
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page.getByTestId('dashboard')).toBeVisible();
 
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Guests', exact: true }).click();
+  await openSettings(page, 'People & access', 'Guests');
   const form = page.locator('form.new');
   await form.getByLabel('Guest name').fill('anna');
   await form.getByLabel('Password (at least 12 characters)').fill('guest-password-1');
@@ -200,7 +200,8 @@ test('a guest sees only the shared tab and cannot edit', async ({ page }) => {
   await page.getByRole('button', { name: 'Account menu', exact: true }).click();
   await expect(page.getByRole('menuitem', { name: 'Edit', exact: true })).toHaveCount(0);
   await page.getByRole('menuitem', { name: 'Settings', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Guests', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^My account/ }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /^People & access/ })).toHaveCount(0);
   await page.getByRole('button', { name: 'Close' }).click();
   await account(page, 'Log out');
   await expect(page.getByRole('button', { name: 'Log in' })).toBeVisible();
@@ -377,8 +378,7 @@ test('the search field captures items and its options live in the settings (#105
   await page.keyboard.press('Escape');
 
   // The prefixes are a search setting now, not a widget option.
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Search', exact: true }).click();
+  await openSettings(page, 'Dashboard & widgets', 'Search');
   const todoPrefix = page.getByLabel('Prefix for to-dos');
   await expect(todoPrefix).toHaveValue('t');
   await todoPrefix.fill('a');
@@ -481,8 +481,7 @@ test('header with greeting, search pill, launcher and account menu (#189)', asyn
 
   // The greeting addresses the user by name; the launcher shows only bookmarks.
   step = 'settings';
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Appearance', exact: true }).click();
+  await openSettings(page, 'Appearance & language', 'Appearance');
   await page.getByLabel('Your name in the greeting (optional)').fill('Tristan');
   await page.getByLabel(/The launcher/).selectOption('bookmarks');
   await page.getByRole('button', { name: 'Save appearance' }).click();
@@ -522,8 +521,7 @@ test('a kiosk link shows the chosen tab read-only without controls (#50)', async
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page.getByTestId('dashboard')).toBeVisible();
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Kiosk displays', exact: true }).click();
+  await openSettings(page, 'People & access', 'Kiosk displays');
   await page.getByLabel('Name (e.g. flur-tablet)').fill('flur');
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('checkbox', { name: 'Home' }).check();
@@ -606,12 +604,19 @@ test('the main views pass automated WCAG 2.2 AA checks (#113)', async ({ page, b
   await account(page, 'Settings');
   const settings = page.getByRole('dialog');
   await expectAccessible(page, 'settings', 'dialog[open]');
-  // Every settings section, including the ones of self-registering features.
-  const sections = settings.getByRole('navigation').getByRole('button');
-  for (const section of await sections.allTextContents()) {
-    await sections.filter({ hasText: section }).first().click();
+  // Every area and section, including the ones of self-registering features.
+  const nav = settings.getByRole('navigation', { name: 'Settings areas' });
+  const areas = (await nav.locator('button[data-nav]:not(.sub)').allTextContents()).map((a) => a.trim());
+  for (const area of areas) {
+    await nav.getByRole('button', { name: area, exact: true }).click();
     await page.waitForLoadState('networkidle');
-    await expectAccessible(page, `settings ${section.trim()}`, 'dialog[open]');
+    await expectAccessible(page, `settings ${area}`, 'dialog[open]');
+    const sections = (await nav.locator('button.sub').allTextContents()).map((s) => s.trim());
+    for (const section of sections) {
+      await nav.getByRole('button', { name: section, exact: true }).click();
+      await page.waitForLoadState('networkidle');
+      await expectAccessible(page, `settings ${area} › ${section}`, 'dialog[open]');
+    }
   }
   await page.getByRole('button', { name: 'Close' }).click();
 

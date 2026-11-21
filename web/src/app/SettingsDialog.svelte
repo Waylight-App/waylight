@@ -1,45 +1,15 @@
 <script lang="ts">
-  import CaptureBookmarklet from '../features/capture/ui/CaptureBookmarklet.svelte';
-  import { TimelineSettings } from '../features/timeline';
-  import { BriefingSettings } from '../features/briefing';
-  import { AboutSettings, ForecastSettings } from '../features/system';
   import { intlLocale, t } from '../shared/i18n';
   import { tick } from 'svelte';
-  import { groupSections, moveFocus } from './settingsNav';
+  import { areaOf, groupByArea, moveFocus, type SettingsArea } from './settingsNav';
   import { registeredSections } from './settingsSections';
   import { type CatalogSection, OWN_SECTIONS, visibleSections } from './settingsCatalog';
-  import { AdGuardSettings } from '../features/adguard';
-  import { SpeedtestSettings } from '../features/speedtest';
-  import { ImageUpdateSettings } from '../features/docker';
-  import { FritzBoxSettings } from '../features/fritzbox';
-  import { NextcloudSettings } from '../features/nextcloud';
-  import { ShoppingSettings, suggestListUrl } from '../features/shopping';
-  import { ParcelsSettings } from '../features/parcels';
-  import { TransferSettings } from '../features/transfer';
-  import { WasteSettings } from '../features/waste';
-  import { WireGuardSettings } from '../features/wireguard';
-  import { type Appearance, AppearanceSettings } from '../features/appearance';
-  import {
-    ApiTokensSettings,
-    ChangePasswordForm,
-    PasskeySettings,
-    GuestsSettings,
-    SecurityLog,
-    SessionsList,
-    TwoFactorSettings,
-  } from '../features/auth';
-  import { BackupSettings } from '../features/backup';
-  import { BackupSourcesManager } from '../features/backupmonitor';
-  import { NotificationSettings } from '../features/notifications';
-  import { BookmarkImport, BookmarkLinkSettings, FoldersManager } from '../features/bookmarks';
-  import { CalendarSettings } from '../features/calendar';
-  import { FeedsManager } from '../features/rss';
-  import { SearchHistorySettings, SearchSettings } from '../features/search';
-  import { keywordTargets } from './searchKeywords';
-  import { searchUsage, unansweredQueries } from './searchUsage';
-  import UnansweredSettings from '../features/search/ui/UnansweredSettings.svelte';
-  import { ServicesManager } from '../features/services';
+  import { type AreaStatus, loadAreaStatuses, type StatusSources } from './settingsStatus';
+  import { loadRecent, rememberChange } from './settingsRecent';
+  import type { Appearance } from '../features/appearance';
   import Modal from '../shared/ui/Modal.svelte';
+  import SettingsHome from './SettingsHome.svelte';
+  import SettingsSectionView from './SettingsSectionView.svelte';
   import type { Container } from './container';
 
   /** Props of the global settings dialog. */
@@ -83,211 +53,229 @@
       owner: container.auth.owner,
     }),
   );
-  let guestTabs = $state<{ id: string; name: string }[]>([]);
-  $effect(() => {
-    if (!container.auth.guest) container.dashboard.load().then((tabs) => (guestTabs = tabs));
+  const areas = $derived(groupByArea(visible, nameOf, intlLocale()));
+
+  /**
+   * Where the dialog is (#600): the start page, one area's list of sections,
+   * or a section. A deep link (?settings=<id>, search commands) opens its
+   * section directly; an unknown or hidden one falls back to the start page.
+   */
+  type View = { kind: 'home' } | { kind: 'area'; area: SettingsArea } | { kind: 'section'; id: string };
+  // svelte-ignore state_referenced_locally
+  let view = $state<View>(section ? { kind: 'section', id: section } : { kind: 'home' });
+  const current = $derived.by((): View => {
+    if (view.kind === 'section') {
+      const id = view.id;
+      return visible.some((s) => s.id === id) ? view : { kind: 'home' };
+    }
+    if (view.kind === 'area') {
+      const area = view.area;
+      return areas.some((a) => a.id === area) ? view : { kind: 'home' };
+    }
+    return view;
   });
-  const groups = $derived(groupSections(visible, nameOf, intlLocale()));
-  const ordered = $derived(groups.flatMap((g) => g.sections));
-  // svelte-ignore state_referenced_locally
-  let active = $state(section ?? '');
-  const current = $derived((visible.some((s) => s.id === active) && active) || ordered[0]?.id || 'account');
-  const registered = $derived(registeredSections.find((s) => s.id === current));
-  // Phones show the list first and one section at a time (#261).
-  // svelte-ignore state_referenced_locally
-  let showing = $state(Boolean(section));
+  const currentSection = $derived(
+    current.kind === 'section' ? visible.find((s) => s.id === current.id) : undefined,
+  );
+  const currentArea = $derived.by(() => {
+    if (current.kind === 'area') return areas.find((a) => a.id === current.area);
+    if (currentSection) return areas.find((a) => a.id === areaOf(currentSection));
+    return undefined;
+  });
+  /** An area with one section opens that section; a list of one adds a click. */
+  const single = (a: { sections: readonly Section[] }) => a.sections.length === 1;
+  /**
+   * The navigation entry that stands for the current view: a section in the
+   * open area's sub-list, else its area, else the start page. It is the one
+   * entry in the tab order (roving tabindex), so Tab reaches the list once.
+   */
+  const navActive = $derived(
+    current.kind === 'section' && currentArea && !single(currentArea)
+      ? `section:${current.id}`
+      : currentArea
+        ? `area:${currentArea.id}`
+        : 'home',
+  );
+
   let nav = $state<HTMLElement>();
   let content = $state<HTMLElement>();
+  let heading = $state<HTMLElement>();
 
-  function choose(id: string) {
-    active = id;
-    showing = true;
+  /** Shows a view and moves the focus to its heading for screen readers. */
+  async function go(next: View) {
+    view = next;
     if (content) content.scrollTop = 0;
+    await tick();
+    heading?.focus();
+  }
+
+  function openArea(id: SettingsArea) {
+    const a = areas.find((x) => x.id === id);
+    if (!a) return;
+    const only = a.sections[0];
+    void go(single(a) && only ? { kind: 'section', id: only.id } : { kind: 'area', area: id });
+  }
+  const openSection = (id: string) => void go({ kind: 'section', id });
+
+  /** One level up: section → its area (unless it is the area's only one) → start page. */
+  function up() {
+    if (current.kind === 'section' && currentArea && !single(currentArea)) {
+      void go({ kind: 'area', area: currentArea.id });
+    } else {
+      void go({ kind: 'home' });
+    }
   }
 
   /** Arrow keys, Home and End move between the entries; Enter selects. */
   function navKey(e: KeyboardEvent) {
-    const buttons = [...(nav?.querySelectorAll<HTMLButtonElement>('button[data-section]') ?? [])];
+    const buttons = [...(nav?.querySelectorAll<HTMLButtonElement>('button[data-nav]') ?? [])];
     const next = moveFocus(e.key, buttons.indexOf(e.target as HTMLButtonElement), buttons.length);
     if (next === null) return;
     e.preventDefault();
     buttons[next]?.focus();
   }
 
-  async function back() {
-    showing = false;
-    await tick();
-    nav?.querySelector<HTMLButtonElement>('button[aria-current="true"]')?.focus();
+  // Statuses of the area tiles: each source only for a viewer who may read it.
+  let statuses = $state<Partial<Record<SettingsArea, AreaStatus>>>({});
+  $effect(() => {
+    const shown = (id: string) => visible.some((s) => s.id === id);
+    const auth = container.auth;
+    const sources: StatusSources = {
+      twoFactor:
+        shown('account') && !auth.kiosk && !container.localMode ? () => auth.twoFactorStatus() : undefined,
+      channels: shown('notifications') ? () => container.notifications.channels() : undefined,
+      backups: shown('backups') ? () => container.backup.list() : undefined,
+      version: shown('about') ? () => container.system.version() : undefined,
+      connections: areas.find((a) => a.id === 'connections')?.sections.filter((s) => s.id !== 'tokens')
+        .length,
+    };
+    const ids = areas.map((a) => a.id);
+    let stale = false;
+    loadAreaStatuses(ids, sources).then((s) => {
+      if (!stale) statuses = s;
+    });
+    return () => (stale = true);
+  });
+
+  // "Recently changed" (#600): a change or a submitted form inside a section
+  // counts, so the list needs no hook in every feature's settings form.
+  let recentIds = $state(loadRecent());
+  const recent = $derived(
+    recentIds.flatMap((id) => {
+      const s = visible.find((x) => x.id === id);
+      const area = s && areas.find((a) => a.id === areaOf(s));
+      return s && area ? [{ id, name: nameOf(s), area: t(area.label) }] : [];
+    }),
+  );
+  function noteChange() {
+    if (current.kind === 'section') recentIds = rememberChange(current.id);
   }
+
+  const title = $derived(
+    currentSection ? nameOf(currentSection) : currentArea ? t(currentArea.label) : t('settings.overview'),
+  );
 </script>
 
 <Modal title={t('app.settings')} size="wide" {onclose}>
-  <div class="layout" class:showing>
-    <nav class="sections" aria-label={t('settings.sections')} bind:this={nav}>
-      {#each groups as g (g.id)}
-        <div class="group" role="group" aria-labelledby="settings-group-{g.id}">
-          <h3 id="settings-group-{g.id}">{t(g.label)}</h3>
-          {#each g.sections as s (s.id)}
+  <div class="layout">
+    <nav class="areas" aria-label={t('settings.areas')} bind:this={nav}>
+      <button
+        type="button"
+        data-nav="home"
+        class:current={navActive === 'home'}
+        aria-current={navActive === 'home' ? 'page' : undefined}
+        tabindex={navActive === 'home' ? 0 : -1}
+        onkeydown={navKey}
+        onclick={() => go({ kind: 'home' })}>{t('settings.overview')}</button
+      >
+      {#each areas as a (a.id)}
+        {@const here = currentArea?.id === a.id}
+        <button
+          type="button"
+          data-nav={a.id}
+          class:current={navActive === `area:${a.id}`}
+          class:open={here}
+          aria-current={navActive === `area:${a.id}` ? 'page' : undefined}
+          tabindex={navActive === `area:${a.id}` ? 0 : -1}
+          onkeydown={navKey}
+          onclick={() => openArea(a.id)}>{t(a.label)}</button
+        >
+        {#if here && !single(a)}
+          {#each a.sections as s (s.id)}
             <button
               type="button"
+              class="sub"
+              data-nav={s.id}
               data-section={s.id}
-              class:current={current === s.id}
-              aria-current={current === s.id ? 'true' : undefined}
-              tabindex={current === s.id ? 0 : -1}
+              class:current={navActive === `section:${s.id}`}
+              aria-current={navActive === `section:${s.id}` ? 'page' : undefined}
+              tabindex={navActive === `section:${s.id}` ? 0 : -1}
               onkeydown={navKey}
-              onclick={() => choose(s.id)}>{nameOf(s)}</button
+              onclick={() => openSection(s.id)}>{nameOf(s)}</button
             >
           {/each}
-        </div>
+        {/if}
       {/each}
     </nav>
     <section
       class="content"
       bind:this={content}
-      aria-label={(() => {
-        const s = visible.find((x) => x.id === current);
-        return s ? nameOf(s) : t('app.settings');
-      })()}
+      aria-label={title}
+      onchange={noteChange}
+      onsubmit={noteChange}
     >
-      <button class="btn back" type="button" onclick={back}>← {t('settings.back')}</button>
-      {#if current === 'appearance'}
-        <AppearanceSettings appearance={container.appearance} current={appearance} onchange={onappearance} />
-      {:else if current === 'search'}
-        <SearchSettings search={container.search} keywordTargets={() => keywordTargets(container, modules)} />
-        <CaptureBookmarklet />
-        <SearchHistorySettings usage={searchUsage} />
-        <UnansweredSettings queries={unansweredQueries} />
-      {:else if current === 'services'}
-        <ServicesManager services={container.services} />
-      {:else if current === 'feeds'}
-        <FeedsManager rss={container.rss} />
-      {:else if current === 'folders'}
-        <FoldersManager bookmarks={container.bookmarks} />
-        {#if container.auth.admin}<BookmarkLinkSettings bookmarks={container.bookmarks} />{/if}
-      {:else if current === 'calendar'}
-        <CalendarSettings calendar={container.calendar} />
-      {:else if current === 'transfer'}
-        <TransferSettings transfer={container.transfer} />
-        {#if modules.has('bookmarks')}<BookmarkImport bookmarks={container.bookmarks} />{/if}
-      {:else if current === 'security-log'}
-        <SecurityLog auth={container.auth} />
-      {:else if current === 'tokens'}
-        <ApiTokensSettings auth={container.auth} {modules} />
-      {:else if current === 'guests'}
-        <GuestsSettings auth={container.auth} tabs={guestTabs} />
-      {:else if current === 'members'}
-        {#await import('../features/auth/ui/MembersSettings.svelte') then { default: MembersSettings }}
-          <MembersSettings auth={container.auth} />
-        {/await}
-      {:else if current === 'full-version'}
-        {#await import('./local/FullVersionHint.svelte') then { default: FullVersionHint }}
-          <FullVersionHint variant="full" />
-        {/await}
-      {:else if current === 'invites'}
-        {#await import('../features/auth/ui/InvitesSettings.svelte') then { default: InvitesSettings }}
-          <InvitesSettings auth={container.auth} tabs={guestTabs} />
-        {/await}
-      {:else if current === 'kiosks'}
-        {#await import('../features/auth/ui/KiosksSettings.svelte') then { default: KiosksSettings }}
-          <KiosksSettings auth={container.auth} tabs={guestTabs} />
-        {/await}
-      {:else if current === 'timeline'}
-        <TimelineSettings timeline={container.timeline} />
-      {:else if current === 'briefing'}
-        <BriefingSettings
-          briefing={container.briefing}
-          canPush={modules.has('notifications') && container.auth.admin}
+      {#if current.kind !== 'home'}
+        <button class="btn back" type="button" onclick={up}>
+          ← {current.kind === 'section' && currentArea && !single(currentArea)
+            ? t(currentArea.label)
+            : t('settings.overview')}
+        </button>
+      {/if}
+      <h3 class="title" tabindex="-1" bind:this={heading}>{title}</h3>
+      {#if current.kind === 'home'}
+        <SettingsHome {areas} {statuses} {recent} onarea={openArea} onsection={openSection} />
+      {:else if current.kind === 'area' && currentArea}
+        <p class="muted">{t(currentArea.hint)}</p>
+        <ul class="list">
+          {#each currentArea.sections as s (s.id)}
+            <li>
+              <button type="button" data-section={s.id} onclick={() => openSection(s.id)}>
+                <span>{nameOf(s)}</span><span aria-hidden="true">›</span>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {:else if current.kind === 'section'}
+        <SettingsSectionView
+          id={current.id}
+          {container}
+          {modules}
+          {appearance}
+          {onappearance}
+          {onrestarttour}
         />
-      {:else if current === 'forecast'}
-        <ForecastSettings system={container.system} />
-      {:else if current === 'about'}
-        <AboutSettings system={container.system} />
-      {:else if current === 'parcels'}
-        <ParcelsSettings parcels={container.parcels} />
-      {:else if current === 'shopping'}
-        <ShoppingSettings
-          shopping={container.shopping}
-          suggest={async () => {
-            const c = await container.calendar.settings();
-            return c.configured
-              ? { listUrl: suggestListUrl(c.calendarUrls[0] ?? ''), username: c.username }
-              : null;
-          }}
-        />
-      {:else if current === 'waste'}
-        <WasteSettings waste={container.waste} />
-      {:else if current === 'wireguard'}
-        <WireGuardSettings wireguard={container.wireguard} />
-      {:else if current === 'fritzbox'}
-        <FritzBoxSettings fritzbox={container.fritzbox} />
-      {:else if current === 'nextcloud'}
-        <NextcloudSettings nextcloud={container.nextcloud} />
-      {:else if current === 'docker-updates'}
-        <ImageUpdateSettings docker={container.docker} />
-      {:else if current === 'speedtest'}
-        <SpeedtestSettings speedtest={container.speedtest} />
-      {:else if current === 'adguard'}
-        <AdGuardSettings adguard={container.adguard} />
-      {:else if registered}
-        {#await registered.load() then Section}
-          <Section {...registered.props(container, { modules })} />
-        {/await}
-      {:else if current === 'notifications'}
-        <NotificationSettings notifications={container.notifications} />
-      {:else if current === 'backupmonitor'}
-        <BackupSourcesManager backupMonitor={container.backupMonitor} />
-      {:else if current === 'backups'}
-        <BackupSettings backups={container.backup} />
-      {:else}
-        {#if onrestarttour}
-          <h3>{t('app.guided_tour')}</h3>
-          <p class="muted">{t('app.shows_the_most_important_features_of')}</p>
-          <button class="btn" type="button" onclick={onrestarttour}>{t('app.restart_the_tour')}</button>
-        {/if}
-        <h3>{t('app.two_factor_authentication')}</h3>
-        <TwoFactorSettings auth={container.auth} />
-        <PasskeySettings auth={container.auth} />
-        {#if !container.auth.kiosk && !container.localMode}
-          {#await import('../features/auth/ui/LinkedSignInSettings.svelte') then { default: LinkedSignInSettings }}
-            <LinkedSignInSettings auth={container.auth} />
-          {/await}
-        {/if}
-        <h3>{t('app.active_sessions')}</h3>
-        <SessionsList auth={container.auth} />
-        {#if !container.auth.kiosk && !container.localMode}
-          <h3>{t('app.mobile_app')}</h3>
-          {#await import('../features/auth/ui/AppPairing.svelte') then { default: AppPairing }}
-            <AppPairing auth={container.auth} />
-          {/await}
-        {/if}
-        <h3>{t('app.change_password')}</h3>
-        <ChangePasswordForm auth={container.auth} />
-        {#if !container.auth.admin && !container.auth.kiosk}
-          <h3>{t('auth.reset_email_title')}</h3>
-          {#await import('../features/auth/ui/ResetEmailSettings.svelte') then { default: ResetEmailSettings }}
-            <ResetEmailSettings auth={container.auth} />
-          {/await}
-        {/if}
       {/if}
     </section>
   </div>
 </Modal>
 
 <style>
-  /* Two columns: the navigation stays, the section scrolls on its own (#261). */
+  /* Two columns: the areas stay, the content scrolls on its own (#261, #600). */
   .layout {
     display: grid;
     grid-template-columns: minmax(180px, 230px) 1fr;
     gap: var(--space-4);
     height: min(72vh, 760px);
   }
-  .sections,
+  .areas,
   .content {
     overflow-y: auto;
     min-height: 0;
     overscroll-behavior: contain;
   }
-  .sections {
+  .areas {
+    display: flex;
+    flex-direction: column;
     border-right: 1px solid var(--color-border);
     padding-right: var(--space-2);
   }
@@ -295,21 +283,8 @@
     min-width: 0;
     padding-right: var(--space-1);
   }
-  .group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: var(--space-3);
-  }
-  .group h3 {
-    margin: 0 0 var(--space-1);
-    padding: 0 var(--space-2);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--color-text-muted);
-  }
-  .sections button {
+  .areas button,
+  .list button {
     text-align: left;
     border: 0;
     background: none;
@@ -319,39 +294,59 @@
     border-radius: var(--radius-small);
     cursor: pointer;
   }
-  .sections button:hover {
+  .areas button.open {
+    font-weight: 600;
+  }
+  .areas button.sub {
+    padding-left: var(--space-6);
+    font-size: 0.92rem;
+  }
+  .areas button:hover,
+  .list button:hover {
     background: var(--color-surface-2);
   }
-  .sections button.current {
+  .areas button.current {
     background: color-mix(in srgb, var(--color-accent) 18%, transparent);
     font-weight: 600;
   }
-  .sections button:focus-visible {
+  .areas button:focus-visible,
+  .list button:focus-visible {
     outline: 2px solid var(--color-accent-text);
     outline-offset: -2px;
+  }
+  .title {
+    margin: 0 0 var(--space-3);
+  }
+  .title:focus {
+    outline: none;
+  }
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+  }
+  .list li + li {
+    border-top: 1px solid var(--color-border);
+  }
+  .list button {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px var(--space-3);
   }
   .back {
     display: none;
   }
-  /* Phones: the list of sections, then one section with a back button. */
+  /* Phones: one page at a time with a back link instead of the area column. */
   @media (max-width: 640px) {
     .layout {
       display: block;
       height: auto;
     }
-    .sections {
-      border-right: 0;
-      padding-right: 0;
-    }
-    .sections button {
-      padding: 10px var(--space-2);
-    }
-    .layout .content,
-    .layout.showing .sections {
+    .areas {
       display: none;
-    }
-    .layout.showing .content {
-      display: block;
     }
     .back {
       display: inline-flex;
