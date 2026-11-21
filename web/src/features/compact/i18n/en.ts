@@ -19,6 +19,11 @@ export const en = {
   'compact.example.docker': '11 of 12 running · 1 stopped',
   'compact.example.parcels': '2 on the way · 1 arriving today',
   'compact.example.speedtest': '250 ↓ · 40 ↑ Mbit/s',
+  'compact.example.proxmox': '3 of 4 guests running',
+  'compact.example.adguard': '12 % blocked',
+  'compact.example.wireguard': '2 of 3 peers connected',
+  'compact.example.weather': '7° · Overcast',
+  'compact.example.electricity': '28 ct now · Cheap from 14:00',
   'compact.example.smarthome': 'Coffee machine · Off',
 } as const;
 

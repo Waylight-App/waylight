@@ -21,5 +21,10 @@ export const de: Record<keyof typeof en, string> = {
   'compact.example.docker': '11 von 12 laufen · 1 gestoppt',
   'compact.example.parcels': '2 unterwegs · 1 kommt heute',
   'compact.example.speedtest': '250 ↓ · 40 ↑ Mbit/s',
+  'compact.example.proxmox': '3 von 4 Gästen laufen',
+  'compact.example.adguard': '12 % blockiert',
+  'compact.example.wireguard': '2 von 3 Peers verbunden',
+  'compact.example.weather': '7° · Bedeckt',
+  'compact.example.electricity': '28 ct jetzt · Günstig ab 14:00',
   'compact.example.smarthome': 'Kaffeemaschine · Aus',
 };
