@@ -7,6 +7,8 @@
   import { registeredSections } from './settingsSections';
   import { type CatalogSection, OWN_SECTIONS, visibleSections } from './settingsCatalog';
   import { type AreaStatus, loadAreaStatuses, type StatusSources } from './settingsStatus';
+  import { advancedProblem } from './settingsAdvancedHint';
+  import { attention } from './attention.svelte';
   import { loadRecent, rememberChange } from './settingsRecent';
   import type { Appearance } from '../features/appearance';
   import Modal from '../shared/ui/Modal.svelte';
@@ -73,6 +75,25 @@
         (s) => s.advanced || (s.advancedFields?.length ?? 0) > 0,
       ),
   );
+  /**
+   * A hidden advanced section whose connection fails (#622): the start page
+   * points at it so an admin does not miss the problem behind the switch.
+   */
+  const advancedAttention = $derived(
+    canSwitchAdvanced
+      ? advancedProblem({
+          items: attention.items,
+          sections: visibleSections(sections, { ...viewer, advanced: true }),
+          showAdvanced: !!appearance.showAdvanced,
+          admin: container.auth.admin,
+        })
+      : undefined,
+  );
+  /** Opens the section for this visit; the stored switch stays off. */
+  function openAdvancedAttention(id: string) {
+    visitAdvanced = true;
+    void go({ kind: 'section', id });
+  }
   let advancedError = $state('');
   let savingAdvanced = $state(false);
   async function setAdvanced(on: boolean) {
@@ -325,6 +346,16 @@
               <span>{t('settings.advanced.label')}</span>
             </label>
             <p class="muted" id="settings-advanced-hint">{t('settings.advanced.hint')}</p>
+            {#if advancedAttention}
+              {@const target = advancedAttention}
+              <p class="advanced-attention">
+                <span class="dot" aria-hidden="true"></span>
+                {t('settings.advanced.attention')}
+                <button type="button" class="link" onclick={() => openAdvancedAttention(target.id)}>
+                  {t('settings.advanced.attention_open', { name: nameOf(target) })}
+                </button>
+              </p>
+            {/if}
             {#if advancedError}<p class="error" role="alert">{advancedError}</p>{/if}
           </div>
         {/if}
@@ -442,6 +473,28 @@
   .advanced p {
     margin: var(--space-1) 0 0;
     font-size: 0.85rem;
+  }
+  .advanced-attention {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+  }
+  .advanced-attention .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-warning);
+  }
+  .advanced-attention .link {
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-accent-text);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
   }
   .switch {
     display: inline-flex;

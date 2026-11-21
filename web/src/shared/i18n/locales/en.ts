@@ -1006,6 +1006,8 @@ export const en = {
   'settings.search.kind_section': 'Section',
   'settings.search.kind_field': 'Setting',
   'settings.advanced.label': 'Show advanced settings',
+  'settings.advanced.attention': 'An advanced setting needs attention.',
+  'settings.advanced.attention_open': 'Open {name}',
   'settings.advanced.hint':
     'API tokens, JSON APIs, the resource forecast and custom CSS. Saved for your account.',
   'settings.recent': 'Recently changed',
