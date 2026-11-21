@@ -2,7 +2,6 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
-  srv_6a8ea4229e4ff1a3: "Could not connect to Grafana: {detail}",
   srv_8ff75b8c58539e49: "Grafana cannot render this panel as an image; install the Grafana image renderer.",
   srv_a25fcc52746e2dd0: "Grafana is not configured yet.",
   srv_2ee1fd290ca5d367: "Grafana is not reachable.",

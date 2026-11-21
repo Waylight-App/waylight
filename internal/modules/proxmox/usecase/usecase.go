@@ -119,7 +119,7 @@ func (uc *proxmox) SaveSettings(ctx context.Context, in SettingsInput) (Settings
 	}
 	cluster, err := uc.d.Client.Cluster(ctx, s)
 	if err != nil {
-		return SettingsView{}, kernel.TargetFailure(kernel.ErrInvalid, err)
+		return SettingsView{}, kernel.SetupFailure("Proxmox VE", err)
 	}
 	if err := uc.d.Repo.Save(ctx, s); err != nil {
 		return SettingsView{}, fmt.Errorf("save settings: %w", err)

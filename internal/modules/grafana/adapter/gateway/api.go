@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"waylight/internal/modules/grafana/domain"
+	"waylight/internal/shared/kernel"
 )
 
 const (
@@ -166,7 +167,7 @@ func (a *API) getJSON(ctx context.Context, s domain.Settings, path string, dst a
 func decode(res *http.Response, dst any) error {
 	defer res.Body.Close()
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxJSONBytes)).Decode(dst); err != nil {
-		return fmt.Errorf("unexpected response from Grafana: %w", err)
+		return fmt.Errorf("%w: %w", kernel.ErrTargetWrongService, err)
 	}
 	return nil
 }
@@ -194,10 +195,10 @@ func (a *API) do(ctx context.Context, s domain.Settings, method, path, accept st
 		return res, nil
 	case http.StatusUnauthorized:
 		_ = res.Body.Close()
-		return nil, fmt.Errorf("the token was rejected (%s)", res.Status)
+		return nil, fmt.Errorf("%w: the token was rejected (%s)", kernel.ErrTargetAuth, res.Status)
 	case http.StatusForbidden:
 		_ = res.Body.Close()
-		return nil, fmt.Errorf("the token lacks a permission (%s)", res.Status)
+		return nil, fmt.Errorf("%w: the token lacks a permission (%s)", kernel.ErrTargetAuth, res.Status)
 	case http.StatusNotFound:
 		_ = res.Body.Close()
 		return nil, domain.ErrBadDashboard

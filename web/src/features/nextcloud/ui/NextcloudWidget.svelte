@@ -1,5 +1,6 @@
 <script lang="ts">
-  import EmptyState from '../../../shared/ui/EmptyState.svelte';
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { nextcloudSetup } from './nextcloudSetup';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -20,22 +21,27 @@
   let error = $state('');
   let unconfigured = $state(false);
 
-  $effect(() => {
-    const load = () =>
-      nextcloud
-        .status()
-        .then((s) => ((status = s), (error = ''), (unconfigured = false)))
-        .catch((err) => {
-          unconfigured = err instanceof ApiError && err.status === 404;
-          error = errorMessage(err);
-          throw err;
-        });
-    return poll(load, POLL_MS);
-  });
+  const load = () =>
+    nextcloud
+      .status()
+      .then((s) => ((status = s), (error = ''), (unconfigured = false)))
+      .catch((err) => {
+        unconfigured = err instanceof ApiError && err.status === 404;
+        error = errorMessage(err);
+        throw err;
+      });
+  $effect(() => poll(load, POLL_MS));
+  // svelte-ignore state_referenced_locally
+  const setup = nextcloudSetup(nextcloud);
 </script>
 
 {#if unconfigured}
-  <EmptyState text={t('nextcloud.connect_nextcloud_under_settings_nextclo')} section="nextcloud" />
+  <SetupInPlace
+    text={t('nextcloud.connect_nextcloud_under_settings_nextclo')}
+    descriptor={setup}
+    instance
+    ondone={() => void load().catch(() => undefined)}
+  />
 {:else if error && !status}
   <p class="error">{error}</p>
 {:else if status}

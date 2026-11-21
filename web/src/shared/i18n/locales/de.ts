@@ -301,6 +301,15 @@ export const de: Record<BaseMessageKey, string> = {
   'nextcloud.connect_nextcloud_under_settings_nextclo': 'Verbinde Nextcloud unter Einstellungen → Nextcloud.',
   'nextcloud.nextcloud': 'Nextcloud {value}',
   'nextcloud.maintenance': 'Wartung',
+  'nextcloud.setup_username': 'Benutzername',
+  'nextcloud.setup_password': 'App-Passwort',
+  'nextcloud.setup_step_settings':
+    'Öffne Nextcloud, klicke auf dein Profilbild und wähle Persönliche Einstellungen.',
+  'nextcloud.setup_step_security': 'Öffne Sicherheit und scrolle zu Geräte & Sitzungen.',
+  'nextcloud.setup_step_create': 'Gib Waylight als App-Name ein und klicke Neues App-Passwort erstellen.',
+  'nextcloud.setup_step_copy':
+    'Kopiere den angezeigten Benutzernamen und das App-Passwort und füge sie unten ein.',
+  'nextcloud.setup_version': 'Nextcloud {version}, {percent} % des Speichers belegt',
   'nextcloud.app_updates': '{appUpdates} App-Updates',
   'nextcloud.you_use_no_quota': 'Du nutzt {value} (kein Kontingent).',
   'nextcloud.free': 'frei',

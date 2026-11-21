@@ -1,4 +1,6 @@
 <script lang="ts">
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { grafanaSetup } from './grafanaSetup';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -17,27 +19,30 @@
   let error = $state('');
   let unconfigured = $state(false);
 
-  $effect(() =>
-    poll(
-      () =>
-        grafana
-          .alerts()
-          .then((a) => ((data = a), (error = ''), (unconfigured = false)))
-          .catch((err) => {
-            unconfigured = err instanceof ApiError && err.status === 404;
-            error = errorMessage(err);
-            throw err;
-          }),
-      POLL_MS,
-    ),
-  );
+  const load = () =>
+    grafana
+      .alerts()
+      .then((a) => ((data = a), (error = ''), (unconfigured = false)))
+      .catch((err) => {
+        unconfigured = err instanceof ApiError && err.status === 404;
+        error = errorMessage(err);
+        throw err;
+      });
+  $effect(() => poll(load, POLL_MS));
+  // svelte-ignore state_referenced_locally
+  const setup = grafanaSetup(grafana);
 
   const since = (d: Date) =>
     d.toLocaleString(intlLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 </script>
 
 {#if unconfigured}
-  <p class="muted">{t('grafana.connect_under_settings')}</p>
+  <SetupInPlace
+    text={t('grafana.connect_under_settings')}
+    descriptor={setup}
+    instance
+    ondone={() => void load().catch(() => undefined)}
+  />
 {:else if error && !data}
   <p class="error">{error}</p>
 {:else if data}

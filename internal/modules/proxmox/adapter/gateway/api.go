@@ -126,11 +126,13 @@ func (a *API) do(ctx context.Context, s domain.Settings, method, path string, ds
 		return fmt.Errorf("%w: the API token was rejected (%s)", kernel.ErrTargetAuth, res.Status)
 	case http.StatusForbidden:
 		return fmt.Errorf("%w: the API token lacks a permission (%s)", kernel.ErrTargetAuth, res.Status)
+	case http.StatusNotFound, http.StatusNotImplemented:
+		return fmt.Errorf("%w: %s", kernel.ErrTargetWrongService, res.Status)
 	default:
 		return fmt.Errorf("unexpected answer from Proxmox VE: %s", res.Status)
 	}
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxResponseBytes)).Decode(dst); err != nil {
-		return fmt.Errorf("unexpected response from Proxmox VE: %w", err)
+		return fmt.Errorf("%w: %w", kernel.ErrTargetWrongService, err)
 	}
 	return nil
 }

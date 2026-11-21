@@ -27,4 +27,11 @@ export const de: Record<keyof typeof en, string> = {
   'grafana.loading_values': 'Werte werden geladen…',
   'grafana.values_over': '{title} in den letzten {range}',
   'grafana.alert_list': 'Alarmliste',
+  'grafana.setup_token': 'Token des Dienstkontos',
+  'grafana.setup_step_open':
+    'Öffne Grafana und gehe zu Administration → Users and access → Service accounts.',
+  'grafana.setup_step_add': 'Klicke Add service account, nenne es Waylight und gib ihm die Rolle Viewer.',
+  'grafana.setup_step_token': 'Klicke Add service account token und dann Generate token.',
+  'grafana.setup_step_copy': 'Kopiere das Token und füge es unten ein; Grafana zeigt es nur einmal.',
+  'grafana.setup_alerts': '{n} Alarme aktiv oder ausstehend',
 };

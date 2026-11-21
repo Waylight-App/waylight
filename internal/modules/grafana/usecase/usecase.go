@@ -98,7 +98,7 @@ func (uc *grafana) SaveSettings(ctx context.Context, in SettingsInput) (Settings
 		return SettingsView{}, err
 	}
 	if _, err := uc.client.Search(ctx, s, ""); err != nil {
-		return SettingsView{}, kernel.NewPublicErrorf(kernel.ErrInvalid, "Could not connect to Grafana: {detail}", "detail", err.Error())
+		return SettingsView{}, kernel.SetupFailure("Grafana", err)
 	}
 	if err := uc.repo.Save(ctx, s); err != nil {
 		return SettingsView{}, fmt.Errorf("save settings: %w", err)
