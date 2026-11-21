@@ -9,6 +9,11 @@ export const serverMessages = {
   srv_97f22fc39ea1794a: "Could not load the ICS calendar: {detail}",
   srv_38ba62864162fcec: "Events can be at most one year long.",
   srv_92fe9be68e4fbeb4: "No calendar is configured yet.",
+  srv_fabbc2a837e8964d: "No calendar set up",
+  srv_840e712c8a9ce8f9: "No upcoming events",
+  srv_3763f519c347a9f7: "Now",
+  srv_6e7f27cd5f252230: "On {date}",
+  srv_28a1ef3fa295aae0: "On {date} at {time}",
   srv_f5627673a11b56bd: "Please choose one of the configured calendars.",
   srv_b71f32ebd27a0b6a: "Please enter a valid start and end.",
   srv_a4d2757d3ca7d004: "Please enter at least one calendar URL.",
@@ -23,7 +28,12 @@ export const serverMessages = {
   srv_066ea148faee11ae: "The period must be positive and at most 42 days long.",
   srv_99e5a87eee94b355: "The refresh interval must be between 15 minutes and 24 hours.",
   srv_f79c303515b1250c: "The title must be between 1 and 200 characters long.",
+  srv_63d040e37887f17e: "Today",
+  srv_3ae5f0c83c31dbca: "Today at {time}",
+  srv_44ef1526bf1d8106: "Tomorrow",
+  srv_289edcea27d3bdd2: "Tomorrow at {time}",
   srv_ac92ff8f414a83b9: "from and to must be RFC 3339 timestamps.",
+  srv_981efd4748b03a23: "{title}",
 } as const;
 
 /** Key of a backend message. */

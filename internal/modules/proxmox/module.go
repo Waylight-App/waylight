@@ -1,6 +1,7 @@
 package proxmox
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
@@ -70,3 +71,15 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 func (m *Module) Jobs() []modules.Job {
 	return []modules.Job{{Name: "proxmox.refresh", Interval: refreshInterval, Run: m.uc.Refresh}}
 }
+
+// ConnectionStatus implements modules.StatusReporter (#592): the status the
+// job keeps says whether the last refresh reached Proxmox.
+func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus {
+	v, err := m.uc.Status(ctx)
+	if err == nil && v.Error != "" {
+		err = errUnreachable
+	}
+	return modules.StatusOf(err, domain.ErrNotConfigured)
+}
+
+var errUnreachable = kernel.NewPublicError(kernel.ErrUnavailable, "Proxmox VE is not reachable.")

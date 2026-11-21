@@ -2,6 +2,12 @@ tags:
   - name: diskhealth
 
 paths:
+  /api/diskhealth/compact:
+    get:
+      tags: [diskhealth]
+      summary: "Compact state of the widget (#594): Health of all drives"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
   /api/diskhealth:
     get:
       tags: [diskhealth]

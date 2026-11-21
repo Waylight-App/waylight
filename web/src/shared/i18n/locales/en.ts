@@ -1504,6 +1504,8 @@ export const en = {
   'dashboard.widget_size': 'Size of {name}',
   'dashboard.size_free': 'Free size',
   'dashboard.open_details': '{name}: show details',
+  'dashboard.edit_widget': 'Edit widget',
+  'dashboard.notify_on_failure': 'Notify me when this fails',
   'dashboard.mobile_moved': '“{name}” moved to position {position}.',
   'dashboard.tab_rules': 'Open by default',
   'dashboard.rules_of': 'When to open “{name}”',

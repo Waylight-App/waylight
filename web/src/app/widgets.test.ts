@@ -18,14 +18,23 @@ describe('widget registry (#116)', () => {
     expect(new Set(kinds).size).toBe(kinds.length);
   });
 
-  it('declares compact views for the widgets with a compact state (#595)', () => {
+  it('declares compact views for the widgets with a compact state (#595, #594)', () => {
     const modules = Object.fromEntries(
       widgetDefinitions.flatMap((d) => {
         const module = d.compact?.({});
         return module ? [[d.type.kind, module]] : [];
       }),
     );
-    expect(modules).toEqual({ todos: 'todos', focus: 'focus', habits: 'habits' });
+    expect(modules).toEqual({
+      todos: 'todos',
+      focus: 'focus',
+      habits: 'habits',
+      services: 'services',
+      'status-overview': 'services',
+      calendar: 'calendar',
+      'backup-status': 'backupmonitor',
+      diskhealth: 'diskhealth',
+    });
     // A connected to-do list has no compact state on the server.
     expect(definitionFor('todos')?.compact?.({ source: 'caldav-1' })).toBeUndefined();
   });

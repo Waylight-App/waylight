@@ -17,4 +17,22 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // Use a cron expression with five fields, e.g. 0 3 * * * (daily at 03:00).
   srv_564c3b1fecfb1093:
     'Bitte einen Cron-Ausdruck mit fünf Feldern verwenden, z. B. 0 3 * * * (täglich um 03:00).',
+  // Backup OK
+  srv_54022920e535da37: 'Sicherung OK',
+  // Last success {time}
+  srv_dca29003ab21344d: 'Zuletzt erfolgreich {time}',
+  // No backups yet
+  srv_4efa152402f99eaf: 'Noch keine Sicherungen',
+  // Waiting for the first run
+  srv_122bbf8d15074197: 'Wartet auf den ersten Lauf',
+  // {count} of {total} failed
+  srv_690e8b1d63e37e2e: '{count} von {total} fehlgeschlagen',
+  // {count} of {total} overdue
+  srv_8ede15696ca60c31: '{count} von {total} überfällig',
+  // {name} failed
+  srv_44460b43e14f12f1: '{name} ist fehlgeschlagen',
+  // {name} is overdue
+  srv_654703b9e7d6cc6c: '{name} ist überfällig',
+  // {total} backups OK
+  srv_5533d9eb788ce382: '{total} Sicherungen OK',
 };

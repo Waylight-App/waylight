@@ -34,6 +34,11 @@ export interface WidgetDefinition {
    * their full view at every size.
    */
   compact?: (config: Config) => string | undefined;
+  /**
+   * The widget watches something that can fail (a service, a backup, a
+   * drive), so its detail panel offers to set up notifications (#594).
+   */
+  alerts?: boolean;
 }
 
 /**

@@ -50,4 +50,24 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_0756151be3234993: 'Das Konto ist nicht (mehr) verbunden.',
   // The account needs to be signed in again.
   srv_124d16b34844185b: 'Das Konto muss neu angemeldet werden.',
+  // No upcoming events
+  srv_840e712c8a9ce8f9: 'Keine anstehenden Termine',
+  // Now
+  srv_3763f519c347a9f7: 'Jetzt',
+  // On {date}
+  srv_6e7f27cd5f252230: 'Am {date}',
+  // On {date} at {time}
+  srv_28a1ef3fa295aae0: 'Am {date} um {time}',
+  // Today
+  srv_63d040e37887f17e: 'Heute',
+  // Today at {time}
+  srv_3ae5f0c83c31dbca: 'Heute um {time}',
+  // Tomorrow
+  srv_44ef1526bf1d8106: 'Morgen',
+  // Tomorrow at {time}
+  srv_289edcea27d3bdd2: 'Morgen um {time}',
+  // {title}
+  srv_981efd4748b03a23: '{title}',
+  // No calendar set up
+  srv_fabbc2a837e8964d: 'Kein Kalender eingerichtet',
 };

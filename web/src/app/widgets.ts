@@ -99,6 +99,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 6, h: 4 },
     },
     icon: 'server',
+    compact: () => 'services',
+    alerts: true,
     view: lazy(
       () => import('../features/services/ui/ServicesWidget.svelte'),
       (config, c) => ({ config, services: c.services }),
@@ -118,6 +120,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 5 },
     },
     icon: 'activity',
+    compact: () => 'services',
+    alerts: true,
     view: lazy(
       () => import('../features/services/ui/StatusOverviewWidget.svelte'),
       (_config, c) => ({ services: c.services }),
@@ -237,6 +241,7 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultConfig: { view: 'split' },
     },
     icon: 'calendar',
+    compact: () => 'calendar',
     view: lazy(
       () => import('../features/calendar/ui/CalendarWidget.svelte'),
       (config, c) => ({ config, calendar: c.calendar }),
@@ -466,6 +471,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 3 },
     },
     icon: 'archive',
+    compact: () => 'backupmonitor',
+    alerts: true,
     view: lazy(
       () => import('../features/backupmonitor/ui/BackupStatusWidget.svelte'),
       (_config, c) => ({ backupMonitor: c.backupMonitor }),
@@ -504,6 +511,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 4 },
     },
     icon: 'disk',
+    compact: () => 'diskhealth',
+    alerts: true,
     view: lazy(
       () => import('../features/diskhealth/ui/DiskHealthWidget.svelte'),
       (_config, c) => ({ diskhealth: c.diskhealth }),

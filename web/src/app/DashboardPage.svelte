@@ -6,6 +6,7 @@
   import LazyComponent from './LazyComponent.svelte';
   import { definitionFor, iconFor, widgetDefinitions } from './widgets';
   import { lazy } from './widgetKit';
+  import { useOpenSettings } from '../shared/ui/settingsLink';
   import { categoryShown, type StartProfile } from '../features/appearance/domain/appearance';
 
   /** Props of the dashboard page. */
@@ -48,6 +49,7 @@
     redo: () => void;
     showTabBackground: (tabId: string, background: string) => void;
     selectTab: (id: string) => void;
+    openWidgetSettings: (tabId: string, widgetId: string) => void;
     openAddWidget: (query?: string) => void;
   }>();
   // The picker is loaded only when someone opens it (#116).
@@ -76,6 +78,10 @@
   export function selectTab(id: string) {
     view?.selectTab(id);
   }
+  /** Opens a widget's settings on its tab, from the attention list (#592). */
+  export function openWidgetSettings(tabId: string, widgetId: string) {
+    view?.openWidgetSettings(tabId, widgetId);
+  }
   export function openAddWidget(query = '') {
     view?.openAddWidget(query);
   }
@@ -98,6 +104,14 @@
   function compactModule(widget: Widget): string | undefined {
     if (container.localMode) return undefined;
     return definitionFor(widget.kind)?.compact?.(widget.config);
+  }
+
+  // Notifications are set up by admins in the settings (#594).
+  const openSettings = useOpenSettings();
+  function notifyAction(widget: Widget): (() => void) | undefined {
+    const open = openSettings;
+    if (!open || !container.auth.admin || !definitionFor(widget.kind)?.alerts) return undefined;
+    return () => open('notifications');
   }
 
   // The "everyday" profile hides home-server and network widgets from the
@@ -125,6 +139,7 @@
   pickerFooter={container.localMode ? fullVersionHint : undefined}
   hasCompact={(widget) => compactModule(widget) !== undefined}
   detailPanel={!container.auth.kiosk}
+  {notifyAction}
 >
   {#snippet content(widget: Widget)}
     {@const def = definitionFor(widget.kind)}

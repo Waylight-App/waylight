@@ -5,6 +5,7 @@ export const serverMessages = {
   srv_1f3976061912504c: "Docker discovery needs the docker module to be enabled.",
   srv_2ad35206dae11b67: "Each service name can be used only once in the file.",
   srv_591001f7788fb502: "No MAC address is stored for this service.",
+  srv_e40289b4499ed164: "No services yet",
   srv_49713b674a89dd04: "The check URL must start with http:// or https://.",
   srv_b6d4e2000983a0fe: "The description must be at most 200 characters long.",
   srv_42e741b2bbfc2695: "The icon is too long.",
@@ -12,6 +13,9 @@ export const serverMessages = {
   srv_a75b491a5e89aabe: "The new order must contain every service exactly once.",
   srv_df6166e3647fbc04: "The service does not exist.",
   srv_c64f8cf81797f821: "Unknown merge rule.",
+  srv_ac66b193c5335c18: "{count} services down",
+  srv_09bd02ddefc751e8: "{name} is down",
+  srv_85ec6321e77d0b4a: "{online} of {total} running",
 } as const;
 
 /** Key of a backend message. */

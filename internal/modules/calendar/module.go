@@ -3,6 +3,7 @@ package calendar
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"io/fs"
 	"net/http"
 	"net/url"
@@ -11,6 +12,7 @@ import (
 	"waylight/internal/modules"
 	"waylight/internal/modules/calendar/adapter/controller"
 	"waylight/internal/modules/calendar/adapter/gateway"
+	"waylight/internal/modules/calendar/domain"
 	"waylight/internal/modules/calendar/usecase"
 	"waylight/internal/shared/kernel"
 )
@@ -24,6 +26,8 @@ type Module struct {
 	handlers *controller.Handlers
 	subs     *controller.SubscriptionHandlers
 	accounts *controller.AccountHandlers
+	clock    kernel.Clock
+	loc      *time.Location
 }
 
 // New builds the calendar module. Floating event times are interpreted in loc.
@@ -45,7 +49,7 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 		IDs: ids, Clock: clock,
 		Accounts: accounts, API: gateway.NewAccountAPI(client), OAuth: newOAuthPort(client, publicURL, clock.Now),
 	})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc), subs: controller.NewSubscriptionHandlers(uc), accounts: controller.NewAccountHandlers(uc)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), subs: controller.NewSubscriptionHandlers(uc), accounts: controller.NewAccountHandlers(uc), clock: clock, loc: loc}
 }
 
 // Name implements modules.Module.
@@ -89,4 +93,19 @@ func (m *Module) Jobs() []modules.Job {
 // briefing, ADR 0016).
 func (m *Module) Upcoming(ctx context.Context, days int) (usecase.AgendaResponse, error) {
 	return m.uc.Upcoming(ctx, days)
+}
+
+// compactDays is how far ahead the compact state looks for the next event.
+const compactDays = 14
+
+// CompactState implements modules.CompactProvider (#594): the next event.
+func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
+	agenda, err := m.uc.Upcoming(ctx, compactDays)
+	if errors.Is(err, domain.ErrNotConfigured) {
+		return kernel.CompactState{Level: kernel.CompactNone, UpdatedAt: m.clock.Now(), Title: kernel.NewText("No calendar set up")}, nil
+	}
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	return usecase.CompactState(agenda, m.clock.Now(), m.loc), nil
 }

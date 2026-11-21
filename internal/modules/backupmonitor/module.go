@@ -31,13 +31,14 @@ type Module struct {
 	modules.Base
 	uc       usecase.Monitor
 	handlers *controller.Handlers
+	clock    kernel.Clock
 }
 
 // New builds the backup monitor module.
 func New(d Deps) *Module {
 	deps := usecase.Deps{Repo: gateway.NewRepository(d.DB), Tokens: d.Tokens, Clock: d.Clock, IDs: d.IDs, Observations: d.Observations}
 	uc := usecase.NewMonitor(deps)
-	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, deps) }, uc: uc, handlers: controller.NewHandlers(uc)}
+	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, deps) }, uc: uc, handlers: controller.NewHandlers(uc), clock: d.Clock}
 }
 
 // Name implements modules.Module.
@@ -95,4 +96,14 @@ func (m *Module) Metrics(ctx context.Context) []kernel.MetricSample {
 		}
 	}
 	return out
+}
+
+// CompactState implements modules.CompactProvider (#594): failed and
+// overdue backups first, otherwise the latest success.
+func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
+	list, err := m.uc.List(ctx)
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	return usecase.CompactState(list, m.clock.Now(), time.Local), nil
 }
