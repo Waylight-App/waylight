@@ -24,6 +24,12 @@ type fakeClient struct {
 	alerts    []domain.Alert
 	alertCall int
 	searchErr error
+	data      domain.PanelData
+	dataErr   error
+}
+
+func (f *fakeClient) PanelData(context.Context, domain.Settings, domain.DataRequest) (domain.PanelData, error) {
+	return f.data, f.dataErr
 }
 
 func (f *fakeClient) Alerts(context.Context, domain.Settings) ([]domain.Alert, error) {
@@ -97,5 +103,30 @@ func TestNotConfiguredAndBadUID(t *testing.T) {
 	}
 	if uc.URL(context.Background()) != "" {
 		t.Fatal("no URL without settings")
+	}
+}
+
+func TestPanelDataKeepsItsOwnErrors(t *testing.T) {
+	repo := &memRepo{s: &domain.Settings{URL: "http://g", Token: "t"}}
+	req := domain.DataRequest{UID: "node", PanelID: 1, Range: "6h"}
+	for name, c := range map[string]struct {
+		err, want error
+	}{
+		"missing panel": {domain.ErrBadDashboard, domain.ErrBadDashboard},
+		"no values":     {domain.ErrNoData, domain.ErrNoData},
+		"other":         {errors.New("boom"), domain.ErrUnreachable},
+	} {
+		uc := New(repo, &fakeClient{dataErr: c.err}, &clock{now: time.Now()})
+		if _, err := uc.PanelData(context.Background(), req); !errors.Is(err, c.want) {
+			t.Errorf("%s: got %v", name, err)
+		}
+	}
+	want := domain.PanelData{Title: "CPU", Series: []domain.Series{{Name: "cpu", Points: []domain.Point{{Value: 1}}}}}
+	uc := New(repo, &fakeClient{data: want}, &clock{now: time.Now()})
+	if got, err := uc.PanelData(context.Background(), req); err != nil || got.Title != "CPU" {
+		t.Fatalf("got %+v %v", got, err)
+	}
+	if _, err := New(&memRepo{}, &fakeClient{}, &clock{}).PanelData(context.Background(), req); !errors.Is(err, domain.ErrNotConfigured) {
+		t.Fatalf("not configured: %v", err)
 	}
 }

@@ -6,6 +6,7 @@ export const serverMessages = {
   srv_8ff75b8c58539e49: "Grafana cannot render this panel as an image; install the Grafana image renderer.",
   srv_a25fcc52746e2dd0: "Grafana is not configured yet.",
   srv_2ee1fd290ca5d367: "Grafana is not reachable.",
+  srv_de8bb22138954324: "Grafana returned no values for this panel; panels that use dashboard variables need the image renderer.",
   srv_ff20bffaaad40a7b: "The URL must look like http://192.168.1.2:3000.",
   srv_0016d1a6fbb13c7f: "The dashboard does not exist.",
   srv_3bbe665dcdec36da: "The service account token is required.",

@@ -49,6 +49,7 @@ func (m *Module) GuestGatedRoutes() map[string]string {
 	return map[string]string{
 		"/api/grafana/alerts":     "grafana-alerts",
 		"/api/grafana/render":     "grafana-panel",
+		"/api/grafana/data":       "grafana-panel",
 		"/api/grafana/dashboards": "grafana-browse",
 	}
 }
@@ -62,6 +63,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/grafana/dashboards", h.Dashboards)
 	r.Protected("GET /api/grafana/dashboards/{uid}/panels", h.Panels)
 	r.Protected("GET /api/grafana/render/{uid}/{panel}", h.Render)
+	r.Protected("GET /api/grafana/data/{uid}/{panel}", h.PanelData)
 }
 
 // AnswerSources implements answers.Provider: "grafana alerts" in the smart

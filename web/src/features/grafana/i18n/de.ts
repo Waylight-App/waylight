@@ -3,7 +3,8 @@ import type { en } from './en';
 /** German UI texts of the grafana feature; the type makes every key mandatory. */
 export const de: Record<keyof typeof en, string> = {
   'widget.grafana-panel.title': 'Grafana-Panel',
-  'widget.grafana-panel.description': 'Ein Panel eines Grafana-Dashboards als Bild.',
+  'widget.grafana-panel.description':
+    'Ein Panel eines Grafana-Dashboards als Bild oder ohne Image Renderer mit seinen aktuellen Werten.',
   'widget.grafana-alerts.title': 'Grafana-Alarme',
   'widget.grafana-alerts.description': 'Aktive und ausstehende Alarme von Grafana Alerting.',
   'settings.section.grafana': 'Grafana',
@@ -23,5 +24,7 @@ export const de: Record<keyof typeof en, string> = {
   'grafana.no_dashboards': 'Keine Dashboards gefunden.',
   'grafana.all_quiet': 'Kein Alarm ist aktiv.',
   'grafana.pending': 'ausstehend',
+  'grafana.loading_values': 'Werte werden geladen…',
+  'grafana.values_over': '{title} in den letzten {range}',
   'grafana.alert_list': 'Alarmliste',
 };
