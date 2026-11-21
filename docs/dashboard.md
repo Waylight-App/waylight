@@ -91,6 +91,20 @@ it to see when its data was last updated and to refresh it by hand. When the dat
 badge stays visible and changes colour, so a broken integration does not
 look like current data.
 
+## What needs your attention
+
+Waylight keeps a list of what needs your attention: widgets on your own tabs
+that miss a setting (a departures widget without a stop) and services behind
+your widgets that are not set up or stopped answering (Immich, Home
+Assistant, Nextcloud, Grafana, the FRITZ!Box for now). Admins also see
+broken connections of the instance that none of their widgets use. Shared
+tabs of others and integrations you never set up are left out. Each entry
+names one thing to do, such as *choose a stop* or *check again*.
+
+The web interface and the app read the list from `GET /api/attention`
+(see the API reference). A service's state is checked at most every two
+minutes, so a fixed problem can take that long to disappear.
+
 ## Related pages
 
 - [Feature overview](features.md): every widget and what it can do.

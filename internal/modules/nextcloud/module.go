@@ -1,10 +1,13 @@
 package nextcloud
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
 	"time"
+
+	"waylight/internal/modules/nextcloud/domain"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/nextcloud/adapter/controller"
@@ -50,4 +53,10 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 // Jobs implements modules.Module.
 func (m *Module) Jobs() []modules.Job {
 	return []modules.Job{{Name: "nextcloud.refresh", Interval: refreshInterval, Run: m.uc.Refresh}}
+}
+
+// ConnectionStatus implements modules.StatusReporter (#599).
+func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus {
+	_, err := m.uc.Status(ctx)
+	return modules.StatusOf(err, domain.ErrNotConfigured)
 }

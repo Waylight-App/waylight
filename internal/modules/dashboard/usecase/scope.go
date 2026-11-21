@@ -1,10 +1,12 @@
 package usecase
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"slices"
 
+	"waylight/internal/modules/dashboard/domain"
 	"waylight/internal/shared/kernel"
 )
 
@@ -18,6 +20,15 @@ type TabScope interface {
 	// FirstWidgetConfig returns the settings (JSON) of the first widget of
 	// kind on the account's tabs, in tab order and then top to bottom.
 	FirstWidgetConfig(ctx context.Context, kind string) (string, bool, error)
+	// OwnWidgets lists the widgets on the tabs the account owns, in tab
+	// order and then top to bottom; tabs others share with it are left out
+	// because only their owner can change them (#599).
+	OwnWidgets(ctx context.Context) ([]OwnWidget, error)
+}
+
+// OwnWidget is a widget as OwnWidgets returns it.
+type OwnWidget struct {
+	ID, TabID, Kind, Config string
 }
 
 type tabScope struct{ deps Deps }
@@ -73,4 +84,32 @@ func (uc *tabScope) FirstWidgetConfig(ctx context.Context, kind string) (string,
 		}
 	}
 	return "", false, nil
+}
+
+// OwnWidgets implements TabScope.
+func (uc *tabScope) OwnWidgets(ctx context.Context) ([]OwnWidget, error) {
+	p := kernel.PrincipalFrom(ctx)
+	tabs, err := uc.deps.Tabs.ListTabs(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list tabs: %w", err)
+	}
+	widgets, err := uc.deps.Widgets.ListWidgets(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list widgets: %w", err)
+	}
+	slices.SortStableFunc(widgets, func(a, b domain.Widget) int {
+		return cmp.Or(cmp.Compare(a.Rect().Y, b.Rect().Y), cmp.Compare(a.Rect().X, b.Rect().X))
+	})
+	var out []OwnWidget
+	for _, t := range tabs {
+		if !t.Access().Mine(p) {
+			continue
+		}
+		for _, w := range widgets {
+			if w.TabID() == t.ID() {
+				out = append(out, OwnWidget{ID: w.ID(), TabID: w.TabID(), Kind: w.Kind(), Config: w.Config()})
+			}
+		}
+	}
+	return out, nil
 }

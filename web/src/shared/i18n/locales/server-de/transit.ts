@@ -10,4 +10,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_d92a0962a35bc0f4: 'Bitte wähle in den Widget-Einstellungen eine Haltestelle.',
   // The departure information is not available right now.
   srv_83a3bc209358c090: 'Die Abfahrtsinformationen sind gerade nicht verfügbar.',
+  // Choose a stop for the departures.
+  srv_21a0df256f4c1358: 'Wähle eine Haltestelle für die Abfahrten.',
 };

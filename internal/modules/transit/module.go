@@ -1,7 +1,9 @@
 package transit
 
 import (
+	"encoding/json"
 	"net/http"
+	"strings"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/transit/adapter/controller"
@@ -48,3 +50,22 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 func (m *Module) AnswerSources() []answers.Source {
 	return []answers.Source{smartsearch.New(m.uc)}
 }
+
+// CheckWidget implements modules.WidgetChecker (#599): a departures widget
+// shows nothing until a stop is chosen.
+func (m *Module) CheckWidget(kind, config string) *modules.SetupNeed {
+	if kind != "transit" {
+		return nil
+	}
+	var cfg struct {
+		StopID string `json:"stopId"`
+	}
+	_ = json.Unmarshal([]byte(config), &cfg)
+	if strings.TrimSpace(cfg.StopID) != "" {
+		return nil
+	}
+	return &modules.SetupNeed{Reason: errNoStop, Field: "stopId"}
+}
+
+// errNoStop is the reason of a departures widget without a stop.
+var errNoStop = kernel.NewPublicError(kernel.ErrInvalid, "Choose a stop for the departures.")

@@ -13,6 +13,8 @@ import (
 	"waylight/internal/modules/adguard"
 	"waylight/internal/modules/appearance"
 	appearancedomain "waylight/internal/modules/appearance/domain"
+	"waylight/internal/modules/attention"
+	attentionuc "waylight/internal/modules/attention/usecase"
 	"waylight/internal/modules/auth"
 	authdomain "waylight/internal/modules/auth/domain"
 	"waylight/internal/modules/backup"
@@ -271,6 +273,8 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	}
 	registry.Register(dash)
 	scope.dashboard = dash
+	// The attention list asks the other modules, so it comes last (#599).
+	registry.Register(attention.New(registry.All(), ownWidgets(dash), authModule.MayRead, clk))
 	wireSmartSearch(registry, authModule.MayRead, dash.WidgetConfig, log, clk)
 	return authModule, registry, nil
 }
@@ -570,4 +574,20 @@ func appearancePreset(ctx context.Context) (appearance.Preset, bool) {
 		return appearance.Preset{}, false
 	}
 	return appearance.Preset{Theme: appearancedomain.Theme(b.DefaultTheme), Accent: b.Accent, Locked: b.LockTheme}, true
+}
+
+// ownWidgets adapts the dashboard's widgets on the account's own tabs to the
+// attention list (#599), so neither module imports the other.
+func ownWidgets(dash *dashboard.Module) attention.Widgets {
+	return func(ctx context.Context) ([]attentionuc.Widget, error) {
+		own, err := dash.OwnWidgets(ctx)
+		if err != nil {
+			return nil, err
+		}
+		out := make([]attentionuc.Widget, 0, len(own))
+		for _, w := range own {
+			out = append(out, attentionuc.Widget{ID: w.ID, TabID: w.TabID, Kind: w.Kind, Config: w.Config})
+		}
+		return out, nil
+	}
 }
