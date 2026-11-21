@@ -504,7 +504,7 @@
   // The widget kind whose help is open (#678): from a widget's "?" or a
   // help result of the search. Kiosk displays offer neither.
   let helpKind = $state<string | null>(null);
-  const showHelp = container.auth.kiosk ? undefined : (kind: string) => (helpKind = kind);
+  const showHelp = $derived(container.auth.kiosk ? undefined : (kind: string) => (helpKind = kind));
 
   /**
    * Whether the dashboard is still as setup left it: one tab with at most
@@ -575,7 +575,9 @@
       return container.auth.guest || dashboardManaged || simpleView ? undefined : () => (editing = true);
     },
     shortcuts: () => (shortcutHelp = true),
-    widgetHelp: showHelp,
+    get widgetHelp() {
+      return showHelp;
+    },
     get tour() {
       return modules?.has('onboarding') && !container.auth.guest ? restartTour : undefined;
     },

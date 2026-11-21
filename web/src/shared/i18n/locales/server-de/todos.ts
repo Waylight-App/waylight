@@ -54,8 +54,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_fe19a87a4c31a1ac: '{count} offen',
   // {count} overdue
   srv_4fd610086ba2117c: '{count} überfällig',
-  // Done: {title}
-  srv_08ee030d3497c389: 'Erledigt: {title}',
   // Type "t" and a task into the search to add one. Open the widget settings to show a connected task list instead.
   srv_18bdc8c24d205e82:
     'Tippe „t“ und eine Aufgabe in die Suche, um sie anzulegen. In den Widget-Einstellungen zeigst du stattdessen eine verbundene Aufgabenliste.',
