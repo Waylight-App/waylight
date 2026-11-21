@@ -336,7 +336,10 @@ type profileSeeder interface {
 }
 
 func onAccountCreated(ctx context.Context, cfg config.Config, log *slog.Logger, registry *modules.Registry, profile string) {
-	if profile != "" && !managedSections(registry)["appearance"] {
+	// The profile is stored even when the client sent none (the web setup no
+	// longer asks, #655): an empty one becomes the default, and the owner gets
+	// appearance settings of their own instead of reading the system ones.
+	if !managedSections(registry)["appearance"] {
 		for _, m := range registry.All() {
 			if p, ok := m.(profileStore); ok {
 				if err := p.SetProfile(ctx, profile); err != nil {
