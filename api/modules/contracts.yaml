@@ -1,0 +1,82 @@
+# OpenAPI fragment of the contracts module (#687). `make openapi` merges it
+# with api/openapi.base.yaml and checks it.
+tags:
+  - name: contracts
+
+paths:
+  /api/contracts:
+    get:
+      tags: [contracts]
+      summary: List the visible contracts, the next cancellation deadline first
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Contract" } } } } }
+    post:
+      tags: [contracts]
+      summary: Enter a contract
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ContractInput" } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Contract" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/contracts/{id}:
+    put:
+      tags: [contracts]
+      summary: Change a contract (creator only)
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ContractInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Contract" } } } }
+        "403": { description: Not the creator, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+    delete:
+      tags: [contracts]
+      summary: Remove a contract (creator only)
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      responses:
+        "204": { description: Deleted }
+        "403": { description: Not the creator, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+  /api/contracts/compact:
+    get:
+      tags: [contracts]
+      summary: Compact state, the next cancellation deadline
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
+
+schemas:
+  ContractInput:
+    type: object
+    required: [name, period, termEnd]
+    properties:
+      name: { type: string, maxLength: 80 }
+      provider: { type: string, maxLength: 80 }
+      costCents: { type: integer, minimum: 0, maximum: 100000000, description: Cost per period in the smallest currency unit }
+      period: { type: string, enum: [monthly, quarterly, yearly] }
+      termEnd: { type: string, format: date, description: Last day of the current term }
+      noticeDays: { type: integer, minimum: 0, maximum: 730 }
+      renewMonths: { type: integer, minimum: 0, maximum: 60, description: "Automatic renewal; 0 = the contract ends" }
+      remindDays: { type: integer, minimum: 0, maximum: 90, description: "Days before the deadline; 0 = no reminder" }
+      note: { type: string, maxLength: 500 }
+      visibility: { type: string, description: "private, everyone or group:<id>; empty uses the default for new records" }
+  Contract:
+    type: object
+    properties:
+      id: { type: string }
+      name: { type: string }
+      provider: { type: string }
+      costCents: { type: integer }
+      period: { type: string }
+      monthlyCents: { type: integer }
+      termEnd: { type: string, format: date }
+      noticeDays: { type: integer }
+      renewMonths: { type: integer }
+      remindDays: { type: integer }
+      note: { type: string }
+      currentEnd: { type: string, format: date, description: End of the term the next deadline belongs to }
+      deadline: { type: string, format: date, description: Next cancellation deadline }
+      open: { type: boolean, description: false when the contract ends and its last deadline passed }
+      soon: { type: boolean }
+      visibility: { type: string }
+      mine: { type: boolean }
