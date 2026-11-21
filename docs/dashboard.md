@@ -23,6 +23,12 @@ redoes it. A removed widget comes back with its settings and its content.
 arrow keys to move through the list and `Enter` to add it to the current
 tab.
 
+A click on a widget adds it in its default size. The ⊞ button in the corner
+of each entry shows the widget in every [size](#widget-sizes) side by side
+instead, with example data, so you can see what a small tile or a strip will
+say before the widget is set up. Choosing a preview adds the widget in that
+size.
+
 The grid has twelve columns. Drag a widget by its frame to move it and drag
 its lower right corner to resize it; other widgets move out of the way. With
 the keyboard, focus a widget and use the arrow keys to move it or `Shift`

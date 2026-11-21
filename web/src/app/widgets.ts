@@ -100,6 +100,7 @@ const legacyDefinitions: WidgetDefinition[] = [
     },
     icon: 'server',
     compact: () => 'services',
+    compactExample: () => t('compact.example.services'),
     alerts: true,
     view: lazy(
       () => import('../features/services/ui/ServicesWidget.svelte'),
@@ -121,6 +122,7 @@ const legacyDefinitions: WidgetDefinition[] = [
     },
     icon: 'activity',
     compact: () => 'services',
+    compactExample: () => t('compact.example.status-overview'),
     alerts: true,
     view: lazy(
       () => import('../features/services/ui/StatusOverviewWidget.svelte'),
@@ -189,6 +191,7 @@ const legacyDefinitions: WidgetDefinition[] = [
     icon: 'check',
     // The compact state counts the built-in list; a connected list has none.
     compact: (config) => (config['source'] ? undefined : 'todos'),
+    compactExample: () => t('compact.example.todos'),
     view: lazy(
       () => import('../features/todos/ui/TodosWidget.svelte'),
       (config, c) => ({
@@ -242,6 +245,7 @@ const legacyDefinitions: WidgetDefinition[] = [
     },
     icon: 'calendar',
     compact: () => 'calendar',
+    compactExample: () => t('compact.example.calendar'),
     view: lazy(
       () => import('../features/calendar/ui/CalendarWidget.svelte'),
       (config, c) => ({ config, calendar: c.calendar }),
@@ -472,6 +476,7 @@ const legacyDefinitions: WidgetDefinition[] = [
     },
     icon: 'archive',
     compact: () => 'backupmonitor',
+    compactExample: () => t('compact.example.backup-status'),
     alerts: true,
     view: lazy(
       () => import('../features/backupmonitor/ui/BackupStatusWidget.svelte'),
@@ -512,6 +517,7 @@ const legacyDefinitions: WidgetDefinition[] = [
     },
     icon: 'disk',
     compact: () => 'diskhealth',
+    compactExample: () => t('compact.example.diskhealth'),
     alerts: true,
     view: lazy(
       () => import('../features/diskhealth/ui/DiskHealthWidget.svelte'),

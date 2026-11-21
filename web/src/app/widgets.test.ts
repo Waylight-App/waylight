@@ -38,4 +38,10 @@ describe('widget registry (#116)', () => {
     // A connected to-do list has no compact state on the server.
     expect(definitionFor('todos')?.compact?.({ source: 'caldav-1' })).toBeUndefined();
   });
+
+  it('gives every compact view an example for the size previews (#596)', () => {
+    for (const d of widgetDefinitions) {
+      if (d.compact) expect(d.compactExample?.(), d.type.kind).toBeTruthy();
+    }
+  });
 });

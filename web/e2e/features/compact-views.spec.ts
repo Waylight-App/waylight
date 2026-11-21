@@ -44,3 +44,26 @@ test('a small tile shows the compact view and opens the details (#595)', async (
   await page.getByRole('button', { name: 'Compact', exact: true }).click();
   await expect(page.getByTestId('compact-view')).toBeVisible();
 });
+
+test('the picker previews the sizes and adds the widget in the chosen one (#596)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByTestId('dashboard')).toBeVisible();
+
+  await account(page, 'Edit');
+  await page.getByRole('button', { name: '+ Tab' }).click();
+  await page.getByRole('textbox', { name: 'Name' }).fill('Sizes');
+  await page.getByRole('button', { name: 'Create' }).click();
+  await page.getByRole('button', { name: '+ Add widget' }).click();
+  await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('focus');
+  await page.getByRole('button', { name: 'Choose a size for Focus timer' }).click();
+  // Previews use example data and say what each size shows.
+  await expect(page.getByRole('button', { name: 'Medium: Full view' })).toBeVisible();
+  await page.getByRole('button', { name: 'Strip: 50 min focus today' }).click();
+  const settings = page.getByRole('dialog', { name: 'Focus timer settings' });
+  await settings.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: 'Size of Focus timer' })).toHaveValue('strip');
+  await account(page, 'Done');
+  await expect(page.getByTestId('compact-view')).toContainText('min focus today');
+});

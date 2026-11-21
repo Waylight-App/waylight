@@ -135,6 +135,7 @@
   hasCompact={(widget) => compactModule(widget) !== undefined}
   detailPanel={!container.auth.kiosk}
   {notifyAction}
+  compactExample={container.localMode ? undefined : (kind) => definitionFor(kind)?.compactExample?.()}
 >
   {#snippet content(widget: Widget)}
     {@const def = definitionFor(widget.kind)}
