@@ -91,6 +91,13 @@ it to see when its data was last updated and to refresh it by hand. When the dat
 badge stays visible and changes colour, so a broken integration does not
 look like current data.
 
+Some widgets also have a short state: one line such as *3 open · 1 overdue*
+for to-dos, *2 of 5 today* for habits or *50 min focus today* for the focus
+timer, with a level (none, ok, attention, problem). Small tiles, the app's
+home screen widgets and the watch show it instead of the full widget; it is
+served at `GET /api/<module>/compact` with the same permissions as the
+module's other endpoints.
+
 ## What needs your attention
 
 Waylight keeps a list of what needs your attention: widgets on your own tabs

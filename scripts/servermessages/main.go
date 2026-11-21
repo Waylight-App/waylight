@@ -1,5 +1,5 @@
-// Command servermessages extracts every user-facing backend error message
-// (kernel.NewPublicError, NewValidationError and their f variants) and
+// Command servermessages extracts every user-facing backend message
+// (kernel.NewPublicError, NewValidationError, NewText and their f variants) and
 // writes the English catalogue for the frontend, keyed by
 // kernel.MessageKey. A message that is not a string literal is an error:
 // it could not be translated (#102).
@@ -28,7 +28,13 @@ import (
 	"waylight/internal/shared/kernel"
 )
 
-var constructors = map[string]bool{"NewPublicError": true, "NewValidationError": true, "NewPublicErrorf": true, "NewValidationErrorf": true}
+// constructors maps the kernel functions that take a user-facing template
+// to the position of that template among their arguments.
+var constructors = map[string]int{
+	"NewPublicError": 1, "NewValidationError": 1, "NewPublicErrorf": 1, "NewValidationErrorf": 1,
+	// Texts of compact widget states (#597).
+	"NewText": 0, "NewTextf": 0,
+}
 
 // literal returns the value of a string literal or a "+" chain of literals.
 func literal(e ast.Expr) (string, bool) {
@@ -85,7 +91,7 @@ func collect(roots []string) (map[string]string, map[string]map[string]bool, []s
 			}
 			ast.Inspect(f, func(n ast.Node) bool {
 				call, ok := n.(*ast.CallExpr)
-				if !ok || len(call.Args) < 2 {
+				if !ok {
 					return true
 				}
 				// kernel.NewX(...) everywhere, NewX(...) inside the kernel itself (#191).
@@ -100,10 +106,11 @@ func collect(roots []string) (map[string]string, map[string]map[string]bool, []s
 						name = fn.Name
 					}
 				}
-				if !constructors[name] {
+				arg, known := constructors[name]
+				if !known || len(call.Args) <= arg {
 					return true
 				}
-				msg, ok := literal(call.Args[1])
+				msg, ok := literal(call.Args[arg])
 				if !ok {
 					problems = append(problems, fmt.Sprintf("%s: message is not a string literal (use kernel.%sf with {placeholders})",
 						fset.Position(call.Pos()), strings.TrimSuffix(name, "f")))

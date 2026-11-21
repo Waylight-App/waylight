@@ -48,4 +48,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Die Anmeldung ist abgelaufen oder wurde widerrufen. Trenne die Liste und verbinde sie neu.',
   // Sharing is not available here.
   srv_821a541a7d6c7b9f: 'Teilen ist hier nicht verfügbar.',
+  // Nothing to do
+  srv_8474d36c18713018: 'Nichts zu tun',
+  // {count} open
+  srv_fe19a87a4c31a1ac: '{count} offen',
+  // {count} overdue
+  srv_4fd610086ba2117c: '{count} überfällig',
 };

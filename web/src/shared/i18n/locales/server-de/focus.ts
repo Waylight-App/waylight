@@ -10,4 +10,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_e9ad8cf134079d79: 'Eine Einheit dauert zwischen 1 und 180 Minuten.',
   // The session must have ended within the last day.
   srv_addb603b2e8d10d3: 'Die Einheit muss innerhalb des letzten Tages geendet haben.',
+  // {count} sessions
+  srv_74b44643f778ca81: '{count} Einheiten',
+  // {minutes} min focus today
+  srv_cf0e9452be96913b: '{minutes} Min. Fokus heute',
 };

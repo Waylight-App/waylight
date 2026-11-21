@@ -7,6 +7,7 @@ export const serverMessages = {
   srv_e21c32bf57ab4be8: "Choose a Todoist project.",
   srv_01e6a58b40c54321: "Choose a list.",
   srv_844dc15540ba01b8: "Enter the API token from Todoist's settings (Integrations → Developer).",
+  srv_8474d36c18713018: "Nothing to do",
   srv_33507329e3cf1562: "Reminders need a time like 08:00 and at most 30 days before the due date.",
   srv_5f173b47eee5e70d: "Repeat every 1–365 days, weeks or months; weekly repeats need at least one weekday.",
   srv_821a541a7d6c7b9f: "Sharing is not available here.",
@@ -21,6 +22,8 @@ export const serverMessages = {
   srv_b4f6dd576f1534c2: "The to-do was changed elsewhere in the meantime.",
   srv_b8a4d7c2f106adb7: "This list does not support repeating to-dos or reminders.",
   srv_e28b70dde38477c1: "Unknown kind of to-do list.",
+  srv_fe19a87a4c31a1ac: "{count} open",
+  srv_4fd610086ba2117c: "{count} overdue",
 } as const;
 
 /** Key of a backend message. */

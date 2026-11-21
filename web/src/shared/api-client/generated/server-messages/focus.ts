@@ -4,6 +4,8 @@
 export const serverMessages = {
   srv_e9ad8cf134079d79: "A session lasts between 1 and 180 minutes.",
   srv_addb603b2e8d10d3: "The session must have ended within the last day.",
+  srv_74b44643f778ca81: "{count} sessions",
+  srv_cf0e9452be96913b: "{minutes} min focus today",
 } as const;
 
 /** Key of a backend message. */

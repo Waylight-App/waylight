@@ -20,3 +20,46 @@ export interface InfoResponse {
    */
   readOnly: string[];
 }
+/**
+ * CompactText is a translatable text of a compact state (#597): clients
+ * look up Key in their message catalogue, fill in Params and fall back to
+ * the English Text when they do not know the key.
+ */
+export interface CompactText {
+  key: string;
+  text: string;
+  params?: { [key: string]: string};
+}
+/**
+ * CompactChoice is one chip of a compact action.
+ */
+export interface CompactChoice {
+  id: string;
+  label: CompactText;
+  body?: { [key: string]: any};
+  selected: boolean;
+}
+/**
+ * CompactAction is the one primary action of a compact view: the request
+ * a client sends when it is used, or, with choices, one request per chip.
+ */
+export interface CompactAction {
+  id: string;
+  label: CompactText;
+  method: string;
+  path: string;
+  body?: { [key: string]: any};
+  choices?: CompactChoice[];
+}
+/**
+ * CompactResponse is the DTO of GET /api/<module>/compact: the short state
+ * of the module's widget. Level is one of none, ok, attention, problem.
+ */
+export interface CompactResponse {
+  title: CompactText;
+  detail?: CompactText;
+  level: string;
+  count?: number /* int */;
+  updatedAt: string /* RFC 3339 */;
+  action?: CompactAction;
+}

@@ -2,6 +2,12 @@ tags:
   - name: todos
 
 paths:
+  /api/todos/compact:
+    get:
+      tags: [todos]
+      summary: "Compact state of the widget (#597): Open to-dos; attention while some are overdue"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
   /api/todos:
     get:
       tags: [todos]

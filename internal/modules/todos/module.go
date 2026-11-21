@@ -25,6 +25,7 @@ type Module struct {
 	seed      usecase.SeedSampleData
 	reminders usecase.SendDueReminders
 	list      usecase.ListTodos
+	clock     kernel.Clock
 }
 
 // reminderInterval is how often due reminders are checked (#68).
@@ -54,7 +55,7 @@ func New(db *sql.DB, clock kernel.Clock, ids kernel.IDGenerator, alerts kernel.A
 	d.Providers = gateway.NewProviders(client, usecase.NewTokenSource(d))
 	list := usecase.NewListTodos(d)
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, seed: usecase.NewSeedSampleData(d), seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, d) },
-		reminders: usecase.NewSendDueReminders(d), list: list, handlers: controller.NewHandlers(controller.UseCases{
+		reminders: usecase.NewSendDueReminders(d), list: list, clock: clock, handlers: controller.NewHandlers(controller.UseCases{
 			List: list, Create: usecase.NewCreateTodo(d), Update: usecase.NewUpdateTodo(d),
 			Delete: usecase.NewDeleteTodo(d), ClearCompleted: usecase.NewClearCompleted(d), Sources: usecase.NewSources(d),
 			Share: usecase.NewShareTodo(d),
@@ -100,4 +101,33 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 // in the composition root – ADR 0016).
 func (m *Module) OpenTodos(ctx context.Context) ([]usecase.TodoView, error) {
 	return m.list.Execute(ctx, domain.LocalSource, false)
+}
+
+// CompactState implements modules.CompactProvider (#597): open to-dos, and
+// a look is asked for while some are overdue.
+func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
+	list, err := m.list.Execute(ctx, "", false)
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	open, overdue := 0, 0
+	for _, t := range list {
+		if t.Done {
+			continue
+		}
+		open++
+		if t.Overdue {
+			overdue++
+		}
+	}
+	state := kernel.CompactState{Level: kernel.CompactOK, Count: kernel.IntPtr(open), UpdatedAt: m.clock.Now()}
+	state.Title = kernel.NewTextf("{count} open", "count", open)
+	if open == 0 {
+		state.Title = kernel.NewText("Nothing to do")
+	}
+	if overdue > 0 {
+		state.Level = kernel.CompactAttention
+		state.Detail = kernel.NewTextf("{count} overdue", "count", overdue)
+	}
+	return state, nil
 }
