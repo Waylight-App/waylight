@@ -4,8 +4,7 @@ import type { en } from './en';
 export const de: Record<keyof typeof en, string> = {
   'shopping.list': 'Liste',
   'shopping.caldav_list': 'CalDAV-Aufgabenliste',
-  'shopping.no_list':
-    'Noch keine Einkaufsliste. Lege hier eine an oder verbinde eine CalDAV-Aufgabenliste unter Einstellungen → Einkaufsliste.',
+  'shopping.no_list': 'Noch keine Einkaufsliste. Lege hier eine an.',
   'shopping.new_list_name': 'Name der neuen Liste',
   'shopping.default_list_name': 'Einkaufen',
   'shopping.create_list': 'Liste anlegen',
@@ -27,4 +26,15 @@ export const de: Record<keyof typeof en, string> = {
   'shopping.import_caldav': 'Aus CalDAV übernehmen',
   'shopping.imported': '{count} offene Einträge aus der CalDAV-Liste übernommen.',
   'shopping.caldav_title': 'CalDAV-Aufgabenliste',
+  'shopping.setup_hint': 'Oder verbinde eine CalDAV-Aufgabenliste, z. B. eine Liste in Nextcloud Tasks.',
+  'shopping.setup_list_url': 'Adresse der Aufgabenliste (Aufgaben → ⋯ der Liste → Privaten Link kopieren)',
+  'shopping.setup_username': 'Benutzername',
+  'shopping.setup_password': 'App-Passwort',
+  'shopping.setup_step_security':
+    'Öffne Nextcloud, klicke auf dein Profilbild, wähle Persönliche Einstellungen und dann Sicherheit.',
+  'shopping.setup_step_create':
+    'Gib unter Geräte & Sitzungen Waylight als App-Namen ein und klicke Neues App-Passwort erstellen.',
+  'shopping.setup_step_copy':
+    'Kopiere den angezeigten Benutzernamen und das App-Passwort und füge sie unten ein.',
+  'shopping.setup_found': '{n} offene Einträge',
 };

@@ -24,6 +24,14 @@ export const en = {
   'fuel.key_hint':
     'Request a free API key at creativecommons.tankerkoenig.de. Prices are loaded at most every five minutes and only while the widget is open.',
   'fuel.invalid_radius': 'The radius must be between 1 and 25 km.',
+  'fuel.setup_place': 'Place',
+  'fuel.setup_api_key': 'API key',
+  'fuel.setup_step_register': 'Request a free API key at Tankerkönig with your email address.',
+  'fuel.setup_step_mail': 'Confirm the link in the email; the key arrives in a second email.',
+  'fuel.setup_step_copy': 'Copy the key and paste it below.',
+  'fuel.setup_place_not_found': 'No place found with this name. Try a town or a postcode.',
+  'fuel.setup_found': '{n} stations within {km} km of {place}',
+  'fuel.setup_cheapest': 'Cheapest {fuel}: {name}, {price}',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

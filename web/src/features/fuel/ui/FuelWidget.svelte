@@ -1,8 +1,11 @@
 <script lang="ts">
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { fuelSetup } from './fuelSetup';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
   import {
+    type PlaceResult,
     type Favourite,
     formatPrice,
     fuelName,
@@ -18,8 +21,10 @@
   interface Props {
     fuel: FuelUseCases;
     config: Record<string, unknown>;
+    /** Place search of the weather module for the setup; without it the settings page sets fuel up. */
+    searchPlaces?: (query: string) => Promise<PlaceResult[]>;
   }
-  let { fuel, config }: Props = $props();
+  let { fuel, config, searchPlaces }: Props = $props();
   const poll = usePolling();
   const cfg = $derived(parseWidgetConfig(config));
 
@@ -42,6 +47,8 @@
       });
 
   $effect(() => poll(load, POLL_MS));
+  // svelte-ignore state_referenced_locally
+  const setup = searchPlaces ? fuelSetup(fuel, searchPlaces) : null;
 
   async function star(s: Station) {
     try {
@@ -52,7 +59,14 @@
   }
 </script>
 
-{#if unconfigured}
+{#if unconfigured && setup}
+  <SetupInPlace
+    text={t('fuel.connect_under_settings')}
+    descriptor={setup}
+    instance
+    ondone={() => void load().catch(() => undefined)}
+  />
+{:else if unconfigured}
   <p class="muted">{t('fuel.connect_under_settings')}</p>
 {:else if error && !overview}
   <p class="error">{error}</p>

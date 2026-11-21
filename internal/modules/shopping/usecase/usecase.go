@@ -91,7 +91,7 @@ func (uc *shopping) SaveSettings(ctx context.Context, listURL, username, passwor
 		return SettingsView{}, err
 	}
 	if _, err := uc.store.List(ctx, s); err != nil {
-		return SettingsView{}, kernel.TargetFailure(kernel.ErrInvalid, err)
+		return SettingsView{}, kernel.SetupFailure("CalDAV", err)
 	}
 	if err := uc.repo.Save(ctx, s); err != nil {
 		return SettingsView{}, fmt.Errorf("save settings: %w", err)

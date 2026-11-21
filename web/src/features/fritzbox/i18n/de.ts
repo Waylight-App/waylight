@@ -22,4 +22,17 @@ export const de: Record<keyof typeof en, string> = {
   'fritzbox.call.outgoing': 'ausgehend',
   'fritzbox.call.rejected': 'abgewiesen',
   'fritzbox.call.active': 'aktiv',
+  'fritzbox.setup_username': 'FRITZ!Box-Benutzer',
+  'fritzbox.setup_password': 'Passwort',
+  'fritzbox.setup_step_network':
+    'Öffne die FRITZ!Box, gehe zu Heimnetz → Netzwerk → Netzwerkeinstellungen und setze die Haken bei Zugriff für Anwendungen zulassen und Statusinformationen über UPnP übertragen.',
+  'fritzbox.setup_step_user':
+    'Für Leitungsgeschwindigkeit und Anrufliste: Lege unter System → FRITZ!Box-Benutzer einen Benutzer Waylight mit dem Recht FRITZ!Box Einstellungen an.',
+  'fritzbox.setup_step_user_calls':
+    'Lege unter System → FRITZ!Box-Benutzer einen Benutzer Waylight mit den Rechten FRITZ!Box Einstellungen und Sprachnachrichten, Faxnachrichten, FRITZ!App Fon und Anrufliste an.',
+  'fritzbox.setup_step_enter_optional': 'Trage Benutzer und Passwort unten ein oder lass beides leer.',
+  'fritzbox.setup_step_enter': 'Trage Benutzer und Passwort unten ein.',
+  'fritzbox.setup_online': 'Online, externe Adresse {ip}',
+  'fritzbox.setup_offline': 'Die FRITZ!Box antwortet; die Internetverbindung ist getrennt.',
+  'fritzbox.setup_calls': '{n} letzte Anrufe',
 };

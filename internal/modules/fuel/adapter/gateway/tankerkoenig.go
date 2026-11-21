@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"waylight/internal/modules/fuel/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // DefaultTankerkoenigURL is the public API (data: Markttransparenzstelle
@@ -62,7 +63,7 @@ func (t *Tankerkoenig) Around(ctx context.Context, s domain.Settings) ([]domain.
 		return nil, err
 	}
 	if !p.OK {
-		return nil, errors.New(p.Message)
+		return nil, refusal(p.Message)
 	}
 	out := make([]domain.Station, 0, len(p.Stations))
 	for _, st := range p.Stations {
@@ -96,7 +97,7 @@ func (t *Tankerkoenig) Prices(ctx context.Context, apiKey string, ids []string) 
 		return nil, err
 	}
 	if !p.OK {
-		return nil, errors.New(p.Message)
+		return nil, refusal(p.Message)
 	}
 	out := make(map[string]domain.Prices, len(p.Prices))
 	for id, v := range p.Prices {
@@ -104,6 +105,16 @@ func (t *Tankerkoenig) Prices(ctx context.Context, apiKey string, ids []string) 
 			domain.FuelE5: price(v.E5), domain.FuelE10: price(v.E10), domain.FuelDiesel: price(v.Diesel)}}
 	}
 	return out, nil
+}
+
+// refusal turns the message of an answer with ok=false into an error. A
+// missing or unknown key ("apikey nicht gefunden") wraps kernel.ErrTargetAuth,
+// so the setup assistant asks for the key again (#618).
+func refusal(message string) error {
+	if strings.Contains(strings.ToLower(message), "apikey") {
+		return fmt.Errorf("%w: %s", kernel.ErrTargetAuth, message)
+	}
+	return errors.New(message)
 }
 
 // price reads a price that is false when a station does not sell the fuel.
