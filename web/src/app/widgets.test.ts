@@ -37,6 +37,10 @@ describe('widget registry (#116)', () => {
       docker: 'docker',
       parcels: 'parcels',
       speedtest: 'speedtest',
+      proxmox: 'proxmox',
+      adguard: 'adguard?provider=adguard',
+      wireguard: 'wireguard',
+      electricity: 'electricity?zone=DE-LU',
     });
     // A connected to-do list has no compact state on the server.
     expect(definitionFor('todos')?.compact?.({ source: 'caldav-1' })).toBeUndefined();
@@ -44,6 +48,11 @@ describe('widget registry (#116)', () => {
     const smarthome = definitionFor('smarthome')?.compact;
     expect(smarthome?.({ entities: ['switch.coffee'] })).toBe('smarthome?entity=switch.coffee');
     expect(smarthome?.({ entities: ['switch.coffee', 'light.desk'] })).toBeUndefined();
+    // Weather, DNS filter and electricity prices pass their configuration (#641).
+    const weather = definitionFor('weather')?.compact;
+    expect(weather?.({ lat: 53.14, lon: 8.21 })).toBe('weather?lat=53.14&lon=8.21');
+    expect(definitionFor('adguard')?.compact?.({ provider: 'pihole' })).toBe('adguard?provider=pihole');
+    expect(definitionFor('electricity')?.compact?.({ zone: 'AT' })).toBe('electricity?zone=AT');
   });
 
   it('gives every compact view an example for the size previews (#596)', () => {

@@ -11,4 +11,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Kein WireGuard-Export gefunden. Führe scripts/wireguard-export.sh auf dem Host aus (siehe docs/host-integrations.md).',
   // This is not a WireGuard public key.
   srv_e5774de61b49a80f: 'Das ist kein öffentlicher WireGuard-Schlüssel.',
+  // No peers
+  srv_79255c3da312af57: 'Keine Peers',
+  // The export is out of date
+  srv_a7f77e98c90729a9: 'Der Export ist veraltet',
+  // {online} of {total} peers connected
+  srv_d94ddd59412dba1f: '{online} von {total} Peers verbunden',
 };

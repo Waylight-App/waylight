@@ -2,6 +2,15 @@ tags:
   - name: electricity
 
 paths:
+  /api/electricity/compact:
+    get:
+      tags: [electricity]
+      summary: "Compact state of the widget (#641): price of the current hour and the next cheap hour"
+      parameters:
+        - { name: zone, in: query, required: false, schema: { type: string, enum: [DE-LU, AT] }, description: "Bidding zone; empty means DE-LU" }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
   /api/electricity/prices:
     get:
       tags: [electricity]

@@ -13,6 +13,16 @@ paths:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Forecast" } } } }
         "422": { $ref: "#/components/responses/Invalid" }
         "502": { $ref: "#/components/responses/Unavailable" }
+  /api/weather/compact:
+    get:
+      tags: [weather]
+      summary: "Compact state of the widget (#641): current temperature and sky at a location"
+      parameters:
+        - { name: lat, in: query, required: true, schema: { type: number } }
+        - { name: lon, in: query, required: true, schema: { type: number } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
   /api/weather/warnings:
     get:
       tags: [weather]

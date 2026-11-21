@@ -2,6 +2,15 @@ tags:
   - name: adguard
 
 paths:
+  /api/adguard/compact:
+    get:
+      tags: [adguard]
+      summary: "Compact state of the widget (#641): share of blocked queries of one provider"
+      parameters:
+        - { name: provider, in: query, required: false, schema: { type: string, enum: [adguard, pihole] }, description: "DNS filter; empty means AdGuard Home" }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
   /api/adguard/settings:
     get:
       tags: [adguard]

@@ -2,13 +2,38 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_079ecf8df23a0daf: "Clear sky",
+  srv_0d9429b1a019413e: "Dense drizzle",
+  srv_aa17e4cc0cbb8ecd: "Drizzle",
+  srv_f2bb8d199c92d43f: "Fog",
+  srv_061bd69a46d49c8f: "Freezing drizzle",
+  srv_d8b57a87d52d6ded: "Freezing rain",
+  srv_385fbf7e52385aae: "Heavy rain",
+  srv_68c0138424f8074b: "Heavy snow",
   srv_9d350adc128ef832: "Latitude and longitude are required.",
+  srv_6793a3117aad7cf5: "Light drizzle",
+  srv_9f8d7b03da2db18b: "Light rain",
+  srv_fd8baefca48339ea: "Light snow",
+  srv_5ae1ab5870ccaffa: "Mainly clear",
+  srv_74a09b179be18310: "Overcast",
+  srv_c72683131dff0339: "Partly cloudy",
   srv_990b607e23145ec7: "Please enter between 2 and 100 characters.",
+  srv_984afe2bd363c533: "Rain",
+  srv_c09988829a692b1c: "Rain showers",
+  srv_a5e43404e0b672b6: "Rime fog",
+  srv_8300b224ee074d12: "Snow",
+  srv_852f4060b58e9e0e: "Snow grains",
+  srv_5184b87cd74a5e31: "Snow showers",
   srv_3f60e80ed2350494: "The latitude must be between -90 and 90.",
   srv_39566e8cbb1ec35d: "The longitude must be between -180 and 180.",
   srv_cb30f7793468eebc: "The pollen and UV forecasts are not available right now.",
   srv_d5d2cea1e1d1fa8d: "The rain radar is only available for Germany.",
   srv_314a73e152936a17: "The weather warnings are not available right now.",
+  srv_11111027a2159b52: "Thunderstorm",
+  srv_95215781350e5dbc: "Thunderstorm with hail",
+  srv_c592307ea80f16b9: "Unknown",
+  srv_60e5e8ca070c80f3: "Violent showers",
+  srv_d72ab051081647bd: "{temp}°",
 } as const;
 
 /** Key of a backend message. */
