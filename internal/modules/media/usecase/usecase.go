@@ -92,7 +92,7 @@ func (uc *media) SaveSettings(ctx context.Context, in SettingsInput) (SettingsVi
 	}
 	o, err := uc.providers[s.Provider].Overview(ctx, s)
 	if err != nil {
-		return SettingsView{}, kernel.NewPublicErrorf(kernel.ErrInvalid, "Could not connect to the media server: {detail}", "detail", err.Error())
+		return SettingsView{}, kernel.SetupFailure(s.Provider.Title(), err)
 	}
 	if err := uc.repo.Save(ctx, s); err != nil {
 		return SettingsView{}, fmt.Errorf("save settings: %w", err)

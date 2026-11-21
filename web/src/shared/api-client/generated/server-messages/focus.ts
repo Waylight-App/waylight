@@ -2,8 +2,18 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_888252e2db1c2fca: "A long break follows every 1 to 12 sessions.",
+  srv_0f85885a0017dc08: "A phase lasts between 1 and 180 minutes.",
   srv_e9ad8cf134079d79: "A session lasts between 1 and 180 minutes.",
+  srv_562970061d64cba1: "Focus · {time}",
+  srv_34384acbdc4b9f9a: "Long break · {time}",
+  srv_372b1075533617de: "Only a signed-in account has its own focus timer.",
+  srv_061cc20e3432dead: "Pause",
+  srv_f896339e1166a799: "Paused · {time}",
+  srv_c9c9fdc4f2ddf844: "Short break · {time}",
+  srv_ae1c7f13b7c0c47f: "Start",
   srv_addb603b2e8d10d3: "The session must have ended within the last day.",
+  srv_4aeb14eb94ebdd1c: "Unknown timer action.",
   srv_74b44643f778ca81: "{count} sessions",
   srv_cf0e9452be96913b: "{minutes} min focus today",
 } as const;

@@ -26,4 +26,8 @@ export const de: Record<keyof typeof en, string> = {
   'arr.delete': '{name} löschen',
   'arr.invalid_url': 'Die URL muss mit http:// oder https:// beginnen.',
   'arr.key_required': 'Bitte gib den API-Schlüssel ein.',
+  'arr.setup_api_key': 'API-Schlüssel',
+  'arr.setup_step_open': 'Öffne die App und gehe zu Settings → General.',
+  'arr.setup_step_copy': 'Kopiere den API Key unter Security und füge ihn unten ein.',
+  'arr.setup_found': '{upcoming} demnächst, {queue} Downloads',
 };

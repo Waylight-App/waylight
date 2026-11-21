@@ -31,3 +31,35 @@ func Week(days []domain.Day) WeekDTO {
 	}
 	return out
 }
+
+// TimerConfigDTO holds the phase lengths in minutes.
+type TimerConfigDTO struct {
+	Work      int `json:"work"`
+	Short     int `json:"short"`
+	Long      int `json:"long"`
+	LongEvery int `json:"longEvery"`
+}
+
+// TimerDTO is the focus timer of the account (#631). The time left is
+// relative, so a client whose clock is off still counts down correctly.
+type TimerDTO struct {
+	// Phase is work, short or long.
+	Phase string `json:"phase"`
+	// Done counts the focus sessions finished in the current cycle.
+	Done    int  `json:"done"`
+	Running bool `json:"running"`
+	// RemainingMs is the time left when the answer was written.
+	RemainingMs int64 `json:"remainingMs"`
+	// TotalMs is the full length of the phase.
+	TotalMs int64          `json:"totalMs"`
+	Config  TimerConfigDTO `json:"config"`
+}
+
+// Timer maps the timer at now.
+func Timer(t domain.Timer, now time.Time) TimerDTO {
+	c := t.Config
+	return TimerDTO{Phase: string(t.Phase), Done: t.Done, Running: t.Running(),
+		RemainingMs: t.Remaining(now).Milliseconds(), TotalMs: t.Total.Milliseconds(),
+		Config: TimerConfigDTO{Work: int(c.Work / time.Minute), Short: int(c.Short / time.Minute),
+			Long: int(c.Long / time.Minute), LongEvery: c.LongEvery}}
+}

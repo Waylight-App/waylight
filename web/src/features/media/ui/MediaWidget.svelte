@@ -1,4 +1,6 @@
 <script lang="ts">
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { mediaSetup } from './mediaSetup';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -19,24 +21,27 @@
   let error = $state('');
   let unconfigured = $state(false);
 
-  $effect(() =>
-    poll(
-      () =>
-        media
-          .overview()
-          .then((o) => ((overview = o), (error = ''), (unconfigured = false)))
-          .catch((err) => {
-            unconfigured = err instanceof ApiError && err.status === 404;
-            error = errorMessage(err);
-            throw err;
-          }),
-      POLL_MS,
-    ),
-  );
+  const load = () =>
+    media
+      .overview()
+      .then((o) => ((overview = o), (error = ''), (unconfigured = false)))
+      .catch((err) => {
+        unconfigured = err instanceof ApiError && err.status === 404;
+        error = errorMessage(err);
+        throw err;
+      });
+  $effect(() => poll(load, POLL_MS));
+  // svelte-ignore state_referenced_locally
+  const setup = mediaSetup(media);
 </script>
 
 {#if unconfigured}
-  <p class="muted">{t('media.connect_under_settings')}</p>
+  <SetupInPlace
+    text={t('media.connect_under_settings')}
+    descriptor={setup}
+    instance
+    ondone={() => void load().catch(() => undefined)}
+  />
 {:else if error && !overview}
   <p class="error">{error}</p>
 {:else if overview}

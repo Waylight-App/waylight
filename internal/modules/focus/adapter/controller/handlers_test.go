@@ -39,7 +39,7 @@ func TestRecord(t *testing.T) {
 		`{"minutes":25,"endedAt":"yesterday"}`:            http.StatusBadRequest,
 	} {
 		rec := httptest.NewRecorder()
-		NewHandlers(f).Record(rec, httptest.NewRequest(http.MethodPost, "/api/focus/sessions", strings.NewReader(body)))
+		NewHandlers(f, func() time.Time { return now }).Record(rec, httptest.NewRequest(http.MethodPost, "/api/focus/sessions", strings.NewReader(body)))
 		if rec.Code != want {
 			t.Errorf("%s: got %d, want %d (%s)", body, rec.Code, want, rec.Body)
 		}
@@ -51,7 +51,7 @@ func TestRecord(t *testing.T) {
 
 func TestStats(t *testing.T) {
 	rec := httptest.NewRecorder()
-	NewHandlers(&fakeUC{}).Stats(rec, httptest.NewRequest(http.MethodGet, "/api/focus/stats", nil))
+	NewHandlers(&fakeUC{}, func() time.Time { return now }).Stats(rec, httptest.NewRequest(http.MethodGet, "/api/focus/stats", nil))
 	if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), `{"date":"2026-11-12","sessions":1,"minutes":25}`) {
 		t.Fatalf("%d %s", rec.Code, rec.Body)
 	}

@@ -19,7 +19,7 @@ modules in detail.
 | Shopping list (`shopping`) | Lists kept on Waylight, shareable with a group or everyone and exportable as text or `.ics`, or a CalDAV task list the household already uses in its task app. See [shopping](modules/shopping.md). |
 | Phone list (`phonelist`) | A searchable directory of names, roles, teams, phone numbers and e-mail addresses, maintained by admins; the search field answers "phone <name>". [Details](modules/phonelist.md) |
 | Countdowns (`countdown`) | Days left until exams, holidays or deadlines, highlighted when the date is close. |
-| Focus timer (`focus`) | Pomodoro timer that keeps running in background tabs, with an optional browser notification and a count of finished sessions per day. |
+| Focus timer (`focus`) | Pomodoro timer kept per account on the server, so every device and the compact view show the same timer (in the extension's local mode it stays in the browser), with an optional browser notification and a count of finished sessions per day. |
 | Habits (`habits`) | Daily habits or habits on chosen weekdays, checked off with one tap, with current and best streak and a four-week heatmap. |
 | Read later (`readlater`) | Saves a clean reader copy of a page with its images, so it stays readable when the original disappears. [Details](modules/readlater.md) |
 | Drop zone (`drop`) | Moves text, links and files up to 25 MB between your devices; items expire after one hour, a day or a week. [Details](modules/drop.md) |

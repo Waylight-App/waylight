@@ -10,12 +10,23 @@ import type { MessageKey } from '../i18n';
 /** Which step of the assistant a field belongs to. */
 export type SetupStage = 'address' | 'credential';
 
+/** One option of a choice field; the label is a product name, not translated. */
+export interface SetupOption {
+  value: string;
+  label: string;
+}
+
 /** One input of the assistant. */
 export interface SetupField {
   key: string;
   label: MessageKey;
   stage: SetupStage;
-  type: 'url' | 'text' | 'password';
+  /** A choice picks one of several products, e.g. Sonarr or Radarr. */
+  type: 'url' | 'text' | 'password' | 'choice';
+  /** The options of a choice; the first one is preselected. */
+  options?: SetupOption[];
+  /** An optional field may stay empty, e.g. a Pi-hole without a password. */
+  optional?: boolean;
   placeholder?: string;
   autocomplete?: FullAutoFill;
 }
@@ -43,7 +54,7 @@ export interface SetupDescriptor {
   /** Numbered steps to get the credential, in the service's own wording. */
   steps: MessageKey[];
   /** The service page where the credential is created, from the address. */
-  credentialPage?: (address: string) => string | null;
+  credentialPage?: (address: string, values: Record<string, string>) => string | null;
   /**
    * Saves the connection after the server checked it and returns the
    * preview; a failure throws an error whose message names the cause.
@@ -65,7 +76,19 @@ export function stageComplete(
   stage: SetupStage,
   values: Record<string, string>,
 ): boolean {
-  return d.fields.filter((f) => f.stage === stage).every((f) => (values[f.key] ?? '').trim() !== '');
+  return d.fields
+    .filter((f) => f.stage === stage && !f.optional)
+    .every((f) => (values[f.key] ?? '').trim() !== '');
+}
+
+/** The starting values: the first option of every choice. */
+export function initialValues(d: SetupDescriptor): Record<string, string> {
+  const values: Record<string, string> = {};
+  for (const f of d.fields) {
+    const first = f.options?.[0];
+    if (f.type === 'choice' && first) values[f.key] = first.value;
+  }
+  return values;
 }
 
 /**

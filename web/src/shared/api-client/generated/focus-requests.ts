@@ -11,3 +11,13 @@ export interface SessionInputDTO {
   minutes: number /* int */;
   endedAt: string /* RFC 3339 */;
 }
+/**
+ * TimerConfigInputDTO is the body of PUT /api/focus/timer/config: the
+ * widget's phase lengths in minutes.
+ */
+export interface TimerConfigInputDTO {
+  work: number /* int */;
+  short: number /* int */;
+  long: number /* int */;
+  longEvery: number /* int */;
+}

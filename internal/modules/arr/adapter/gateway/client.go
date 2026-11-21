@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"waylight/internal/modules/arr/domain"
+	"waylight/internal/shared/kernel"
 )
 
 const maxResponseBytes = 4 << 20
@@ -34,13 +35,15 @@ func (c client) get(ctx context.Context, in domain.Instance, path string, dst an
 	defer res.Body.Close()
 	switch res.StatusCode {
 	case http.StatusOK:
-	case http.StatusUnauthorized:
-		return fmt.Errorf("the API key was rejected (%s)", res.Status)
+	case http.StatusUnauthorized, http.StatusForbidden:
+		return fmt.Errorf("%w: the API key was rejected (%s)", kernel.ErrTargetAuth, res.Status)
+	case http.StatusNotFound:
+		return fmt.Errorf("%w: %s", kernel.ErrTargetWrongService, res.Status)
 	default:
 		return fmt.Errorf("unexpected answer: %s", res.Status)
 	}
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxResponseBytes)).Decode(dst); err != nil {
-		return fmt.Errorf("unexpected response: %w", err)
+		return fmt.Errorf("%w: %w", kernel.ErrTargetWrongService, err)
 	}
 	return nil
 }
@@ -55,7 +58,7 @@ func (c client) check(ctx context.Context, in domain.Instance) error {
 		return err
 	}
 	if status.AppName != "" && !strings.EqualFold(status.AppName, string(in.App)) {
-		return fmt.Errorf("this is %s, not %s", status.AppName, in.App.Title())
+		return fmt.Errorf("%w: this is %s, not %s", kernel.ErrTargetWrongService, status.AppName, in.App.Title())
 	}
 	return nil
 }
