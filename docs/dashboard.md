@@ -162,7 +162,10 @@ timer, with a level (none, ok, attention, problem). Small tiles and strips
 on the dashboard ([widget sizes](#widget-sizes)), the app's home screen
 widgets and the watch show it instead of the full widget; it is
 served at `GET /api/<module>/compact` with the same permissions as the
-module's other endpoints.
+module's other endpoints. `GET /api/modules` lists under `compact` which
+modules you may use have one, with the path and the query parameters it
+takes (the smart home device needs `?entity=`), so clients do not need a list
+of their own.
 
 ## Setting up a widget in place
 

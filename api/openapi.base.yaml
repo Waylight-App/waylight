@@ -130,6 +130,18 @@ components:
       properties:
         modules: { type: array, items: { type: string } }
         widgetKinds: { type: array, items: { type: string } }
+        dataKinds: { type: object, additionalProperties: { type: string }, description: Who owns each module's data (ADR 0018) }
+        readOnly: { type: array, items: { type: string }, description: Modules that stay readable but cannot be changed right now }
+        compact:
+          type: array
+          description: Modules with a compact state the viewer may use, with their endpoint and the query parameters it takes
+          items:
+            type: object
+            required: [module, path, params]
+            properties:
+              module: { type: string }
+              path: { type: string, examples: [/api/todos/compact] }
+              params: { type: array, items: { type: string }, examples: [[entity]] }
     Session:
       type: object
       required: [csrfToken, expiresAt]

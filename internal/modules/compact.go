@@ -28,6 +28,20 @@ type CompactParamProvider interface {
 // CompactRoute is the pattern of a module's compact state endpoint.
 func CompactRoute(module string) string { return "GET /api/" + module + "/compact" }
 
+// CompactInfoOf describes a module's compact endpoint for the module list
+// (#634); false for a module without a compact state.
+func CompactInfoOf(m Module) (CompactInfo, bool) {
+	info := CompactInfo{Module: m.Name(), Path: "/api/" + m.Name() + "/compact", Params: []string{}}
+	if _, ok := m.(CompactProvider); ok {
+		return info, true
+	}
+	if p, ok := m.(CompactParamProvider); ok {
+		info.Params = append(info.Params, p.CompactParams()...)
+		return info, true
+	}
+	return CompactInfo{}, false
+}
+
 // CompactHandler answers GET /api/<module>/compact with the provider's state.
 func CompactHandler(p CompactProvider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

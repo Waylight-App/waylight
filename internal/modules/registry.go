@@ -168,6 +168,7 @@ func (r *Registry) Handler(staticKinds []string) http.HandlerFunc {
 			WidgetKinds: slices.Clone(staticKinds),
 			DataKinds:   map[string]string{},
 			ReadOnly:    []string{},
+			Compact:     []CompactInfo{},
 		}
 		member := kernel.PrincipalFrom(req.Context()).Role == "member"
 		for _, m := range r.modules {
@@ -181,6 +182,9 @@ func (r *Registry) Handler(staticKinds []string) http.HandlerFunc {
 			res.Modules = append(res.Modules, m.Name())
 			res.WidgetKinds = append(res.WidgetKinds, m.WidgetKinds()...)
 			res.DataKinds[m.Name()] = string(m.DataKind())
+			if c, ok := CompactInfoOf(m); ok {
+				res.Compact = append(res.Compact, c)
+			}
 		}
 		httpapi.WriteJSON(w, http.StatusOK, res)
 	}

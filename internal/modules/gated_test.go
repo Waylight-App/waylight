@@ -5,8 +5,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"reflect"
 	"slices"
 	"testing"
+
+	"waylight/internal/shared/kernel"
 )
 
 // muxRouter registers both kinds of routes on one ServeMux, without a session check.
@@ -90,5 +94,44 @@ func TestModulesListLeavesOutGatedModulesWithoutAccess(t *testing.T) {
 	}
 	if _, ok := got.DataKinds["branding"]; ok {
 		t.Errorf("data kinds list a hidden module: %v", got.DataKinds)
+	}
+}
+
+type compactModule struct{ Base }
+
+func (compactModule) Name() string       { return "todos" }
+func (compactModule) DataKind() DataKind { return PersonalContent }
+func (compactModule) CompactState(context.Context) (kernel.CompactState, error) {
+	return kernel.CompactState{}, nil
+}
+
+type paramCompactModule struct{ Base }
+
+func (paramCompactModule) Name() string       { return "smarthome" }
+func (paramCompactModule) DataKind() DataKind { return InstanceData }
+func (paramCompactModule) CompactStateFor(context.Context, url.Values) (kernel.CompactState, error) {
+	return kernel.CompactState{}, nil
+}
+func (paramCompactModule) CompactParams() []string { return []string{"entity"} }
+
+func TestModulesListNamesCompactStates(t *testing.T) {
+	r := &Registry{}
+	r.Register(plainModule{})
+	r.Register(compactModule{})
+	r.Register(paramCompactModule{})
+	r.Register(&gatedModule{name: "branding", access: AccessNone})
+
+	rec := httptest.NewRecorder()
+	r.Handler(nil)(rec, httptest.NewRequest(http.MethodGet, "/api/modules", nil))
+	var got InfoResponse
+	if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
+		t.Fatal(err)
+	}
+	want := []CompactInfo{
+		{Module: "todos", Path: "/api/todos/compact", Params: []string{}},
+		{Module: "smarthome", Path: "/api/smarthome/compact", Params: []string{"entity"}},
+	}
+	if !reflect.DeepEqual(got.Compact, want) {
+		t.Errorf("compact = %+v", got.Compact)
 	}
 }
