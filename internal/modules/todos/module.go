@@ -129,5 +129,47 @@ func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) 
 		state.Level = kernel.CompactAttention
 		state.Detail = kernel.NewTextf("{count} overdue", "count", overdue)
 	}
+	state.Action = urgentTodoAction(list)
 	return state, nil
+}
+
+// urgentTodoAction ticks off the most urgent open to-do (#598): overdue
+// ones first, then the earliest due date, then the list order. The body
+// is a full update with the edited version, so a change made elsewhere
+// meanwhile answers 409 instead of being overwritten.
+func urgentTodoAction(list []usecase.TodoView) *kernel.CompactAction {
+	var best *usecase.TodoView
+	for i := range list {
+		t := &list[i]
+		if !t.Done && (best == nil || moreUrgent(*t, *best)) {
+			best = t
+		}
+	}
+	if best == nil {
+		return nil
+	}
+	due := ""
+	if !best.Due.IsZero() {
+		due = best.Due.Format(time.DateOnly)
+	}
+	return &kernel.CompactAction{
+		ID:     "todos.complete",
+		Label:  kernel.NewTextf("Done: {title}", "title", best.Title),
+		Method: http.MethodPut,
+		Path:   "/api/todos/" + url.PathEscape(best.ID),
+		Body:   map[string]any{"title": best.Title, "due": due, "done": true, "version": best.Version},
+	}
+}
+
+func moreUrgent(a, b usecase.TodoView) bool {
+	if a.Overdue != b.Overdue {
+		return a.Overdue
+	}
+	if a.Due.IsZero() != b.Due.IsZero() {
+		return !a.Due.IsZero()
+	}
+	if !a.Due.Equal(b.Due) {
+		return a.Due.Before(b.Due)
+	}
+	return a.Position < b.Position
 }

@@ -4,6 +4,7 @@ export const en = {
   'compact.unavailable': 'Not available',
   'compact.level_attention': 'Needs attention',
   'compact.level_problem': 'Problem',
+  'compact.action_done': '{action}: done',
   'compact.example.todos': '3 open · 1 overdue',
   'compact.example.habits': '2 of 5 today',
   'compact.example.focus': '50 min focus today',
