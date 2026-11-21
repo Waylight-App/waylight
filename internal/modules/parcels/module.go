@@ -27,6 +27,7 @@ type Module struct {
 	modules.Transferable
 	uc       usecase.Parcels
 	handlers *controller.Handlers
+	clock    kernel.Clock
 }
 
 // mailCheck is how often the mail discovery job looks whether the
@@ -44,7 +45,7 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, dial gateway.Di
 		MailStore: gateway.NewMailStore(db, cipher, clock.Now),
 	}
 	uc := usecase.NewParcels(deps)
-	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, deps) }, Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, uc: uc, handlers: controller.NewHandlers(uc)}
+	return &Module{seedDemo: func(ctx context.Context) error { return usecase.SeedDemo(ctx, deps) }, Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables}, uc: uc, handlers: controller.NewHandlers(uc), clock: clock}
 }
 
 // Name implements modules.Module.
@@ -77,6 +78,16 @@ func (m *Module) Jobs() []modules.Job {
 		{Name: "parcels.refresh", Interval: refreshInterval, Run: m.uc.RefreshAll},
 		{Name: "parcels.mail", Interval: mailCheck, Run: m.uc.DiscoverParcels},
 	}
+}
+
+// CompactState implements modules.CompactProvider (#638): parcels on the
+// way and how many arrive today, in the server's time zone.
+func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
+	list, err := m.uc.List(ctx)
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	return usecase.CompactState(list, m.clock.Now(), time.Local), nil
 }
 
 // AnswerSources implements answers.Provider: the parcels answers of the smart

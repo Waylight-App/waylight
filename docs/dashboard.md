@@ -72,7 +72,9 @@ quick actions.
 Compact views exist for services and the status overview (*11 of 12
 running*, and which service is down), the backup status, drive health, the
 calendar (the next event), to-dos (the built-in list), habits, the focus
-timer and smart home tiles with one device. Widgets whose content is the point, such as the clock, bookmarks or
+timer, smart home tiles with one device, Docker (running containers), parcels
+(on the way and arriving today) and the speed test (the latest measurement).
+Widgets whose content is the point, such as the clock, bookmarks or
 notes, show their full view at every size.
 
 You can put the same kind of widget on a tab more than once, for example two
