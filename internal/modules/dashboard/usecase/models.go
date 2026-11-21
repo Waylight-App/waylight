@@ -57,6 +57,7 @@ type WidgetResponse struct {
 	X, Y   int
 	W, H   int
 	Config string
+	Size   string
 }
 
 // CreateTabRequest is the input of ManageTabs.Create.
@@ -82,6 +83,8 @@ type AddWidgetRequest struct {
 	X, Y   int
 	W, H   int
 	Config string
+	// Size is the web size (#595); empty for a freely sized tile.
+	Size string
 }
 
 // ConfigureWidgetRequest is the input of ManageWidgets.Configure.
@@ -90,11 +93,14 @@ type ConfigureWidgetRequest struct {
 	Config   string
 }
 
-// WidgetPlacement is the new rectangle of one widget.
+// WidgetPlacement is the new rectangle of one widget and, when Size is
+// set, its new web size (#595). A nil Size keeps the stored one, so a
+// client that only moves widgets cannot clear their sizes.
 type WidgetPlacement struct {
 	WidgetID string
 	X, Y     int
 	W, H     int
+	Size     *string
 }
 
 // SaveLayoutRequest stores the positions of the widgets of one tab.

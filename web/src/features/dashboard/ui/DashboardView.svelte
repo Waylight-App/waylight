@@ -14,7 +14,10 @@
     type WidgetConfig,
     type WidgetType,
   } from '../domain/dashboard';
-  import type { LayoutItem } from '../domain/layout';
+  import { type LayoutItem, layoutCells, setItemSize } from '../domain/layout';
+  import { isCramped, type WidgetSize, widgetView } from '../domain/sizes';
+  import { SvelteSet } from 'svelte/reactivity';
+  import DetailPanel from './DetailPanel.svelte';
   import type { DashboardUseCases } from '../usecase/dashboardUseCases';
   import Grid from './Grid.svelte';
   import MobileList from './MobileList.svelte';
@@ -63,6 +66,12 @@
     onbackground?: (tab: Tab) => void;
     /** Extra content below the widget picker, e.g. what a server adds (#291). */
     pickerFooter?: Snippet;
+    /** Renders the compact view of a widget (#595); strip is a one-line tile. */
+    compact?: Snippet<[Widget, { strip: boolean }]>;
+    /** Whether a widget has a compact view with its current configuration. */
+    hasCompact?: (widget: Widget) => boolean;
+    /** Whether compact tiles open the detail panel; off on kiosk displays (#594). */
+    detailPanel?: boolean;
   }
   let {
     uc,
@@ -79,7 +88,19 @@
     ondone,
     onbackground,
     pickerFooter,
+    compact,
+    hasCompact = () => false,
+    detailPanel = true,
   }: Props = $props();
+
+  // The widget whose full view the detail panel shows, and the tile that opened it.
+  let detail = $state<{ widget: Widget; opener: HTMLElement } | null>(null);
+  // Tiles whose content box is too small for the full view right now (#595).
+  const cramped = new SvelteSet<string>();
+  function onbox(id: string, width: number, height: number) {
+    if (isCramped(width, height)) cramped.add(id);
+    else cramped.delete(id);
+  }
 
   const ACTIVE_TAB_KEY = 'waylight.activeTab';
   // A tab picked by hand wins over rules until the browser is closed (#71).
@@ -280,8 +301,14 @@
     toastTimer = setTimeout(() => (toast = null), 8000);
   }
 
-  const layoutOf = (widgets: readonly LayoutItem[]): LayoutItem[] =>
-    widgets.map(({ id, x, y, w, h }) => ({ id, x, y, w, h }));
+  /** A widget at the place and size of a layout item; no size makes it free. */
+  function place(widget: Widget, item: LayoutItem | undefined): Widget {
+    if (!item) return widget;
+    const next: Widget = { ...widget, x: item.x, y: item.y, w: item.w, h: item.h };
+    if (item.size) next.size = item.size;
+    else delete next.size;
+    return next;
+  }
 
   function onlayout(items: LayoutItem[]) {
     const tab = active;
@@ -290,9 +317,15 @@
     const command = layoutCommand(tab.id, before, items);
     if (!command) return; // nothing moved: no undo step, no save (#272)
     const byId = new Map(items.map((i) => [i.id, i]));
-    replaceTab({ ...tab, widgets: tab.widgets.map((w) => ({ ...w, ...byId.get(w.id) })) });
+    replaceTab({ ...tab, widgets: tab.widgets.map((w) => place(w, byId.get(w.id))) });
     record(command);
     run(() => uc.saveLayout(tab.id, before, items));
+  }
+
+  /** Gives a widget one of the sizes or makes it freely sized again (#595). */
+  function setSize(widget: Widget, size: WidgetSize | undefined) {
+    const tab = tabOf(widget.tabId);
+    if (tab) onlayout(setItemSize(layoutCells(tab.widgets), widget.id, size));
   }
 
   function addWidget(type: WidgetType) {
@@ -345,8 +378,8 @@
         const items = history.resolveItems(undo ? c.before : c.after).filter((i) => present.has(i.id));
         const before = tab.widgets;
         const byId = new Map(items.map((i) => [i.id, i]));
-        replaceTab({ ...tab, widgets: tab.widgets.map((w) => ({ ...w, ...byId.get(w.id) })) });
-        await uc.saveLayout(tab.id, before, layoutOf(tabOf(c.tabId)?.widgets ?? []));
+        replaceTab({ ...tab, widgets: tab.widgets.map((w) => place(w, byId.get(w.id))) });
+        await uc.saveLayout(tab.id, before, layoutCells(tabOf(c.tabId)?.widgets ?? []));
         return;
       }
       case 'add':
@@ -493,23 +526,42 @@
 
   {#if active}
     {@const visible = active.widgets.filter((w) => available.has(w.kind))}
-    {#snippet frame(widget: Widget, handle: { onpointerdown: (e: PointerEvent) => void })}
+    {#snippet frame(
+      widget: Widget,
+      handle: { onpointerdown: (e: PointerEvent) => void },
+      size: WidgetSize | undefined,
+      sizable: boolean,
+    )}
+      {@const view = compact
+        ? widgetView({ size, hasCompact: hasCompact(widget), cramped: cramped.has(widget.id) })
+        : 'full'}
       <WidgetFrame
         title={titles.get(widget.kind) ?? widget.kind}
         editing={editingTab}
         {handle}
         chromeless={chromeless(widget.kind)}
+        compact={view === 'compact'}
+        onopen={view === 'compact' && detailPanel ? (opener) => (detail = { widget, opener }) : undefined}
+        size={widget.size}
+        onsize={sizable ? (s) => setSize(widget, s) : undefined}
+        onbox={(w, h) => onbox(widget.id, w, h)}
         onsettings={hasSettings(widget.kind) ? () => (dialog = { kind: 'settings', widget }) : undefined}
         ondelete={() => removeWidget(widget)}
         onduplicate={() => duplicateWidget(widget)}
       >
-        {@render content(widget)}
+        {#if view === 'compact' && compact}
+          {@render compact(widget, { strip: size === 'strip' })}
+        {:else}
+          {@render content(widget)}
+        {/if}
       </WidgetFrame>
     {/snippet}
     {#if phone}
       {@const tab = active}
+      {@const layout = tab.mobileCustom ? resolveMobile(tab.mobile, visible) : deriveMobile(visible)}
+      {@const phoneSizes = new Map(layout.map((e) => [e.id, e.size]))}
       <MobileList
-        layout={tab.mobileCustom ? resolveMobile(tab.mobile, visible) : deriveMobile(visible)}
+        {layout}
         widgets={new Map(visible.map((w) => [w.id, w]))}
         editing={editingTab}
         custom={tab.mobileCustom}
@@ -518,13 +570,14 @@
         label={(w) => titles.get(w.kind) ?? w.kind}
       >
         {#snippet item(widget: Widget)}
-          {@render frame(widget, { onpointerdown: () => {} })}
+          <!-- On phones the phone layout's size decides the view. -->
+          {@render frame(widget, { onpointerdown: () => {} }, phoneSizes.get(widget.id), false)}
         {/snippet}
       </MobileList>
     {:else}
       <Grid items={visible} editing={editingTab} {onlayout} label={(w) => titles.get(w.kind) ?? w.kind}>
         {#snippet item(widget: Widget, handle: { onpointerdown: (e: PointerEvent) => void })}
-          {@render frame(widget, handle)}
+          {@render frame(widget, handle, widget.size, true)}
         {/snippet}
       </Grid>
     {/if}
@@ -573,6 +626,17 @@
     {/if}
   {/if}
 </section>
+
+{#if detail}
+  {@const widget = detail.widget}
+  <DetailPanel
+    title={titles.get(widget.kind) ?? widget.kind}
+    opener={detail.opener}
+    onclose={() => (detail = null)}
+  >
+    {@render content(widget)}
+  </DetailPanel>
+{/if}
 
 {#if toast}
   <div class="toast" class:above-bar={editing} role="status">

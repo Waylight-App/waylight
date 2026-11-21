@@ -1,6 +1,7 @@
 import type { Dashboard, Tab, TabRule, TabTemplate, Widget, WidgetConfig } from '../domain/dashboard';
 import type { LayoutItem, Rect } from '../domain/layout';
 import type { MobileItem } from '../domain/mobile';
+import type { WidgetSize } from '../domain/sizes';
 
 /** Output port: persistence of tabs and widgets. */
 export interface DashboardGateway {
@@ -9,7 +10,14 @@ export interface DashboardGateway {
   renameTab(id: string, name: string): Promise<Tab>;
   deleteTab(id: string): Promise<void>;
   reorderTabs(ids: string[]): Promise<void>;
-  addWidget(tabId: string, kind: string, rect: Rect, config: WidgetConfig): Promise<Widget>;
+  /** Adds a widget; a size (#595) makes it a sized tile instead of a free one. */
+  addWidget(
+    tabId: string,
+    kind: string,
+    rect: Rect,
+    config: WidgetConfig,
+    size?: WidgetSize,
+  ): Promise<Widget>;
   configureWidget(id: string, config: WidgetConfig): Promise<Widget>;
   saveLayout(tabId: string, items: LayoutItem[]): Promise<void>;
   deleteWidget(id: string): Promise<void>;

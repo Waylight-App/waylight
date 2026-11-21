@@ -29,6 +29,31 @@ the keyboard, focus a widget and use the arrow keys to move it or `Shift`
 with the arrow keys to resize it. A screen reader announces the new
 position.
 
+## Widget sizes
+
+In edit mode every widget has a size menu in its title bar with the same
+sizes as the phone layout: *Small*, *Medium*, *Large* and *Strip*. The size
+decides what the widget shows. Medium and large tiles show the full widget.
+Small tiles and strips show its compact view, one or two lines such as
+*3 open · 1 overdue*, and a click on the tile opens the full widget in a
+panel at the side of the screen (a sheet from the bottom on phones). `Escape`
+or the close button closes the panel and puts the focus back on the tile.
+Kiosk displays show the compact view without the panel.
+
+When a narrow window makes a medium or large tile too small for its full
+view, the widget switches to its compact view instead of cutting its content
+off.
+
+Dragging the corner of a sized widget snaps to the nearest size; with the
+keyboard, `Shift` and the arrow keys step through the sizes. *Free size* in
+the menu turns a widget back into a freely sized tile, which always shows the
+full widget. Widgets placed before sizes existed stay free until you pick a
+size, so existing dashboards keep their look.
+
+Compact views exist for to-dos (the built-in list), habits and the focus
+timer. Widgets whose content is the point, such as the clock, bookmarks or
+notes, show their full view at every size.
+
 You can put the same kind of widget on a tab more than once, for example two
 weather widgets for two towns. **Duplicate** copies a widget with its
 settings.
@@ -93,8 +118,9 @@ look like current data.
 
 Some widgets also have a short state: one line such as *3 open · 1 overdue*
 for to-dos, *2 of 5 today* for habits or *50 min focus today* for the focus
-timer, with a level (none, ok, attention, problem). Small tiles, the app's
-home screen widgets and the watch show it instead of the full widget; it is
+timer, with a level (none, ok, attention, problem). Small tiles and strips
+on the dashboard ([widget sizes](#widget-sizes)), the app's home screen
+widgets and the watch show it instead of the full widget; it is
 served at `GET /api/<module>/compact` with the same permissions as the
 module's other endpoints.
 

@@ -19,11 +19,12 @@ var (
 	ErrTooManyTemplates = kernel.NewPublicError(kernel.ErrConflict, "At most 50 templates can be stored.")
 )
 
-// TemplateWidget is a widget inside a template (kind, place and config).
+// TemplateWidget is a widget inside a template (kind, place, size and config).
 type TemplateWidget struct {
 	Kind   string
 	Rect   Rect
 	Config string
+	Size   Size
 }
 
 // Template is a saved tab layout that new tabs can be created from.
@@ -44,7 +45,7 @@ func NewTemplate(id, name string, widgets []Widget) (Template, error) {
 	}
 	t := Template{ID: id, Name: name, Widgets: make([]TemplateWidget, 0, len(widgets))}
 	for _, w := range widgets {
-		t.Widgets = append(t.Widgets, TemplateWidget{Kind: w.Kind(), Rect: w.Rect(), Config: w.Config()})
+		t.Widgets = append(t.Widgets, TemplateWidget{Kind: w.Kind(), Rect: w.Rect(), Config: w.Config(), Size: w.Size()})
 	}
 	return t, nil
 }

@@ -2,6 +2,7 @@ import { newId } from '../../../../shared/id/uuid';
 import type { DocumentStore } from '../../../../shared/local/documentStore';
 import type { Dashboard, Tab, TabRule, TabTemplate, Widget, WidgetConfig } from '../../domain/dashboard';
 import type { LayoutItem, Rect } from '../../domain/layout';
+import type { WidgetSize } from '../../domain/sizes';
 import { deriveMobile, resolveMobile, type MobileItem } from '../../domain/mobile';
 import { defaultTabId } from '../../domain/schedule';
 import type { DashboardGateway } from '../../usecase/ports';
@@ -23,6 +24,7 @@ interface WidgetRow extends Rect {
   tabId: string;
   kind: string;
   config: WidgetConfig;
+  size?: WidgetSize;
 }
 
 interface TemplateRow {
@@ -105,6 +107,7 @@ export class LocalDashboardGateway implements DashboardGateway {
         y: w.y,
         w: w.w,
         h: w.h,
+        ...(w.size ? { size: w.size } : {}),
       }));
     return {
       id: row.id,
@@ -183,12 +186,19 @@ export class LocalDashboardGateway implements DashboardGateway {
     });
   }
 
-  addWidget(tabId: string, kind: string, rect: Rect, config: WidgetConfig): Promise<Widget> {
+  addWidget(
+    tabId: string,
+    kind: string,
+    rect: Rect,
+    config: WidgetConfig,
+    size?: WidgetSize,
+  ): Promise<Widget> {
     return this.change((d) => {
       LocalDashboardGateway.tabRow(d, tabId);
-      const row: WidgetRow = { id: newId(), tabId, kind, config, ...rect };
+      const sized = size ? { size } : {};
+      const row: WidgetRow = { id: newId(), tabId, kind, config, ...rect, ...sized };
       d.widgets.push(row);
-      return { id: row.id, tabId, kind, config, ...rect };
+      return { id: row.id, tabId, kind, config, ...rect, ...sized };
     });
   }
 
@@ -196,7 +206,17 @@ export class LocalDashboardGateway implements DashboardGateway {
     return this.change((d) => {
       const w = LocalDashboardGateway.widgetRow(d, id);
       w.config = config;
-      return { id: w.id, tabId: w.tabId, kind: w.kind, config: w.config, x: w.x, y: w.y, w: w.w, h: w.h };
+      return {
+        id: w.id,
+        tabId: w.tabId,
+        kind: w.kind,
+        config: w.config,
+        x: w.x,
+        y: w.y,
+        w: w.w,
+        h: w.h,
+        ...(w.size ? { size: w.size } : {}),
+      };
     });
   }
 
@@ -207,6 +227,8 @@ export class LocalDashboardGateway implements DashboardGateway {
         const w = LocalDashboardGateway.widgetRow(d, item.id);
         if (w.tabId !== tabId) throw new NotFoundError(`widget ${item.id} is not on tab ${tabId}`);
         Object.assign(w, { x: item.x, y: item.y, w: item.w, h: item.h });
+        if (item.size) w.size = item.size;
+        else delete w.size;
       }
     });
   }

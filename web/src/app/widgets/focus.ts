@@ -17,6 +17,7 @@ export const widgets: WidgetDefinition[] = [
       defaultSize: { w: 3, h: 4 },
     },
     icon: 'timer',
+    compact: () => 'focus',
     view: lazy(
       () => import('../../features/focus/ui/FocusWidget.svelte'),
       (config, c) => ({ config, focus: c.focus }),

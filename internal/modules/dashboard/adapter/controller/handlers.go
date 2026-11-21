@@ -102,7 +102,7 @@ func (h *Handlers) AddWidget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res, err := h.widgets.Add(r.Context(), usecase.AddWidgetRequest{
-		TabID: r.PathValue("id"), Kind: dto.Kind, X: dto.X, Y: dto.Y, W: dto.W, H: dto.H, Config: config,
+		TabID: r.PathValue("id"), Kind: dto.Kind, X: dto.X, Y: dto.Y, W: dto.W, H: dto.H, Config: config, Size: dto.Size,
 	})
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
@@ -140,7 +140,7 @@ func (h *Handlers) SaveLayout(w http.ResponseWriter, r *http.Request) {
 	}
 	req := usecase.SaveLayoutRequest{TabID: r.PathValue("id"), Placements: make([]usecase.WidgetPlacement, 0, len(dto.Items))}
 	for _, it := range dto.Items {
-		req.Placements = append(req.Placements, usecase.WidgetPlacement{WidgetID: it.ID, X: it.X, Y: it.Y, W: it.W, H: it.H})
+		req.Placements = append(req.Placements, usecase.WidgetPlacement{WidgetID: it.ID, X: it.X, Y: it.Y, W: it.W, H: it.H, Size: it.Size})
 	}
 	if err := h.widgets.SaveLayout(r.Context(), req); err != nil {
 		httpapi.WriteDomainError(w, r, err)
@@ -217,7 +217,7 @@ func (h *Handlers) SaveMobileLayout(w http.ResponseWriter, r *http.Request) {
 	}
 	in := make([]domain.MobileEntry, 0, len(dto.Items))
 	for _, x := range dto.Items {
-		in = append(in, domain.MobileEntry{WidgetID: x.ID, Hidden: x.Hidden, Rows: x.Rows, Size: domain.MobileSize(x.Size)})
+		in = append(in, domain.MobileEntry{WidgetID: x.ID, Hidden: x.Hidden, Rows: x.Rows, Size: domain.Size(x.Size)})
 	}
 	res, err := h.tabs.SaveMobileLayout(r.Context(), r.PathValue("id"), in)
 	if err != nil {

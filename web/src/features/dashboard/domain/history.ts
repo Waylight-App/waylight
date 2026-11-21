@@ -1,5 +1,5 @@
 import type { Widget, WidgetConfig } from './dashboard';
-import { type LayoutItem, sameLayout } from './layout';
+import { type LayoutItem, layoutCells, sameLayout } from './layout';
 
 /** Maximum number of undoable steps (#93). */
 export const HISTORY_LIMIT = 50;
@@ -13,9 +13,8 @@ export type EditCommand =
   | { type: 'delete'; widget: Widget }
   | { type: 'configure'; widgetId: string; before: WidgetConfig; after: WidgetConfig };
 
-/** Plain grid cells of the items (no widget data). */
-const cells = (items: readonly LayoutItem[]): LayoutItem[] =>
-  items.map(({ id, x, y, w, h }) => ({ id, x, y, w, h }));
+/** Plain grid cells and sizes of the items (no widget data). */
+const cells = layoutCells;
 
 /**
  * The undo step of a layout change, or null when nothing moved: a click on a

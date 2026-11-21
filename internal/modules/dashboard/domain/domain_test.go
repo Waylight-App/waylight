@@ -67,3 +67,20 @@ func TestWidget(t *testing.T) {
 		t.Fatal("expected size error")
 	}
 }
+
+func TestWidgetSize(t *testing.T) {
+	r, _ := NewRect(0, 0, 3, 2)
+	w, _ := NewWidget("1", "t", "todos", r, "")
+	if w.Size() != SizeAuto {
+		t.Fatalf("new widget size = %q, want free", w.Size())
+	}
+	if err := w.Resize(SizeSmall); err != nil || w.Size() != SizeSmall {
+		t.Fatalf("resize to small: %q %v", w.Size(), err)
+	}
+	if err := w.Resize("huge"); err == nil || w.Size() != SizeSmall {
+		t.Fatalf("unknown size accepted: %q %v", w.Size(), err)
+	}
+	if got := RestoreWidget("1", "t", "todos", r, "{}", "huge").Size(); got != SizeAuto {
+		t.Fatalf("restored unknown size = %q, want free", got)
+	}
+}

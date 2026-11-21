@@ -8,7 +8,7 @@ import (
 )
 
 func widgetAt(id string, x, y, h int) Widget {
-	return RestoreWidget(id, "t", "clock", Rect{X: x, Y: y, W: 4, H: h}, "{}")
+	return RestoreWidget(id, "t", "clock", Rect{X: x, Y: y, W: 4, H: h}, "{}", SizeAuto)
 }
 
 func ids(m MobileLayout) []string {
@@ -102,7 +102,7 @@ func TestMobileSizes(t *testing.T) {
 	if e := m.Entries()[0]; e.Size != SizeAuto {
 		t.Fatalf("unknown stored size kept: %+v", e)
 	}
-	for _, s := range []MobileSize{SizeAuto, SizeSmall, SizeMedium, SizeLarge, SizeStrip} {
+	for _, s := range []Size{SizeAuto, SizeSmall, SizeMedium, SizeLarge, SizeStrip} {
 		if !s.Valid() {
 			t.Errorf("%q must be valid", s)
 		}

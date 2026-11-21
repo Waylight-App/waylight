@@ -73,6 +73,11 @@ export interface WidgetDTO {
   w: number /* int */;
   h: number /* int */;
   config: { [key: string]: unknown };
+  /**
+   * Size is small, medium, large or strip on the web grid; omitted for a
+   * freely sized tile (#595).
+   */
+  size?: string;
 }
 /**
  * TemplateDTO describes a tab template.
