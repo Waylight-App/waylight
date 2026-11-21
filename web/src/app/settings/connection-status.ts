@@ -5,8 +5,8 @@ import { integrationName, openSection, sectionFor, tabName } from '../attention.
 // Connections & services (#591): every integration with its state and the
 // widgets that use it, next to the saved places.
 export const section = defineSettingsSection({
-  id: 'services',
-  label: 'settings.section.services',
+  id: 'connection-status',
+  label: 'settings.section.connection_status',
   module: 'attention',
   area: 'connections',
   load: () => import('../../features/attention/ui/ServicesList.svelte').then((m) => m.default),

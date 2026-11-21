@@ -18,7 +18,7 @@ export const en = {
   'attention.action.connect': 'Connect',
   'attention.on_tab': 'On tab {value}',
   'attention.instance': 'Used by the whole instance',
-  'settings.section.services': 'Services',
+  'settings.section.connection_status': 'Connected services',
   'services.intro': 'The services your widgets connect to, and whether they answer.',
   'services.summary': '{connected} connected · {failing} with a problem · {setup} not set up',
   'services.empty': 'No service reports a connection yet.',

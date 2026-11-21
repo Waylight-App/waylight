@@ -162,7 +162,7 @@ closing the settings after a change ask the services right away
 
 ## Services and places
 
-**Settings → Connections & services** has two pages. *Services* lists every
+**Settings → Connections & services** has two pages. *Connected services* lists every
 service your widgets connect to with its state: connected, with a problem
 (and the cause), or not set up yet. Each entry names the widgets that use it
 and opens the service's settings; *Check all again* asks every service right

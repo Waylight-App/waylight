@@ -21,7 +21,7 @@ export const de: Record<keyof typeof en, string> = {
   'attention.action.connect': 'Verbinden',
   'attention.on_tab': 'Auf dem Tab {value}',
   'attention.instance': 'Für die ganze Instanz',
-  'settings.section.services': 'Dienste',
+  'settings.section.connection_status': 'Verbundene Dienste',
   'services.intro': 'Die Dienste, mit denen deine Widgets verbunden sind, und ob sie antworten.',
   'services.summary': '{connected} verbunden · {failing} mit Problem · {setup} nicht eingerichtet',
   'services.empty': 'Noch kein Dienst meldet eine Verbindung.',
