@@ -1,5 +1,6 @@
 <script lang="ts">
-  import EmptyState from '../../../shared/ui/EmptyState.svelte';
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { fritzboxSetup } from './fritzboxSetup';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -22,7 +23,13 @@
   let error = $state('');
   let unconfigured = $state(false);
 
+  // Bumped after the setup assistant saved, so the effect loads again.
+  let reload = $state(0);
+  // svelte-ignore state_referenced_locally
+  const setup = fritzboxSetup(fritzbox, false);
+
   $effect(() => {
+    void reload;
     const load = () =>
       fritzbox
         .status()
@@ -37,7 +44,12 @@
 </script>
 
 {#if unconfigured}
-  <EmptyState text={t('fritzbox.connect_your_fritz_box_under_settings')} section="fritzbox" />
+  <SetupInPlace
+    text={t('fritzbox.connect_your_fritz_box_under_settings')}
+    descriptor={setup}
+    instance
+    ondone={() => reload++}
+  />
 {:else if error && !status}
   <p class="error">{error}</p>
 {:else if status}

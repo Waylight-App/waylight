@@ -91,7 +91,7 @@ func responseArgs(raw []byte, wrapper string) (map[string]string, error) {
 			break
 		}
 		if err != nil {
-			return nil, fmt.Errorf("decode soap response: %w", err)
+			return nil, fmt.Errorf("%w: decode soap response: %w", kernel.ErrTargetWrongService, err)
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
