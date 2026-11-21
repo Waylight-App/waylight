@@ -26,7 +26,7 @@ test('a small tile shows the compact view and opens the details (#595)', async (
   await expect(compact).toContainText(/open|Nothing to do/);
   const open = page.getByRole('button', { name: 'To-dos: show details' });
   await open.press('Enter'); // the quick action may sit where a click would land
-  const panel = page.getByRole('dialog', { name: 'To-dos' });
+  const panel = page.getByRole('dialog', { name: 'To-dos', exact: true });
   await expect(panel.getByRole('textbox', { name: 'New to-do' })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(panel).toHaveCount(0);
