@@ -211,17 +211,40 @@ A kiosk display shows tabs on a device that hangs on the wall or stands in
 the kitchen, such as an old tablet or a Raspberry Pi with a screen. It needs
 no password and shows no controls.
 
-Create one under Settings → Kiosk displays:
+### Setting up a wall tablet
+
+The quickest way is **Set up a wall tablet** at the top of Settings → Kiosk
+displays. One form covers everything a family screen needs:
+
+- a name for the tablet (`wall-tablet` unless you change it);
+- what it shows: a new tab from the *Wall tablet* template (large clock,
+  weather, calendar and departures; the weather asks for a place, which you
+  can also set later) or tabs you already have;
+- **large text**, on by default, so the screen reads from across the room;
+- **night mode**, on by default from 22:00 to 06:30;
+- a **tab rotation** when you pick more than one tab (every 60 seconds by
+  default).
+
+*Set up the tablet* creates the tab and the display and shows the link and
+a QR code once. Scan the code with the tablet's camera or open the link in
+its browser and tap *Full screen*. The Waylight app opens the same link
+under *Use as wall display*, so the tablet can run the app instead of a
+browser.
+
+### Creating a display by hand
+
+Under Settings → Kiosk displays you can also create a display yourself:
 
 1. Give it a name (for example `hallway-tablet`) and pick the tabs it shows.
 2. Optionally set a **tab rotation**: the display moves to the next tab every
    few seconds.
-3. Optionally **dim at night** between two times.
+3. Optionally **dim at night** between two times, and choose **large text**.
 4. Click *Create display*. Waylight shows a link and a QR code **once**.
    Open the link on the device or scan the code with it.
 
 The device signs in and switches to a clean full-screen view of the chosen
-tabs. It keeps the screen awake while it is open, as far as the browser
+tabs. `GET /api/auth/kiosk` gives the display its options (rotation, night
+window and `largeText`), for the browser and the app alike. It keeps the screen awake while it is open, as far as the browser
 allows. Buttons that would change something are hidden, and the server
 refuses every change from a display anyway.
 

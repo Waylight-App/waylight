@@ -153,6 +153,8 @@ export interface KioskOptions {
   /** "HH:MM" local time; both empty = never dimmed. */
   nightFrom: string;
   nightTo: string;
+  /** Larger text for a display read from across the room (#680). */
+  largeText: boolean;
 }
 
 /** A kiosk display as managed by the owner. */

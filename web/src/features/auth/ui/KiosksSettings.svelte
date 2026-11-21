@@ -10,8 +10,10 @@
   interface Props {
     auth: AuthUseCases;
     tabs: { id: string; name: string }[];
+    /** Opens the wall tablet assistant (#680); it lives outside this feature. */
+    onassistant?: () => void;
   }
-  let { auth, tabs }: Props = $props();
+  let { auth, tabs, onassistant }: Props = $props();
 
   const empty = (): KioskInput => ({
     name: '',
@@ -20,6 +22,7 @@
     rotateSeconds: 0,
     nightFrom: '',
     nightTo: '',
+    largeText: false,
   });
   let kiosks = $state<KioskDisplay[]>([]);
   let form = $state<KioskInput>(empty());
@@ -60,11 +63,15 @@
     rotateSeconds: k.rotateSeconds,
     nightFrom: k.nightFrom,
     nightTo: k.nightTo,
+    largeText: k.largeText,
   });
   const ROTATIONS = [0, 15, 30, 60, 120, 300];
 </script>
 
 <p class="muted">{t('auth.kiosk_hint')}</p>
+{#if onassistant}
+  <p><button class="btn btn-primary" type="button" onclick={onassistant}>{t('tablet.open')}</button></p>
+{/if}
 {#if link}
   <div class="link" role="status">
     <p><strong>{t('auth.kiosk_link_for', { name: link.name })}</strong> {t('auth.kiosk_link_once')}</p>
@@ -114,6 +121,7 @@
       <p class="muted small">
         {k.rotateSeconds ? t('auth.kiosk_rotates', { n: k.rotateSeconds }) : t('auth.kiosk_no_rotation')}
         {#if k.nightFrom}· {t('auth.kiosk_night_summary', { from: k.nightFrom, to: k.nightTo })}{/if}
+        {#if k.largeText}· {t('auth.kiosk_large_text')}{/if}
       </p>
       <p class="row">
         <button
@@ -198,6 +206,7 @@
       /></label
     >
   </div>
+  <label><input type="checkbox" bind:checked={form.largeText} /> {t('auth.kiosk_large_text')}</label>
   {#if error}<p class="error" role="alert">{error}</p>{/if}
   <button class="btn btn-primary" type="submit" disabled={!form.name || form.tabs.length === 0}
     >{t('auth.kiosk_create')}</button

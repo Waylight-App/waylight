@@ -281,6 +281,7 @@ schemas:
       rotateSeconds: { type: integer, description: "Seconds per tab, 10-3600; 0 = no rotation" }
       nightFrom: { type: string, example: "22:00", description: "HH:MM, empty = never dimmed" }
       nightTo: { type: string, example: "06:30" }
+      largeText: { type: boolean, description: "Larger text for a display read from across the room (#680)" }
   KioskRequest:
     allOf:
       - $ref: "#/components/schemas/KioskOptions"

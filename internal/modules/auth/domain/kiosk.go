@@ -43,6 +43,9 @@ type KioskOptions struct {
 	// screen; both empty = never.
 	NightFrom string
 	NightTo   string
+	// LargeText enlarges the text, for a display read from across the room
+	// (#680).
+	LargeText bool
 }
 
 var clockTime = regexp.MustCompile(`^([01]\d|2[0-3]):[0-5]\d$`)

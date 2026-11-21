@@ -57,7 +57,7 @@ func TestKioskRepository(t *testing.T) {
 	ctx := context.Background()
 	r := NewKioskRepository(dbtest.Open(t, "auth", Migrations()))
 	now := time.Date(2026, 11, 14, 8, 0, 0, 0, time.UTC)
-	k := domain.Kiosk{AccountID: "k1", TokenHash: domain.HashToken("secret"), Options: domain.KioskOptions{RotateSeconds: 60, NightFrom: "22:00", NightTo: "06:00"}}
+	k := domain.Kiosk{AccountID: "k1", TokenHash: domain.HashToken("secret"), Options: domain.KioskOptions{RotateSeconds: 60, NightFrom: "22:00", NightTo: "06:00", LargeText: true}}
 	if err := r.Save(ctx, k); err != nil {
 		t.Fatal(err)
 	}
