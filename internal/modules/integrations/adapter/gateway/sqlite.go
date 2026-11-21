@@ -155,3 +155,55 @@ func (r *Repository) ReplaceAll(ctx context.Context, list []domain.Connection) e
 	}
 	return tx.Commit()
 }
+
+// Copied implements usecase.CopyRepository.
+func (r *Repository) Copied(ctx context.Context) (map[string]bool, error) {
+	rows, err := r.db.QueryContext(ctx, `SELECT source FROM integrations_copies`)
+	if err != nil {
+		return nil, fmt.Errorf("query copies: %w", err)
+	}
+	defer rows.Close()
+	out := map[string]bool{}
+	for rows.Next() {
+		var s string
+		if err := rows.Scan(&s); err != nil {
+			return nil, fmt.Errorf("scan copy: %w", err)
+		}
+		out[s] = true
+	}
+	return out, rows.Err()
+}
+
+// SaveCopy implements usecase.CopyRepository. The connection is written,
+// read back and decrypted inside one transaction; only when verify accepts
+// what was read is the source recorded and the transaction committed, so a
+// failed copy leaves neither a row nor a record behind.
+func (r *Repository) SaveCopy(ctx context.Context, source string, c domain.Connection, verify func(domain.Connection) error) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+	var done int
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM integrations_copies WHERE source = ?`, source).Scan(&done); err != nil {
+		return fmt.Errorf("query copy: %w", err)
+	}
+	if done > 0 {
+		return nil // another run copied it in the meantime
+	}
+	if err := r.save(ctx, tx, c); err != nil {
+		return err
+	}
+	back, err := r.scan(tx.QueryRowContext(ctx, `SELECT `+columns+` FROM integrations_connections WHERE id = ?`, c.ID))
+	if err != nil {
+		return fmt.Errorf("read copy back: %w", err)
+	}
+	if err := verify(back); err != nil {
+		return err
+	}
+	if _, err := tx.ExecContext(ctx, `INSERT INTO integrations_copies (source, connection_id, copied_at) VALUES (?, ?, ?)`,
+		source, c.ID, sqlutil.FormatTime(c.CreatedAt)); err != nil {
+		return fmt.Errorf("record copy: %w", err)
+	}
+	return tx.Commit()
+}

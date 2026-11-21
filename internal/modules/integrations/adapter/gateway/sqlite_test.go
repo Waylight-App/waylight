@@ -77,3 +77,46 @@ func TestReplaceAllSwapsNames(t *testing.T) {
 		t.Fatalf("%+v", list)
 	}
 }
+
+// TestSaveCopy writes a copy and its record together, and leaves neither
+// behind when the copy read back is refused. prefixCipher lower-cases on
+// decryption, so a mixed-case value comes back different (field names
+// are therefore lower case here).
+func TestSaveCopy(t *testing.T) {
+	ctx := context.Background()
+	db := dbtest.Open(t, "integrations", Migrations())
+	repo := NewRepository(db, prefixCipher{})
+	created := time.Date(2026, 11, 21, 12, 0, 0, 0, time.UTC)
+	exact := func(want domain.Connection) func(domain.Connection) error {
+		return func(got domain.Connection) error {
+			if got.Credential["apikey"] != want.Credential["apikey"] {
+				return errors.New("mismatch")
+			}
+			return nil
+		}
+	}
+	lossy, _ := domain.NewConnection("1", "immich", "Immich", "http://h:2283", domain.Credential{"apikey": "MiXeD"}, created)
+	if err := repo.SaveCopy(ctx, "immich", lossy, exact(lossy)); err == nil {
+		t.Fatal("a copy that reads back differently must be refused")
+	}
+	if list, _ := repo.List(ctx); len(list) != 0 {
+		t.Fatalf("the refused copy must be rolled back: %+v", list)
+	}
+	if done, _ := repo.Copied(ctx); len(done) != 0 {
+		t.Fatalf("a refused copy must not be recorded: %v", done)
+	}
+	good, _ := domain.NewConnection("2", "immich", "Immich", "http://h:2283", domain.Credential{"apikey": "lower"}, created)
+	if err := repo.SaveCopy(ctx, "immich", good, exact(good)); err != nil {
+		t.Fatal(err)
+	}
+	if done, _ := repo.Copied(ctx); !done["immich"] {
+		t.Fatalf("recorded: %v", done)
+	}
+	again, _ := domain.NewConnection("3", "immich", "Immich 2", "http://h:2283", domain.Credential{"apikey": "lower"}, created)
+	if err := repo.SaveCopy(ctx, "immich", again, exact(again)); err != nil {
+		t.Fatal(err)
+	}
+	if list, _ := repo.List(ctx); len(list) != 1 || list[0].ID != "2" {
+		t.Fatalf("a recorded source is not copied twice: %+v", list)
+	}
+}

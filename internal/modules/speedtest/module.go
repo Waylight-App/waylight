@@ -25,14 +25,17 @@ type Module struct {
 	handlers *controller.Handlers
 	// specs are the services a named connection can reach (#610).
 	specs []modules.ConnectionSpec
+	// repo reads the settings the integrations store copies (#610).
+	repo usecase.SettingsRepository
 }
 
 // New builds the speedtest module; cipher encrypts the stored token and
 // sink receives threshold observations.
 func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, sink kernel.ObservationSink, clock kernel.Clock) *Module {
 	api := gateway.NewAPI(client)
-	uc := usecase.NewSpeedtest(gateway.NewSettingsRepository(db, cipher), api, sink, clock)
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(api, clock)}
+	repo := gateway.NewSettingsRepository(db, cipher)
+	uc := usecase.NewSpeedtest(repo, api, sink, clock)
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), repo: repo, specs: connectionSpecs(api, clock)}
 }
 
 // Name implements modules.Module.
@@ -87,3 +90,8 @@ func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) 
 
 // ConnectionSpecs implements modules.Connectable (#610).
 func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }
+
+// SavedConnections implements modules.ConnectionSource (#610).
+func (m *Module) SavedConnections(ctx context.Context) ([]modules.SavedConnection, error) {
+	return savedConnections(ctx, m.repo)
+}

@@ -1,6 +1,7 @@
 package fuel
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
@@ -18,6 +19,9 @@ type Module struct {
 	handlers *controller.Handlers
 	// specs are the services a named connection can reach (#610).
 	specs []modules.ConnectionSpec
+	// repo reads the settings the integrations store copies (#610).
+	repo   usecase.SettingsRepository
+	apiURL string
 }
 
 // New builds the fuel module (#53); apiURL is the Tankerkönig base URL.
@@ -26,8 +30,9 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, apiURL string, 
 		apiURL = gateway.DefaultTankerkoenigURL
 	}
 	provider := gateway.NewTankerkoenig(client, apiURL)
-	uc := usecase.NewFuel(gateway.NewSettingsRepository(db, cipher), provider, clock)
-	return &Module{handlers: controller.NewHandlers(uc), specs: connectionSpecs(provider, apiURL)}
+	repo := gateway.NewSettingsRepository(db, cipher)
+	uc := usecase.NewFuel(repo, provider, clock)
+	return &Module{handlers: controller.NewHandlers(uc), repo: repo, apiURL: apiURL, specs: connectionSpecs(provider, apiURL)}
 }
 
 // Name implements modules.Module.
@@ -52,3 +57,8 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 
 // ConnectionSpecs implements modules.Connectable (#610).
 func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }
+
+// SavedConnections implements modules.ConnectionSource (#610).
+func (m *Module) SavedConnections(ctx context.Context) ([]modules.SavedConnection, error) {
+	return savedConnections(ctx, m.repo, m.apiURL)
+}

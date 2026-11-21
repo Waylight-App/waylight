@@ -11,6 +11,31 @@ This is the store and its API. Widgets and the settings pages of the
 integrations do not use it yet; their own settings stay as they are until
 they move to connections (#610).
 
+## Copy of the module settings
+
+At start and then every hour, the settings of the integration modules are
+copied into connections, each once:
+
+- Immich, Grafana, Nextcloud, Proxmox VE, Home Assistant, Speedtest
+  Tracker, the FRITZ!Box and the media server become one connection named
+  after the product; AdGuard Home and Pi-hole one each; every Sonarr,
+  Radarr and Prowlarr instance one with its own name; the Tankerkönig key
+  one with the fixed address. Settings that are not credentials (place and
+  radius of fuel prices, Speedtest thresholds) stay in the module.
+- A name another connection of the service already has gets a number
+  ("Immich 2").
+- Each copy is read back and decrypted in the same transaction and compared
+  with the module settings. Only then is it kept and recorded; otherwise
+  nothing is kept and the next run tries again. The log names the source
+  and the reason, never a credential.
+- A recorded source is not copied again, also when its connection is
+  removed later. Settings saved in a module after the first run are copied
+  by the next run.
+- The module settings are only read. Widgets keep using them until they
+  read connections.
+- While [config as code](../config-as-code.md) manages the `integrations`
+  section, nothing is copied: the file stays the only source of the list.
+
 ## Services
 
 Each integration module declares the services it reaches and the

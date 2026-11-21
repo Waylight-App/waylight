@@ -2,6 +2,7 @@ package smarthome
 
 import (
 	"context"
+	"errors"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/smarthome/domain"
@@ -26,4 +27,22 @@ func connectionSpecs(provider usecase.Provider) []modules.ConnectionSpec {
 			return nil
 		},
 	}}
+}
+
+// savedConnections returns the module settings as a connection to copy.
+func savedConnections(ctx context.Context, repo usecase.SettingsRepository) ([]modules.SavedConnection, error) {
+	s, err := repo.Load(ctx)
+	if errors.Is(err, domain.ErrNotConfigured) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	// A connection from signing in (#654) holds a short-lived access token
+	// that only this module renews; copied, it would stop working within
+	// half an hour.
+	if s.Refresh != "" {
+		return nil, nil
+	}
+	return []modules.SavedConnection{{Source: "smarthome", Service: "homeassistant", URL: s.URL, Credential: map[string]string{"token": s.Token}}}, nil
 }

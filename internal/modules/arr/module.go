@@ -21,6 +21,8 @@ type Module struct {
 	handlers *controller.Handlers
 	// specs are the services a named connection can reach (#610).
 	specs []modules.ConnectionSpec
+	// repo reads the settings the integrations store copies (#610).
+	repo usecase.InstanceRepository
 }
 
 // New builds the *arr module (#86); cipher encrypts the API keys.
@@ -28,8 +30,9 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 	providers := map[domain.App]usecase.Provider{
 		domain.AppSonarr: gateway.NewSonarr(client), domain.AppRadarr: gateway.NewRadarr(client), domain.AppProwlarr: gateway.NewProwlarr(client),
 	}
-	uc := usecase.NewArr(usecase.Deps{Repo: gateway.NewInstanceRepository(db, cipher), Providers: providers, Clock: clock, IDs: ids})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(providers)}
+	repo := gateway.NewInstanceRepository(db, cipher)
+	uc := usecase.NewArr(usecase.Deps{Repo: repo, Providers: providers, Clock: clock, IDs: ids})
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), repo: repo, specs: connectionSpecs(providers)}
 }
 
 // Name implements modules.Module.
@@ -69,3 +72,8 @@ var errInstanceDown = kernel.NewPublicError(kernel.ErrUnavailable, "A Sonarr, Ra
 
 // ConnectionSpecs implements modules.Connectable (#610).
 func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }
+
+// SavedConnections implements modules.ConnectionSource (#610).
+func (m *Module) SavedConnections(ctx context.Context) ([]modules.SavedConnection, error) {
+	return savedConnections(ctx, m.repo)
+}

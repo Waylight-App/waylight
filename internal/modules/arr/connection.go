@@ -32,3 +32,18 @@ func connectionSpecs(providers map[domain.App]usecase.Provider) []modules.Connec
 	}
 	return out
 }
+
+// savedConnections returns every instance as a connection of its app,
+// named like the instance.
+func savedConnections(ctx context.Context, repo usecase.InstanceRepository) ([]modules.SavedConnection, error) {
+	list, err := repo.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]modules.SavedConnection, 0, len(list))
+	for _, in := range list {
+		out = append(out, modules.SavedConnection{Source: "arr:" + in.ID, Service: string(in.App), Name: in.Name, URL: in.URL,
+			Credential: map[string]string{"apiKey": in.APIKey}})
+	}
+	return out, nil
+}

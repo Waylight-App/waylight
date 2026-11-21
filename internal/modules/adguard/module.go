@@ -27,6 +27,8 @@ type Module struct {
 	handlers *controller.Handlers
 	// specs are the services a named connection can reach (#610).
 	specs []modules.ConnectionSpec
+	// repo reads the settings the integrations store copies (#610).
+	repo usecase.SettingsRepository
 }
 
 // Config are the dependencies of the module.
@@ -53,9 +55,10 @@ func New(c Config) *Module {
 			pausable = append(pausable, p)
 		}
 	}
-	uc := usecase.NewDNSFilter(usecase.Deps{Repo: gateway.NewSettingsRepository(c.DB, c.Cipher), Providers: providers,
+	repo := gateway.NewSettingsRepository(c.DB, c.Cipher)
+	uc := usecase.NewDNSFilter(usecase.Deps{Repo: repo, Providers: providers,
 		Pausable: pausable, Audit: c.Audit, Clock: c.Clock})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(providers)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), repo: repo, specs: connectionSpecs(providers)}
 }
 
 // Name implements modules.Module.
@@ -108,3 +111,8 @@ func (m *Module) Discovery() modules.DiscoverySpec {
 
 // ConnectionSpecs implements modules.Connectable (#610).
 func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }
+
+// SavedConnections implements modules.ConnectionSource (#610).
+func (m *Module) SavedConnections(ctx context.Context) ([]modules.SavedConnection, error) {
+	return savedConnections(ctx, m.repo)
+}
