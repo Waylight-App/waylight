@@ -98,3 +98,36 @@ test('a compact view ticks off the next habit with its quick action (#598)', asy
   await expect(done).toHaveCount(0);
   await expect(page.getByRole('dialog', { name: 'Habits' })).toHaveCount(0);
 });
+
+test('status widgets fold into the system summary and come back (#593)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByTestId('dashboard')).toBeVisible();
+
+  await account(page, 'Edit');
+  await page.getByRole('button', { name: '+ Tab' }).click();
+  await page.getByRole('textbox', { name: 'Name' }).fill('System');
+  await page.getByRole('button', { name: 'Create' }).click();
+  for (const [query, name] of [
+    ['services', /^Services/],
+    ['backup', /^Backups/],
+  ] as const) {
+    await page.getByRole('button', { name: '+ Add widget' }).click();
+    await page.getByRole('searchbox', { name: 'Search widgets…' }).fill(query);
+    // Inside the picker: the top bar has a "Services and bookmarks" button as well.
+    await page.getByRole('dialog', { name: 'Add widget' }).getByRole('button', { name }).first().click();
+  }
+  await account(page, 'Done');
+
+  const summary = page.getByTestId('system-summary');
+  await expect(summary).toContainText('Services:');
+  const grid = page.locator('.grid [data-widget-id]');
+  await expect(grid).toHaveCount(2);
+  await summary.getByRole('button', { name: 'Collapse' }).click();
+  await expect(grid).toHaveCount(0);
+  // No "empty tab" hint while the widgets are folded away.
+  await expect(page.getByText('This tab is empty')).toHaveCount(0);
+  await summary.getByRole('button', { name: 'Show all' }).click();
+  await expect(grid).toHaveCount(2);
+});

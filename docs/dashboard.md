@@ -126,6 +126,25 @@ same grid.
 The phone layout belongs to the tab, not to the device, so it applies to
 every phone you use.
 
+## The attention line and the system summary
+
+When something on a tab needs a look, one line at the top says what it is,
+for example *Services: 11 of 12 running · Nextcloud is down*, and how many
+other things need a look as well. **View** scrolls to the widget and puts the
+focus on it. The line takes the status widgets of the tab whose short state
+is amber or red (services, backups, drives) and connections that stopped
+working, such as an expired sign-in. It disappears when all is well. Colour
+is used only for what needs action: amber asks for a look, red means
+something is broken.
+
+A tab with two or more status widgets also gets a summary line, for example
+*Services: 12 of 12 running · Backups: Backup OK · Disk health: 3
+drives healthy*. **Collapse** folds the status widgets into that line and
+**Show all** brings them back. The choice is remembered per tab in this
+browser; in edit mode all widgets are shown.
+
+Zones that group a tab into *Today*, *My things* and *System* follow in #619.
+
 ## Widget status
 
 Widgets that load data from the server refresh on their own, at an interval
