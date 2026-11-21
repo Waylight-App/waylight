@@ -67,11 +67,7 @@ credential fields they need. `GET /api/integrations/services` lists them:
 | --- | --- | --- |
 | `adguard` | AdGuard Home | `username`, **`password`** |
 | `fritzbox` | FRITZ!Box | *`username`*, ***`password`*** |
-| `grafana` | Home Assistant | `GET /api/smarthome/entities`, `GET /api/smarthome/states`, `GET /api/smarthome/compact`, `POST /api/smarthome/entities/{id}/action` (acts on the same server) |
-| Nextcloud | `GET /api/nextcloud/status` |
-| Proxmox VE | `GET /api/proxmox/status`, `GET /api/proxmox/compact`, `POST /api/proxmox/guests/{id}/{action}` (acts on the same cluster) |
-| Speedtest Tracker | `GET /api/speedtest/results`, `GET /api/speedtest/compact` (the thresholds stay in the module settings) |
-| Grafana | **`token`** |
+| `grafana` | Grafana | **`token`** |
 | `homeassistant` | Home Assistant | **`token`** |
 | `immich` | Immich | **`apiKey`** |
 | `jellyfin`, `plex` | Jellyfin, Plex | **`token`** |
