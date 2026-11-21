@@ -527,6 +527,8 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.pair_app_valid_until': 'Einmal gültig, bis {value}.',
   'auth.pair_app_show_code': 'Kopplungscode anzeigen',
   'auth.pair_app_new_code': 'Neuer Code',
+  'auth.pair_app_code': 'Kopplungscode',
+  'auth.pair_app_type_hint': 'Oder gib den Code auf dem Gerät ein, zum Beispiel auf einer Uhr:',
   'app.mobile_app': 'Mobile App',
   'auth.handover_title': 'Waylight-App anmelden?',
   'auth.handover_text': 'Die Waylight-App auf diesem Gerät möchte mit deinem Konto angemeldet werden.',

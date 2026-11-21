@@ -1,7 +1,7 @@
 import { t } from '../../shared/i18n';
 import { lazy, type WidgetDefinition } from '../widgetKit';
 
-/** The Grafana widgets (#574): one panel as an image, and the alerts. */
+/** The Grafana widgets (#574): one panel as an image or its values (#579), and the alerts. */
 export const widgets: WidgetDefinition[] = [
   {
     type: {
@@ -19,7 +19,7 @@ export const widgets: WidgetDefinition[] = [
     icon: 'activity',
     view: lazy(
       () => import('../../features/grafana/ui/GrafanaPanelWidget.svelte'),
-      (config) => ({ config }),
+      (config, c) => ({ config, grafana: c.grafana }),
     ),
     settings: lazy(
       () => import('../../features/grafana/ui/GrafanaPanelSettings.svelte'),

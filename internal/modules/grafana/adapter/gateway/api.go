@@ -85,6 +85,15 @@ type panelJSON struct {
 	Title  string      `json:"title"`
 	Type   string      `json:"type"`
 	Panels []panelJSON `json:"panels"`
+	// The fields below are only read for the values of a panel (#579).
+	Datasource  json.RawMessage              `json:"datasource"`
+	Targets     []map[string]json.RawMessage `json:"targets"`
+	FieldConfig struct {
+		Defaults struct {
+			Unit     string `json:"unit"`
+			Decimals *int   `json:"decimals"`
+		} `json:"defaults"`
+	} `json:"fieldConfig"`
 }
 
 // Panels implements usecase.Client: the panels of a dashboard, panels in
@@ -151,6 +160,10 @@ func (a *API) getJSON(ctx context.Context, s domain.Settings, path string, dst a
 	if err != nil {
 		return err
 	}
+	return decode(res, dst)
+}
+
+func decode(res *http.Response, dst any) error {
 	defer res.Body.Close()
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxJSONBytes)).Decode(dst); err != nil {
 		return fmt.Errorf("unexpected response from Grafana: %w", err)
@@ -159,12 +172,19 @@ func (a *API) getJSON(ctx context.Context, s domain.Settings, path string, dst a
 }
 
 func (a *API) get(ctx context.Context, s domain.Settings, path, accept string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.URL+path, nil)
+	return a.do(ctx, s, http.MethodGet, path, accept, nil)
+}
+
+func (a *API) do(ctx context.Context, s domain.Settings, method, path, accept string, body io.Reader) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, method, s.URL+path, body)
 	if err != nil {
 		return nil, fmt.Errorf("build request: %w", err)
 	}
 	req.Header.Set("Authorization", "Bearer "+s.Token)
 	req.Header.Set("Accept", accept)
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
 	res, err := a.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
