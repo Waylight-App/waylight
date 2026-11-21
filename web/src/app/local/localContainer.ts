@@ -14,6 +14,7 @@ import { LocalCountdownGateway } from '../../features/countdown/adapter/local/lo
 import { browserNotifier } from '../../features/focus/adapter/api/focusApi';
 import { FocusUseCases } from '../../features/focus/usecase/focusUseCases';
 import { LocalFocusGateway } from '../../features/focus/adapter/local/localFocusGateway';
+import { LocalTimer } from '../../features/focus/adapter/local/localTimer';
 import { HabitsUseCases } from '../../features/habits/usecase/habitsUseCases';
 import { LocalHabitsGateway } from '../../features/habits/adapter/local/localHabitsGateway';
 import { DashboardUseCases } from '../../features/dashboard/usecase/dashboardUseCases';
@@ -40,6 +41,7 @@ export function createLocalContainer(store: DocumentStore = new IndexedDbDocumen
   // a hidden feature reached for the network, which the module list prevents.
   const base = createContainer(() => undefined);
   const todos = new TodosUseCases(new LocalTodosGateway(store));
+  const focusSessions = new LocalFocusGateway(store);
   return {
     ...base,
     localMode: true,
@@ -53,7 +55,7 @@ export function createLocalContainer(store: DocumentStore = new IndexedDbDocumen
     todosFor: () => todos,
     countdown: new CountdownUseCases(new LocalCountdownGateway(store)),
     // The browser notifier lives next to the API adapter but needs no server.
-    focus: new FocusUseCases(new LocalFocusGateway(store), browserNotifier),
+    focus: new FocusUseCases(focusSessions, browserNotifier, new LocalTimer(focusSessions)),
     habits: new HabitsUseCases(new LocalHabitsGateway(store)),
     weather: new WeatherUseCases(new LocalWeatherGateway(locale)),
     enabledModules() {

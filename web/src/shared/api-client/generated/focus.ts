@@ -28,3 +28,36 @@ export interface WeekDTO {
    */
   days: DayDTO[];
 }
+/**
+ * TimerConfigDTO holds the phase lengths in minutes.
+ */
+export interface TimerConfigDTO {
+  work: number /* int */;
+  short: number /* int */;
+  long: number /* int */;
+  longEvery: number /* int */;
+}
+/**
+ * TimerDTO is the focus timer of the account (#631). The time left is
+ * relative, so a client whose clock is off still counts down correctly.
+ */
+export interface TimerDTO {
+  /**
+   * Phase is work, short or long.
+   */
+  phase: string;
+  /**
+   * Done counts the focus sessions finished in the current cycle.
+   */
+  done: number /* int */;
+  running: boolean;
+  /**
+   * RemainingMs is the time left when the answer was written.
+   */
+  remainingMs: number /* int64 */;
+  /**
+   * TotalMs is the full length of the phase.
+   */
+  totalMs: number /* int64 */;
+  config: TimerConfigDTO;
+}

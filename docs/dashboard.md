@@ -65,7 +65,10 @@ most common step needs no panel: habits tick off the next habit due today
 and to-dos tick off the most urgent one (overdue first, then the earliest due
 date). A smart home tile with one device shows its state and turns it on or
 off (or runs a button, script or scene) when actions are enabled for it with
-`SMARTHOME_ACTIONS_ENTITIES`. The button gives feedback at once; when the server refuses, its
+`SMARTHOME_ACTIONS_ENTITIES`. The focus timer offers **Start** or **Pause**
+and shows the running phase as *Focus · 12:40*; the timer is kept per
+account on the server, so the full widget, the compact view and your other
+devices show the same one. The button gives feedback at once; when the server refuses, its
 message is shown and nothing changes. Guests and kiosk displays do not see
 quick actions.
 
