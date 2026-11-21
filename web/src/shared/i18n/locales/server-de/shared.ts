@@ -10,6 +10,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_22fc413ef29251fa: 'Bitte ein Datum wie 2026-12-24 eingeben.',
   // Done: {title}
   srv_08ee030d3497c389: 'Erledigt: {title}',
+  // The note does not exist.
+  srv_f901e92a895881b7: 'Die Notiz existiert nicht.',
   // Nothing answers at this address. Is the service running?
   srv_8a17d4cf0faa9d18: 'Unter dieser Adresse antwortet nichts. Läuft der Dienst?',
   // The certificate is not trusted. Use the http:// address in your home network, or give the service a certificate this server trusts.
