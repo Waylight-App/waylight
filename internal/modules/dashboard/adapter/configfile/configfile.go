@@ -36,8 +36,10 @@ type Rule struct {
 
 // Widget is one tile; config is whatever the widget's settings store.
 type Widget struct {
-	Kind   string         `yaml:"kind"`
-	At     Rect           `yaml:"at,flow"`
+	Kind string `yaml:"kind"`
+	At   Rect   `yaml:"at,flow"`
+	// Size is small, medium, large or strip on the web grid (#595).
+	Size   string         `yaml:"size,omitempty"`
 	Phone  *Phone         `yaml:"phone,omitempty,flow"`
 	Config map[string]any `yaml:"config,omitempty"`
 }
@@ -80,7 +82,7 @@ func FromTabs(tabs []usecase.ConfigTab) (*Section, error) {
 			if len(cfg) == 0 {
 				cfg = nil
 			}
-			cw := Widget{Kind: w.Kind, At: Rect(w.Rect), Config: cfg}
+			cw := Widget{Kind: w.Kind, At: Rect(w.Rect), Size: w.Size, Config: cfg}
 			if w.Phone != nil {
 				cw.Phone = &Phone{Order: w.Phone.Order, Rows: w.Phone.Rows, Hidden: w.Phone.Hidden, Size: w.Phone.Size}
 			}
@@ -108,7 +110,7 @@ func (s Section) ToTabs() ([]usecase.ConfigTab, error) {
 				}
 				cfg = string(b)
 			}
-			cw := usecase.ConfigWidget{Kind: w.Kind, Rect: domain.Rect(w.At), Config: cfg}
+			cw := usecase.ConfigWidget{Kind: w.Kind, Rect: domain.Rect(w.At), Size: w.Size, Config: cfg}
 			if w.Phone != nil {
 				cw.Phone = &usecase.ConfigPhone{Order: w.Phone.Order, Rows: w.Phone.Rows, Hidden: w.Phone.Hidden, Size: w.Phone.Size}
 			}

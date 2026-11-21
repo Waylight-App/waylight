@@ -54,7 +54,7 @@ const legacyDefinitions: WidgetDefinition[] = [
     ),
     settings: lazy(
       () => import('../features/weather/ui/WeatherSettings.svelte'),
-      (config, c) => ({ config, weather: c.weather }),
+      (config, c) => ({ config, weather: c.weather, places: c.places }),
     ),
   },
   {
@@ -81,6 +81,7 @@ const legacyDefinitions: WidgetDefinition[] = [
         config,
         weather: c.weather,
         mode: 'radar' as const,
+        places: c.places,
       }),
     ),
   },
@@ -182,6 +183,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 5 },
     },
     icon: 'check',
+    // The compact state counts the built-in list; a connected list has none.
+    compact: (config) => (config['source'] ? undefined : 'todos'),
     view: lazy(
       () => import('../features/todos/ui/TodosWidget.svelte'),
       (config, c) => ({

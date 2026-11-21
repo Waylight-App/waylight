@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { account, password, openSettings } from '../support';
 
 test('parcels of other carriers link to their tracking page and the mailbox is tested before saving (#166)', async ({
   page,
@@ -32,8 +32,7 @@ test('parcels of other carriers link to their tracking page and the mailbox is t
   );
   await expect(page.getByText('No live status for GLS')).toBeVisible();
 
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Parcels', exact: true }).click();
+  await openSettings(page, 'Dashboard & widgets', 'Parcels');
   await expect(page.getByRole('heading', { name: 'Parcels from e-mails' })).toBeVisible();
   await page.getByLabel('Look for parcels in e-mails').check();
   await page.getByLabel('IMAP server').fill('localhost');

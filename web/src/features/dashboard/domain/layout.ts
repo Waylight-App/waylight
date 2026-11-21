@@ -1,4 +1,5 @@
 import { t } from '../../../shared/i18n';
+import { sizeRect, stepSize, type WidgetSize } from './sizes';
 /**
  * Pure layout algorithm of the dashboard grid (see ADR 0007). Items live on
  * a 12-column grid with unbounded rows; gravity pulls every item up as far
@@ -21,6 +22,13 @@ export interface Rect {
 /** A rectangle that belongs to a widget. */
 export interface LayoutItem extends Rect {
   id: string;
+  /** Size of the tile (#595); unset for a freely sized tile. */
+  size?: WidgetSize;
+}
+
+/** Position, size and the size name of items, without any widget data. */
+export function layoutCells(items: readonly LayoutItem[]): LayoutItem[] {
+  return items.map(({ id, x, y, w, h, size }) => ({ id, x, y, w, h, ...(size ? { size } : {}) }));
 }
 
 const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
@@ -71,6 +79,28 @@ export function resizeItem(items: readonly LayoutItem[], id: string, w: number, 
   return compact(compact(resized, id));
 }
 
+/**
+ * Gives item `id` a size (#595): its cells become the size's cells and the
+ * layout reflows. Without a size the tile keeps its cells and becomes
+ * freely sized again.
+ */
+export function setItemSize(
+  items: readonly LayoutItem[],
+  id: string,
+  size: WidgetSize | undefined,
+): LayoutItem[] {
+  if (!size) {
+    return items.map((i) => {
+      if (i.id !== id) return i;
+      const free = { ...i };
+      delete free.size;
+      return free;
+    });
+  }
+  const cells = sizeRect(size);
+  return resizeItem(items, id, cells.w, cells.h).map((i) => (i.id === id ? { ...i, size } : i));
+}
+
 /** Finds the top-most, left-most position where a w × h item fits. */
 export function findFreeSpot(items: readonly Rect[], w: number, h: number): Rect {
   const size = clampRect({ x: 0, y: 0, w, h });
@@ -88,7 +118,7 @@ export function sameLayout(a: readonly LayoutItem[], b: readonly LayoutItem[]): 
   const byId = new Map(b.map((i) => [i.id, i]));
   return a.every((i) => {
     const o = byId.get(i.id);
-    return !!o && o.x === i.x && o.y === i.y && o.w === i.w && o.h === i.h;
+    return !!o && o.x === i.x && o.y === i.y && o.w === i.w && o.h === i.h && o.size === i.size;
   });
 }
 
@@ -119,7 +149,15 @@ export function keyboardStep(
     );
     if (below.length) ty = Math.min(...below.map((o) => o.y)) + 1;
   }
-  const next = resize ? resizeItem(items, id, it.w + dx, it.h + dy) : moveItem(items, id, it.x + dx, ty);
+  let next: LayoutItem[];
+  if (resize && it.size) {
+    // A sized tile walks through the sizes instead of growing cell by cell.
+    const size = stepSize(it.size, dx + dy > 0);
+    if (!size) return null;
+    next = setItemSize(items, id, size);
+  } else {
+    next = resize ? resizeItem(items, id, it.w + dx, it.h + dy) : moveItem(items, id, it.x + dx, ty);
+  }
   return sameLayout(items, next) ? null : next;
 }
 

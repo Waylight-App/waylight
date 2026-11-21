@@ -184,15 +184,15 @@ func (r *Repository) SaveTabOrder(ctx context.Context, tabs []domain.Tab) error 
 	})
 }
 
-const widgetColumns = `id, tab_id, kind, x, y, w, h, config`
+const widgetColumns = `id, tab_id, kind, x, y, w, h, config, size`
 
 func scanWidget(s interface{ Scan(...any) error }) (domain.Widget, error) {
-	var id, tabID, kind, config string
+	var id, tabID, kind, config, size string
 	var rect domain.Rect
-	if err := s.Scan(&id, &tabID, &kind, &rect.X, &rect.Y, &rect.W, &rect.H, &config); err != nil {
+	if err := s.Scan(&id, &tabID, &kind, &rect.X, &rect.Y, &rect.W, &rect.H, &config, &size); err != nil {
 		return domain.Widget{}, err
 	}
-	return domain.RestoreWidget(id, tabID, kind, rect, config), nil
+	return domain.RestoreWidget(id, tabID, kind, rect, config, domain.Size(size)), nil
 }
 
 func (r *Repository) queryWidgets(ctx context.Context, query string, args ...any) ([]domain.Widget, error) {
@@ -248,9 +248,9 @@ func (r *Repository) CreateWidget(ctx context.Context, w domain.Widget) error {
 	rect := w.Rect()
 	cond, args := ownedTabs(ctx)
 	//nolint:gosec // cond comes from sqlutil with bound arguments
-	res, err := r.db.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) SELECT ?, ?, ?, ?, ?, ?, ?, ?
+	res, err := r.db.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
 		WHERE EXISTS (SELECT 1 FROM dashboard_tabs WHERE id = ? AND `+cond+`)`,
-		append([]any{w.ID(), w.TabID(), w.Kind(), rect.X, rect.Y, rect.W, rect.H, w.Config(), w.TabID()}, args...)...)
+		append([]any{w.ID(), w.TabID(), w.Kind(), rect.X, rect.Y, rect.W, rect.H, w.Config(), string(w.Size()), w.TabID()}, args...)...)
 	if err != nil {
 		return fmt.Errorf("insert widget: %w", err)
 	}
@@ -260,26 +260,26 @@ func (r *Repository) CreateWidget(ctx context.Context, w domain.Widget) error {
 	return nil
 }
 
-// UpdateWidget stores the configuration and rectangle of a widget.
+// UpdateWidget stores the configuration, rectangle and size of a widget.
 func (r *Repository) UpdateWidget(ctx context.Context, w domain.Widget) error {
 	rect := w.Rect()
 	cond, args := ownedTabs(ctx)
-	_, err := r.db.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ?, config = ? WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
-		append([]any{rect.X, rect.Y, rect.W, rect.H, w.Config(), w.ID()}, args...)...)
+	_, err := r.db.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ?, config = ?, size = ? WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
+		append([]any{rect.X, rect.Y, rect.W, rect.H, w.Config(), string(w.Size()), w.ID()}, args...)...)
 	if err != nil {
 		return fmt.Errorf("update widget: %w", err)
 	}
 	return nil
 }
 
-// SaveWidgetRects stores the rectangles of several widgets atomically.
+// SaveWidgetRects stores the rectangles and sizes of several widgets atomically.
 func (r *Repository) SaveWidgetRects(ctx context.Context, widgets []domain.Widget) error {
 	cond, args := ownedTabs(ctx)
 	return r.inTx(ctx, func(tx *sql.Tx) error {
 		for _, w := range widgets {
 			rect := w.Rect()
-			if _, err := tx.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ? WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
-				append([]any{rect.X, rect.Y, rect.W, rect.H, w.ID()}, args...)...); err != nil {
+			if _, err := tx.ExecContext(ctx, `UPDATE dashboard_widgets SET x = ?, y = ?, w = ?, h = ?, size = ? WHERE id = ? AND tab_id IN (SELECT id FROM dashboard_tabs WHERE `+cond+`)`, //nolint:gosec // cond comes from sqlutil with bound arguments
+				append([]any{rect.X, rect.Y, rect.W, rect.H, string(w.Size()), w.ID()}, args...)...); err != nil {
 				return fmt.Errorf("update widget rect: %w", err)
 			}
 		}
@@ -340,8 +340,8 @@ func (r *Repository) ReplaceAll(ctx context.Context, tabs []domain.Tab, widgets 
 		}
 		for _, w := range widgets {
 			rc := w.Rect()
-			if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-				w.ID(), w.TabID(), w.Kind(), rc.X, rc.Y, rc.W, rc.H, w.Config()); err != nil {
+			if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				w.ID(), w.TabID(), w.Kind(), rc.X, rc.Y, rc.W, rc.H, w.Config(), string(w.Size())); err != nil {
 				return fmt.Errorf("insert widget: %w", err)
 			}
 		}

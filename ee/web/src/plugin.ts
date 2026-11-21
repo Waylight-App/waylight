@@ -62,6 +62,7 @@ export const plugin: WaylightPlugin = {
   settings: [
     {
       id: 'licence',
+      area: 'system',
       label: {
         en: 'Features for organisations',
         de: 'Funktionen für Organisationen',
@@ -71,6 +72,7 @@ export const plugin: WaylightPlugin = {
     },
     {
       id: 'team-tabs',
+      area: 'dashboard',
       feature: 'team-tabs',
       adminOnly: true,
       label: teamTabTexts.label ?? { en: 'Team tabs' },
@@ -79,6 +81,7 @@ export const plugin: WaylightPlugin = {
     },
     {
       id: 'branding',
+      area: 'appearance',
       feature: 'branding',
       adminOnly: true,
       label: brandingTexts.label ?? { en: 'Branding' },
@@ -87,6 +90,7 @@ export const plugin: WaylightPlugin = {
     },
     {
       id: 'connections',
+      area: 'connections',
       feature: 'connected-accounts',
       label: connectionTexts.label ?? { en: 'Connected accounts' },
       description: connectionTexts.description ?? { en: '' },
@@ -94,6 +98,7 @@ export const plugin: WaylightPlugin = {
     },
     {
       id: 'team-calendar',
+      area: 'dashboard',
       feature: 'absences',
       label: teamCalendarTexts.label ?? { en: 'Team calendar' },
       description: teamCalendarTexts.description ?? { en: '' },
@@ -101,6 +106,7 @@ export const plugin: WaylightPlugin = {
     },
     {
       id: 'presence',
+      area: 'people',
       feature: 'presence',
       adminOnly: true,
       label: presenceTexts.section ?? { en: 'Presence' },

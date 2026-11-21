@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { account, password, openSettings } from '../support';
 
 test('the JSON widget shows values from an endpoint picked with JSONPath (#48)', async ({ page }) => {
   await page.goto('/');
@@ -9,8 +9,7 @@ test('the JSON widget shows values from an endpoint picked with JSONPath (#48)',
 
   // The server's own health check is a JSON endpoint on loopback, which counts as private.
   const url = new URL('/healthz', page.url()).toString();
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'JSON APIs', exact: true }).click();
+  await openSettings(page, 'Connections & services', 'JSON APIs');
   await page.getByRole('button', { name: 'Add endpoint' }).click();
   await page.getByLabel('Name').fill('Self');
   await page.getByLabel('URL').fill(url);

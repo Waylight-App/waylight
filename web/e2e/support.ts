@@ -18,6 +18,27 @@ export async function account(page: Page, item: string) {
   await page.getByRole('menuitem', { name: item, exact: true }).click();
 }
 
+/**
+ * Opens a settings section from the open settings dialog (#600): the area in
+ * the navigation, then the section in the area's list unless the area has
+ * only that one section and opened it directly.
+ */
+export async function settingsSection(page: Page, area: string, section: string) {
+  const dialog = page.getByRole('dialog', { name: 'Settings' });
+  const nav = dialog.getByRole('navigation', { name: 'Settings areas' });
+  await nav.getByRole('button', { name: area, exact: true }).click();
+  const opened = dialog.getByRole('region', { name: section, exact: true });
+  await expect(opened.or(dialog.getByRole('region', { name: area, exact: true })).first()).toBeVisible();
+  if (!(await opened.isVisible())) await nav.getByRole('button', { name: section, exact: true }).click();
+  await expect(opened).toBeVisible();
+}
+
+/** Opens the settings from the account menu and goes to a section. */
+export async function openSettings(page: Page, area: string, section: string) {
+  await account(page, 'Settings');
+  await settingsSection(page, area, section);
+}
+
 /** RFC 6238 TOTP for the test (SHA1, 6 digits, 30 s). */
 export function totp(base32Secret: string, now = Date.now()): string {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';

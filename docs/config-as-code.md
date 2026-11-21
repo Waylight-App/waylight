@@ -44,7 +44,15 @@ dashboard:
         - kind: bookmarks
           at: { x: 4, y: 0, w: 4, h: 4 }
           phone: { order: 1, rows: 4, size: medium }
+        - kind: todos
+          at: { x: 8, y: 0, w: 3, h: 2 }
+          size: small
 ```
+
+`size` is optional: `small`, `medium`, `large` or `strip` give the widget one
+of the [widget sizes](dashboard.md#widget-sizes) on the web dashboard, and
+small and strip show its compact view. Without it the widget is a freely
+sized tile. `at` still sets its cells.
 
 `phone.size` is optional: `small`, `medium`, `large` or `strip` place the
 widget on the phone grid ([dashboard](dashboard.md#the-phone-layout)); without

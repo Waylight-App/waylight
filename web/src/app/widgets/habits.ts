@@ -17,6 +17,7 @@ export const widgets: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 4 },
     },
     icon: 'check',
+    compact: () => 'habits',
     view: lazy(
       () => import('../../features/habits/ui/HabitsWidget.svelte'),
       (config, c) => ({ config, habits: c.habits }),

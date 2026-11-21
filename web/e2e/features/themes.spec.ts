@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { password, openSettings } from '../support';
 
 test('the theme gallery applies, restores, imports and exports themes (#111)', async ({ page }) => {
   await page.goto('/');
@@ -9,8 +9,7 @@ test('the theme gallery applies, restores, imports and exports themes (#111)', a
   const bg = () =>
     page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim());
   const before = await bg();
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Appearance', exact: true }).click();
+  await openSettings(page, 'Appearance & language', 'Appearance');
 
   await page.getByRole('button', { name: 'Apply theme Nord' }).click();
   await expect(page.getByRole('button', { name: 'Apply theme Nord' })).toHaveText('Applied');

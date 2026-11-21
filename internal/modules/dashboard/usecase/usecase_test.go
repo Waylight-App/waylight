@@ -230,12 +230,30 @@ func TestWidgets(t *testing.T) {
 	if r := repo.widgets[w.ID].Rect(); r.X != 4 || r.H != 3 || repo.widgets[w.ID].Config() != `{"lat":2}` {
 		t.Fatalf("layout/config not stored: %+v", r)
 	}
+	small := "small"
+	err = widgets.SaveLayout(ctx, SaveLayoutRequest{TabID: tab.ID, Placements: []WidgetPlacement{{WidgetID: w.ID, X: 0, Y: 0, W: 3, H: 2, Size: &small}}})
+	if err != nil || repo.widgets[w.ID].Size() != domain.SizeSmall {
+		t.Fatalf("size not stored: %q %v", repo.widgets[w.ID].Size(), err)
+	}
+	// A placement without a size keeps the stored one.
+	err = widgets.SaveLayout(ctx, SaveLayoutRequest{TabID: tab.ID, Placements: []WidgetPlacement{{WidgetID: w.ID, X: 3, Y: 0, W: 3, H: 2}}})
+	if err != nil || repo.widgets[w.ID].Size() != domain.SizeSmall {
+		t.Fatalf("size lost on move: %q %v", repo.widgets[w.ID].Size(), err)
+	}
+	huge := "huge"
+	err = widgets.SaveLayout(ctx, SaveLayoutRequest{TabID: tab.ID, Placements: []WidgetPlacement{{WidgetID: w.ID, W: 3, H: 2, Size: &huge}}})
+	if err == nil {
+		t.Fatal("an unknown size must be rejected")
+	}
 	err = widgets.SaveLayout(ctx, SaveLayoutRequest{TabID: other.ID, Placements: []WidgetPlacement{{WidgetID: w.ID, W: 1, H: 1}}})
 	if !errors.Is(err, domain.ErrWidgetNotFound) {
 		t.Fatalf("moving a foreign widget must fail, got %v", err)
 	}
 	if err := widgets.Delete(ctx, w.ID); err != nil || len(repo.widgets) != 0 {
 		t.Fatalf("delete failed: %v", err)
+	}
+	if sized, err := widgets.Add(ctx, AddWidgetRequest{TabID: tab.ID, Kind: "weather", Y: 5, W: 6, H: 1, Size: "strip"}); err != nil || sized.Size != "strip" {
+		t.Fatalf("add with size: %+v %v", sized, err)
 	}
 }
 

@@ -19,18 +19,23 @@ import type {
 import type { Dashboard, Tab, TabRule, TabTemplate, Widget, WidgetConfig } from '../../domain/dashboard';
 import type { LayoutItem, Rect } from '../../domain/layout';
 import { type MobileItem, type MobileSize, sizeCells } from '../../domain/mobile';
+import { parseSize, type WidgetSize } from '../../domain/sizes';
 import type { DashboardGateway } from '../../usecase/ports';
 
-const toWidget = (dto: WidgetDTO): Widget => ({
-  id: dto.id,
-  tabId: dto.tabId,
-  kind: dto.kind,
-  config: dto.config ?? {},
-  x: dto.x,
-  y: dto.y,
-  w: dto.w,
-  h: dto.h,
-});
+const toWidget = (dto: WidgetDTO): Widget => {
+  const size = parseSize(dto.size);
+  return {
+    id: dto.id,
+    tabId: dto.tabId,
+    kind: dto.kind,
+    config: dto.config ?? {},
+    x: dto.x,
+    y: dto.y,
+    w: dto.w,
+    h: dto.h,
+    ...(size ? { size } : {}),
+  };
+};
 
 const toTab = (dto: TabDTO): Tab => ({
   id: dto.id,
@@ -83,8 +88,14 @@ export class DashboardApi implements DashboardGateway {
     return this.http.put('/api/dashboard/tabs/order', body);
   }
 
-  async addWidget(tabId: string, kind: string, rect: Rect, config: WidgetConfig): Promise<Widget> {
-    const body: AddWidgetDTO = { kind, ...rect, config };
+  async addWidget(
+    tabId: string,
+    kind: string,
+    rect: Rect,
+    config: WidgetConfig,
+    size?: WidgetSize,
+  ): Promise<Widget> {
+    const body: AddWidgetDTO = { kind, ...rect, config, ...(size ? { size } : {}) };
     return toWidget(
       await this.http.post<WidgetDTO>(`/api/dashboard/tabs/${encodeURIComponent(tabId)}/widgets`, body),
     );
@@ -98,7 +109,10 @@ export class DashboardApi implements DashboardGateway {
   }
 
   saveLayout(tabId: string, items: LayoutItem[]): Promise<void> {
-    const body: LayoutDTO = { items: items.map(({ id, x, y, w, h }) => ({ id, x, y, w, h })) };
+    // The size is always sent, so a tile made free again loses it on the server too.
+    const body: LayoutDTO = {
+      items: items.map(({ id, x, y, w, h, size }) => ({ id, x, y, w, h, size: size ?? '' })),
+    };
     return this.http.put(`/api/dashboard/tabs/${encodeURIComponent(tabId)}/layout`, body);
   }
 

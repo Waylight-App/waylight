@@ -18,6 +18,7 @@ type templateWidgetRow struct {
 	W      int             `json:"w"`
 	H      int             `json:"h"`
 	Config json.RawMessage `json:"config"`
+	Size   string          `json:"size,omitempty"`
 }
 
 func scanTemplate(sc interface{ Scan(...any) error }) (domain.Template, error) {
@@ -31,7 +32,7 @@ func scanTemplate(sc interface{ Scan(...any) error }) (domain.Template, error) {
 		return t, fmt.Errorf("decode template widgets: %w", err)
 	}
 	for _, r := range rows {
-		t.Widgets = append(t.Widgets, domain.TemplateWidget{Kind: r.Kind, Rect: domain.Rect{X: r.X, Y: r.Y, W: r.W, H: r.H}, Config: string(r.Config)})
+		t.Widgets = append(t.Widgets, domain.TemplateWidget{Kind: r.Kind, Rect: domain.Rect{X: r.X, Y: r.Y, W: r.W, H: r.H}, Config: string(r.Config), Size: domain.Size(r.Size)})
 	}
 	return t, nil
 }
@@ -70,7 +71,7 @@ func (r *Repository) GetTemplate(ctx context.Context, id string) (domain.Templat
 func (r *Repository) CreateTemplate(ctx context.Context, t domain.Template) error {
 	rows := make([]templateWidgetRow, 0, len(t.Widgets))
 	for _, w := range t.Widgets {
-		rows = append(rows, templateWidgetRow{Kind: w.Kind, X: w.Rect.X, Y: w.Rect.Y, W: w.Rect.W, H: w.Rect.H, Config: json.RawMessage(w.Config)})
+		rows = append(rows, templateWidgetRow{Kind: w.Kind, X: w.Rect.X, Y: w.Rect.Y, W: w.Rect.W, H: w.Rect.H, Config: json.RawMessage(w.Config), Size: string(w.Size)})
 	}
 	raw, err := json.Marshal(rows)
 	if err != nil {
@@ -100,8 +101,8 @@ func (r *Repository) CreateTabWithWidgets(ctx context.Context, t domain.Tab, wid
 		}
 		for _, w := range widgets {
 			rc := w.Rect()
-			if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-				w.ID(), w.TabID(), w.Kind(), rc.X, rc.Y, rc.W, rc.H, w.Config()); err != nil {
+			if _, err := tx.ExecContext(ctx, `INSERT INTO dashboard_widgets (`+widgetColumns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				w.ID(), w.TabID(), w.Kind(), rc.X, rc.Y, rc.W, rc.H, w.Config(), string(w.Size())); err != nil {
 				return fmt.Errorf("insert widget: %w", err)
 			}
 		}

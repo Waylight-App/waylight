@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { account, password, openSettings } from '../support';
 
 test('notes are summarised by a local Ollama once it is set up (#75)', async ({ page }) => {
   page.on('pageerror', (e) => console.log('PAGEERROR', e.message.slice(0, 300)));
@@ -32,8 +32,7 @@ test('notes are summarised by a local Ollama once it is set up (#75)', async ({ 
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page.getByTestId('dashboard')).toBeVisible();
 
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'AI summaries', exact: true }).click();
+  await openSettings(page, 'Connections & services', 'AI summaries');
   const url = page.getByLabel('Ollama address (home network)');
   await url.fill('https://api.example.com');
   await page.getByRole('button', { name: 'Load models' }).click();

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { account, password, openSettings } from '../support';
 
 test('study progress sums up credits and the weighted average (#57)', async ({ page }) => {
   await page.goto('/');
@@ -7,8 +7,7 @@ test('study progress sums up credits and the weighted average (#57)', async ({ p
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page.getByTestId('dashboard')).toBeVisible();
 
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Study progress', exact: true }).click();
+  await openSettings(page, 'Dashboard & widgets', 'Study progress');
   await page.getByLabel('ECTS of the degree').fill('210');
   await page.getByRole('button', { name: 'Save', exact: true }).first().click();
   await expect(page.getByText('Saved.')).toBeVisible();

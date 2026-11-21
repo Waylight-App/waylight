@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { password, openSettings } from '../support';
 
 test('quick capture saves a shared page only after confirming (#66)', async ({ page }) => {
   const shared = new URLSearchParams({ url: 'https://example.org/article', title: 'An article', text: '' });
@@ -27,8 +27,7 @@ test('quick capture saves a shared page only after confirming (#66)', async ({ p
   await expect(page.getByRole('radio', { name: 'Note' })).toBeChecked();
   await expect(page.getByLabel('Text')).toHaveValue('Idee: Fahrradtour');
   await page.goto('/');
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Search', exact: true }).click();
+  await openSettings(page, 'Dashboard & widgets', 'Search');
   await expect(page.getByRole('link', { name: '＋ Waylight' })).toHaveAttribute(
     'href',
     /^javascript:.*\/capture\?url=/,

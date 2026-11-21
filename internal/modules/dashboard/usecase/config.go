@@ -27,6 +27,8 @@ type ConfigWidget struct {
 	Rect   domain.Rect
 	Phone  *ConfigPhone
 	Config string
+	// Size is the web size (#595); empty for a freely sized tile.
+	Size string
 }
 
 // ConfigTab is a tab with its widgets in reading order.
@@ -100,7 +102,7 @@ func (uc *config) Export(ctx context.Context) ([]ConfigTab, error) {
 			ct.Rules = append(ct.Rules, domain.RuleInput{Days: r.Days(), From: from, To: to, Networks: r.Networks()})
 		}
 		for _, w := range ws {
-			ct.Widgets = append(ct.Widgets, ConfigWidget{Kind: w.Kind(), Rect: w.Rect(), Phone: phone[w.ID()], Config: w.Config()})
+			ct.Widgets = append(ct.Widgets, ConfigWidget{Kind: w.Kind(), Rect: w.Rect(), Phone: phone[w.ID()], Config: w.Config(), Size: string(w.Size())})
 		}
 		out = append(out, ct)
 	}
@@ -178,9 +180,12 @@ func (uc *config) buildTab(id string, pos int, ct ConfigTab) (domain.Tab, []doma
 		if err != nil {
 			return domain.Tab{}, nil, err
 		}
+		if err := w.Resize(domain.Size(cw.Size)); err != nil {
+			return domain.Tab{}, nil, err
+		}
 		widgets = append(widgets, w)
 		if cw.Phone != nil {
-			phone = append(phone, placed{cw.Phone.Order, domain.MobileEntry{WidgetID: w.ID(), Rows: cw.Phone.Rows, Hidden: cw.Phone.Hidden, Size: domain.MobileSize(cw.Phone.Size)}})
+			phone = append(phone, placed{cw.Phone.Order, domain.MobileEntry{WidgetID: w.ID(), Rows: cw.Phone.Rows, Hidden: cw.Phone.Hidden, Size: domain.Size(cw.Phone.Size)}})
 		}
 	}
 	// Without any phone entry the tab keeps the layout derived from the grid.

@@ -60,6 +60,9 @@ type WidgetDTO struct {
 	W      int             `json:"w"`
 	H      int             `json:"h"`
 	Config json.RawMessage `json:"config" tstype:"{ [key: string]: unknown }"`
+	// Size is small, medium, large or strip on the web grid; omitted for a
+	// freely sized tile (#595).
+	Size string `json:"size,omitempty"`
 }
 
 // Dashboard maps a DashboardResponse.
@@ -91,7 +94,7 @@ func Tab(t usecase.TabResponse) TabDTO {
 
 // Widget maps a WidgetResponse.
 func Widget(w usecase.WidgetResponse) WidgetDTO {
-	return WidgetDTO{ID: w.ID, TabID: w.TabID, Kind: w.Kind, X: w.X, Y: w.Y, W: w.W, H: w.H, Config: json.RawMessage(w.Config)}
+	return WidgetDTO{ID: w.ID, TabID: w.TabID, Kind: w.Kind, X: w.X, Y: w.Y, W: w.W, H: w.H, Config: json.RawMessage(w.Config), Size: w.Size}
 }
 
 // TemplateDTO describes a tab template.

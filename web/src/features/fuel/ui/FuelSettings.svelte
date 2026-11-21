@@ -3,14 +3,22 @@
   import { errorMessage } from '../../../shared/api-client/http';
   import { fuelName, type FuelType, fuelTypes, type PlaceResult } from '../domain/fuel';
   import type { FuelUseCases } from '../usecase/fuelUseCases';
+  import PlacePicker from '../../../shared/places/PlacePicker.svelte';
+  import type { SavedPlace, SavedPlaces } from '../../../shared/places/places';
 
   /** Props of the fuel price settings. */
   interface Props {
     fuel: FuelUseCases;
     /** Place search of the weather feature, passed in by the app; optional. */
     searchPlaces?: (query: string) => Promise<PlaceResult[]>;
+    /** Saved places to choose from (#591); optional. */
+    places?: SavedPlaces;
   }
-  let { fuel, searchPlaces }: Props = $props();
+  let { fuel, searchPlaces, places }: Props = $props();
+  // The instance settings store coordinates only; the chosen place is
+  // recognised again by them when the form opens.
+  let placeId = $state('');
+  let loaded = $state(false);
 
   let apiKey = $state('');
   let hasApiKey = $state(false);
@@ -35,6 +43,7 @@
         place = s.place;
         radiusKm = s.radiusKm;
         fuelType = s.fuel;
+        loaded = true;
       })
       .catch((err) => (error = errorMessage(err)));
   });
@@ -53,8 +62,17 @@
     lat = p.lat;
     lon = p.lon;
     place = p.name;
+    placeId = '';
     results = [];
     query = '';
+  }
+
+  function pick(p: SavedPlace | null) {
+    placeId = p?.id ?? '';
+    if (!p) return;
+    lat = p.lat;
+    lon = p.lon;
+    place = p.name;
   }
 
   async function submit(e: SubmitEvent) {
@@ -74,6 +92,14 @@
   }
 </script>
 
+{#if places && loaded}
+  <PlacePicker
+    {places}
+    value={placeId}
+    current={place ? { name: place, label: '', lat, lon } : null}
+    onpick={pick}
+  />
+{/if}
 {#if searchPlaces}
   <form class="search" onsubmit={search}>
     <input

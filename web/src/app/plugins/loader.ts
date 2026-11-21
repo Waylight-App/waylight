@@ -5,6 +5,7 @@ import { iconPaths } from '../../shared/ui/icons/paths';
 import type { AuthUseCases } from '../../features/auth';
 import type { SearchAction } from '../searchActions';
 import type { SettingsSection } from '../settingsKit';
+import { isSettingsArea, type SettingsArea } from '../settingsNav';
 import type { WidgetDefinition } from '../widgetKit';
 import {
   PLUGIN_API_VERSION,
@@ -73,6 +74,12 @@ function toWidget(w: PluginWidget, context: PluginContext): WidgetDefinition {
 }
 
 /**
+ * Where a plugin section goes when it names no known area: plugin sections
+ * are mostly about running an organisation, i.e. people and their access.
+ */
+const PLUGIN_AREA: SettingsArea = 'people';
+
+/**
  * A plugin section is listed even while its feature is off (ADR 0021): it
  * then shows what the feature does and that it needs a licence key.
  */
@@ -80,9 +87,9 @@ function toSection(s: PluginSection, context: PluginContext): SettingsSection {
   const locked = () => !!s.feature && context.level(s.feature) === 'none';
   return {
     id: `plugin-${s.id}`,
-    label: 'settings.group.organisation',
+    label: 'settings.plugin_section',
     title: () => pick(s.label, locale()),
-    group: 'organisation',
+    area: isSettingsArea(s.area) ? s.area : PLUGIN_AREA,
     adminOnly: s.adminOnly,
     plugin: true,
     load: () => Promise.resolve((locked() ? LockedFeature : PluginHost) as never),

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { account, password, openSettings } from '../support';
 
 test('read later keeps links, refuses internal addresses and checks off articles (#99)', async ({ page }) => {
   await page.goto('/');
@@ -33,8 +33,7 @@ test('read later keeps links, refuses internal addresses and checks off articles
   await expect(page.getByText('Nothing to read.')).toBeVisible();
 
   // Settings: the archived article can be deleted.
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Read later', exact: true }).click();
+  await openSettings(page, 'Dashboard & widgets', 'Read later');
   await page.locator('.tabs label', { hasText: 'Archived' }).click();
   page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: new RegExp(`^Delete “${host}”`) }).click();

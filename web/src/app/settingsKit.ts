@@ -5,7 +5,7 @@
 import type { Component } from 'svelte';
 import type { MessageKey } from '../shared/i18n';
 import type { Container } from './container';
-import type { SettingsGroup } from './settingsNav';
+import type { SettingsArea } from './settingsNav';
 
 /** What the dialog knows besides the container. */
 export interface SettingsContext {
@@ -19,8 +19,8 @@ export interface SettingsSection {
   label: MessageKey;
   /** Shown only while this backend module is enabled. */
   module?: string;
-  /** Topic in the navigation (#261); default "integrations". */
-  group?: SettingsGroup;
+  /** Task area on the settings start page (#600); default "connections". */
+  area?: SettingsArea;
   /** Home server or network integration: hidden by the "everyday" profile (#281). */
   homelab?: boolean;
   /** A plugin's own label (ADR 0021); used instead of `label` when set. */
@@ -41,7 +41,7 @@ export function defineSettingsSection<P extends object>(def: {
   id: string;
   label: MessageKey;
   module?: string;
-  group?: SettingsGroup;
+  area?: SettingsArea;
   homelab?: boolean;
   load: () => Promise<Component<P>>;
   props: (container: Container, context: SettingsContext) => P;

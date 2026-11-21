@@ -6,29 +6,6 @@ import (
 	"waylight/internal/shared/kernel"
 )
 
-// MobileSize is the size of a widget on the phone's home screen grid of
-// four columns (#585). The empty size keeps the single-column layout: full
-// width, height from Rows.
-type MobileSize string
-
-// The sizes of the phone grid, in cells of four columns.
-const (
-	SizeAuto   MobileSize = ""
-	SizeSmall  MobileSize = "small"  // 2 × 2
-	SizeMedium MobileSize = "medium" // 4 × 2
-	SizeLarge  MobileSize = "large"  // 4 × 4
-	SizeStrip  MobileSize = "strip"  // 4 × 1
-)
-
-// Valid reports whether s is one of the sizes or empty.
-func (s MobileSize) Valid() bool {
-	switch s {
-	case SizeAuto, SizeSmall, SizeMedium, SizeLarge, SizeStrip:
-		return true
-	}
-	return false
-}
-
 // MobileEntry places one widget in the phone layout (#92).
 type MobileEntry struct {
 	WidgetID string
@@ -38,7 +15,7 @@ type MobileEntry struct {
 	// Size is empty.
 	Rows int
 	// Size places the widget on the phone grid; empty means full width.
-	Size MobileSize
+	Size Size
 }
 
 // MobileLayout is the phone layout of a tab: widgets in reading order.

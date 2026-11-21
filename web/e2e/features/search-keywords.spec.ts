@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { account, password } from '../support';
+import { password, openSettings } from '../support';
 
 test('own keywords are made in the settings or from a result and open first (#478)', async ({ page }) => {
   await page.goto('/');
@@ -8,8 +8,7 @@ test('own keywords are made in the settings or from a result and open first (#47
   await expect(page.getByTestId('dashboard')).toBeVisible();
 
   // A keyword for a search, made in the settings.
-  await account(page, 'Settings');
-  await page.getByRole('button', { name: 'Search', exact: true }).click();
+  await openSettings(page, 'Dashboard & widgets', 'Search');
   await expect(page.getByRole('heading', { name: 'Own keywords' })).toBeVisible();
   await page.getByRole('textbox', { name: 'Own keyword' }).fill('Merk');
   await page.getByRole('combobox', { name: 'Opens' }).selectOption('query');
