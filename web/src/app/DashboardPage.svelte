@@ -7,6 +7,7 @@
   import { definitionFor, iconFor, widgetDefinitions } from './widgets';
   import { lazy } from './widgetKit';
   import { useOpenSettings } from '../shared/ui/settingsLink';
+  import { compactText } from '../features/compact/domain/compact';
   import { categoryShown, type StartProfile } from '../features/appearance/domain/appearance';
 
   /** Props of the dashboard page. */
@@ -101,6 +102,30 @@
     return definitionFor(widget.kind)?.compact?.(widget.config);
   }
 
+  // The attention line and the system summary load with the first tab that
+  // shows them, not with the page (#593).
+  const loadAttentionLine = () => import('../features/attention/ui/AttentionLine.svelte');
+  const loadSystemSummary = () => import('../features/compact/ui/SystemSummary.svelte');
+
+  /** One source per module: the services and status overview widgets share theirs. */
+  function statusSources(widgets: Widget[]): { widgetId: string; module: string; title: string }[] {
+    const seen = new Set<string>();
+    const out: { widgetId: string; module: string; title: string }[] = [];
+    for (const w of widgets) {
+      const module = compactModule(w);
+      if (!module || seen.has(module)) continue;
+      seen.add(module);
+      out.push({ widgetId: w.id, module, title: definitionFor(w.kind)?.type.title ?? w.kind });
+    }
+    return out;
+  }
+
+  /** The attention line reads compact states through this port; it knows no compact feature. */
+  async function sourceState(module: string): Promise<{ level: string; text: string }> {
+    const s = await container.compact.state(module);
+    return { level: s.level, text: compactText(s.title) + (s.detail ? ` · ${compactText(s.detail)}` : '') };
+  }
+
   // Notifications are set up by admins in the settings (#594).
   const openSettings = useOpenSettings();
   function notifyAction(widget: Widget): (() => void) | undefined {
@@ -135,6 +160,7 @@
   hasCompact={(widget) => compactModule(widget) !== undefined}
   detailPanel={!container.auth.kiosk}
   {notifyAction}
+  statusWidget={(widget) => !!definitionFor(widget.kind)?.alerts && compactModule(widget) !== undefined}
   compactExample={container.localMode ? undefined : (kind) => definitionFor(kind)?.compactExample?.()}
 >
   {#snippet content(widget: Widget)}
@@ -146,6 +172,33 @@
         scheduler={container.refresh}
         label={def.type.title}
       />
+    {/if}
+  {/snippet}
+  {#snippet overview(o: {
+    tab: Tab;
+    status: Widget[];
+    collapsed: boolean;
+    toggle: () => void;
+    view: (widgetId: string) => void;
+  })}
+    {@const sources = statusSources(o.status)}
+    <!-- Also without status widgets: connections that stopped working (#599) belong here too. -->
+    {#if !container.localMode}
+      {#await loadAttentionLine() then { default: AttentionLine }}
+        <AttentionLine
+          attention={container.attention}
+          {sourceState}
+          tabId={o.tab.id}
+          {sources}
+          onview={o.view}
+        />
+      {/await}
+    {/if}
+    <!-- One status widget needs no summary; two or more fold into one line. -->
+    {#if sources.length > 1}
+      {#await loadSystemSummary() then { default: SystemSummary }}
+        <SystemSummary compact={container.compact} {sources} collapsed={o.collapsed} ontoggle={o.toggle} />
+      {/await}
     {/if}
   {/snippet}
   {#snippet compact(widget: Widget, opts: { strip: boolean })}

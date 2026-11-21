@@ -80,6 +80,23 @@
     notifyAction?: (widget: Widget) => (() => void) | undefined;
     /** Example of a kind's compact view for the size previews of the picker (#596). */
     compactExample?: (kind: string) => string | undefined;
+    /** Whether a widget watches the system (services, backups, drives; #593). */
+    statusWidget?: (widget: Widget) => boolean;
+    /**
+     * Lines above the grid (#593): the attention line and the system
+     * summary. `status` are the tab's status widgets, `collapsed` whether
+     * they are folded into the summary, `view` shows a widget.
+     */
+    overview?: Snippet<[Overview]>;
+  }
+
+  /** What the overview lines above the grid get. */
+  interface Overview {
+    tab: Tab;
+    status: Widget[];
+    collapsed: boolean;
+    toggle: () => void;
+    view: (widgetId: string) => void;
   }
   let {
     uc,
@@ -101,7 +118,39 @@
     detailPanel = true,
     notifyAction = () => undefined,
     compactExample,
+    statusWidget = () => false,
+    overview,
   }: Props = $props();
+
+  // Tabs whose status widgets are folded into the system summary (#593).
+  // A per-browser view choice, like the active tab, so it lives in storage.
+  const COLLAPSED_KEY = 'waylight.collapsedStatus';
+  const collapsedTabs = new SvelteSet<string>(readCollapsed());
+  function readCollapsed(): string[] {
+    try {
+      const ids: unknown = JSON.parse(localStorage.getItem(COLLAPSED_KEY) ?? '[]');
+      return Array.isArray(ids) ? ids.filter((id): id is string => typeof id === 'string') : [];
+    } catch {
+      return [];
+    }
+  }
+  function toggleCollapsed(tabId: string) {
+    if (collapsedTabs.has(tabId)) collapsedTabs.delete(tabId);
+    else collapsedTabs.add(tabId);
+    try {
+      localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsedTabs]));
+    } catch {
+      // storage may be unavailable (private mode); the choice is just not remembered
+    }
+  }
+
+  /** Shows a widget from the overview: unfolds the summary first if it hides it. */
+  async function viewWidget(tab: Tab, widgetId: string) {
+    const widget = tab.widgets.find((w) => w.id === widgetId);
+    if (widget && statusWidget(widget) && collapsedTabs.has(tab.id)) toggleCollapsed(tab.id);
+    await tick();
+    highlightWidget(widgetId, true);
+  }
 
   // The widget whose full view the detail panel shows, and the tile that opened it.
   let detail = $state<{ widget: Widget; opener: HTMLElement } | null>(null);
@@ -548,7 +597,19 @@
   {:else if editing}<p class="edit-hint">{t('dashboard.edit_mode_hint')}</p>{/if}
 
   {#if active}
-    {@const visible = active.widgets.filter((w) => available.has(w.kind))}
+    {@const status = active.widgets.filter((w) => available.has(w.kind) && statusWidget(w))}
+    {@const folded = collapsedTabs.has(active.id) && !editing && status.length > 0}
+    {@const visible = active.widgets.filter((w) => available.has(w.kind) && !(folded && statusWidget(w)))}
+    {#if overview && !editing}
+      {@const tab = active}
+      {@render overview({
+        tab,
+        status,
+        collapsed: folded,
+        toggle: () => toggleCollapsed(tab.id),
+        view: (id) => viewWidget(tab, id),
+      })}
+    {/if}
     {#snippet frame(
       widget: Widget,
       handle: { onpointerdown: (e: PointerEvent) => void },
@@ -604,7 +665,7 @@
         {/snippet}
       </Grid>
     {/if}
-    {#if visible.length === 0 && loaded}
+    {#if visible.length === 0 && !folded && loaded}
       <p class="empty muted">
         {t(editingTab ? 'dashboard.empty_tab_editing' : 'dashboard.empty_tab_view')}
         {#if !editing && onedit && active.mine}
