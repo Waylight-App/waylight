@@ -4,7 +4,7 @@
 // source: dto.go
 
 /**
- * ConnectionInputDTO is the body of POST /api/connections.
+ * ConnectionInputDTO is the body of POST /api/integrations/connections.
  */
 export interface ConnectionInputDTO {
   service: string;
@@ -13,7 +13,7 @@ export interface ConnectionInputDTO {
   credential: { [key: string]: string};
 }
 /**
- * ConnectionChangeDTO is the body of PUT /api/connections/{id}; a missing
+ * ConnectionChangeDTO is the body of PUT /api/integrations/connections/{id}; a missing
  * credential keeps the stored one while the address stays the same.
  */
 export interface ConnectionChangeDTO {
@@ -22,7 +22,7 @@ export interface ConnectionChangeDTO {
   credential?: { [key: string]: string};
 }
 /**
- * CredentialDTO is the body of PUT /api/connections/{id}/credential.
+ * CredentialDTO is the body of PUT /api/integrations/connections/{id}/credential.
  */
 export interface CredentialDTO {
   credential: { [key: string]: string};

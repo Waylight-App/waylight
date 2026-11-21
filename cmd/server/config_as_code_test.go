@@ -49,7 +49,7 @@ func TestConfigAsCode(t *testing.T) {
 	if !bytes.Contains(first, []byte("- name: Home")) {
 		t.Fatalf("no tab in the export:\n%s", first)
 	}
-	for _, want := range []string{"$schema=", "version: 1", "appearance:", "search:", "services:", "connections:", "bookmarks:", "dashboard:"} {
+	for _, want := range []string{"$schema=", "version: 1", "appearance:", "search:", "services:", "integrations:", "bookmarks:", "dashboard:"} {
 		if !bytes.Contains(first, []byte(want)) {
 			t.Fatalf("export lacks %q:\n%s", want, first)
 		}

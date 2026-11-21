@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"waylight/internal/modules/connections/usecase"
+	"waylight/internal/modules/integrations/usecase"
 )
 
 type fakeUC struct {
@@ -29,7 +29,7 @@ func (f fakeUC) Remove(_ context.Context, _ string, confirmed bool) error {
 func TestAddNeverEchoesTheCredential(t *testing.T) {
 	rec := httptest.NewRecorder()
 	body := `{"service":"immich","name":"Home","url":"http://h","credential":{"apiKey":"very-secret"}}`
-	NewHandlers(fakeUC{}).Add(rec, httptest.NewRequest(http.MethodPost, "/api/connections", strings.NewReader(body)))
+	NewHandlers(fakeUC{}).Add(rec, httptest.NewRequest(http.MethodPost, "/api/integrations/connections", strings.NewReader(body)))
 	if rec.Code != http.StatusCreated || strings.Contains(rec.Body.String(), "very-secret") {
 		t.Fatalf("%d %s", rec.Code, rec.Body)
 	}
@@ -44,7 +44,7 @@ func TestRemoveConfirm(t *testing.T) {
 	h := NewHandlers(fakeUC{confirmed: &confirmed})
 	for q, want := range map[string]bool{"": false, "?confirm=true": true} {
 		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodDelete, "/api/connections/1"+q, nil)
+		req := httptest.NewRequest(http.MethodDelete, "/api/integrations/connections/1"+q, nil)
 		req.SetPathValue("id", "1")
 		h.Remove(rec, req)
 		if rec.Code != http.StatusNoContent || confirmed != want {

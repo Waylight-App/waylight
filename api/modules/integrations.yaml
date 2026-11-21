@@ -1,11 +1,11 @@
-# OpenAPI fragment of the connections module (#610).
+# OpenAPI fragment of the integrations module (#610).
 tags:
-  - name: connections
+  - name: integrations
 
 paths:
-  /api/connections:
+  /api/integrations/connections:
     get:
-      tags: [connections]
+      tags: [integrations]
       summary: "Named connections of the instance (admins only), each with the widgets that name it in their settings (connectionId); credentials are never returned, only which fields are set"
       parameters:
         - { name: service, in: query, required: false, schema: { type: string }, description: Only connections of this service, e.g. immich }
@@ -13,7 +13,7 @@ paths:
         "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Connection" } } } } }
         "403": { description: Admins only, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
     post:
-      tags: [connections]
+      tags: [integrations]
       summary: Save a connection (admins only, at most 100, names unique per service)
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ConnectionInput" } } } }
@@ -22,9 +22,9 @@ paths:
         "403": { description: Admins only, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
         "409": { description: "Name taken, or the connection is in use", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
         "422": { $ref: "#/components/responses/Invalid" }
-  /api/connections/{id}:
+  /api/integrations/connections/{id}:
     put:
-      tags: [connections]
+      tags: [integrations]
       summary: "Rename or move a connection; a new address needs the credential again"
       security: [{ session: [], csrf: [] }]
       parameters: [{ $ref: "#/components/parameters/id" }]
@@ -36,7 +36,7 @@ paths:
         "409": { description: "Name taken, or the connection is in use", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
         "422": { $ref: "#/components/responses/Invalid" }
     delete:
-      tags: [connections]
+      tags: [integrations]
       summary: "Remove a connection; one that widgets use answers 409 until confirm=true"
       security: [{ session: [], csrf: [] }]
       parameters:
@@ -47,9 +47,9 @@ paths:
         "403": { description: Admins only, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { description: "Name taken, or the connection is in use", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
-  /api/connections/{id}/credential:
+  /api/integrations/connections/{id}/credential:
     put:
-      tags: [connections]
+      tags: [integrations]
       summary: "Replace the credential of a connection; stays available while config as code manages the section"
       security: [{ session: [], csrf: [] }]
       parameters: [{ $ref: "#/components/parameters/id" }]

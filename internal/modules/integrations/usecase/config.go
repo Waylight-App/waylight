@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"slices"
 
-	"waylight/internal/modules/connections/domain"
+	"waylight/internal/modules/integrations/domain"
 	"waylight/internal/shared/kernel"
 )
 

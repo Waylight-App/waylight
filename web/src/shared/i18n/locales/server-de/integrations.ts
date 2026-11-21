@@ -1,7 +1,7 @@
-import type { ServerMessageKey } from '../../../api-client/generated/server-messages/connections';
+import type { ServerMessageKey } from '../../../api-client/generated/server-messages/integrations';
 
 /**
- * German translations of the backend error messages of `connections` (#102, #610).
+ * German translations of the backend error messages of `integrations` (#102, #610).
  * The keys come from the generated catalogue (run `make generate` first); the
  * type makes a missing translation a compile error.
  */

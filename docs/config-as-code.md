@@ -11,7 +11,7 @@ The file has six sections. Each one belongs to a module and is written in the or
 | `appearance` | Colour scheme, accent colour, background image, language, greeting, launcher, profile and custom CSS |
 | `search` | Web search provider, whether results open in a new tab, the quick capture prefixes, your `!` shortcuts and your own keywords |
 | `services` | The service tiles you created yourself, in display order |
-| `connections` | Named connections to a service (service, name and address), sorted by service and name; their credentials are entered in the settings |
+| `integrations` | Named connections to a service (service, name and address), sorted by service and name; their credentials are entered in the settings |
 | `bookmarks` | Bookmarks without a folder, then each folder with its bookmarks |
 | `dashboard` | Tabs with their background, default-tab rules and widgets, including each widget's settings and its place in the phone layout |
 

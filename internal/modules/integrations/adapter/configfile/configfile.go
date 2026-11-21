@@ -4,7 +4,7 @@
 // Ring: Interface Adapters.
 package configfile
 
-import "waylight/internal/modules/connections/usecase"
+import "waylight/internal/modules/integrations/usecase"
 
 // Connection is one connection by service and name.
 type Connection struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"waylight/internal/modules/connections/domain"
+	"waylight/internal/modules/integrations/domain"
 	"waylight/internal/shared/kernel"
 )
 

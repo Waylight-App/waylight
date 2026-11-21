@@ -1,6 +1,6 @@
 package controller
 
-// ConnectionInputDTO is the body of POST /api/connections.
+// ConnectionInputDTO is the body of POST /api/integrations/connections.
 type ConnectionInputDTO struct {
 	Service    string            `json:"service"`
 	Name       string            `json:"name"`
@@ -8,7 +8,7 @@ type ConnectionInputDTO struct {
 	Credential map[string]string `json:"credential"`
 }
 
-// ConnectionChangeDTO is the body of PUT /api/connections/{id}; a missing
+// ConnectionChangeDTO is the body of PUT /api/integrations/connections/{id}; a missing
 // credential keeps the stored one while the address stays the same.
 type ConnectionChangeDTO struct {
 	Name       string            `json:"name"`
@@ -16,7 +16,7 @@ type ConnectionChangeDTO struct {
 	Credential map[string]string `json:"credential,omitempty"`
 }
 
-// CredentialDTO is the body of PUT /api/connections/{id}/credential.
+// CredentialDTO is the body of PUT /api/integrations/connections/{id}/credential.
 type CredentialDTO struct {
 	Credential map[string]string `json:"credential"`
 }

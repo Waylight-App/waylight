@@ -3,7 +3,7 @@
 // Ring: Interface Adapters.
 package presenter
 
-import "waylight/internal/modules/connections/usecase"
+import "waylight/internal/modules/integrations/usecase"
 
 // UseDTO is a widget whose settings name a connection.
 type UseDTO struct {

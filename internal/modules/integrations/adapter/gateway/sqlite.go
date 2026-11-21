@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"io/fs"
 
-	"waylight/internal/modules/connections/domain"
+	"waylight/internal/modules/integrations/domain"
 	"waylight/internal/shared/sqlutil"
 )
 
@@ -75,7 +75,7 @@ func (r *Repository) encrypt(c domain.Connection) (string, error) {
 
 // List implements usecase.Repository.
 func (r *Repository) List(ctx context.Context) ([]domain.Connection, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM connections_connections ORDER BY service, name COLLATE NOCASE`)
+	rows, err := r.db.QueryContext(ctx, `SELECT `+columns+` FROM integrations_connections ORDER BY service, name COLLATE NOCASE`)
 	if err != nil {
 		return nil, fmt.Errorf("query connections: %w", err)
 	}
@@ -93,7 +93,7 @@ func (r *Repository) List(ctx context.Context) ([]domain.Connection, error) {
 
 // Get implements usecase.Repository.
 func (r *Repository) Get(ctx context.Context, id string) (domain.Connection, error) {
-	c, err := r.scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM connections_connections WHERE id = ?`, id))
+	c, err := r.scan(r.db.QueryRowContext(ctx, `SELECT `+columns+` FROM integrations_connections WHERE id = ?`, id))
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Connection{}, domain.ErrNotFound
 	}
@@ -104,7 +104,7 @@ func (r *Repository) Get(ctx context.Context, id string) (domain.Connection, err
 }
 
 // upsert keeps created_at of an existing row.
-const upsert = `INSERT INTO connections_connections (` + columns + `) VALUES (?, ?, ?, ?, ?, ?)
+const upsert = `INSERT INTO integrations_connections (` + columns + `) VALUES (?, ?, ?, ?, ?, ?)
 	ON CONFLICT (id) DO UPDATE SET service = excluded.service, name = excluded.name, url = excluded.url,
 		credential_encrypted = excluded.credential_encrypted`
 
@@ -130,7 +130,7 @@ func (r *Repository) Save(ctx context.Context, c domain.Connection) error {
 
 // Delete implements usecase.Repository; an unknown ID is no error.
 func (r *Repository) Delete(ctx context.Context, id string) error {
-	if _, err := r.db.ExecContext(ctx, `DELETE FROM connections_connections WHERE id = ?`, id); err != nil {
+	if _, err := r.db.ExecContext(ctx, `DELETE FROM integrations_connections WHERE id = ?`, id); err != nil {
 		return fmt.Errorf("delete connection: %w", err)
 	}
 	return nil
@@ -145,7 +145,7 @@ func (r *Repository) ReplaceAll(ctx context.Context, list []domain.Connection) e
 		return fmt.Errorf("begin: %w", err)
 	}
 	defer func() { _ = tx.Rollback() }()
-	if _, err := tx.ExecContext(ctx, `DELETE FROM connections_connections`); err != nil {
+	if _, err := tx.ExecContext(ctx, `DELETE FROM integrations_connections`); err != nil {
 		return fmt.Errorf("delete connections: %w", err)
 	}
 	for _, c := range list {

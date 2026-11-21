@@ -1,4 +1,4 @@
-package connections
+package integrations
 
 import (
 	"context"
@@ -6,10 +6,10 @@ import (
 	"io/fs"
 
 	"waylight/internal/modules"
-	"waylight/internal/modules/connections/adapter/configfile"
-	"waylight/internal/modules/connections/adapter/controller"
-	"waylight/internal/modules/connections/adapter/gateway"
-	"waylight/internal/modules/connections/usecase"
+	"waylight/internal/modules/integrations/adapter/configfile"
+	"waylight/internal/modules/integrations/adapter/controller"
+	"waylight/internal/modules/integrations/adapter/gateway"
+	"waylight/internal/modules/integrations/usecase"
 	"waylight/internal/shared/kernel"
 )
 
@@ -17,7 +17,7 @@ import (
 // connection can say which widgets use it.
 type Widgets func(ctx context.Context) ([]usecase.Widget, error)
 
-// Module wires the Connections rings and implements modules.Module and
+// Module wires the Integrations rings and implements modules.Module and
 // modules.Configurable. It is not Portable: a data export never carries
 // credentials, and connections without them are of no use.
 type Module struct {
@@ -26,7 +26,7 @@ type Module struct {
 	config   usecase.Config
 }
 
-// New builds the connections module (#610); cipher encrypts credentials.
+// New builds the integrations module (#610); cipher encrypts credentials.
 func New(db *sql.DB, cipher gateway.Cipher, widgets Widgets, clock kernel.Clock, ids kernel.IDGenerator) *Module {
 	repo := gateway.NewRepository(db, cipher)
 	uc := usecase.New(usecase.Deps{Repo: repo, Widgets: widgets, Clock: clock, IDs: ids})
@@ -34,7 +34,7 @@ func New(db *sql.DB, cipher gateway.Cipher, widgets Widgets, clock kernel.Clock,
 }
 
 // Name implements modules.Module.
-func (m *Module) Name() string { return "connections" }
+func (m *Module) Name() string { return "integrations" }
 
 // Migrations implements modules.Module.
 func (m *Module) Migrations() fs.FS { return gateway.Migrations() }
@@ -44,15 +44,15 @@ func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
 
 // RegisterRoutes implements modules.Module.
 func (m *Module) RegisterRoutes(r modules.Router) {
-	r.Protected("GET /api/connections", m.handlers.List)
-	r.Protected("POST /api/connections", m.handlers.Add)
-	r.Protected("PUT /api/connections/{id}", m.handlers.Update)
-	r.Protected("PUT /api/connections/{id}/credential", m.handlers.ReplaceCredential)
-	r.Protected("DELETE /api/connections/{id}", m.handlers.Remove)
+	r.Protected("GET /api/integrations/connections", m.handlers.List)
+	r.Protected("POST /api/integrations/connections", m.handlers.Add)
+	r.Protected("PUT /api/integrations/connections/{id}", m.handlers.Update)
+	r.Protected("PUT /api/integrations/connections/{id}/credential", m.handlers.ReplaceCredential)
+	r.Protected("DELETE /api/integrations/connections/{id}", m.handlers.Remove)
 }
 
 // ConfigSection implements modules.Configurable.
-func (m *Module) ConfigSection() string { return "connections" }
+func (m *Module) ConfigSection() string { return "integrations" }
 
 // ExportConfig implements modules.Configurable.
 func (m *Module) ExportConfig(ctx context.Context) (any, error) {
@@ -67,9 +67,9 @@ func (m *Module) ExportConfig(ctx context.Context) (any, error) {
 // not listed: the file names connections, the credential is entered here.
 func (m *Module) ConfigRoutes() []string {
 	return []string{
-		"POST /api/connections",
-		"PUT /api/connections/{id}",
-		"DELETE /api/connections/{id}",
+		"POST /api/integrations/connections",
+		"PUT /api/integrations/connections/{id}",
+		"DELETE /api/integrations/connections/{id}",
 	}
 }
 

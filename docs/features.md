@@ -33,7 +33,7 @@ modules in detail.
 | --- | --- |
 | Weather (`weather`) | Forecast from Open-Meteo, no API key needed. In Germany also official DWD warnings, pollen forecast, UV index and a rain radar widget. |
 | Places (`places`) | Places entered once by address search or browser location and chosen by the weather, rain radar and fuel price settings; Settings shows which widgets use each one. [Details](modules/places.md) |
-| Connections (`connections`) | Named connections to a service with an encrypted credential, saved once by an admin and later chosen by every widget of that service; lists which widgets use each one. [Details](modules/connections.md) |
+| Integrations (`integrations`) | Named connections to a service with an encrypted credential, saved once by an admin and later chosen by every widget of that service; lists which widgets use each one. [Details](modules/integrations.md) |
 | Clock (`clock`) | Time and date, optionally in another time zone. |
 | Daily briefing (`briefing`) | Weather warnings, failures since last evening, offline services, due to-dos, appointments and waste collection in one widget, optionally pushed at a set time each morning. |
 | Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export, and a built-in catalogue of news sources by topic and language (Settings → Feeds → Browse catalogue; no outside request until you subscribe; [format](https://github.com/Waylight-App/waylight/blob/main/web/src/features/rss/catalogue/README.md)). |
