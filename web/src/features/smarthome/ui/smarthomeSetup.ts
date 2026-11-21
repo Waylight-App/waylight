@@ -7,6 +7,15 @@ export function smarthomeSetup(
   smarthome: SmarthomeUseCases,
   discover?: () => Promise<FoundService[]>,
 ): SetupDescriptor {
+  const preview = async () => {
+    const entities = await smarthome.entities();
+    return {
+      lines: [
+        t('smarthome.setup_entities', { n: entities.length }),
+        ...entities.slice(0, 3).map((e) => `${e.name}: ${e.state}${e.unit ? ` ${e.unit}` : ''}`),
+      ],
+    };
+  };
   return {
     discover,
     service: 'Home Assistant',
@@ -27,15 +36,18 @@ export function smarthomeSetup(
       'smarthome.setup_step_copy',
     ],
     credentialPage: (address) => (address ? `${address}/profile/security` : null),
+    // OAuth with Waylight's address as client ID (#654); needs PUBLIC_URL,
+    // otherwise the server says so and the assistant asks for a token.
+    signIn: {
+      service: 'homeassistant',
+      async check(_values, signIn) {
+        await smarthome.saveSignIn(signIn);
+        return preview();
+      },
+    },
     async check(values) {
       await smarthome.saveSettings(values['url'] ?? '', values['token'] ?? '');
-      const entities = await smarthome.entities();
-      return {
-        lines: [
-          t('smarthome.setup_entities', { n: entities.length }),
-          ...entities.slice(0, 3).map((e) => `${e.name}: ${e.state}${e.unit ? ` ${e.unit}` : ''}`),
-        ],
-      };
+      return preview();
     },
   };
 }

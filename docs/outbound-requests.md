@@ -21,9 +21,9 @@ stored encrypted.
 | RSS, Atom and JSON feeds | Every 30 minutes. |
 | AdGuard Home | Every minute. |
 | Pi-hole | `/api/auth` once per session, then statistics and the blocking state every minute. |
-| Nextcloud | Every five minutes. |
+| Nextcloud | Every five minutes. While you sign in from the setup assistant, `/index.php/login/v2/poll` at most every two seconds for up to ten minutes. |
 | FRITZ!Box | Every 15 seconds; the call list only when a calls widget exists. |
-| Home Assistant | `/api/states` while a smart home widget is open, at most every ten seconds. |
+| Home Assistant | `/api/states` while a smart home widget is open, at most every ten seconds. After signing in from the setup assistant, `/auth/token` to renew the access token shortly before it expires (every 30 minutes while the widget is in use). |
 | Proxmox VE | `/api2/json/cluster/resources` every 30 seconds. |
 | Sonarr, Radarr, Prowlarr | While an arr widget is open, at most once a minute. |
 | Jellyfin, Plex | While a media widget is open, at most every 15 seconds. |

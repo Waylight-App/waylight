@@ -241,6 +241,42 @@ When the check fails, the message says why and what to try: the key was not
 accepted, nothing answers at the address, something other than the expected
 service answers there, or the certificate is not trusted.
 
+### Signing in instead of pasting a key
+
+For Nextcloud (the Nextcloud widget, the calendar and a shopping list on
+Nextcloud) and for Home Assistant the credential step starts with **Sign in
+with Nextcloud** or **Sign in with Home Assistant**. Pressing it opens the
+service's sign-in page in a new window. You sign in there and allow access,
+then come back: the assistant says when it has the access and checks the
+connection as usual. Nothing has to be copied, and the key never passes
+through your browser. *Paste a key instead* switches to the steps above at
+any time, and the assistant switches by itself when signing in cannot start.
+
+Nextcloud uses its [Login Flow v2](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/).
+Waylight starts the flow on the Nextcloud address you entered and asks that
+address every two seconds whether you have granted access, for at most ten
+minutes or until you close the assistant. Nextcloud then creates an app
+password named *Waylight*, which you can revoke under *Settings → Security →
+Devices & sessions*. For a shopping list the Nextcloud address is taken from
+the list address (the part before `/remote.php/`); other CalDAV servers keep
+the pasted password.
+
+Home Assistant uses OAuth with Waylight's own address as the client ID, so
+nothing has to be registered in Home Assistant. That address comes from
+`PUBLIC_URL`: Home Assistant sends your browser back to
+`PUBLIC_URL/api/setup/signin/oauth/callback`, so the browser that signs in
+must be able to open it. Without `PUBLIC_URL` the assistant explains this
+and asks for a long-lived access token. After signing in, Waylight keeps a
+refresh token, encrypted like any other key, and renews the short-lived
+access token by itself. Home Assistant lists the sign-in under your profile
+as a refresh token for Waylight's address; deleting it there disconnects
+the widget until you set it up again.
+
+A sign-in lives in memory only, for ten minutes, and belongs to the account
+that started it. The link back from Home Assistant carries a random value
+that works once; a sign-in that was not finished, or that another account
+started, cannot be used.
+
 The assistant exists for Immich, Home Assistant, the Nextcloud calendar,
 Nextcloud, Grafana, Proxmox VE, Sonarr, Radarr and Prowlarr, Jellyfin and
 Plex, AdGuard Home, Pi-hole, Speedtest Tracker, the FRITZ!Box, fuel prices

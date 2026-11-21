@@ -32,9 +32,10 @@ type Module struct {
 
 // New builds the calendar module. Floating event times are interpreted in loc.
 // publicURL (PUBLIC_URL) enables signing in to Google and Microsoft (#282);
-// nil leaves that unavailable.
+// nil leaves that unavailable. signIns (may be nil) hands over Nextcloud
+// sign-ins of the setup assistant (#654).
 func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator, loc *time.Location, publicURL *url.URL,
-	sharing *Sharing) *Module {
+	sharing *Sharing, signIns kernel.SignIns) *Module {
 	caldav := gateway.NewCalDAV(client, loc)
 	subs := gateway.NewSubscriptionRepository(db, cipher)
 	if sharing == nil {
@@ -48,6 +49,7 @@ func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Cl
 		Subscriptions: subs, Feeds: gateway.NewFeed(client, loc, clock.Now),
 		IDs: ids, Clock: clock,
 		Accounts: accounts, API: gateway.NewAccountAPI(client), OAuth: newOAuthPort(client, publicURL, clock.Now),
+		SignIns: signIns,
 	})
 	return &Module{uc: uc, handlers: controller.NewHandlers(uc), subs: controller.NewSubscriptionHandlers(uc), accounts: controller.NewAccountHandlers(uc), clock: clock, loc: loc}
 }

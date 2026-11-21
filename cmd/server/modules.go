@@ -46,6 +46,7 @@ import (
 	"waylight/internal/modules/search"
 	"waylight/internal/modules/services"
 	servicesusecase "waylight/internal/modules/services/usecase"
+	"waylight/internal/modules/setupsignin"
 	"waylight/internal/modules/shopping"
 	"waylight/internal/modules/smarthome"
 	"waylight/internal/modules/speedtest"
@@ -150,6 +151,16 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		containers = containerLabels{docker: dockerModule}
 	}
 
+	// Sign-ins of the setup assistant (#654) are redeemed by the modules
+	// below, so the module is built first; switched off, they offer
+	// pasted keys only.
+	var signIns kernel.SignIns
+	if cfg.ModuleEnabled("setupsignin") {
+		m := setupsignin.New(out.integration, cfg.PublicURL, clk)
+		registry.Register(m)
+		signIns = m.SignIns()
+	}
+
 	// Team calendar (#299): the calendar adds calendars others shared only
 	// while ee/ switches it on; without ee/ nothing ever does.
 	calendarSharing := calendar.NewSharing()
@@ -194,7 +205,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		{"adguard", func() modules.Module {
 			return adguard.New(adguard.Config{DB: db, Cipher: secrets, Client: out.integration, Pausable: cfg.DNSPauseProviders, Audit: authModule, Clock: clk})
 		}},
-		{"nextcloud", func() modules.Module { return nextcloud.New(db, secrets, out.integration, clk) }},
+		{"nextcloud", func() modules.Module { return nextcloud.New(db, secrets, out.integration, clk, signIns) }},
 		{"parcels", func() modules.Module {
 			return parcels.New(db, secrets, client, httpclient.IntegrationDialContext, clk, ids)
 		}},
@@ -210,7 +221,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 			if cfg.PublicURL != nil {
 				host = cfg.PublicURL.Hostname()
 			}
-			m := shopping.New(db, secrets, out.integration, ids, clk, host)
+			m := shopping.New(db, secrets, out.integration, ids, clk, host, signIns)
 			authModule.OnAccountDeleted(func(ctx context.Context, accountID string) {
 				if err := m.ForgetAccount(ctx, accountID); err != nil {
 					log.Warn("shopping: remove a deleted account's lists", "err", err)
@@ -229,7 +240,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		}},
 		{"speedtest", func() modules.Module { return speedtest.New(db, secrets, out.integration, sink, clk) }},
 		{"calendar", func() modules.Module {
-			return calendar.New(db, secrets, out.integration, clk, ids, time.Local, cfg.PublicURL, calendarSharing)
+			return calendar.New(db, secrets, out.integration, clk, ids, time.Local, cfg.PublicURL, calendarSharing, signIns)
 		}},
 		{"proxmox", func() modules.Module {
 			return proxmox.New(proxmox.Config{DB: db, Cipher: secrets, Client: out.integration, Pinned: out.pinned,
@@ -237,7 +248,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 		}},
 		{"smarthome", func() modules.Module {
 			return smarthome.New(smarthome.Config{DB: db, Cipher: secrets, Client: out.integration,
-				ActionEntities: cfg.SmartHomeActionsEntities, Clock: clk, Audit: authModule})
+				ActionEntities: cfg.SmartHomeActionsEntities, Clock: clk, Audit: authModule, SignIns: signIns})
 		}},
 		{"countdown", func() modules.Module { return countdown.New(db, clk, ids) }},
 		{"focus", func() modules.Module { return focus.New(db, clk, ids) }},

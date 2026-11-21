@@ -64,11 +64,11 @@ func (ids) NewID() string { return "x" }
 func TestShopping(t *testing.T) {
 	ctx := context.Background()
 	repo, store := &memRepo{}, &memStore{items: map[string]domain.Item{}}
-	uc := NewShopping(repo, store, ids{})
+	uc := NewShopping(repo, store, ids{}, nil)
 	if _, err := uc.List(ctx); !errors.Is(err, kernel.ErrNotFound) {
 		t.Fatal(err)
 	}
-	if _, err := uc.SaveSettings(ctx, "https://c/cal/shopping/", "me", "pw"); err != nil {
+	if _, err := uc.SaveSettings(ctx, SettingsInput{ListURL: "https://c/cal/shopping/", Username: "me", Password: "pw"}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := uc.Add(ctx, "  "); err == nil {

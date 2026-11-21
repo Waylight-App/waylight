@@ -4,6 +4,12 @@ import type { NextcloudUseCases } from '../usecase/nextcloudUseCases';
 
 /** The setup assistant of the Nextcloud widget (#618), as data. */
 export function nextcloudSetup(nextcloud: NextcloudUseCases): SetupDescriptor {
+  const preview = async () => {
+    const s = await nextcloud.status();
+    return {
+      lines: [t('nextcloud.setup_version', { version: s.version, percent: Math.round(s.quota.percent) })],
+    };
+  };
   return {
     service: 'Nextcloud',
     fields: [
@@ -30,12 +36,17 @@ export function nextcloudSetup(nextcloud: NextcloudUseCases): SetupDescriptor {
       'nextcloud.setup_step_copy',
     ],
     credentialPage: (address) => (address ? `${address}/index.php/settings/user/security` : null),
+    // Login Flow v2 (#654): Nextcloud creates the app password itself.
+    signIn: {
+      service: 'nextcloud',
+      async check(_values, signIn) {
+        await nextcloud.saveSignIn(signIn);
+        return preview();
+      },
+    },
     async check(values) {
       await nextcloud.saveSettings(values['url'] ?? '', values['username'] ?? '', values['password'] ?? '');
-      const s = await nextcloud.status();
-      return {
-        lines: [t('nextcloud.setup_version', { version: s.version, percent: Math.round(s.quota.percent) })],
-      };
+      return preview();
     },
   };
 }

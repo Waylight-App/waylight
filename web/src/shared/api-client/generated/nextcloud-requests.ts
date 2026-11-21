@@ -11,4 +11,9 @@ export interface SettingsInputDTO {
   url: string;
   username: string;
   appPassword: string;
+  /**
+   * SignIn is a finished sign-in of the setup assistant (#654); it
+   * replaces url, username and appPassword.
+   */
+  signIn?: string;
 }

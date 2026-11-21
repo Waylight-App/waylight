@@ -20,9 +20,10 @@ type SettingsView struct {
 }
 
 // SettingsInput is the input of SaveSettings; an empty app password keeps
-// the stored one.
+// the stored one. SignIn is a finished sign-in of the setup assistant
+// (#654) that replaces address, user name and app password.
 type SettingsInput struct {
-	URL, Username, AppPassword string
+	URL, Username, AppPassword, SignIn string
 }
 
 // StatusView is the cached status.
@@ -53,16 +54,18 @@ type StatusSource interface {
 }
 
 type nextcloud struct {
-	repo   SettingsRepository
-	source StatusSource
-	clock  kernel.Clock
-	mu     sync.RWMutex
-	cached *StatusView
+	repo    SettingsRepository
+	source  StatusSource
+	clock   kernel.Clock
+	signIns kernel.SignIns
+	mu      sync.RWMutex
+	cached  *StatusView
 }
 
-// NewNextcloud returns the Nextcloud use cases.
-func NewNextcloud(repo SettingsRepository, source StatusSource, clock kernel.Clock) Nextcloud {
-	return &nextcloud{repo: repo, source: source, clock: clock}
+// NewNextcloud returns the Nextcloud use cases; signIns (may be nil) hands
+// over sign-ins of the setup assistant.
+func NewNextcloud(repo SettingsRepository, source StatusSource, clock kernel.Clock, signIns kernel.SignIns) Nextcloud {
+	return &nextcloud{repo: repo, source: source, clock: clock, signIns: signIns}
 }
 
 // Settings implements Nextcloud.
@@ -79,6 +82,13 @@ func (uc *nextcloud) Settings(ctx context.Context) (SettingsView, error) {
 
 // SaveSettings implements Nextcloud; the connection is tested first.
 func (uc *nextcloud) SaveSettings(ctx context.Context, in SettingsInput) (SettingsView, error) {
+	if in.SignIn != "" {
+		g, err := kernel.RedeemSignIn(ctx, uc.signIns, in.SignIn, kernel.SignInNextcloud)
+		if err != nil {
+			return SettingsView{}, err
+		}
+		in = SettingsInput{URL: g.URL, Username: g.Username, AppPassword: g.Secret}
+	}
 	password := in.AppPassword
 	if password == "" {
 		if old, err := uc.repo.Load(ctx); err == nil {

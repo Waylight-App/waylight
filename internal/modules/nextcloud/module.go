@@ -25,9 +25,10 @@ type Module struct {
 	handlers *controller.Handlers
 }
 
-// New builds the Nextcloud module; cipher encrypts the app password.
-func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock) *Module {
-	uc := usecase.NewNextcloud(gateway.NewSettingsRepository(db, cipher), gateway.NewAPI(client), clock)
+// New builds the Nextcloud module; cipher encrypts the app password and
+// signIns (may be nil) hands over sign-ins of the setup assistant (#654).
+func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, signIns kernel.SignIns) *Module {
+	uc := usecase.NewNextcloud(gateway.NewSettingsRepository(db, cipher), gateway.NewAPI(client), clock, signIns)
 	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
 }
 

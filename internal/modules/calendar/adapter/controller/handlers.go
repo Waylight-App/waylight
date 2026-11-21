@@ -50,7 +50,7 @@ func (h *Handlers) Connect(w http.ResponseWriter, r *http.Request) {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
-	res, err := h.uc.Connect(r.Context(), usecase.ConnectInput{Server: dto.Server, Username: dto.Username, Password: dto.Password})
+	res, err := h.uc.Connect(r.Context(), usecase.ConnectInput{Server: dto.Server, Username: dto.Username, Password: dto.Password, SignIn: dto.SignIn})
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return

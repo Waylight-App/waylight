@@ -809,6 +809,14 @@ export const en = {
   'setup.done': 'Done',
   'setup.connect': 'Connect',
   'setup.found': '{service} found at {url}',
+  'setup.signin': 'Sign in with {service}',
+  'setup.signin_intro':
+    'Sign in with your {service} account in a new window. Waylight gets its own access there, so you do not have to copy a key.',
+  'setup.signin_waiting': 'Waiting for you to sign in in the new window…',
+  'setup.signin_checking': 'Signed in. Checking the connection…',
+  'setup.signin_reopen': 'Open the sign-in page again',
+  'setup.signin_manual': 'Paste a key instead',
+  'setup.signin_instead': 'Sign in with {service} instead',
   // Saved places in widget settings (#591).
   'places.saved_place': 'Saved place',
   'places.other_location': 'Another location…',

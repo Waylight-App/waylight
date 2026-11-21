@@ -3,7 +3,8 @@ import type { Entity, SmartHomeSettings } from '../domain/smarthome';
 /** Output port: smart home backend. */
 export interface SmartHomeGateway {
   settings(): Promise<SmartHomeSettings>;
-  saveSettings(url: string, token: string): Promise<SmartHomeSettings>;
+  /** signIn is a finished sign-in of the setup assistant (#654) that replaces the token. */
+  saveSettings(url: string, token: string, signIn?: string): Promise<SmartHomeSettings>;
   entities(): Promise<Entity[]>;
   states(ids: string[]): Promise<Entity[]>;
   act(id: string): Promise<void>;
@@ -20,6 +21,11 @@ export class SmarthomeUseCases {
   /** Tests and saves the connection; an empty token keeps the stored one. */
   saveSettings(url: string, token: string): Promise<SmartHomeSettings> {
     return this.gateway.saveSettings(url.trim(), token.trim());
+  }
+
+  /** Saves the connection of a finished sign-in of the setup assistant (#654). */
+  saveSignIn(signIn: string): Promise<SmartHomeSettings> {
+    return this.gateway.saveSettings('', '', signIn);
   }
 
   /** Every entity, for the widget's entity picker. */

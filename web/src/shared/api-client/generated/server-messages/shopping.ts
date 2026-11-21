@@ -7,6 +7,7 @@ export const serverMessages = {
   srv_67340dd03bbd3030: "Only the person who created the list can rename, share or delete it.",
   srv_77686a482211f04a: "The item does not exist (any more).",
   srv_7faea27f96c82f5f: "The item was changed in another app at the same time. Please try again.",
+  srv_f9c1324c8f48e5e6: "The list address is not on the Nextcloud you signed in to.",
   srv_b670eb0b48710065: "The list has 500 items; clear the ticked ones first.",
   srv_b112f7b441bebf0d: "The shopping list does not exist or is not shared with you.",
   srv_7d7ee048ea53fd65: "The shopping list is not configured yet.",

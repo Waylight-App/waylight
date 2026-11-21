@@ -34,7 +34,8 @@ export interface CalendarConnection {
 export interface CalendarGateway {
   settings(): Promise<CalendarSettings>;
   saveSettings(urls: string[], username: string, password: string): Promise<CalendarSettings>;
-  connect(server: string, username: string, password: string): Promise<CalendarConnection>;
+  /** signIn is a finished Nextcloud sign-in of the setup assistant (#654) that replaces all three. */
+  connect(server: string, username: string, password: string, signIn?: string): Promise<CalendarConnection>;
   events(days: number): Promise<Agenda>;
   range(from: Date, to: Date): Promise<Agenda>;
   create(input: {
@@ -84,6 +85,11 @@ export class CalendarUseCases {
   /** Finds, checks and saves the calendars of an account from its server address (#588). */
   connect(server: string, username: string, password: string): Promise<CalendarConnection> {
     return this.gateway.connect(server.trim(), username.trim(), password);
+  }
+
+  /** Connects with a finished Nextcloud sign-in of the setup assistant (#654). */
+  connectSignIn(signIn: string): Promise<CalendarConnection> {
+    return this.gateway.connect('', '', '', signIn);
   }
 
   events(days: number): Promise<Agenda> {

@@ -20,6 +20,11 @@ export interface ConnectInputDTO {
   server: string;
   username: string;
   password: string;
+  /**
+   * SignIn is a finished Nextcloud sign-in of the setup assistant
+   * (#654); it replaces server, username and password.
+   */
+  signIn?: string;
 }
 /**
  * NewEventDTO is the body of POST /api/calendar/events. Timed events use

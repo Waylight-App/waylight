@@ -37,7 +37,7 @@ func (clk) Now() time.Time { return time.Unix(0, 0) }
 func TestNextcloud(t *testing.T) {
 	ctx := context.Background()
 	repo, src := &memRepo{}, &fakeSource{}
-	uc := NewNextcloud(repo, src, clk{})
+	uc := NewNextcloud(repo, src, clk{}, nil)
 	if _, err := uc.Status(ctx); !errors.Is(err, kernel.ErrNotFound) {
 		t.Fatalf("unconfigured: %v", err)
 	}

@@ -6,6 +6,7 @@
 import { getContext, setContext } from 'svelte';
 import type { FullAutoFill } from 'svelte/elements';
 import type { MessageKey } from '../i18n';
+import type { SetupSignIn } from './signin';
 
 /** Which step of the assistant a field belongs to. */
 export type SetupStage = 'address' | 'credential';
@@ -62,6 +63,18 @@ export interface SetupDescriptor {
   check: (values: Record<string, string>) => Promise<SetupPreview>;
   /** Services of this kind found in the home network; optional (#590). */
   discover?: () => Promise<FoundService[]>;
+  /**
+   * Signing in with the service instead of pasting a key (#654); the steps
+   * and fields above stay as the fallback.
+   */
+  signIn?: SetupSignIn;
+}
+
+/** The address a sign-in starts from, or null when it cannot be offered. */
+export function signInAddress(d: SetupDescriptor, values: Record<string, string>): string | null {
+  if (!d.signIn) return null;
+  const address = d.signIn.address ? d.signIn.address(values) : addressOf(d, values);
+  return address ? address.trim().replace(/\/+$/, '') : null;
 }
 
 /** The value of the first address field, normalised for links. */
