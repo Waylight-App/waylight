@@ -49,7 +49,7 @@ func TestConfigAsCode(t *testing.T) {
 	if !bytes.Contains(first, []byte("- name: Home")) {
 		t.Fatalf("no tab in the export:\n%s", first)
 	}
-	for _, want := range []string{"$schema=", "version: 1", "appearance:", "search:", "services:", "bookmarks:", "dashboard:"} {
+	for _, want := range []string{"$schema=", "version: 1", "appearance:", "search:", "services:", "integrations:", "bookmarks:", "dashboard:"} {
 		if !bytes.Contains(first, []byte(want)) {
 			t.Fatalf("export lacks %q:\n%s", want, first)
 		}
@@ -60,7 +60,7 @@ func TestConfigAsCode(t *testing.T) {
 		Failed  map[string]string `json:"failed"`
 	}
 	_ = json.Unmarshal(body, &res)
-	if status != http.StatusOK || len(res.Applied) != 5 || len(res.Failed) != 0 {
+	if status != http.StatusOK || len(res.Applied) != 6 || len(res.Failed) != 0 {
 		t.Fatalf("re-import: %d %s", status, body)
 	}
 	if second := c.do(http.MethodGet, "/api/transfer/config", nil, http.StatusOK); !bytes.Equal(first, second) {
@@ -165,8 +165,8 @@ func TestConfigRoutesAreRegistered(t *testing.T) {
 			}
 		}
 	}
-	if found != 5 {
-		t.Fatalf("expected five configurable modules, found %d", found)
+	if found != 6 {
+		t.Fatalf("expected six configurable modules, found %d", found)
 	}
 }
 

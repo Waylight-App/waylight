@@ -16,7 +16,7 @@ const MaxConfigBytes = 2 << 20
 
 // SectionOrder is the order of the sections in an exported file and the
 // order in which an imported file is applied.
-var SectionOrder = []string{"appearance", "search", "services", "bookmarks", "dashboard"}
+var SectionOrder = []string{"appearance", "search", "services", "integrations", "bookmarks", "dashboard"}
 
 // CheckConfigVersion validates the version of a config file.
 func CheckConfigVersion(v int) error {

@@ -4,13 +4,14 @@ Waylight can write its settings into one readable file, `waylight.yaml`, and rea
 
 ## What the file contains
 
-The file has five sections. Each one belongs to a module and is written in the order below:
+The file has six sections. Each one belongs to a module and is written in the order below:
 
 | Section | Contents |
 |---|---|
 | `appearance` | Colour scheme, accent colour, background image, language, greeting, launcher, profile and custom CSS |
 | `search` | Web search provider, whether results open in a new tab, the quick capture prefixes, your `!` shortcuts and your own keywords |
 | `services` | The service tiles you created yourself, in display order |
+| `integrations` | Named connections to a service (service, name and address), sorted by service and name; their credentials are entered in the settings |
 | `bookmarks` | Bookmarks without a folder, then each folder with its bookmarks |
 | `dashboard` | Tabs with their background, default-tab rules and widgets, including each widget's settings and its place in the phone layout |
 
@@ -99,6 +100,9 @@ You first get a preview: how many tiles, bookmarks and widgets would be added, a
 An import only adds. A tile whose name exists, or a bookmark whose URL exists, is skipped, and the new tab (named "Homepage" or "Homarr") is only created once, so importing the same files again changes nothing. Icons are only taken when they are a full URL: icon names would make the browser load pictures from a public CDN, which Waylight avoids. Managed sections (see below) are left alone.
 
 ## Secrets and private host names
+
+Connections in the file carry no credential. A connection that the file keeps by service and name keeps the credential entered for it; when its address changes, the credential is dropped and has to be entered again, so it never goes to another host. Entering a credential stays possible while the file manages the section.
+
 
 Any text value may contain `${NAME}`. When the file is applied, Waylight replaces it with the environment variable `NAME` of the server process, for example from your `.env` file. That keeps private domains and similar values out of the repository. An unset variable is an error rather than an empty string. Write `$${NAME}` if you need the literal text `${NAME}`.
 
