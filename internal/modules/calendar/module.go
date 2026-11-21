@@ -108,3 +108,12 @@ func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) 
 	}
 	return usecase.CompactState(agenda, m.clock.Now(), m.loc), nil
 }
+
+// Discovery implements modules.Discoverable (#590) for the Nextcloud
+// calendar setup: status.php names the product without a login.
+func (m *Module) Discovery() modules.DiscoverySpec {
+	return modules.DiscoverySpec{
+		Service: "Nextcloud", Images: []string{"nextcloud"}, Hostnames: []string{"nextcloud", "nextcloud.local"},
+		Ports: []int{80, 8080}, ProbePath: "/status.php", ProbeContains: `"productname":"Nextcloud"`,
+	}
+}

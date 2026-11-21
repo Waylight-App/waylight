@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"net/netip"
 	"os"
 	"slices"
 	"time"
@@ -25,6 +26,8 @@ import (
 	"waylight/internal/modules/calendar"
 	"waylight/internal/modules/countdown"
 	"waylight/internal/modules/dashboard"
+	"waylight/internal/modules/discovery"
+	discoveryuc "waylight/internal/modules/discovery/usecase"
 	"waylight/internal/modules/diskhealth"
 	"waylight/internal/modules/docker"
 	"waylight/internal/modules/focus"
@@ -282,6 +285,14 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	}
 	// The attention list asks the other modules, so it comes last (#599).
 	registry.Register(attention.New(registry.All(), ownWidgets(dash), authModule.MayRead, clk))
+	// Discovery asks the other modules how their service is found (#590).
+	if cfg.ModuleEnabled("discovery") {
+		var found discovery.Containers
+		if dockerModule != nil {
+			found = discoveryContainers(dockerModule)
+		}
+		registry.Register(discovery.New(registry.All(), found, out.integration, cfg.AllowedCIDRs, clk))
+	}
 	wireSmartSearch(registry, authModule.MayRead, dash.WidgetConfig, log, clk)
 	return authModule, registry, nil
 }
@@ -616,6 +627,31 @@ func placeWidgets(dash *dashboard.Module) places.Widgets {
 			}
 			_ = json.Unmarshal([]byte(w.Config), &cfg)
 			out = append(out, placesuc.Widget{ID: w.ID, TabID: w.TabID, Kind: w.Kind, PlaceID: cfg.PlaceID})
+		}
+		return out, nil
+	}
+}
+
+// discoveryContainers adapts the docker module's containers to service
+// discovery (#590), so neither module imports the other.
+func discoveryContainers(d *docker.Module) discovery.Containers {
+	return func(ctx context.Context) ([]discoveryuc.Container, error) {
+		list, err := d.Containers(ctx)
+		if err != nil {
+			return nil, err
+		}
+		out := make([]discoveryuc.Container, 0, len(list))
+		for _, c := range list {
+			dc := discoveryuc.Container{Name: c.Name, Image: c.Image}
+			for _, p := range c.Ports {
+				dc.Ports = append(dc.Ports, struct{ Private, Public int }{Private: p.Private, Public: p.Public})
+			}
+			for _, a := range c.Addresses {
+				if addr, err := netip.ParseAddr(a); err == nil {
+					dc.Addresses = append(dc.Addresses, addr)
+				}
+			}
+			out = append(out, dc)
 		}
 		return out, nil
 	}

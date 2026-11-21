@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -34,6 +35,16 @@ type containerPayload struct {
 	Status  string            `json:"Status"`
 	Created int64             `json:"Created"`
 	Labels  map[string]string `json:"Labels"`
+	Ports   []struct {
+		PrivatePort int    `json:"PrivatePort"`
+		PublicPort  int    `json:"PublicPort"`
+		Type        string `json:"Type"`
+	} `json:"Ports"`
+	NetworkSettings struct {
+		Networks map[string]struct {
+			IPAddress string `json:"IPAddress"`
+		} `json:"Networks"`
+	} `json:"NetworkSettings"`
 }
 
 // Containers implements usecase.ContainerSource.
@@ -67,7 +78,36 @@ func (a *API) Containers(ctx context.Context) ([]domain.Container, error) {
 		out = append(out, domain.Container{
 			ID: id, Name: name, Image: p.Image, State: p.State, Status: p.Status,
 			Project: p.Labels["com.docker.compose.project"], Created: time.Unix(p.Created, 0).UTC(), Labels: p.Labels,
+			Ports: ports(p), Addresses: addresses(p),
 		})
 	}
 	return out, nil
+}
+
+// ports keeps the TCP ports once each; Docker lists a port per host
+// address (IPv4 and IPv6) and per protocol.
+func ports(p containerPayload) []domain.Port {
+	var out []domain.Port
+	seen := map[domain.Port]bool{}
+	for _, x := range p.Ports {
+		port := domain.Port{Private: x.PrivatePort, Public: x.PublicPort}
+		if x.Type != "tcp" || x.PrivatePort == 0 || seen[port] {
+			continue
+		}
+		seen[port] = true
+		out = append(out, port)
+	}
+	return out
+}
+
+// addresses lists the container's IPs in its networks, sorted.
+func addresses(p containerPayload) []string {
+	var out []string
+	for _, n := range p.NetworkSettings.Networks {
+		if n.IPAddress != "" {
+			out = append(out, n.IPAddress)
+		}
+	}
+	slices.Sort(out)
+	return out
 }
