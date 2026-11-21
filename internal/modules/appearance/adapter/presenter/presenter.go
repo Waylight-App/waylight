@@ -21,6 +21,9 @@ type AppearanceDTO struct {
 	Launcher string `json:"launcher" tstype:"'both' | 'services' | 'bookmarks'"`
 	// Profile is what the start page shows (#281); empty on PUT keeps it.
 	Profile string `json:"profile" tstype:"'everyday' | 'homelab'"`
+	// ShowAdvanced lists settings for developers and power users (#602);
+	// always sent in answers, omitted on PUT to keep the stored value.
+	ShowAdvanced *bool `json:"showAdvanced,omitempty"`
 	// ThemeLocked: the organisation set theme and accent colour (#305); a
 	// change to them is ignored. Never read from a PUT.
 	ThemeLocked bool `json:"themeLocked,omitempty"`
@@ -29,7 +32,8 @@ type AppearanceDTO struct {
 // Appearance maps an AppearanceResponse.
 func Appearance(r usecase.AppearanceResponse) AppearanceDTO {
 	return AppearanceDTO{Theme: r.Theme, AccentColor: r.AccentColor, BackgroundImage: r.BackgroundImage, CustomCSS: r.CustomCSS, Language: r.Language,
-		GreetingName: r.GreetingName, GreetingMoment: r.GreetingMoment, Launcher: r.Launcher, Profile: r.Profile, ThemeLocked: r.ThemeLocked}
+		GreetingName: r.GreetingName, GreetingMoment: r.GreetingMoment, Launcher: r.Launcher, Profile: r.Profile, ThemeLocked: r.ThemeLocked,
+		ShowAdvanced: &r.ShowAdvanced}
 }
 
 // ThemeDTO is a gallery theme.

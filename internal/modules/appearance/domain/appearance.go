@@ -40,6 +40,8 @@ type Appearance struct {
 	greetingMoment bool
 	launcher       Launcher
 	profile        Profile
+	// showAdvanced lists settings for developers and power users (#602).
+	showAdvanced bool
 }
 
 // Profile says what the start page is about (#281): everyday topics only,
@@ -127,6 +129,12 @@ func (a *Appearance) SetGreetingMoment(on bool) { a.greetingMoment = on }
 // GreetingMoment reports whether the greeting has a line by time of day.
 func (a Appearance) GreetingMoment() bool { return a.greetingMoment }
 
+// SetShowAdvanced shows or hides the advanced settings (#602).
+func (a *Appearance) SetShowAdvanced(on bool) { a.showAdvanced = on }
+
+// ShowAdvanced reports whether the settings list advanced sections and fields.
+func (a Appearance) ShowAdvanced() bool { return a.showAdvanced }
+
 // Languages lists the supported UI languages; "" follows the browser.
 var Languages = []string{"", "en", "de"}
 
@@ -154,6 +162,7 @@ func (a Appearance) WithScheme(theme Theme, accentColor string) (Appearance, err
 		return Appearance{}, err
 	}
 	b.language, b.greetingName, b.greetingMoment, b.launcher, b.profile = a.language, a.greetingName, a.greetingMoment, a.launcher, a.profile
+	b.showAdvanced = a.showAdvanced
 	return b, nil
 }
 

@@ -21,6 +21,13 @@ export interface CatalogSection {
   keywords?: readonly string[];
   /** Labels of fields or headings inside the section the search finds (#601). */
   fields?: readonly MessageKey[];
+  /**
+   * For developers and power users (#602): listed only while the account
+   * shows advanced settings, or when a link opens it directly.
+   */
+  advanced?: boolean;
+  /** Fields of the section that count as advanced; searchable only while shown (#602). */
+  advancedFields?: readonly MessageKey[];
 }
 
 // The sections built into the dialog. Each belongs to exactly one task area
@@ -70,6 +77,7 @@ export const OWN_SECTIONS: CatalogSection[] = [
       'appearance.launcher',
       'appearance.profile',
     ],
+    advancedFields: ['appearance.custom_css_override_variables_such_as'],
   },
   // Notifications: every channel, the phone and the web interface.
   {
@@ -127,6 +135,7 @@ export const OWN_SECTIONS: CatalogSection[] = [
     area: 'connections',
     keywords: ['api', 'token', 'key', 'schlüssel'],
     fields: ['auth.new_token'],
+    advanced: true,
   },
   // People & access: who else uses this instance and how.
   {
@@ -177,7 +186,14 @@ export const OWN_SECTIONS: CatalogSection[] = [
     keywords: ['version', 'update', 'release', 'aktualisierung'],
     fields: ['system.update_check'],
   },
-  { id: 'forecast', label: 'settings.section.forecast', module: 'system', area: 'system', homelab: true },
+  {
+    id: 'forecast',
+    label: 'settings.section.forecast',
+    module: 'system',
+    area: 'system',
+    homelab: true,
+    advanced: true,
+  },
   { id: 'security-log', label: 'settings.section.security_log', area: 'system' },
   { id: 'full-version', label: 'settings.section.full_version', area: 'system' },
 ];
@@ -196,6 +212,8 @@ export interface SectionViewer {
   member: boolean;
   admin: boolean;
   owner: boolean;
+  /** Whether advanced sections are listed (#602); hidden when not set. */
+  advanced?: boolean;
 }
 
 /** Guests only manage their own account (ADR 0012). */
@@ -234,6 +252,7 @@ export function visibleSections<T extends CatalogSection>(sections: readonly T[]
       (!s.module || v.modules.has(s.module)) &&
       allowed(s, v) &&
       // The "everyday" profile hides home-server and network settings (#281).
-      !(s.homelab && v.profile === 'everyday'),
+      !(s.homelab && v.profile === 'everyday') &&
+      !(s.advanced && !v.advanced),
   );
 }
