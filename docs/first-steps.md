@@ -54,7 +54,9 @@ English and German, for example *Passwort* or *Immich*. Settings for
 developers and power users (API tokens, JSON APIs, the resource forecast and
 custom CSS) stay hidden until you turn on **Show advanced settings** at the
 bottom of the overview; the choice is saved for your account, and a link
-straight to such a section opens it anyway. Open Settings →
+straight to such a section opens it anyway. If one of them stops
+working while they are hidden, admins see *An advanced setting needs
+attention* next to the switch, with a link that opens the section. Open Settings →
 *Dashboard & widgets* → Calendar and enter the address of each calendar (one per line), your user
 name and an app password. In Nextcloud you find a calendar's address in its
 menu under *Copy private link*. Read-only ICS links, such as a school
