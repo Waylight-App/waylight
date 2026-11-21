@@ -45,6 +45,7 @@ type Module struct {
 	handlers  *controller.Handlers
 	disc      *controller.DiscoveryHandlers
 	config    usecase.Config
+	clock     kernel.Clock
 }
 
 // New builds the services module.
@@ -60,7 +61,7 @@ func New(d Deps) *Module {
 	return &Module{
 		Transferable: modules.Transferable{DB: d.DB, Tables: gateway.TransferTables}, uc: uc, seed: usecase.NewSeedSampleData(deps),
 		discovery: disc, handlers: controller.NewHandlers(uc), disc: controller.NewDiscoveryHandlers(disc),
-		config: usecase.NewConfig(repo, d.IDs),
+		config: usecase.NewConfig(repo, d.IDs), clock: d.Clock,
 	}
 }
 
@@ -183,4 +184,14 @@ func (m *Module) Services(ctx context.Context) ([]usecase.ServiceView, error) { 
 // search (ADR 0026).
 func (m *Module) AnswerSources() []answers.Source {
 	return []answers.Source{smartsearch.New(m.uc)}
+}
+
+// CompactState implements modules.CompactProvider (#594): how many
+// services run, and which one is down.
+func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) {
+	list, err := m.uc.List(ctx)
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	return usecase.CompactState(list, m.clock.Now()), nil
 }

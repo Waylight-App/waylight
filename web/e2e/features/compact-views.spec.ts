@@ -32,6 +32,13 @@ test('a small tile shows the compact view and opens the details (#595)', async (
   await expect(panel).toHaveCount(0);
   await expect(open).toBeFocused();
 
+  // "Edit widget" in the panel opens the widget's settings (#594).
+  await open.click();
+  await panel.getByRole('button', { name: 'Edit widget' }).click();
+  await expect(panel).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: /To-dos/ })).toBeVisible();
+  await page.keyboard.press('Escape');
+
   // The size is stored with the widget.
   await page.reload();
   await page.getByRole('button', { name: 'Compact', exact: true }).click();

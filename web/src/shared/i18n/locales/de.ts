@@ -1523,6 +1523,8 @@ export const de: Record<BaseMessageKey, string> = {
   'dashboard.widget_size': 'Größe von {name}',
   'dashboard.size_free': 'Freie Größe',
   'dashboard.open_details': '{name}: Details anzeigen',
+  'dashboard.edit_widget': 'Widget bearbeiten',
+  'dashboard.notify_on_failure': 'Bei Störung benachrichtigen',
   'dashboard.mobile_moved': '„{name}“ an Position {position} verschoben.',
   'dashboard.tab_rules': 'Automatisch öffnen',
   'dashboard.rules_of': 'Wann „{name}“ öffnen',

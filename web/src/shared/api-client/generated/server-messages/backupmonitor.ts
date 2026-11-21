@@ -2,11 +2,20 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_54022920e535da37: "Backup OK",
+  srv_dca29003ab21344d: "Last success {time}",
+  srv_4efa152402f99eaf: "No backups yet",
   srv_24356b769e2a8258: "The backup source does not exist.",
   srv_dcd48aa7c1edb891: "The grace period must be between 0 minutes and 7 days.",
   srv_0dbc446d2a829ab3: "The kind must be backup or check.",
   srv_761ff31914abb39c: "The maximum age must be between 1 hour and 60 days.",
   srv_564c3b1fecfb1093: "Use a cron expression with five fields, e.g. 0 3 * * * (daily at 03:00).",
+  srv_122bbf8d15074197: "Waiting for the first run",
+  srv_690e8b1d63e37e2e: "{count} of {total} failed",
+  srv_8ede15696ca60c31: "{count} of {total} overdue",
+  srv_44460b43e14f12f1: "{name} failed",
+  srv_654703b9e7d6cc6c: "{name} is overdue",
+  srv_5533d9eb788ce382: "{total} backups OK",
 } as const;
 
 /** Key of a backend message. */
