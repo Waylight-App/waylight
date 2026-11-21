@@ -7,7 +7,7 @@ name: waylight
 
 services:
   waylight:
-    image: ${WAYLIGHT_IMAGE:-ghcr.io/itadori26/waylight}:${WAYLIGHT_VERSION:-latest}
+    image: ${WAYLIGHT_IMAGE:-ghcr.io/waylight-app/waylight}:${WAYLIGHT_VERSION:-latest}
     container_name: waylight
     restart: unless-stopped
     env_file: .env
@@ -100,7 +100,7 @@ services:
   # network (broadcasts cannot leave a Docker bridge network); it has no access
   # to data, Docker or secrets and ignores everything that is not a magic packet.
   wol-relay:
-    image: ${WAYLIGHT_IMAGE:-ghcr.io/itadori26/waylight}:${WAYLIGHT_VERSION:-latest}
+    image: ${WAYLIGHT_IMAGE:-ghcr.io/waylight-app/waylight}:${WAYLIGHT_VERSION:-latest}
     container_name: waylight-wol-relay
     profiles: [wol]
     command: ["wol-relay"]

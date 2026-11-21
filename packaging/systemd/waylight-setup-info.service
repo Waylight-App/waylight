@@ -1,6 +1,6 @@
 [Unit]
 Description=Show the waylight setup token on the console and boot partition
-Documentation=https://github.com/itadori26/waylight/blob/main/docs/native-install.md
+Documentation=https://github.com/Waylight-App/waylight/blob/main/docs/native-install.md
 After=waylight.service
 
 [Service]

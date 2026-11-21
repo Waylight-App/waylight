@@ -3,7 +3,10 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_e560c7558d4cf5c3: "No WireGuard export found. Run scripts/wireguard-export.sh on the host (see docs/host-integrations.md).",
+  srv_79255c3da312af57: "No peers",
+  srv_a7f77e98c90729a9: "The export is out of date",
   srv_e5774de61b49a80f: "This is not a WireGuard public key.",
+  srv_d94ddd59412dba1f: "{online} of {total} peers connected",
 } as const;
 
 /** Key of a backend message. */

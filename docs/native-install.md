@@ -12,14 +12,14 @@ devices.
 ## Install
 
 Pick the package for your architecture (`dpkg --print-architecture`) from the
-[latest release](https://github.com/itadori26/waylight/releases/latest),
+[latest release](https://github.com/Waylight-App/waylight/releases/latest),
 check it and install it:
 
 ```sh
 VERSION=1.2.3   # the release you want
 ARCH=$(dpkg --print-architecture)
-curl -fLO "https://github.com/itadori26/waylight/releases/download/v$VERSION/waylight_${VERSION}_$ARCH.deb"
-curl -fLO "https://github.com/itadori26/waylight/releases/download/v$VERSION/waylight_${VERSION}_packages.sha256"
+curl -fLO "https://github.com/Waylight-App/waylight/releases/download/v$VERSION/waylight_${VERSION}_$ARCH.deb"
+curl -fLO "https://github.com/Waylight-App/waylight/releases/download/v$VERSION/waylight_${VERSION}_packages.sha256"
 sha256sum --check --ignore-missing "waylight_${VERSION}_packages.sha256"
 sudo apt install "./waylight_${VERSION}_$ARCH.deb"
 ```
@@ -54,7 +54,7 @@ account exists (`waylight-setup-info.timer`). To choose the token yourself
 | Path | Purpose |
 | --- | --- |
 | `/usr/bin/waylight` | The binary (same as in the container image) |
-| `/etc/waylight/waylight.env` | Configuration (environment variables, see [.env.example](https://github.com/itadori26/waylight/blob/main/.env.example)) |
+| `/etc/waylight/waylight.env` | Configuration (environment variables, see [.env.example](https://github.com/Waylight-App/waylight/blob/main/.env.example)) |
 | `/etc/waylight/secret.env` | `SECRET_KEY` and `SETUP_TOKEN`, generated on the first start |
 | `/var/lib/waylight/` | Database and automatic backups |
 | `waylight.service` | systemd unit, runs as the system user `waylight` |
@@ -107,10 +107,10 @@ this way and updates itself every night):
 
 ```sh
 sudo curl -fsSLo /usr/share/keyrings/waylight-archive-keyring.asc \
-  https://itadori26.github.io/waylight/apt/waylight-archive-keyring.asc
+  https://waylight-app.github.io/waylight/apt/waylight-archive-keyring.asc
 sudo tee /etc/apt/sources.list.d/waylight.sources >/dev/null <<'EOF'
 Types: deb
-URIs: https://itadori26.github.io/waylight/apt
+URIs: https://waylight-app.github.io/waylight/apt
 Suites: stable
 Components: main
 Signed-By: /usr/share/keyrings/waylight-archive-keyring.asc

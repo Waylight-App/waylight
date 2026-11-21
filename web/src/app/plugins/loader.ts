@@ -1,5 +1,6 @@
 import { errorMessage, type HttpClient } from '../../shared/api-client/http';
-import { locale } from '../../shared/i18n';
+import { locale, registerServerMessages } from '../../shared/i18n';
+import { compactSource } from '../../features/compact/domain/compact';
 import type { IconName } from '../../shared/ui/icons/paths';
 import { iconPaths } from '../../shared/ui/icons/paths';
 import type { AuthUseCases } from '../../features/auth';
@@ -8,6 +9,7 @@ import type { SettingsSection } from '../settingsKit';
 import { isSettingsArea, type SettingsArea } from '../settingsNav';
 import type { WidgetDefinition } from '../widgetKit';
 import {
+  MIN_PLUGIN_API_VERSION,
   PLUGIN_API_VERSION,
   pick,
   type FeatureLevel,
@@ -70,8 +72,19 @@ function toWidget(w: PluginWidget, context: PluginContext): WidgetDefinition {
     icon: knownIcon(w.icon),
     view: hosted(w.view, context),
     settings: w.settings ? hosted(w.settings, context) : undefined,
+    compact: w.compact
+      ? (config) => {
+          const source = w.compact?.(config);
+          return source ? compactSource(source.module, source.params) : undefined;
+        }
+      : undefined,
+    compactExample: w.compactExample ? () => pick(w.compactExample ?? { en: '' }, locale()) : undefined,
   };
 }
+
+/** Whether the loader understands a plugin built against version v. */
+export const supportedVersion = (v: unknown): boolean =>
+  typeof v === 'number' && v >= MIN_PLUGIN_API_VERSION && v <= PLUGIN_API_VERSION;
 
 /**
  * Where a plugin section goes when it names no known area: plugin sections
@@ -158,7 +171,7 @@ export async function loadPlugins(
     if (!url.startsWith('/') || url.startsWith('//')) continue;
     try {
       const { plugin } = await importPlugin(url);
-      if (!plugin || plugin.apiVersion !== PLUGIN_API_VERSION) {
+      if (!plugin || !supportedVersion(plugin.apiVersion)) {
         console.warn('plugin skipped: unsupported API version', url);
         continue;
       }
@@ -170,6 +183,9 @@ export async function loadPlugins(
       for (const a of plugin.searchActions ?? []) {
         if (targets.searchActions && mayRun(a, context))
           targets.searchActions.push(toSearchAction(plugin.name, a, context));
+      }
+      for (const [language, texts] of Object.entries(plugin.serverMessages ?? {})) {
+        registerServerMessages(language, texts);
       }
       loaded.push(plugin.name);
     } catch (err) {

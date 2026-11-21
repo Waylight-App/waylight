@@ -12,6 +12,7 @@ export const texts: Catalogue = {
   away: { en: 'Away', de: 'Weg' },
   none: { en: 'Not set', de: 'Nicht gesetzt' },
   my_status: { en: 'My status today', de: 'Mein Status heute' },
+  compact_example: { en: '3 in the office · 2 at home', de: '3 im Büro · 2 im Homeoffice' },
   return_on: { en: 'Back on', de: 'Zurück am' },
   back: { en: 'back {date}', de: 'zurück {date}' },
   from_absence: { en: 'from the absences', de: 'aus den Abwesenheiten' },

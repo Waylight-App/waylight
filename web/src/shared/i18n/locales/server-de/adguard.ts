@@ -19,4 +19,14 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // Pausing is switched off for this DNS filter. Allow it with DNS_PAUSE_PROVIDERS on the server.
   srv_6af65a6080fe6b52:
     'Pausieren ist für diesen DNS-Filter ausgeschaltet. Erlaube es mit DNS_PAUSE_PROVIDERS auf dem Server.',
+  // Blocking is off
+  srv_71fcd40efaa8ff27: 'Blockieren ist aus',
+  // Blocking paused
+  srv_43efb7d828a46638: 'Blockieren pausiert',
+  // The DNS filter is not reachable
+  srv_c24326f62f32176b: 'Der DNS-Filter ist nicht erreichbar',
+  // {count} of {total} queries
+  srv_15a7ef0c4caf3d1d: '{count} von {total} Anfragen',
+  // {percent} % blocked
+  srv_f388457dcac53d65: '{percent} % blockiert',
 };

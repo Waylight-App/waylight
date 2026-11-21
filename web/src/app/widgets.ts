@@ -6,6 +6,9 @@ import { t } from '../shared/i18n';
  */
 import type { IconName } from '../shared/ui/icons/paths';
 import { lazy, type Renderer, type WidgetDefinition } from './widgetKit';
+import { compactSource } from '../features/compact/domain/compact';
+import { parseWeatherConfig } from '../features/weather/domain/weather';
+import { parseWidgetConfig as parseAdGuardConfig } from '../features/adguard/domain/adguard';
 
 export type { Renderer, WidgetDefinition };
 
@@ -48,6 +51,12 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 4 },
     },
     icon: 'sun',
+    // The location lives in the widget configuration (#641).
+    compact: (config) => {
+      const c = parseWeatherConfig(config);
+      return c ? compactSource('weather', { lat: String(c.lat), lon: String(c.lon) }) : undefined;
+    },
+    compactExample: () => t('compact.example.weather'),
     view: lazy(
       () => import('../features/weather/ui/WeatherWidget.svelte'),
       (config, c) => ({ config, weather: c.weather }),
@@ -313,6 +322,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 4 },
     },
     icon: 'shield',
+    compact: (config) => compactSource('adguard', { provider: parseAdGuardConfig(config).provider }),
+    compactExample: () => t('compact.example.adguard'),
     view: lazy(
       () => import('../features/adguard/ui/AdGuardWidget.svelte'),
       (config, c) => ({ config, adguard: c.adguard }),
@@ -378,6 +389,8 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 3 },
     },
     icon: 'key',
+    compact: () => 'wireguard',
+    compactExample: () => t('compact.example.wireguard'),
     view: lazy(
       () => import('../features/wireguard/ui/WireGuardWidget.svelte'),
       (_config, c) => ({ wireguard: c.wireguard }),

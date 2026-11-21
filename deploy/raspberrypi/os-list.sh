@@ -9,7 +9,7 @@ set -eu
 xz_file=${1:?image missing}
 extract_size=${2:?size missing}
 version=${3:?version missing}
-repo=${GITHUB_REPOSITORY:-itadori26/waylight}
+repo=${GITHUB_REPOSITORY:-Waylight-App/waylight}
 
 name=$(basename "$xz_file")
 download_size=$(stat -c %s "$xz_file")

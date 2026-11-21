@@ -14,7 +14,7 @@ import (
 )
 
 // DefaultReleasesURL is the GitHub API endpoint of the latest release.
-const DefaultReleasesURL = "https://api.github.com/repos/itadori26/waylight/releases/latest"
+const DefaultReleasesURL = "https://api.github.com/repos/Waylight-App/waylight/releases/latest"
 
 // GitHubReleases implements usecase.ReleaseSource.
 type GitHubReleases struct {

@@ -71,9 +71,9 @@ places:
   far more services. The [generic JSON widget](modules/apiwidget.md) covers
   many gaps; for the rest you would write a module.
 - **No configuration as code yet.** A YAML export and import is planned
-  ([#88](https://github.com/itadori26/waylight/issues/88)).
+  ([#88](https://github.com/Waylight-App/waylight/issues/88)).
 - **English and German only.** Adding a language is a matter of translating
-  one file per feature ([contributing](https://github.com/itadori26/waylight/blob/main/CONTRIBUTING.md#ui-texts-and-translations)).
+  one file per feature ([contributing](https://github.com/Waylight-App/waylight/blob/main/CONTRIBUTING.md#ui-texts-and-translations)).
 - **Several integrations are Germany-specific:** weather warnings, rain radar
   and pollen from the DWD, fuel prices from Tankerkönig, public and school
   holidays. They simply stay unused elsewhere.

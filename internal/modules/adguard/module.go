@@ -1,9 +1,11 @@
 package adguard
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"time"
 
 	"waylight/internal/modules"
@@ -78,6 +80,20 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 func (m *Module) Jobs() []modules.Job {
 	return []modules.Job{{Name: "adguard.refresh", Interval: refreshInterval, Run: m.uc.Refresh}}
 }
+
+// CompactStateFor implements modules.CompactParamProvider (#641): the share
+// of blocked queries of the widget's provider, chosen with ?provider=
+// (adguard or pihole; empty means AdGuard Home).
+func (m *Module) CompactStateFor(ctx context.Context, params url.Values) (kernel.CompactState, error) {
+	v, err := m.uc.Stats(ctx, params.Get("provider"))
+	if err != nil {
+		return kernel.CompactState{}, err
+	}
+	return usecase.CompactState(v), nil
+}
+
+// CompactParams implements modules.CompactParamProvider.
+func (m *Module) CompactParams() []string { return []string{"provider"} }
 
 // Discovery implements modules.Discoverable (#627) for AdGuard Home, whose
 // login page is public; Pi-hole is entered by hand.

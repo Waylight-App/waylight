@@ -3,7 +3,7 @@
 This page gets a development copy of Waylight running and explains the
 everyday commands, the repository layout and the test suites. Plan about ten
 minutes for the setup. The rules for pull requests are in
-[CONTRIBUTING.md](https://github.com/itadori26/waylight/blob/main/CONTRIBUTING.md).
+[CONTRIBUTING.md](https://github.com/Waylight-App/waylight/blob/main/CONTRIBUTING.md).
 
 ## Requirements
 
@@ -19,7 +19,7 @@ generator.
 ## First run
 
 ```sh
-git clone https://github.com/itadori26/waylight.git
+git clone https://github.com/Waylight-App/waylight.git
 cd waylight
 make deps
 cp .env.example .env

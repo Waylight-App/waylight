@@ -20,4 +20,54 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_314a73e152936a17: 'Die Wetterwarnungen sind gerade nicht verfügbar.',
   // The pollen and UV forecasts are not available right now.
   srv_cb30f7793468eebc: 'Pollenflug und UV-Index sind gerade nicht verfügbar.',
+  // Clear sky
+  srv_079ecf8df23a0daf: 'Klarer Himmel',
+  // Dense drizzle
+  srv_0d9429b1a019413e: 'Starker Nieselregen',
+  // Drizzle
+  srv_aa17e4cc0cbb8ecd: 'Nieselregen',
+  // Fog
+  srv_f2bb8d199c92d43f: 'Nebel',
+  // Freezing drizzle
+  srv_061bd69a46d49c8f: 'Gefrierender Nieselregen',
+  // Freezing rain
+  srv_d8b57a87d52d6ded: 'Gefrierender Regen',
+  // Heavy rain
+  srv_385fbf7e52385aae: 'Starker Regen',
+  // Heavy snow
+  srv_68c0138424f8074b: 'Starker Schneefall',
+  // Light drizzle
+  srv_6793a3117aad7cf5: 'Leichter Nieselregen',
+  // Light rain
+  srv_9f8d7b03da2db18b: 'Leichter Regen',
+  // Light snow
+  srv_fd8baefca48339ea: 'Leichter Schneefall',
+  // Mainly clear
+  srv_5ae1ab5870ccaffa: 'Überwiegend klar',
+  // Overcast
+  srv_74a09b179be18310: 'Bedeckt',
+  // Partly cloudy
+  srv_c72683131dff0339: 'Teilweise bewölkt',
+  // Rain
+  srv_984afe2bd363c533: 'Regen',
+  // Rain showers
+  srv_c09988829a692b1c: 'Regenschauer',
+  // Rime fog
+  srv_a5e43404e0b672b6: 'Raureifnebel',
+  // Snow
+  srv_8300b224ee074d12: 'Schneefall',
+  // Snow grains
+  srv_852f4060b58e9e0e: 'Schneegriesel',
+  // Snow showers
+  srv_5184b87cd74a5e31: 'Schneeschauer',
+  // Thunderstorm
+  srv_11111027a2159b52: 'Gewitter',
+  // Thunderstorm with hail
+  srv_95215781350e5dbc: 'Gewitter mit Hagel',
+  // Unknown
+  srv_c592307ea80f16b9: 'Unbekannt',
+  // Violent showers
+  srv_60e5e8ca070c80f3: 'Heftige Schauer',
+  // {temp}°
+  srv_d72ab051081647bd: '{temp}°',
 };

@@ -16,7 +16,7 @@ status=$(waylight_setup_status)
 case "$status" in
 done)
 	echo "waylight is already set up; the setup token is no longer valid."
-	echo "Forgot the password? See https://github.com/itadori26/waylight/blob/main/docs/native-install.md"
+	echo "Forgot the password? See https://github.com/Waylight-App/waylight/blob/main/docs/native-install.md"
 	;;
 *)
 	token=$(waylight_value SETUP_TOKEN)

@@ -17,6 +17,8 @@ export const widgets: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 6 },
     },
     icon: 'server',
+    compact: () => 'proxmox',
+    compactExample: () => t('compact.example.proxmox'),
     view: lazy(
       () => import('../../features/proxmox/ui/ProxmoxWidget.svelte'),
       (config, c) => ({ config, proxmox: c.proxmox }),

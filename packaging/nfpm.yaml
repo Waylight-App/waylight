@@ -14,7 +14,7 @@ section: web
 priority: optional
 maintainer: Tristan L. Farinella <32554080+itadori26@users.noreply.github.com>
 vendor: waylight contributors
-homepage: https://github.com/itadori26/waylight
+homepage: https://github.com/Waylight-App/waylight
 license: MIT
 description: |-
   Self-hosted personal start page

@@ -71,6 +71,25 @@ func TestPresence(t *testing.T) {
 	}
 	a.do(http.MethodGet, "/api/presence?group=nope", nil, http.StatusUnprocessableEntity)
 
+	// The compact view (#632): counts, the number away and the own status as chips.
+	var compact struct {
+		Title  struct{ Text string } `json:"title"`
+		Action struct {
+			ID      string `json:"id"`
+			Path    string `json:"path"`
+			Choices []struct {
+				ID       string `json:"id"`
+				Selected bool   `json:"selected"`
+			} `json:"choices"`
+		} `json:"action"`
+	}
+	a.json(http.MethodGet, "/api/presence/compact", nil, http.StatusOK, &compact)
+	if compact.Title.Text != "1 in the office · 1 at home" || compact.Action.ID != "presence.set" ||
+		len(compact.Action.Choices) != 3 || !compact.Action.Choices[0].Selected {
+		t.Fatalf("compact: %+v", compact)
+	}
+	a.do(http.MethodGet, "/api/presence/compact?group=nope", nil, http.StatusUnprocessableEntity)
+
 	// Switched off, presence answers 404 and forgets today's statuses.
 	owner.do(http.MethodPut, "/api/presence/settings", obj{"enabled": false}, http.StatusOK)
 	a.do(http.MethodGet, "/api/presence", nil, http.StatusNotFound)
