@@ -16,7 +16,7 @@ describe('AttentionState', () => {
   it('drops an entry once the server no longer lists it', async () => {
     const list = vi.fn().mockResolvedValueOnce([entry]).mockResolvedValueOnce([]);
     const state = new AttentionState();
-    state.attach(new AttentionUseCases({ list }));
+    state.attach(new AttentionUseCases({ list, connections: vi.fn() }));
     await state.refresh();
     expect(state.count).toBe(1);
     await state.refresh();
@@ -27,7 +27,7 @@ describe('AttentionState', () => {
   it('shares one request between concurrent refreshes', async () => {
     const list = vi.fn().mockResolvedValue([entry]);
     const state = new AttentionState();
-    state.attach(new AttentionUseCases({ list }));
+    state.attach(new AttentionUseCases({ list, connections: vi.fn() }));
     await Promise.all([state.refresh(), state.refresh()]);
     expect(list).toHaveBeenCalledTimes(1);
   });
@@ -35,7 +35,7 @@ describe('AttentionState', () => {
   it('keeps the entries and reports the error when the server fails', async () => {
     const list = vi.fn().mockResolvedValueOnce([entry]).mockRejectedValueOnce(new Error('offline'));
     const state = new AttentionState();
-    state.attach(new AttentionUseCases({ list }));
+    state.attach(new AttentionUseCases({ list, connections: vi.fn() }));
     await state.refresh();
     await state.check();
     expect(state.count).toBe(1);

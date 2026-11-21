@@ -31,6 +31,45 @@ export interface AttentionItem {
   field?: string;
 }
 
+/** How one integration's connection is doing (#591). */
+export interface ServiceConnection {
+  integration: string;
+  /** A connection of the instance, which admins set up. */
+  instance: boolean;
+  state: 'ok' | 'setup' | 'failing';
+  reason?: AttentionReason;
+  action?: AttentionAction;
+  widgets: { id: string; tabId: string; kind: string }[];
+}
+
+/** Counts for a summary line such as "9 connected · 1 problem". */
+export function connectionCounts(list: readonly ServiceConnection[]): {
+  connected: number;
+  failing: number;
+  setup: number;
+} {
+  return {
+    connected: list.filter((c) => c.state === 'ok').length,
+    failing: list.filter((c) => c.state === 'failing').length,
+    setup: list.filter((c) => c.state === 'setup').length,
+  };
+}
+
+/**
+ * Orders connections for the page: problems first, then what is connected,
+ * then what can still be connected, each by name.
+ */
+export function sortConnections(
+  list: readonly ServiceConnection[],
+  name: (integration: string) => string,
+  locale?: string,
+): ServiceConnection[] {
+  const rank = { failing: 0, ok: 1, setup: 2 } as const;
+  return [...list].sort(
+    (a, b) => rank[a.state] - rank[b.state] || name(a.integration).localeCompare(name(b.integration), locale),
+  );
+}
+
 /** The list split the way the page shows it: failures first, then setups. */
 export interface AttentionGroups {
   failing: AttentionItem[];

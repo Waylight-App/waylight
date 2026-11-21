@@ -126,6 +126,25 @@ same grid.
 The phone layout belongs to the tab, not to the device, so it applies to
 every phone you use.
 
+## The attention line and the system summary
+
+When something on a tab needs a look, one line at the top says what it is,
+for example *Services: 11 of 12 running · Nextcloud is down*, and how many
+other things need a look as well. **View** scrolls to the widget and puts the
+focus on it. The line takes the status widgets of the tab whose short state
+is amber or red (services, backups, drives) and connections that stopped
+working, such as an expired sign-in. It disappears when all is well. Colour
+is used only for what needs action: amber asks for a look, red means
+something is broken.
+
+A tab with two or more status widgets also gets a summary line, for example
+*Services: 12 of 12 running · Backups: Backup OK · Disk health: 3
+drives healthy*. **Collapse** folds the status widgets into that line and
+**Show all** brings them back. The choice is remembered per tab in this
+browser; in edit mode all widgets are shown.
+
+Zones that group a tab into *Today*, *My things* and *System* follow in #619.
+
 ## Widget status
 
 Widgets that load data from the server refresh on their own, at an interval
@@ -208,6 +227,17 @@ The app reads the same list from `GET /api/attention` (see the API
 reference). A service's state is kept for two minutes; *Check again* and
 closing the settings after a change ask the services right away
 (`?refresh=true`).
+
+## Services and places
+
+**Settings → Connections & services** has two pages. *Connected services* lists every
+service your widgets connect to with its state: connected, with a problem
+(and the cause), or not set up yet. Each entry names the widgets that use it
+and opens the service's settings; *Check all again* asks every service right
+away. Admins see all services of the instance; other accounts see their own
+connections and the instance services their widgets depend on. *Places*
+holds the places you entered once for weather, rain radar and fuel prices
+(see [Places](modules/places.md)).
 
 ## Related pages
 

@@ -40,3 +40,28 @@ export interface ListDTO {
   items: ItemDTO[];
   count: number /* int */;
 }
+/**
+ * WidgetRefDTO is a widget that uses a connection.
+ */
+export interface WidgetRefDTO {
+  id: string;
+  tabId: string;
+  kind: string;
+}
+/**
+ * ConnectionDTO is one entry of GET /api/attention/connections.
+ */
+export interface ConnectionDTO {
+  integration: string;
+  instance: boolean;
+  /**
+   * State is ok, setup or failing.
+   */
+  state: string;
+  /**
+   * Reason and Action explain a setup or failing state.
+   */
+  reason?: ReasonDTO;
+  action?: string;
+  widgets: WidgetRefDTO[];
+}

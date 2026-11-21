@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { actionTarget, type AttentionItem, groupItems, sameItems } from './attention';
+import {
+  actionTarget,
+  type AttentionItem,
+  connectionCounts,
+  groupItems,
+  sameItems,
+  type ServiceConnection,
+  sortConnections,
+} from './attention';
 
 const item = (over: Partial<AttentionItem>): AttentionItem => ({
   id: 'module:immich',
@@ -54,5 +62,33 @@ describe('sameItems', () => {
     expect(sameItems(a, [item({})])).toBe(true);
     expect(sameItems(a, [item({ action: 'fix' })])).toBe(false);
     expect(sameItems(a, [])).toBe(false);
+  });
+});
+
+describe('connections', () => {
+  const conn = (integration: string, state: ServiceConnection['state']): ServiceConnection => ({
+    integration,
+    instance: true,
+    state,
+    widgets: [],
+  });
+  const list = [
+    conn('proxmox', 'setup'),
+    conn('immich', 'ok'),
+    conn('grafana', 'failing'),
+    conn('arr', 'ok'),
+  ];
+
+  it('puts problems first, then connected, then the rest, by name', () => {
+    expect(sortConnections(list, (i) => i).map((c) => c.integration)).toEqual([
+      'grafana',
+      'arr',
+      'immich',
+      'proxmox',
+    ]);
+  });
+
+  it('counts for the summary', () => {
+    expect(connectionCounts(list)).toEqual({ connected: 2, failing: 1, setup: 1 });
   });
 });

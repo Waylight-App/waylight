@@ -7,6 +7,7 @@
   import { definitionFor, iconFor, widgetDefinitions } from './widgets';
   import { lazy } from './widgetKit';
   import { useOpenSettings } from '../shared/ui/settingsLink';
+  import { type StatusSource, uniqueSources } from '../features/dashboard/domain/attentionLine';
   import { categoryShown, type StartProfile } from '../features/appearance/domain/appearance';
 
   /** Props of the dashboard page. */
@@ -106,6 +107,19 @@
     return definitionFor(widget.kind)?.compact?.(widget.config);
   }
 
+  // The lines above the grid load with the first tab that shows them (#593).
+  const loadOverview = () => import('./DashboardOverview.svelte');
+
+  /** The status widgets of a tab with the module of their compact state. */
+  function statusSources(widgets: Widget[]): StatusSource[] {
+    return uniqueSources(
+      widgets.flatMap((w) => {
+        const module = compactModule(w);
+        return module ? [{ widgetId: w.id, module, title: definitionFor(w.kind)?.type.title ?? w.kind }] : [];
+      }),
+    );
+  }
+
   // Notifications are set up by admins in the settings (#594).
   const openSettings = useOpenSettings();
   function notifyAction(widget: Widget): (() => void) | undefined {
@@ -140,6 +154,7 @@
   hasCompact={(widget) => compactModule(widget) !== undefined}
   detailPanel={!container.auth.kiosk}
   {notifyAction}
+  statusWidget={(widget) => !!definitionFor(widget.kind)?.alerts && compactModule(widget) !== undefined}
   compactExample={container.localMode ? undefined : (kind) => definitionFor(kind)?.compactExample?.()}
 >
   {#snippet content(widget: Widget)}
@@ -151,6 +166,27 @@
         scheduler={container.refresh}
         label={def.type.title}
       />
+    {/if}
+  {/snippet}
+  {#snippet overview(o: {
+    tab: Tab;
+    status: Widget[];
+    collapsed: boolean;
+    toggle: () => void;
+    view: (widgetId: string) => void;
+  })}
+    {@const sources = statusSources(o.status)}
+    {#if !container.localMode}
+      {#await loadOverview() then { default: DashboardOverview }}
+        <DashboardOverview
+          compact={container.compact}
+          tabId={o.tab.id}
+          {sources}
+          collapsed={o.collapsed}
+          ontoggle={o.toggle}
+          onview={o.view}
+        />
+      {/await}
     {/if}
   {/snippet}
   {#snippet compact(widget: Widget, opts: { strip: boolean })}

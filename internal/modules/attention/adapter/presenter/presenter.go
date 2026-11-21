@@ -60,3 +60,40 @@ func reason(m domain.Message) ReasonDTO {
 	}
 	return ReasonDTO{Message: text, MessageKey: kernel.MessageKey(m.Template), Params: m.Params}
 }
+
+// WidgetRefDTO is a widget that uses a connection.
+type WidgetRefDTO struct {
+	ID    string `json:"id"`
+	TabID string `json:"tabId"`
+	Kind  string `json:"kind"`
+}
+
+// ConnectionDTO is one entry of GET /api/attention/connections.
+type ConnectionDTO struct {
+	Integration string `json:"integration"`
+	Instance    bool   `json:"instance"`
+	// State is ok, setup or failing.
+	State string `json:"state"`
+	// Reason and Action explain a setup or failing state.
+	Reason  *ReasonDTO     `json:"reason,omitempty"`
+	Action  string         `json:"action,omitempty"`
+	Widgets []WidgetRefDTO `json:"widgets"`
+}
+
+// Connections maps the connection list.
+func Connections(list []domain.Connection) []ConnectionDTO {
+	out := make([]ConnectionDTO, 0, len(list))
+	for _, c := range list {
+		d := ConnectionDTO{Integration: c.Integration, Instance: c.Instance, State: string(c.Status.State),
+			Action: string(c.Status.Action), Widgets: make([]WidgetRefDTO, 0, len(c.Widgets))}
+		if c.Status.Reason.Template != "" {
+			r := reason(c.Status.Reason)
+			d.Reason = &r
+		}
+		for _, w := range c.Widgets {
+			d.Widgets = append(d.Widgets, WidgetRefDTO{ID: w.ID, TabID: w.TabID, Kind: w.Kind})
+		}
+		out = append(out, d)
+	}
+	return out
+}

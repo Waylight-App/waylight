@@ -110,3 +110,18 @@ func Sort(items []Item) {
 		)
 	})
 }
+
+// WidgetRef is a widget on one of the account's own tabs.
+type WidgetRef struct {
+	ID, TabID, Kind string
+}
+
+// Connection is how one integration's connection is doing, with the widgets
+// of the account that use it, for Settings → Connections & services (#591).
+type Connection struct {
+	Integration string
+	// Instance is true for a connection of the instance (admins set it up).
+	Instance bool
+	Status   Status
+	Widgets  []WidgetRef
+}

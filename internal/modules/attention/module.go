@@ -66,4 +66,5 @@ func (m *Module) DataKind() modules.DataKind { return modules.PersonalSettings }
 // RegisterRoutes implements modules.Module.
 func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/attention", m.handlers.List)
+	r.Protected("GET /api/attention/connections", m.handlers.Connections)
 }
