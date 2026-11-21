@@ -178,3 +178,8 @@ func (m *Module) WidgetConfig(ctx context.Context, kind string) map[string]any {
 
 // TabIDs returns all tab ids (used for the display of an appliance, #140).
 func (m *Module) TabIDs(ctx context.Context) ([]string, error) { return m.scope.TabIDs(ctx) }
+
+// OwnWidgets lists the widgets on the account's own tabs (#599).
+func (m *Module) OwnWidgets(ctx context.Context) ([]usecase.OwnWidget, error) {
+	return m.scope.OwnWidgets(ctx)
+}

@@ -104,4 +104,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // The licence key has expired or covers fewer accounts than this instance has; …
   srv_28cc0a1c84155db5:
     'Der Lizenzschlüssel ist abgelaufen oder deckt weniger Konten ab, als diese Instanz hat. Die Daten bleiben lesbar, Änderungen brauchen einen gültigen Schlüssel.',
+  // The service does not answer.
+  srv_d4a77dfc8f36f361: 'Der Dienst antwortet nicht.',
 };

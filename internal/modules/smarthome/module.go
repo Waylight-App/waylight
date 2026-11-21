@@ -1,6 +1,7 @@
 package smarthome
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
@@ -28,6 +29,7 @@ type Config struct {
 // Module wires the smart home rings and implements modules.Module.
 type Module struct {
 	modules.Base
+	uc       usecase.SmartHome
 	handlers *controller.Handlers
 }
 
@@ -37,7 +39,7 @@ func New(cfg Config) *Module {
 		Repo: gateway.NewSettingsRepository(cfg.DB, cfg.Cipher), Provider: gateway.NewHomeAssistant(cfg.Client),
 		Clock: cfg.Clock, Policy: domain.ActionPolicy{Allowed: cfg.ActionEntities}, Audit: cfg.Audit,
 	})
-	return &Module{handlers: controller.NewHandlers(uc)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
 }
 
 // Name implements modules.Module.
@@ -59,4 +61,11 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("GET /api/smarthome/entities", m.handlers.Entities)
 	r.Protected("GET /api/smarthome/states", m.handlers.States)
 	r.Protected("POST /api/smarthome/entities/{id}/action", m.handlers.Act)
+}
+
+// ConnectionStatus implements modules.StatusReporter (#599): the entity
+// list the widget shows tells whether Home Assistant answers.
+func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus {
+	_, err := m.uc.Entities(ctx)
+	return modules.StatusOf(err, domain.ErrNotConfigured)
 }

@@ -37,6 +37,7 @@ export const serverMessages = {
   srv_5cd46d3ed824e037: "The server did not answer in time.",
   srv_d6ecea29338eeff4: "The server rejected the login. Check user name, password or token.",
   srv_cc10ad5b6bd86945: "The server sent an unexpected answer.",
+  srv_d4a77dfc8f36f361: "The service does not answer.",
   srv_cd970adb7028a7ce: "The sign-in was not started here or has expired. Please start again.",
   srv_07a824b208b96b62: "These settings are managed by the configuration file (CONFIG_FILE) and are read-only here.",
   srv_b093b38e42d34fa3: "This feature needs a valid licence key.",

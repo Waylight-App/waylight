@@ -25,7 +25,7 @@ func TestDataKinds(t *testing.T) {
 	want := map[modules.DataKind][]string{
 		modules.PersonalContent: {"birthdays", "bookmarks", "countdown", "dashboard", "drop", "focus", "gamedeals", "habits",
 			"markets", "notes", "parcels", "photos", "readlater", "releases", "rss", "shopping", "study", "todos"},
-		modules.PersonalSettings: {"appearance", "briefing", "calendar", "mail", "onboarding", "search"},
+		modules.PersonalSettings: {"appearance", "attention", "briefing", "calendar", "mail", "onboarding", "search"},
 	}
 	got := map[modules.DataKind][]string{}
 	for _, m := range a.registry.All() {

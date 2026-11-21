@@ -1,0 +1,39 @@
+tags:
+  - name: attention
+
+paths:
+  /api/attention:
+    get:
+      tags: [attention]
+      summary: "What needs the signed-in account's attention (#599): widgets on its own tabs that miss a setting, and connections of their modules that are not set up or stopped working; admins also get broken instance connections that no widget of theirs uses. Failures first, then setups, oldest first. Guests, kiosk displays and API tokens get an empty list. Statuses are kept for two minutes."
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/AttentionList" } } } }
+
+schemas:
+  AttentionList:
+    type: object
+    required: [items, count]
+    properties:
+      items: { type: array, items: { $ref: "#/components/schemas/AttentionItem" } }
+      count: { type: integer, description: Number of items, for a badge }
+  AttentionItem:
+    type: object
+    required: [id, kind, integration, title, reason, since, action]
+    properties:
+      id: { type: string, description: "Stable while the entry exists: widget:<id> or module:<name>" }
+      kind: { type: string, enum: [connection, setup], description: "connection = stopped working, setup = not set up yet" }
+      integration: { type: string, description: "Module the entry belongs to, e.g. immich; clients name it with their widget names" }
+      widgetId: { type: string, description: The widget the entry belongs to, if any }
+      tabId: { type: string, description: The tab of that widget }
+      connectionId: { type: string, description: "The shared connection (#591) the entry belongs to, once connections exist" }
+      title: { type: string, description: Currently the module name }
+      reason:
+        type: object
+        required: [message, messageKey]
+        properties:
+          message: { type: string, description: English text }
+          messageKey: { type: string, description: "Key of the English template for translation (#102)" }
+          params: { type: object, additionalProperties: { type: string } }
+      since: { type: string, format: date-time, description: When the server first saw the problem }
+      action: { type: string, enum: [signIn, check, fix, choose, connect] }
+      field: { type: string, description: "For action choose: the widget setting to open, e.g. stopId" }

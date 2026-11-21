@@ -1,9 +1,12 @@
 package grafana
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"net/http"
+
+	"waylight/internal/modules/grafana/domain"
 
 	"waylight/internal/modules"
 	"waylight/internal/modules/grafana/adapter/controller"
@@ -65,4 +68,11 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 // search (ADR 0026).
 func (m *Module) AnswerSources() []answers.Source {
 	return []answers.Source{smartsearch.New(m.uc)}
+}
+
+// ConnectionStatus implements modules.StatusReporter (#599): the alert list
+// the widget shows tells whether Grafana answers.
+func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus {
+	_, err := m.uc.Alerts(ctx)
+	return modules.StatusOf(err, domain.ErrNotConfigured)
 }

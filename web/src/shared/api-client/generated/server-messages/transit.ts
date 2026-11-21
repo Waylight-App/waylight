@@ -2,6 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_21a0df256f4c1358: "Choose a stop for the departures.",
   srv_d92a0962a35bc0f4: "Please choose a stop in the widget settings.",
   srv_83a3bc209358c090: "The departure information is not available right now.",
 } as const;
