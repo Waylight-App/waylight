@@ -6,6 +6,8 @@
   import Meter from '../../../shared/ui/Meter.svelte';
   import { type ImmichOverview, parseWidgetConfig, thumbnailUrl } from '../domain/immich';
   import type { ImmichUseCases } from '../usecase/immichUseCases';
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { immichSetup } from './immichSetup';
 
   /** Props of the Immich widget (#85). */
   interface Props {
@@ -21,24 +23,27 @@
   let error = $state('');
   let unconfigured = $state(false);
 
-  $effect(() =>
-    poll(
-      () =>
-        immich
-          .overview()
-          .then((o) => ((overview = o), (error = ''), (unconfigured = false)))
-          .catch((err) => {
-            unconfigured = err instanceof ApiError && err.status === 404;
-            error = errorMessage(err);
-            throw err;
-          }),
-      POLL_MS,
-    ),
-  );
+  const load = () =>
+    immich
+      .overview()
+      .then((o) => ((overview = o), (error = ''), (unconfigured = false)))
+      .catch((err) => {
+        unconfigured = err instanceof ApiError && err.status === 404;
+        error = errorMessage(err);
+        throw err;
+      });
+  $effect(() => poll(load, POLL_MS));
+  // svelte-ignore state_referenced_locally
+  const setup = immichSetup(immich);
 </script>
 
 {#if unconfigured}
-  <p class="muted">{t('immich.connect_under_settings')}</p>
+  <SetupInPlace
+    text={t('immich.connect_under_settings')}
+    descriptor={setup}
+    instance
+    ondone={() => void load().catch(() => undefined)}
+  />
 {:else if error && !overview}
   <p class="error">{error}</p>
 {:else if overview}

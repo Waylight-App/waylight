@@ -6,6 +6,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
+  // A Sonarr, Radarr or Prowlarr instance does not answer.
+  srv_80cd4d1600527c40: 'Eine Sonarr-, Radarr- oder Prowlarr-Instanz antwortet nicht.',
   // At most {max} instances are supported.
   srv_e087fafa20933ecf: 'Höchstens {max} Instanzen werden unterstützt.',
   // Choose Sonarr, Radarr or Prowlarr.

@@ -22,6 +22,15 @@ export const en = {
   'calendar.accounts.disconnect_confirm':
     'Disconnect {name}? Its calendars disappear from Waylight and the access is revoked.',
   'calendar.accounts.read_only': 'read-only',
+  'calendar.setup_service': 'Nextcloud calendar',
+  'calendar.setup_server': 'Nextcloud address',
+  'calendar.setup_step_settings': 'Open Nextcloud, click your profile picture and choose Personal settings.',
+  'calendar.setup_step_security': 'Open Security and scroll down to Devices & sessions.',
+  'calendar.setup_step_create': 'Enter Waylight as app name and press Create new app password.',
+  'calendar.setup_step_copy': 'Copy the user name and the app password shown and paste them below.',
+  'calendar.setup_username': 'User name',
+  'calendar.setup_password': 'App password',
+  'calendar.setup_calendars': 'Calendars: {list}',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

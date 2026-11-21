@@ -6,4 +6,13 @@ export const de: Record<keyof typeof en, string> = {
   'compact.unavailable': 'Nicht verfügbar',
   'compact.level_attention': 'Braucht Aufmerksamkeit',
   'compact.level_problem': 'Problem',
+  'compact.action_done': '{action}: erledigt',
+  'compact.example.todos': '3 offen · 1 überfällig',
+  'compact.example.habits': '2 von 5 heute',
+  'compact.example.focus': '50 Min. Fokus heute',
+  'compact.example.services': '11 von 12 laufen',
+  'compact.example.status-overview': '11 von 12 laufen',
+  'compact.example.calendar': 'Zahnarzt · Heute um 14:00',
+  'compact.example.backup-status': 'Sicherung OK',
+  'compact.example.diskhealth': '3 Laufwerke gesund',
 };

@@ -16,4 +16,11 @@ export const de: Record<keyof typeof en, string> = {
   'immich.api_key': 'API-Schlüssel {value}',
   'immich.key_hint':
     'Lege einen API-Schlüssel unter Kontoeinstellungen → API-Schlüssel mit den Berechtigungen asset.statistics, server.storage, memory.read und asset.view an. Er wird verschlüsselt gespeichert; Fotos lädt Waylight selbst.',
+  'immich.setup_step_profile': 'Öffne Immich und klicke oben rechts auf dein Profilbild.',
+  'immich.setup_step_keys': 'Wähle Kontoeinstellungen → API-Schlüssel → Neuer API-Schlüssel.',
+  'immich.setup_step_permissions':
+    'Nenne ihn Waylight, hake asset.statistics, server.storage, memory.read und asset.view an und klicke Erstellen.',
+  'immich.setup_step_copy': 'Kopiere den Schlüssel und füge ihn unten ein.',
+  'immich.setup_key': 'API-Schlüssel',
+  'immich.setup_photos': '{n} Fotos, {videos} Videos',
 };

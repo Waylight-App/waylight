@@ -23,6 +23,12 @@ redoes it. A removed widget comes back with its settings and its content.
 arrow keys to move through the list and `Enter` to add it to the current
 tab.
 
+A click on a widget adds it in its default size. The ⊞ button in the corner
+of each entry shows the widget in every [size](#widget-sizes) side by side
+instead, with example data, so you can see what a small tile or a strip will
+say before the widget is set up. Choosing a preview adds the widget in that
+size.
+
 The grid has twelve columns. Drag a widget by its frame to move it and drag
 its lower right corner to resize it; other widgets move out of the way. With
 the keyboard, focus a widget and use the arrow keys to move it or `Shift`
@@ -53,6 +59,13 @@ keyboard, `Shift` and the arrow keys step through the sizes. *Free size* in
 the menu turns a widget back into a freely sized tile, which always shows the
 full widget. Widgets placed before sizes existed stay free until you pick a
 size, so existing dashboards keep their look.
+
+Some compact views carry one quick action next to the short state, so the
+most common step needs no panel: habits tick off the next habit due today
+and to-dos tick off the most urgent one (overdue first, then the earliest due
+date). The button gives feedback at once; when the server refuses, its
+message is shown and nothing changes. Guests and kiosk displays do not see
+quick actions.
 
 Compact views exist for services and the status overview (*11 of 12
 running*, and which service is down), the backup status, drive health, the
@@ -130,19 +143,55 @@ widgets and the watch show it instead of the full widget; it is
 served at `GET /api/<module>/compact` with the same permissions as the
 module's other endpoints.
 
+## Setting up a widget in place
+
+A widget whose service is not connected yet shows one sentence and a
+**Set up** button. The setup runs inside the widget in three steps:
+
+1. **Address.** Enter where the service runs, for example
+   `http://192.168.178.20:2283` for Immich.
+2. **Credential.** The widget lists the steps in the service's own words,
+   for example *Account Settings → API Keys → New API Key* in Immich, and
+   *Open Immich* takes you to that page in a new tab. Paste the key or token.
+3. **Check.** Waylight tries the connection before it saves anything. When
+   it works you see real data (the number of photos and three of today's
+   memories, a few entities of Home Assistant, the calendars found and your
+   next events) and press *Done*.
+
+When the check fails, the message says why and what to try: the key was not
+accepted, nothing answers at the address, something other than the expected
+service answers there, or the certificate is not trusted.
+
+The assistant exists for Immich, Home Assistant and the Nextcloud calendar
+so far. For the calendar you enter the Nextcloud address, your user name and
+an app password; Waylight finds your calendars itself. Immich and Home
+Assistant are set up for the whole instance, so only admins see *Set up*
+there; every account can connect its own calendar. The settings pages stay
+the place to change a connection later.
+
 ## What needs your attention
 
 Waylight keeps a list of what needs your attention: widgets on your own tabs
 that miss a setting (a departures widget without a stop) and services behind
 your widgets that are not set up or stopped answering (Immich, Home
-Assistant, Nextcloud, Grafana, the FRITZ!Box for now). Admins also see
+Assistant, Nextcloud, Grafana, the FRITZ!Box, Proxmox, the media server,
+Sonarr/Radarr/Prowlarr and Speedtest Tracker for now). Admins also see
 broken connections of the instance that none of their widgets use. Shared
 tabs of others and integrations you never set up are left out. Each entry
 names one thing to do, such as *choose a stop* or *check again*.
 
-The web interface and the app read the list from `GET /api/attention`
-(see the API reference). A service's state is checked at most every two
-minutes, so a fixed problem can take that long to disappear.
+In the web interface a dot with the number of entries appears in the top
+bar as soon as something needs you; it is hidden while everything works.
+It opens **Settings → Needs your attention**, which lists what stopped
+working first and what is not set up yet below. The button next to an entry
+opens the widget's own settings on its tab, opens the integration's
+settings, or asks the service again. The list updates by itself while the
+page is open, so a fixed entry disappears without reloading.
+
+The app reads the same list from `GET /api/attention` (see the API
+reference). A service's state is kept for two minutes; *Check again* and
+closing the settings after a change ask the services right away
+(`?refresh=true`).
 
 ## Related pages
 

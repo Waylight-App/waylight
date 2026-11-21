@@ -8,12 +8,21 @@ import (
 	"testing"
 	"time"
 
+	"waylight/internal/modules/attention/adapter/presenter"
 	"waylight/internal/modules/attention/domain"
 )
 
-type fakeUC struct{ items []domain.Item }
+type fakeUC struct {
+	items []domain.Item
+	fresh *bool
+}
 
-func (f fakeUC) List(context.Context) ([]domain.Item, error) { return f.items, nil }
+func (f fakeUC) List(_ context.Context, fresh bool) ([]domain.Item, error) {
+	if f.fresh != nil {
+		*f.fresh = fresh
+	}
+	return f.items, nil
+}
 
 func TestList(t *testing.T) {
 	since := time.Unix(1_800_000_000, 0)
@@ -27,7 +36,7 @@ func TestList(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatal(rec.Code)
 	}
-	var got ListDTO
+	var got presenter.ListDTO
 	if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
 		t.Fatal(err)
 	}
@@ -39,5 +48,10 @@ func TestList(t *testing.T) {
 	NewHandlers(fakeUC{items: []domain.Item{}}).List(rec, httptest.NewRequest(http.MethodGet, "/api/attention", nil))
 	if rec.Body.String() != "{\"items\":[],\"count\":0}\n" {
 		t.Fatalf("empty list: %q", rec.Body.String())
+	}
+	var fresh bool
+	NewHandlers(fakeUC{fresh: &fresh}).List(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/api/attention?refresh=true", nil))
+	if !fresh {
+		t.Fatal("refresh=true asks for a fresh list")
 	}
 }

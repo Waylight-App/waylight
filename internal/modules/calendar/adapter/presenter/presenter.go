@@ -89,3 +89,29 @@ func Subscriptions(list []usecase.SubscriptionView) []SubscriptionDTO {
 	}
 	return out
 }
+
+// FoundCalendarDTO is a calendar the setup assistant found.
+type FoundCalendarDTO struct {
+	URL  string `json:"url"`
+	Name string `json:"name"`
+}
+
+// ConnectDTO is the answer of POST /api/calendar/connect: the saved
+// settings, the calendars found and the next events for the preview.
+type ConnectDTO struct {
+	Settings  SettingsDTO        `json:"settings"`
+	Calendars []FoundCalendarDTO `json:"calendars"`
+	Next      []EventDTO         `json:"next"`
+}
+
+// Connect maps the outcome of the setup assistant.
+func Connect(v usecase.ConnectView) ConnectDTO {
+	out := ConnectDTO{Settings: Settings(v.Settings), Calendars: make([]FoundCalendarDTO, 0, len(v.Calendars)), Next: make([]EventDTO, 0, len(v.Next))}
+	for _, c := range v.Calendars {
+		out.Calendars = append(out.Calendars, FoundCalendarDTO{URL: c.URL, Name: c.Name})
+	}
+	for _, e := range v.Next {
+		out.Next = append(out.Next, Event(e))
+	}
+	return out
+}

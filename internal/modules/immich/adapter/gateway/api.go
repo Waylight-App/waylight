@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"waylight/internal/modules/immich/domain"
+	"waylight/internal/shared/kernel"
 )
 
 const (
@@ -119,7 +120,7 @@ func (a *API) getJSON(ctx context.Context, s domain.Settings, path string, dst a
 	}
 	defer res.Body.Close()
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxJSONBytes)).Decode(dst); err != nil {
-		return fmt.Errorf("unexpected response from Immich: %w", err)
+		return fmt.Errorf("%w: %w", kernel.ErrTargetWrongService, err)
 	}
 	return nil
 }
@@ -140,10 +141,13 @@ func (a *API) get(ctx context.Context, s domain.Settings, path string) (*http.Re
 		return res, nil
 	case http.StatusUnauthorized:
 		_ = res.Body.Close()
-		return nil, fmt.Errorf("the API key was rejected (%s)", res.Status)
+		return nil, fmt.Errorf("%w: the API key was rejected (%s)", kernel.ErrTargetAuth, res.Status)
 	case http.StatusForbidden:
 		_ = res.Body.Close()
-		return nil, fmt.Errorf("the API key lacks a permission (%s)", res.Status)
+		return nil, fmt.Errorf("%w: the API key lacks a permission (%s)", kernel.ErrTargetAuth, res.Status)
+	case http.StatusNotFound:
+		_ = res.Body.Close()
+		return nil, fmt.Errorf("%w: %s", kernel.ErrTargetNotFound, path)
 	default:
 		_ = res.Body.Close()
 		return nil, fmt.Errorf("unexpected answer from Immich: %s", res.Status)

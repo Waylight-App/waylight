@@ -1,5 +1,6 @@
 <script lang="ts">
-  import EmptyState from '../../../shared/ui/EmptyState.svelte';
+  import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import { calendarSetup } from './calendarSetup';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -26,6 +27,8 @@
   let unconfigured = $state(false);
   let adding = $state<Date | null>(null);
   let reload = $state(0);
+  // svelte-ignore state_referenced_locally
+  const setup = calendarSetup(calendar);
 
   // The agenda list; the month and split views load their own months.
   $effect(() => {
@@ -62,7 +65,13 @@
 </script>
 
 {#if unconfigured}
-  <EmptyState text={t('calendar.connect_a_caldav_calendar_under_settings')} section="calendar" />
+  <!-- Calendars are personal (ADR 0018): every account may connect its own. -->
+  <SetupInPlace
+    text={t('calendar.connect_a_caldav_calendar_under_settings')}
+    descriptor={setup}
+    instance={false}
+    ondone={() => ((unconfigured = false), (error = ''), reload++)}
+  />
 {:else if error && !loaded}
   <p class="error">{error}</p>
 {:else if cfg.view === 'split'}

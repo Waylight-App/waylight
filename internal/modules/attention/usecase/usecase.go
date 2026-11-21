@@ -44,7 +44,9 @@ type Deps struct {
 // Attention is the input port of the module.
 type Attention interface {
 	// List returns what needs the account's attention, sorted (#599).
-	List(ctx context.Context) ([]domain.Item, error)
+	// fresh asks the services again instead of answering from the kept
+	// statuses, for a "Check again" a person just pressed.
+	List(ctx context.Context, fresh bool) ([]domain.Item, error)
 }
 
 // statusTimeout bounds one status call; a source that takes longer counts
@@ -54,6 +56,10 @@ const statusTimeout = 3 * time.Second
 // statusTTL keeps a status for a while, so a badge that is polled does not
 // ask every service on every request.
 const statusTTL = 2 * time.Minute
+
+// freshAfter is how old a kept status must be before a fresh list asks the
+// service again, so repeated clicks on "Check again" do not hammer it.
+const freshAfter = 10 * time.Second
 
 type cached struct {
 	status domain.Status
@@ -80,7 +86,7 @@ func New(d Deps) Attention {
 	return a
 }
 
-func (a *attention) List(ctx context.Context) ([]domain.Item, error) {
+func (a *attention) List(ctx context.Context, fresh bool) ([]domain.Item, error) {
 	p := kernel.PrincipalFrom(ctx)
 	// Guests, kiosk displays and API tokens can change nothing, so nothing
 	// needs their attention.
@@ -112,7 +118,7 @@ func (a *attention) List(ctx context.Context) ([]domain.Item, error) {
 			continue
 		}
 		reported[src.Module] = true
-		if item, ok := a.fromStatus(ctx, p, src); ok {
+		if item, ok := a.fromStatus(ctx, p, src, fresh); ok {
 			item.WidgetID, item.TabID = w.ID, w.TabID
 			items = append(items, item)
 		}
@@ -126,7 +132,7 @@ func (a *attention) List(ctx context.Context) ([]domain.Item, error) {
 			if !src.Instance || src.Status == nil || reported[src.Module] {
 				continue
 			}
-			if item, ok := a.fromStatus(ctx, p, src); ok && item.Kind == domain.KindConnection {
+			if item, ok := a.fromStatus(ctx, p, src, fresh); ok && item.Kind == domain.KindConnection {
 				items = append(items, item)
 			}
 		}
@@ -143,8 +149,8 @@ func (a *attention) mayRead(ctx context.Context, module string) bool {
 	return a.d.MayRead == nil || a.d.MayRead(ctx, module)
 }
 
-func (a *attention) fromStatus(ctx context.Context, p kernel.Principal, src *Source) (domain.Item, bool) {
-	st := a.status(ctx, p, src)
+func (a *attention) fromStatus(ctx context.Context, p kernel.Principal, src *Source, fresh bool) (domain.Item, bool) {
+	st := a.status(ctx, p, src, fresh)
 	if st.State == domain.StateOK || st.State == "" {
 		return domain.Item{}, false
 	}
@@ -158,9 +164,10 @@ func (a *attention) fromStatus(ctx context.Context, p kernel.Principal, src *Sou
 	}, true
 }
 
-// status asks the source with a timeout and keeps the answer for statusTTL;
-// instance connections are shared, personal ones are kept per account.
-func (a *attention) status(ctx context.Context, p kernel.Principal, src *Source) domain.Status {
+// status asks the source with a timeout and keeps the answer for statusTTL
+// (freshAfter when fresh); instance connections are shared, personal ones
+// are kept per account.
+func (a *attention) status(ctx context.Context, p kernel.Principal, src *Source, fresh bool) domain.Status {
 	key := src.Module
 	if !src.Instance {
 		key += "|" + p.AccountID
@@ -169,7 +176,11 @@ func (a *attention) status(ctx context.Context, p kernel.Principal, src *Source)
 	a.mu.Lock()
 	c, ok := a.statuses[key]
 	a.mu.Unlock()
-	if ok && now.Sub(c.at) < statusTTL {
+	ttl := statusTTL
+	if fresh {
+		ttl = freshAfter
+	}
+	if ok && now.Sub(c.at) < ttl {
 		return c.status
 	}
 	callCtx, cancel := context.WithTimeout(ctx, statusTimeout)

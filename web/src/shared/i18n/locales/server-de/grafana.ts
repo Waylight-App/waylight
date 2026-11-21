@@ -11,6 +11,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // Grafana cannot render this panel as an image; install the Grafana image renderer.
   srv_8ff75b8c58539e49:
     'Grafana kann dieses Panel nicht als Bild ausgeben; installiere den Grafana Image Renderer.',
+  // Grafana returned no values for this panel; panels that use dashboard variables need the image renderer.
+  srv_de8bb22138954324:
+    'Grafana hat für dieses Panel keine Werte geliefert; Panels mit Dashboard-Variablen brauchen den Image Renderer.',
   // Grafana is not configured yet.
   srv_a25fcc52746e2dd0: 'Grafana ist noch nicht eingerichtet.',
   // Grafana is not reachable.

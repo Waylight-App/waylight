@@ -1,6 +1,7 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type {
   AgendaDTO,
+  ConnectDTO,
   EventDTO,
   SettingsDTO,
   SubscriptionDTO,
@@ -9,6 +10,7 @@ import type {
   AccountDTO,
   AccountsDTO,
   CalendarChoiceDTO,
+  ConnectInputDTO,
   NewEventDTO,
   SignInStartDTO,
   SignInStatusDTO,
@@ -29,7 +31,7 @@ import type {
   CalendarProvider,
   SignInStatus,
 } from '../../domain/accounts';
-import type { Agenda, CalendarGateway } from '../../usecase/calendarUseCases';
+import type { Agenda, CalendarConnection, CalendarGateway } from '../../usecase/calendarUseCases';
 
 const toAccount = (d: AccountDTO): CalendarAccount => ({
   ...d,
@@ -61,6 +63,11 @@ export class CalendarApi implements CalendarGateway {
   async saveSettings(urls: string[], username: string, password: string): Promise<CalendarSettings> {
     const body: SettingsInputDTO = { calendarUrls: urls, username, password };
     return { ...(await this.http.put<SettingsDTO>('/api/calendar/settings', body)) };
+  }
+  async connect(server: string, username: string, password: string): Promise<CalendarConnection> {
+    const body: ConnectInputDTO = { server, username, password };
+    const d = await this.http.post<ConnectDTO>('/api/calendar/connect', body);
+    return { calendars: d.calendars.map((c) => ({ ...c })), next: d.next.map(toEvent) };
   }
   async events(days: number): Promise<Agenda> {
     const d = await this.http.get<AgendaDTO>(`/api/calendar/events?days=${days}`);

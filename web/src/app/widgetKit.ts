@@ -34,6 +34,8 @@ export interface WidgetDefinition {
    * their full view at every size.
    */
   compact?: (config: Config) => string | undefined;
+  /** Example of the compact view for the size previews of the picker (#596). */
+  compactExample?: () => string;
   /**
    * The widget watches something that can fail (a service, a backup, a
    * drive), so its detail panel offers to set up notifications (#594).

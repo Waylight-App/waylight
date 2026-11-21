@@ -9,6 +9,7 @@
   import SyncStatus from './offline/SyncStatus.svelte';
   import MaintenanceBanner from '../features/notifications/ui/MaintenanceBanner.svelte';
   import { setLanguage, t } from '../shared/i18n';
+  import { tick } from 'svelte';
   import { type Appearance, cssVariables, defaultAppearance } from '../features/appearance';
   import { errorMessage } from '../shared/api-client/http';
   import { applyTheme } from '../shared/theme/theme';
@@ -17,10 +18,13 @@
   import DashboardPage from './DashboardPage.svelte';
   import { branding } from './branding/branding.svelte';
   import { loadPlugins } from './plugins/loader';
-  import { widgetDefinitions } from './widgets';
+  import { definitionFor, widgetDefinitions } from './widgets';
   import { searchActions } from './searchActions';
   import { registeredSections } from './settingsSections';
+  import { OWN_SECTIONS } from './settingsCatalog';
+  import type { AttentionState } from '../features/attention/ui/attentionState.svelte';
   import { provideOpenSettings } from '../shared/ui/settingsLink';
+  import { provideSetupRights } from '../shared/setup/setup';
   import { attachShortcuts } from '../shared/shortcuts';
   import Icon from '../shared/ui/icons/Icon.svelte';
   import AccountMenu from './AccountMenu.svelte';
@@ -55,6 +59,14 @@
     settingsSection = section;
     settingsOpen = true;
   });
+  // Widgets that are not set up offer the setup assistant in place (#588)
+  // to those who may save the integration; the local mode has no server.
+  // svelte-ignore state_referenced_locally
+  if (!container.localMode)
+    provideSetupRights({
+      admin: container.auth.admin,
+      guest: container.auth.guest || container.auth.kiosk,
+    });
   let editing = $state(false);
   let error = $state('');
   let appearance = $state<Appearance>(defaultAppearance);
@@ -73,6 +85,7 @@
   let dashboard = $state<{
     selectTabAt: (index: number) => void;
     selectTab: (id: string) => void;
+    openWidgetSettings: (tabId: string, widgetId: string) => void;
     openAddWidget: (query?: string) => void;
     undo: () => void;
     redo: () => void;
@@ -104,6 +117,91 @@
     url.searchParams.delete('settings');
     history.replaceState(history.state, '', url.pathname + url.search + url.hash);
   });
+  /**
+   * Opens the settings at a section. An open dialog keeps the section it
+   * opened with, so it is closed and opened again.
+   */
+  async function openSettingsAt(section: string) {
+    if (settingsOpen) {
+      settingsOpen = false;
+      await tick();
+    }
+    settingsSection = section;
+    settingsOpen = true;
+  }
+
+  // The attention list (#592): the dot in the top bar and Settings → Needs
+  // your attention. Guests, kiosk displays and the local mode can fix
+  // nothing, so they never ask.
+  const attentionOn = $derived(
+    !!modules?.has('attention') && !container.auth.guest && !container.auth.kiosk && !container.localMode,
+  );
+  // Loaded only where it is used, so the extension's local mode and guests
+  // do not carry it (ADR 0011).
+  let attention = $state<AttentionState | null>(null);
+  $effect(() => {
+    if (!attentionOn) return;
+    let cancelled = false;
+    let stop = () => {};
+    void import('./attention.svelte').then((m) => {
+      if (cancelled) return;
+      m.setAttentionHandlers(attentionHandlers);
+      const state = m.attention;
+      state.attach(container.attention);
+      attention = state;
+      void state.refresh();
+      const poll = () => {
+        if (!document.hidden) void state.refresh();
+      };
+      const id = setInterval(poll, 60_000);
+      document.addEventListener('visibilitychange', poll);
+      stop = () => {
+        clearInterval(id);
+        document.removeEventListener('visibilitychange', poll);
+        state.attach(null);
+      };
+    });
+    return () => {
+      cancelled = true;
+      stop();
+      attention = null;
+    };
+  });
+  const attentionHandlers = {
+    openWidget: (tabId: string, widgetId: string) => {
+      settingsOpen = false;
+      dashboard?.openWidgetSettings(tabId, widgetId);
+    },
+    openSettings: (section: string) => void openSettingsAt(section),
+    sectionOf: (integration: string) =>
+      [...OWN_SECTIONS, ...registeredSections].find((s) => s.module === integration && s.id !== 'attention')
+        ?.id,
+    nameOf: (integration: string) => {
+      const s = [...OWN_SECTIONS, ...registeredSections].find(
+        (x) => x.module === integration && x.id !== 'attention',
+      );
+      if (s) return s.title?.() ?? t(s.label);
+      return definitionFor(integration)?.type.title ?? integration;
+    },
+    tabName: (tabId: string) => dashboardState.tabs.find((tab) => tab.id === tabId)?.name,
+  } satisfies import('./attention.svelte').AttentionHandlers;
+  // A changed widget may have got its missing setting: look again shortly
+  // after the dashboard changed, without asking the services.
+  $effect(() => {
+    void dashboardState.tabs;
+    const state = attention;
+    if (!state) return;
+    const id = setTimeout(() => void state.refresh(), 1_000);
+    return () => clearTimeout(id);
+  });
+
+  function closeSettings() {
+    settingsOpen = false;
+    // A connection may have been fixed in the settings: ask its service
+    // again, but only when something was broken.
+    if (attention && attention.count > 0) void attention.check();
+  }
+
   let launcherOpen = $state<Segment | null>(null);
   let launcherTrigger = $state<HTMLButtonElement>();
   let serviceStatus = $state<ReturnType<typeof statusSummary>>({ kind: 'none', offline: 0 });
@@ -457,6 +555,12 @@
     />
   </div>
   <div class="right">
+    {#if attention && attention.count > 0}
+      {@const state = attention}
+      {#await import('../features/attention/ui/AttentionBadge.svelte') then { default: AttentionBadge }}
+        <AttentionBadge {state} onopen={() => void openSettingsAt('attention')} />
+      {/await}
+    {/if}
     {#if serviceStatus.kind !== 'none'}
       <button
         type="button"
@@ -581,7 +685,7 @@
       onappearance={(a) => (appearance = a)}
       onrestarttour={modules.has('onboarding') ? restartTour : undefined}
       section={settingsSection}
-      onclose={() => (settingsOpen = false)}
+      onclose={closeSettings}
     />
   {/await}
 {/if}

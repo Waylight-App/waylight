@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"waylight/internal/modules/smarthome/domain"
+	"waylight/internal/shared/kernel"
 )
 
 // maxStatesBytes bounds GET /api/states; large installations have a few
@@ -82,12 +83,14 @@ func (h *HomeAssistant) do(ctx context.Context, s domain.Settings, method, path 
 	switch res.StatusCode {
 	case http.StatusOK:
 	case http.StatusUnauthorized:
-		return fmt.Errorf("the access token was rejected (%s)", res.Status)
+		return fmt.Errorf("%w: the access token was rejected (%s)", kernel.ErrTargetAuth, res.Status)
+	case http.StatusNotFound:
+		return fmt.Errorf("%w: %s", kernel.ErrTargetNotFound, path)
 	default:
 		return fmt.Errorf("unexpected answer from Home Assistant: %s", res.Status)
 	}
 	if err := json.NewDecoder(io.LimitReader(res.Body, maxStatesBytes)).Decode(dst); err != nil {
-		return fmt.Errorf("unexpected response from Home Assistant: %w", err)
+		return fmt.Errorf("%w: %w", kernel.ErrTargetWrongService, err)
 	}
 	return nil
 }

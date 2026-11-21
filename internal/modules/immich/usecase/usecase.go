@@ -94,7 +94,7 @@ func (uc *immich) SaveSettings(ctx context.Context, in SettingsInput) (SettingsV
 		return SettingsView{}, err
 	}
 	if _, err := uc.client.Stats(ctx, s); err != nil {
-		return SettingsView{}, kernel.NewPublicErrorf(kernel.ErrInvalid, "Could not connect to Immich: {detail}", "detail", err.Error())
+		return SettingsView{}, kernel.SetupFailure("Immich", err)
 	}
 	if err := uc.repo.Save(ctx, s); err != nil {
 		return SettingsView{}, fmt.Errorf("save settings: %w", err)
