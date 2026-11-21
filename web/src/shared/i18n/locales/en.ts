@@ -515,6 +515,8 @@ export const en = {
   'auth.pair_app_valid_until': 'Valid once, until {value}.',
   'auth.pair_app_show_code': 'Show pairing code',
   'auth.pair_app_new_code': 'New code',
+  'auth.pair_app_code': 'Pairing code',
+  'auth.pair_app_type_hint': 'Or type the code on the device, for example on a watch:',
   'app.mobile_app': 'Mobile app',
   'auth.handover_title': 'Sign in the Waylight app?',
   'auth.handover_text': 'The Waylight app on this device asks to be signed in with your account.',
