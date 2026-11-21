@@ -13,34 +13,31 @@ func TestCompact(t *testing.T) {
 	uc, repo, _, _, _ := setup()
 	repo.s = &domain.Settings{URL: "http://ha", Token: "token"}
 
-	// An allow-listed switch that is off offers to turn it on.
-	s, err := uc.Compact(ctx, "switch.coffee")
-	if err != nil || s.Title.String() != "Coffee" || s.Detail.String() != "Off" {
-		t.Fatalf("%+v %v", s, err)
-	}
-	if s.Action == nil || s.Action.Label.String() != "Turn on" || s.Action.Path != "/api/smarthome/entities/switch.coffee/action" || s.Action.Method != "POST" {
-		t.Fatalf("action %+v", s.Action)
+	// An allow-listed switch comes with its toggle.
+	s, e, err := uc.Compact(ctx, "switch.coffee")
+	if err != nil || s.Title.String() != "Coffee" || s.Detail.String() != "Off" || e.Action != domain.ActionToggle {
+		t.Fatalf("%+v %+v %v", s, e, err)
 	}
 	if s.UpdatedAt.IsZero() {
 		t.Fatal("no update time")
 	}
 
 	// A switch outside the allow-list is shown without an action.
-	if s, _ := uc.Compact(ctx, "switch.heater"); s.Action != nil || s.Detail.String() != "On" {
+	if s, e, _ := uc.Compact(ctx, "switch.heater"); e.Action != domain.ActionNone || s.Detail.String() != "On" {
 		t.Fatalf("heater %+v", s)
 	}
 	// A sensor shows its value with the unit and has no action.
-	if s, _ := uc.Compact(ctx, "sensor.power"); s.Action != nil || s.Detail.String() != "42 W" {
+	if s, e, _ := uc.Compact(ctx, "sensor.power"); e.Action != domain.ActionNone || s.Detail.String() != "42 W" {
 		t.Fatalf("sensor %+v", s)
 	}
 
-	if _, err := uc.Compact(ctx, ""); err == nil {
+	if _, _, err := uc.Compact(ctx, ""); err == nil {
 		t.Fatal("a missing entity must be refused")
 	}
-	if _, err := uc.Compact(ctx, "switch.nope"); !errors.Is(err, domain.ErrEntityNotFound) {
+	if _, _, err := uc.Compact(ctx, "switch.nope"); !errors.Is(err, domain.ErrEntityNotFound) {
 		t.Fatalf("unknown entity: %v", err)
 	}
-	if _, err := uc.Compact(ctx, "../etc"); !errors.Is(err, domain.ErrEntityNotFound) {
+	if _, _, err := uc.Compact(ctx, "../etc"); !errors.Is(err, domain.ErrEntityNotFound) {
 		t.Fatalf("invalid entity: %v", err)
 	}
 }
