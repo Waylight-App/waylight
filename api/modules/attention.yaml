@@ -14,7 +14,34 @@ paths:
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/AttentionList" } } } }
 
+  /api/attention/connections:
+    get:
+      tags: [attention]
+      summary: "Every integration that reports a connection (#591), with its state and the widgets on the account's own tabs that use it, for Settings → Connections & services. Admins see all instance connections, members only those behind their own widgets plus their personal ones; guests, kiosk displays and API tokens get an empty list."
+      parameters:
+        - { name: refresh, in: query, description: "true asks the services again", schema: { type: boolean, default: false } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/AttentionConnection" } } } } }
+
 schemas:
+  AttentionConnection:
+    type: object
+    required: [integration, instance, state, widgets]
+    properties:
+      integration: { type: string }
+      instance: { type: boolean, description: A connection of the instance that admins set up }
+      state: { type: string, enum: [ok, setup, failing] }
+      reason:
+        type: object
+        required: [message, messageKey]
+        properties:
+          message: { type: string }
+          messageKey: { type: string }
+          params: { type: object, additionalProperties: { type: string } }
+      action: { type: string, enum: [signIn, check, fix, choose, connect] }
+      widgets:
+        type: array
+        items: { type: object, required: [id, tabId, kind], properties: { id: { type: string }, tabId: { type: string }, kind: { type: string } } }
   AttentionList:
     type: object
     required: [items, count]

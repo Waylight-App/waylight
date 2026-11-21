@@ -1,6 +1,6 @@
 /** English UI texts of the places feature (#591). */
 export const en = {
-  'settings.section.connections': 'Connections & places',
+  'settings.section.connections': 'Places',
   'places.title': 'Places',
   'places.intro':
     'Enter a place once and choose it in every widget that needs a location: weather, rain radar and fuel prices.',

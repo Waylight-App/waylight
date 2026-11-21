@@ -43,6 +43,17 @@ func TestAttentionList(t *testing.T) {
 		}
 	}
 
+	// Connections & services lists the same integrations with their state (#591).
+	var conns []obj
+	owner.json(http.MethodGet, "/api/attention/connections", nil, http.StatusOK, &conns)
+	states := map[string]string{}
+	for _, c := range conns {
+		states[c["integration"].(string)] = c["state"].(string)
+	}
+	if states["immich"] != "setup" || states["proxmox"] != "setup" {
+		t.Fatalf("connections: %+v", conns)
+	}
+
 	owner.json(http.MethodPatch, "/api/dashboard/widgets/"+transit["id"].(string), obj{"config": obj{"stopId": "de-delfi:1"}}, http.StatusOK, nil)
 	owner.json(http.MethodGet, "/api/attention", nil, http.StatusOK, &list)
 	for _, it := range list.Items {

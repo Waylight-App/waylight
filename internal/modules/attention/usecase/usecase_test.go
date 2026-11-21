@@ -158,3 +158,44 @@ func TestSlowSourceCountsAsNotAnswering(t *testing.T) {
 		t.Fatal("the timeout bounds the call")
 	}
 }
+
+// TestConnections lists every reporting integration with its state and the
+// widgets that use it; members see instance connections only behind their
+// own widgets (#591).
+func TestConnections(t *testing.T) {
+	c := &clock{now: time.Unix(1_800_000_000, 0)}
+	var calls int
+	uc := New(Deps{
+		Clock: c,
+		Widgets: func(context.Context) ([]Widget, error) {
+			return []Widget{{ID: "w1", TabID: "t1", Kind: "immich"}}, nil
+		},
+		Sources: []Source{
+			{Module: "immich", Kinds: []string{"immich"}, Instance: true, Status: failing(&calls)},
+			{Module: "proxmox", Kinds: []string{"proxmox"}, Instance: true, Status: func(context.Context) domain.Status {
+				return domain.Status{State: domain.StateSetup, Action: domain.ActionConnect}
+			}},
+			{Module: "calendar", Kinds: []string{"calendar"}, Status: func(context.Context) domain.Status { return domain.Status{} }},
+			{Module: "transit", Kinds: []string{"transit"}},
+		},
+	})
+	list, err := uc.Connections(ctxAs("admin"), false)
+	if err != nil || len(list) != 3 {
+		t.Fatalf("admin: %+v %v", list, err)
+	}
+	byName := map[string]domain.Connection{}
+	for _, x := range list {
+		byName[x.Integration] = x
+	}
+	if byName["immich"].Status.State != domain.StateFailing || len(byName["immich"].Widgets) != 1 ||
+		byName["proxmox"].Status.State != domain.StateSetup || byName["calendar"].Status.State != domain.StateOK {
+		t.Fatalf("%+v", byName)
+	}
+	list, _ = uc.Connections(ctxAs("member"), false)
+	if len(list) != 2 || list[0].Integration != "calendar" || list[1].Integration != "immich" {
+		t.Fatalf("member: %+v", list)
+	}
+	if list, _ := uc.Connections(ctxAs("guest"), false); len(list) != 0 {
+		t.Fatalf("guest: %+v", list)
+	}
+}

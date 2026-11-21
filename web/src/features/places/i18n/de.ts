@@ -2,7 +2,7 @@ import type { en } from './en';
 
 /** German UI texts of the places feature; the type makes every key mandatory. */
 export const de: Record<keyof typeof en, string> = {
-  'settings.section.connections': 'Zugänge & Orte',
+  'settings.section.connections': 'Orte',
   'places.title': 'Orte',
   'places.intro':
     'Gib einen Ort einmal ein und wähle ihn in jedem Widget, das einen Standort braucht: Wetter, Regenradar und Spritpreise.',
