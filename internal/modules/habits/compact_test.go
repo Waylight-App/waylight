@@ -1,6 +1,7 @@
 package habits
 
 import (
+	"net/http"
 	"testing"
 	"time"
 
@@ -20,7 +21,7 @@ func TestNextHabitAction(t *testing.T) {
 		t.Fatalf("nothing open and due: %+v", a)
 	}
 	a := nextHabitAction([]usecase.HabitView{view("a", true, true), view("b", false, false), view("c", true, false)})
-	if a == nil || a.Path != "/api/habits/c/toggle" || a.Method != "POST" || a.Body["date"] != "2026-11-21" || a.Label.String() != "Done: Habit c" {
+	if a == nil || a.Path != "/api/habits/c/toggle" || a.Method != http.MethodPost || a.Body["date"] != "2026-11-21" || a.Label.String() != "Done: Habit c" {
 		t.Fatalf("next habit: %+v", a)
 	}
 }

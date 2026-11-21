@@ -1,6 +1,7 @@
 package todos
 
 import (
+	"net/http"
 	"testing"
 	"time"
 
@@ -18,7 +19,7 @@ func TestUrgentTodoAction(t *testing.T) {
 		{ID: "soon", Title: "Soon", Due: day(22), Position: 2, Version: 3},
 	}
 	a := urgentTodoAction(list)
-	if a == nil || a.Path != "/api/todos/soon" || a.Method != "PUT" || a.Body["due"] != "2026-11-22" || a.Body["version"] != 3 || a.Body["done"] != true {
+	if a == nil || a.Path != "/api/todos/soon" || a.Method != http.MethodPut || a.Body["due"] != "2026-11-22" || a.Body["version"] != 3 || a.Body["done"] != true {
 		t.Fatalf("earliest due: %+v", a)
 	}
 	list = append(list, usecase.TodoView{ID: "late", Title: "Late", Due: day(30), Overdue: true, Position: 3})
