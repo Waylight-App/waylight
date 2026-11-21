@@ -90,6 +90,20 @@
         }
       }
     },
+    "connections": {
+      "type": "array",
+      "description": "Named connections to a service, chosen by the widgets that use it. Credentials are never part of the file; enter them in the settings.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["service", "name", "url"],
+        "properties": {
+          "service": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}$", "description": "Module of the service, e.g. immich or proxmox" },
+          "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "Unique per service, compared without case" },
+          "url": { "$ref": "#/$defs/httpUrl" }
+        }
+      }
+    },
     "bookmarks": {
       "type": "array",
       "description": "Bookmarks without a folder, and folders with their bookmarks.",

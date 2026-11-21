@@ -24,6 +24,8 @@ import (
 	"waylight/internal/modules/bookmarks"
 	"waylight/internal/modules/briefing"
 	"waylight/internal/modules/calendar"
+	"waylight/internal/modules/connections"
+	connectionsuc "waylight/internal/modules/connections/usecase"
 	"waylight/internal/modules/countdown"
 	"waylight/internal/modules/dashboard"
 	"waylight/internal/modules/discovery"
@@ -282,6 +284,10 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	// Places name the widgets that use them, so they need the dashboard (#591).
 	if cfg.ModuleEnabled("places") {
 		registry.Register(places.New(db, placeWidgets(dash), clk, ids))
+	}
+	// Connections name the widgets that use them, so they need the dashboard (#610).
+	if cfg.ModuleEnabled("connections") {
+		registry.Register(connections.New(db, secrets, connectionWidgets(dash), clk, ids))
 	}
 	// The attention list asks the other modules, so it comes last (#599).
 	registry.Register(attention.New(registry.All(), ownWidgets(dash), authModule.MayRead, clk))
@@ -630,6 +636,28 @@ func placeWidgets(dash *dashboard.Module) places.Widgets {
 			}
 			_ = json.Unmarshal([]byte(w.Config), &cfg)
 			out = append(out, placesuc.Widget{ID: w.ID, TabID: w.TabID, Kind: w.Kind, PlaceID: cfg.PlaceID})
+		}
+		return out, nil
+	}
+}
+
+// connectionWidgets adapts the dashboard's widgets on the account's own tabs
+// to the connections module (#610), so neither module imports the other.
+func connectionWidgets(dash *dashboard.Module) connections.Widgets {
+	return func(ctx context.Context) ([]connectionsuc.Widget, error) {
+		own, err := dash.OwnWidgets(ctx)
+		if err != nil {
+			return nil, err
+		}
+		out := make([]connectionsuc.Widget, 0, len(own))
+		for _, w := range own {
+			// Widgets name their connection in their settings; settings that
+			// are not JSON name none.
+			var cfg struct {
+				ConnectionID string `json:"connectionId"`
+			}
+			_ = json.Unmarshal([]byte(w.Config), &cfg)
+			out = append(out, connectionsuc.Widget{ID: w.ID, TabID: w.TabID, Kind: w.Kind, ConnectionID: cfg.ConnectionID})
 		}
 		return out, nil
 	}
