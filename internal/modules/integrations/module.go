@@ -9,6 +9,7 @@ import (
 	"waylight/internal/modules/integrations/adapter/configfile"
 	"waylight/internal/modules/integrations/adapter/controller"
 	"waylight/internal/modules/integrations/adapter/gateway"
+	"waylight/internal/modules/integrations/domain"
 	"waylight/internal/modules/integrations/usecase"
 	"waylight/internal/shared/kernel"
 )
@@ -26,11 +27,26 @@ type Module struct {
 	config   usecase.Config
 }
 
-// New builds the integrations module (#610); cipher encrypts credentials.
-func New(db *sql.DB, cipher gateway.Cipher, widgets Widgets, clock kernel.Clock, ids kernel.IDGenerator) *Module {
+// New builds the integrations module (#610); cipher encrypts credentials,
+// specs are the services of the enabled modules (modules.ConnectionSpecsOf).
+func New(db *sql.DB, cipher gateway.Cipher, specs []modules.ConnectionSpec, widgets Widgets, clock kernel.Clock, ids kernel.IDGenerator) *Module {
 	repo := gateway.NewRepository(db, cipher)
-	uc := usecase.New(usecase.Deps{Repo: repo, Widgets: widgets, Clock: clock, IDs: ids})
+	uc := usecase.New(usecase.Deps{Repo: repo, Widgets: widgets, Services: services(specs), Clock: clock, IDs: ids})
 	return &Module{handlers: controller.NewHandlers(uc), config: usecase.NewConfig(repo, clock, ids)}
+}
+
+// services converts the module specs into the ports of the use cases, so
+// the inner rings do not depend on the module contract.
+func services(specs []modules.ConnectionSpec) []usecase.Service {
+	out := make([]usecase.Service, 0, len(specs))
+	for _, s := range specs {
+		spec := domain.Spec{Service: s.Service, Title: s.Title, FixedURL: s.FixedURL}
+		for _, f := range s.Fields {
+			spec.Fields = append(spec.Fields, domain.Field{Name: f.Name, Secret: f.Secret, Optional: f.Optional})
+		}
+		out = append(out, usecase.Service{Spec: spec, Check: s.Check})
+	}
+	return out
 }
 
 // Name implements modules.Module.
@@ -44,7 +60,9 @@ func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
 
 // RegisterRoutes implements modules.Module.
 func (m *Module) RegisterRoutes(r modules.Router) {
+	r.Protected("GET /api/integrations/services", m.handlers.Services)
 	r.Protected("GET /api/integrations/connections", m.handlers.List)
+	r.Protected("POST /api/integrations/connections/{id}/check", m.handlers.Check)
 	r.Protected("POST /api/integrations/connections", m.handlers.Add)
 	r.Protected("PUT /api/integrations/connections/{id}", m.handlers.Update)
 	r.Protected("PUT /api/integrations/connections/{id}/credential", m.handlers.ReplaceCredential)

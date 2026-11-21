@@ -3,6 +3,13 @@ tags:
   - name: integrations
 
 paths:
+  /api/integrations/services:
+    get:
+      tags: [integrations]
+      summary: "Services a connection can be made to (admins only): the credential fields each expects and, for services with a single address, that address"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/ConnectionService" } } } } }
+        "403": { description: Admins only, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
   /api/integrations/connections:
     get:
       tags: [integrations]
@@ -14,7 +21,7 @@ paths:
         "403": { description: Admins only, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
     post:
       tags: [integrations]
-      summary: Save a connection (admins only, at most 100, names unique per service)
+      summary: "Save a connection (admins only, at most 100, names unique per service); the service must be one of /api/integrations/services and the credential holds its required fields"
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ConnectionInput" } } } }
       responses:
@@ -47,6 +54,18 @@ paths:
         "403": { description: Admins only, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { description: "Name taken, or the connection is in use", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+  /api/integrations/connections/{id}/check:
+    post:
+      tags: [integrations]
+      summary: "Try the connection with the request the service's settings page makes before saving"
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      responses:
+        "204": { description: The service accepted the connection }
+        "403": { description: Admins only, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "503": { description: "The module of the service is switched off", content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
   /api/integrations/connections/{id}/credential:
     put:
       tags: [integrations]
@@ -78,7 +97,7 @@ schemas:
     type: object
     required: [service, name, url]
     properties:
-      service: { type: string, pattern: "^[a-z][a-z0-9-]{1,31}$", description: "Module of the service, e.g. immich" }
+      service: { type: string, pattern: "^[a-z][a-z0-9-]{1,31}$", description: "Service, e.g. immich or sonarr" }
       name: { type: string, maxLength: 60 }
       url: { type: string, format: uri }
       credential: { $ref: "#/components/schemas/ConnectionCredential" }
@@ -89,15 +108,32 @@ schemas:
       name: { type: string, maxLength: 60 }
       url: { type: string, format: uri }
       credential: { $ref: "#/components/schemas/ConnectionCredential" }
+  ConnectionService:
+    type: object
+    required: [service, title, fields]
+    properties:
+      service: { type: string, description: "Identifier stored with a connection, e.g. homeassistant" }
+      title: { type: string, description: Product name }
+      fixedUrl: { type: string, description: "The only address of the service; connections always use it" }
+      fields:
+        type: array
+        items:
+          type: object
+          required: [name, secret, optional]
+          properties:
+            name: { type: string }
+            secret: { type: boolean, description: Never returned once saved }
+            optional: { type: boolean }
   Connection:
     type: object
-    required: [id, service, name, url, fields, usedBy]
+    required: [id, service, name, url, fields, values, usedBy]
     properties:
       id: { type: string }
       service: { type: string }
       name: { type: string }
       url: { type: string }
       fields: { type: array, items: { type: string }, description: Names of the credential fields that are set }
+      values: { type: object, additionalProperties: { type: string }, description: "Credential fields that are not secret, e.g. the user name" }
       usedBy:
         type: array
         items:

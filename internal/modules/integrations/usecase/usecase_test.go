@@ -54,13 +54,39 @@ func admin() context.Context {
 	return kernel.WithPrincipal(context.Background(), kernel.Principal{AccountID: "a", Role: "admin"})
 }
 
-func newUC(widgets []Widget) (Connections, *memRepo) {
-	repo := &memRepo{m: map[string]domain.Connection{}}
-	return New(Deps{
-		Repo: repo, Clock: clock{}, IDs: &ids{},
-		Widgets: func(context.Context) ([]Widget, error) { return widgets, nil },
-	}), repo
+// services are trimmed-down specs of real modules; checked records the
+// URL and credential each check saw.
+func services(checked *[]string) []Service {
+	check := func(_ context.Context, url string, cred map[string]string) error {
+		*checked = append(*checked, url+" "+cred["apiKey"])
+		if cred["apiKey"] == "wrong" {
+			return kernel.SetupFailure("Immich", kernel.ErrTargetAuth)
+		}
+		return nil
+	}
+	return []Service{
+		{Spec: domain.Spec{Service: "immich", Title: "Immich", Fields: []domain.Field{{Name: "apiKey", Secret: true}}}, Check: check},
+		{Spec: domain.Spec{Service: "proxmox", Title: "Proxmox VE", Fields: []domain.Field{{Name: "tokenId"}, {Name: "secret", Secret: true}}}},
+		{Spec: domain.Spec{Service: "tankerkoenig", Title: "Tankerkönig", FixedURL: "https://creativecommons.tankerkoenig.de/json",
+			Fields: []domain.Field{{Name: "apiKey", Secret: true}}}},
+	}
 }
+
+func newUC(widgets []Widget) (Connections, *memRepo) {
+	uc, repo, _ := newCheckedUC(widgets)
+	return uc, repo
+}
+
+func newCheckedUC(widgets []Widget) (Connections, *memRepo, *[]string) {
+	repo := &memRepo{m: map[string]domain.Connection{}}
+	checked := &[]string{}
+	return New(Deps{
+		Repo: repo, Clock: clock{}, IDs: &ids{}, Services: services(checked),
+		Widgets: func(context.Context) ([]Widget, error) { return widgets, nil },
+	}), repo, checked
+}
+
+var key = map[string]string{"apiKey": "k"}
 
 func TestOnlyAdmins(t *testing.T) {
 	uc, _ := newUC(nil)
@@ -83,7 +109,7 @@ func TestAddListAndNames(t *testing.T) {
 	if repo.m["a"].Credential["apiKey"] != "secret" {
 		t.Fatal("the credential must be stored")
 	}
-	if _, err := uc.Add(ctx, Input{Service: "immich", Name: "home", URL: "http://h"}); !errors.Is(err, domain.ErrNameTaken) {
+	if _, err := uc.Add(ctx, Input{Service: "immich", Name: "home", URL: "http://h", Credential: key}); !errors.Is(err, domain.ErrNameTaken) {
 		t.Fatalf("same name: %v", err)
 	}
 	if _, err := uc.Add(ctx, Input{Service: "proxmox", Name: "Home", URL: "https://pve:8006",
@@ -91,11 +117,11 @@ func TestAddListAndNames(t *testing.T) {
 		t.Fatalf("the name may repeat across services: %v", err)
 	}
 	list, err := uc.List(ctx, "immich")
-	if err != nil || len(list) != 1 || len(list[0].UsedBy) != 1 || list[0].UsedBy[0].WidgetID != "w1" {
+	if err != nil || len(list) != 1 || len(list[0].UsedBy) != 1 || list[0].UsedBy[0].WidgetID != "w1" || len(list[0].Values) != 0 {
 		t.Fatalf("%+v %v", list, err)
 	}
 	all, _ := uc.List(ctx, "")
-	if len(all) != 2 {
+	if len(all) != 2 || !maps.Equal(all[1].Values, map[string]string{"tokenId": "w@pve!d"}) {
 		t.Fatalf("all: %+v", all)
 	}
 }
@@ -123,8 +149,8 @@ func TestUpdateKeepsTheCredentialOnlyAtTheSameAddress(t *testing.T) {
 func TestRemoveInUseAsksFirst(t *testing.T) {
 	uc, repo := newUC([]Widget{{ID: "w1", TabID: "t1", Kind: "immich", ConnectionID: "a"}})
 	ctx := admin()
-	_, _ = uc.Add(ctx, Input{Service: "immich", Name: "Home", URL: "http://h"})
-	_, _ = uc.Add(ctx, Input{Service: "immich", Name: "Spare", URL: "http://s"})
+	_, _ = uc.Add(ctx, Input{Service: "immich", Name: "Home", URL: "http://h", Credential: key})
+	_, _ = uc.Add(ctx, Input{Service: "immich", Name: "Spare", URL: "http://s", Credential: key})
 	if err := uc.Remove(ctx, "a", false); !errors.Is(err, ErrInUse) {
 		t.Fatalf("in use: %v", err)
 	}
@@ -136,6 +162,84 @@ func TestRemoveInUseAsksFirst(t *testing.T) {
 	}
 	if err := uc.Remove(ctx, "a", true); !errors.Is(err, domain.ErrNotFound) {
 		t.Fatalf("gone: %v", err)
+	}
+}
+
+func TestSpecsGuardTheCredential(t *testing.T) {
+	uc, repo := newUC(nil)
+	ctx := admin()
+	for name, in := range map[string]Input{
+		"unknown service": {Service: "gitlab", Name: "Code", URL: "http://g", Credential: key},
+		"unknown field":   {Service: "immich", Name: "Home", URL: "http://h", Credential: map[string]string{"apiKey": "k", "token": "t"}},
+		"missing field":   {Service: "proxmox", Name: "Home", URL: "https://p:8006", Credential: map[string]string{"tokenId": "w@pve!d"}},
+		"no credential":   {Service: "immich", Name: "Home", URL: "http://h"},
+	} {
+		var v *kernel.ValidationError
+		if _, err := uc.Add(ctx, in); !errors.As(err, &v) {
+			t.Errorf("%s: %v", name, err)
+		}
+	}
+	if len(repo.m) != 0 {
+		t.Fatalf("nothing may be saved: %+v", repo.m)
+	}
+	c, _ := uc.Add(ctx, Input{Service: "immich", Name: "Home", URL: "http://h", Credential: key})
+	if _, err := uc.ReplaceCredential(ctx, c.ID, map[string]string{"token": "t"}); !errors.Is(err, domain.ErrUnknownField) {
+		t.Fatalf("replace: %v", err)
+	}
+	if _, err := uc.Update(ctx, c.ID, Change{Name: "Home", URL: "http://h", Credential: map[string]string{}}); !errors.Is(err, domain.ErrMissingField) {
+		t.Fatalf("update: %v", err)
+	}
+	// A connection of a switched-off module keeps the general rules only.
+	repo.m["old"] = domain.Connection{ID: "old", Service: "gitlab", Name: "Code", URL: "http://g", Credential: domain.Credential{"token": "t"}}
+	if _, err := uc.ReplaceCredential(ctx, "old", map[string]string{"token": "u"}); err != nil {
+		t.Fatalf("unknown service: %v", err)
+	}
+}
+
+func TestFixedAddress(t *testing.T) {
+	uc, _ := newUC(nil)
+	ctx := admin()
+	c, err := uc.Add(ctx, Input{Service: "tankerkoenig", Name: "Prices", URL: "http://elsewhere", Credential: key})
+	if err != nil || c.URL != "https://creativecommons.tankerkoenig.de/json" {
+		t.Fatalf("%+v %v", c, err)
+	}
+	if c, err = uc.Update(ctx, c.ID, Change{Name: "Fuel", URL: "http://other"}); err != nil || c.URL != "https://creativecommons.tankerkoenig.de/json" {
+		t.Fatalf("a fixed address cannot move, so the key stays: %+v %v", c, err)
+	}
+}
+
+func TestCheckAndServices(t *testing.T) {
+	uc, _, checked := newCheckedUC(nil)
+	ctx := admin()
+	good, _ := uc.Add(ctx, Input{Service: "immich", Name: "Home", URL: "http://h:2283", Credential: key})
+	bad, _ := uc.Add(ctx, Input{Service: "immich", Name: "Old", URL: "http://o:2283", Credential: map[string]string{"apiKey": "wrong"}})
+	pve, _ := uc.Add(ctx, Input{Service: "proxmox", Name: "Lab", URL: "https://p:8006", Credential: map[string]string{"tokenId": "w@pve!d", "secret": "s"}})
+	if err := uc.Check(ctx, good.ID); err != nil {
+		t.Fatalf("good: %v", err)
+	}
+	var pub *kernel.PublicError
+	if err := uc.Check(ctx, bad.ID); !errors.As(err, &pub) {
+		t.Fatalf("a refused key answers the setup failure: %v", err)
+	}
+	if err := uc.Check(ctx, pve.ID); !errors.Is(err, ErrNoCheck) {
+		t.Fatalf("no check: %v", err)
+	}
+	if err := uc.Check(ctx, "missing"); !errors.Is(err, domain.ErrNotFound) {
+		t.Fatalf("missing: %v", err)
+	}
+	if !slices.Equal(*checked, []string{"http://h:2283 k", "http://o:2283 wrong"}) {
+		t.Fatalf("checked: %v", *checked)
+	}
+	member := kernel.WithPrincipal(context.Background(), kernel.Principal{AccountID: "m", Role: "member"})
+	if err := uc.Check(member, good.ID); !errors.Is(err, kernel.ErrForbidden) {
+		t.Fatalf("member check: %v", err)
+	}
+	if _, err := uc.Services(member); !errors.Is(err, kernel.ErrForbidden) {
+		t.Fatalf("member services: %v", err)
+	}
+	list, err := uc.Services(ctx)
+	if err != nil || len(list) != 3 || list[0].Service != "immich" || list[2].FixedURL == "" {
+		t.Fatalf("%+v %v", list, err)
 	}
 }
 

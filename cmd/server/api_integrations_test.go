@@ -14,6 +14,12 @@ func init() {
 		Name: "integrations",
 		Check: func(e e2eEnv) {
 			t, c := e.t, e.c
+			services := string(c.do(http.MethodGet, "/api/integrations/services", nil, http.StatusOK))
+			if !strings.Contains(services, `"service":"immich"`) || !strings.Contains(services, `"fixedUrl":`) {
+				t.Fatalf("services: %s", services)
+			}
+			c.do(http.MethodPost, "/api/integrations/connections", obj{"service": "immich", "name": "Home", "url": "http://192.168.178.20:2283",
+				"credential": obj{"token": "e2e"}}, http.StatusUnprocessableEntity)
 			var created obj
 			c.json(http.MethodPost, "/api/integrations/connections", obj{"service": "immich", "name": "Home", "url": "http://192.168.178.20:2283",
 				"credential": obj{"apiKey": "e2e-secret-key"}}, http.StatusCreated, &created)

@@ -81,3 +81,23 @@ func (h *Handlers) Remove(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// Check handles POST /api/integrations/connections/{id}/check: 204 when the
+// service accepts the connection, otherwise the error of its settings check.
+func (h *Handlers) Check(w http.ResponseWriter, r *http.Request) {
+	if err := h.uc.Check(r.Context(), r.PathValue("id")); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Services handles GET /api/integrations/services.
+func (h *Handlers) Services(w http.ResponseWriter, r *http.Request) {
+	list, err := h.uc.Services(r.Context())
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Services(list))
+}

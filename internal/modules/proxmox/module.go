@@ -36,15 +36,18 @@ type Module struct {
 	modules.Base
 	uc       usecase.Proxmox
 	handlers *controller.Handlers
+	// specs are the services a named connection can reach (#610).
+	specs []modules.ConnectionSpec
 }
 
 // New builds the Proxmox module (#84).
 func New(cfg Config) *Module {
+	api := gateway.NewAPI(cfg.Client, cfg.Pinned)
 	uc := usecase.NewProxmox(usecase.Deps{
-		Repo: gateway.NewSettingsRepository(cfg.DB, cfg.Cipher), Client: gateway.NewAPI(cfg.Client, cfg.Pinned),
+		Repo: gateway.NewSettingsRepository(cfg.DB, cfg.Cipher), Client: api,
 		Clock: cfg.Clock, Policy: domain.ActionPolicy{Allowed: cfg.ActionGuests}, Audit: cfg.Audit,
 	})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(api)}
 }
 
 // Name implements modules.Module.
@@ -93,3 +96,6 @@ func (m *Module) CompactState(ctx context.Context) (kernel.CompactState, error) 
 }
 
 var errUnreachable = kernel.NewPublicError(kernel.ErrUnavailable, "Proxmox VE is not reachable.")
+
+// ConnectionSpecs implements modules.Connectable (#610).
+func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }

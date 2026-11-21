@@ -29,5 +29,29 @@ export interface ConnectionDTO {
    * Fields lists the credential fields that are set, e.g. ["apiKey"].
    */
   fields: string[];
+  /**
+   * Values holds the fields that are not secret, e.g. the user name.
+   */
+  values: { [key: string]: string};
   usedBy: UseDTO[];
+}
+/**
+ * FieldDTO is one credential field of a service.
+ */
+export interface FieldDTO {
+  name: string;
+  secret: boolean;
+  optional: boolean;
+}
+/**
+ * ServiceDTO is a service a connection can be made to.
+ */
+export interface ServiceDTO {
+  service: string;
+  title: string;
+  fields: FieldDTO[];
+  /**
+   * FixedURL is set for services with a single address.
+   */
+  fixedUrl?: string;
 }

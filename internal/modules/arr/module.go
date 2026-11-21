@@ -19,18 +19,17 @@ type Module struct {
 	modules.Base
 	uc       usecase.Arr
 	handlers *controller.Handlers
+	// specs are the services a named connection can reach (#610).
+	specs []modules.ConnectionSpec
 }
 
 // New builds the *arr module (#86); cipher encrypts the API keys.
 func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock, ids kernel.IDGenerator) *Module {
-	uc := usecase.NewArr(usecase.Deps{
-		Repo: gateway.NewInstanceRepository(db, cipher),
-		Providers: map[domain.App]usecase.Provider{
-			domain.AppSonarr: gateway.NewSonarr(client), domain.AppRadarr: gateway.NewRadarr(client), domain.AppProwlarr: gateway.NewProwlarr(client),
-		},
-		Clock: clock, IDs: ids,
-	})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	providers := map[domain.App]usecase.Provider{
+		domain.AppSonarr: gateway.NewSonarr(client), domain.AppRadarr: gateway.NewRadarr(client), domain.AppProwlarr: gateway.NewProwlarr(client),
+	}
+	uc := usecase.NewArr(usecase.Deps{Repo: gateway.NewInstanceRepository(db, cipher), Providers: providers, Clock: clock, IDs: ids})
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(providers)}
 }
 
 // Name implements modules.Module.
@@ -67,3 +66,6 @@ func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus 
 // errInstanceDown is the reason when one of several instances fails; the
 // widget names which one.
 var errInstanceDown = kernel.NewPublicError(kernel.ErrUnavailable, "A Sonarr, Radarr or Prowlarr instance does not answer.")
+
+// ConnectionSpecs implements modules.Connectable (#610).
+func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }

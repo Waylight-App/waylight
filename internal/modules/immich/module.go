@@ -20,12 +20,15 @@ type Module struct {
 	modules.Base
 	uc       usecase.Immich
 	handlers *controller.Handlers
+	// specs are the services a named connection can reach (#610).
+	specs []modules.ConnectionSpec
 }
 
 // New builds the Immich module (#85); cipher encrypts the API key.
 func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock) *Module {
-	uc := usecase.NewImmich(gateway.NewSettingsRepository(db, cipher), gateway.NewAPI(client), clock)
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	api := gateway.NewAPI(client)
+	uc := usecase.NewImmich(gateway.NewSettingsRepository(db, cipher), api, clock)
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), specs: connectionSpecs(api)}
 }
 
 // Name implements modules.Module.
@@ -63,3 +66,6 @@ func (m *Module) Discovery() modules.DiscoverySpec {
 		Ports: []int{2283}, ProbePath: "/api/server/ping", ProbeContains: "pong",
 	}
 }
+
+// ConnectionSpecs implements modules.Connectable (#610).
+func (m *Module) ConnectionSpecs() []modules.ConnectionSpec { return m.specs }
