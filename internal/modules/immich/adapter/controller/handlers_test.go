@@ -17,11 +17,11 @@ func (fakeImmich) Settings(context.Context) (usecase.SettingsView, error) {
 	return usecase.SettingsView{Configured: true, URL: "http://immich", HasAPIKey: true}, nil
 }
 
-func (fakeImmich) Overview(context.Context) (domain.Overview, error) {
+func (fakeImmich) Overview(context.Context, string) (domain.Overview, error) {
 	return domain.Overview{Stats: domain.LibraryStats{Photos: 3, DiskUsed: 1, DiskTotal: 3}}, nil
 }
 
-func (fakeImmich) Thumbnail(_ context.Context, id string) (domain.Thumbnail, error) {
+func (fakeImmich) Thumbnail(_ context.Context, _, id string) (domain.Thumbnail, error) {
 	if id != "ok" {
 		return domain.Thumbnail{}, domain.ErrThumbnailNotFound
 	}

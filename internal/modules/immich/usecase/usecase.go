@@ -32,9 +32,19 @@ type SettingsInput struct {
 type Immich interface {
 	Settings(ctx context.Context) (SettingsView, error)
 	SaveSettings(ctx context.Context, in SettingsInput) (SettingsView, error)
-	Overview(ctx context.Context) (domain.Overview, error)
+	// Overview reads the library through the named connection the widget
+	// chose (#610), or through the module settings when connectionID is
+	// empty or the connection is not usable.
+	Overview(ctx context.Context, connectionID string) (domain.Overview, error)
 	// Thumbnail returns the preview of a photo of today's memories.
-	Thumbnail(ctx context.Context, assetID string) (domain.Thumbnail, error)
+	Thumbnail(ctx context.Context, connectionID, assetID string) (domain.Thumbnail, error)
+}
+
+// Connections resolves a named connection of the integrations module to
+// settings (output port, #610). Any error means the module settings are
+// used instead.
+type Connections interface {
+	Settings(ctx context.Context, id string) (domain.Settings, error)
 }
 
 // SettingsRepository persists the settings (output port). Load returns
@@ -54,18 +64,38 @@ type Client interface {
 	Thumbnail(ctx context.Context, s domain.Settings, assetID string) (domain.Thumbnail, error)
 }
 
-type immich struct {
-	repo    SettingsRepository
-	client  Client
-	clock   kernel.Clock
-	mu      sync.Mutex
-	cached  *domain.Overview
-	fetched time.Time
+type cachedOverview struct {
+	overview domain.Overview
+	fetched  time.Time
 }
 
-// NewImmich returns the use cases.
-func NewImmich(repo SettingsRepository, client Client, clock kernel.Clock) Immich {
-	return &immich{repo: repo, client: client, clock: clock}
+type immich struct {
+	repo   SettingsRepository
+	client Client
+	conns  Connections
+	clock  kernel.Clock
+	mu     sync.Mutex
+	// cache holds one overview per connection ID; "" is the module
+	// settings. There are at most as many entries as connections.
+	cache map[string]cachedOverview
+}
+
+// NewImmich returns the use cases; conns may be nil, then only the module
+// settings are used.
+func NewImmich(repo SettingsRepository, client Client, conns Connections, clock kernel.Clock) Immich {
+	return &immich{repo: repo, client: client, conns: conns, clock: clock, cache: map[string]cachedOverview{}}
+}
+
+// load returns the settings of the named connection, falling back to the
+// module settings while the connection does not exist or is not usable,
+// so a widget keeps working whatever happened to the copy (#610).
+func (uc *immich) load(ctx context.Context, connectionID string) (domain.Settings, error) {
+	if connectionID != "" && uc.conns != nil {
+		if s, err := uc.conns.Settings(ctx, connectionID); err == nil {
+			return s, nil
+		}
+	}
+	return uc.repo.Load(ctx)
 }
 
 // Settings implements Immich.
@@ -100,23 +130,23 @@ func (uc *immich) SaveSettings(ctx context.Context, in SettingsInput) (SettingsV
 		return SettingsView{}, fmt.Errorf("save settings: %w", err)
 	}
 	uc.mu.Lock()
-	uc.cached = nil
+	clear(uc.cache)
 	uc.mu.Unlock()
 	return SettingsView{Configured: true, URL: s.URL, HasAPIKey: true}, nil
 }
 
 // Overview implements Immich. Memories and version are optional: their
 // errors (e.g. a key without memory.read) only leave them empty.
-func (uc *immich) Overview(ctx context.Context) (domain.Overview, error) {
-	s, err := uc.repo.Load(ctx)
+func (uc *immich) Overview(ctx context.Context, connectionID string) (domain.Overview, error) {
+	s, err := uc.load(ctx, connectionID)
 	if err != nil {
 		return domain.Overview{}, err
 	}
 	uc.mu.Lock()
 	defer uc.mu.Unlock()
 	now := uc.clock.Now()
-	if uc.cached != nil && now.Sub(uc.fetched) < overviewTTL && sameDay(uc.fetched, now) {
-		return *uc.cached, nil
+	if c, ok := uc.cache[connectionID]; ok && now.Sub(c.fetched) < overviewTTL && sameDay(c.fetched, now) {
+		return c.overview, nil
 	}
 	stats, err := uc.client.Stats(ctx, s)
 	if err != nil {
@@ -131,17 +161,17 @@ func (uc *immich) Overview(ctx context.Context) (domain.Overview, error) {
 		}
 		o.Memories = append(o.Memories, m)
 	}
-	uc.cached, uc.fetched = &o, now
+	uc.cache[connectionID] = cachedOverview{overview: o, fetched: now}
 	return o, nil
 }
 
 // Thumbnail implements Immich. Only assets of today's memories are
 // proxied, so the endpoint cannot be used to browse the library.
-func (uc *immich) Thumbnail(ctx context.Context, assetID string) (domain.Thumbnail, error) {
+func (uc *immich) Thumbnail(ctx context.Context, connectionID, assetID string) (domain.Thumbnail, error) {
 	if !domain.ValidAssetID(assetID) {
 		return domain.Thumbnail{}, domain.ErrThumbnailNotFound
 	}
-	o, err := uc.Overview(ctx)
+	o, err := uc.Overview(ctx, connectionID)
 	if err != nil {
 		return domain.Thumbnail{}, err
 	}
@@ -149,7 +179,7 @@ func (uc *immich) Thumbnail(ctx context.Context, assetID string) (domain.Thumbna
 	if !known {
 		return domain.Thumbnail{}, domain.ErrThumbnailNotFound
 	}
-	s, err := uc.repo.Load(ctx)
+	s, err := uc.load(ctx, connectionID)
 	if err != nil {
 		return domain.Thumbnail{}, err
 	}

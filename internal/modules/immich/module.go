@@ -26,11 +26,12 @@ type Module struct {
 	repo usecase.SettingsRepository
 }
 
-// New builds the Immich module (#85); cipher encrypts the API key.
-func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, clock kernel.Clock) *Module {
+// New builds the Immich module (#85); cipher encrypts the API key, conns
+// resolves the named connection a widget chose (#610).
+func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, conns modules.ConnectionResolver, clock kernel.Clock) *Module {
 	api := gateway.NewAPI(client)
 	repo := gateway.NewSettingsRepository(db, cipher)
-	uc := usecase.NewImmich(repo, api, clock)
+	uc := usecase.NewImmich(repo, api, connections{conns}, clock)
 	return &Module{uc: uc, handlers: controller.NewHandlers(uc), repo: repo, specs: connectionSpecs(api)}
 }
 
@@ -57,7 +58,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 // ConnectionStatus implements modules.StatusReporter (#599): the overview
 // the widget shows tells whether Immich answers.
 func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus {
-	_, err := m.uc.Overview(ctx)
+	_, err := m.uc.Overview(ctx, "")
 	return modules.StatusOf(err, domain.ErrNotConfigured)
 }
 

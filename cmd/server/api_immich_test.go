@@ -23,8 +23,17 @@ func init() {
 		},
 		Check: func(e e2eEnv) {
 			t, c, up := e.t, e.c, e.up
-			_ = up
 			c.do(http.MethodGet, "/api/immich/overview", nil, http.StatusNotFound)
+			// A widget that chose a named connection reads through it (#610);
+			// an unknown one falls back to the module settings.
+			var conn obj
+			c.json(http.MethodPost, "/api/integrations/connections", obj{"service": "immich", "name": "Upstream", "url": up.URL + "/immich",
+				"credential": obj{"apiKey": "immich-key"}}, http.StatusCreated, &conn)
+			id := conn["id"].(string)
+			c.do(http.MethodPost, "/api/integrations/connections/"+id+"/check", nil, http.StatusNoContent)
+			c.do(http.MethodGet, "/api/immich/overview?connection="+id, nil, http.StatusOK)
+			c.do(http.MethodGet, "/api/immich/overview?connection=missing", nil, http.StatusNotFound)
+			c.do(http.MethodDelete, "/api/integrations/connections/"+id, nil, http.StatusNoContent)
 			c.json(http.MethodPut, "/api/immich/settings", obj{"url": up.URL + "/immich", "apiKey": "immich-key"}, http.StatusOK, nil)
 			var immich obj
 			c.json(http.MethodGet, "/api/immich/overview", nil, http.StatusOK, &immich)
