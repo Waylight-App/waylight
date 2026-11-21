@@ -20,6 +20,8 @@ type AddWidgetDTO struct {
 	W      int             `json:"w"`
 	H      int             `json:"h"`
 	Config json.RawMessage `json:"config,omitempty" tstype:"{ [key: string]: unknown }"`
+	// Size is small, medium, large or strip (#595); empty for a freely sized tile.
+	Size string `json:"size,omitempty"`
 }
 
 // WidgetConfigDTO is the body of PATCH /api/dashboard/widgets/{id}.
@@ -34,6 +36,9 @@ type PlacementDTO struct {
 	Y  int    `json:"y"`
 	W  int    `json:"w"`
 	H  int    `json:"h"`
+	// Size sets the widget size (#595): small, medium, large, strip, or
+	// empty for a freely sized tile. Omitted keeps the stored size.
+	Size *string `json:"size,omitempty"`
 }
 
 // LayoutDTO is the body of PUT /api/dashboard/tabs/{id}/layout.

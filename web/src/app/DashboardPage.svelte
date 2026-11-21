@@ -5,6 +5,7 @@
   import type { Container } from './container';
   import LazyComponent from './LazyComponent.svelte';
   import { definitionFor, iconFor, widgetDefinitions } from './widgets';
+  import { lazy } from './widgetKit';
   import { categoryShown, type StartProfile } from '../features/appearance/domain/appearance';
 
   /** Props of the dashboard page. */
@@ -92,6 +93,18 @@
     view?.redo();
   }
 
+  // One component shows the compact state of every module (#595).
+  const compactView = lazy(
+    () => import('../features/compact/ui/CompactView.svelte'),
+    (_config, c) => ({ compact: c.compact, module: '', title: '' }),
+  );
+
+  /** The module of a widget's compact view; none in local mode, which has no compact endpoints. */
+  function compactModule(widget: Widget): string | undefined {
+    if (container.localMode) return undefined;
+    return definitionFor(widget.kind)?.compact?.(widget.config);
+  }
+
   // The "everyday" profile hides home-server and network widgets from the
   // picker (#281); widgets already placed stay.
   const types = $derived(
@@ -115,6 +128,8 @@
   {ondone}
   onbackground={container.auth.guest ? undefined : (tab) => (pickerTab = tab)}
   pickerFooter={container.localMode ? fullVersionHint : undefined}
+  hasCompact={(widget) => compactModule(widget) !== undefined}
+  detailPanel={!container.auth.kiosk}
 >
   {#snippet content(widget: Widget)}
     {@const def = definitionFor(widget.kind)}
@@ -122,6 +137,23 @@
       <LazyComponent
         renderer={def.view}
         props={def.view.props(widget.config, container)}
+        scheduler={container.refresh}
+        label={def.type.title}
+      />
+    {/if}
+  {/snippet}
+  {#snippet compact(widget: Widget, opts: { strip: boolean })}
+    {@const def = definitionFor(widget.kind)}
+    {@const module = compactModule(widget)}
+    {#if def && module}
+      <LazyComponent
+        renderer={compactView}
+        props={{
+          ...compactView.props(widget.config, container),
+          module,
+          title: def.type.title,
+          strip: opts.strip,
+        }}
         scheduler={container.refresh}
         label={def.type.title}
       />

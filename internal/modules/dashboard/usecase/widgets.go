@@ -28,6 +28,9 @@ func (uc *manageWidgets) Add(ctx context.Context, req AddWidgetRequest) (WidgetR
 	if err != nil {
 		return WidgetResponse{}, err
 	}
+	if err := w.Resize(domain.Size(req.Size)); err != nil {
+		return WidgetResponse{}, err
+	}
 	if err := uc.deps.Widgets.CreateWidget(ctx, w); err != nil {
 		return WidgetResponse{}, fmt.Errorf("create widget: %w", err)
 	}
@@ -71,6 +74,11 @@ func (uc *manageWidgets) SaveLayout(ctx context.Context, req SaveLayoutRequest) 
 			return err
 		}
 		w.Place(rect)
+		if p.Size != nil {
+			if err := w.Resize(domain.Size(*p.Size)); err != nil {
+				return err
+			}
+		}
 		changed = append(changed, w)
 	}
 	if err := uc.deps.Widgets.SaveWidgetRects(ctx, changed); err != nil {

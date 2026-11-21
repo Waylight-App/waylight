@@ -70,7 +70,7 @@ func decodeMobile(raw sql.NullString) []domain.MobileEntry {
 	}
 	out := make([]domain.MobileEntry, 0, len(rows))
 	for _, r := range rows {
-		out = append(out, domain.MobileEntry{WidgetID: r.ID, Hidden: r.Hidden, Rows: r.Rows, Size: domain.MobileSize(r.Size)})
+		out = append(out, domain.MobileEntry{WidgetID: r.ID, Hidden: r.Hidden, Rows: r.Rows, Size: domain.Size(r.Size)})
 	}
 	return out
 }

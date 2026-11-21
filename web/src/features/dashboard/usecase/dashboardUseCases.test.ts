@@ -74,6 +74,7 @@ describe('DashboardUseCases', () => {
       'notes',
       { x: 4, y: 0, w: 4, h: 3 },
       { id: 'n1' },
+      undefined,
     );
     const blocker = { id: 'w3', tabId: 'a', kind: 'clock', config: {}, x: 4, y: 0, w: 4, h: 2 };
     await uc.restoreWidget(tab('a', 0, [blocker]), gone);
@@ -82,6 +83,7 @@ describe('DashboardUseCases', () => {
       'notes',
       { x: 0, y: 0, w: 4, h: 3 },
       { id: 'n1' },
+      undefined,
     );
   });
 
@@ -102,7 +104,21 @@ describe('DashboardUseCases', () => {
       category: 'information',
       keywords: [],
     });
-    expect(gateway.addWidget).toHaveBeenCalledWith('a', 'weather', { x: 4, y: 0, w: 4, h: 3 }, {});
+    expect(gateway.addWidget).toHaveBeenCalledWith('a', 'weather', { x: 4, y: 0, w: 4, h: 3 }, {}, undefined);
+  });
+
+  it('adds a widget in the cells of a chosen size (#595)', async () => {
+    const { uc, gateway } = setup();
+    const type = {
+      kind: 'todos',
+      title: 'To-dos',
+      description: '',
+      defaultSize: { w: 4, h: 5 },
+      category: 'everyday' as const,
+      keywords: [],
+    };
+    await uc.addWidget(tab('a', 0), type, {}, 'strip');
+    expect(gateway.addWidget).toHaveBeenCalledWith('a', 'todos', { x: 0, y: 0, w: 6, h: 1 }, {}, 'strip');
   });
 
   it('gives new widgets the default configuration of their type (#163)', async () => {
@@ -147,7 +163,13 @@ describe('DashboardUseCases', () => {
     const { uc, gateway } = setup();
     const w = { id: 'w', tabId: 'a', kind: 'clock', config: { tz: 'UTC' }, x: 0, y: 0, w: 4, h: 2 };
     await uc.duplicateWidget(tab('a', 0, [w]), w);
-    expect(gateway.addWidget).toHaveBeenCalledWith('a', 'clock', { x: 4, y: 0, w: 4, h: 2 }, { tz: 'UTC' });
+    expect(gateway.addWidget).toHaveBeenCalledWith(
+      'a',
+      'clock',
+      { x: 4, y: 0, w: 4, h: 2 },
+      { tz: 'UTC' },
+      undefined,
+    );
   });
 
   it('validates backgrounds and template names', async () => {

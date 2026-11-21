@@ -9,10 +9,13 @@
     GRID_COLUMNS,
     keyboardStep,
     type LayoutItem,
+    layoutCells,
     moveItem,
     resizeItem,
     sameLayout,
+    setItemSize,
   } from '../domain/layout';
+  import { snapSize } from '../domain/sizes';
 
   /** Props of the drag & drop grid. */
   interface Props {
@@ -45,7 +48,7 @@
     if (!editing || e.target !== e.currentTarget) return;
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
     e.preventDefault();
-    const base = items.map(({ id, x, y, w, h }) => ({ id, x, y, w, h }));
+    const base = layoutCells(items);
     const next = keyboardStep(base, it.id, e.key as ArrowKey, e.shiftKey);
     const r = (next ?? base).find((i) => i.id === it.id);
     if (!r) return;
@@ -72,7 +75,7 @@
     e.preventDefault();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     gesture = { mode, id: target.id, startX: e.clientX, startY: e.clientY, origin: { ...target } };
-    preview = items.map(({ id, x, y, w, h }) => ({ id, x, y, w, h }));
+    preview = layoutCells(items);
   }
 
   function move(e: PointerEvent) {
@@ -80,12 +83,12 @@
     const { col, row } = cellSize();
     const dx = Math.round((e.clientX - gesture.startX) / col);
     const dy = Math.round((e.clientY - gesture.startY) / row);
-    const base = items.map(({ id, x, y, w, h }) => ({ id, x, y, w, h }));
+    const base = layoutCells(items);
     const o = gesture.origin;
-    preview =
-      gesture.mode === 'move'
-        ? moveItem(base, o.id, o.x + dx, o.y + dy)
-        : resizeItem(base, o.id, o.w + dx, o.h + dy);
+    if (gesture.mode === 'move') preview = moveItem(base, o.id, o.x + dx, o.y + dy);
+    // A sized tile snaps to the nearest size (#595); a free one grows by cells.
+    else if (o.size) preview = setItemSize(base, o.id, snapSize(o.w + dx, o.h + dy));
+    else preview = resizeItem(base, o.id, o.w + dx, o.h + dy);
   }
 
   function end() {

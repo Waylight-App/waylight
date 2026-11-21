@@ -25,6 +25,10 @@ export interface AddWidgetDTO {
   w: number /* int */;
   h: number /* int */;
   config?: { [key: string]: unknown };
+  /**
+   * Size is small, medium, large or strip (#595); empty for a freely sized tile.
+   */
+  size?: string;
 }
 /**
  * WidgetConfigDTO is the body of PATCH /api/dashboard/widgets/{id}.
@@ -41,6 +45,11 @@ export interface PlacementDTO {
   y: number /* int */;
   w: number /* int */;
   h: number /* int */;
+  /**
+   * Size sets the widget size (#595): small, medium, large, strip, or
+   * empty for a freely sized tile. Omitted keeps the stored size.
+   */
+  size?: string;
 }
 /**
  * LayoutDTO is the body of PUT /api/dashboard/tabs/{id}/layout.

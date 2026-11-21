@@ -7,9 +7,11 @@ import {
   describeRect,
   findFreeSpot,
   keyboardStep,
+  layoutCells,
   moveItem,
   resizeItem,
   sameLayout,
+  setItemSize,
   type LayoutItem,
 } from './layout';
 
@@ -125,5 +127,37 @@ describe('sameLayout', () => {
         'Weather cannot grow or shrink further: column 5, row 2, 4 × 3 cells',
       );
     });
+  });
+});
+
+describe('sized tiles (#595)', () => {
+  it('gives an item the cells of a size and reflows the others', () => {
+    const items = [item('a', 0, 0, 4, 4), item('b', 0, 4, 4, 2)];
+    const next = setItemSize(items, 'a', 'small');
+    expect(next.find((i) => i.id === 'a')).toEqual({ id: 'a', x: 0, y: 0, w: 3, h: 2, size: 'small' });
+    expect(next.find((i) => i.id === 'b')?.y).toBe(2);
+    expect(noOverlaps(next)).toBe(true);
+  });
+
+  it('makes a tile free again without moving it', () => {
+    const next = setItemSize([{ ...item('a', 1, 1, 3, 2), size: 'small' }], 'a', undefined);
+    expect(next).toEqual([item('a', 1, 1, 3, 2)]);
+  });
+
+  it('counts a size change as a layout change', () => {
+    expect(sameLayout([item('a', 0, 0, 3, 2)], [{ ...item('a', 0, 0, 3, 2), size: 'small' }])).toBe(false);
+  });
+
+  it('walks through the sizes with Shift + arrow keys', () => {
+    const items = [{ ...item('a', 0, 0, 3, 2), size: 'small' as const }];
+    expect(keyboardStep(items, 'a', 'ArrowRight', true)?.[0]).toMatchObject({ size: 'medium', w: 4, h: 4 });
+    expect(keyboardStep(items, 'a', 'ArrowLeft', true)?.[0]).toMatchObject({ size: 'strip', w: 6, h: 1 });
+    const large = [{ ...item('a', 0, 0, 6, 6), size: 'large' as const }];
+    expect(keyboardStep(large, 'a', 'ArrowDown', true)).toBeNull();
+  });
+
+  it('keeps sizes in layoutCells and drops widget data', () => {
+    const widget = { ...item('a', 0, 0, 3, 2), size: 'small' as const, kind: 'todos' };
+    expect(layoutCells([widget])).toEqual([{ id: 'a', x: 0, y: 0, w: 3, h: 2, size: 'small' }]);
   });
 });

@@ -199,6 +199,7 @@ schemas:
           tabId: { type: string }
           kind: { type: string, examples: [clock, search, weather, services, bookmarks, notes, todos, rss, calendar, system, docker, adguard] }
           config: { type: object, additionalProperties: true }
+          size: { type: string, enum: [small, medium, large, strip], description: "Size on the web grid (#595): small and strip show the compact view, medium and large the full view; omitted for a freely sized tile" }
   AddWidget:
     allOf:
       - $ref: "#/components/schemas/Rect"
@@ -207,6 +208,7 @@ schemas:
         properties:
           kind: { type: string }
           config: { type: object, additionalProperties: true }
+          size: { type: string, enum: [small, medium, large, strip], description: "Size on the web grid (#595): small and strip show the compact view, medium and large the full view; omitted for a freely sized tile" }
   WidgetConfig: { type: object, required: [config], properties: { config: { type: object, additionalProperties: true } } }
   Layout:
     type: object
@@ -214,4 +216,11 @@ schemas:
     properties:
       items:
         type: array
-        items: { allOf: [{ $ref: "#/components/schemas/Rect" }, { type: object, required: [id], properties: { id: { type: string } } }] }
+        items:
+          allOf:
+            - $ref: "#/components/schemas/Rect"
+            - type: object
+              required: [id]
+              properties:
+                id: { type: string }
+                size: { type: string, enum: ["", small, medium, large, strip], description: 'New web size (#595); "" makes the tile freely sized again, omitted keeps the stored size' }
