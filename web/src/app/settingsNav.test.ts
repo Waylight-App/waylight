@@ -56,8 +56,11 @@ describe('settings areas (#600)', () => {
   });
 
   it('keeps the documented mapping of the built-in sections', () => {
-    const area = (id: string) =>
-      areaOf([...OWN_SECTIONS, ...registeredSections].find((s) => s.id === id) ?? { id });
+    const area = (id: string) => {
+      const s = [...OWN_SECTIONS, ...registeredSections].find((x) => x.id === id);
+      if (!s) throw new Error(`no section ${id}`);
+      return areaOf(s);
+    };
     expect(area('account')).toBe('account');
     expect(area('appearance')).toBe('appearance');
     expect(area('notifications')).toBe('notifications');
