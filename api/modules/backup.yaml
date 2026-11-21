@@ -87,6 +87,12 @@ paths:
       summary: End an active window now or remove a planned one
       parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
       responses: { "204": { description: Ended } }
+  /api/backupmonitor/compact:
+    get:
+      tags: [backup-status]
+      summary: "Compact state of the backup status widget (#594): failed and overdue backups or the latest success"
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
   /api/backup-status/sources:
     get:
       tags: [backup-status]

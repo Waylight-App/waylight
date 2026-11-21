@@ -72,6 +72,12 @@
     hasCompact?: (widget: Widget) => boolean;
     /** Whether compact tiles open the detail panel; off on kiosk displays (#594). */
     detailPanel?: boolean;
+    /**
+     * "Notify me when this fails" in the detail panel (#594): what it does
+     * for a widget, or undefined where it is not offered (no admin, a widget
+     * that watches nothing).
+     */
+    notifyAction?: (widget: Widget) => (() => void) | undefined;
   }
   let {
     uc,
@@ -91,10 +97,24 @@
     compact,
     hasCompact = () => false,
     detailPanel = true,
+    notifyAction = () => undefined,
   }: Props = $props();
 
   // The widget whose full view the detail panel shows, and the tile that opened it.
   let detail = $state<{ widget: Widget; opener: HTMLElement } | null>(null);
+  // The panel belongs to the tab it was opened on; it closes when the tab
+  // changes or the widget is gone (deleted, or undone in another step).
+  $effect(() => {
+    const open = detail;
+    if (open && !active?.widgets.some((w) => w.id === open.widget.id)) detail = null;
+  });
+
+  /** "Edit widget" in the panel: the settings form, for whoever may edit the tab. */
+  function editFromPanel(widget: Widget) {
+    detail = null;
+    dialog = { kind: 'settings', widget };
+  }
+
   // Tiles whose content box is too small for the full view right now (#595).
   const cramped = new SvelteSet<string>();
   function onbox(id: string, width: number, height: number) {
@@ -640,13 +660,33 @@
 
 {#if detail}
   {@const widget = detail.widget}
+  {@const notify = notifyAction(widget)}
+  {@const mayEdit = !!onedit && (active?.mine ?? false) && hasSettings(widget.kind)}
   <DetailPanel
     title={titles.get(widget.kind) ?? widget.kind}
     opener={detail.opener}
     onclose={() => (detail = null)}
+    actions={mayEdit || notify ? panelActions : undefined}
   >
     {@render content(widget)}
   </DetailPanel>
+  {#snippet panelActions()}
+    {#if notify}
+      <button
+        class="btn"
+        type="button"
+        onclick={() => {
+          detail = null;
+          notify();
+        }}>{t('dashboard.notify_on_failure')}</button
+      >
+    {/if}
+    {#if mayEdit}
+      <button class="btn" type="button" onclick={() => editFromPanel(widget)}
+        >{t('dashboard.edit_widget')}</button
+      >
+    {/if}
+  {/snippet}
 {/if}
 
 {#if toast}

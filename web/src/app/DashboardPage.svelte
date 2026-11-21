@@ -6,6 +6,7 @@
   import LazyComponent from './LazyComponent.svelte';
   import { definitionFor, iconFor, widgetDefinitions } from './widgets';
   import { lazy } from './widgetKit';
+  import { useOpenSettings } from '../shared/ui/settingsLink';
   import { categoryShown, type StartProfile } from '../features/appearance/domain/appearance';
 
   /** Props of the dashboard page. */
@@ -105,6 +106,14 @@
     return definitionFor(widget.kind)?.compact?.(widget.config);
   }
 
+  // Notifications are set up by admins in the settings (#594).
+  const openSettings = useOpenSettings();
+  function notifyAction(widget: Widget): (() => void) | undefined {
+    const open = openSettings;
+    if (!open || !container.auth.admin || !definitionFor(widget.kind)?.alerts) return undefined;
+    return () => open('notifications');
+  }
+
   // The "everyday" profile hides home-server and network widgets from the
   // picker (#281); widgets already placed stay.
   const types = $derived(
@@ -130,6 +139,7 @@
   pickerFooter={container.localMode ? fullVersionHint : undefined}
   hasCompact={(widget) => compactModule(widget) !== undefined}
   detailPanel={!container.auth.kiosk}
+  {notifyAction}
 >
   {#snippet content(widget: Widget)}
     {@const def = definitionFor(widget.kind)}
