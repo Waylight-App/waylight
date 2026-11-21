@@ -24,4 +24,15 @@ export const de: Record<keyof typeof en, string> = {
   'calendar.accounts.disconnect_confirm':
     '{name} trennen? Die Kalender verschwinden aus Waylight, und der Zugriff wird widerrufen.',
   'calendar.accounts.read_only': 'schreibgeschützt',
+  'calendar.setup_service': 'Nextcloud-Kalender',
+  'calendar.setup_server': 'Nextcloud-Adresse',
+  'calendar.setup_step_settings':
+    'Öffne Nextcloud, klicke auf dein Profilbild und wähle Persönliche Einstellungen.',
+  'calendar.setup_step_security': 'Öffne Sicherheit und scrolle zu Geräte & Sitzungen.',
+  'calendar.setup_step_create': 'Gib Waylight als App-Name ein und klicke Neues App-Passwort erstellen.',
+  'calendar.setup_step_copy':
+    'Kopiere den angezeigten Benutzernamen und das App-Passwort und füge sie unten ein.',
+  'calendar.setup_username': 'Benutzername',
+  'calendar.setup_password': 'App-Passwort',
+  'calendar.setup_calendars': 'Kalender: {list}',
 };

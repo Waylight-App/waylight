@@ -14,6 +14,13 @@ export const en = {
   'immich.api_key': 'API key {value}',
   'immich.key_hint':
     'Create an API key under Account settings → API keys with the permissions asset.statistics, server.storage, memory.read and asset.view. It is stored encrypted; photos are loaded through Waylight.',
+  'immich.setup_step_profile': 'Open Immich and click your profile picture at the top right.',
+  'immich.setup_step_keys': 'Choose Account Settings → API Keys → New API Key.',
+  'immich.setup_step_permissions':
+    'Name it Waylight, tick asset.statistics, server.storage, memory.read and asset.view, and press Create.',
+  'immich.setup_step_copy': 'Copy the key and paste it below.',
+  'immich.setup_key': 'API key',
+  'immich.setup_photos': '{n} photos, {videos} videos',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

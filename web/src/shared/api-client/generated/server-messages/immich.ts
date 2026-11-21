@@ -2,7 +2,6 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
-  srv_4c9f2919cc2b23d8: "Could not connect to Immich: {detail}",
   srv_b1e270c3a3b1cc7b: "Immich is not configured yet.",
   srv_5f51c1adae96a94e: "Immich is not reachable.",
   srv_80ac49019fb5bed8: "The API key is required.",

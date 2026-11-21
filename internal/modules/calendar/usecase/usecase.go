@@ -34,6 +34,23 @@ type SettingsInput struct {
 	Password     string
 }
 
+// ConnectInput is what the setup assistant asks for (#588): the server
+// address instead of each calendar's URL.
+type ConnectInput struct {
+	Server, Username, Password string
+}
+
+// ConnectView is the outcome of Connect: the saved settings, the calendars
+// found and the next few events for the preview.
+type ConnectView struct {
+	Settings  SettingsView
+	Calendars []domain.FoundCalendar
+	Next      []EventView
+}
+
+// connectPreview is how many upcoming events the setup preview shows.
+const connectPreview = 3
+
 // EventView is an event at the use case boundary.
 type EventView struct {
 	UID, Summary, Location, Calendar, Color string
@@ -54,6 +71,9 @@ type AgendaResponse struct {
 type Calendar interface {
 	Settings(ctx context.Context) (SettingsView, error)
 	SaveSettings(ctx context.Context, in SettingsInput) (SettingsView, error)
+	// Connect finds the event calendars of an account from the server
+	// address, checks them and saves them, for the setup assistant (#588).
+	Connect(ctx context.Context, in ConnectInput) (ConnectView, error)
 	Upcoming(ctx context.Context, days int) (AgendaResponse, error)
 	// Range returns the events overlapping [from, to) (at most 42 days).
 	Range(ctx context.Context, from, to time.Time) (AgendaResponse, error)
@@ -80,6 +100,12 @@ type EventWriter interface {
 type SettingsRepository interface {
 	Load(ctx context.Context) (domain.Settings, error)
 	Save(ctx context.Context, s domain.Settings) error
+}
+
+// CalendarFinder lists the event calendars of a CalDAV account from the
+// server address (output port, #588).
+type CalendarFinder interface {
+	Discover(ctx context.Context, server, username, password string) ([]domain.FoundCalendar, error)
 }
 
 // EventSource loads events of one CalDAV calendar in a time range (output port).
@@ -131,10 +157,13 @@ type Deps struct {
 	Repo           SettingsRepository
 	Source         EventSource
 	Writer         EventWriter
-	Subscriptions  SubscriptionRepository
-	Feeds          FeedSource
-	IDs            kernel.IDGenerator
-	Clock          kernel.Clock
+	// Finder lets the setup assistant connect by server address; nil
+	// leaves only the form with calendar addresses.
+	Finder        CalendarFinder
+	Subscriptions SubscriptionRepository
+	Feeds         FeedSource
+	IDs           kernel.IDGenerator
+	Clock         kernel.Clock
 	// Accounts, API and OAuth connect Google and Microsoft calendars
 	// (#282); without them no account can be connected.
 	Accounts AccountRepository
@@ -154,6 +183,7 @@ type calendar struct {
 	repo   SettingsRepository
 	source EventSource
 	writer EventWriter
+	finder CalendarFinder
 	subs   SubscriptionRepository
 	feeds  FeedSource
 	ids    kernel.IDGenerator
@@ -204,7 +234,7 @@ func (uc *calendar) snapshot(ctx context.Context) (*AgendaResponse, time.Time, t
 
 // NewCalendar returns the calendar use cases.
 func NewCalendar(d Deps) Service {
-	return &calendar{repo: d.Repo, source: d.Source, writer: d.Writer, subs: d.Subscriptions, feeds: d.Feeds, ids: d.IDs, clock: d.Clock,
+	return &calendar{repo: d.Repo, source: d.Source, writer: d.Writer, finder: d.Finder, subs: d.Subscriptions, feeds: d.Feeds, ids: d.IDs, clock: d.Clock,
 		accounts: d.Accounts, api: d.API, oauth: d.OAuth, acc: accountState{pending: map[string]*pendingSignIn{}}, agendas: map[string]*agendaCache{},
 		shared: d.Shared, sharedAccounts: d.SharedAccounts, sharingOn: d.SharingOn}
 }
@@ -394,6 +424,40 @@ func (uc *calendar) SaveSettings(ctx context.Context, in SettingsInput) (Setting
 	}
 	_ = uc.Refresh(ctx) // errors are reported through AgendaResponse.Error
 	return SettingsView{Configured: true, CalendarURLs: s.CalendarURLs, Username: s.Username, HasPassword: true}, nil
+}
+
+// Connect implements Calendar. Errors name the cause in the setup
+// assistant's words (kernel.SetupFailure); the calendars are then checked
+// and saved like the form does.
+func (uc *calendar) Connect(ctx context.Context, in ConnectInput) (ConnectView, error) {
+	server, user := strings.TrimSpace(in.Server), strings.TrimSpace(in.Username)
+	// The server address follows the same rules as a calendar address.
+	if _, err := domain.NewSettings([]string{server}, user, in.Password); err != nil {
+		return ConnectView{}, err
+	}
+	if uc.finder == nil {
+		return ConnectView{}, domain.ErrNoCalendars
+	}
+	found, err := uc.finder.Discover(ctx, server, user, in.Password)
+	if err != nil {
+		return ConnectView{}, kernel.SetupFailure("Nextcloud", err)
+	}
+	if len(found) == 0 {
+		return ConnectView{}, domain.ErrNoCalendars
+	}
+	urls := make([]string, 0, len(found))
+	for _, f := range found {
+		urls = append(urls, f.URL)
+	}
+	view, err := uc.SaveSettings(ctx, SettingsInput{CalendarURLs: urls, Username: user, Password: in.Password})
+	if err != nil {
+		return ConnectView{}, err
+	}
+	out := ConnectView{Settings: view, Calendars: found}
+	if agenda, err := uc.Upcoming(ctx, 14); err == nil {
+		out.Next = agenda.Events[:min(len(agenda.Events), connectPreview)]
+	}
+	return out, nil
 }
 
 // Upcoming implements Calendar (cache-aside).

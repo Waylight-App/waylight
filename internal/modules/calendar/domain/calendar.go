@@ -182,3 +182,11 @@ func SafeLink(raw string) string {
 	}
 	return u.String()
 }
+
+// FoundCalendar is an event calendar found on a CalDAV server (#588).
+type FoundCalendar struct {
+	URL, Name string
+}
+
+// ErrNoCalendars is returned when the account has no event calendar.
+var ErrNoCalendars = kernel.NewPublicError(kernel.ErrInvalid, "The account has no calendar at this address.")

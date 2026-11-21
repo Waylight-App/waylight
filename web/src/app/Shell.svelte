@@ -24,6 +24,7 @@
   import { OWN_SECTIONS } from './settingsCatalog';
   import type { AttentionState } from '../features/attention/ui/attentionState.svelte';
   import { provideOpenSettings } from '../shared/ui/settingsLink';
+  import { provideSetupRights } from '../shared/setup/setup';
   import { attachShortcuts } from '../shared/shortcuts';
   import Icon from '../shared/ui/icons/Icon.svelte';
   import AccountMenu from './AccountMenu.svelte';
@@ -58,6 +59,14 @@
     settingsSection = section;
     settingsOpen = true;
   });
+  // Widgets that are not set up offer the setup assistant in place (#588)
+  // to those who may save the integration; the local mode has no server.
+  // svelte-ignore state_referenced_locally
+  if (!container.localMode)
+    provideSetupRights({
+      admin: container.auth.admin,
+      guest: container.auth.guest || container.auth.kiosk,
+    });
   let editing = $state(false);
   let error = $state('');
   let appearance = $state<Appearance>(defaultAppearance);

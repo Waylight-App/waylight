@@ -89,7 +89,7 @@ func StatusOf(err, notConfigured error) ConnectionStatus {
 	switch {
 	case notConfigured != nil && errors.Is(err, notConfigured):
 		return ConnectionStatus{State: StateSetup, Reason: reason, Action: ActionConnect}
-	case errors.Is(err, kernel.ErrUnauthorized), errors.Is(err, kernel.ErrForbidden):
+	case errors.Is(err, kernel.ErrUnauthorized), errors.Is(err, kernel.ErrForbidden), errors.Is(err, kernel.ErrTargetAuth):
 		return ConnectionStatus{State: StateFailing, Reason: reason, Action: ActionFix}
 	default:
 		return ConnectionStatus{State: StateFailing, Reason: reason, Action: ActionCheck}

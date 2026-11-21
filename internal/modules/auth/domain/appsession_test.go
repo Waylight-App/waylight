@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 	"time"
@@ -68,5 +69,34 @@ func TestHandoverCodeVerifier(t *testing.T) {
 	qr, _ := NewPairingCode(HashToken("q"), "owner", now)
 	if !qr.AcceptsVerifier("") || qr.AcceptsVerifier("x") {
 		t.Fatal("QR codes take no verifier")
+	}
+}
+
+func TestNewPairingCodeText(t *testing.T) {
+	// Bytes 0..7 map to the first eight characters of the alphabet; byte
+	// 32 wraps around to the first one again.
+	got, err := NewPairingCodeText(bytes.NewReader([]byte{0, 1, 2, 3, 4, 5, 6, 32}))
+	if err != nil || got != "0123-4560" {
+		t.Fatalf("got %q, %v", got, err)
+	}
+	if _, err := NewPairingCodeText(bytes.NewReader([]byte{1, 2})); err == nil {
+		t.Fatal("short random source accepted")
+	}
+}
+
+func TestCanonicalPairingCode(t *testing.T) {
+	long := strings.Repeat("a", 43)
+	cases := []struct{ raw, want string }{
+		{"7KQ2-M9XD", "7KQ2M9XD"},
+		{" 7kq2 m9xd ", "7KQ2M9XD"},
+		{"oil0-abcd", "0110ABCD"},  // O, I and L read as digits
+		{"7KQ2-M9X", "7KQ2-M9X"},   // too short: left alone
+		{"7KQ2-M9XU", "7KQ2-M9XU"}, // U is not in the alphabet
+		{" " + long + " ", long},   // handover codes are only trimmed
+	}
+	for _, c := range cases {
+		if got := CanonicalPairingCode(c.raw); got != c.want {
+			t.Errorf("CanonicalPairingCode(%q) = %q, want %q", c.raw, got, c.want)
+		}
 	}
 }

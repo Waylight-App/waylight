@@ -98,6 +98,22 @@ func TestDemoMode(t *testing.T) {
 			t.Errorf("%s: %d entries after the resets, want %d", path, len(list), want)
 		}
 	}
+	// The example Grafana shows a panel's values and its alerts (#579).
+	var panel struct {
+		Unit   string `json:"unit"`
+		Series []obj  `json:"series"`
+	}
+	c.json(http.MethodGet, "/api/grafana/data/"+demo.GrafanaDashboard+"/1", nil, http.StatusOK, &panel)
+	if panel.Unit != "percent" || len(panel.Series) != 1 {
+		t.Errorf("grafana panel: %+v", panel)
+	}
+	var alerts struct {
+		Alerts []obj `json:"alerts"`
+	}
+	c.json(http.MethodGet, "/api/grafana/alerts", nil, http.StatusOK, &alerts)
+	if len(alerts.Alerts) != 2 {
+		t.Errorf("grafana alerts: %+v", alerts)
+	}
 	// Visitors still cannot store credentials of their own.
 	c.do(http.MethodPut, "/api/immich/settings", obj{"url": demo.ImmichURL, "apiKey": "visitor-key"}, http.StatusForbidden)
 

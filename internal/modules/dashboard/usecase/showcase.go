@@ -23,7 +23,7 @@ func ShowcaseLayout(weatherConfig string) []SampleTab {
 			"electricity", "gamedeals", "photo-frame", "immich", "media")},
 		{Name: "Server", Widgets: grid("services", "status-overview", "system", "docker", "adguard", "diskhealth", "speedtest",
 			"backup-status", "proxmox", "wireguard", "releases", "nextcloud", "fritzbox", "fritzbox-calls", "arr", "apiwidget",
-			"smarthome", "phonelist")},
+			"smarthome", "phonelist", "grafana-panel", "grafana-alerts")},
 	}
 }
 

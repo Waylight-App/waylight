@@ -54,4 +54,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_fe19a87a4c31a1ac: '{count} offen',
   // {count} overdue
   srv_4fd610086ba2117c: '{count} überfällig',
+  // Done: {title}
+  srv_08ee030d3497c389: 'Erledigt: {title}',
 };

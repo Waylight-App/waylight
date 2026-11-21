@@ -117,7 +117,7 @@ func (uc *smartHome) SaveSettings(ctx context.Context, in SettingsInput) (Settin
 	}
 	states, err := uc.d.Provider.States(ctx, s)
 	if err != nil {
-		return SettingsView{}, kernel.NewPublicErrorf(kernel.ErrInvalid, "Could not connect to Home Assistant: {detail}", "detail", err.Error())
+		return SettingsView{}, kernel.SetupFailure("Home Assistant", err)
 	}
 	if err := uc.d.Repo.Save(ctx, s); err != nil {
 		return SettingsView{}, fmt.Errorf("save settings: %w", err)

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 	"strings"
 
@@ -61,7 +62,7 @@ func (uc *appSessions) pair(ctx context.Context, code, verifier string, login Lo
 		return AppSessionResponse{}, domain.ErrTooManyAttempts
 	}
 	client := domain.NewClient(login.UserAgent, login.ClientKey)
-	c, err := uc.pairing.Take(ctx, domain.HashToken(code), now)
+	c, err := uc.pairing.Take(ctx, domain.HashToken(domain.CanonicalPairingCode(code)), now)
 	if err == nil && !c.AcceptsVerifier(verifier) {
 		err = domain.ErrInvalidPairingCode
 	}
@@ -84,15 +85,17 @@ func (uc *appSessions) pair(ctx context.Context, code, verifier string, login Lo
 }
 
 // NewPairingCode implements AppSessions.
+// Its code is short enough to type, for devices without a camera (#605).
 func (uc *appSessions) NewPairingCode(ctx context.Context) (PairingCodeResponse, error) {
-	return uc.newCode(ctx, func(hash domain.TokenHash, accountID string) (domain.PairingCode, error) {
+	generate := func() (string, error) { return domain.NewPairingCodeText(rand.Reader) }
+	return uc.newCode(ctx, generate, func(hash domain.TokenHash, accountID string) (domain.PairingCode, error) {
 		return domain.NewPairingCode(hash, accountID, uc.deps.Clock.Now())
 	})
 }
 
 // NewHandoverCode implements AppSessions.
 func (uc *appSessions) NewHandoverCode(ctx context.Context, challenge string) (PairingCodeResponse, error) {
-	return uc.newCode(ctx, func(hash domain.TokenHash, accountID string) (domain.PairingCode, error) {
+	return uc.newCode(ctx, uc.deps.Tokens.NewToken, func(hash domain.TokenHash, accountID string) (domain.PairingCode, error) {
 		return domain.NewHandoverCode(hash, accountID, challenge, uc.deps.Clock.Now())
 	})
 }
@@ -100,16 +103,16 @@ func (uc *appSessions) NewHandoverCode(ctx context.Context, challenge string) (P
 // newCode stores a code built by build for the signed-in account. Kiosk
 // displays cannot sign in an app: their link signs in a display, not a
 // person.
-func (uc *appSessions) newCode(ctx context.Context, build func(domain.TokenHash, string) (domain.PairingCode, error)) (PairingCodeResponse, error) {
+func (uc *appSessions) newCode(ctx context.Context, generate func() (string, error), build func(domain.TokenHash, string) (domain.PairingCode, error)) (PairingCodeResponse, error) {
 	p := kernel.PrincipalFrom(ctx)
 	if p.AccountID == "" || p.Role == string(domain.RoleKiosk) {
 		return PairingCodeResponse{}, kernel.NewPublicError(kernel.ErrForbidden, "This account cannot pair an app.")
 	}
-	raw, err := uc.deps.Tokens.NewToken()
+	raw, err := generate()
 	if err != nil {
 		return PairingCodeResponse{}, fmt.Errorf("generate pairing code: %w", err)
 	}
-	c, err := build(domain.HashToken(raw), p.AccountID)
+	c, err := build(domain.HashToken(domain.CanonicalPairingCode(raw)), p.AccountID)
 	if err != nil {
 		return PairingCodeResponse{}, err
 	}

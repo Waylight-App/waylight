@@ -60,6 +60,13 @@ the menu turns a widget back into a freely sized tile, which always shows the
 full widget. Widgets placed before sizes existed stay free until you pick a
 size, so existing dashboards keep their look.
 
+Some compact views carry one quick action next to the short state, so the
+most common step needs no panel: habits tick off the next habit due today
+and to-dos tick off the most urgent one (overdue first, then the earliest due
+date). The button gives feedback at once; when the server refuses, its
+message is shown and nothing changes. Guests and kiosk displays do not see
+quick actions.
+
 Compact views exist for services and the status overview (*11 of 12
 running*, and which service is down), the backup status, drive health, the
 calendar (the next event), to-dos (the built-in list), habits and the focus
@@ -135,6 +142,32 @@ on the dashboard ([widget sizes](#widget-sizes)), the app's home screen
 widgets and the watch show it instead of the full widget; it is
 served at `GET /api/<module>/compact` with the same permissions as the
 module's other endpoints.
+
+## Setting up a widget in place
+
+A widget whose service is not connected yet shows one sentence and a
+**Set up** button. The setup runs inside the widget in three steps:
+
+1. **Address.** Enter where the service runs, for example
+   `http://192.168.178.20:2283` for Immich.
+2. **Credential.** The widget lists the steps in the service's own words,
+   for example *Account Settings → API Keys → New API Key* in Immich, and
+   *Open Immich* takes you to that page in a new tab. Paste the key or token.
+3. **Check.** Waylight tries the connection before it saves anything. When
+   it works you see real data (the number of photos and three of today's
+   memories, a few entities of Home Assistant, the calendars found and your
+   next events) and press *Done*.
+
+When the check fails, the message says why and what to try: the key was not
+accepted, nothing answers at the address, something other than the expected
+service answers there, or the certificate is not trusted.
+
+The assistant exists for Immich, Home Assistant and the Nextcloud calendar
+so far. For the calendar you enter the Nextcloud address, your user name and
+an app password; Waylight finds your calendars itself. Immich and Home
+Assistant are set up for the whole instance, so only admins see *Set up*
+there; every account can connect its own calendar. The settings pages stay
+the place to change a connection later.
 
 ## What needs your attention
 

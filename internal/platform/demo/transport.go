@@ -20,8 +20,10 @@ type Transport struct {
 
 // RoundTrip implements http.RoundTripper.
 func (t Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Fixtures may read the body (e.g. Grafana's query API); it is closed
+	// once they answered.
 	if req.Body != nil {
-		_ = req.Body.Close()
+		defer func() { _ = req.Body.Close() }()
 	}
 	now := time.Now()
 	if t.Now != nil {
@@ -153,8 +155,10 @@ type HealthyTransport struct{}
 
 // RoundTrip implements http.RoundTripper.
 func (HealthyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Fixtures may read the body (e.g. Grafana's query API); it is closed
+	// once they answered.
 	if req.Body != nil {
-		_ = req.Body.Close()
+		defer func() { _ = req.Body.Close() }()
 	}
 	return respond(req, http.StatusOK, "text/plain", "ok")
 }

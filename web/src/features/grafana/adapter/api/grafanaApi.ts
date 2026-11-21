@@ -2,16 +2,36 @@ import type { HttpClient } from '../../../../shared/api-client/http';
 import type {
   AlertsDTO,
   DashboardDTO,
+  PanelDataDTO,
   PanelDTO,
   SettingsDTO,
 } from '../../../../shared/api-client/generated/grafana';
 import type { SettingsInputDTO } from '../../../../shared/api-client/generated/grafana-requests';
-import type { GrafanaAlerts, GrafanaDashboard, GrafanaPanel, GrafanaSettings } from '../../domain/grafana';
+import type {
+  GrafanaAlerts,
+  GrafanaDashboard,
+  GrafanaPanel,
+  GrafanaSettings,
+  PanelValues,
+} from '../../domain/grafana';
 import type { GrafanaGateway } from '../../usecase/grafanaUseCases';
 
 /** GrafanaGateway backed by the REST API. */
 export class GrafanaApi implements GrafanaGateway {
   constructor(private readonly http: HttpClient) {}
+
+  async panelValues(url: string): Promise<PanelValues> {
+    const d = await this.http.get<PanelDataDTO>(url);
+    return {
+      title: d.title,
+      unit: d.unit,
+      decimals: d.decimals,
+      series: d.series.map((s) => ({
+        name: s.name,
+        points: s.points.map((p) => ({ t: p.t ? new Date(p.t) : null, v: p.v })),
+      })),
+    };
+  }
 
   async settings(): Promise<GrafanaSettings> {
     return { ...(await this.http.get<SettingsDTO>('/api/grafana/settings')) };

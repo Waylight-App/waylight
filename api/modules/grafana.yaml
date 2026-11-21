@@ -86,8 +86,46 @@ paths:
         "200": { description: The image, content: { image/png: { schema: { type: string, format: binary } } } }
         "422": { $ref: "#/components/responses/Invalid" }
         "503": { description: Grafana has no image renderer or is not reachable, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+  /api/grafana/data/{uid}/{panel}:
+    get:
+      tags: [grafana]
+      summary: The values of a panel through Grafana's query API, for a stat or sparkline without the image renderer
+      parameters:
+        - { name: uid, in: path, required: true, schema: { type: string } }
+        - { name: panel, in: path, required: true, schema: { type: integer } }
+        - { name: range, in: query, description: 'Time range back from now, e.g. 30m, 6h, 7d', schema: { type: string } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/GrafanaPanelData" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "503": { description: Grafana returned no values or is not reachable, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
 
 schemas:
+  GrafanaPanelData:
+    type: object
+    required: [title, unit, series]
+    properties:
+      title: { type: string }
+      unit: { type: string, description: 'Grafana unit id, e.g. percent; empty without one' }
+      decimals: { type: integer }
+      series:
+        type: array
+        maxItems: 5
+        items:
+          type: object
+          required: [name, points]
+          properties:
+            name: { type: string }
+            points:
+              type: array
+              maxItems: 120
+              description: Oldest first
+              items:
+                type: object
+                required: [t, v]
+                properties:
+                  t: { type: integer, format: int64, description: Unix milliseconds; 0 for a value without time }
+                  v: { type: number }
   GrafanaSettings:
     type: object
     required: [configured, url, hasToken]

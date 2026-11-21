@@ -15,6 +15,7 @@ var (
 	ErrUnreachable   = kernel.NewPublicError(kernel.ErrUnavailable, "Grafana is not reachable.")
 	ErrNoRenderer    = kernel.NewPublicError(kernel.ErrUnavailable, "Grafana cannot render this panel as an image; install the Grafana image renderer.")
 	ErrBadDashboard  = kernel.NewPublicError(kernel.ErrNotFound, "The dashboard does not exist.")
+	ErrNoData        = kernel.NewPublicError(kernel.ErrUnavailable, "Grafana returned no values for this panel; panels that use dashboard variables need the image renderer.")
 )
 
 // Settings are the connection details of Grafana.
@@ -124,4 +125,66 @@ func clamp(v, lo, hi, fallback int) int {
 		return fallback
 	}
 	return max(lo, min(hi, v))
+}
+
+// Limits of the values read without the image renderer (#579): enough for a
+// stat and a sparkline in a widget, small enough for a phone.
+const (
+	MaxSeries = 5
+	MaxPoints = 120
+)
+
+// Point is one value of a series.
+type Point struct {
+	Time  time.Time
+	Value float64
+}
+
+// Series is one line of a panel, oldest point first.
+type Series struct {
+	Name   string
+	Points []Point
+}
+
+// PanelData are the values of a panel, read through Grafana's query API
+// instead of the image renderer (#579).
+type PanelData struct {
+	Title string
+	// Unit is Grafana's unit id of the panel, e.g. "percent" or "celsius".
+	Unit string
+	// Decimals of the panel; nil lets the client choose.
+	Decimals *int
+	Series   []Series
+}
+
+// DataRequest describes the values of a panel.
+type DataRequest struct {
+	UID     string
+	PanelID int
+	// Range is a Grafana relative range such as "6h" (now-6h to now).
+	Range string
+}
+
+// NewDataRequest validates the request; an empty range means six hours.
+func NewDataRequest(uid string, panelID int, rng string) (DataRequest, error) {
+	r, err := NewRenderRequest(uid, panelID, 0, 0, rng, false)
+	if err != nil {
+		return DataRequest{}, err
+	}
+	return DataRequest{UID: r.UID, PanelID: r.PanelID, Range: r.Range}, nil
+}
+
+// Downsample keeps at most max points of a series: the newest point always
+// stays (it is the value a stat shows), the others are picked evenly.
+func Downsample(points []Point, maxPoints int) []Point {
+	if len(points) <= maxPoints || maxPoints < 2 {
+		return points
+	}
+	out := make([]Point, 0, maxPoints)
+	step := float64(len(points)-1) / float64(maxPoints-1)
+	for i := range maxPoints {
+		out = append(out, points[int(float64(i)*step+0.5)])
+	}
+	out[len(out)-1] = points[len(points)-1]
+	return out
 }

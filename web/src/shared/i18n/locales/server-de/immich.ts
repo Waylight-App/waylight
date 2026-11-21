@@ -6,8 +6,6 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
-  // Could not connect to Immich: {detail}
-  srv_4c9f2919cc2b23d8: 'Verbindung zu Immich fehlgeschlagen: {detail}',
   // Immich is not configured yet.
   srv_b1e270c3a3b1cc7b: 'Immich ist noch nicht eingerichtet.',
   // Immich is not reachable.

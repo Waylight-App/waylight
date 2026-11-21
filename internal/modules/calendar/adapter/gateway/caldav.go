@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"waylight/internal/modules/calendar/domain"
+	"waylight/internal/shared/caldav"
 )
 
 const (
@@ -91,4 +92,18 @@ func (c *CalDAV) Events(ctx context.Context, s domain.Settings, calendarURL stri
 		}
 	}
 	return events, nil
+}
+
+// Discover implements usecase.CalendarFinder: the event calendars of an
+// account, starting at the server address (#588).
+func (c *CalDAV) Discover(ctx context.Context, server, username, password string) ([]domain.FoundCalendar, error) {
+	found, err := caldav.Client{HTTP: c.client}.DiscoverEvents(ctx, caldav.Account{URL: server, Username: username, Password: password})
+	if err != nil {
+		return nil, err
+	}
+	out := make([]domain.FoundCalendar, 0, len(found))
+	for _, f := range found {
+		out = append(out, domain.FoundCalendar{URL: f.URL, Name: f.Name})
+	}
+	return out, nil
 }

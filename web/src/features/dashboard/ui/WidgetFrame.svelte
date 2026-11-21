@@ -185,6 +185,14 @@
   .compact .content {
     padding: var(--space-2) var(--space-3);
   }
+  /* Clicks fall through the content to the stretched "show details" button
+     below it; only controls that opt in with pointer-events: auto (quick
+     actions, #598) take them. */
+  .openable .content {
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+  }
   .open {
     position: absolute;
     inset: 0;
