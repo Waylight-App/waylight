@@ -2,16 +2,14 @@ import { describe, expect, it, vi } from 'vitest';
 import { type HelpGateway, HelpUseCases } from './helpUseCases';
 
 const gateway = (over: Partial<HelpGateway> = {}): HelpGateway => ({
-  widgets: vi
-    .fn()
-    .mockResolvedValue([
-      {
-        kind: 'calendar',
-        shows: 'Appointments.',
-        setUp: 'Connect a calendar.',
-        docsUrl: 'https://d/calendar/',
-      },
-    ]),
+  widgets: vi.fn().mockResolvedValue([
+    {
+      kind: 'calendar',
+      shows: 'Appointments.',
+      setUp: 'Connect a calendar.',
+      docsUrl: 'https://d/calendar/',
+    },
+  ]),
   docs: vi.fn().mockResolvedValue({
     baseUrl: 'https://d/',
     pages: [{ path: 'modules/calendar/', title: 'Calendar', summary: '', sections: [] }],

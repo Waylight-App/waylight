@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
+	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
@@ -57,7 +58,7 @@ func encode(pages []Page) ([]byte, error) {
 
 func TestBuild(t *testing.T) {
 	docs := fstest.MapFS{
-		"index.md": {Data: []byte("# Waylight\n\nA start page.\n")},
+		"index.md":          {Data: []byte("# Waylight\n\nA start page.\n")},
 		"modules/README.md": {Data: []byte("# Modules\n")},
 		"modules/immich.md": {Data: []byte(
 			"# Immich\n\nShows your [library](x.md) and *memories*.\nSecond line.\n\nMore text.\n\n" +
@@ -93,7 +94,7 @@ func TestShortenCutsAtAWord(t *testing.T) {
 func TestHandler(t *testing.T) {
 	h := Handler("https://example.org/docs/")
 	rec := httptest.NewRecorder()
-	h(rec, httptest.NewRequest("GET", "/api/help/docs", nil))
+	h(rec, httptest.NewRequest(http.MethodGet, "/api/help/docs", nil))
 	var got Index
 	if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
 		t.Fatal(err)
