@@ -15,7 +15,10 @@ test('a widget without its setting shows up under Needs your attention (#592)', 
   await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('departures');
   await page.getByRole('button', { name: /^Departures/ }).click();
   // Leave the settings without choosing a stop.
-  await page.keyboard.press('Escape');
+  await page
+    .getByRole('dialog', { name: 'Departures settings' })
+    .getByRole('button', { name: 'Close' })
+    .click();
   await account(page, 'Done');
 
   // The dot in the top bar counts the entries and opens the page.
