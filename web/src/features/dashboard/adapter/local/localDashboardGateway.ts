@@ -3,6 +3,7 @@ import type { DocumentStore } from '../../../../shared/local/documentStore';
 import type { Dashboard, Tab, TabRule, TabTemplate, Widget, WidgetConfig } from '../../domain/dashboard';
 import type { LayoutItem, Rect } from '../../domain/layout';
 import type { WidgetSize } from '../../domain/sizes';
+import type { Zone } from '../../domain/zones';
 import { deriveMobile, resolveMobile, type MobileItem } from '../../domain/mobile';
 import { defaultTabId } from '../../domain/schedule';
 import type { DashboardGateway } from '../../usecase/ports';
@@ -16,6 +17,8 @@ interface TabRow {
   rules: TabRule[];
   mobile: MobileItem[];
   mobileCustom: boolean;
+  /** Absent in documents written before zones (#619). */
+  zoned?: boolean;
 }
 
 /** A widget as stored, in the shape of the server's widgets table. */
@@ -25,6 +28,7 @@ interface WidgetRow extends Rect {
   kind: string;
   config: WidgetConfig;
   size?: WidgetSize;
+  zone?: Zone;
 }
 
 interface TemplateRow {
@@ -108,6 +112,7 @@ export class LocalDashboardGateway implements DashboardGateway {
         w: w.w,
         h: w.h,
         ...(w.size ? { size: w.size } : {}),
+        ...(w.zone ? { zone: w.zone } : {}),
       }));
     return {
       id: row.id,
@@ -119,6 +124,7 @@ export class LocalDashboardGateway implements DashboardGateway {
       mobile: row.mobileCustom ? resolveMobile(row.mobile, widgets) : deriveMobile(widgets),
       mobileCustom: row.mobileCustom,
       mine: true,
+      zoned: row.zoned ?? false,
     };
   }
 
@@ -216,6 +222,7 @@ export class LocalDashboardGateway implements DashboardGateway {
         w: w.w,
         h: w.h,
         ...(w.size ? { size: w.size } : {}),
+        ...(w.zone ? { zone: w.zone } : {}),
       };
     });
   }
@@ -245,6 +252,22 @@ export class LocalDashboardGateway implements DashboardGateway {
       const tab = LocalDashboardGateway.tabRow(d, tabId);
       tab.background = background;
       return LocalDashboardGateway.toTab(d, tab);
+    });
+  }
+
+  setZones(tabId: string, enabled: boolean): Promise<Tab> {
+    return this.change((d) => {
+      const tab = LocalDashboardGateway.tabRow(d, tabId);
+      tab.zoned = enabled;
+      return LocalDashboardGateway.toTab(d, tab);
+    });
+  }
+
+  async moveToZone(widget: Widget, zone: Zone | undefined): Promise<void> {
+    await this.change((d) => {
+      const w = LocalDashboardGateway.widgetRow(d, widget.id);
+      if (zone) w.zone = zone;
+      else delete w.zone;
     });
   }
 

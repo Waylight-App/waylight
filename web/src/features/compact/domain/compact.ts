@@ -41,6 +41,8 @@ export interface CompactState {
   count?: number;
   updatedAt: string;
   action?: CompactAction;
+  /** Nothing to show; zoned dashboards hide the widget (#619). */
+  empty?: boolean;
 }
 
 const LEVELS: readonly CompactLevel[] = ['none', 'ok', 'attention', 'problem'];

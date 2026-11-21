@@ -3,6 +3,7 @@ import type { WidgetCategory } from './catalog';
 import { t } from '../../../shared/i18n';
 import type { LayoutItem } from './layout';
 import type { MobileItem } from './mobile';
+import type { Zone } from './zones';
 
 /** Opaque widget configuration owned by the widget's feature. */
 export type WidgetConfig = Record<string, unknown>;
@@ -12,6 +13,8 @@ export interface Widget extends LayoutItem {
   tabId: string;
   kind: string;
   config: WidgetConfig;
+  /** Zone on a zoned tab (#619); undefined while it follows the kind. */
+  zone?: Zone;
 }
 
 /** A dashboard tab with its widgets. */
@@ -30,6 +33,8 @@ export interface Tab {
   mobileCustom: boolean;
   /** False for a team tab someone shared with the viewer (#295): read-only. */
   mine: boolean;
+  /** Laid out in zones instead of the free grid (#619). */
+  zoned: boolean;
 }
 
 /**

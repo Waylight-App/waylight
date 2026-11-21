@@ -62,4 +62,6 @@ type CompactResponse struct {
 	Count     *int           `json:"count,omitempty"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	Action    *CompactAction `json:"action,omitempty"`
+	// Empty is true when the widget has nothing to show (#619).
+	Empty bool `json:"empty,omitempty"`
 }

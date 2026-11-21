@@ -1,0 +1,26 @@
+# OpenAPI fragment of service discovery (#590).
+tags:
+  - name: discovery
+
+paths:
+  /api/discovery/{integration}:
+    get:
+      tags: [discovery]
+      summary: "Admins only. Services of an integration (immich, smarthome, calendar for Nextcloud) found in the home network: Docker containers of its image, its usual host names and its default ports on the gateway. Only private addresses within ALLOWED_CIDRS are probed, at most 12 per request, each confirmed by the integration's probe; results are kept for three minutes and never stored."
+      parameters:
+        - { name: integration, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [url, hint]
+                  properties:
+                    url: { type: string, description: "Base URL, e.g. http://192.168.178.20:2283" }
+                    hint: { type: string, description: "Where it was found, e.g. Docker container immich_server" }
+        "403": { description: Not an admin }
+        "404": { $ref: "#/components/responses/NotFound" }

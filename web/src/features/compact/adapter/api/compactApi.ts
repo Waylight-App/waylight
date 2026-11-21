@@ -38,6 +38,7 @@ export function toCompactState(d: CompactResponse): CompactState {
     ...(d.count !== undefined && d.count !== null ? { count: d.count } : {}),
     updatedAt: d.updatedAt,
     ...(d.action ? { action: toAction(d.action) } : {}),
+    ...(d.empty ? { empty: true } : {}),
   };
 }
 

@@ -90,6 +90,7 @@ func (m *Module) ConfigRoutes() []string {
 		"DELETE /api/dashboard/widgets/{id}",
 		"PUT /api/dashboard/tabs/{id}/background",
 		"PUT /api/dashboard/tabs/{id}/rules",
+		"PUT /api/dashboard/tabs/{id}/zones",
 		"PUT /api/dashboard/tabs/{id}/mobile-layout",
 		"DELETE /api/dashboard/tabs/{id}/mobile-layout",
 		"POST /api/dashboard/templates/{id}/tabs",
@@ -147,6 +148,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("DELETE /api/dashboard/widgets/{id}", h.DeleteWidget)
 	r.Protected("PUT /api/dashboard/tabs/{id}/background", h.SetBackground)
 	r.Protected("PUT /api/dashboard/tabs/{id}/rules", h.SetRules)
+	r.Protected("PUT /api/dashboard/tabs/{id}/zones", h.SetZones)
 	r.Protected("PUT /api/dashboard/tabs/{id}/mobile-layout", h.SaveMobileLayout)
 	r.Protected("DELETE /api/dashboard/tabs/{id}/mobile-layout", h.ResetMobileLayout)
 	r.Protected("GET /api/dashboard/templates", h.ListTemplates)

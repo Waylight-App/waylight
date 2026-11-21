@@ -43,6 +43,7 @@ describe('defaultTabId', () => {
     mobile: [],
     mobileCustom: false,
     mine: true,
+    zoned: false,
   });
   it('returns the first tab with a matching rule, or ""', () => {
     const tabs = [tab('a', []), tab('b', [rule({ days: [1] })]), tab('c', [rule({})])];

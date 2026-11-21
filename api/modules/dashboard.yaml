@@ -74,6 +74,16 @@ paths:
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { background: { type: string } } } } } }
       responses: { "200": { description: OK }, "404": { $ref: "#/components/responses/NotFound" }, "422": { description: Invalid URL } }
+  /api/dashboard/tabs/{id}/zones:
+    parameters: [{ $ref: "#/components/parameters/id" }]
+    put:
+      tags: [dashboard]
+      summary: Lay a tab out in the zones Today, My things and System, or in the free grid again; widgets keep their grid places
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [enabled], properties: { enabled: { type: boolean } } } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Tab" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/dashboard/tabs/{id}/rules:
     parameters: [{ $ref: "#/components/parameters/id" }]
     put:
@@ -189,6 +199,7 @@ schemas:
       widgets: { type: array, items: { $ref: "#/components/schemas/Widget" } }
       mobile: { type: array, items: { $ref: "#/components/schemas/MobileItem" }, description: Phone layout in display order (derived from the desktop grid until edited) }
       mobileCustom: { type: boolean, description: "false = the phone layout follows the desktop grid" }
+      zoned: { type: boolean, description: "true = the tab is laid out in zones instead of the free grid" }
   Widget:
     allOf:
       - $ref: "#/components/schemas/Rect"
@@ -200,6 +211,7 @@ schemas:
           kind: { type: string, examples: [clock, search, weather, services, bookmarks, notes, todos, rss, calendar, system, docker, adguard] }
           config: { type: object, additionalProperties: true }
           size: { type: string, enum: [small, medium, large, strip], description: "Size on the web grid (#595): small and strip show the compact view, medium and large the full view; omitted for a freely sized tile" }
+          zone: { type: string, enum: [today, mine, system], description: "Zone on a zoned tab; omitted while the client picks one by the widget's kind" }
   AddWidget:
     allOf:
       - $ref: "#/components/schemas/Rect"
@@ -224,3 +236,4 @@ schemas:
               properties:
                 id: { type: string }
                 size: { type: string, enum: ["", small, medium, large, strip], description: 'New web size (#595); "" makes the tile freely sized again, omitted keeps the stored size' }
+                zone: { type: string, enum: ["", today, mine, system], description: 'New zone on a zoned tab; "" picks one by kind again, omitted keeps the stored zone' }

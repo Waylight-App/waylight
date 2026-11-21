@@ -54,6 +54,10 @@ of the [widget sizes](dashboard.md#widget-sizes) on the web dashboard, and
 small and strip show its compact view. Without it the widget is a freely
 sized tile. `at` still sets its cells.
 
+A tab with `zones: true` is laid out in [zones](dashboard.md#zones), and a
+widget's optional `zone` (`today`, `mine` or `system`) moves it out of the
+zone its kind gives it.
+
 `phone.size` is optional: `small`, `medium`, `large` or `strip` place the
 widget on the phone grid ([dashboard](dashboard.md#the-phone-layout)); without
 it the widget takes the full width.

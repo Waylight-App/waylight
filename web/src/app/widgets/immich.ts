@@ -19,7 +19,7 @@ export const widgets: WidgetDefinition[] = [
     icon: 'archive',
     view: lazy(
       () => import('../../features/immich/ui/ImmichWidget.svelte'),
-      (config, c) => ({ config, immich: c.immich }),
+      (config, c) => ({ config, immich: c.immich, discover: () => c.discovery.find('immich') }),
     ),
     settings: lazy(
       () => import('../../features/immich/ui/ImmichWidgetSettings.svelte'),

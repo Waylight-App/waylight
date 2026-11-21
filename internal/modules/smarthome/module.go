@@ -109,3 +109,13 @@ func (m *Module) ConnectionStatus(ctx context.Context) modules.ConnectionStatus 
 	_, err := m.uc.Entities(ctx)
 	return modules.StatusOf(err, domain.ErrNotConfigured)
 }
+
+// Discovery implements modules.Discoverable (#590): the web app manifest of
+// Home Assistant names it and needs no token.
+func (m *Module) Discovery() modules.DiscoverySpec {
+	return modules.DiscoverySpec{
+		Service: "Home Assistant", Images: []string{"home-assistant", "homeassistant"},
+		Hostnames: []string{"homeassistant.local", "homeassistant"},
+		Ports:     []int{8123}, ProbePath: "/manifest.json", ProbeContains: "Home Assistant",
+	}
+}
