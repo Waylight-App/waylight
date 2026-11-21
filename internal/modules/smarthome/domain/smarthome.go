@@ -26,8 +26,36 @@ var ErrNoAction = kernel.NewPublicError(kernel.ErrInvalid, "This entity has no a
 // Settings are the connection details of Home Assistant.
 type Settings struct {
 	URL string
-	// Token is a long-lived access token.
+	// Token is a long-lived access token or, after signing in (#654), a
+	// short-lived one renewed with Refresh.
 	Token string
+	// Refresh, ClientID and Expiry are set after signing in with Home
+	// Assistant; empty for a pasted long-lived token.
+	Refresh  string
+	ClientID string
+	Expiry   time.Time
+}
+
+// renewMargin renews an access token shortly before it expires, so a
+// request never starts with one that runs out on the way.
+const renewMargin = time.Minute
+
+// NeedsRenewal reports whether the access token has to be renewed first.
+func (s Settings) NeedsRenewal(now time.Time) bool {
+	return s.Refresh != "" && (s.Expiry.IsZero() || !now.Before(s.Expiry.Add(-renewMargin)))
+}
+
+// SignedIn returns settings from a Home Assistant sign-in.
+func SignedIn(rawURL string, g kernel.SignInGrant) (Settings, error) {
+	s, err := NewSettings(rawURL, g.Access)
+	if err != nil {
+		return Settings{}, err
+	}
+	if g.Secret == "" || g.ClientID == "" {
+		return Settings{}, kernel.ErrSignInUnknown
+	}
+	s.Refresh, s.ClientID, s.Expiry = g.Secret, g.ClientID, g.Expiry
+	return s, nil
 }
 
 // NewSettings validates and normalises the settings.

@@ -14,6 +14,9 @@ type ConnectInputDTO struct {
 	Server   string `json:"server"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+	// SignIn is a finished Nextcloud sign-in of the setup assistant
+	// (#654); it replaces server, username and password.
+	SignIn string `json:"signIn,omitempty"`
 }
 
 // NewEventDTO is the body of POST /api/calendar/events. Timed events use

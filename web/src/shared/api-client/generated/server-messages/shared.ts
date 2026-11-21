@@ -41,6 +41,7 @@ export const serverMessages = {
   srv_d6ecea29338eeff4: "The server rejected the login. Check user name, password or token.",
   srv_cc10ad5b6bd86945: "The server sent an unexpected answer.",
   srv_d4a77dfc8f36f361: "The service does not answer.",
+  srv_88824ac4a9a1e957: "The sign-in has expired or was not finished. Please sign in again.",
   srv_cd970adb7028a7ce: "The sign-in was not started here or has expired. Please start again.",
   srv_07a824b208b96b62: "These settings are managed by the configuration file (CONFIG_FILE) and are read-only here.",
   srv_b22ef860827fa826: "This address does not speak https. Try it with http://.",

@@ -64,8 +64,13 @@ export class CalendarApi implements CalendarGateway {
     const body: SettingsInputDTO = { calendarUrls: urls, username, password };
     return { ...(await this.http.put<SettingsDTO>('/api/calendar/settings', body)) };
   }
-  async connect(server: string, username: string, password: string): Promise<CalendarConnection> {
-    const body: ConnectInputDTO = { server, username, password };
+  async connect(
+    server: string,
+    username: string,
+    password: string,
+    signIn?: string,
+  ): Promise<CalendarConnection> {
+    const body: ConnectInputDTO = { server, username, password, signIn };
     const d = await this.http.post<ConnectDTO>('/api/calendar/connect', body);
     return { calendars: d.calendars.map((c) => ({ ...c })), next: d.next.map(toEvent) };
   }

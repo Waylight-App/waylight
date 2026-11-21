@@ -11,7 +11,13 @@ import {
 export interface ShoppingGateway {
   // The connected CalDAV task list.
   settings(): Promise<ShoppingSettings>;
-  saveSettings(listUrl: string, username: string, password: string): Promise<ShoppingSettings>;
+  /** signIn is a finished Nextcloud sign-in of the setup assistant (#654) that replaces the credential. */
+  saveSettings(
+    listUrl: string,
+    username: string,
+    password: string,
+    signIn?: string,
+  ): Promise<ShoppingSettings>;
   items(): Promise<ShoppingItem[]>;
   add(summary: string): Promise<ShoppingItem>;
   setDone(id: string, done: boolean): Promise<void>;
@@ -55,6 +61,10 @@ export class ShoppingUseCases {
   }
   saveSettings(listUrl: string, username: string, password: string): Promise<ShoppingSettings> {
     return this.gateway.saveSettings(listUrl.trim(), username.trim(), password);
+  }
+  /** Saves the list with a finished Nextcloud sign-in of the setup assistant (#654). */
+  saveSignIn(listUrl: string, signIn: string): Promise<ShoppingSettings> {
+    return this.gateway.saveSettings(listUrl.trim(), '', '', signIn);
   }
 
   overview(): Promise<ShoppingOverview> {

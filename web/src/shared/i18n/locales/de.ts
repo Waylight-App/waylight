@@ -827,6 +827,14 @@ export const de: Record<BaseMessageKey, string> = {
   'setup.done': 'Fertig',
   'setup.connect': 'Verbinden',
   'setup.found': '{service} gefunden unter {url}',
+  'setup.signin': 'Mit {service} anmelden',
+  'setup.signin_intro':
+    'Melde dich in einem neuen Fenster mit deinem {service}-Konto an. Waylight bekommt dort einen eigenen Zugang, du musst keinen Schlüssel kopieren.',
+  'setup.signin_waiting': 'Warte auf deine Anmeldung im neuen Fenster …',
+  'setup.signin_checking': 'Angemeldet. Die Verbindung wird geprüft …',
+  'setup.signin_reopen': 'Anmeldeseite erneut öffnen',
+  'setup.signin_manual': 'Stattdessen einen Schlüssel einfügen',
+  'setup.signin_instead': 'Stattdessen mit {service} anmelden',
   // Gespeicherte Orte in Widget-Einstellungen (#591).
   'places.saved_place': 'Gespeicherter Ort',
   'places.other_location': 'Anderer Ort …',

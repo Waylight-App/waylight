@@ -48,7 +48,7 @@ func TestCopyModuleSettings(t *testing.T) {
 		{`INSERT INTO grafana_settings VALUES (1, 'https://grafana.example.org', ?)`, []any{enc("glsa_token_1")}},
 		{`INSERT INTO nextcloud_settings VALUES (1, 'https://cloud.example.org/nextcloud', 'anna', ?)`, []any{enc("Xk3pQ-app-pass")}},
 		{`INSERT INTO proxmox_settings VALUES (1, 'https://192.168.178.5:8006', 'waylight@pve!dash', ?, '')`, []any{enc("1b2c3d4e-uuid")}},
-		{`INSERT INTO smarthome_settings VALUES (1, 'http://homeassistant.local:8123', ?)`, []any{enc("eyJ.long.lived")}},
+		{`INSERT INTO smarthome_settings (id, url, token_encrypted) VALUES (1, 'http://homeassistant.local:8123', ?)`, []any{enc("eyJ.long.lived")}},
 		{`INSERT INTO speedtest_settings VALUES (1, 'http://speedtest.lan', ?, 100, 20)`, []any{enc("st-token")}},
 		{`INSERT INTO fritzbox_settings VALUES (1, 'http://fritz.box:49000', '', '')`, nil},
 		{`INSERT INTO media_settings VALUES (1, 'jellyfin', 'http://jellyfin.lan:8096', ?)`, []any{enc("jf-key")}},

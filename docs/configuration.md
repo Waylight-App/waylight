@@ -43,7 +43,7 @@ Durations use Go syntax: `90s`, `15m`, `24h`, `720h`.
 | `LISTEN_ADDR` | `:8090` | Address the server listens on inside the container or on the host. |
 | `ALLOWED_CIDRS` | loopback and private ranges | Client networks that may connect. Loopback is always allowed. Rejected and first-seen addresses are logged, which helps to tune the list. |
 | `TRUSTED_PROXIES` | empty | Reverse proxies whose `X-Forwarded-For` header is trusted. Needed behind a proxy so that the allow-list, rate limits and network tab rules see the real client address. |
-| `PUBLIC_URL` | empty | The public `https://` address, such as `https://home.example.org`. Required for passkeys and for signing in to Microsoft To Do, Google Tasks and TickTick ([to-do lists](modules/todos.md)) and to Google Calendar and Microsoft 365 ([calendar](modules/calendar.md)), and for password reset links by e-mail ([accounts](accounts.md)). |
+| `PUBLIC_URL` | empty | The public `https://` address, such as `https://home.example.org`. Required for passkeys and for signing in to Microsoft To Do, Google Tasks and TickTick ([to-do lists](modules/todos.md)) and to Google Calendar and Microsoft 365 ([calendar](modules/calendar.md)), and for password reset links by e-mail ([accounts](accounts.md)). Signing in with Home Assistant in the setup assistant uses it as the client ID ([dashboard](dashboard.md#signing-in-instead-of-pasting-a-key)). |
 | `PUSH_RELAY_URL` | `https://push.getwaylight.app` | Where push notifications for the mobile app go ([notifications](notifications.md#waylight-app)). `off` turns the app channel off; nothing is sent to the relay then. |
 | `COOKIE_SECURE` | `false` | Set to `true` once the app is served over HTTPS. Adds the `Secure` flag and the `__Host-` prefix to the session cookie. |
 

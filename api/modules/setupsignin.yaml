@@ -1,0 +1,72 @@
+# OpenAPI fragment of the sign-ins of the setup assistant (#654).
+tags:
+  - name: setupsignin
+
+paths:
+  /api/setup/signin:
+    post:
+      tags: [setupsignin]
+      summary: "Start signing in to Nextcloud (Login Flow v2) or Home Assistant (OAuth with Waylight's address as client ID; needs PUBLIC_URL). Answers with the page the user opens in a new window. The credential stays on the server; the module that is set up redeems the sign-in once with signIn in its settings request. Not for guests, kiosk displays or API tokens."
+      security: [{ session: [], csrf: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [service, url]
+              properties:
+                service: { type: string, enum: [nextcloud, homeassistant] }
+                url: { type: string, description: "Address of the service, e.g. https://cloud.example.com" }
+      responses:
+        "200":
+          description: Started; the sign-in lives for ten minutes
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SetupSignIn" }
+        "403": { description: Guest, kiosk display or API token }
+        "422": { $ref: "#/components/responses/Invalid" }
+        "429": { description: Too many sign-ins at once }
+  /api/setup/signin/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      tags: [setupsignin]
+      summary: "Where a sign-in stands. For Nextcloud the server polls the login flow, at most every two seconds. A failed or expired sign-in answers 422 with the reason."
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: { type: string, enum: [pending, ready] }
+        "422": { $ref: "#/components/responses/Invalid" }
+    delete:
+      tags: [setupsignin]
+      summary: Forget a sign-in, e.g. when the assistant closes
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Gone }
+  /api/setup/signin/oauth/callback:
+    get:
+      tags: [setupsignin]
+      summary: "Home Assistant's redirect after signing in. Public: the single-use state ties it to the sign-in. Answers with a short HTML page."
+      security: []
+      parameters:
+        - { name: state, in: query, required: true, schema: { type: string } }
+        - { name: code, in: query, schema: { type: string } }
+        - { name: error, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Signed in, content: { text/html: {} } }
+        "400": { description: Unknown state or refused code, content: { text/html: {} } }
+
+schemas:
+  SetupSignIn:
+    type: object
+    required: [id, loginUrl]
+    properties:
+      id: { type: string }
+      loginUrl: { type: string, description: The page the user signs in on }

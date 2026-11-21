@@ -27,9 +27,10 @@ type SettingsView struct {
 }
 
 // SettingsInput is the input of SaveSettings; an empty token keeps the
-// stored one.
+// stored one. SignIn is a finished sign-in of the setup assistant (#654)
+// that replaces URL and token.
 type SettingsInput struct {
-	URL, Token string
+	URL, Token, SignIn string
 }
 
 // EntityView is an entity with what the user may do with it.
@@ -68,12 +69,23 @@ type Provider interface {
 	Call(ctx context.Context, s domain.Settings, svc domain.Service, entityID string) error
 }
 
+// TokenRenewer renews the access token of a signed-in connection with its
+// refresh token (output port). A refused refresh token wraps
+// kernel.ErrTargetAuth: the admin has to sign in again.
+type TokenRenewer interface {
+	Renew(ctx context.Context, s domain.Settings) (domain.Settings, error)
+}
+
 // Deps bundles the output ports and the action policy.
 type Deps struct {
 	Repo     SettingsRepository
 	Provider Provider
-	Clock    kernel.Clock
-	Policy   domain.ActionPolicy
+	// Renewer and SignIns serve signing in with Home Assistant (#654);
+	// without them only pasted tokens work.
+	Renewer TokenRenewer
+	SignIns kernel.SignIns
+	Clock   kernel.Clock
+	Policy  domain.ActionPolicy
 	// Audit records actions in the security event log; may be nil.
 	Audit kernel.AuditSink
 }
@@ -83,6 +95,9 @@ type smartHome struct {
 	mu      sync.Mutex
 	states  []domain.Entity
 	fetched time.Time
+	// renewing serialises renewals, so two requests never spend one
+	// refresh token at the same time.
+	renewing sync.Mutex
 }
 
 // NewSmartHome returns the smart home use cases.
@@ -107,15 +122,12 @@ func (uc *smartHome) Settings(ctx context.Context) (SettingsView, error) {
 
 // SaveSettings implements SmartHome; the connection is tested first.
 func (uc *smartHome) SaveSettings(ctx context.Context, in SettingsInput) (SettingsView, error) {
-	token := in.Token
-	if token == "" {
-		if old, err := uc.d.Repo.Load(ctx); err == nil {
-			token = old.Token
-		}
-	}
-	s, err := domain.NewSettings(in.URL, token)
+	s, err := uc.input(ctx, in)
 	if err != nil {
 		return SettingsView{}, err
+	}
+	if s, err = uc.renew(ctx, s); err != nil {
+		return SettingsView{}, kernel.SetupFailure("Home Assistant", err)
 	}
 	states, err := uc.d.Provider.States(ctx, s)
 	if err != nil {
@@ -128,6 +140,75 @@ func (uc *smartHome) SaveSettings(ctx context.Context, in SettingsInput) (Settin
 	uc.states, uc.fetched = states, uc.d.Clock.Now()
 	uc.mu.Unlock()
 	return SettingsView{Configured: true, URL: s.URL, HasToken: true}, nil
+}
+
+// input turns the form into settings: a sign-in, a pasted token, or the
+// stored credential when the token is left empty.
+func (uc *smartHome) input(ctx context.Context, in SettingsInput) (domain.Settings, error) {
+	if in.SignIn != "" {
+		g, err := kernel.RedeemSignIn(ctx, uc.d.SignIns, in.SignIn, kernel.SignInHomeAssistant)
+		if err != nil {
+			return domain.Settings{}, err
+		}
+		return domain.SignedIn(g.URL, g)
+	}
+	if in.Token == "" {
+		if old, err := uc.d.Repo.Load(ctx); err == nil {
+			// The stored token is never sent to another address (#191).
+			if kernel.TargetChanged([]string{old.URL}, []string{in.URL}) {
+				return domain.Settings{}, kernel.SecretRequired("token")
+			}
+			s, err := domain.NewSettings(in.URL, old.Token)
+			if err != nil {
+				return domain.Settings{}, err
+			}
+			// Keep a signed-in connection signed in.
+			s.Refresh, s.ClientID, s.Expiry = old.Refresh, old.ClientID, old.Expiry
+			return s, nil
+		}
+	}
+	return domain.NewSettings(in.URL, in.Token)
+}
+
+// load returns the stored settings with a valid access token.
+func (uc *smartHome) load(ctx context.Context) (domain.Settings, error) {
+	s, err := uc.d.Repo.Load(ctx)
+	if err != nil {
+		return domain.Settings{}, err
+	}
+	if !s.NeedsRenewal(uc.d.Clock.Now()) {
+		return s, nil
+	}
+	uc.renewing.Lock()
+	defer uc.renewing.Unlock()
+	// Another request may have renewed it while this one waited.
+	if s, err = uc.d.Repo.Load(ctx); err != nil || !s.NeedsRenewal(uc.d.Clock.Now()) {
+		return s, err
+	}
+	if s, err = uc.renew(ctx, s); err != nil {
+		e := kernel.NewPublicError(kernel.ErrUnavailable, "Home Assistant did not renew the sign-in. Set up Home Assistant again.")
+		e.Cause = err
+		return domain.Settings{}, e
+	}
+	if err := uc.d.Repo.Save(ctx, s); err != nil {
+		return domain.Settings{}, fmt.Errorf("save renewed token: %w", err)
+	}
+	return s, nil
+}
+
+// renew renews the access token of s when it is due.
+func (uc *smartHome) renew(ctx context.Context, s domain.Settings) (domain.Settings, error) {
+	if !s.NeedsRenewal(uc.d.Clock.Now()) {
+		return s, nil
+	}
+	if uc.d.Renewer == nil {
+		return domain.Settings{}, fmt.Errorf("%w: no token renewer", kernel.ErrTargetAuth)
+	}
+	renewed, err := uc.d.Renewer.Renew(ctx, s)
+	if err != nil {
+		return domain.Settings{}, fmt.Errorf("renew the access token: %w", err)
+	}
+	return renewed, nil
 }
 
 // Entities implements SmartHome.
@@ -175,7 +256,7 @@ func (uc *smartHome) Act(ctx context.Context, id string) error {
 	if !uc.d.Policy.Allows(id) {
 		return domain.ErrActionNotAllowed
 	}
-	s, err := uc.d.Repo.Load(ctx)
+	s, err := uc.load(ctx)
 	if err != nil {
 		return err
 	}
@@ -201,7 +282,7 @@ func (uc *smartHome) Act(ctx context.Context, id string) error {
 
 // current returns cached states younger than statesTTL or fetches them.
 func (uc *smartHome) current(ctx context.Context) ([]domain.Entity, error) {
-	s, err := uc.d.Repo.Load(ctx)
+	s, err := uc.load(ctx)
 	if err != nil {
 		return nil, err
 	}

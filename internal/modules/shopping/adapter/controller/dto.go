@@ -6,6 +6,9 @@ type SettingsInputDTO struct {
 	ListURL  string `json:"listUrl"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+	// SignIn is a finished Nextcloud sign-in of the setup assistant
+	// (#654); it replaces username and password.
+	SignIn string `json:"signIn,omitempty"`
 }
 
 // NewItemDTO is the body of POST /api/shopping/items.

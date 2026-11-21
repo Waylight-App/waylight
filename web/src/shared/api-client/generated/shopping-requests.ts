@@ -11,6 +11,11 @@ export interface SettingsInputDTO {
   listUrl: string;
   username: string;
   password: string;
+  /**
+   * SignIn is a finished Nextcloud sign-in of the setup assistant
+   * (#654); it replaces username and password.
+   */
+  signIn?: string;
 }
 /**
  * NewItemDTO is the body of POST /api/shopping/items.

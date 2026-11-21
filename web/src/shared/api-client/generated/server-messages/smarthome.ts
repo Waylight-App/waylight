@@ -6,6 +6,7 @@ export const serverMessages = {
   srv_0f4d7732f2cd4899: "Actions are not enabled for this entity (SMARTHOME_ACTIONS_ENTITIES).",
   srv_3a4c7bf887ab6487: "At most {max} entities per widget.",
   srv_ea2866d2e8547dcb: "Choose one entity for the compact view.",
+  srv_c900d4617320061f: "Home Assistant did not renew the sign-in. Set up Home Assistant again.",
   srv_bcbabc6a08a54107: "Home Assistant is not configured yet.",
   srv_dc90aa2a1e0a5f62: "Home Assistant is not reachable.",
   srv_af1423afec138ad6: "Home Assistant rejected the action: {detail}",

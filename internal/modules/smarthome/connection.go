@@ -38,5 +38,11 @@ func savedConnections(ctx context.Context, repo usecase.SettingsRepository) ([]m
 	if err != nil {
 		return nil, err
 	}
+	// A connection from signing in (#654) holds a short-lived access token
+	// that only this module renews; copied, it would stop working within
+	// half an hour.
+	if s.Refresh != "" {
+		return nil, nil
+	}
 	return []modules.SavedConnection{{Source: "smarthome", Service: "homeassistant", URL: s.URL, Credential: map[string]string{"token": s.Token}}}, nil
 }

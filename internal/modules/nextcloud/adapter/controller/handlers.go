@@ -34,7 +34,7 @@ func (h *Handlers) SaveSettings(w http.ResponseWriter, r *http.Request) {
 		httpapi.WriteDomainError(w, r, err)
 		return
 	}
-	res, err := h.uc.SaveSettings(r.Context(), usecase.SettingsInput{URL: dto.URL, Username: dto.Username, AppPassword: dto.AppPassword})
+	res, err := h.uc.SaveSettings(r.Context(), usecase.SettingsInput{URL: dto.URL, Username: dto.Username, AppPassword: dto.AppPassword, SignIn: dto.SignIn})
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return

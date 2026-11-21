@@ -35,9 +35,10 @@ type SettingsInput struct {
 }
 
 // ConnectInput is what the setup assistant asks for (#588): the server
-// address instead of each calendar's URL.
+// address instead of each calendar's URL. SignIn is a finished Nextcloud
+// sign-in (#654) that replaces all three.
 type ConnectInput struct {
-	Server, Username, Password string
+	Server, Username, Password, SignIn string
 }
 
 // ConnectView is the outcome of Connect: the saved settings, the calendars
@@ -169,6 +170,9 @@ type Deps struct {
 	Accounts AccountRepository
 	API      AccountAPI
 	OAuth    OAuth
+	// SignIns hands over Nextcloud sign-ins of the setup assistant (#654);
+	// may be nil.
+	SignIns kernel.SignIns
 }
 
 // Service bundles both input ports; one value implements them so CalDAV
@@ -193,6 +197,7 @@ type calendar struct {
 	api      AccountAPI
 	oauth    OAuth
 	acc      accountState
+	signIns  kernel.SignIns
 	mu       sync.RWMutex
 	// agendas caches the agenda per account whose calendars apply
 	// (kernel.Principal.SettingsAccount, ADR 0018).
@@ -236,7 +241,7 @@ func (uc *calendar) snapshot(ctx context.Context) (*AgendaResponse, time.Time, t
 func NewCalendar(d Deps) Service {
 	return &calendar{repo: d.Repo, source: d.Source, writer: d.Writer, finder: d.Finder, subs: d.Subscriptions, feeds: d.Feeds, ids: d.IDs, clock: d.Clock,
 		accounts: d.Accounts, api: d.API, oauth: d.OAuth, acc: accountState{pending: map[string]*pendingSignIn{}}, agendas: map[string]*agendaCache{},
-		shared: d.Shared, sharedAccounts: d.SharedAccounts, sharingOn: d.SharingOn}
+		shared: d.Shared, sharedAccounts: d.SharedAccounts, sharingOn: d.SharingOn, signIns: d.SignIns}
 }
 
 // sourceSet is everything the agenda is built from.
@@ -430,6 +435,13 @@ func (uc *calendar) SaveSettings(ctx context.Context, in SettingsInput) (Setting
 // assistant's words (kernel.SetupFailure); the calendars are then checked
 // and saved like the form does.
 func (uc *calendar) Connect(ctx context.Context, in ConnectInput) (ConnectView, error) {
+	if in.SignIn != "" {
+		g, err := kernel.RedeemSignIn(ctx, uc.signIns, in.SignIn, kernel.SignInNextcloud)
+		if err != nil {
+			return ConnectView{}, err
+		}
+		in = ConnectInput{Server: g.URL, Username: g.Username, Password: g.Secret}
+	}
 	server, user := strings.TrimSpace(in.Server), strings.TrimSpace(in.Username)
 	// The server address follows the same rules as a calendar address.
 	if _, err := domain.NewSettings([]string{server}, user, in.Password); err != nil {

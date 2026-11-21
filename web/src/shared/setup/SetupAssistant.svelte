@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { tick } from 'svelte';
+  import { onDestroy, tick } from 'svelte';
   import { t } from '../i18n';
   import { errorMessage } from '../api-client/http';
   import {
@@ -10,8 +10,10 @@
     type SetupField,
     type SetupPreview,
     type SetupStage,
+    signInAddress,
     stageComplete,
   } from './setup';
+  import { followSignIn, useSignIn } from './signin';
 
   /**
    * Props of the setup assistant shown in place of a widget that is not set
@@ -35,6 +37,18 @@
   let found = $state<FoundService[]>([]);
   let heading = $state<HTMLElement>();
 
+  // Signing in with the service (#654) comes first where the descriptor
+  // offers it and the shell provides the server side; the pasted key stays
+  // one click away and takes over when the sign-in cannot start.
+  const signIn = useSignIn();
+  let mode = $state<'signin' | 'manual'>('signin');
+  let signInStatus = $state('');
+  let loginLink = $state('');
+  let running: AbortController | null = null;
+  const signInFrom = $derived(signIn ? signInAddress(d, values) : null);
+  const signingIn = $derived(stage === 'credential' && mode === 'signin' && !!signInFrom);
+  const signInLabel = $derived(d.signIn?.label ?? d.service);
+
   const index = $derived(stage === 'address' ? 1 : stage === 'credential' ? 2 : 3);
   const fieldsOf = (s: SetupStage) => d.fields.filter((f) => f.stage === s);
   const link = $derived(
@@ -49,7 +63,67 @@
       .catch(() => (found = []));
   });
 
+  function stopSignIn() {
+    running?.abort();
+    running = null;
+    signInStatus = '';
+    loginLink = '';
+  }
+  onDestroy(stopSignIn);
+
+  function useMode(next: 'signin' | 'manual') {
+    stopSignIn();
+    error = '';
+    mode = next;
+  }
+
+  /**
+   * Opens the sign-in window on the click itself, so no popup blocker
+   * stops it, and points it at the service's page once the server named
+   * it. The opener reference is cut before the service's page loads.
+   */
+  async function startSignIn() {
+    if (!signIn || !d.signIn || !signInFrom) return;
+    stopSignIn();
+    error = '';
+    const win = window.open('', '_blank');
+    if (win) win.opener = null;
+    const controller = new AbortController();
+    running = controller;
+    checking = true;
+    try {
+      const id = await followSignIn(
+        signIn,
+        d.signIn.service,
+        signInFrom,
+        (url) => {
+          loginLink = url;
+          signInStatus = t('setup.signin_waiting');
+          if (win && !win.closed) win.location.href = url;
+        },
+        controller.signal,
+      );
+      signInStatus = t('setup.signin_checking');
+      preview = await d.signIn.check({ ...values }, id);
+      running = null;
+      await go('done');
+    } catch (err) {
+      if (controller.signal.aborted) return;
+      win?.close();
+      running = null;
+      signInStatus = '';
+      error = errorMessage(err);
+      // A sign-in that never started (no PUBLIC_URL, not the service)
+      // leaves the pasted key as the way forward.
+      if (!loginLink) mode = 'manual';
+      loginLink = '';
+    } finally {
+      if (running === null || running === controller) checking = false;
+    }
+  }
+
   async function go(next: Stage) {
+    if (next !== 'done') stopSignIn();
     error = '';
     stage = next;
     await tick();
@@ -132,6 +206,24 @@
       {#each fieldsOf('address') as f (f.key)}{@render input(f)}{/each}
       <button class="btn btn-primary" type="submit">{t('setup.next')}</button>
     </form>
+  {:else if signingIn}
+    <p>{t('setup.signin_intro', { service: signInLabel })}</p>
+    <div class="actions">
+      <button class="btn btn-primary" type="button" onclick={startSignIn} disabled={checking}
+        >{t('setup.signin', { service: signInLabel })}</button
+      >
+      {#if loginLink}
+        <a class="btn" href={loginLink} target="_blank" rel="noopener noreferrer"
+          >{t('setup.signin_reopen')}</a
+        >
+      {/if}
+    </div>
+    <p class="muted" role="status" aria-live="polite">{signInStatus}</p>
+    {#if error}<p class="error" role="alert">{error}</p>{/if}
+    <div class="actions">
+      <button class="btn" type="button" onclick={() => go('address')}>{t('setup.back')}</button>
+      <button class="btn" type="button" onclick={() => useMode('manual')}>{t('setup.signin_manual')}</button>
+    </div>
   {:else if stage === 'credential'}
     <ol class="steps">
       {#each d.steps as s (s)}<li>{t(s)}</li>{/each}
@@ -149,6 +241,11 @@
         <button class="btn btn-primary" type="submit" disabled={checking}
           >{checking ? t('setup.checking') : t('setup.check')}</button
         >
+        {#if signInFrom}
+          <button class="btn" type="button" onclick={() => useMode('signin')}
+            >{t('setup.signin_instead', { service: signInLabel })}</button
+          >
+        {/if}
       </div>
     </form>
   {:else if preview}

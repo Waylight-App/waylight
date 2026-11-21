@@ -25,6 +25,8 @@ type Config struct {
 	ActionEntities []string
 	Clock          kernel.Clock
 	Audit          kernel.AuditSink
+	// SignIns hands over sign-ins of the setup assistant (#654); may be nil.
+	SignIns kernel.SignIns
 }
 
 // Module wires the smart home rings and implements modules.Module.
@@ -45,6 +47,7 @@ func New(cfg Config) *Module {
 	uc := usecase.NewSmartHome(usecase.Deps{
 		Repo: repo, Provider: hass,
 		Clock: cfg.Clock, Policy: domain.ActionPolicy{Allowed: cfg.ActionEntities}, Audit: cfg.Audit,
+		Renewer: newRenewer(cfg.Client, cfg.Clock.Now), SignIns: cfg.SignIns,
 	})
 	return &Module{uc: uc, handlers: controller.NewHandlers(uc), repo: repo, specs: connectionSpecs(hass)}
 }

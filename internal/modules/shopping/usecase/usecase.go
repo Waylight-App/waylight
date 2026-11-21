@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"waylight/internal/modules/shopping/domain"
 	"waylight/internal/shared/kernel"
@@ -20,7 +21,7 @@ type SettingsView struct {
 // Shopping is the input port of the module.
 type Shopping interface {
 	Settings(ctx context.Context) (SettingsView, error)
-	SaveSettings(ctx context.Context, listURL, username, password string) (SettingsView, error)
+	SaveSettings(ctx context.Context, in SettingsInput) (SettingsView, error)
 	List(ctx context.Context) ([]domain.Item, error)
 	Add(ctx context.Context, summary string) (domain.Item, error)
 	SetDone(ctx context.Context, id string, done bool) error
@@ -48,11 +49,25 @@ type shopping struct {
 	repo  SettingsRepository
 	store Store
 	ids   kernel.IDGenerator
+	// signIns hands over sign-ins of the setup assistant; may be nil.
+	signIns kernel.SignIns
 }
 
-// NewShopping returns the shopping list use cases.
-func NewShopping(repo SettingsRepository, store Store, ids kernel.IDGenerator) Shopping {
-	return &shopping{repo: repo, store: store, ids: ids}
+// SettingsInput is the input of SaveSettings; an empty password keeps the
+// stored one. SignIn is a finished Nextcloud sign-in of the setup
+// assistant (#654) that replaces user name and password; the list has to
+// lie on that Nextcloud.
+type SettingsInput struct {
+	ListURL, Username, Password, SignIn string
+}
+
+// errListElsewhere is returned when the list is not on the signed-in Nextcloud.
+var errListElsewhere = kernel.NewValidationError("listUrl", "The list address is not on the Nextcloud you signed in to.")
+
+// NewShopping returns the shopping list use cases; signIns (may be nil)
+// hands over sign-ins of the setup assistant.
+func NewShopping(repo SettingsRepository, store Store, ids kernel.IDGenerator, signIns kernel.SignIns) Shopping {
+	return &shopping{repo: repo, store: store, ids: ids, signIns: signIns}
 }
 
 // unavailable wraps store errors that are not domain errors.
@@ -77,7 +92,19 @@ func (uc *shopping) Settings(ctx context.Context) (SettingsView, error) {
 }
 
 // SaveSettings implements Shopping; the list is read once to test access.
-func (uc *shopping) SaveSettings(ctx context.Context, listURL, username, password string) (SettingsView, error) {
+func (uc *shopping) SaveSettings(ctx context.Context, in SettingsInput) (SettingsView, error) {
+	listURL, username, password := strings.TrimSpace(in.ListURL), in.Username, in.Password
+	if in.SignIn != "" {
+		g, err := kernel.RedeemSignIn(ctx, uc.signIns, in.SignIn, kernel.SignInNextcloud)
+		if err != nil {
+			return SettingsView{}, err
+		}
+		// The app password is only ever sent to the server that issued it.
+		if prefix := g.URL + "/"; len(listURL) <= len(prefix) || !strings.EqualFold(listURL[:len(prefix)], prefix) {
+			return SettingsView{}, errListElsewhere
+		}
+		username, password = g.Username, g.Secret
+	}
 	if password == "" {
 		if old, err := uc.repo.Load(ctx); err == nil {
 			if kernel.TargetChanged([]string{old.ListURL, old.Username}, []string{listURL, username}) {

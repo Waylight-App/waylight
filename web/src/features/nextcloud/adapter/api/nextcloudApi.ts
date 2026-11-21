@@ -11,8 +11,13 @@ export class NextcloudApi implements NextcloudGateway {
   async settings(): Promise<NextcloudSettings> {
     return { ...(await this.http.get<SettingsDTO>('/api/nextcloud/settings')) };
   }
-  async saveSettings(url: string, username: string, appPassword: string): Promise<NextcloudSettings> {
-    const body: SettingsInputDTO = { url, username, appPassword };
+  async saveSettings(
+    url: string,
+    username: string,
+    appPassword: string,
+    signIn?: string,
+  ): Promise<NextcloudSettings> {
+    const body: SettingsInputDTO = { url, username, appPassword, signIn };
     return { ...(await this.http.put<SettingsDTO>('/api/nextcloud/settings', body)) };
   }
   async status(): Promise<NextcloudStatus> {

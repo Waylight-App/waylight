@@ -26,6 +26,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_a6715a41424b56f8: 'Diese Entität hat keine Aktion; nur Schalter und Taster lassen sich bedienen.',
   // Choose one entity for the compact view.
   srv_ea2866d2e8547dcb: 'Wähle eine Entität für die kompakte Ansicht.',
+  // Home Assistant did not renew the sign-in. Set up Home Assistant again.
+  srv_c900d4617320061f:
+    'Home Assistant hat die Anmeldung nicht verlängert. Richte Home Assistant erneut ein.',
   // Off
   srv_302cbb19bf9a174a: 'Aus',
   // On

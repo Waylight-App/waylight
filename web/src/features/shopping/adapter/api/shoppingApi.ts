@@ -36,8 +36,13 @@ export class ShoppingApi implements ShoppingGateway {
   async settings(): Promise<ShoppingSettings> {
     return { ...(await this.http.get<SettingsDTO>('/api/shopping/settings')) };
   }
-  async saveSettings(listUrl: string, username: string, password: string): Promise<ShoppingSettings> {
-    const body: SettingsInputDTO = { listUrl, username, password };
+  async saveSettings(
+    listUrl: string,
+    username: string,
+    password: string,
+    signIn?: string,
+  ): Promise<ShoppingSettings> {
+    const body: SettingsInputDTO = { listUrl, username, password, signIn };
     return { ...(await this.http.put<SettingsDTO>('/api/shopping/settings', body)) };
   }
   async items(): Promise<ShoppingItem[]> {

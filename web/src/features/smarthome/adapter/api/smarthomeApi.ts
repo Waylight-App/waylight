@@ -18,8 +18,8 @@ export class SmarthomeApi implements SmartHomeGateway {
   async settings(): Promise<SmartHomeSettings> {
     return { ...(await this.http.get<SettingsDTO>('/api/smarthome/settings')) };
   }
-  async saveSettings(url: string, token: string): Promise<SmartHomeSettings> {
-    const body: SettingsInputDTO = { url, token };
+  async saveSettings(url: string, token: string, signIn?: string): Promise<SmartHomeSettings> {
+    const body: SettingsInputDTO = { url, token, signIn };
     return { ...(await this.http.put<SettingsDTO>('/api/smarthome/settings', body)) };
   }
   async entities(): Promise<Entity[]> {

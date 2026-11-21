@@ -25,10 +25,12 @@ type Module struct {
 }
 
 // New builds the shopping list module; cipher encrypts the app password.
-// host (from PUBLIC_URL) makes the UIDs of exported items unique.
-func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, ids kernel.IDGenerator, clock kernel.Clock, host string) *Module {
+// host (from PUBLIC_URL) makes the UIDs of exported items unique; signIns
+// (may be nil) hands over sign-ins of the setup assistant (#654).
+func New(db *sql.DB, cipher gateway.Cipher, client *http.Client, ids kernel.IDGenerator, clock kernel.Clock, host string,
+	signIns kernel.SignIns) *Module {
 	settings, store := gateway.NewSettingsRepository(db, cipher), gateway.NewCalDAVStore(client)
-	uc := usecase.NewShopping(settings, store, ids)
+	uc := usecase.NewShopping(settings, store, ids, signIns)
 	repo := gateway.NewListRepository(db)
 	if host == "" {
 		host = "waylight.local"

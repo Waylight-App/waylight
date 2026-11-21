@@ -24,7 +24,7 @@ paths:
       security: [{ session: [], csrf: [] }]
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object, required: [url], properties: { url: { type: string }, token: { type: string } } } } }
+        content: { application/json: { schema: { type: object, required: [url], properties: { url: { type: string }, token: { type: string }, signIn: { type: string, description: "ID of a finished sign-in of the setup assistant (#654); replaces url and token" } } } } }
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/SmartHomeSettings" } } } }
         "422": { $ref: "#/components/responses/Invalid" }

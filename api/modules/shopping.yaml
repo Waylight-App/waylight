@@ -10,7 +10,7 @@ paths:
     put:
       tags: [shopping]
       summary: Test and save the task list; an empty password keeps the stored one
-      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { listUrl: { type: string }, username: { type: string }, password: { type: string } } } } } }
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { listUrl: { type: string }, username: { type: string }, password: { type: string }, signIn: { type: string, description: "ID of a finished sign-in of the setup assistant (#654); replaces username and password; the list must lie on the signed-in Nextcloud" } } } } } }
       responses: { "200": { description: OK }, "422": { description: Validation error or list not readable } }
   /api/shopping/items:
     get:

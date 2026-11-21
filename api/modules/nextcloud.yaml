@@ -10,7 +10,7 @@ paths:
     put:
       tags: [nextcloud]
       summary: Test and save the connection; an empty app password keeps the stored one
-      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { url: { type: string }, username: { type: string }, appPassword: { type: string } } } } } }
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { url: { type: string }, username: { type: string }, appPassword: { type: string }, signIn: { type: string, description: "ID of a finished sign-in of the setup assistant (#654); replaces url, username and app password" } } } } } }
       responses: { "200": { description: OK }, "422": { description: Validation error or connection failed } }
   /api/nextcloud/status:
     get:
