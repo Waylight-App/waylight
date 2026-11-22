@@ -56,6 +56,8 @@ export const iconPaths = {
   ],
   bell: ['M6 16V11a6 6 0 0 1 12 0v5l2 2H4z', 'M10 21h4'],
   plug: ['M9 3v5M15 3v5', 'M6 8h12v3a6 6 0 0 1-12 0z', 'M12 17v4'],
+  smartphone: ['M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2', 'M11 18h2'],
+  upload: ['M12 16V4', 'M7 9l5-5l5 5', 'M4 20h16'],
   info: ['M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18', 'M12 11v6', 'M12 7.5h.01'],
 } as const;
 

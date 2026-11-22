@@ -27,6 +27,7 @@ export const de: Record<keyof typeof en, string> = {
     'Einen kostenlosen API-Schlüssel gibt es auf creativecommons.tankerkoenig.de. Preise werden höchstens alle fünf Minuten geladen und nur, solange das Widget offen ist.',
   'fuel.invalid_radius': 'Der Umkreis muss zwischen 1 und 25 km liegen.',
   'fuel.setup_place': 'Ort',
+  'fuel.setup_place_hint': 'Ein Ort oder eine Postleitzahl. Waylight sucht Tankstellen in der Nähe.',
   'fuel.setup_api_key': 'Zugangsschlüssel',
   'fuel.setup_step_register':
     'Beantrage bei Tankerkönig mit deiner E-Mail-Adresse einen kostenlosen API-Schlüssel.',

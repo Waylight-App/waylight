@@ -31,6 +31,8 @@ export const en = {
   'proxmox.actions_hint':
     'Start and shutdown stay off unless PROXMOX_ACTIONS_GUESTS lists the guest IDs and the token may power them (VM.PowerMgmt).',
   'proxmox.setup_token_id': 'Token ID',
+  'proxmox.setup_token_id_hint':
+    'Proxmox shows it when you create the token, for example waylight@pve!dashboard.',
   'proxmox.setup_secret': 'Secret',
   'proxmox.setup_step_open': 'Open Proxmox VE and go to Datacenter → Permissions → API Tokens.',
   'proxmox.setup_step_add':

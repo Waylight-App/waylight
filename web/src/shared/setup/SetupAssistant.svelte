@@ -1,64 +1,71 @@
 <script lang="ts">
-  import { onDestroy, tick } from 'svelte';
+  import { onDestroy } from 'svelte';
   import { t } from '../i18n';
   import { errorMessage } from '../api-client/http';
+  import Icon from '../ui/icons/Icon.svelte';
+  import { qrDataUrl } from '../ui/qr';
+  import { useWidgetIcon } from '../ui/widgetIcon';
+  import SetupDialog from './SetupDialog.svelte';
+  import SetupResult from './SetupResult.svelte';
+  import SetupStep from './SetupStep.svelte';
   import {
     addressOf,
+    fieldHint,
     type FoundService,
     initialValues,
+    pasteTarget,
     type SetupDescriptor,
     type SetupField,
     type SetupPreview,
-    type SetupStage,
-    pasteTarget,
     signInAddress,
     stageComplete,
   } from './setup';
   import { followPaste, pasteLink, usePaste } from './paste';
-  import { qrDataUrl } from '../ui/qr';
   import { followSignIn, useSignIn } from './signin';
 
   /**
-   * Props of the setup assistant shown in place of a widget that is not set
-   * up (#588): address, credential with the service's own steps, then a
-   * check that shows real data before the widget takes over.
+   * The guided setup of a widget (#588, #738), the same for every
+   * integration: everything it needs on one screen as numbered steps, each
+   * with a plain hint, one connection test that shows real data and one
+   * primary action. Entering the key on the phone and signing in with the
+   * service are offered next to the key's field.
    */
   interface Props {
     descriptor: SetupDescriptor;
-    /** Called after Done; the widget loads its data again. */
+    /** Called after Done, or when the dialog closes after a working connection. */
     ondone: () => void;
+    /** Called when the setup is left without a working connection. */
+    onclose: () => void;
   }
-  let { descriptor: d, ondone }: Props = $props();
+  let { descriptor: d, ondone, onclose }: Props = $props();
+  const uid = $props.id();
+  const widgetIcon = useWidgetIcon();
 
-  type Stage = SetupStage | 'done';
-  let stage = $state<Stage>('address');
   // svelte-ignore state_referenced_locally
   let values = $state<Record<string, string>>(initialValues(d));
   let error = $state('');
   let checking = $state(false);
   let preview = $state<SetupPreview | null>(null);
   let found = $state<FoundService[]>([]);
-  let heading = $state<HTMLElement>();
 
-  // Signing in with the service (#654) comes first where the descriptor
-  // offers it and the shell provides the server side; the pasted key stays
-  // one click away and takes over when the sign-in cannot start.
+  // Signing in with the service (#654) is offered where the descriptor has
+  // it and the shell provides the server side; the key's field stays.
   const signIn = useSignIn();
-  let mode = $state<'signin' | 'manual'>('signin');
   let signInStatus = $state('');
-  let loginLink = $state('');
   let running: AbortController | null = null;
   const signInFrom = $derived(signIn ? signInAddress(d, values) : null);
-  const signingIn = $derived(stage === 'credential' && mode === 'signin' && !!signInFrom);
   const signInLabel = $derived(d.signIn?.label ?? d.service);
 
-  // Paste from phone: the mobile app sends a key copied there; the key goes
-  // into the first secret field and is checked like a typed one.
+  // Entering the key on the phone: the mobile app sends a key copied there;
+  // it goes into the first secret field and is checked like a typed one.
   const paste = usePaste();
-  const pasteField = $derived(pasteTarget(d));
+  const secret = $derived(pasteTarget(d));
   let pasteQr = $state('');
   let pasteStatus = $state('');
   let pasting: AbortController | null = null;
+
+  const link = $derived(d.credentialPage?.(addressOf(d, values), values) ?? null);
+  const complete = $derived(stageComplete(d, 'address', values) && stageComplete(d, 'credential', values));
 
   function stopPaste() {
     pasting?.abort();
@@ -68,7 +75,7 @@
   }
 
   async function startPaste() {
-    if (!paste || !pasteField) return;
+    if (!paste || !secret) return;
     stopPaste();
     error = '';
     const controller = new AbortController();
@@ -82,7 +89,7 @@
         },
         controller.signal,
       );
-      values[pasteField.key] = value;
+      values[secret.key] = value;
       pasting = null;
       pasteQr = '';
       pasteStatus = t('setup.paste_received');
@@ -95,14 +102,8 @@
     }
   }
 
-  const index = $derived(stage === 'address' ? 1 : stage === 'credential' ? 2 : 3);
-  const fieldsOf = (s: SetupStage) => d.fields.filter((f) => f.stage === s);
-  const link = $derived(
-    stage === 'credential' ? (d.credentialPage?.(addressOf(d, values), values) ?? null) : null,
-  );
-
   // Services found in the home network are offered first (#590); the
-  // assistant works the same without them.
+  // setup works the same without them.
   $effect(() => {
     d.discover?.()
       .then((list) => (found = list))
@@ -113,18 +114,11 @@
     running?.abort();
     running = null;
     signInStatus = '';
-    loginLink = '';
   }
   onDestroy(() => {
     stopSignIn();
     stopPaste();
   });
-
-  function useMode(next: 'signin' | 'manual') {
-    stopSignIn();
-    error = '';
-    mode = next;
-  }
 
   /**
    * Opens the sign-in window on the click itself, so no popup blocker
@@ -146,7 +140,6 @@
         d.signIn.service,
         signInFrom,
         (url) => {
-          loginLink = url;
           signInStatus = t('setup.signin_waiting');
           if (win && !win.closed) win.location.href = url;
         },
@@ -154,199 +147,186 @@
       );
       signInStatus = t('setup.signin_checking');
       preview = await d.signIn.check({ ...values }, id);
+      signInStatus = '';
       running = null;
-      await go('done');
     } catch (err) {
       if (controller.signal.aborted) return;
       win?.close();
       running = null;
       signInStatus = '';
       error = errorMessage(err);
-      // A sign-in that never started (no PUBLIC_URL, not the service)
-      // leaves the pasted key as the way forward.
-      if (!loginLink) mode = 'manual';
-      loginLink = '';
     } finally {
       if (running === null || running === controller) checking = false;
     }
   }
 
-  async function go(next: Stage) {
-    if (next !== 'done') stopSignIn();
+  async function check() {
+    if (!complete) return;
     stopPaste();
-    error = '';
-    stage = next;
-    await tick();
-    heading?.focus();
-  }
-
-  function useFound(s: FoundService) {
-    const field = fieldsOf('address')[0];
-    if (field) values[field.key] = s.url;
-    void go('credential');
-  }
-
-  function next(e: SubmitEvent) {
-    e.preventDefault();
-    if (stageComplete(d, 'address', values)) void go('credential');
-  }
-
-  async function check(e: SubmitEvent) {
-    e.preventDefault();
-    if (!stageComplete(d, 'credential', values)) return;
     error = '';
     checking = true;
     try {
       preview = await d.check({ ...values });
-      await go('done');
     } catch (err) {
       error = errorMessage(err);
     } finally {
       checking = false;
     }
   }
+
+  // The first press tests the connection and saves it; once it works the
+  // same button is Done.
+  const primary = () => (preview ? ondone() : void check());
+  // A working connection is saved already, so leaving then still loads the widget.
+  const leave = () => (preview ? ondone() : onclose());
+
+  // A changed value makes the shown result obsolete.
+  function changed() {
+    preview = null;
+    error = '';
+  }
+
+  const id = (f: SetupField) => `${uid}-${f.key}`;
 </script>
 
 {#snippet input(f: SetupField)}
-  <label class="field">
-    <span>{t(f.label)}</span>
-    {#if f.type === 'choice'}
-      <select class="input" bind:value={values[f.key]} required>
-        {#each f.options ?? [] as o (o.value)}<option value={o.value}>{o.label}</option>{/each}
-      </select>
-    {:else}
-      <input
-        class="input"
-        type={f.type}
-        placeholder={f.placeholder}
-        autocomplete={f.autocomplete ?? (f.type === 'password' ? 'new-password' : 'off')}
-        bind:value={values[f.key]}
-        required={!f.optional}
-      />
-    {/if}
-  </label>
+  {#if f.type === 'choice'}
+    <select id={id(f)} class="input" bind:value={values[f.key]} oninput={changed} required>
+      {#each f.options ?? [] as o (o.value)}<option value={o.value}>{o.label}</option>{/each}
+    </select>
+  {:else}
+    <input
+      id={id(f)}
+      class="input"
+      type={f.type}
+      placeholder={f.placeholder}
+      autocomplete={f.autocomplete ?? (f.type === 'password' ? 'new-password' : 'off')}
+      bind:value={values[f.key]}
+      oninput={changed}
+      required={!f.optional}
+    />
+  {/if}
 {/snippet}
 
-<section class="setup" aria-labelledby="setup-heading">
-  <p class="muted step">{t('setup.step', { n: index, total: 3 })}</p>
-  <h4 id="setup-heading" tabindex="-1" bind:this={heading}>
-    {stage === 'done'
-      ? t('setup.connected', { service: d.service })
-      : t('setup.title', { service: d.service })}
-  </h4>
-
-  {#if stage === 'address'}
-    {#if found.length}
-      <ul class="found">
-        {#each found as s (s.url)}
-          <li>
-            <span
-              >{t('setup.found', { service: d.service, url: s.url })}<br /><small class="muted"
-                >{s.hint}</small
-              ></span
-            >
-            <button class="btn btn-primary" type="button" onclick={() => useFound(s)}
-              >{t('setup.connect')}</button
-            >
-          </li>
-        {/each}
-      </ul>
-    {/if}
-    <form onsubmit={next}>
-      {#each fieldsOf('address') as f (f.key)}{@render input(f)}{/each}
-      <button class="btn btn-primary" type="submit">{t('setup.next')}</button>
-    </form>
-  {:else if signingIn}
-    <p>{t('setup.signin_intro', { service: signInLabel })}</p>
-    <div class="actions">
-      <button class="btn btn-primary" type="button" onclick={startSignIn} disabled={checking}
-        >{t('setup.signin', { service: signInLabel })}</button
-      >
-      {#if loginLink}
-        <a class="btn" href={loginLink} target="_blank" rel="noopener noreferrer"
-          >{t('setup.signin_reopen')}</a
-        >
-      {/if}
-    </div>
-    <p class="muted" role="status" aria-live="polite">{signInStatus}</p>
-    {#if error}<p class="error" role="alert">{error}</p>{/if}
-    <div class="actions">
-      <button class="btn" type="button" onclick={() => go('address')}>{t('setup.back')}</button>
-      <button class="btn" type="button" onclick={() => useMode('manual')}>{t('setup.signin_manual')}</button>
-    </div>
-  {:else if stage === 'credential'}
-    <ol class="steps">
-      {#each d.steps as s (s)}<li>{t(s)}</li>{/each}
-    </ol>
-    {#if link}
-      <a class="btn" href={link} target="_blank" rel="noopener noreferrer"
-        >{t('setup.open', { service: d.service })}</a
-      >
-    {/if}
-    <form onsubmit={check}>
-      {#each fieldsOf('credential') as f (f.key)}{@render input(f)}{/each}
-      {#if paste && pasteField}
-        {#if pasteQr}
-          <p class="muted">{t('setup.paste_hint')}</p>
-          <img class="qr" src={pasteQr} alt={t('setup.paste_qr_alt')} />
-          <button class="btn" type="button" onclick={stopPaste}>{t('setup.paste_cancel')}</button>
-        {:else}
-          <button class="btn" type="button" onclick={startPaste}>{t('setup.paste')}</button>
-        {/if}
-        <p class="muted" role="status" aria-live="polite">{pasteStatus}</p>
-      {/if}
-      {#if error}<p class="error" role="alert">{error}</p>{/if}
-      <div class="actions">
-        <button class="btn" type="button" onclick={() => go('address')}>{t('setup.back')}</button>
-        <button class="btn btn-primary" type="submit" disabled={checking}
-          >{checking ? t('setup.checking') : t('setup.check')}</button
-        >
-        {#if signInFrom}
-          <button class="btn" type="button" onclick={() => useMode('signin')}
-            >{t('setup.signin_instead', { service: signInLabel })}</button
-          >
-        {/if}
-      </div>
-    </form>
-  {:else if preview}
-    <ul class="preview" role="status">
-      {#each preview.lines as line (line)}<li>{line}</li>{/each}
-    </ul>
-    {#if preview.images?.length}
-      <div class="images">
-        {#each preview.images.slice(0, 3) as src (src)}<img {src} alt="" loading="lazy" />{/each}
-      </div>
-    {/if}
-    <button class="btn btn-primary" type="button" onclick={ondone}>{t('setup.done')}</button>
+{#snippet actions(f: SetupField)}
+  {#if f === secret && paste}
+    <button
+      class="btn ghost"
+      type="button"
+      aria-describedby={pasteQr ? `${uid}-qr` : undefined}
+      onclick={pasteQr ? stopPaste : startPaste}
+    >
+      <Icon name="smartphone" size={18} />{pasteQr ? t('setup.paste_cancel') : t('setup.paste')}
+    </button>
   {/if}
-</section>
+{/snippet}
+
+<SetupDialog
+  title={t('setup.title_connect', { service: d.service })}
+  icon={widgetIcon}
+  lead={d.intro ? t(d.intro) : t('setup.lead', { service: d.service })}
+  primary={preview ? t('setup.done') : checking ? t('setup.checking') : t('setup.connect')}
+  busy={checking}
+  onprimary={primary}
+  onclose={leave}
+>
+  {#if found.length && !addressOf(d, values)}
+    <ul class="found">
+      {#each found as s (s.url)}
+        <li>
+          <span
+            >{t('setup.found', { service: d.service, url: s.url })}<br /><small class="muted">{s.hint}</small
+            ></span
+          >
+          <button
+            class="btn"
+            type="button"
+            onclick={() => {
+              const f = d.fields.find((x) => x.stage === 'address' && x.type === 'url');
+              if (f) values[f.key] = s.url;
+            }}>{t('setup.use_found')}</button
+          >
+        </li>
+      {/each}
+    </ul>
+  {/if}
+
+  {#each d.fields as f, i (f.key)}
+    <SetupStep n={i + 1} label={t(f.label)} for={id(f)}>
+      {#snippet hint()}
+        {#if f === secret}
+          <ol>
+            {#each d.steps as s (s)}<li>{t(s)}</li>{/each}
+          </ol>
+          {#if link}
+            <a href={link} target="_blank" rel="noopener noreferrer"
+              >{t('setup.open', { service: d.service })}</a
+            >
+          {/if}
+        {:else}
+          {fieldHint(f, d.service)}
+        {/if}
+      {/snippet}
+      <div class="row">
+        {@render input(f)}
+        {@render actions(f)}
+      </div>
+      {#if f === secret}
+        {#if pasteQr}
+          <div class="qr-box" id="{uid}-qr">
+            <img class="qr" src={pasteQr} alt={t('setup.paste_qr_alt')} />
+            <p class="muted">{t('setup.paste_hint')}</p>
+          </div>
+        {/if}
+        <p class="muted status" role="status" aria-live="polite">{pasteStatus}</p>
+      {/if}
+    </SetupStep>
+  {/each}
+
+  {#if signInFrom}
+    <div class="signin">
+      <button class="btn ghost" type="button" onclick={startSignIn} disabled={checking}
+        >{t('setup.signin_instead', { service: signInLabel })}</button
+      >
+      <span class="muted" role="status" aria-live="polite">{signInStatus}</span>
+    </div>
+  {/if}
+
+  {#if preview}
+    <SetupResult ok lines={preview.lines} images={preview.images} />
+  {:else if error}
+    <SetupResult ok={false} lines={[error]} />
+  {/if}
+</SetupDialog>
 
 <style>
-  .setup {
+  .row {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--space-3);
+    align-items: center;
   }
-  .step {
+  .row :global(.input) {
+    flex: 1;
+    min-width: 0;
+  }
+  .ghost {
+    white-space: nowrap;
+    color: var(--color-accent-text);
+  }
+  .status {
     margin: 0;
-    font-size: 0.8rem;
+    min-height: 0;
   }
-  h4 {
-    margin: 0;
+  .status:empty {
+    display: none;
   }
-  h4:focus-visible {
-    outline: 2px solid var(--color-accent-text);
-    outline-offset: 2px;
+  .signin {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
   }
-  .steps {
-    margin: 0;
-    padding-left: 1.4em;
-  }
-  .steps li + li {
-    margin-top: var(--space-1);
-  }
-  .found,
-  .preview {
+  .found {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -358,31 +338,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-2);
-    padding: var(--space-2);
+    gap: var(--space-3);
+    padding: var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius);
   }
-  .actions {
+  .qr-box {
     display: flex;
-    gap: var(--space-2);
-    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .qr-box p {
+    margin: 0;
   }
   .qr {
     width: 10rem;
     height: 10rem;
     image-rendering: pixelated;
     background: #fff; /* scanners need a light quiet zone in dark themes */
-  }
-  .images {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-1);
-  }
-  .images img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-    border-radius: var(--radius-small);
   }
 </style>

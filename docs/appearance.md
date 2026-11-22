@@ -97,8 +97,9 @@ from the weekday and the hour on your device only and is off unless you
 switch it on.
 
 A widget that needs setting up before it can show anything, such as the
-calendar without a calendar, shows what is missing and a **Set up** button
-that opens the matching settings section.
+calendar without a calendar, shows a symbol, one short sentence and a
+**Connect** or **Set up** button that opens the guided setup
+([setting up a widget](dashboard.md#setting-up-a-widget-in-place)).
 
 The launcher, the grid icon in the top bar, opens a quick list of your
 service tiles, your bookmarks or both; choose which under *Appearance*.

@@ -7,8 +7,8 @@
   import { type SetupDescriptor, useMaySetUp } from './setup';
 
   /**
-   * What a widget that is not set up shows (#588): one sentence and *Set up*,
-   * which opens the assistant in the widget. Viewers who may not set the
+   * What a widget that is not set up shows (#588, #737): the shared symbol,
+   * one sentence and *Connect*, which opens the guided setup in a dialog. Viewers who may not set the
    * integration up (members for instance integrations, guests) only read
    * the sentence. Saved connections of the service come first (#709):
    * choosing one stores it in the widget instead of asking for an address.
@@ -38,21 +38,27 @@
 </script>
 
 {#if open}
-  <SetupAssistant {descriptor} {ondone} />
-{:else}
-  <EmptyState {text}>
-    {#if allowed}
-      {@render children?.()}
-      {#each saved as c (c.id)}
-        <button class="btn btn-primary" type="button" onclick={() => void connections?.choose(c.id)}
-          >{t('setup.use_connection', { name: c.name })}</button
-        >
-      {/each}
-      <button
-        class={saved.length || children ? 'btn' : 'btn btn-primary'}
-        type="button"
-        onclick={() => (open = true)}>{label ?? t('setup.connect')}</button
-      >
-    {/if}
-  </EmptyState>
+  <SetupAssistant
+    {descriptor}
+    onclose={() => (open = false)}
+    ondone={() => {
+      open = false;
+      ondone();
+    }}
+  />
 {/if}
+<EmptyState {text}>
+  {#if allowed}
+    {@render children?.()}
+    {#each saved as c (c.id)}
+      <button class="btn btn-primary" type="button" onclick={() => void connections?.choose(c.id)}
+        >{t('setup.use_connection', { name: c.name })}</button
+      >
+    {/each}
+    <button
+      class={saved.length || children ? 'btn' : 'btn btn-primary'}
+      type="button"
+      onclick={() => (open = true)}>{label ?? t('setup.connect')}</button
+    >
+  {/if}
+</EmptyState>

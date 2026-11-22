@@ -12,6 +12,7 @@ export function mediaSetup(media: MediaUseCases, discover?: () => Promise<FoundS
     fields: [
       {
         key: 'provider',
+        hint: 'setup.hint_choice',
         label: 'media.server',
         stage: 'address',
         type: 'choice',

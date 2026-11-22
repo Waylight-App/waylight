@@ -16,6 +16,7 @@ export function proxmoxSetup(proxmox: ProxmoxUseCases): SetupDescriptor {
       },
       {
         key: 'tokenId',
+        hint: 'proxmox.setup_token_id_hint',
         label: 'proxmox.setup_token_id',
         stage: 'credential',
         type: 'text',

@@ -1,5 +1,7 @@
 <script lang="ts">
   import EmptyState from '../../../shared/ui/EmptyState.svelte';
+  import WasteSetup from './WasteSetup.svelte';
+  import { useMaySetUp } from '../../../shared/setup/setup';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -12,14 +14,18 @@
   }
   let { waste }: Props = $props();
   const poll = usePolling();
+  const allowed = useMaySetUp(false);
 
   const POLL_MS = 30 * 60_000;
   let overview = $state<WasteOverview | null>(null);
   let error = $state('');
   let unconfigured = $state(false);
   let now = $state(new Date());
+  let setupOpen = $state(false);
+  let reload = $state(0);
 
   $effect(() => {
+    void reload;
     const load = () =>
       waste
         .upcoming()
@@ -37,7 +43,23 @@
 </script>
 
 {#if unconfigured}
-  <EmptyState text={t('waste.add_the_ics_link_of_your')} section="waste" />
+  <EmptyState text={t('waste.add_the_ics_link_of_your')}>
+    {#if allowed}
+      <button class="btn btn-primary" type="button" onclick={() => (setupOpen = true)}
+        >{t('common.set_up')}</button
+      >
+    {/if}
+  </EmptyState>
+  {#if setupOpen}
+    <WasteSetup
+      {waste}
+      onclose={() => (setupOpen = false)}
+      ondone={() => {
+        setupOpen = false;
+        reload++;
+      }}
+    />
+  {/if}
 {:else if error && !overview}
   <p class="error">{error}</p>
 {:else if overview}

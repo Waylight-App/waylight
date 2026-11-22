@@ -22,7 +22,14 @@ export function fuelSetup(
   return {
     service: 'Tankerkönig',
     fields: [
-      { key: 'place', label: 'fuel.setup_place', stage: 'address', type: 'text', placeholder: 'Berlin' },
+      {
+        key: 'place',
+        hint: 'fuel.setup_place_hint',
+        label: 'fuel.setup_place',
+        stage: 'address',
+        type: 'text',
+        placeholder: 'Berlin',
+      },
       {
         key: 'apiKey',
         label: 'fuel.setup_api_key',

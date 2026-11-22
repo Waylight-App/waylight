@@ -263,61 +263,66 @@ uses for questions ([asking a question](search.md#asking-a-question)).
 
 ## Setting up a widget in place
 
-A widget whose service is not connected yet shows one sentence and a
-**Set up** button. The setup runs inside the widget in three steps:
+A widget that is not set up shows a symbol, one short sentence and one button,
+**Connect** (**Set up** for the waste calendar). The button opens the same
+setup dialog for every integration: a title, one sentence on what the widget
+needs, and everything it asks for on one screen as numbered steps. Each step
+has a note under it that says where to find the value.
 
 1. **Address.** Enter where the service runs, for example
    `http://192.168.178.20:2283` for Immich. For admins Waylight first looks
    for the service in the home network and offers what it found
    ("Immich found at http://172.18.0.5:2283"); entering an address by hand
    always works.
-2. **Credential.** The widget lists the steps in the service's own words,
+2. **Access key.** The note lists the steps in the service's own words,
    for example *Account Settings → API Keys → New API Key* in Immich, and
-   *Open Immich* takes you to that page in a new tab. Paste the key or token.
-3. **Check.** Waylight tries the connection before it saves anything. When
-   it works you see real data (the number of photos and three of today's
-   memories, a few entities of Home Assistant, the calendars found and your
-   next events) and press *Done*.
+   *Open Immich* takes you to that page in a new tab. Paste the key or token,
+   or press **Enter on phone**.
+
+**Connect** tries the connection before it saves anything. When it works you
+see a green message with real data (the number of photos and three of today's
+memories, a few entities of Home Assistant, the calendars found and your next
+events) and the button becomes **Done**. **Later** closes the dialog without
+saving.
 
 When the check fails, the message says why and what to try: the key was not
 accepted, nothing answers at the address, something other than the expected
 service answers there, or the certificate is not trusted.
 
 When you have already saved a connection to the service under Settings, the
-widget offers it first as **Use** *name*; choosing it skips the steps above.
+widget offers it first as **Use** *name*; choosing it skips the dialog.
 
-![An Immich widget that is not set up, offering a saved connection and Set up](screenshots/setup-connection.png)
+![An Immich widget that is not set up, offering a saved connection and Connect](screenshots/setup-connection.png)
 
 *A widget that is not connected yet.*
 
-![The credential step of the setup with the steps in Immich's words, the key field and a QR code](screenshots/setup-credential.png)
+![The setup dialog for Immich with the address, the steps in Immich's words, the key field and a QR code](screenshots/setup-credential.png)
 
-*The credential step: the service's own steps, the field for the key and the QR code of Paste from phone.*
+*The setup dialog: the address, the service's own steps, the field for the key and the QR code of Enter on phone.*
 
-### Pasting from your phone
+### Entering the key on your phone
 
 Typing a long key on a keyboard you do not like is the part people skip, so
-the credential step also offers **Paste from phone**. Copy the key on your
+the dialog also offers **Enter on phone** next to the key. Copy the key on your
 phone, scan the QR code with the Waylight app (or open `waylight://paste`)
-and send it. The key appears in the field and you press *Check and save* as
+and send it. The key appears in the field and you press *Connect* as
 usual. The code behind the QR code works once, lives in memory for a few
 minutes and can only be read by the account that asked for it.
 
 ### Signing in instead of pasting a key
 
 For Nextcloud (the Nextcloud widget, the calendar and a shopping list on
-Nextcloud) and for Home Assistant the credential step starts with **Sign in
-with Nextcloud** or **Sign in with Home Assistant**. Pressing it opens the
+Nextcloud) and for Home Assistant the dialog offers **Sign in with Nextcloud instead** or **Sign in with
+Home Assistant instead** next to the key. Pressing it opens the
 service's sign-in page in a new window. You sign in there and allow access,
-then come back: the assistant says when it has the access and checks the
+then come back: the dialog says when it has the access and checks the
 connection as usual. Nothing has to be copied, and the key never passes
-through your browser. *Paste a key instead* switches to the steps above at
-any time, and the assistant switches by itself when signing in cannot start.
+through your browser. The key's field stays available at any time.
 
 Nextcloud uses its [Login Flow v2](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/).
 Waylight starts the flow on the Nextcloud address you entered and asks that
 address every two seconds whether you have granted access, for at most ten
-minutes or until you close the assistant. Nextcloud then creates an app
+minutes or until you close the dialog. Nextcloud then creates an app
 password named *Waylight*, which you can revoke under *Settings → Security →
 Devices & sessions*. For a shopping list the Nextcloud address is taken from
 the list address (the part before `/remote.php/`); other CalDAV servers keep
@@ -327,7 +332,7 @@ Home Assistant uses OAuth with Waylight's own address as the client ID, so
 nothing has to be registered in Home Assistant. That address comes from
 `PUBLIC_URL`: Home Assistant sends your browser back to
 `PUBLIC_URL/api/setup/signin/oauth/callback`, so the browser that signs in
-must be able to open it. Without `PUBLIC_URL` the assistant explains this
+must be able to open it. Without `PUBLIC_URL` the dialog explains this
 and asks for a long-lived access token. After signing in, Waylight keeps a
 refresh token, encrypted like any other key, and renews the short-lived
 access token by itself. Home Assistant lists the sign-in under your profile
@@ -339,23 +344,32 @@ that started it. The link back from Home Assistant carries a random value
 that works once; a sign-in that was not finished, or that another account
 started, cannot be used.
 
-The assistant exists for Immich, Home Assistant, the Nextcloud calendar,
+The dialog exists for Immich, Home Assistant, the Nextcloud calendar,
 Nextcloud, Grafana, Proxmox VE, Sonarr, Radarr and Prowlarr, Jellyfin and
 Plex, AdGuard Home, Pi-hole, Speedtest Tracker, the FRITZ!Box, fuel prices
 and a CalDAV task list for the shopping list. Where one widget
-covers several products, the address step asks which one runs there. Proxmox
+covers several products, the first step asks which one runs there. Proxmox
 usually runs with a self-signed certificate; pin it under Settings → Proxmox
-VE, the assistant does not ask for the fingerprint. Speedtest thresholds stay
+VE, the dialog does not ask for the fingerprint. Speedtest thresholds stay
 off until you set them under Settings → Speedtest Tracker. The FRITZ!Box internet
 widget works without a FRITZ!Box user (status over UPnP); the call list
 needs one. Fuel prices ask for a place instead of an address and find it
 with the place search of the weather module; radius (5 km) and fuel (E10)
-are changed in the settings. The shopping list offers the CalDAV assistant
-next to creating a list on Waylight, for every account that is not a guest. For the calendar you enter the Nextcloud address, your user name and
+are changed in the settings. The shopping list creates a list on Waylight with one button and offers
+**Connect a list** for CalDAV, for every account that is not a guest. For the calendar you enter the Nextcloud address, your user name and
 an app password; Waylight finds your calendars itself. Immich and Home
-Assistant are set up for the whole instance, so only admins see *Set up*
+Assistant are set up for the whole instance, so only admins see *Connect*
 there; every account can connect its own calendar. The settings pages stay
 the place to change a connection later.
+
+### Waste calendar
+
+The waste calendar has no account to connect. Its setup dialog shows the two
+ways side by side: **Paste a link** to the calendar of your municipality (the
+dates keep themselves up to date) or **Upload a file** you downloaded. A note
+says where to look, since there is no central source: the website of the
+municipality or the waste company, usually under the collection dates. The
+link or file is an `.ics` calendar. The file is checked when you choose it.
 
 ### How services are found
 

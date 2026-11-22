@@ -22,5 +22,7 @@ export const de: Record<keyof typeof en, string> = {
     'Nenne ihn Waylight, hake asset.statistics, server.storage, memory.read und asset.view an und klicke Erstellen.',
   'immich.setup_step_copy': 'Kopiere den Schlüssel und füge ihn unten ein.',
   'immich.setup_key': 'Zugangsschlüssel',
+  'immich.setup_intro':
+    'Waylight zeigt Bilder aus deinem Immich-Server. Dafür brauchst du zwei Dinge, beide findest du in Immich.',
   'immich.setup_photos': '{n} Fotos, {videos} Videos',
 };

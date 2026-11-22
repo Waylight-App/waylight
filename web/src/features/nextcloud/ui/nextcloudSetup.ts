@@ -22,6 +22,7 @@ export function nextcloudSetup(nextcloud: NextcloudUseCases): SetupDescriptor {
       },
       {
         key: 'username',
+        hint: 'setup.hint_username',
         label: 'nextcloud.setup_username',
         stage: 'credential',
         type: 'text',

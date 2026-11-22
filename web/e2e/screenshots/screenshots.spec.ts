@@ -111,9 +111,7 @@ test('guided setup', async ({ page }) => {
   await account(page, 'Done');
 
   const widget = page.locator('article.widget').filter({ hasText: 'Immich' }).last();
-  const shot = async (name: string, height?: number) => {
-    // The widget scrolls inside its frame; give it the room the content needs.
-    if (height) await widget.evaluate((el, h) => (el.style.height = `${h}px`), height);
+  const shot = async (name: string) => {
     await widget.scrollIntoViewIfNeeded();
     await widget.screenshot({ path: `${outDir}/setup-${name}.png` });
   };
@@ -122,15 +120,18 @@ test('guided setup', async ({ page }) => {
     await expect(widget.getByRole('button', { name: 'Use Photos at home' })).toBeVisible();
     await shot('connection');
 
-    await widget.getByRole('button', { name: 'Set up', exact: true }).click();
-    await widget.getByRole('textbox').first().fill('http://192.168.1.20:2283');
-    await widget.getByRole('button', { name: 'Next' }).click();
+    await widget.getByRole('button', { name: 'Connect', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Connect Immich' });
+    await dialog.getByLabel('Address').fill('http://192.168.1.20:2283');
 
-    // The credential step: the steps in Immich's words, and the QR code that
-    // lets the mobile app send the key.
-    await widget.getByRole('button', { name: 'Paste from phone' }).click();
-    await expect(widget.getByRole('img', { name: 'QR code for Paste from phone' })).toBeVisible();
-    await shot('credential', 720);
+    // The steps in Immich's words, and the QR code that lets the mobile app
+    // send the key.
+    await dialog.getByRole('button', { name: 'Enter on phone' }).click();
+    await expect(
+      dialog.getByRole('img', { name: 'QR code for entering the key on your phone' }),
+    ).toBeVisible();
+    await dialog.screenshot({ path: `${outDir}/setup-credential.png` });
+    await page.keyboard.press('Escape');
   } finally {
     // Take the demo widget out again, so the order of the tests does not matter.
     await page.unrouteAll({ behavior: 'ignoreErrors' });
