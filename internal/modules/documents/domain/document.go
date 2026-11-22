@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"net/http"
+	"bytes"
 	"path"
 	"strings"
 	"time"
@@ -159,10 +159,8 @@ func NewFile(name string, data []byte) (File, error) {
 	if len(data) > MaxFileBytes {
 		return File{}, errFileLarge
 	}
-	ct := http.DetectContentType(data)
-	switch ct {
-	case "image/jpeg", "image/png", "image/webp", "application/pdf":
-	default:
+	ct := sniff(data)
+	if ct == "" {
 		return File{}, errFileType
 	}
 	return File{Name: CleanFileName(name), ContentType: ct, Size: int64(len(data))}, nil
@@ -185,4 +183,20 @@ func CleanFileName(name string) string {
 		name = string(r[:maxNameRunes])
 	}
 	return name
+}
+
+// sniff names the type of a photo or PDF from its first bytes and returns
+// "" for anything else.
+func sniff(data []byte) string {
+	switch {
+	case bytes.HasPrefix(data, []byte("\xff\xd8\xff")):
+		return "image/jpeg"
+	case bytes.HasPrefix(data, []byte("\x89PNG\r\n\x1a\n")):
+		return "image/png"
+	case len(data) >= 12 && bytes.Equal(data[:4], []byte("RIFF")) && bytes.Equal(data[8:12], []byte("WEBP")):
+		return "image/webp"
+	case bytes.HasPrefix(data, []byte("%PDF-")):
+		return "application/pdf"
+	}
+	return ""
 }

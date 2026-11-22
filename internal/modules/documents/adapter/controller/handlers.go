@@ -142,5 +142,5 @@ func (h *Handlers) File(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("Content-Security-Policy", "default-src 'none'; sandbox")
 	w.Header().Set("Cache-Control", "private, no-store")
-	_, _ = w.Write(data) //nolint:gosec // an attachment of a type checked at upload; nosniff and the sandbox CSP add defence in depth
+	_, _ = w.Write(data)
 }

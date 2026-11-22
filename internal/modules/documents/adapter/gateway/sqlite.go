@@ -144,7 +144,6 @@ func (r *Repository) SaveFile(ctx context.Context, id string, f domain.File, dat
 func (r *Repository) File(ctx context.Context, id string) ([]byte, error) {
 	cond, args := sqlutil.VisibleTo(kernel.PrincipalFrom(ctx), "")
 	var data []byte
-	//nolint:gosec // the condition comes from sqlutil with bound arguments
 	err := r.db.QueryRowContext(ctx, `SELECT data FROM documents_files WHERE item_id IN (SELECT id FROM documents_items WHERE id = ? AND `+cond+`)`,
 		append([]any{id}, args...)...).Scan(&data)
 	if errors.Is(err, sql.ErrNoRows) {
