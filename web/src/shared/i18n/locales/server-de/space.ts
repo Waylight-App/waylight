@@ -6,8 +6,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
-  // The NASA API key looks wrong.
-  srv_1725722a41c512af: 'Der NASA-API-Schlüssel sieht falsch aus.',
+  // The NASA access key looks wrong.
+  srv_0843f18316a55817: 'Der NASA-Zugangsschlüssel sieht falsch aus.',
   // The picture is not hosted by NASA.
   srv_374c6d77e754cb26: 'Das Bild liegt nicht bei der NASA.',
   // The space data is not available right now.

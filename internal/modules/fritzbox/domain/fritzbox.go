@@ -44,7 +44,7 @@ func NewSettings(rawURL, username, password string) (Settings, error) {
 	}
 	// TR-064 on port 49000 only speaks http; https uses a different port.
 	if u.Scheme != "http" {
-		return Settings{}, kernel.NewValidationError("url", "The URL must look like http://192.168.178.1:49000.")
+		return Settings{}, kernel.NewValidationError("url", "The address must look like http://192.168.178.1:49000.")
 	}
 	if u.Port() == "" {
 		u.Host += ":49000"

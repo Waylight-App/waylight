@@ -56,7 +56,7 @@ type Settings struct {
 func NewSettings(apiKey string, lat, lon float64, place string, radius float64, fuel string) (Settings, error) {
 	s := Settings{APIKey: strings.TrimSpace(apiKey), Lat: lat, Lon: lon, Place: strings.TrimSpace(place), RadiusKm: radius, Fuel: FuelType(fuel)}
 	if !stationIDPattern.MatchString(s.APIKey) {
-		return Settings{}, kernel.NewValidationError("apiKey", "The API key must look like 00000000-0000-0000-0000-000000000002.")
+		return Settings{}, kernel.NewValidationError("apiKey", "The access key must look like 00000000-0000-0000-0000-000000000002.")
 	}
 	if lat < -90 || lat > 90 || lon < -180 || lon > 180 || (lat == 0 && lon == 0) {
 		return Settings{}, kernel.NewValidationError("lat", "Please choose a location.")

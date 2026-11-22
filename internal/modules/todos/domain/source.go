@@ -129,7 +129,7 @@ func NewSource(id, name string, kind SourceKind, listURL, username, password, li
 	case KindTodoist:
 		token := strings.TrimSpace(password)
 		if token == "" || len(token) > 200 || strings.ContainsAny(token, " \r\n") {
-			return Source{}, kernel.NewValidationError("password", "Enter the API token from Todoist's settings (Integrations → Developer).")
+			return Source{}, kernel.NewValidationError("password", "Enter the access token from the Todoist settings (Integrations → Developer).")
 		}
 		if !listIDPattern.MatchString(listID) {
 			return Source{}, kernel.NewValidationError("listId", "Choose a Todoist project.")

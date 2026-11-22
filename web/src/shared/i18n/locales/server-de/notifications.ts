@@ -44,8 +44,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_53e6d03eb73e5456: 'Es gibt bereits 10 Kanäle.',
   // Unknown alert type {type}.
   srv_fc5b4d698d5d3c6f: 'Unbekannte Benachrichtigungsart {type}.',
-  // Paste the Slack webhook URL; it starts with https://hooks.slack.com/services/.
-  srv_c0e9b689d32a723e: 'Füge die Slack-Webhook-URL ein; sie beginnt mit https://hooks.slack.com/services/.',
+  // Paste the Slack webhook address; it starts with https://hooks.slack.com/services/.
+  srv_0957de6560cf5ddd:
+    'Füge die Slack-Webhook-Adresse ein; sie beginnt mit https://hooks.slack.com/services/.',
   // Paste the https:// address of the Teams workflow (trigger: when a Teams webhook request is received).
   srv_138e19899f7b394a:
     'Füge die https://-Adresse des Teams-Workflows ein (Auslöser: wenn eine Teams-Webhookanforderung empfangen wird).',

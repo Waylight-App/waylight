@@ -10,10 +10,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_b1e270c3a3b1cc7b: 'Immich ist noch nicht eingerichtet.',
   // Immich is not reachable.
   srv_5f51c1adae96a94e: 'Immich ist nicht erreichbar.',
-  // The API key is required.
-  srv_80ac49019fb5bed8: 'Der API-Schlüssel ist erforderlich.',
-  // The URL must look like http://192.168.1.2:2283.
-  srv_ce1e99b3a7ab0a0d: 'Die URL muss wie http://192.168.1.2:2283 aussehen.',
+  // The access key is required.
+  srv_41f4f2e49617b26a: 'Der Zugangsschlüssel ist erforderlich.',
+  // The address must look like http://192.168.1.2:2283.
+  srv_e7b4706fb601581c: 'Die Adresse muss wie http://192.168.1.2:2283 aussehen.',
   // The thumbnail does not exist.
   srv_6493a23b37be9677: 'Das Vorschaubild existiert nicht.',
   // Choose Set up in the widget and enter the address of Immich and a key you create in its settings.

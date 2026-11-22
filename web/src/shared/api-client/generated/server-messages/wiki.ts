@@ -4,7 +4,7 @@
 export const serverMessages = {
   srv_f0229a7c2d8c1f57: "At most 5 wikis can be connected.",
   srv_a516606c590e59bd: "Choose BookStack, Outline or Wiki.js.",
-  srv_ee83ee6db56d0cdd: "Enter the API token of the wiki.",
+  srv_19efb0d1db98099f: "Enter the access token of the wiki.",
   srv_7d42213f5b873092: "The wiki is not connected (any more).",
 } as const;
 

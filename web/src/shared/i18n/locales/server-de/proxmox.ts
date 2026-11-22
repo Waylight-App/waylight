@@ -6,8 +6,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
-  // A certificate fingerprint needs an https:// URL.
-  srv_56aacb20f1f37331: 'Ein Zertifikats-Fingerabdruck braucht eine https://-URL.',
+  // A certificate fingerprint needs an https:// address.
+  srv_ec006828a76da1d6: 'Ein Zertifikats-Fingerabdruck braucht eine https://-Adresse.',
   // Actions are not enabled for this guest (PROXMOX_ACTIONS_GUESTS).
   srv_90d6536f1a9bc239: 'Aktionen sind für diesen Gast nicht aktiviert (PROXMOX_ACTIONS_GUESTS).',
   // Proxmox VE is not configured yet.

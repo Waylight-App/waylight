@@ -6,8 +6,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
-  // An API token with the results:read scope is required.
-  srv_d05b6c7e6905729f: 'Ein API-Token mit dem Bereich results:read ist erforderlich.',
+  // An access token with the results:read scope is required.
+  srv_9149e8b922088f89: 'Ein Zugangstoken mit dem Bereich results:read ist erforderlich.',
   // Speedtest Tracker is not configured yet.
   srv_6f32001a15a15c4d: 'Speedtest Tracker ist noch nicht eingerichtet.',
   // Speedtest Tracker is not reachable.

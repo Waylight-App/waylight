@@ -20,8 +20,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_4cd4b235493d7de0: 'Bezeichnungen dürfen höchstens 40 Zeichen lang sein.',
   // No waste calendar is configured yet.
   srv_d1f1feb231209e5a: 'Es ist noch kein Abfallkalender eingerichtet.',
-  // Enter an ICS URL or upload an ICS file.
-  srv_5706fcf249ae0e34: 'Gib eine ICS-Adresse an oder lade eine ICS-Datei hoch.',
+  // Enter a calendar link or upload a calendar file.
+  srv_446c8e66ca2e7125: 'Gib eine ICS-Adresse an oder lade eine ICS-Datei hoch.',
   // The file contains no collection dates.
   srv_41f13c454504aa2f: 'Die Datei enthält keine Abholtermine.',
   // The file is larger than 1 MB.

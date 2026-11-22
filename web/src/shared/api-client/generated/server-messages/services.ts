@@ -9,7 +9,7 @@ export const serverMessages = {
   srv_e02aa2085e4c6961: "It uses the services you added in Settings under Services; there is nothing else to set up.",
   srv_591001f7788fb502: "No MAC address is stored for this service.",
   srv_e40289b4499ed164: "No services yet",
-  srv_49713b674a89dd04: "The check URL must start with http:// or https://.",
+  srv_aa968d1ebc0107b3: "The check address must start with http:// or https://.",
   srv_b6d4e2000983a0fe: "The description must be at most 200 characters long.",
   srv_42e741b2bbfc2695: "The icon is too long.",
   srv_c2aa1fabd915da16: "The interval must be between 1 and {max} minutes.",

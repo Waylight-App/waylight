@@ -95,7 +95,7 @@ func (d *DHL) Track(ctx context.Context, s domain.Settings, trackingNumber strin
 	switch res.StatusCode {
 	case http.StatusOK:
 	case http.StatusUnauthorized, http.StatusForbidden:
-		return domain.Status{}, usecase.Estimate{}, kernel.NewPublicError(kernel.ErrUnauthorized, "DHL rejected the API key.")
+		return domain.Status{}, usecase.Estimate{}, kernel.NewPublicError(kernel.ErrUnauthorized, "DHL rejected the access key.")
 	case http.StatusNotFound:
 		return domain.Status{}, usecase.Estimate{}, kernel.NewPublicError(kernel.ErrNotFound, "DHL does not know this tracking number (yet).")
 	case http.StatusTooManyRequests:

@@ -7,7 +7,7 @@ export const serverMessages = {
   srv_d6e30a440a4e7b86: "Invalid scope {scope}: use service:\u003cname\u003e, container:\u003cname\u003e or *.",
   srv_582421b3bac9020d: "Only the mobile app can register for push notifications.",
   srv_37ea6c105ce8cb51: "Only the mobile app can unregister its device.",
-  srv_c0e9b689d32a723e: "Paste the Slack webhook URL; it starts with https://hooks.slack.com/services/.",
+  srv_0957de6560cf5ddd: "Paste the Slack webhook address; it starts with https://hooks.slack.com/services/.",
   srv_138e19899f7b394a: "Paste the https:// address of the Teams workflow (trigger: when a Teams webhook request is received).",
   srv_ac8a8ae2b384e281: "Please enter a valid sender address.",
   srv_dd3a700b0be13baf: "Please enter and save a topic first.",

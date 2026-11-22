@@ -43,7 +43,7 @@ type Feed struct {
 func NewFeed(id, rawURL string, now time.Time) (Feed, error) {
 	rawURL = strings.TrimSpace(rawURL)
 	if !IsHTTPURL(rawURL) {
-		return Feed{}, kernel.NewValidationError("url", "The feed URL must start with http:// or https://.")
+		return Feed{}, kernel.NewValidationError("url", "The feed address must start with http:// or https://.")
 	}
 	return Feed{ID: id, URL: rawURL, Title: rawURL, CreatedAt: now}, nil
 }

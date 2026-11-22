@@ -38,7 +38,7 @@ func ParseBackground(field, raw string) (string, error) {
 	case isImageURL(raw):
 		return raw, nil
 	}
-	return "", NewValidationError(field, "The background must be an http(s) image URL, an uploaded picture or a built-in background.")
+	return "", NewValidationError(field, "The background must be an http(s) image address, an uploaded picture or a built-in background.")
 }
 
 func isImageURL(raw string) bool {

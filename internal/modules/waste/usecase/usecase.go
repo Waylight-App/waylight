@@ -112,7 +112,7 @@ func (uc *waste) SaveSettings(ctx context.Context, rawURL string, rules []domain
 			return domain.Settings{}, fmt.Errorf("load settings: %w", err)
 		}
 		if !current.Source.Configured() {
-			return domain.Settings{}, kernel.NewValidationError("url", "Enter an ICS URL or upload an ICS file.")
+			return domain.Settings{}, kernel.NewValidationError("url", "Enter a calendar link or upload a calendar file.")
 		}
 		current.Rules = clean
 		save := uc.repo.Save

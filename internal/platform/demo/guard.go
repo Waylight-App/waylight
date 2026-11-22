@@ -18,7 +18,7 @@ import (
 const Password = "waylight-demo"
 
 // ErrSecretsDisabled is returned when something tries to store a secret.
-var ErrSecretsDisabled = kernel.NewPublicError(kernel.ErrForbidden, "Storing credentials is disabled in the demo.")
+var ErrSecretsDisabled = kernel.NewPublicError(kernel.ErrForbidden, "Storing passwords is disabled in the demo.")
 
 // Cipher is the secret store interface the modules use.
 type Cipher interface {

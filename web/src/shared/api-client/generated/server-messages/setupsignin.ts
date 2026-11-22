@@ -3,7 +3,6 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_182123d619d272ea: "Signing in with Home Assistant needs PUBLIC_URL, the address you open Waylight with. Create a long-lived access token instead.",
-  srv_13af0ff59dfa18d3: "The address must start with http:// or https://.",
   srv_ce81cb900ee071d5: "The service did not name a sign-in page. Create a key instead.",
   srv_d765b701fb776c4a: "The sign-in was cancelled. Sign in again or create a key instead.",
   srv_b4e2abb05e1e39c8: "This service has no sign-in.",

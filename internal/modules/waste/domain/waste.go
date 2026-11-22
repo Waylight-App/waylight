@@ -63,7 +63,7 @@ func normaliseURL(rawURL string) (string, error) {
 	}
 	u, err := url.Parse(rawURL)
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-		return "", kernel.NewValidationError("url", "The ICS URL must start with https://, http:// or webcal://.")
+		return "", kernel.NewValidationError("url", "The calendar link must start with https://, http:// or webcal://.")
 	}
 	return u.String(), nil
 }

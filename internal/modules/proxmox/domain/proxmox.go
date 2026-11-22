@@ -47,7 +47,7 @@ func NewSettings(rawURL, tokenID, secret, fingerprint string) (Settings, error) 
 		return Settings{}, err
 	}
 	if fp != "" && u.Scheme != "https" {
-		return Settings{}, kernel.NewValidationError("fingerprint", "A certificate fingerprint needs an https:// URL.")
+		return Settings{}, kernel.NewValidationError("fingerprint", "A certificate fingerprint needs an https:// address.")
 	}
 	return Settings{URL: u.String(), TokenID: tokenID, Secret: secret, Fingerprint: fp}, nil
 }

@@ -18,8 +18,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_f5627673a11b56bd: 'Bitte wähle einen der eingerichteten Kalender.',
   // Please enter a valid start and end.
   srv_b71f32ebd27a0b6a: 'Bitte gib einen gültigen Beginn und ein gültiges Ende ein.',
-  // Please enter at least one calendar URL.
-  srv_a4d2757d3ca7d004: 'Bitte mindestens eine Kalender-URL eingeben.',
+  // Please enter at least one calendar link.
+  srv_014d310b9d3ee071: 'Bitte mindestens eine Kalenderlink eingeben.',
   // The calendar server is not reachable.
   srv_3e73df212f6df359: 'Der Kalenderserver ist nicht erreichbar.',
   // The event must end after it starts.

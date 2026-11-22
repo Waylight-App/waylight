@@ -6,7 +6,7 @@ export const serverMessages = {
   srv_a284ac8e205f55f5: "At most 20 to-do lists can be connected.",
   srv_e21c32bf57ab4be8: "Choose a Todoist project.",
   srv_01e6a58b40c54321: "Choose a list.",
-  srv_844dc15540ba01b8: "Enter the API token from Todoist's settings (Integrations → Developer).",
+  srv_74392c5bb2c99b45: "Enter the access token from the Todoist settings (Integrations → Developer).",
   srv_8474d36c18713018: "Nothing to do",
   srv_33507329e3cf1562: "Reminders need a time like 08:00 and at most 30 days before the due date.",
   srv_5f173b47eee5e70d: "Repeat every 1–365 days, weeks or months; weekly repeats need at least one weekday.",

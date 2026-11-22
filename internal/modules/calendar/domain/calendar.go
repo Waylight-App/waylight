@@ -103,7 +103,7 @@ func NewSettings(urls []string, username, password string) (Settings, error) {
 	}
 	switch {
 	case len(clean) == 0:
-		return Settings{}, kernel.NewValidationError("calendarUrls", "Please enter at least one calendar URL.")
+		return Settings{}, kernel.NewValidationError("calendarUrls", "Please enter at least one calendar link.")
 	case len(clean) > MaxCalendars:
 		return Settings{}, kernel.NewValidationError("calendarUrls", "At most 10 calendars are supported.")
 	case strings.TrimSpace(username) == "" || password == "":

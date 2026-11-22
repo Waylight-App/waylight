@@ -127,7 +127,7 @@ func TestFetcher(t *testing.T) {
 		t.Fatalf("big numbers must keep their digits: %v", big)
 	}
 	for path, want := range map[string]string{
-		"/html":     "not JSON",
+		"/html":     "data file",
 		"/denied":   "401",
 		"/huge":     "larger than 1 MB",
 		"/redirect": "302",

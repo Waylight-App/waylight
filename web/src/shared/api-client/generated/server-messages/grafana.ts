@@ -9,7 +9,7 @@ export const serverMessages = {
   srv_de8bb22138954324: "Grafana returned no values for this panel; panels that use dashboard variables need the image renderer.",
   srv_628f9b5e5233abd9: "It uses the Grafana connection; choose Set up in the widget if there is none yet.",
   srv_91684bab7006c4b2: "One panel of a Grafana dashboard, as a value or a small chart.",
-  srv_ff20bffaaad40a7b: "The URL must look like http://192.168.1.2:3000.",
+  srv_aab0f249bc0dc9be: "The address must look like http://192.168.1.2:3000.",
   srv_f882441eaa2180ac: "The alerts that are firing in Grafana right now.",
   srv_0016d1a6fbb13c7f: "The dashboard does not exist.",
   srv_3bbe665dcdec36da: "The service account token is required.",

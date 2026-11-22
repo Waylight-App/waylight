@@ -2,7 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
-  srv_56aacb20f1f37331: "A certificate fingerprint needs an https:// URL.",
+  srv_ec006828a76da1d6: "A certificate fingerprint needs an https:// address.",
   srv_90d6536f1a9bc239: "Actions are not enabled for this guest (PROXMOX_ACTIONS_GUESTS).",
   srv_672f8bd456e5433c: "Choose Set up in the widget and enter the Proxmox address and a read-only access key.",
   srv_d30d28cec1fe8a0e: "Proxmox VE is not configured yet.",

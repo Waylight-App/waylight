@@ -136,7 +136,7 @@ func (c *Channel) Validate() error {
 	case ChannelSlack:
 		hook := strings.TrimSpace(c.Secret)
 		if !strings.HasPrefix(hook, slackWebhookPrefix) || len(hook) > maxWebhookURL || strings.ContainsAny(hook, " \n") {
-			return kernel.NewValidationError("secret", "Paste the Slack webhook URL; it starts with https://hooks.slack.com/services/.")
+			return kernel.NewValidationError("secret", "Paste the Slack webhook address; it starts with https://hooks.slack.com/services/.")
 		}
 		c.Secret, c.URL = hook, ""
 	case ChannelApp, ChannelBrowser:

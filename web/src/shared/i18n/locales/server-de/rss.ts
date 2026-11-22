@@ -6,8 +6,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
  * compile error. The English original is shown as a comment above each entry.
  */
 export const serverDe: Record<ServerMessageKey, string> = {
-  // The feed URL must start with http:// or https://.
-  srv_bbec0c13348226e8: 'Die Feed-URL muss mit http:// oder https:// beginnen.',
+  // The feed address must start with http:// or https://.
+  srv_301e86770865231f: 'Die Feed-Adresse muss mit http:// oder https:// beginnen.',
   // The feed could not be loaded: {detail}
   srv_4dfea8484179a15f: 'Der Feed konnte nicht geladen werden: {detail}',
   // The feed does not exist.

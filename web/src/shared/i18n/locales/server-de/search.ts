@@ -8,8 +8,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
 export const serverDe: Record<ServerMessageKey, string> = {
   // A shortcut with this keyword already exists.
   srv_76a5625367cbe997: 'Es gibt bereits ein Kürzel mit diesem Schlüsselwort.',
-  // The URL must contain {query}.
-  srv_1605df454fade766: 'Die URL muss {query} enthalten.',
+  // The address must contain {query}.
+  srv_62dfd4e2933d05d7: 'Die Adresse muss {query} enthalten.',
   // The keyword must consist of 1 to 16 letters or digits.
   srv_d6e09729bc0d1f3b: 'Das Schlüsselwort muss aus 1 bis 16 Buchstaben oder Ziffern bestehen.',
   // The search query is too long.

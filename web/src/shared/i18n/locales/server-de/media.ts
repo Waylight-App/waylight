@@ -8,10 +8,10 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
 export const serverDe: Record<ServerMessageKey, string> = {
   // Choose Jellyfin or Plex.
   srv_52395ea57eb8771f: 'Wähle Jellyfin oder Plex.',
-  // The API key or token is required.
-  srv_2aa10686fa162dde: 'Der API-Schlüssel oder das Token ist erforderlich.',
-  // The URL must look like http://192.168.1.2:8096.
-  srv_ec3846ce5d9b8caf: 'Die URL muss wie http://192.168.1.2:8096 aussehen.',
+  // The access key or token is required.
+  srv_c958491d891a6a18: 'Der Zugangsschlüssel oder das Zugangstoken ist erforderlich.',
+  // The address must look like http://192.168.1.2:8096.
+  srv_9d6bdf2942458cde: 'Die Adresse muss wie http://192.168.1.2:8096 aussehen.',
   // The media server is not configured yet.
   srv_7b276d2193d07bc8: 'Der Medienserver ist noch nicht eingerichtet.',
   // The media server is not reachable.

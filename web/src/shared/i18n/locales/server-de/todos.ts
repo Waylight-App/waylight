@@ -34,8 +34,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_e28b70dde38477c1: 'Unbekannte Art von To-do-Liste.',
   // Choose a Todoist project.
   srv_e21c32bf57ab4be8: 'Wähle ein Todoist-Projekt.',
-  // Enter the API token from Todoist's settings (Integrations → Developer).
-  srv_844dc15540ba01b8: 'Gib das API-Token aus den Todoist-Einstellungen ein (Integrationen → Entwickler).',
+  // Enter the access token from the Todoist settings (Integrations → Developer).
+  srv_74392c5bb2c99b45:
+    'Gib das Zugangstoken aus den Todoist-Einstellungen ein (Integrationen → Entwickler).',
   // The service asks to slow down. The list is loaded again in a minute.
   srv_31173fc19f6e7f41: 'Der Dienst bittet um weniger Anfragen. Die Liste wird in einer Minute neu geladen.',
   // Choose a list.

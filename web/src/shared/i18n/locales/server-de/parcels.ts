@@ -10,12 +10,12 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_5343c52cdf9d2afd: 'Es können höchstens 30 Sendungen verfolgt werden.',
   // DHL does not know this tracking number (yet).
   srv_24f489be60f9182b: 'DHL kennt diese Sendungsnummer (noch) nicht.',
-  // DHL rejected the API key.
-  srv_099fe605093d8b87: 'DHL hat den API-Schlüssel abgelehnt.',
+  // DHL rejected the access key.
+  srv_1db7bc6c723f0d2d: 'DHL hat den Zugangsschlüssel abgelehnt.',
   // Delivered parcels can be kept for 0 to 30 days.
   srv_7cb71b2e113119ec: 'Zugestellte Sendungen können 0 bis 30 Tage angezeigt werden.',
-  // Please add your DHL API key in the settings first.
-  srv_7d0f681f466f8e83: 'Bitte zuerst deinen DHL-API-Schlüssel in den Einstellungen hinterlegen.',
+  // Please add your DHL access key in the settings first.
+  srv_e89ff7b5bf5f218f: 'Bitte zuerst deinen DHL-Zugangsschlüssel in den Einstellungen hinterlegen.',
   // The daily DHL limit is reached; it will be retried later.
   srv_2d07f911dc00e3dc: 'Das tägliche DHL-Limit ist erreicht; es wird später erneut versucht.',
   // The label must be at most 60 characters long.

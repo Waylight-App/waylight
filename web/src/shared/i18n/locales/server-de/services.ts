@@ -8,8 +8,8 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
 export const serverDe: Record<ServerMessageKey, string> = {
   // No MAC address is stored for this service.
   srv_591001f7788fb502: 'Für diesen Dienst ist keine MAC-Adresse hinterlegt.',
-  // The check URL must start with http:// or https://.
-  srv_49713b674a89dd04: 'Die Prüf-URL muss mit http:// oder https:// beginnen.',
+  // The check address must start with http:// or https://.
+  srv_aa968d1ebc0107b3: 'Die Prüfadresse muss mit http:// oder https:// beginnen.',
   // The description must be at most 200 characters long.
   srv_b6d4e2000983a0fe: 'Die Beschreibung darf höchstens 200 Zeichen lang sein.',
   // The icon is too long.

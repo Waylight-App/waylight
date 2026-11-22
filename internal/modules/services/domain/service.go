@@ -63,13 +63,13 @@ func NewService(id, name, rawURL, checkURL, icon, description string, skipTLS bo
 		return Service{}, kernel.NewValidationError("name", "The name must be between 1 and 60 characters long.")
 	}
 	if !isHTTPURL(s.URL) {
-		return Service{}, kernel.NewValidationError("url", "The URL must start with http:// or https://.")
+		return Service{}, kernel.NewValidationError("url", "The address must start with http:// or https://.")
 	}
 	if s.CheckURL == "" {
 		s.CheckURL = s.URL
 	}
 	if !isHTTPURL(s.CheckURL) {
-		return Service{}, kernel.NewValidationError("checkUrl", "The check URL must start with http:// or https://.")
+		return Service{}, kernel.NewValidationError("checkUrl", "The check address must start with http:// or https://.")
 	}
 	if len(s.Icon) > MaxIconLength {
 		return Service{}, kernel.NewValidationError("icon", "The icon is too long.")

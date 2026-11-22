@@ -70,7 +70,7 @@ const (
 var (
 	ErrParcelNotFound = kernel.NewPublicError(kernel.ErrNotFound, "The parcel does not exist.")
 	ErrTooMany        = kernel.NewPublicError(kernel.ErrConflict, "At most 30 parcels can be tracked.")
-	ErrNoAPIKey       = kernel.NewPublicError(kernel.ErrInvalid, "Please add your DHL API key in the settings first.")
+	ErrNoAPIKey       = kernel.NewPublicError(kernel.ErrInvalid, "Please add your DHL access key in the settings first.")
 )
 
 var trackingPattern = regexp.MustCompile(`^[A-Z0-9]{8,35}$`)

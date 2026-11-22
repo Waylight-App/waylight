@@ -36,8 +36,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // Remove the user name and password from the address and use the fields below.
   srv_83cc78074d3e2ff6:
     'Bitte Benutzername und Passwort aus der Adresse entfernen und die Felder darunter nutzen.',
-  // Storing credentials is disabled in the demo.
-  srv_ea4ce39d77587136: 'Das Speichern von Zugangsdaten ist in der Demo deaktiviert.',
+  // Storing passwords is disabled in the demo.
+  srv_6e80b6a01219e5de: 'Das Speichern von Passwörter ist in der Demo deaktiviert.',
   // The address must not contain a query (?…) or fragment (#…).
   srv_693550da2f4a6610: 'Die Adresse darf keine Abfrage (?…) und keinen Anker (#…) enthalten.',
   // The address or account changed: enter the password or token again.
@@ -57,10 +57,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Der Server hat die Anmeldung abgelehnt. Bitte Benutzername, Passwort oder Token prüfen.',
   // The server sent an unexpected answer.
   srv_cc10ad5b6bd86945: 'Der Server hat unerwartet geantwortet.',
-  // The ICS URL must start with https://, http:// or webcal://.
-  srv_457b52382d260269: 'Die ICS-URL muss mit https://, http:// oder webcal:// beginnen.',
-  // The URL must start with http:// or https://.
-  srv_33e6dad254bc6264: 'Die URL muss mit http:// oder https:// beginnen.',
+  // The calendar link must start with https://, http:// or webcal://.
+  srv_20acfac607ed684f: 'Die Kalenderlink muss mit https://, http:// oder webcal:// beginnen.',
+  // The address must start with http:// or https://.
+  srv_13af0ff59dfa18d3: 'Die Adresse muss mit http:// oder https:// beginnen.',
   // The Wake-on-LAN relay did not answer. Is COMPOSE_PROFILES=wol set (see docs/host-integrations.md)?
   srv_39f1fbfcd5e03469:
     'Das Wake-on-LAN-Relay hat nicht geantwortet. Ist COMPOSE_PROFILES=wol gesetzt (siehe docs/host-integrations.md)?',
@@ -95,8 +95,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // These settings are managed by the configuration file (CONFIG_FILE) and are read-only here.
   srv_07a824b208b96b62:
     'Diese Einstellungen werden von der Konfigurationsdatei (CONFIG_FILE) verwaltet und sind hier schreibgeschützt.',
-  // The background must be an http(s) image URL, an uploaded picture or a built-in background.
-  srv_fc9cd325f2b0b2ac:
+  // The background must be an http(s) image address, an uploaded picture or a built-in background.
+  srv_002f05fb5e25a457:
     'Der Hintergrund muss eine http(s)-Bildadresse, ein hochgeladenes Bild oder ein eingebauter Hintergrund sein.',
   // Upload a JPEG, PNG or GIF picture.
   srv_eac41835716f01a3: 'Lade ein JPEG-, PNG- oder GIF-Bild hoch.',

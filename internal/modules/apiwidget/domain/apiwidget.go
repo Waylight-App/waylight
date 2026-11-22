@@ -27,7 +27,7 @@ const (
 )
 
 // ErrNotFound is returned for an unknown endpoint.
-var ErrNotFound = kernel.NewPublicError(kernel.ErrNotFound, "The endpoint does not exist.")
+var ErrNotFound = kernel.NewPublicError(kernel.ErrNotFound, "The address does not exist.")
 
 var headerName = regexp.MustCompile(`^[A-Za-z0-9!#$%&'*+.^_|~-]{1,64}$`)
 

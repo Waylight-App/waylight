@@ -8,7 +8,7 @@ export const serverMessages = {
   srv_34b961f29d48bdbc: "Recent calls of your FRITZ!Box: missed, incoming and outgoing.",
   srv_3de8440f30f2cb18: "Show between {min} and {max} calls.",
   srv_6f0fbfbef4b05402: "The FRITZ!Box is not configured yet.",
-  srv_d14b64d005d328ef: "The URL must look like http://192.168.178.1:49000.",
+  srv_f1d3a1502168131c: "The address must look like http://192.168.178.1:49000.",
   srv_ab808509e7ff3cb7: "The filter must be all, missed, incoming or outgoing.",
   srv_3fb2a0557bebb033: "Your internet connection as the FRITZ!Box sees it: online status, speed and how long it has been up.",
 } as const;

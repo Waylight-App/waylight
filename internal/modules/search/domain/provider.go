@@ -58,11 +58,11 @@ func ProviderByID(id string) (Provider, error) {
 // the query placeholder.
 func ValidateTemplate(field, template string) error {
 	if !strings.Contains(template, QueryPlaceholder) {
-		return kernel.NewValidationError(field, "The URL must contain {query}.")
+		return kernel.NewValidationError(field, "The address must contain {query}.")
 	}
 	u, err := url.Parse(strings.ReplaceAll(template, QueryPlaceholder, "x"))
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-		return kernel.NewValidationError(field, "The URL must start with http:// or https://.")
+		return kernel.NewValidationError(field, "The address must start with http:// or https://.")
 	}
 	return nil
 }
