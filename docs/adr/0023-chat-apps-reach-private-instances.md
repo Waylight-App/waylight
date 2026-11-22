@@ -2,7 +2,7 @@
 
 - Status: Accepted (2026-11-16, by the maintainer)
 - Date: 2026-11-16
-- Issues: [#333](https://github.com/itadori26/waylight/issues/333), [#334](https://github.com/itadori26/waylight/issues/334), part of [#335](https://github.com/itadori26/waylight/issues/335)
+- Issues: [#333](https://github.com/Waylight-App/waylight/issues/333), [#334](https://github.com/Waylight-App/waylight/issues/334), part of [#335](https://github.com/Waylight-App/waylight/issues/335)
 
 ## Context
 

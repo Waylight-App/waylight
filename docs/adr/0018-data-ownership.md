@@ -2,7 +2,7 @@
 
 - Status: Accepted (2026-11-15, by the maintainer)
 - Date: 2026-11-15
-- Issue: [#293](https://github.com/itadori26/waylight/issues/293), part of [#292](https://github.com/itadori26/waylight/issues/292)
+- Issue: [#293](https://github.com/Waylight-App/waylight/issues/293), part of [#292](https://github.com/Waylight-App/waylight/issues/292)
 - Extends: [ADR 0012](0012-owner-and-guest-roles.md)
 
 ## Context
