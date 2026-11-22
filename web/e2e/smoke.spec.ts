@@ -128,7 +128,7 @@ test('settings sections of self-registering features load on demand (#193)', asy
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
   await openSettings(page, 'Connections & services', 'Proxmox');
-  await expect(page.getByLabel('Proxmox VE URL')).toBeVisible();
+  await expect(page.getByLabel('Proxmox VE address')).toBeVisible();
 });
 
 test('settings: start page with areas, keyboard navigation and phones (#600)', async ({ page }) => {
@@ -150,7 +150,7 @@ test('settings: start page with areas, keyboard navigation and phones (#600)', a
   await expect(dialog.getByRole('region', { name: 'Connections & services', exact: true })).toBeVisible();
   // An area lists its sections; the open section is marked in the navigation.
   await dialog.getByRole('region').getByRole('button', { name: 'Proxmox', exact: true }).click();
-  await expect(page.getByLabel('Proxmox VE URL')).toBeVisible();
+  await expect(page.getByLabel('Proxmox VE address')).toBeVisible();
   await expect(nav.getByRole('button', { name: 'Proxmox', exact: true })).toHaveAttribute(
     'aria-current',
     'page',

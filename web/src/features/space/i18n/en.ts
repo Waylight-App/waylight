@@ -8,7 +8,7 @@ export const en = {
     'Both sources are off until you switch them on; afterwards they are only loaded while a widget shows them.',
   'space.launches_on': 'Show rocket launches (Launch Library 2)',
   'space.picture_on': 'Show the Astronomy Picture of the Day (NASA)',
-  'space.nasa_key': 'NASA API key (optional)',
+  'space.nasa_key': 'NASA access key (optional)',
   'space.nasa_key_stored': 'stored – leave empty to keep',
   'space.nasa_key_hint':
     'Without your own free key from api.nasa.gov the shared DEMO_KEY is used, which has a low limit per IP address.',

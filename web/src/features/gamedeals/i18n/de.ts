@@ -13,7 +13,7 @@ export const de: Record<keyof typeof en, string> = {
   'gamedeals.wishlist': 'Steam-Wunschliste im Angebot',
   'gamedeals.nothing': 'Gerade keine Angebote.',
   'gamedeals.unreachable': '{source} konnte nicht geladen werden.',
-  'gamedeals.steam_id': 'Steam-Profil-URL oder -ID (optional)',
+  'gamedeals.steam_id': 'Steam-Profil-Adresse oder -ID (optional)',
   'gamedeals.steam_hint':
     'Die Wunschliste muss öffentlich sein (Steam → Profil bearbeiten → Privatsphäre → Spieldetails: Öffentlich).',
   'gamedeals.country': 'Land',

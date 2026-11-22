@@ -9,7 +9,7 @@ export const de: Record<keyof typeof en, string> = {
   'widget.grafana-alerts.description': 'Aktive und ausstehende Alarme von Grafana Alerting.',
   'settings.section.grafana': 'Grafana',
   'grafana.connect_under_settings': 'Verbinde Grafana unter Einstellungen → Grafana.',
-  'grafana.url': 'Grafana-URL',
+  'grafana.url': 'Grafana-Adresse',
   'grafana.token': 'Token des Dienstkontos {value}',
   'grafana.token_hint':
     'Lege in Grafana unter Administration → Users and access → Service accounts ein Dienstkonto mit der Rolle Viewer an und erstelle dafür ein Token. Das Token wird verschlüsselt gespeichert; Panels und Alarme lädt Waylight.',

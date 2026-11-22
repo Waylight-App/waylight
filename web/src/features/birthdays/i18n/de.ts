@@ -28,7 +28,7 @@ export const de: Record<keyof typeof en, string> = {
   'birthdays.book_title': 'CardDAV-Adressbuch',
   'birthdays.book_hint':
     'Wird beim Speichern und danach alle sechs Stunden gelesen. Einträge daraus änderst du im Adressbuch, nicht hier. Nutze ein App-Passwort.',
-  'birthdays.book_url': 'Adressbuch-URL',
+  'birthdays.book_url': 'Adresse des Adressbuch-Servers',
   'birthdays.username': 'Benutzername',
   'birthdays.password': 'App-Passwort',
   'birthdays.password_stored': 'gespeichert – leer lassen, um es zu behalten',

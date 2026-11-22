@@ -22,12 +22,12 @@ export const de: Record<keyof typeof en, string> = {
   'fuel.lon': 'Längengrad',
   'fuel.fuel': 'Kraftstoff',
   'fuel.radius': 'Umkreis in km',
-  'fuel.api_key': 'Tankerkönig-API-Schlüssel {value}',
+  'fuel.api_key': 'Tankerkönig-Zugangsschlüssel {value}',
   'fuel.key_hint':
     'Einen kostenlosen API-Schlüssel gibt es auf creativecommons.tankerkoenig.de. Preise werden höchstens alle fünf Minuten geladen und nur, solange das Widget offen ist.',
   'fuel.invalid_radius': 'Der Umkreis muss zwischen 1 und 25 km liegen.',
   'fuel.setup_place': 'Ort',
-  'fuel.setup_api_key': 'API-Schlüssel',
+  'fuel.setup_api_key': 'Zugangsschlüssel',
   'fuel.setup_step_register':
     'Beantrage bei Tankerkönig mit deiner E-Mail-Adresse einen kostenlosen API-Schlüssel.',
   'fuel.setup_step_mail': 'Bestätige den Link in der E-Mail; der Schlüssel kommt mit einer zweiten E-Mail.',

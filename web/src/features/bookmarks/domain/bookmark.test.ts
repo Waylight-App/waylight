@@ -26,7 +26,9 @@ describe('icons and link status (#72)', () => {
   });
   it('describes problems', () => {
     const checkedAt = '2026-11-12T10:00:00Z';
-    expect(linkProblem({ state: 'broken', code: 404, target: '', checkedAt }, 'en-US')).toContain('404');
+    expect(linkProblem({ state: 'broken', code: 404, target: '', checkedAt }, 'en-US')).toContain(
+      'Broken link',
+    );
     expect(linkProblem({ state: 'broken', code: 0, target: '', checkedAt }, 'en-US')).toMatch(
       /not reachable/,
     );

@@ -20,7 +20,7 @@ export const en = {
   'proxmox.confirm_start': 'Start {name}?',
   'proxmox.confirm_shutdown': 'Shut down {name}? Running services in it will stop.',
   'proxmox.running_only': 'Only show running guests',
-  'proxmox.url': 'Proxmox VE URL',
+  'proxmox.url': 'Proxmox VE address',
   'proxmox.token_id': 'API token ID',
   'proxmox.secret': 'Token secret {value}',
   'proxmox.fingerprint': 'Certificate fingerprint (SHA-256, optional)',

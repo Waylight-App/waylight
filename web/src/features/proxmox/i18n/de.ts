@@ -22,7 +22,7 @@ export const de: Record<keyof typeof en, string> = {
   'proxmox.confirm_start': '{name} starten?',
   'proxmox.confirm_shutdown': '{name} herunterfahren? Dienste darin werden beendet.',
   'proxmox.running_only': 'Nur laufende Gäste anzeigen',
-  'proxmox.url': 'Proxmox-VE-URL',
+  'proxmox.url': 'Proxmox-VE-Adresse',
   'proxmox.token_id': 'API-Token-ID',
   'proxmox.secret': 'Token-Secret {value}',
   'proxmox.fingerprint': 'Zertifikats-Fingerabdruck (SHA-256, optional)',

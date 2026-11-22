@@ -16,7 +16,7 @@ export const en = {
   'smarthome.confirm_press': 'Press {name}?',
   'smarthome.search_entities': 'Search entities',
   'smarthome.selected': '{count} of at most {max} selected',
-  'smarthome.url': 'Home Assistant URL',
+  'smarthome.url': 'Home Assistant address',
   'smarthome.token': 'Long-lived access token {value}',
   'smarthome.token_hint':
     'Create the token in Home Assistant under your profile → Security → Long-lived access tokens. It is stored encrypted and never shown again.',

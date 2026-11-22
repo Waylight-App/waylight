@@ -10,14 +10,14 @@ export const de: Record<keyof typeof en, string> = {
   'media.nothing_playing': 'Gerade läuft nichts.',
   'media.recently_added': 'Neu hinzugefügt',
   'media.server': 'Medienserver',
-  'media.url': '{name}-URL',
-  'media.jellyfin_key': 'API-Schlüssel {value}',
+  'media.url': '{name}-Adresse',
+  'media.jellyfin_key': 'Zugangsschlüssel {value}',
   'media.plex_token': 'Plex-Token {value}',
   'media.jellyfin_hint':
     'Lege einen API-Schlüssel in Jellyfin unter Dashboard → API-Schlüssel an. Er wird verschlüsselt gespeichert; Cover lädt Waylight selbst.',
   'media.plex_hint':
     'Nutze das X-Plex-Token deines Kontos (Plex-Hilfeartikel „Finding an authentication token“). Es wird verschlüsselt gespeichert; Cover lädt Waylight selbst.',
-  'media.setup_token': 'API-Schlüssel oder Token',
+  'media.setup_token': 'Zugangsschlüssel oder Token',
   'media.setup_step_jellyfin':
     'Jellyfin: Öffne Dashboard → API-Schlüssel, klicke + und nenne den Schlüssel Waylight.',
   'media.setup_step_plex':
