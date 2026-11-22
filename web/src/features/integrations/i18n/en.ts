@@ -1,0 +1,52 @@
+/** English UI texts of the integrations feature (#610). */
+export const en = {
+  'settings.section.integrations': 'Connections',
+  'integrations.title': 'Connections',
+  'integrations.intro':
+    'Save the address and access of a service once and choose it in every widget that needs it. Access details are never shown again; you can only replace them.',
+  'integrations.empty': 'No connections saved yet.',
+  'integrations.summary': '{ok} working · {failing} with a problem',
+  'integrations.used_by': 'Used by {list}',
+  'integrations.unused': 'Not used by any widget',
+  'integrations.other_account': 'another account',
+  'integrations.state_unchecked': 'Not checked yet',
+  'integrations.state_checking': 'Checking…',
+  'integrations.state_ok': 'Working',
+  'integrations.state_failing': 'Not working: {reason}',
+  'integrations.check': 'Check',
+  'integrations.check_connection': 'Check {name}',
+  'integrations.edit': 'Rename or move',
+  'integrations.edit_connection': 'Rename or move {name}',
+  'integrations.replace': 'Replace access',
+  'integrations.replace_connection': 'Replace the access details of {name}',
+  'integrations.remove': 'Remove',
+  'integrations.remove_connection': 'Remove {name}',
+  'integrations.confirm_remove': 'Remove the connection “{name}”?',
+  'integrations.confirm_remove_used':
+    'Remove the connection “{name}”? These widgets use it and will stop working: {list}.',
+  'integrations.add': 'Add a connection',
+  'integrations.service': 'Service',
+  'integrations.choose_service': 'Choose a service…',
+  'integrations.name': 'Name',
+  'integrations.url': 'Address',
+  'integrations.optional': 'optional',
+  'integrations.save': 'Save and check',
+  'integrations.cancel': 'Cancel',
+  'integrations.field.apiKey': 'Access key',
+  'integrations.field.token': 'Access token',
+  'integrations.field.username': 'User name',
+  'integrations.field.password': 'Password',
+  'integrations.field.appPassword': 'App password',
+  'integrations.field.tokenId': 'Token ID',
+  'integrations.field.secret': 'Secret',
+  'integrations.field.fingerprint': 'Certificate fingerprint',
+  'integrations.error_service': 'Choose a service.',
+  'integrations.error_name': 'Enter a name.',
+  'integrations.error_name_long': 'The name is too long.',
+  'integrations.error_url': 'Enter the address starting with http:// or https://.',
+  'integrations.error_field': 'Fill in all access fields.',
+} as const;
+
+declare module '../../../shared/i18n/registry' {
+  interface FeatureMessages extends Record<keyof typeof en, string> {}
+}
