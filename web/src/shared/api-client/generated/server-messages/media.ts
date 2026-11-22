@@ -2,8 +2,8 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_514bffd4e6214d7d: "Choose Connect in the widget, pick Jellyfin or Plex and enter its address and key.",
   srv_52395ea57eb8771f: "Choose Jellyfin or Plex.",
-  srv_2c5a63cfd6db3056: "Choose Set up in the widget, pick Jellyfin or Plex and enter its address and key.",
   srv_c958491d891a6a18: "The access key or token is required.",
   srv_9d6bdf2942458cde: "The address must look like http://192.168.1.2:8096.",
   srv_7b276d2193d07bc8: "The media server is not configured yet.",

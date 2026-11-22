@@ -11,7 +11,7 @@ func (m *Module) WidgetHelp() []modules.WidgetHelp {
 		{
 			Kind:  "arr",
 			Shows: kernel.NewText("Upcoming episodes and films, downloads in progress and warnings from Sonarr, Radarr or Prowlarr."),
-			SetUp: kernel.NewText("Choose Set up in the widget, pick the app and enter its address and key."),
+			SetUp: kernel.NewText("Choose Connect in the widget, pick the app and enter its address and key."),
 			Docs:  "modules/arr/",
 		},
 	}

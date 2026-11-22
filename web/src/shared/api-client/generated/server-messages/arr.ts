@@ -4,7 +4,7 @@
 export const serverMessages = {
   srv_80cd4d1600527c40: "A Sonarr, Radarr or Prowlarr instance does not answer.",
   srv_e087fafa20933ecf: "At most {max} instances are supported.",
-  srv_f1bc61893833e7cb: "Choose Set up in the widget, pick the app and enter its address and key.",
+  srv_284f6f8709d112c6: "Choose Connect in the widget, pick the app and enter its address and key.",
   srv_35314e09732db39d: "Choose Sonarr, Radarr or Prowlarr.",
   srv_e7b97389eba1653e: "No Sonarr, Radarr or Prowlarr instance is configured yet.",
   srv_7cb14eb21ac56134: "The access key is required (Settings → General).",

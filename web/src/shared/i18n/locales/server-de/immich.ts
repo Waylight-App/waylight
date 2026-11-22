@@ -16,9 +16,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_e7b4706fb601581c: 'Die Adresse muss wie http://192.168.1.2:2283 aussehen.',
   // The thumbnail does not exist.
   srv_6493a23b37be9677: 'Das Vorschaubild existiert nicht.',
-  // Choose Set up in the widget and enter the address of Immich and a key you create in its settings.
-  srv_2c8c36393c90cc6f:
-    'Wähle Einrichten im Widget und gib die Adresse von Immich und einen Schlüssel ein, den du in dessen Einstellungen erstellst.',
+  // Choose Connect in the widget and enter the address of Immich and a key you create in its settings.
+  srv_53abe4db239639c0:
+    'Wähle Verbinden im Widget und gib die Adresse von Immich und einen Schlüssel ein, den du in dessen Einstellungen erstellst.',
   // Your Immich photo library and the photos taken on this day in past years.
   srv_96f0e81eb11e30d2:
     'Deine Immich-Fotobibliothek und die Fotos, die an diesem Tag in früheren Jahren entstanden sind.',

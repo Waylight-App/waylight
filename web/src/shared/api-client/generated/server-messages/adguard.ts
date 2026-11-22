@@ -4,7 +4,7 @@
 export const serverMessages = {
   srv_71fcd40efaa8ff27: "Blocking is off",
   srv_43efb7d828a46638: "Blocking paused",
-  srv_9403d5143205448f: "Choose Set up in the widget and enter the address and password of your AdGuard Home or Pi-hole.",
+  srv_fe7371449aba60d8: "Choose Connect in the widget and enter the address and password of your AdGuard Home or Pi-hole.",
   srv_b49765dc7af314cb: "How many requests AdGuard Home or Pi-hole blocked today, and whether blocking is on.",
   srv_0c0b1a4d7e09267c: "Pause for 5, 30 or 60 minutes.",
   srv_6af65a6080fe6b52: "Pausing is switched off for this DNS filter. Allow it with DNS_PAUSE_PROVIDERS on the server.",

@@ -11,7 +11,7 @@ func (m *Module) WidgetHelp() []modules.WidgetHelp {
 		{
 			Kind:  "nextcloud",
 			Shows: kernel.NewText("Your Nextcloud: version, your storage, and for admins free space, users and app updates."),
-			SetUp: kernel.NewText("Choose Set up in the widget and sign in with Nextcloud, or enter its address and an app password."),
+			SetUp: kernel.NewText("Choose Connect in the widget and sign in with Nextcloud, or enter its address and an app password."),
 			Docs:  "features/#network-and-integrations",
 		},
 	}

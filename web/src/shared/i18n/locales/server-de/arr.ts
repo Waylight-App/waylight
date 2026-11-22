@@ -20,8 +20,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_3c6d93dc1a0cc653: 'Die Adresse muss wie http://192.168.1.2:8989 aussehen.',
   // The instance does not exist.
   srv_c8e8fb2032a453cc: 'Die Instanz existiert nicht.',
-  // Choose Set up in the widget, pick the app and enter its address and key.
-  srv_f1bc61893833e7cb: 'Wähle Einrichten im Widget, wähle die App und gib Adresse und Schlüssel ein.',
+  // Choose Connect in the widget, pick the app and enter its address and key.
+  srv_284f6f8709d112c6: 'Wähle Verbinden im Widget, wähle die App und gib Adresse und Schlüssel ein.',
   // Upcoming episodes and films, downloads in progress and warnings from Sonarr, Radarr or Prowlarr.
   srv_2c28b0f9e10b3a43:
     'Kommende Folgen und Filme, laufende Downloads und Warnungen aus Sonarr, Radarr oder Prowlarr.',

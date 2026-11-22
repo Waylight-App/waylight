@@ -2,7 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
-  srv_2c8c36393c90cc6f: "Choose Set up in the widget and enter the address of Immich and a key you create in its settings.",
+  srv_53abe4db239639c0: "Choose Connect in the widget and enter the address of Immich and a key you create in its settings.",
   srv_b1e270c3a3b1cc7b: "Immich is not configured yet.",
   srv_5f51c1adae96a94e: "Immich is not reachable.",
   srv_41f4f2e49617b26a: "The access key is required.",

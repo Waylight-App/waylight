@@ -16,9 +16,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_3de8440f30f2cb18: 'Zeige zwischen {min} und {max} Anrufen.',
   // The filter must be all, missed, incoming or outgoing.
   srv_ab808509e7ff3cb7: 'Der Filter muss alle, verpasst, eingehend oder ausgehend sein.',
-  // Choose Set up in the widget and enter the address of your FRITZ!Box and a user name and password of the box.
-  srv_d74ab61cf0423be5:
-    'Wähle Einrichten im Widget und gib die Adresse deiner FRITZ!Box sowie einen Benutzernamen und ein Passwort der Box ein.',
+  // Choose Connect in the widget and enter the address of your FRITZ!Box and a user name and password of the box.
+  srv_5ee9327bc621aa5c:
+    'Wähle Verbinden im Widget und gib die Adresse deiner FRITZ!Box sowie einen Benutzernamen und ein Passwort der Box ein.',
   // It uses the FRITZ!Box you set up for the internet widget. Open the widget settings to choose which calls are shown.
   srv_30aa95cedabf4c8e:
     'Es nutzt die FRITZ!Box, die du für das Internet-Widget eingerichtet hast. In den Widget-Einstellungen wählst du, welche Anrufe angezeigt werden.',

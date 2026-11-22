@@ -3,7 +3,7 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_9149e8b922088f89: "An access token with the results:read scope is required.",
-  srv_ab35df50208b8020: "Choose Set up in the widget and enter the address of your Speedtest Tracker and its access key.",
+  srv_34deaa4e80aaf9b7: "Choose Connect in the widget and enter the address of your Speedtest Tracker and its access key.",
   srv_a61c7e4a9008bf06: "No results yet",
   srv_62fe3060b9aa0039: "Ping {ping} ms",
   srv_6f32001a15a15c4d: "Speedtest Tracker is not configured yet.",

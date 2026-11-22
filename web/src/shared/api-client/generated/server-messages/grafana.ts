@@ -2,12 +2,12 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
-  srv_69a4c688bd045ddf: "Choose Set up in the widget to connect Grafana, then pick the dashboard and the panel.",
+  srv_0bad8a7e373236de: "Choose Connect in the widget to connect Grafana, then pick the dashboard and the panel.",
   srv_8ff75b8c58539e49: "Grafana cannot render this panel as an image; install the Grafana image renderer.",
   srv_a25fcc52746e2dd0: "Grafana is not configured yet.",
   srv_2ee1fd290ca5d367: "Grafana is not reachable.",
   srv_de8bb22138954324: "Grafana returned no values for this panel; panels that use dashboard variables need the image renderer.",
-  srv_628f9b5e5233abd9: "It uses the Grafana connection; choose Set up in the widget if there is none yet.",
+  srv_b28e05f03dd7b97c: "It uses the Grafana connection; choose Connect in the widget if there is none yet.",
   srv_91684bab7006c4b2: "One panel of a Grafana dashboard, as a value or a small chart.",
   srv_aab0f249bc0dc9be: "The address must look like http://192.168.1.2:3000.",
   srv_f882441eaa2180ac: "The alerts that are firing in Grafana right now.",

@@ -11,7 +11,7 @@ func (m *Module) WidgetHelp() []modules.WidgetHelp {
 		{
 			Kind:  "media",
 			Shows: kernel.NewText("What is playing on Jellyfin or Plex right now and what was added recently."),
-			SetUp: kernel.NewText("Choose Set up in the widget, pick Jellyfin or Plex and enter its address and key."),
+			SetUp: kernel.NewText("Choose Connect in the widget, pick Jellyfin or Plex and enter its address and key."),
 			Docs:  "modules/media/",
 		},
 	}
