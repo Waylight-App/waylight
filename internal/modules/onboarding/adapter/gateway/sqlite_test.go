@@ -28,4 +28,11 @@ func TestRepository(t *testing.T) {
 	if got, _ := repo.Load(ctx); got.Completed() {
 		t.Fatal("restart not stored")
 	}
+	if err := s.Resume("widgets"); err != nil {
+		t.Fatal(err)
+	}
+	_ = repo.Save(ctx, s)
+	if got, _ := repo.Load(ctx); got.Step() != "widgets" {
+		t.Fatalf("step not stored: %q", got.Step())
+	}
 }

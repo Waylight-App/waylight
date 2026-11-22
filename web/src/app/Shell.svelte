@@ -23,8 +23,8 @@
   import DashboardPage from './DashboardPage.svelte';
   import { branding } from './branding/branding.svelte';
   import { loadPlugins, type OnboardingStep } from './plugins/loader';
-  import PluginHost from './plugins/PluginHost.svelte';
-  import type { Personal, Place } from '../features/onboarding/domain/firstStart';
+  import type { Personal } from '../features/onboarding/domain/profile';
+  import { stageOf } from '../features/onboarding/domain/stage';
   import { definitionFor, widgetDefinitions } from './widgets';
   import { searchActions } from './searchActions';
   import { registeredSections } from './settingsSections';
@@ -461,73 +461,50 @@
         appearance = await container.appearance.load();
         appearanceLoaded = true;
       }
-      // Wait a moment so the dashboard is rendered before the tour measures it.
-      if (
-        !container.auth.guest &&
-        info.modules.has('onboarding') &&
-        (await container.onboarding.shouldShowTour())
-      ) {
-        // The essential settings come first (#671), then the templates
-        // and the tour. The public demo shares one account and keeps its
-        // showcase, so it goes straight to the tour.
-        if (container.localMode || container.auth.demo) setTimeout(startTour, 600);
-        else firstStart = true;
+      if (!container.auth.guest && info.modules.has('onboarding')) {
+        const status = await container.onboarding.status();
+        const stage = stageOf(status);
+        // The public demo shares one account and keeps its showcase, and
+        // the local mode has no server to ask: both go straight to the tour.
+        if (stage !== 'finished' && (container.localMode || container.auth.demo)) setTimeout(startTour, 600);
+        // The wizard comes first (#739), the tour after it.
+        else if (stage === 'wizard') wizardStep = status.step;
+        // Wait a moment so the dashboard is rendered before the tour measures it.
+        else if (stage === 'tour') setTimeout(startTour, 600);
       }
     } catch (err) {
       error = errorMessage(err);
+    } finally {
+      onboardingChecked = true;
     }
   }
 
-  let firstStart = $state(false);
-  /** The place saved in the first-start flow; the templates use it for the weather. */
-  let firstPlace = $state<Place | undefined>();
+  /** The dashboard waits until it is known whether the wizard comes first (#739). */
+  let onboardingChecked = $state(false);
+  /** The step the wizard opens at (empty before it started); null while it is not shown. */
+  let wizardStep = $state<string | null>(null);
 
-  /** Saves personal settings from the first-start flow (#671). */
+  /** Saves personal settings from the wizard (#671). */
   async function savePersonal(patch: Partial<Personal>) {
     appearance = await container.appearance.save({ ...appearance, ...patch });
   }
 
-  /** After the first-start flow: a fresh dashboard offers the templates (#589), then the tour. */
-  async function firstStartDone(result: { place?: Place }) {
-    firstStart = false;
+  /** The wizard is finished or skipped: the dashboard opens, then the tour. */
+  async function wizardDone() {
+    wizardStep = null;
     lookPreview = null;
-    firstPlace = result.place;
-    const fresh = await freshDashboard();
-    if (fresh !== 'no') {
-      sampleDashboard = fresh === 'sample';
-      choosingTemplate = true;
-    } else setTimeout(startTour, 600);
+    try {
+      await container.onboarding.finishWizard();
+    } catch (err) {
+      error = errorMessage(err);
+    }
+    setTimeout(startTour, 600);
   }
-
-  let choosingTemplate = $state(false);
-  /** Whether the template choice replaces the example tabs of the setup (#670). */
-  let sampleDashboard = $state(false);
 
   // The widget kind whose help is open (#678): from a widget's "?" or a
   // help result of the search. Kiosk displays offer neither.
   let helpKind = $state<string | null>(null);
   const showHelp = $derived(container.auth.kiosk ? undefined : (kind: string) => (helpKind = kind));
-
-  /**
-   * Whether the dashboard is still as setup left it: one tab with at most
-   * the default widget ('empty'), or only the untouched example tabs of the
-   * sample data ('sample', #670). An applied waylight.yaml or a dashboard
-   * someone arranged counts as set up ('no').
-   */
-  async function freshDashboard(): Promise<'empty' | 'sample' | 'no'> {
-    try {
-      const tabs = await container.dashboard.load();
-      if (tabs.length > 0 && tabs.every((tab) => tab.sample)) return 'sample';
-      return tabs.length <= 1 && tabs.every((tab) => tab.widgets.length <= 1) ? 'empty' : 'no';
-    } catch {
-      return 'no';
-    }
-  }
-
-  function templateChosen() {
-    choosingTemplate = false;
-    setTimeout(startTour, 600);
-  }
 
   function startTour() {
     editing = false;
@@ -634,91 +611,93 @@
 <svelte:window ononline={() => (offline = false)} onoffline={() => (offline = true)} />
 
 <!-- Top bar and hero (#189): brand · date, weather, to-dos · status, launcher, account. -->
-<header class="topbar">
-  <a class="brand" href="/">
-    {#if branding().logo}
-      <!-- An organisation's logo (#305); the dark variant follows the theme. -->
-      <img class="brand-logo light" src={branding().logo} alt="" height="28" />
-      <img class="brand-logo dark" src={branding().logoDark || branding().logo} alt="" height="28" />
-    {:else}
-      <span class="logo"><WaylightMark size={22} /></span>
-    {/if}
-    <span class:wordmark={branding().name === PRODUCT_NAME}>{branding().name}</span>
-  </a>
-  <div class="center">
-    <TopInfo
-      weather={modules?.has('weather') ? container.weather : null}
-      location={weatherLocation}
-      todos={modules?.has('todos') ? container.todos : null}
-    />
-  </div>
-  <div class="right">
-    {#if attention && attention.count > 0}
-      {@const state = attention}
-      {#await import('../features/attention/ui/AttentionBadge.svelte') then { default: AttentionBadge }}
-        <AttentionBadge {state} onopen={() => void openSettingsAt('attention')} />
+{#if wizardStep === null}
+  <header class="topbar">
+    <a class="brand" href="/">
+      {#if branding().logo}
+        <!-- An organisation's logo (#305); the dark variant follows the theme. -->
+        <img class="brand-logo light" src={branding().logo} alt="" height="28" />
+        <img class="brand-logo dark" src={branding().logoDark || branding().logo} alt="" height="28" />
+      {:else}
+        <span class="logo"><WaylightMark size={22} /></span>
+      {/if}
+      <span class:wordmark={branding().name === PRODUCT_NAME}>{branding().name}</span>
+    </a>
+    <div class="center">
+      <TopInfo
+        weather={modules?.has('weather') ? container.weather : null}
+        location={weatherLocation}
+        todos={modules?.has('todos') ? container.todos : null}
+      />
+    </div>
+    <div class="right">
+      {#if attention && attention.count > 0}
+        {@const state = attention}
+        {#await import('../features/attention/ui/AttentionBadge.svelte') then { default: AttentionBadge }}
+          <AttentionBadge {state} onopen={() => void openSettingsAt('attention')} />
+        {/await}
+      {/if}
+      {#if serviceStatus.kind !== 'none'}
+        <button
+          type="button"
+          class="status"
+          data-kind={serviceStatus.kind}
+          data-launcher-trigger
+          onclick={() => (launcherOpen = launcherOpen ? null : 'services')}
+        >
+          <span class="dot" aria-hidden="true"></span>
+          {serviceStatus.kind === 'ok'
+            ? t('launcher.all_online')
+            : t('launcher.some_offline', { n: serviceStatus.offline })}
+        </button>
+      {/if}
+      {#if launcher}
+        <button
+          bind:this={launcherTrigger}
+          type="button"
+          class="round"
+          data-launcher-trigger
+          aria-haspopup="dialog"
+          aria-expanded={launcherOpen !== null}
+          aria-label={t('launcher.title')}
+          title={t('launcher.title')}
+          onclick={() => (launcherOpen = launcherOpen ? null : 'all')}><Icon name="grid" size={22} /></button
+        >
+      {/if}
+      <AccountMenu
+        initial={accountInitial}
+        {editing}
+        canEdit={!container.auth.guest && !simpleView}
+        editLocked={dashboardManaged ? t('app.edit_managed') : ''}
+        onedit={() => (editing = !editing)}
+        onsettings={() => ((settingsSection = undefined), (settingsOpen = true))}
+        onlogout={logout}
+      />
+    </div>
+    {#if launcherOpen && launcher}
+      {#await import('../features/launcher/ui/LauncherPanel.svelte') then { default: LauncherPanel }}
+        <LauncherPanel
+          {launcher}
+          content={appearance.launcher}
+          initialSegment={launcherOpen}
+          onclose={closeLauncher}
+          onsettings={() => ((launcherOpen = null), (settingsSection = 'appearance'), (settingsOpen = true))}
+        />
       {/await}
     {/if}
-    {#if serviceStatus.kind !== 'none'}
-      <button
-        type="button"
-        class="status"
-        data-kind={serviceStatus.kind}
-        data-launcher-trigger
-        onclick={() => (launcherOpen = launcherOpen ? null : 'services')}
-      >
-        <span class="dot" aria-hidden="true"></span>
-        {serviceStatus.kind === 'ok'
-          ? t('launcher.all_online')
-          : t('launcher.some_offline', { n: serviceStatus.offline })}
-      </button>
-    {/if}
-    {#if launcher}
-      <button
-        bind:this={launcherTrigger}
-        type="button"
-        class="round"
-        data-launcher-trigger
-        aria-haspopup="dialog"
-        aria-expanded={launcherOpen !== null}
-        aria-label={t('launcher.title')}
-        title={t('launcher.title')}
-        onclick={() => (launcherOpen = launcherOpen ? null : 'all')}><Icon name="grid" size={22} /></button
-      >
-    {/if}
-    <AccountMenu
-      initial={accountInitial}
-      {editing}
-      canEdit={!container.auth.guest && !simpleView}
-      editLocked={dashboardManaged ? t('app.edit_managed') : ''}
-      onedit={() => (editing = !editing)}
-      onsettings={() => ((settingsSection = undefined), (settingsOpen = true))}
-      onlogout={logout}
-    />
-  </div>
-  {#if launcherOpen && launcher}
-    {#await import('../features/launcher/ui/LauncherPanel.svelte') then { default: LauncherPanel }}
-      <LauncherPanel
-        {launcher}
-        content={appearance.launcher}
-        initialSegment={launcherOpen}
-        onclose={closeLauncher}
-        onsettings={() => ((launcherOpen = null), (settingsSection = 'appearance'), (settingsOpen = true))}
-      />
-    {/await}
-  {/if}
-</header>
-<Hero
-  bind:this={hero}
-  name={appearance.greetingName}
-  moment={appearance.greetingMoment}
-  tabsId="header-tabs"
-  {container}
-  {modules}
-  {weatherLocation}
-  widgetConfig={(kind) => firstWidgetConfig(dashboardState.tabs, dashboardState.activeId, kind)}
-  {commandHandlers}
-/>
+  </header>
+  <Hero
+    bind:this={hero}
+    name={appearance.greetingName}
+    moment={appearance.greetingMoment}
+    tabsId="header-tabs"
+    {container}
+    {modules}
+    {weatherLocation}
+    widgetConfig={(kind) => firstWidgetConfig(dashboardState.tabs, dashboardState.activeId, kind)}
+    {commandHandlers}
+  />
+{/if}
 
 {#if deviceSetup}
   <!-- The setup step of an appliance (#140): asked once, until a mode is chosen. -->
@@ -752,7 +731,7 @@
     </p>{/if}
   <SyncStatus sync={container.offline} />
   {#if error}<p class="error" role="alert">{error}</p>{/if}
-  {#if modules}
+  {#if modules && onboardingChecked && wizardStep === null}
     {#if modules.has('notifications') && container.auth.admin}<MaintenanceBanner
         notifications={container.notifications}
       />{/if}
@@ -796,37 +775,19 @@
   {/await}
 {/if}
 
-{#if firstStart}
-  {#await import('../features/onboarding/ui/FirstStart.svelte') then { default: FirstStart }}
-    <FirstStart
-      owner={container.auth.owner}
-      personal={modules?.has('appearance') ? appearance : undefined}
+{#if wizardStep !== null && modules}
+  {#await import('./OnboardingWizard.svelte') then { default: OnboardingWizard }}
+    <OnboardingWizard
+      {container}
+      {modules}
+      {widgetKinds}
+      {appearance}
+      {onboardingSteps}
+      stored={wizardStep}
       {savePersonal}
       preview={(patch) => (lookPreview = patch)}
-      places={modules?.has('places')
-        ? {
-            search: modules.has('weather')
-              ? async (q) =>
-                  (await container.weather.searchPlaces(q)).map((p) => ({
-                    name: '',
-                    label: [p.name, p.region, p.country].filter(Boolean).join(', '),
-                    lat: p.lat,
-                    lon: p.lon,
-                  }))
-              : undefined,
-            save: (p) => container.places.add(p),
-          }
-        : undefined}
-      extraSteps={onboardingSteps.map((s) => ({ id: s.id, title: s.title() }))}
-      ondone={firstStartDone}
-    >
-      {#snippet extra(id: string, setSubmit: (save: () => Promise<void>) => void)}
-        {@const step = onboardingSteps.find((s) => s.id === id)}
-        {#if step}
-          <PluginHost mountable={step.mountable} context={step.context} props={{ setSubmit }} />
-        {/if}
-      {/snippet}
-    </FirstStart>
+      ondone={() => void wizardDone()}
+    />
   {/await}
 {/if}
 
@@ -839,30 +800,6 @@
       fallback={definitionFor(kind)?.type.description ?? ''}
       docsUrl={DOCS_URL}
       onclose={() => (helpKind = null)}
-    />
-  {/await}
-{/if}
-
-{#if choosingTemplate}
-  {#await import('../features/dashboard/ui/TemplatePicker.svelte') then { default: TemplatePicker }}
-    <TemplatePicker
-      uc={container.dashboard}
-      widgetName={(kind) => definitionFor(kind)?.type.title ?? kind}
-      searchPlaces={modules?.has('weather')
-        ? async (q) =>
-            (await container.weather.searchPlaces(q)).map((p) => ({
-              label: [p.name, p.region, p.country].filter(Boolean).join(', '),
-              lat: p.lat,
-              lon: p.lon,
-            }))
-        : undefined}
-      sample={sampleDashboard}
-      location={firstPlace
-        ? { lat: firstPlace.lat, lon: firstPlace.lon, label: firstPlace.label, placeId: firstPlace.id }
-        : undefined}
-      oncreated={(tab) => (sampleDashboard ? dashboard?.reload(tab.id) : dashboard?.addTab(tab))}
-      onemptied={() => dashboard?.reload()}
-      onclose={templateChosen}
     />
   {/await}
 {/if}

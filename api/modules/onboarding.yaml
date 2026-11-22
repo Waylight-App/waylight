@@ -10,7 +10,7 @@ paths:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Onboarding" } } } }
     put:
       tags: [onboarding]
-      summary: Complete (true) or restart (false) the guided tour
+      summary: Complete (true) or restart (false) the guided tour; a step with false stores the wizard step to resume at
       security: [{ session: [], csrf: [] }]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/Onboarding" } } } }
       responses:
@@ -210,4 +210,4 @@ schemas:
       lastSeenAt: { type: string, format: date-time }
       expiresAt: { type: string, format: date-time }
       current: { type: boolean }
-  Onboarding: { type: object, required: [completed], properties: { completed: { type: boolean } } }
+  Onboarding: { type: object, required: [completed], properties: { completed: { type: boolean }, step: { type: string, description: Onboarding wizard step the account stopped at; empty before it started } } }

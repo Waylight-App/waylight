@@ -29,4 +29,10 @@ func TestOnboarding(t *testing.T) {
 	if s, _ := uc.Restart(ctx); s.Completed {
 		t.Fatal("restart failed")
 	}
+	if s, err := uc.Resume(ctx, "profile"); err != nil || s.Completed || s.Step != "profile" {
+		t.Fatalf("resume: %+v %v", s, err)
+	}
+	if _, err := uc.Resume(ctx, ""); err == nil {
+		t.Fatal("an empty step must be rejected")
+	}
 }

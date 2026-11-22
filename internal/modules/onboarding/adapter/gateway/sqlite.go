@@ -31,9 +31,10 @@ func NewRepository(db *sql.DB) *Repository { return &Repository{db: db} }
 // Load returns the stored state or the pending zero state.
 func (r *Repository) Load(ctx context.Context) (domain.State, error) {
 	var completed *string
+	var step string
 	// Per account and without falling back to the admin, so every new
 	// member gets the tour.
-	err := r.db.QueryRowContext(ctx, `SELECT completed_at FROM onboarding_state WHERE account_id = ?`, kernel.PrincipalFrom(ctx).SettingsAccount()).Scan(&completed)
+	err := r.db.QueryRowContext(ctx, `SELECT completed_at, wizard_step FROM onboarding_state WHERE account_id = ?`, kernel.PrincipalFrom(ctx).SettingsAccount()).Scan(&completed, &step)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.State{}, nil
 	}
@@ -44,13 +45,14 @@ func (r *Repository) Load(ctx context.Context) (domain.State, error) {
 	if err != nil {
 		return domain.State{}, err
 	}
-	return domain.RestoreState(at), nil
+	return domain.RestoreState(at, step), nil
 }
 
 // Save stores the state.
 func (r *Repository) Save(ctx context.Context, s domain.State) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO onboarding_state (account_id, completed_at) VALUES (?, ?)
-		ON CONFLICT (account_id) DO UPDATE SET completed_at = excluded.completed_at`, kernel.PrincipalFrom(ctx).SettingsAccount(), sqlutil.FormatNullableTime(s.CompletedAt()))
+	_, err := r.db.ExecContext(ctx, `INSERT INTO onboarding_state (account_id, completed_at, wizard_step) VALUES (?, ?, ?)
+		ON CONFLICT (account_id) DO UPDATE SET completed_at = excluded.completed_at, wizard_step = excluded.wizard_step`,
+		kernel.PrincipalFrom(ctx).SettingsAccount(), sqlutil.FormatNullableTime(s.CompletedAt()), s.Step())
 	if err != nil {
 		return fmt.Errorf("upsert onboarding state: %w", err)
 	}

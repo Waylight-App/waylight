@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test';
 import { password, setupToken } from './support';
 
 // The first start with the default SAMPLE_DATA=true, on a server of its own
-// (see playwright.config.ts): the essential settings (#671), then the
-// template choice (#670), then the tour. A template replaces the example
+// (see playwright.config.ts): the onboarding wizard (#739) asks the profile
+// and the widgets, then the tour follows. A template replaces the example
 // tabs with a zoned tab.
 test.use({ geolocation: { latitude: 53.14, longitude: 8.21 }, permissions: ['geolocation'] });
 
@@ -15,41 +15,36 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await page.getByLabel('Password (at least 12 characters)').fill(password);
   await page.getByLabel('Repeat password').fill(password);
   await page.getByRole('button', { name: 'Create account' }).click();
+
+  // The dashboard stays hidden until the wizard is over.
+  const wizard = page.getByRole('region', { name: 'Set up Waylight' });
+  await expect(wizard.getByRole('heading', { name: 'Glad you are here.' })).toBeVisible();
+  await expect(page.getByTestId('dashboard')).toHaveCount(0);
+  await expect(wizard.getByRole('progressbar')).toHaveAttribute('aria-valuetext', 'Step 1 of 4');
+  await wizard.getByRole('button', { name: "Let's go" }).click();
+
+  await expect(wizard.getByRole('heading', { name: 'What should we call you?' })).toBeVisible();
+  await wizard.getByLabel('Name').fill('Sam');
+  // Picking a language shows it at once.
+  await wizard.getByRole('radio', { name: 'Deutsch' }).check();
+  await expect(page.getByRole('heading', { name: 'Wie sollen wir dich nennen?' })).toBeVisible();
+  await page.getByRole('radio', { name: 'English' }).check();
+  await wizard.getByRole('button', { name: 'Use my location' }).click();
+  await expect(wizard.getByRole('status')).toHaveText('Chosen: My location');
+  await wizard.getByRole('button', { name: 'Next' }).click();
+
+  // Back and forth keeps the step; a reload continues where it stopped.
+  await expect(wizard.getByRole('heading', { name: 'What goes on your start page?' })).toBeVisible();
+  await page.reload();
+  await expect(wizard.getByRole('heading', { name: 'What goes on your start page?' })).toBeVisible();
+
+  await expect(wizard.getByRole('button', { name: 'Family' })).toHaveAttribute('aria-pressed', 'true');
+  await wizard.getByRole('button', { name: 'Next' }).click();
+
+  await expect(wizard.getByRole('heading', { name: "All done, let's go." })).toBeVisible();
+  await expect(page.getByTestId('dashboard')).toHaveCount(0);
+  await wizard.getByRole('button', { name: 'Go to the start page' }).click();
   await expect(page.getByTestId('dashboard')).toBeVisible();
-
-  // The essentials: one question per screen, with the progress.
-  const name = page.getByRole('dialog', { name: 'What should Waylight call you?' });
-  await expect(name.getByText('Step 1 of 4')).toBeVisible();
-  await name.getByLabel('Your name').fill('Sam');
-  await name.getByRole('button', { name: 'Next' }).click();
-
-  const place = page.getByRole('dialog', { name: 'Where are you?' });
-  await expect(place.getByText('Step 2 of 4')).toBeVisible();
-  await place.getByRole('button', { name: 'Use my location' }).click();
-  await expect(place.getByRole('status')).toHaveText('Chosen: My location');
-  await place.getByRole('button', { name: 'Next' }).click();
-
-  const language = page.getByRole('dialog', { name: 'Language and time zone' });
-  await expect(language.getByText(/time zone of this device/)).toBeVisible();
-  await language.getByLabel('Language').selectOption('en');
-  await language.getByRole('button', { name: 'Next' }).click();
-
-  const look = page.getByRole('dialog', { name: 'How should Waylight look?' });
-  await expect(look.getByText('Step 4 of 4')).toBeVisible();
-  await look.getByRole('radio', { name: 'Dark' }).check();
-  // The page previews the choice before it is saved.
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await look.getByRole('button', { name: 'Next' }).click();
-
-  const picker = page.getByRole('dialog', { name: 'What do you use Waylight for?' });
-  await expect(picker).toBeVisible();
-  await expect(picker.getByText('it replaces the example dashboard')).toBeVisible();
-  // The tour waits for the choice.
-  await expect(page.getByRole('dialog', { name: 'Welcome to Waylight 👋' })).toHaveCount(0);
-
-  await picker.getByText('Family', { exact: true }).click();
-  // The place from the essentials is used, so the location is not asked again.
-  await picker.getByRole('button', { name: 'Use this template' }).click();
 
   const tour = page.getByRole('dialog', { name: 'Welcome to Waylight 👋' });
   await expect(tour).toBeVisible();
@@ -87,7 +82,7 @@ test('first start asks the essentials, offers the templates and Family replaces 
 
   // The answers are stored where the settings pages store them.
   const stored = (await (await page.request.get('/api/appearance')).json()) as Record<string, unknown>;
-  expect(stored).toMatchObject({ greetingName: 'Sam', language: 'en', theme: 'dark' });
+  expect(stored).toMatchObject({ greetingName: 'Sam', language: 'en' });
   const places = (await (await page.request.get('/api/places')).json()) as { name: string; lat: number }[];
   expect(places).toEqual([expect.objectContaining({ name: 'Home', lat: 53.14 })]);
   // The example data of the modules stays.

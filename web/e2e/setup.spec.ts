@@ -11,23 +11,16 @@ test('setup, logout and login lead to the dashboard', async ({ page }) => {
   await page.getByLabel('Password (at least 12 characters)').fill(password);
   await page.getByLabel('Repeat password').fill(password);
   await page.getByRole('button', { name: 'Create account' }).click();
-  await expect(page.getByTestId('dashboard')).toBeVisible();
 
-  // The essential settings come first (#671); first-start.spec.ts answers
-  // them, here the dialog is closed, which skips the rest.
-  const essentials = page.getByRole('dialog', { name: 'What should Waylight call you?' });
-  await expect(essentials).toBeVisible();
-  await expect(essentials.getByText(/^Step 1 of \d$/)).toBeVisible();
-  await essentials.getByRole('button', { name: 'Close' }).click();
+  // The onboarding wizard (#739) comes before the dashboard; first-start.spec.ts
+  // goes through its steps. The other specs build on the example dashboard,
+  // so it is skipped here.
+  const wizard = page.getByRole('region', { name: 'Set up Waylight' });
+  await expect(wizard.getByRole('heading', { name: 'Glad you are here.' })).toBeVisible();
+  await expect(page.getByTestId('dashboard')).toHaveCount(0);
+  await wizard.getByRole('button', { name: 'Set up later' }).click();
 
-  // With sample data the template choice comes next (#670). The other
-  // specs build on the example dashboard, so it is kept here;
-  // first-start.spec.ts chooses a template on a server of its own.
-  const picker = page.getByRole('dialog', { name: 'What do you use Waylight for?' });
-  await expect(picker).toBeVisible();
-  await picker.getByRole('button', { name: 'Keep the example dashboard' }).click();
-
-  // The guided tour follows the template choice.
+  // The guided tour follows the wizard.
   const tour = page.getByRole('dialog', { name: 'Welcome to Waylight 👋' });
   await expect(tour).toBeVisible();
   for (const title of ['Tabs', 'Search', 'Edit mode', 'Settings', 'Server overview']) {
