@@ -12,8 +12,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_9868ddfdf1b03925: 'Der Vertrag existiert nicht.',
   // The name must be between 1 and 80 characters long.
   srv_82e6a560a152e8bf: 'Der Name muss zwischen 1 und 80 Zeichen lang sein.',
-  // The note may be at most 500 characters long.
-  srv_279687ba82800dcf: 'Die Notiz darf höchstens 500 Zeichen lang sein.',
   // The notice period must be between 0 and 730 days.
   srv_a978dd17b95a872f: 'Die Kündigungsfrist muss zwischen 0 und 730 Tagen liegen.',
   // The period must be monthly, quarterly or yearly.
@@ -24,4 +22,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_a1b06e8dfdccdec0: 'Die Verlängerung muss zwischen 0 und 60 Monaten liegen.',
   // {name}: cancel by {date}
   srv_b9de50756b290a2b: '{name}: kündigen bis {date}',
+  // Add a contract with its cost, the end of the term and the notice period. You get a reminder before the cancellation deadline.
+  srv_4c598cb1f9b8a4ac:
+    'Lege einen Vertrag mit Kosten, Laufzeitende und Kündigungsfrist an. Vor der Kündigungsfrist bekommst du eine Erinnerung.',
+  // Your contracts by next cancellation deadline, with the monthly total cost.
+  srv_818c9d703702319b: 'Deine Verträge nach der nächsten Kündigungsfrist, mit den monatlichen Gesamtkosten.',
 };

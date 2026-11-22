@@ -2,6 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
+  srv_4c598cb1f9b8a4ac: "Add a contract with its cost, the end of the term and the notice period. You get a reminder before the cancellation deadline.",
   srv_bbee068cd310e235: "Enter a cost between 0 and 1,000,000.",
   srv_c198ebaf810e6f0e: "No deadlines ahead",
   srv_a01290e0c0731c7d: "Remind between 0 and 90 days before the deadline.",
@@ -11,6 +12,7 @@ export const serverMessages = {
   srv_f06b513cc209bee6: "The period must be monthly, quarterly or yearly.",
   srv_08f974b98523102d: "The provider may be at most 80 characters long.",
   srv_a1b06e8dfdccdec0: "The renewal must be between 0 and 60 months.",
+  srv_818c9d703702319b: "Your contracts by next cancellation deadline, with the monthly total cost.",
   srv_b9de50756b290a2b: "{name}: cancel by {date}",
 } as const;
 

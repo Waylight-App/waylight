@@ -132,4 +132,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'In den Widget-Einstellungen wählst du Zeitzone, 12-Stunden-Uhr, Sekunden, Datum oder Kalenderwoche.',
   // The time and date, optionally in another time zone.
   srv_243981d781275d3a: 'Uhrzeit und Datum, auf Wunsch in einer anderen Zeitzone.',
+  // The note may be at most 500 characters long.
+  srv_279687ba82800dcf: 'Die Notiz darf höchstens 500 Zeichen lang sein.',
 };
