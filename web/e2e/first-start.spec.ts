@@ -81,10 +81,18 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await expect(wizard.getByRole('article', { name: '3 * 17 + 4 =' })).toContainText('55');
   await wizard.getByRole('button', { name: 'Next' }).click();
 
-  await expect(wizard.getByRole('heading', { name: "All done, let's go." })).toBeVisible();
+  // The done page lists the widgets that still need the user: Family has a
+  // waste calendar, which needs the municipality's address.
+  await expect(wizard.getByRole('heading', { name: 'Almost done.' })).toBeVisible();
+  await expect(wizard.getByRole('heading', { name: 'Still to set up (1)' })).toBeVisible();
   await expect(page.getByTestId('dashboard')).toHaveCount(0);
-  await wizard.getByRole('button', { name: 'Go to the start page' }).click();
+  // Setting up leads to the dashboard and opens the guided setup of that widget.
+  await wizard.getByRole('button', { name: 'Set up Waste collection' }).click();
+  const setup = page.getByRole('dialog', { name: 'Set up the waste calendar' });
+  await expect(setup).toBeVisible();
   await expect(page.getByTestId('dashboard')).toBeVisible();
+  // Later leaves it; the tour follows the walk.
+  await setup.getByRole('button', { name: 'Later' }).click();
 
   const tour = page.getByRole('dialog', { name: 'Welcome to Waylight 👋' });
   await expect(tour).toBeVisible();

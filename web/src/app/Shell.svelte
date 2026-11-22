@@ -1,6 +1,7 @@
 <script lang="ts">
   import WaylightMark from '../shared/ui/WaylightMark.svelte';
   import { DOCS_URL, PRODUCT_NAME } from '../shared/product';
+  import { setupWalk } from '../shared/setup/walk.svelte';
   import { rememberLook } from './branding/lastLook';
   import type { CommandHandlers } from './appCommands';
   import { hasStoredTimers, timerAlerts } from './timerAlerts.svelte';
@@ -498,7 +499,9 @@
     } catch (err) {
       error = errorMessage(err);
     }
-    setTimeout(startTour, 600);
+    // A setup walk started on the done page comes first; the tour follows it.
+    if (setupWalk.active) setupWalk.whenFinished(startTour);
+    else setTimeout(startTour, 600);
   }
 
   // The widget kind whose help is open (#678): from a widget's "?" or a

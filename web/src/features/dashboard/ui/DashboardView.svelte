@@ -7,6 +7,7 @@
   import Modal from '../../../shared/ui/Modal.svelte';
   import type { IconName } from '../../../shared/ui/icons/paths';
   import WidgetPicker from './WidgetPicker.svelte';
+  import { GUIDED_SETUP_KINDS, setupWalk } from '../../../shared/setup/walk.svelte';
   import {
     initialTabId,
     type Tab,
@@ -326,6 +327,29 @@
     select(tabId);
     if (hasSettings(widget.kind)) dialog = { kind: 'settings', widget };
   }
+
+  // The setup walk of the onboarding (#751): widgets without a guided
+  // setup dialog of their own are set up in their settings; those with one
+  // open it themselves when it is their turn.
+  let walking: string | undefined;
+  $effect(() => {
+    const kind = setupWalk.current;
+    if (!kind || GUIDED_SETUP_KINDS.includes(kind)) return;
+    if (walking === kind) {
+      // Its settings were opened; moving on once they are closed.
+      if (!dialog) {
+        walking = undefined;
+        setupWalk.next();
+      }
+      return;
+    }
+    if (dialog) return;
+    const widget = tabs.flatMap((tab) => tab.widgets).find((w) => w.kind === kind);
+    if (!widget) return;
+    if (!hasSettings(kind)) return setupWalk.next();
+    walking = kind;
+    openWidgetSettings(widget.tabId, widget.id);
+  });
 
   /** Shows a tab created outside the view, e.g. from a template on first start (#589). */
   export function addTab(tab: Tab) {
@@ -712,6 +736,7 @@
         : 'full'}
       <WidgetFrame
         title={titles.get(widget.kind) ?? widget.kind}
+        kind={widget.kind}
         icon={widgetIcon(widget.kind)}
         editing={editingTab}
         {handle}

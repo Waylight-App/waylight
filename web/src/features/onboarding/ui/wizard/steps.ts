@@ -28,5 +28,5 @@ export const stepRegistry: Record<'welcome' | 'profile' | 'widgets' | 'search' |
   profile: { glow: 'top', centered: true, footer: 'actions', component: ProfileStep },
   widgets: { glow: 'top', centered: false, footer: 'actions', component: WidgetsStep },
   search: { glow: 'top', centered: false, footer: 'actions', component: SearchStep },
-  done: { glow: 'middle', centered: true, footer: 'hint', component: DoneStep, hint: 'wizard.done.foot' },
+  done: { glow: 'middle', centered: true, footer: 'hint', component: DoneStep },
 };
