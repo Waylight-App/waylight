@@ -88,3 +88,54 @@ test('dashboard dark amber', async ({ page }) => {
     await post(page, '/api/appearance/themes/restore');
   }
 });
+
+// The guided setup (#588, #618). The demo connects every integration, so the
+// Immich widget is shown the way a fresh install shows it: the server answers
+// 404 "not configured", the same status it sends when nothing is stored.
+// Only placeholder values appear; nothing leaves the demo instance.
+test('guided setup', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.route('**/api/immich/overview*', (route) =>
+    route.fulfill({ status: 404, json: { error: 'Immich is not configured yet.' } }),
+  );
+  await page.route('**/api/integrations/choices*', (route) =>
+    route.fulfill({ json: [{ id: 'photos', name: 'Photos at home' }] }),
+  );
+  await openDashboard(page);
+  await account(page, 'Edit');
+  await page.getByRole('button', { name: '+ Add widget' }).click();
+  await page.getByRole('searchbox', { name: 'Search widgets…' }).fill('Immich');
+  await page.getByRole('dialog', { name: 'Add widget' }).getByText('Immich', { exact: true }).click();
+  await page.getByRole('dialog', { name: 'Immich settings' }).getByRole('button', { name: 'Close' }).click();
+  await account(page, 'Done');
+
+  const widget = page.locator('article.widget').filter({ hasText: 'Immich' }).last();
+  const shot = async (name: string, height?: number) => {
+    // The widget scrolls inside its frame; give it the room the content needs.
+    if (height) await widget.evaluate((el, h) => (el.style.height = `${h}px`), height);
+    await widget.scrollIntoViewIfNeeded();
+    await widget.screenshot({ path: `${outDir}/setup-${name}.png` });
+  };
+  try {
+    // A saved connection is offered before anything is asked.
+    await expect(widget.getByRole('button', { name: 'Use Photos at home' })).toBeVisible();
+    await shot('connection');
+
+    await widget.getByRole('button', { name: 'Set up', exact: true }).click();
+    await widget.getByRole('textbox').first().fill('http://192.168.1.20:2283');
+    await widget.getByRole('button', { name: 'Next' }).click();
+
+    // The credential step: the steps in Immich's words, and the QR code that
+    // lets the mobile app send the key.
+    await widget.getByRole('button', { name: 'Paste from phone' }).click();
+    await expect(widget.getByRole('img', { name: 'QR code for Paste from phone' })).toBeVisible();
+    await shot('credential', 720);
+  } finally {
+    // Take the demo widget out again, so the order of the tests does not matter.
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+    await account(page, 'Edit');
+    await widget.getByRole('button', { name: 'Remove widget' }).click();
+    await account(page, 'Done');
+  }
+});
