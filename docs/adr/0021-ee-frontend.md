@@ -2,7 +2,7 @@
 
 - Status: Accepted (2026-11-16)
 - Date: 2026-11-16
-- Issue: [#307](https://github.com/itadori26/waylight/issues/307), part of [#292](https://github.com/itadori26/waylight/issues/292)
+- Issue: [#307](https://github.com/Waylight-App/waylight/issues/307), part of [#292](https://github.com/Waylight-App/waylight/issues/292)
 - Builds on: [ADR 0017](0017-open-core.md), [ADR 0020](0020-ee-stays-proprietary.md)
 
 ## Context
