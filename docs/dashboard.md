@@ -283,6 +283,26 @@ When the check fails, the message says why and what to try: the key was not
 accepted, nothing answers at the address, something other than the expected
 service answers there, or the certificate is not trusted.
 
+When you have already saved a connection to the service under Settings, the
+widget offers it first as **Use** *name*; choosing it skips the steps above.
+
+![An Immich widget that is not set up, offering a saved connection and Set up](screenshots/setup-connection.png)
+
+*A widget that is not connected yet.*
+
+![The credential step of the setup with the steps in Immich's words, the key field and a QR code](screenshots/setup-credential.png)
+
+*The credential step: the service's own steps, the field for the key and the QR code of Paste from phone.*
+
+### Pasting from your phone
+
+Typing a long key on a keyboard you do not like is the part people skip, so
+the credential step also offers **Paste from phone**. Copy the key on your
+phone, scan the QR code with the Waylight app (or open `waylight://paste`)
+and send it. The key appears in the field and you press *Check and save* as
+usual. The code behind the QR code works once, lives in memory for a few
+minutes and can only be read by the account that asked for it.
+
 ### Signing in instead of pasting a key
 
 For Nextcloud (the Nextcloud widget, the calendar and a shopping list on
