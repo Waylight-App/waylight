@@ -64,11 +64,11 @@ func NewInstance(id, app, name, rawURL, apiKey string) (Instance, error) {
 	rawURL = strings.TrimRight(strings.TrimSpace(rawURL), "/")
 	u, err := url.Parse(rawURL)
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-		return Instance{}, kernel.NewValidationError("url", "The URL must look like http://192.168.1.2:8989.")
+		return Instance{}, kernel.NewValidationError("url", "The address must look like http://192.168.1.2:8989.")
 	}
 	apiKey = strings.TrimSpace(apiKey)
 	if apiKey == "" {
-		return Instance{}, kernel.NewValidationError("apiKey", "The API key is required (Settings → General).")
+		return Instance{}, kernel.NewValidationError("apiKey", "The access key is required (Settings → General).")
 	}
 	return Instance{ID: id, App: a, Name: name, URL: rawURL, APIKey: apiKey}, nil
 }

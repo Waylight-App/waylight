@@ -72,7 +72,7 @@ func (b *Bookmark) Update(in BookmarkInput) error {
 	rawURL := strings.TrimSpace(in.URL)
 	u, err := url.Parse(rawURL)
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" || len(rawURL) > MaxURLLength {
-		return kernel.NewValidationError("url", "The URL must start with http:// or https://.")
+		return kernel.NewValidationError("url", "The address must start with http:// or https://.")
 	}
 	title := strings.TrimSpace(in.Title)
 	if title == "" {

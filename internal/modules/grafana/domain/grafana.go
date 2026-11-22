@@ -29,7 +29,7 @@ func NewSettings(rawURL, token string) (Settings, error) {
 	rawURL = strings.TrimRight(strings.TrimSpace(rawURL), "/")
 	u, err := url.Parse(rawURL)
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-		return Settings{}, kernel.NewValidationError("url", "The URL must look like http://192.168.1.2:3000.")
+		return Settings{}, kernel.NewValidationError("url", "The address must look like http://192.168.1.2:3000.")
 	}
 	token = strings.TrimSpace(token)
 	if token == "" {

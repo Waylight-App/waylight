@@ -2,7 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
-  srv_1725722a41c512af: "The NASA API key looks wrong.",
+  srv_0843f18316a55817: "The NASA access key looks wrong.",
   srv_7f04b43fbc8ab518: "The next rocket launches and NASA's astronomy picture of the day.",
   srv_374c6d77e754cb26: "The picture is not hosted by NASA.",
   srv_21a524286ae6e520: "The space data is not available right now.",

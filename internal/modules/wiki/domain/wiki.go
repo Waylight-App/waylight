@@ -42,7 +42,7 @@ var (
 	ErrKind        = kernel.NewValidationError("kind", "Choose BookStack, Outline or Wiki.js.")
 	ErrName        = kernel.NewValidationError("name", "The name must have between 1 and 60 characters.")
 	ErrTooMany     = kernel.NewPublicError(kernel.ErrConflict, "At most 5 wikis can be connected.")
-	ErrTokenNeeded = kernel.NewValidationError("token", "Enter the API token of the wiki.")
+	ErrTokenNeeded = kernel.NewValidationError("token", "Enter the access token of the wiki.")
 )
 
 // Wiki is one connected wiki. Token is the API credential; for BookStack it

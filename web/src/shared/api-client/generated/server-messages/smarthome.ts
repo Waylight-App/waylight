@@ -15,7 +15,7 @@ export const serverMessages = {
   srv_302cbb19bf9a174a: "Off",
   srv_091d5807b5b33550: "On",
   srv_9fbbc819fe7e66aa: "Run",
-  srv_d26f0cb52cfa0948: "The URL must look like http://homeassistant.local:8123.",
+  srv_079867a7aef69741: "The address must look like http://homeassistant.local:8123.",
   srv_2ef3700ca8a09eac: "The entity does not exist.",
   srv_a6715a41424b56f8: "This entity has no action; only switches and buttons can be used.",
   srv_de736af382a428ab: "Turn off",

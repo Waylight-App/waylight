@@ -115,7 +115,7 @@ func NewSettings(launches, picture bool, key string, keepKey bool, stored Settin
 		key = stored.NASAKey
 	}
 	if len(key) > 100 || strings.ContainsAny(key, " \r\n\t&?#/") {
-		return Settings{}, kernel.NewValidationError("nasaKey", "The NASA API key looks wrong.")
+		return Settings{}, kernel.NewValidationError("nasaKey", "The NASA access key looks wrong.")
 	}
 	return Settings{Launches: launches, Picture: picture, NASAKey: key}, nil
 }

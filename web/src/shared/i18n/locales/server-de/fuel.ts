@@ -18,8 +18,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_b8ffa62b5ed7e47e: 'Spritpreise sind noch nicht eingerichtet.',
   // Please choose a location.
   srv_4df94a98701c6c20: 'Bitte wähle einen Ort.',
-  // The API key must look like 00000000-0000-0000-0000-000000000002.
-  srv_90e0ffa88b068f72: 'Der API-Schlüssel muss wie 00000000-0000-0000-0000-000000000002 aussehen.',
+  // The access key must look like 00000000-0000-0000-0000-000000000002.
+  srv_556a8d02f72cc6e8: 'Der Zugangsschlüssel muss wie 00000000-0000-0000-0000-000000000002 aussehen.',
   // The fuel price service is not reachable.
   srv_2542e39dc33a11c6: 'Der Spritpreis-Dienst ist nicht erreichbar.',
   // The place name is too long.

@@ -4,8 +4,8 @@
 export const serverMessages = {
   srv_52395ea57eb8771f: "Choose Jellyfin or Plex.",
   srv_2c5a63cfd6db3056: "Choose Set up in the widget, pick Jellyfin or Plex and enter its address and key.",
-  srv_2aa10686fa162dde: "The API key or token is required.",
-  srv_ec3846ce5d9b8caf: "The URL must look like http://192.168.1.2:8096.",
+  srv_c958491d891a6a18: "The access key or token is required.",
+  srv_9d6bdf2942458cde: "The address must look like http://192.168.1.2:8096.",
   srv_7b276d2193d07bc8: "The media server is not configured yet.",
   srv_4c92147e0244306f: "The media server is not reachable.",
   srv_2b05bbdb56e575c6: "The poster does not exist.",

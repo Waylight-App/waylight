@@ -37,8 +37,8 @@ var (
 	errNotPrivate = kernel.NewPublicError(kernel.ErrInvalid,
 		"The address is not in a private network. Allow public addresses for this endpoint to reach it.")
 	errTooLarge = kernel.NewPublicError(kernel.ErrInvalid, "The response is larger than 1 MB.")
-	errNotJSON  = kernel.NewPublicError(kernel.ErrInvalid, "The response is not JSON.")
-	errTimeout  = kernel.NewPublicError(kernel.ErrInvalid, "The endpoint did not answer within 10 seconds.")
+	errNotJSON  = kernel.NewPublicError(kernel.ErrInvalid, "The address did not answer with a data file.")
+	errTimeout  = kernel.NewPublicError(kernel.ErrInvalid, "The address did not answer within 10 seconds.")
 )
 
 // Fetch implements usecase.JSONFetcher.
@@ -80,7 +80,7 @@ func (f Fetcher) Fetch(ctx context.Context, e domain.Endpoint) (usecase.Response
 	}
 	out := usecase.Response{Raw: raw[:min(len(raw), previewBytes)]}
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		return out, kernel.NewPublicErrorf(kernel.ErrInvalid, "The endpoint answered {status}.", "status", res.Status)
+		return out, kernel.NewPublicErrorf(kernel.ErrInvalid, "The address answered {status}.", "status", res.Status)
 	}
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	dec.UseNumber()

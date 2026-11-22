@@ -16,8 +16,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_a25fcc52746e2dd0: 'Grafana ist noch nicht eingerichtet.',
   // Grafana is not reachable.
   srv_2ee1fd290ca5d367: 'Grafana ist nicht erreichbar.',
-  // The URL must look like http://192.168.1.2:3000.
-  srv_ff20bffaaad40a7b: 'Die URL muss wie http://192.168.1.2:3000 aussehen.',
+  // The address must look like http://192.168.1.2:3000.
+  srv_aab0f249bc0dc9be: 'Die Adresse muss wie http://192.168.1.2:3000 aussehen.',
   // The dashboard does not exist.
   srv_0016d1a6fbb13c7f: 'Das Dashboard existiert nicht.',
   // The service account token is required.

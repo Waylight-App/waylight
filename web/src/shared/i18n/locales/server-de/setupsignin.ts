@@ -10,7 +10,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_182123d619d272ea:
     'Die Anmeldung bei Home Assistant braucht PUBLIC_URL, die Adresse, unter der du Waylight öffnest. Erstelle stattdessen ein langlebiges Zugriffstoken.',
   // The address must start with http:// or https://.
-  srv_13af0ff59dfa18d3: 'Die Adresse muss mit http:// oder https:// beginnen.',
   // The service did not name a sign-in page. Create a key instead.
   srv_ce81cb900ee071d5: 'Der Dienst hat keine Anmeldeseite genannt. Erstelle stattdessen einen Schlüssel.',
   // The sign-in was cancelled. Sign in again or create a key instead.

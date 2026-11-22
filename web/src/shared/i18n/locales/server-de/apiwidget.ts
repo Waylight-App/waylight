@@ -23,12 +23,12 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // The address is not in a private network. Allow public addresses for this endpoint to reach it.
   srv_96e158ab8fbd211f:
     'Die Adresse liegt nicht in einem privaten Netz. Erlaube öffentliche Adressen für diesen Endpunkt, um sie zu erreichen.',
-  // The endpoint answered {status}.
-  srv_719bb42774762c3c: 'Der Endpunkt hat mit {status} geantwortet.',
-  // The endpoint did not answer within 10 seconds.
-  srv_6e83c7041d0c7d02: 'Der Endpunkt hat nicht innerhalb von 10 Sekunden geantwortet.',
-  // The endpoint does not exist.
-  srv_e933bf0bb56c202a: 'Den Endpunkt gibt es nicht.',
+  // The address answered {status}.
+  srv_7264ee5f38a34517: 'Die Adresse hat mit {status} geantwortet.',
+  // The address did not answer within 10 seconds.
+  srv_9c4240e6e496f6e3: 'Die Adresse hat nicht innerhalb von 10 Sekunden geantwortet.',
+  // The address does not exist.
+  srv_d02ae47827de47f3: 'Diese Adresse gibt es nicht.',
   // The header name may only contain letters, digits and - _ . characters.
   srv_9866c93cb1f70331: 'Der Header-Name darf nur Buchstaben, Ziffern und - _ . enthalten.',
   // The header value is too long or contains line breaks.
@@ -37,8 +37,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_1027da36188a6ee7: 'Das Intervall muss zwischen 30 Sekunden und 24 Stunden liegen.',
   // The response is larger than 1 MB.
   srv_ff7c627f1b5a4717: 'Die Antwort ist größer als 1 MB.',
-  // The response is not JSON.
-  srv_986fb912129aa8e8: 'Die Antwort ist kein JSON.',
+  // The address did not answer with a data file.
+  srv_7a404bf244b98c6f: 'Die Adresse hat nicht mit einer Datendatei geantwortet.',
   // This header is set automatically and cannot be configured.
   srv_04481dd132908420: 'Dieser Header wird automatisch gesetzt und kann nicht eingestellt werden.',
   // Thresholds must be numbers.

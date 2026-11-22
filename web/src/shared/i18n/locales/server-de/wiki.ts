@@ -10,8 +10,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_f0229a7c2d8c1f57: 'Es können höchstens 5 Wikis verbunden werden.',
   // Choose BookStack, Outline or Wiki.js.
   srv_a516606c590e59bd: 'Wähle BookStack, Outline oder Wiki.js.',
-  // Enter the API token of the wiki.
-  srv_ee83ee6db56d0cdd: 'Gib das API-Token des Wikis ein.',
+  // Enter the access token of the wiki.
+  srv_19efb0d1db98099f: 'Gib das Zugangstoken des Wikis ein.',
   // The wiki is not connected (any more).
   srv_7d42213f5b873092: 'Das Wiki ist nicht (mehr) verbunden.',
 };

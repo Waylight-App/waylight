@@ -14,10 +14,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_35314e09732db39d: 'Wähle Sonarr, Radarr oder Prowlarr.',
   // No Sonarr, Radarr or Prowlarr instance is configured yet.
   srv_e7b97389eba1653e: 'Noch keine Sonarr-, Radarr- oder Prowlarr-Instanz eingerichtet.',
-  // The API key is required (Settings → General).
-  srv_7a0dfb1a22ec0b96: 'Der API-Schlüssel ist erforderlich (Settings → General).',
-  // The URL must look like http://192.168.1.2:8989.
-  srv_f850721911b29bc6: 'Die URL muss wie http://192.168.1.2:8989 aussehen.',
+  // The access key is required (Settings → General).
+  srv_7cb14eb21ac56134: 'Der Zugangsschlüssel ist erforderlich (Settings → General).',
+  // The address must look like http://192.168.1.2:8989.
+  srv_3c6d93dc1a0cc653: 'Die Adresse muss wie http://192.168.1.2:8989 aussehen.',
   // The instance does not exist.
   srv_c8e8fb2032a453cc: 'Die Instanz existiert nicht.',
   // Choose Set up in the widget, pick the app and enter its address and key.

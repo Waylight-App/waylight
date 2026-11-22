@@ -32,7 +32,7 @@ func NewSettings(rawURL, token string, minDown, minUp float64) (Settings, error)
 		return Settings{}, err
 	}
 	if strings.TrimSpace(token) == "" {
-		return Settings{}, kernel.NewValidationError("token", "An API token with the results:read scope is required.")
+		return Settings{}, kernel.NewValidationError("token", "An access token with the results:read scope is required.")
 	}
 	if minDown < 0 || minUp < 0 || minDown > maxThresholdMbps || minUp > maxThresholdMbps {
 		return Settings{}, kernel.NewValidationError("minDownMbps", "Thresholds must be between 0 and 100000 Mbit/s.")

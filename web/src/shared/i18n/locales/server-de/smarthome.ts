@@ -18,8 +18,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_dc90aa2a1e0a5f62: 'Home Assistant ist nicht erreichbar.',
   // Home Assistant rejected the action: {detail}
   srv_af1423afec138ad6: 'Home Assistant hat die Aktion abgelehnt: {detail}',
-  // The URL must look like http://homeassistant.local:8123.
-  srv_d26f0cb52cfa0948: 'Die URL muss wie http://homeassistant.local:8123 aussehen.',
+  // The address must look like http://homeassistant.local:8123.
+  srv_079867a7aef69741: 'Die Adresse muss wie http://homeassistant.local:8123 aussehen.',
   // The entity does not exist.
   srv_2ef3700ca8a09eac: 'Die Entität existiert nicht.',
   // This entity has no action; only switches and buttons can be used.

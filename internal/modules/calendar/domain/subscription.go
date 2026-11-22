@@ -53,7 +53,7 @@ func NewSubscription(id, name, rawURL, color string, refresh time.Duration) (Sub
 	}
 	u, err := url.Parse(rawURL)
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-		return Subscription{}, kernel.NewValidationError("url", "The ICS URL must start with https://, http:// or webcal://.")
+		return Subscription{}, kernel.NewValidationError("url", "The calendar link must start with https://, http:// or webcal://.")
 	}
 	s.URL = rawURL
 	if s.Color == "" {
