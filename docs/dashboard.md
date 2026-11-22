@@ -255,7 +255,9 @@ this documentation. Kiosk displays do not show it.
 
 The server owns these texts, so the web interface and the app say the same.
 `GET /api/help/widgets` lists the help of every widget kind you can see,
-each text as a key with the English text like a compact state, and
+each text as a key with the text like a compact state, in German for
+`?lang=de` or an `Accept-Language` that prefers German and in English
+otherwise, and
 `GET /api/help/docs` serves the index of this documentation that the search
 uses for questions ([asking a question](search.md#asking-a-question)).
 
