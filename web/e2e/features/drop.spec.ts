@@ -45,6 +45,12 @@ test('the drop zone shares text and files and serves files as downloads (#101)',
   await expect.poll(() => thumb.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(1);
   await expect(page.locator('li', { hasText: 'evil.html' }).locator('img')).toHaveCount(0);
 
-  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: 'Delete', exact: true }).first().click();
+  // The button of a deleted item stays until the list reloads, so wait for each removal;
+  // otherwise the next click hits the same item again and one item remains.
+  const deleteButtons = page.getByRole('button', { name: 'Delete', exact: true });
+  for (let left = 3; left > 0; left--) {
+    await expect(deleteButtons).toHaveCount(left);
+    await deleteButtons.first().click();
+  }
   await expect(page.getByText('Nothing here.', { exact: false })).toBeVisible();
 });
