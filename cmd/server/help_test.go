@@ -34,15 +34,54 @@ func TestWidgetHelpCoversEveryKind(t *testing.T) {
 			if !slices.Contains(m.WidgetKinds(), h.Kind) {
 				t.Errorf("%s: help for %q, a kind it does not back", m.Name(), h.Kind)
 			}
+			if modules.HelpGerman(h.Shows) == "" || modules.HelpGerman(h.SetUp) == "" {
+				t.Errorf("%s: no German help text", h.Kind)
+			}
 			if h.Shows.Template == "" || h.SetUp.Template == "" || h.Docs == "" || strings.HasPrefix(h.Docs, "/") {
 				t.Errorf("%s: incomplete help %+v", h.Kind, h)
 			}
+		}
+	}
+	for _, h := range frontendOnlyHelp {
+		if modules.HelpGerman(h.Shows) == "" || modules.HelpGerman(h.SetUp) == "" {
+			t.Errorf("%s: no German help text", h.Kind)
 		}
 	}
 	for _, k := range kinds {
 		if helped[k] != 1 {
 			t.Errorf("widget kind %q has %d help entries, want 1", k, helped[k])
 		}
+	}
+}
+
+// TestHelpGerman: ?lang=de and Accept-Language serve German texts under the
+// same keys, English stays the default.
+func TestHelpGerman(t *testing.T) {
+	up := fakeUpstream(t)
+	srv := newTestServer(t, up.URL)
+	c := newClient(t, srv.URL)
+	var session obj
+	c.json(http.MethodPost, "/api/auth/setup", obj{"setupToken": "e2e-setup-token-0123", "password": "e2e-password-123"}, http.StatusOK, &session)
+
+	immich := func(path string) modules.WidgetHelpInfo {
+		var help modules.HelpResponse
+		c.json(http.MethodGet, path, nil, http.StatusOK, &help)
+		i := slices.IndexFunc(help.Widgets, func(w modules.WidgetHelpInfo) bool { return w.Kind == "immich" })
+		if i < 0 {
+			t.Fatalf("no help for immich at %s", path)
+		}
+		return help.Widgets[i]
+	}
+	en := immich("/api/help/widgets")
+	de := immich("/api/help/widgets?lang=de")
+	if de.Shows.Key != en.Shows.Key || de.SetUp.Key != en.SetUp.Key {
+		t.Errorf("keys differ: %+v vs %+v", de, en)
+	}
+	if de.Shows.Text == en.Shows.Text || de.SetUp.Text == en.SetUp.Text {
+		t.Errorf("German help is still English: %+v", de)
+	}
+	if fr := immich("/api/help/widgets?lang=fr"); fr.Shows.Text != en.Shows.Text {
+		t.Errorf("unsupported language did not fall back to English: %+v", fr)
 	}
 }
 

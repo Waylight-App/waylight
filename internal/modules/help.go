@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"waylight/internal/shared/answers"
 	"waylight/internal/shared/httpapi"
 	"waylight/internal/shared/kernel"
 )
@@ -40,15 +41,22 @@ func HelpOf(m Module) []WidgetHelp {
 
 // HelpHandler lists the help of every widget kind the caller can see, the
 // same kinds GET /api/modules names, plus the frontend-only ones in static.
+// The texts are German for ?lang=de or an Accept-Language that prefers it,
+// English otherwise; the keys do not change.
 func (r *Registry) HelpHandler(static []WidgetHelp) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
+		lang := req.URL.Query().Get("lang")
+		if lang == "" {
+			lang = req.Header.Get("Accept-Language")
+		}
+		german := answers.ParseLang(lang) == answers.German
 		res := HelpResponse{Widgets: []WidgetHelpInfo{}}
 		add := func(entries []WidgetHelp) {
 			for _, e := range entries {
 				res.Widgets = append(res.Widgets, WidgetHelpInfo{
 					Kind:    e.Kind,
-					Shows:   compactText(e.Shows),
-					SetUp:   compactText(e.SetUp),
+					Shows:   helpText(e.Shows, german),
+					SetUp:   helpText(e.SetUp, german),
 					DocsURL: DocsBaseURL + e.Docs,
 				})
 			}
@@ -74,3 +82,17 @@ func (r *Registry) visible(ctx context.Context) []Module {
 	}
 	return out
 }
+
+// helpText is the help text with its key; the text is German when asked for
+// and known, so a missing translation falls back to English.
+func helpText(t kernel.Text, german bool) CompactText {
+	c := compactText(t)
+	if de, ok := helpDE[t.Template]; ok && german {
+		c.Text = de
+	}
+	return c
+}
+
+// HelpGerman returns the German text of t, or "" when there is none; tests
+// use it to keep every help text translated.
+func HelpGerman(t kernel.Text) string { return helpDE[t.Template] }

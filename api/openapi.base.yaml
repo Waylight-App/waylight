@@ -48,6 +48,9 @@ paths:
     get:
       tags: [platform]
       summary: Short help of every widget kind the account can see (#678)
+      description: German texts for `lang=de` or an `Accept-Language` that prefers German, English otherwise. The keys are the same in both.
+      parameters:
+        - { name: lang, in: query, required: false, schema: { type: string, enum: [en, de] }, description: Overrides Accept-Language. }
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/WidgetHelpList" } } } }
         "401": { $ref: "#/components/responses/Unauthorized" }
