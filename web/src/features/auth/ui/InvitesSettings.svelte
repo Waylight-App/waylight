@@ -92,9 +92,7 @@
   {#each invites as i (i.id)}
     <li>
       <strong>{i.name}</strong>
-      <span class="muted"
-        >({t(roleTexts[i.role].label)})</span
-      >
+      <span class="muted">({t(roleTexts[i.role].label)})</span>
       <span class="muted small" title={t('auth.invite_expires', { time: when(i.expiresAt) })}
         >{remainingLabel(i.expiresAt)}</span
       >

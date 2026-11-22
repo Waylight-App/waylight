@@ -1226,7 +1226,8 @@ export const de: Record<BaseMessageKey, string> = {
   'auth.role.owner': 'Darf alles',
   'auth.role.owner_hint': 'Kümmert sich um die ganze Instanz, auch um Sicherungen und Zugangsschlüssel.',
   'auth.role.admin': 'Darf einrichten',
-  'auth.role.admin_hint': 'Richtet Widgets, Dienste und Personen ein, aber keine Sicherungen oder Zugangsschlüssel.',
+  'auth.role.admin_hint':
+    'Richtet Widgets, Dienste und Personen ein, aber keine Sicherungen oder Zugangsschlüssel.',
   'auth.role.member': 'Darf benutzen',
   'auth.role.member_hint': 'Hat eigene Tabs, Notizen und Listen und kann keine Einstellungen ändern.',
   'auth.role.guest': 'Darf nur ansehen',
