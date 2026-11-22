@@ -31,13 +31,24 @@ type Change struct {
 	Credential map[string]string
 }
 
+// Choice is a connection as a widget picker shows it: no address and no
+// credential.
+type Choice struct {
+	ID, Service, Name string
+}
+
 // ErrInUse refuses to remove a connection that widgets still name until
 // the admin confirms; the list shows which widgets these are.
 var ErrInUse = kernel.NewPublicError(kernel.ErrConflict, "Widgets still use this connection. Remove it anyway?")
 
 // Connections is the input port of the module (#610); every method is one
-// use case and needs an admin, since connections belong to the instance.
+// use case and needs an admin, since connections belong to the instance,
+// except Choices.
 type Connections interface {
+	// Choices lists the connections of a service (every service when it is
+	// empty) for a widget's picker; every signed-in account that edits
+	// widgets may read them.
+	Choices(ctx context.Context, service string) ([]Choice, error)
 	// List returns the connections, of one service when service is set.
 	List(ctx context.Context, service string) ([]View, error)
 	Add(ctx context.Context, in Input) (View, error)
@@ -76,17 +87,21 @@ type Repository interface {
 	Delete(ctx context.Context, id string) error
 }
 
-// Widget is a widget with the connection its settings name
-// ("connectionId"), empty for none.
+// Widget is a widget with the connections its settings name
+// ("connectionId" or "connectionIds"), none for a widget without.
 type Widget struct {
-	ID, TabID, Kind, ConnectionID string
+	ID, TabID, Kind string
+	ConnectionIDs   []string
+	// Mine is true when the widget is on a tab of the signed-in account.
+	Mine bool
 }
 
 // Deps bundles the output ports.
 type Deps struct {
 	Repo Repository
-	// Widgets lists widgets with their connection; nil when the dashboard
-	// is not available, then no connection is in use.
+	// Widgets lists the widgets of every tab of the instance with their
+	// connections; nil when the dashboard is not available, then no
+	// connection is in use.
 	Widgets func(ctx context.Context) ([]Widget, error)
 	// Services are the services of the enabled modules; a connection can
 	// only be added for one of them.
@@ -138,6 +153,25 @@ func (u *uc) List(ctx context.Context, service string) ([]View, error) {
 	for _, c := range list {
 		if service == "" || c.Service == service {
 			out = append(out, u.view(c, uses[c.ID]))
+		}
+	}
+	return out, nil
+}
+
+// Choices implements Connections. Guests and kiosk displays do not edit
+// widgets, so they get none.
+func (u *uc) Choices(ctx context.Context, service string) ([]Choice, error) {
+	if p := kernel.PrincipalFrom(ctx); p.TabScoped() || p.IsToken() {
+		return nil, kernel.ErrForbidden
+	}
+	list, err := u.d.Repo.List(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list connections: %w", err)
+	}
+	out := []Choice{}
+	for _, c := range list {
+		if service == "" || c.Service == service {
+			out = append(out, Choice{ID: c.ID, Service: c.Service, Name: c.Name})
 		}
 	}
 	return out, nil
@@ -323,8 +357,10 @@ func (u *uc) uses(ctx context.Context) (map[string][]domain.Use, error) {
 		return nil, fmt.Errorf("list widgets: %w", err)
 	}
 	for _, w := range widgets {
-		if w.ConnectionID != "" {
-			out[w.ConnectionID] = append(out[w.ConnectionID], domain.Use{WidgetID: w.ID, TabID: w.TabID, Kind: w.Kind})
+		for _, id := range w.ConnectionIDs {
+			if id != "" {
+				out[id] = append(out[id], domain.Use{WidgetID: w.ID, TabID: w.TabID, Kind: w.Kind, Mine: w.Mine})
+			}
 		}
 	}
 	return out, nil

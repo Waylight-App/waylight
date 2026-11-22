@@ -15,6 +15,18 @@ export interface UseDTO {
   widgetId: string;
   tabId: string;
   kind: string;
+  /**
+   * Mine is true when the widget is on a tab of the signed-in account.
+   */
+  mine: boolean;
+}
+/**
+ * ChoiceDTO is a connection in a widget's picker.
+ */
+export interface ChoiceDTO {
+  id: string;
+  service: string;
+  name: string;
 }
 /**
  * ConnectionDTO is one connection in API responses. It carries the names

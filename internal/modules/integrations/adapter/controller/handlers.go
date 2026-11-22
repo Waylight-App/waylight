@@ -27,6 +27,16 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 	httpapi.WriteJSON(w, http.StatusOK, presenter.Connections(list))
 }
 
+// Choices handles GET /api/integrations/choices[?service=immich].
+func (h *Handlers) Choices(w http.ResponseWriter, r *http.Request) {
+	list, err := h.uc.Choices(r.Context(), r.URL.Query().Get("service"))
+	if err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	httpapi.WriteJSON(w, http.StatusOK, presenter.Choices(list))
+}
+
 // Add handles POST /api/integrations/connections.
 func (h *Handlers) Add(w http.ResponseWriter, r *http.Request) {
 	var dto ConnectionInputDTO

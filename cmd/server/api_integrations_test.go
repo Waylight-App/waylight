@@ -34,6 +34,15 @@ func init() {
 			if len(list) != 1 || len(list[0]["usedBy"].([]any)) != 1 || strings.Contains(string(raw), "e2e-secret-key") {
 				t.Fatalf("connections: %s", raw)
 			}
+			if use := list[0]["usedBy"].([]any)[0].(obj); use["mine"] != true {
+				t.Fatalf("the widget is on the admin's own tab: %v", use)
+			}
+			// The widget picker lists names only (#708).
+			var choices []obj
+			c.json(http.MethodGet, "/api/integrations/choices?service=immich", nil, http.StatusOK, &choices)
+			if len(choices) != 1 || choices[0]["name"] != "Home" || choices[0]["url"] != nil {
+				t.Fatalf("choices: %v", choices)
+			}
 			c.json(http.MethodPut, "/api/integrations/connections/"+id+"/credential", obj{"credential": obj{"apiKey": "other"}}, http.StatusOK, nil)
 			c.do(http.MethodDelete, "/api/integrations/connections/"+id, nil, http.StatusConflict)
 			c.do(http.MethodDelete, "/api/integrations/connections/"+id+"?confirm=true", nil, http.StatusNoContent)

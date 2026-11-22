@@ -129,7 +129,11 @@ func (c *Connection) Change(name, rawURL string) error {
 // case, as people read them.
 func SameName(a, b string) bool { return strings.EqualFold(strings.TrimSpace(a), strings.TrimSpace(b)) }
 
-// Use is a widget whose settings name a connection ("connectionId").
+// Use is a widget whose settings name a connection ("connectionId", or
+// one of "connectionIds").
 type Use struct {
 	WidgetID, TabID, Kind string
+	// Mine is true when the widget is on a tab of the signed-in account;
+	// other accounts' tabs are named without their title.
+	Mine bool
 }

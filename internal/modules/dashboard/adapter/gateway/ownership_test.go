@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/modules/dashboard/usecase"
 	"waylight/internal/platform/database/dbtest"
 	"waylight/internal/shared/kernel"
 )
@@ -122,5 +123,34 @@ func TestPersonalTabs(t *testing.T) {
 	}
 	if err := repo.ReplaceAll(admin, []domain.Tab{domain.RestoreTab("anna-tab", "Taken", 0, "")}, nil); !errors.Is(err, domain.ErrTabNotFound) {
 		t.Fatalf("replace took over a member's tab: %v", err)
+	}
+}
+
+// TestInstanceWidgets: the instance-wide widget list (#610) covers every
+// account's tabs and marks those of the asking account.
+func TestInstanceWidgets(t *testing.T) {
+	repo := NewRepository(dbtest.Open(t, "dashboard", Migrations()))
+	admin := kernel.WithPrincipal(context.Background(), kernel.AdminPrincipal())
+	anna := kernel.WithPrincipal(context.Background(), kernel.Principal{AccountID: "anna", Role: "member"})
+	rect, _ := domain.NewRect(0, 0, 4, 2)
+	for ctx, id := range map[context.Context]string{admin: "home", anna: "anna-tab"} {
+		tab, _ := domain.NewTab(id, id, 0)
+		w, _ := domain.NewWidget("w-"+id, id, "immich", rect, `{"connectionId":"c1"}`)
+		if err := repo.CreateTab(ctx, tab); err != nil {
+			t.Fatal(err)
+		}
+		if err := repo.CreateWidget(ctx, w); err != nil {
+			t.Fatal(err)
+		}
+	}
+	scope := usecase.NewTabScope(usecase.Deps{Tabs: repo, Widgets: repo})
+	list, err := scope.InstanceWidgets(admin)
+	if err != nil || len(list) != 2 {
+		t.Fatalf("%+v %v", list, err)
+	}
+	for _, w := range list {
+		if w.Mine != (w.TabID == "home") || w.Config != `{"connectionId":"c1"}` {
+			t.Fatalf("%+v", w)
+		}
 	}
 }

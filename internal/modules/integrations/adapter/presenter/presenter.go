@@ -15,6 +15,24 @@ type UseDTO struct {
 	WidgetID string `json:"widgetId"`
 	TabID    string `json:"tabId"`
 	Kind     string `json:"kind"`
+	// Mine is true when the widget is on a tab of the signed-in account.
+	Mine bool `json:"mine"`
+}
+
+// ChoiceDTO is a connection in a widget's picker.
+type ChoiceDTO struct {
+	ID      string `json:"id"`
+	Service string `json:"service"`
+	Name    string `json:"name"`
+}
+
+// Choices maps the picker list.
+func Choices(list []usecase.Choice) []ChoiceDTO {
+	out := make([]ChoiceDTO, 0, len(list))
+	for _, c := range list {
+		out = append(out, ChoiceDTO(c))
+	}
+	return out
 }
 
 // ConnectionDTO is one connection in API responses. It carries the names
@@ -37,7 +55,7 @@ func Connection(v usecase.View) ConnectionDTO {
 		Fields: append([]string{}, v.Fields...), Values: map[string]string{}, UsedBy: make([]UseDTO, 0, len(v.UsedBy))}
 	maps.Copy(out.Values, v.Values)
 	for _, u := range v.UsedBy {
-		out.UsedBy = append(out.UsedBy, UseDTO{WidgetID: u.WidgetID, TabID: u.TabID, Kind: u.Kind})
+		out.UsedBy = append(out.UsedBy, UseDTO{WidgetID: u.WidgetID, TabID: u.TabID, Kind: u.Kind, Mine: u.Mine})
 	}
 	return out
 }
