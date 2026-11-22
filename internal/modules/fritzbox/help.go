@@ -11,7 +11,7 @@ func (m *Module) WidgetHelp() []modules.WidgetHelp {
 		{
 			Kind:  "fritzbox",
 			Shows: kernel.NewText("Your internet connection as the FRITZ!Box sees it: online status, speed and how long it has been up."),
-			SetUp: kernel.NewText("Choose Set up in the widget and enter the address of your FRITZ!Box and a user name and password of the box."),
+			SetUp: kernel.NewText("Choose Connect in the widget and enter the address of your FRITZ!Box and a user name and password of the box."),
 			Docs:  "features/#network-and-integrations",
 		},
 		{

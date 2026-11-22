@@ -11,7 +11,7 @@ func (m *Module) WidgetHelp() []modules.WidgetHelp {
 		{
 			Kind:  "proxmox",
 			Shows: kernel.NewText("Your Proxmox server: load and which virtual machines and containers are running."),
-			SetUp: kernel.NewText("Choose Set up in the widget and enter the Proxmox address and a read-only access key."),
+			SetUp: kernel.NewText("Choose Connect in the widget and enter the Proxmox address and a read-only access key."),
 			Docs:  "host-integrations/#proxmox-ve",
 		},
 	}

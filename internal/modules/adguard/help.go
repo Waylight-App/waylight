@@ -11,7 +11,7 @@ func (m *Module) WidgetHelp() []modules.WidgetHelp {
 		{
 			Kind:  "adguard",
 			Shows: kernel.NewText("How many requests AdGuard Home or Pi-hole blocked today, and whether blocking is on."),
-			SetUp: kernel.NewText("Choose Set up in the widget and enter the address and password of your AdGuard Home or Pi-hole."),
+			SetUp: kernel.NewText("Choose Connect in the widget and enter the address and password of your AdGuard Home or Pi-hole."),
 			Docs:  "host-integrations/#dns-filter-pause",
 		},
 	}

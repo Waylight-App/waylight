@@ -4,7 +4,7 @@
 export const serverMessages = {
   srv_ec006828a76da1d6: "A certificate fingerprint needs an https:// address.",
   srv_90d6536f1a9bc239: "Actions are not enabled for this guest (PROXMOX_ACTIONS_GUESTS).",
-  srv_672f8bd456e5433c: "Choose Set up in the widget and enter the Proxmox address and a read-only access key.",
+  srv_a276a9fa43aac1f3: "Choose Connect in the widget and enter the Proxmox address and a read-only access key.",
   srv_d30d28cec1fe8a0e: "Proxmox VE is not configured yet.",
   srv_310b2c277042df51: "Proxmox VE is not reachable",
   srv_98db8603c1a1c4cd: "Proxmox VE is not reachable.",

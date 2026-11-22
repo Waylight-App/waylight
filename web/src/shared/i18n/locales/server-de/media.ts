@@ -18,9 +18,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_4c92147e0244306f: 'Der Medienserver ist nicht erreichbar.',
   // The poster does not exist.
   srv_2b05bbdb56e575c6: 'Das Cover existiert nicht.',
-  // Choose Set up in the widget, pick Jellyfin or Plex and enter its address and key.
-  srv_2c5a63cfd6db3056:
-    'Wähle Einrichten im Widget, wähle Jellyfin oder Plex und gib Adresse und Schlüssel ein.',
+  // Choose Connect in the widget, pick Jellyfin or Plex and enter its address and key.
+  srv_514bffd4e6214d7d:
+    'Wähle Verbinden im Widget, wähle Jellyfin oder Plex und gib Adresse und Schlüssel ein.',
   // What is playing on Jellyfin or Plex right now and what was added recently.
   srv_b8fdd06f02bd02db: 'Was gerade auf Jellyfin oder Plex läuft und was neu hinzugekommen ist.',
 };

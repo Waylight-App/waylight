@@ -11,7 +11,7 @@ func (m *Module) WidgetHelp() []modules.WidgetHelp {
 		{
 			Kind:  "immich",
 			Shows: kernel.NewText("Your Immich photo library and the photos taken on this day in past years."),
-			SetUp: kernel.NewText("Choose Set up in the widget and enter the address of Immich and a key you create in its settings."),
+			SetUp: kernel.NewText("Choose Connect in the widget and enter the address of Immich and a key you create in its settings."),
 			Docs:  "modules/immich/",
 		},
 	}

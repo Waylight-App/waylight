@@ -22,9 +22,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_91cee62ab90d375e: 'Speedtest Tracker ist nicht erreichbar',
   // {down} ↓ · {up} ↑ Mbit/s
   srv_4a2ff384785102fb: '{down} ↓ · {up} ↑ Mbit/s',
-  // Choose Set up in the widget and enter the address of your Speedtest Tracker and its access key.
-  srv_ab35df50208b8020:
-    'Wähle Einrichten im Widget und gib die Adresse deines Speedtest Tracker und seinen Zugangsschlüssel ein.',
+  // Choose Connect in the widget and enter the address of your Speedtest Tracker and its access key.
+  srv_34deaa4e80aaf9b7:
+    'Wähle Verbinden im Widget und gib die Adresse deines Speedtest Tracker und seinen Zugangsschlüssel ein.',
   // Your internet speed over time, from Speedtest Tracker.
   srv_44125c07ce6c59fa: 'Deine Internetgeschwindigkeit im Verlauf, aus Speedtest Tracker.',
 };

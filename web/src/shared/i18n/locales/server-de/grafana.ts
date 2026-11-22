@@ -24,12 +24,12 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_3bbe665dcdec36da: 'Das Token des Dienstkontos ist erforderlich.',
   // The time range must look like 30m, 6h, 7d or 4w.
   srv_008998dbd8384168: 'Der Zeitraum muss wie 30m, 6h, 7d oder 4w aussehen.',
-  // Choose Set up in the widget to connect Grafana, then pick the dashboard and the panel.
-  srv_69a4c688bd045ddf:
-    'Wähle Einrichten im Widget, um Grafana zu verbinden, und wähle dann Dashboard und Panel.',
-  // It uses the Grafana connection; choose Set up in the widget if there is none yet.
-  srv_628f9b5e5233abd9:
-    'Es nutzt die Grafana-Verbindung; wähle Einrichten im Widget, falls es noch keine gibt.',
+  // Choose Connect in the widget to connect Grafana, then pick the dashboard and the panel.
+  srv_0bad8a7e373236de:
+    'Wähle Verbinden im Widget, um Grafana zu verbinden, und wähle dann Dashboard und Panel.',
+  // It uses the Grafana connection; choose Connect in the widget if there is none yet.
+  srv_b28e05f03dd7b97c:
+    'Es nutzt die Grafana-Verbindung; wähle Verbinden im Widget, falls es noch keine gibt.',
   // One panel of a Grafana dashboard, as a value or a small chart.
   srv_91684bab7006c4b2: 'Ein Panel eines Grafana-Dashboards, als Wert oder kleines Diagramm.',
   // The alerts that are firing in Grafana right now.

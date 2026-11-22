@@ -11,7 +11,7 @@ func (m *Module) WidgetHelp() []modules.WidgetHelp {
 		{
 			Kind:  "fuel",
 			Shows: kernel.NewText("The cheapest open petrol stations near a place in Germany, or your favourites."),
-			SetUp: kernel.NewText("Choose Set up in the widget and enter your free key from Tankerkönig, then pick a place."),
+			SetUp: kernel.NewText("Choose Connect in the widget and enter your free key from Tankerkönig, then pick a place."),
 			Docs:  "modules/fuel/",
 		},
 	}

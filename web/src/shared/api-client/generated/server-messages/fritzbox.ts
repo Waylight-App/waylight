@@ -2,7 +2,7 @@
 
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
-  srv_d74ab61cf0423be5: "Choose Set up in the widget and enter the address of your FRITZ!Box and a user name and password of the box.",
+  srv_5ee9327bc621aa5c: "Choose Connect in the widget and enter the address of your FRITZ!Box and a user name and password of the box.",
   srv_30aa95cedabf4c8e: "It uses the FRITZ!Box you set up for the internet widget. Open the widget settings to choose which calls are shown.",
   srv_eabd506dfb319855: "Please enter the password of the FRITZ!Box user.",
   srv_34b961f29d48bdbc: "Recent calls of your FRITZ!Box: missed, incoming and outgoing.",

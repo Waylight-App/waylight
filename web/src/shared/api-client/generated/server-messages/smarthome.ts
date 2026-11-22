@@ -5,7 +5,7 @@ export const serverMessages = {
   srv_084af9ca0c7d167d: "A long-lived access token is required.",
   srv_0f4d7732f2cd4899: "Actions are not enabled for this entity (SMARTHOME_ACTIONS_ENTITIES).",
   srv_3a4c7bf887ab6487: "At most {max} entities per widget.",
-  srv_1927b63347fcbc61: "Choose Set up in the widget and sign in with Home Assistant, then pick the devices.",
+  srv_9a5cb1b37ed14c86: "Choose Connect in the widget and sign in with Home Assistant, then pick the devices.",
   srv_ea2866d2e8547dcb: "Choose one entity for the compact view.",
   srv_491401ddfbf37254: "Devices from Home Assistant as tiles, with their state and, if allowed, a switch.",
   srv_c900d4617320061f: "Home Assistant did not renew the sign-in. Set up Home Assistant again.",

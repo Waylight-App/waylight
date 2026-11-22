@@ -3,7 +3,7 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_f06f10baf368c13a: "A shopping list you can share with your household.",
-  srv_bde9981046aeac46: "Add items right in the widget. Choose Set up to use a task list from your calendar server instead.",
+  srv_f34e7fd66aeba95c: "Add items right in the widget. Choose Connect a list to use a task list from your calendar server instead.",
   srv_3d5b8bd9dba6eec1: "Choose text or ics.",
   srv_593a1c118a3d9d67: "Items must be between 1 and 200 characters long.",
   srv_67340dd03bbd3030: "Only the person who created the list can rename, share or delete it.",
