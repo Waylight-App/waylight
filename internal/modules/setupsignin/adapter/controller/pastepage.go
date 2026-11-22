@@ -4,7 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
-	"html/template"
+	"html"
+	"io"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -30,21 +31,6 @@ func styleHash() string {
 	return base64.StdEncoding.EncodeToString(sum[:])
 }
 
-var pageTemplate = template.Must(template.New("paste").Parse(`<!doctype html>
-<html lang="{{.Lang}}"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex"><title>{{.Title}}</title>
-<style>{{.Style}}</style></head><body>
-<h1>{{.Title}}</h1>
-{{if .Message}}<p{{if .Failed}} class="err" role="alert"{{end}}>{{.Message}}</p>{{end}}
-{{if .Form}}<form method="post" autocomplete="off">
-<label for="v">{{.Label}}</label>
-<input id="v" name="value" type="password" required maxlength="4096" autocomplete="off" autocapitalize="off" spellcheck="false" autofocus>
-<button type="submit">{{.Send}}</button></form>
-{{if .AppLink}}<p><a href="{{.AppLink}}">{{.OpenApp}}</a></p>{{end}}{{end}}
-</body></html>
-`))
-
 type pageText struct {
 	Title, Label, Send, OpenApp, Done, Expired, Many, Value string
 }
@@ -63,10 +49,9 @@ var pageTexts = map[string]pageText{
 }
 
 type pageData struct {
-	Lang, Title, Label, Send, OpenApp, Message string
-	Style                                      template.CSS
-	AppLink                                    template.URL
-	Form, Failed                               bool
+	Message      string
+	AppLink      string
+	Form, Failed bool
 }
 
 // hostForm accepts what a Host header of a server looks like and nothing
@@ -82,7 +67,7 @@ func pageLang(r *http.Request) string {
 
 // appLink is the link the app opens (waylight://paste); the page offers it
 // because the QR code carries the address of this page instead.
-func appLink(r *http.Request, code string) template.URL {
+func appLink(r *http.Request, code string) string {
 	if !hostForm.MatchString(r.Host) {
 		return ""
 	}
@@ -91,16 +76,36 @@ func appLink(r *http.Request, code string) template.URL {
 		scheme = "https"
 	}
 	q := url.Values{"server": {scheme + "://" + r.Host}, "code": {code}}
-	// html/template rejects unknown schemes; the query is fully escaped and the prefix is fixed.
-	return template.URL("waylight://paste?" + q.Encode()) //nolint:gosec // see above
+	return "waylight://paste?" + q.Encode()
 }
 
-func (h *PasteHandlers) render(w http.ResponseWriter, r *http.Request, status int, d pageData, code string) {
-	t := pageTexts[pageLang(r)]
-	d.Lang, d.Title, d.Label, d.Send, d.OpenApp, d.Style = pageLang(r), t.Title, t.Label, t.Send, t.OpenApp, pageStyle
-	if d.Form {
-		d.AppLink = appLink(r, code)
+// writePage renders the page by hand: html/template would pull in the
+// reflection machinery that keeps the linker from dropping unused code.
+func writePage(w http.ResponseWriter, r *http.Request, status int, d pageData, code string) {
+	lang := pageLang(r)
+	t := pageTexts[lang]
+	e := html.EscapeString
+	var b strings.Builder
+	b.WriteString(`<!doctype html><html lang="` + lang + `"><head><meta charset="utf-8">` +
+		`<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">` +
+		`<title>` + e(t.Title) + `</title><style>` + pageStyle + `</style></head><body><h1>` + e(t.Title) + `</h1>`)
+	if d.Message != "" {
+		if d.Failed {
+			b.WriteString(`<p class="err" role="alert">`)
+		} else {
+			b.WriteString(`<p>`)
+		}
+		b.WriteString(e(d.Message) + `</p>`)
 	}
+	if d.Form {
+		b.WriteString(`<form method="post" autocomplete="off"><label for="v">` + e(t.Label) + `</label>` +
+			`<input id="v" name="value" type="password" required maxlength="4096" autocomplete="off" ` +
+			`autocapitalize="off" spellcheck="false" autofocus><button type="submit">` + e(t.Send) + `</button></form>`)
+		if link := appLink(r, code); link != "" {
+			b.WriteString(`<p><a href="` + e(link) + `">` + e(t.OpenApp) + `</a></p>`)
+		}
+	}
+	b.WriteString(`</body></html>`)
 	hd := w.Header()
 	hd.Set("Content-Type", "text/html; charset=utf-8")
 	hd.Set("Content-Security-Policy", pageCSP)
@@ -109,7 +114,7 @@ func (h *PasteHandlers) render(w http.ResponseWriter, r *http.Request, status in
 	hd.Set("X-Robots-Tag", "noindex")
 	w.WriteHeader(status)
 	// A failed write means the phone went away; nothing to report.
-	_ = pageTemplate.Execute(w, d)
+	_, _ = io.WriteString(w, b.String())
 }
 
 // failure maps an error of the paste use cases to a status and a text.
@@ -130,10 +135,10 @@ func (h *PasteHandlers) Page(w http.ResponseWriter, r *http.Request) {
 	code := r.PathValue("code")
 	if err := h.uc.Check(clientKey(r), code); err != nil {
 		status, msg := failure(pageTexts[pageLang(r)], err)
-		h.render(w, r, status, pageData{Message: msg, Failed: true}, code)
+		writePage(w, r, status, pageData{Message: msg, Failed: true}, code)
 		return
 	}
-	h.render(w, r, http.StatusOK, pageData{Form: true}, code)
+	writePage(w, r, http.StatusOK, pageData{Form: true}, code)
 }
 
 // maxPageForm bounds the form: the key plus its field name.
@@ -146,15 +151,15 @@ func (h *PasteHandlers) Fill(w http.ResponseWriter, r *http.Request) {
 	t := pageTexts[pageLang(r)]
 	r.Body = http.MaxBytesReader(w, r.Body, maxPageForm)
 	if err := r.ParseForm(); err != nil {
-		h.render(w, r, http.StatusBadRequest, pageData{Message: t.Value, Failed: true, Form: true}, code)
+		writePage(w, r, http.StatusBadRequest, pageData{Message: t.Value, Failed: true, Form: true}, code)
 		return
 	}
 	if err := h.uc.Fill(clientKey(r), code, r.PostForm.Get("value")); err != nil {
 		status, msg := failure(t, err)
-		h.render(w, r, status, pageData{Message: msg, Failed: true, Form: status == http.StatusBadRequest}, code)
+		writePage(w, r, status, pageData{Message: msg, Failed: true, Form: status == http.StatusBadRequest}, code)
 		return
 	}
-	h.render(w, r, http.StatusOK, pageData{Message: t.Done}, code)
+	writePage(w, r, http.StatusOK, pageData{Message: t.Done}, code)
 }
 
 func clientKey(r *http.Request) string { return httpapi.ClientIP(r.Context()).String() }
