@@ -7,7 +7,6 @@ export const serverMessages = {
   srv_2a36cc5a6ff84668: "No open gift ideas",
   srv_5e0a58598f59dbce: "The gift idea does not exist.",
   srv_cc83d8504734d7c2: "The idea must be between 1 and 120 characters long.",
-  srv_279687ba82800dcf: "The note may be at most 500 characters long.",
   srv_02d5db601114ecd2: "Your private gift ideas per person, with the next birthday first.",
   srv_8bc0d4ea1b74675e: "{count} gift ideas",
 } as const;

@@ -80,6 +80,7 @@ nav:
           - AI summaries: modules/summary.md
           - Calendar: modules/calendar.md
           - Chores: modules/chores.md
+          - Contracts: modules/contracts.md
           - Device display mode: modules/device.md
           - Drop zone: modules/drop.md
           - Electricity prices: modules/electricity.md

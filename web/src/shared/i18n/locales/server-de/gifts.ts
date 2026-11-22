@@ -11,8 +11,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // The idea must be between 1 and 120 characters long.
   srv_cc83d8504734d7c2: 'Die Idee muss zwischen 1 und 120 Zeichen lang sein.',
   // The link must be a web address starting with http:// or https://.
-  // The note may be at most 500 characters long.
-  srv_279687ba82800dcf: 'Die Notiz darf höchstens 500 Zeichen lang sein.',
   // {count} gift ideas
   srv_8bc0d4ea1b74675e: '{count} Geschenkideen',
   // Your private gift ideas per person, with the next birthday first.
