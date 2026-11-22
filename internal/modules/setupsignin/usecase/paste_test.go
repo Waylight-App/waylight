@@ -103,3 +103,43 @@ func TestPasteLimits(t *testing.T) {
 		}
 	}
 }
+
+// TestPasteFillFromBrowser: a phone without the app fills a code once, and
+// wrong codes lock that client out without affecting others.
+func TestPasteFillFromBrowser(t *testing.T) {
+	uc, c := newPastes()
+	code, _, _ := uc.Create(as("anna", "admin"))
+	if err := uc.Check("1.1.1.1", code); err != nil {
+		t.Fatal(err)
+	}
+	if err := uc.Fill("1.1.1.1", code, " "); !errors.Is(err, domain.ErrPasteValue) {
+		t.Fatalf("empty value: %v", err)
+	}
+	if err := uc.Fill("1.1.1.1", code, "secret"); err != nil {
+		t.Fatal(err)
+	}
+	if err := uc.Fill("1.1.1.1", code, "again"); !errors.Is(err, domain.ErrPasteUnknown) {
+		t.Fatalf("single use: %v", err)
+	}
+	if v, ready, _ := uc.Take(as("anna", "admin"), code); !ready || v != "secret" {
+		t.Fatalf("take: %q %v", v, ready)
+	}
+
+	code, _, _ = uc.Create(as("anna", "admin"))
+	for i := 0; i < missLimit; i++ {
+		if err := uc.Check("2.2.2.2", "wrong"); !errors.Is(err, domain.ErrPasteUnknown) {
+			t.Fatalf("guess %d: %v", i, err)
+		}
+	}
+	if err := uc.Fill("2.2.2.2", code, "x"); !errors.Is(err, kernel.ErrTooManyRequests) {
+		t.Fatalf("locked client with the right code: %v", err)
+	}
+	if err := uc.Check("3.3.3.3", code); err != nil {
+		t.Fatalf("other client: %v", err)
+	}
+	c.now = c.now.Add(missWindow)
+	code, _, _ = uc.Create(as("anna", "admin"))
+	if err := uc.Check("2.2.2.2", code); err != nil {
+		t.Fatalf("after the window: %v", err)
+	}
+}

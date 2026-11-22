@@ -66,7 +66,7 @@ paths:
   /api/setup/paste:
     post:
       tags: [setupsignin]
-      summary: "Start Paste from phone: a code the assistant shows as a QR code with the text waylight://paste?server=<address>&code=<code>. The signed-in mobile app answers it with PUT. One code per account, valid for five minutes. Not for guests, kiosk displays or API tokens."
+      summary: "Start Paste from phone: a code the assistant shows as a QR code with the address <server>/paste/<code>. That page (public, the code is its only credential) takes the key in the browser; the signed-in mobile app answers with PUT. One code per account, valid for five minutes. Not for guests, kiosk displays or API tokens."
       security: [{ session: [], csrf: [] }]
       responses:
         "200":

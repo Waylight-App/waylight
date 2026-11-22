@@ -54,5 +54,9 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/setup/paste/{code}", m.paste.Submit)
 	r.Protected("GET /api/setup/paste/{code}", m.paste.Take)
 	r.Protected("DELETE /api/setup/paste/{code}", m.paste.Cancel)
+	// The phone's browser has no session; the single-use code in the path
+	// is its credential, and the use case limits wrong codes per client.
+	r.Public("GET /paste/{code}", m.paste.Page)
+	r.Public("POST /paste/{code}", m.paste.Fill)
 	r.Public("GET "+CallbackPath, m.handlers.Callback)
 }

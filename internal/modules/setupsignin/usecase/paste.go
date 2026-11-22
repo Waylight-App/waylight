@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"crypto/subtle"
 	"sync"
 	"time"
 
@@ -30,17 +31,24 @@ type Pastes interface {
 	Take(ctx context.Context, code string) (value string, ready bool, err error)
 	// Cancel forgets a code, e.g. when the assistant closes.
 	Cancel(ctx context.Context, code string) error
+	// Check reports whether the code still waits for a value. It serves the
+	// page of a phone without the app, which has no account: the code is
+	// its only credential, so wrong codes count against the client.
+	Check(client, code string) error
+	// Fill is Submit for that page.
+	Fill(client, code, value string) error
 }
 
 type pastes struct {
 	d       PasteDeps
 	mu      sync.Mutex
 	pending map[string]*domain.Paste
+	misses  *missLimiter
 }
 
 // NewPastes returns the paste use cases.
 func NewPastes(d PasteDeps) Pastes {
-	return &pastes{d: d, pending: map[string]*domain.Paste{}}
+	return &pastes{d: d, pending: map[string]*domain.Paste{}, misses: newMissLimiter()}
 }
 
 func (uc *pastes) Create(ctx context.Context) (string, time.Time, error) {
@@ -132,5 +140,49 @@ func (uc *pastes) Cancel(ctx context.Context, code string) error {
 	if uc.own(acc, code) != nil {
 		delete(uc.pending, code)
 	}
+	return nil
+}
+
+// waiting returns the live code that has no value yet. Every code is
+// compared in constant time so the lookup time does not reveal how much of
+// a guess was right. The client's wrong guesses are counted; callers hold mu.
+func (uc *pastes) waiting(client, code string) (*domain.Paste, error) {
+	now := uc.d.Clock.Now()
+	if !uc.misses.allow(client, now) {
+		return nil, errTooManyGuesses
+	}
+	uc.sweep()
+	var found *domain.Paste
+	for c, p := range uc.pending {
+		if subtle.ConstantTimeCompare([]byte(c), []byte(code)) == 1 {
+			found = p
+		}
+	}
+	if found == nil || found.Ready() {
+		uc.misses.fail(client, now)
+		return nil, domain.ErrPasteUnknown
+	}
+	return found, nil
+}
+
+func (uc *pastes) Check(client, code string) error {
+	uc.mu.Lock()
+	defer uc.mu.Unlock()
+	_, err := uc.waiting(client, code)
+	return err
+}
+
+func (uc *pastes) Fill(client, code, value string) error {
+	v, err := domain.CleanPasteValue(value)
+	if err != nil {
+		return err
+	}
+	uc.mu.Lock()
+	defer uc.mu.Unlock()
+	p, err := uc.waiting(client, code)
+	if err != nil {
+		return err
+	}
+	p.Value = v
 	return nil
 }

@@ -21,4 +21,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_e56fe3c73c0a647e: 'Der Code ist abgelaufen. Zeige einen neuen Code an und scanne ihn erneut.',
   // The value must not be empty or longer than 4096 characters.
   srv_7368f0d8826fd013: 'Der Wert darf nicht leer oder länger als 4096 Zeichen sein.',
+  // Too many wrong codes. Please wait a few minutes.
+  srv_787054103eba10b2: 'Zu viele falsche Codes. Bitte warte ein paar Minuten.',
 };
