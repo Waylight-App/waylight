@@ -25,7 +25,8 @@ export const en = {
   'shopping.imported': '{count} open items copied from the CalDAV list.',
   'shopping.caldav_title': 'CalDAV task list',
   'shopping.connect_list': 'Connect a list',
-  'shopping.setup_list_url': 'Address of the task list (Tasks → ⋯ of the list → Copy private link)',
+  'shopping.setup_list_url': 'Address of the task list',
+  'shopping.setup_list_hint': 'In Nextcloud Tasks: open the ⋯ menu of the list and choose Copy private link.',
   'shopping.setup_username': 'User name',
   'shopping.setup_password': 'App password',
   'shopping.setup_step_security':

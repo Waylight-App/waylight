@@ -27,7 +27,9 @@ export const de: Record<keyof typeof en, string> = {
   'shopping.imported': '{count} offene Einträge aus der CalDAV-Liste übernommen.',
   'shopping.caldav_title': 'CalDAV-Aufgabenliste',
   'shopping.connect_list': 'Liste verbinden',
-  'shopping.setup_list_url': 'Adresse der Aufgabenliste (Aufgaben → ⋯ der Liste → Privaten Link kopieren)',
+  'shopping.setup_list_url': 'Adresse der Aufgabenliste',
+  'shopping.setup_list_hint':
+    'In Nextcloud Aufgaben: das ⋯-Menü der Liste öffnen und „Privaten Link kopieren“ wählen.',
   'shopping.setup_username': 'Benutzername',
   'shopping.setup_password': 'App-Passwort',
   'shopping.setup_step_security':

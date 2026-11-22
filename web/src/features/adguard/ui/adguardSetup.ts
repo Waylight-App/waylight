@@ -24,7 +24,15 @@ export function adguardSetup(
       },
       ...(pihole
         ? []
-        : [{ key: 'username', label: 'adguard.setup_username', stage: 'credential', type: 'text' } as const]),
+        : [
+            {
+              key: 'username',
+              hint: 'setup.hint_username',
+              label: 'adguard.setup_username',
+              stage: 'credential',
+              type: 'text',
+            } as const,
+          ]),
       {
         key: 'password',
         label: pihole ? 'adguard.setup_app_password' : 'adguard.setup_password',

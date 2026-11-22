@@ -27,12 +27,19 @@ export function shoppingSetup(shopping: ShoppingUseCases): SetupDescriptor {
     fields: [
       {
         key: 'listUrl',
+        hint: 'shopping.setup_list_hint',
         label: 'shopping.setup_list_url',
         stage: 'address',
         type: 'url',
         placeholder: 'https://cloud.example.org/remote.php/dav/calendars/anna/shopping/',
       },
-      { key: 'username', label: 'shopping.setup_username', stage: 'credential', type: 'text' },
+      {
+        key: 'username',
+        hint: 'setup.hint_username',
+        label: 'shopping.setup_username',
+        stage: 'credential',
+        type: 'text',
+      },
       { key: 'password', label: 'shopping.setup_password', stage: 'credential', type: 'password' },
     ],
     steps: ['shopping.setup_step_security', 'shopping.setup_step_create', 'shopping.setup_step_copy'],

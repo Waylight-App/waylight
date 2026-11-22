@@ -20,6 +20,8 @@ export const en = {
     'Name it Waylight, tick asset.statistics, server.storage, memory.read and asset.view, and press Create.',
   'immich.setup_step_copy': 'Copy the key and paste it below.',
   'immich.setup_key': 'Access key',
+  'immich.setup_intro':
+    'Waylight shows pictures from your Immich server. For that you need two things, and you find both in Immich.',
   'immich.setup_photos': '{n} photos, {videos} videos',
 } as const;
 

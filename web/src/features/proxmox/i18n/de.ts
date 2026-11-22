@@ -33,6 +33,8 @@ export const de: Record<keyof typeof en, string> = {
   'proxmox.actions_hint':
     'Starten und Herunterfahren bleiben aus, solange PROXMOX_ACTIONS_GUESTS die Gast-IDs nicht auflistet und das Token sie nicht schalten darf (VM.PowerMgmt).',
   'proxmox.setup_token_id': 'Token-ID',
+  'proxmox.setup_token_id_hint':
+    'Proxmox zeigt sie beim Anlegen des Tokens, zum Beispiel waylight@pve!dashboard.',
   'proxmox.setup_secret': 'Secret',
   'proxmox.setup_step_open': 'Öffne Proxmox VE und gehe zu Rechenzentrum → Berechtigungen → API-Token.',
   'proxmox.setup_step_add':

@@ -12,6 +12,7 @@ export function immichSetup(
   return {
     discover,
     service: 'Immich',
+    intro: 'immich.setup_intro',
     fields: [
       {
         key: 'url',

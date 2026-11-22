@@ -10,6 +10,7 @@ export function arrSetup(arr: ArrUseCases): SetupDescriptor {
     fields: [
       {
         key: 'app',
+        hint: 'setup.hint_choice',
         label: 'arr.app',
         stage: 'address',
         type: 'choice',

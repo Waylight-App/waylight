@@ -23,6 +23,7 @@ export function calendarSetup(
       },
       {
         key: 'username',
+        hint: 'setup.hint_username',
         label: 'calendar.setup_username',
         stage: 'credential',
         type: 'text',

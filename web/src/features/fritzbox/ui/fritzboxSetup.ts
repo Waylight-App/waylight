@@ -35,6 +35,7 @@ export function fritzboxSetup(
       },
       {
         key: 'username',
+        hint: 'setup.hint_username',
         label: 'fritzbox.setup_username',
         stage: 'credential',
         type: 'text',

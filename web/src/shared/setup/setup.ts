@@ -5,7 +5,7 @@
  */
 import { getContext, setContext } from 'svelte';
 import type { FullAutoFill } from 'svelte/elements';
-import type { MessageKey } from '../i18n';
+import { type MessageKey, t } from '../i18n';
 import type { SetupSignIn } from './signin';
 
 /** Which step of the assistant a field belongs to. */
@@ -28,6 +28,8 @@ export interface SetupField {
   options?: SetupOption[];
   /** An optional field may stay empty, e.g. a Pi-hole without a password. */
   optional?: boolean;
+  /** Where to find the value, in plain words; addresses have a default. */
+  hint?: MessageKey;
   placeholder?: string;
   autocomplete?: FullAutoFill;
 }
@@ -52,6 +54,8 @@ export interface SetupDescriptor {
   /** Product name in its own spelling, e.g. "Immich". */
   service: string;
   fields: SetupField[];
+  /** One sentence on what the widget does and what it needs; a generic one by default. */
+  intro?: MessageKey;
   /** Numbered steps to get the credential, in the service's own wording. */
   steps: MessageKey[];
   /** The service page where the credential is created, from the address. */
@@ -75,6 +79,16 @@ export function signInAddress(d: SetupDescriptor, values: Record<string, string>
   if (!d.signIn) return null;
   const address = d.signIn.address ? d.signIn.address(values) : addressOf(d, values);
   return address ? address.trim().replace(/\/+$/, '') : null;
+}
+
+/**
+ * The plain note under a field (#738): the descriptor's own, or for an
+ * address the way to type it. The key's field has the service's steps
+ * instead and needs none.
+ */
+export function fieldHint(f: SetupField, service: string): string {
+  if (f.hint) return t(f.hint);
+  return f.type === 'url' ? t('setup.address_hint', { service }) : '';
 }
 
 /** The field a key copied on the phone goes into: the first secret of the credential step. */
