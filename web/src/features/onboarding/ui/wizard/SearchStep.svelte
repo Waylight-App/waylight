@@ -110,7 +110,7 @@
   {#each answers as a (a.intent + a.title)}
     <div class="wz-paper"><AnswerCard answer={a} /></div>
   {:else}
-    {#if asked}<p class="wz-hint">{t('wizard.search.none')}</p>{/if}
+    {#if asked}<p class="wz-hint">{t(played ? 'wizard.search.pending' : 'wizard.search.none')}</p>{/if}
   {/each}
 </div>
 {#if examples.length > 0}

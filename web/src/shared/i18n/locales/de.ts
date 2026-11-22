@@ -455,6 +455,8 @@ export const de: Record<BaseMessageKey, string> = {
     'Die Suche findet nicht nur Seiten. Sie rechnet, rechnet um, zeigt Wetter und Termine und startet Timer. Probier es aus.',
   'wizard.search.label': 'Eine Frage ausprobieren',
   'wizard.search.examples': 'Beispiele',
+  'wizard.search.pending':
+    'Sobald das Widget eingerichtet ist, steht hier die Antwort mit deinen echten Daten.',
   'wizard.search.none': 'Dazu gibt es noch keine Antwort. Probier eines der Beispiele.',
   'wizard.search.tip': 'Tipp: Mit Strg + K öffnest du die Suche von überall.',
   'wizard.done.title': "Fertig, los geht's.",
