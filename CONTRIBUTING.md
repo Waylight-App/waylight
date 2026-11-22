@@ -117,6 +117,27 @@ Anything that only needs to show a value from a JSON endpoint does not need
 its own module: use the generic JSON widget
 ([#48](https://github.com/Waylight-App/waylight/issues/48)).
 
+## Sharing a municipality's waste calendar
+
+The waste widget reads the collection dates from an ICS address that the user
+enters. There is no list of municipalities yet. To share one so it can be
+added later, open an issue that refers to
+[#695](https://github.com/Waylight-App/waylight/issues/695) and give:
+
+- **Place:** municipality name and postcode, as on the municipality's own page.
+- **ICS address:** the full `https://` address that returns the calendar file
+  without signing in.
+- **Source page:** the municipality's page that offers the calendar, so the
+  address can be checked.
+- **What it covers:** the whole municipality, or only a district or a street.
+  If the address depends on a street, say how it is chosen.
+- **Stays valid:** whether the address is the same every year, or changes with
+  the year.
+- **Checked:** the date you opened the address and saw the expected dates.
+
+Share only addresses the municipality publishes for everyone. An address that
+contains a personal token or an account is not shared.
+
 ## UI texts and translations
 
 Every text shown in the UI comes from a message catalogue (see ADR 0010).
