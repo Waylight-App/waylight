@@ -1,0 +1,66 @@
+# OpenAPI fragment of the family board module (#685). `make openapi` merges
+# it with api/openapi.base.yaml and checks it.
+tags:
+  - name: board
+
+paths:
+  /api/board:
+    get:
+      tags: [board]
+      summary: List the visible notes that have not expired, pinned first, then newest
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/BoardNote" } } } } }
+    post:
+      tags: [board]
+      summary: Write a note
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/BoardNoteInput" } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/BoardNote" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/board/{id}:
+    put:
+      tags: [board]
+      summary: Change, pin or unpin a note (writer only)
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/BoardNoteInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/BoardNote" } } } }
+        "403": { description: Not the writer, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+    delete:
+      tags: [board]
+      summary: Remove a note (writer only)
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      responses:
+        "204": { description: Deleted }
+        "403": { description: Not the writer, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+  /api/board/compact:
+    get:
+      tags: [board]
+      summary: Compact state, the number of notes and the first one
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
+
+schemas:
+  BoardNoteInput:
+    type: object
+    required: [text]
+    properties:
+      text: { type: string, maxLength: 500 }
+      pinned: { type: boolean }
+      expiresOn: { type: string, description: "Last day the note is shown (YYYY-MM-DD), empty to keep it" }
+      visibility: { type: string, description: "private, everyone or group:<id>; empty shares a new note with everyone" }
+  BoardNote:
+    type: object
+    properties:
+      id: { type: string }
+      text: { type: string }
+      pinned: { type: boolean }
+      expiresOn: { type: string }
+      visibility: { type: string }
+      mine: { type: boolean }
+      createdAt: { type: string, format: date-time }

@@ -8,8 +8,6 @@ import type { ServerMessageKey } from '../../../api-client/generated/server-mess
 export const serverDe: Record<ServerMessageKey, string> = {
   // A note needs a title or some text.
   srv_cf47637ff80f03dc: 'Eine Notiz braucht einen Titel oder etwas Text.',
-  // The note does not exist.
-  srv_f901e92a895881b7: 'Die Notiz existiert nicht.',
   // The note must be at most 100 KiB long.
   srv_4afce48c7ea72d13: 'Die Notiz darf höchstens 100 KiB lang sein.',
   // The version does not exist.
