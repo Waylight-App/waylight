@@ -3,8 +3,10 @@
 /** English backend messages by kernel.MessageKey; translations live in i18n/locales/server-de/. */
 export const serverMessages = {
   srv_182123d619d272ea: "Signing in with Home Assistant needs PUBLIC_URL, the address you open Waylight with. Create a long-lived access token instead.",
+  srv_e56fe3c73c0a647e: "The code has expired. Show a new code and scan it again.",
   srv_ce81cb900ee071d5: "The service did not name a sign-in page. Create a key instead.",
   srv_d765b701fb776c4a: "The sign-in was cancelled. Sign in again or create a key instead.",
+  srv_7368f0d8826fd013: "The value must not be empty or longer than 4096 characters.",
   srv_b4e2abb05e1e39c8: "This service has no sign-in.",
 } as const;
 

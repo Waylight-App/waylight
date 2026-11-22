@@ -17,4 +17,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
     'Die Anmeldung wurde abgebrochen. Melde dich erneut an oder erstelle stattdessen einen Schlüssel.',
   // This service has no sign-in.
   srv_b4e2abb05e1e39c8: 'Für diesen Dienst gibt es keine Anmeldung.',
+  // The code has expired. Show a new code and scan it again.
+  srv_e56fe3c73c0a647e: 'Der Code ist abgelaufen. Zeige einen neuen Code an und scanne ihn erneut.',
+  // The value must not be empty or longer than 4096 characters.
+  srv_7368f0d8826fd013: 'Der Wert darf nicht leer oder länger als 4096 Zeichen sein.',
 };

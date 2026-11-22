@@ -32,6 +32,7 @@
   import type { AttentionState } from '../features/attention/ui/attentionState.svelte';
   import { provideOpenSettings } from '../shared/ui/settingsLink';
   import { provideSetupRights } from '../shared/setup/setup';
+  import { providePaste } from '../shared/setup/paste';
   import { provideSignIn } from '../shared/setup/signin';
   import { attachShortcuts } from '../shared/shortcuts';
   import Icon from '../shared/ui/icons/Icon.svelte';
@@ -76,6 +77,7 @@
       guest: container.auth.guest || container.auth.kiosk,
     });
     provideSignIn(container.setupSignin);
+    providePaste(container.setupPaste);
   }
   let editing = $state(false);
   let error = $state('');

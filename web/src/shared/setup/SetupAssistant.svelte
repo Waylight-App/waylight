@@ -10,9 +10,12 @@
     type SetupField,
     type SetupPreview,
     type SetupStage,
+    pasteTarget,
     signInAddress,
     stageComplete,
   } from './setup';
+  import { followPaste, pasteLink, usePaste } from './paste';
+  import { qrDataUrl } from '../ui/qr';
   import { followSignIn, useSignIn } from './signin';
 
   /**
@@ -49,6 +52,49 @@
   const signingIn = $derived(stage === 'credential' && mode === 'signin' && !!signInFrom);
   const signInLabel = $derived(d.signIn?.label ?? d.service);
 
+  // Paste from phone: the mobile app sends a key copied there; the key goes
+  // into the first secret field and is checked like a typed one.
+  const paste = usePaste();
+  const pasteField = $derived(pasteTarget(d));
+  let pasteQr = $state('');
+  let pasteStatus = $state('');
+  let pasting: AbortController | null = null;
+
+  function stopPaste() {
+    pasting?.abort();
+    pasting = null;
+    pasteQr = '';
+    pasteStatus = '';
+  }
+
+  async function startPaste() {
+    if (!paste || !pasteField) return;
+    stopPaste();
+    error = '';
+    const controller = new AbortController();
+    pasting = controller;
+    try {
+      const value = await followPaste(
+        paste,
+        (p) => {
+          pasteQr = qrDataUrl(pasteLink(location.origin, p.code), 4);
+          pasteStatus = t('setup.paste_waiting');
+        },
+        controller.signal,
+      );
+      values[pasteField.key] = value;
+      pasting = null;
+      pasteQr = '';
+      pasteStatus = t('setup.paste_received');
+    } catch (err) {
+      if (controller.signal.aborted) return;
+      pasting = null;
+      pasteQr = '';
+      pasteStatus = '';
+      error = errorMessage(err);
+    }
+  }
+
   const index = $derived(stage === 'address' ? 1 : stage === 'credential' ? 2 : 3);
   const fieldsOf = (s: SetupStage) => d.fields.filter((f) => f.stage === s);
   const link = $derived(
@@ -69,7 +115,10 @@
     signInStatus = '';
     loginLink = '';
   }
-  onDestroy(stopSignIn);
+  onDestroy(() => {
+    stopSignIn();
+    stopPaste();
+  });
 
   function useMode(next: 'signin' | 'manual') {
     stopSignIn();
@@ -124,6 +173,7 @@
 
   async function go(next: Stage) {
     if (next !== 'done') stopSignIn();
+    stopPaste();
     error = '';
     stage = next;
     await tick();
@@ -235,6 +285,16 @@
     {/if}
     <form onsubmit={check}>
       {#each fieldsOf('credential') as f (f.key)}{@render input(f)}{/each}
+      {#if paste && pasteField}
+        {#if pasteQr}
+          <p class="muted">{t('setup.paste_hint')}</p>
+          <img class="qr" src={pasteQr} alt={t('setup.paste_qr_alt')} />
+          <button class="btn" type="button" onclick={stopPaste}>{t('setup.paste_cancel')}</button>
+        {:else}
+          <button class="btn" type="button" onclick={startPaste}>{t('setup.paste')}</button>
+        {/if}
+        <p class="muted" role="status" aria-live="polite">{pasteStatus}</p>
+      {/if}
       {#if error}<p class="error" role="alert">{error}</p>{/if}
       <div class="actions">
         <button class="btn" type="button" onclick={() => go('address')}>{t('setup.back')}</button>
@@ -307,6 +367,12 @@
     display: flex;
     gap: var(--space-2);
     flex-wrap: wrap;
+  }
+  .qr {
+    width: 10rem;
+    height: 10rem;
+    image-rendering: pixelated;
+    background: #fff; /* scanners need a light quiet zone in dark themes */
   }
   .images {
     display: grid;
