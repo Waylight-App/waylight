@@ -1,3 +1,4 @@
+import { withConnection } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { SettingsDTO, StatusDTO } from '../../../../shared/api-client/generated/proxmox';
 import type { SettingsInputDTO } from '../../../../shared/api-client/generated/proxmox-requests';
@@ -15,11 +16,11 @@ export class ProxmoxApi implements ProxmoxGateway {
     const body: SettingsInputDTO = input;
     return { ...(await this.http.put<SettingsDTO>('/api/proxmox/settings', body)) };
   }
-  async status(): Promise<ProxmoxStatus> {
-    const d = await this.http.get<StatusDTO>('/api/proxmox/status');
+  async status(connection?: string): Promise<ProxmoxStatus> {
+    const d = await this.http.get<StatusDTO>(withConnection('/api/proxmox/status', connection));
     return { nodes: d.nodes, guests: d.guests, error: d.error };
   }
-  act(guestId: number, action: GuestAction): Promise<void> {
-    return this.http.post(`/api/proxmox/guests/${guestId}/${action}`);
+  act(guestId: number, action: GuestAction, connection?: string): Promise<void> {
+    return this.http.post(withConnection(`/api/proxmox/guests/${guestId}/${action}`, connection));
   }
 }

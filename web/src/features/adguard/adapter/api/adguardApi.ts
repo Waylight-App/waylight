@@ -1,3 +1,4 @@
+import { withConnection } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { SettingsDTO, StatsDTO } from '../../../../shared/api-client/generated/adguard';
 import type { PauseDTO, SettingsInputDTO } from '../../../../shared/api-client/generated/adguard-requests';
@@ -33,11 +34,18 @@ export class AdGuardApi implements AdGuardGateway {
     const body: SettingsInputDTO = { url, username, password };
     return { ...(await this.http.put<SettingsDTO>(`/api/adguard/settings${query(provider)}`, body)) };
   }
-  async stats(provider: DnsProvider): Promise<AdGuardStats> {
-    return toStats(await this.http.get<StatsDTO>(`/api/adguard/stats${query(provider)}`));
+  async stats(provider: DnsProvider, connection?: string): Promise<AdGuardStats> {
+    return toStats(
+      await this.http.get<StatsDTO>(withConnection(`/api/adguard/stats${query(provider)}`, connection)),
+    );
   }
-  async pause(provider: DnsProvider, minutes: PauseMinutes): Promise<AdGuardStats> {
+  async pause(provider: DnsProvider, minutes: PauseMinutes, connection?: string): Promise<AdGuardStats> {
     const body: PauseDTO = { minutes };
-    return toStats(await this.http.post<StatsDTO>(`/api/adguard/pause${query(provider)}`, body));
+    return toStats(
+      await this.http.post<StatsDTO>(
+        withConnection(`/api/adguard/pause${query(provider)}`, connection),
+        body,
+      ),
+    );
   }
 }

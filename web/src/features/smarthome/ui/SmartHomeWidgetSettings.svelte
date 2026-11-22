@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { type ChoiceLoader, withConnectionChoice } from '../../../shared/connection/connection';
+  import ConnectionSelect from '../../../shared/connection/ConnectionSelect.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
   import { type Entity, filterEntities, MAX_ENTITIES, parseWidgetConfig } from '../domain/smarthome';
@@ -9,10 +11,13 @@
     smarthome: SmarthomeUseCases;
     config: Record<string, unknown>;
     onsave: (config: Record<string, unknown>) => Promise<void>;
+    connections: ChoiceLoader;
   }
-  let { smarthome, config, onsave }: Props = $props();
+  let { smarthome, config, onsave, connections }: Props = $props();
   // svelte-ignore state_referenced_locally
   let selected = $state<string[]>(parseWidgetConfig(config).entities);
+  // svelte-ignore state_referenced_locally
+  let connectionId = $state(parseWidgetConfig(config).connectionId);
   let all = $state<Entity[]>([]);
   let query = $state('');
   let error = $state('');
@@ -20,7 +25,7 @@
 
   $effect(() => {
     smarthome
-      .entities()
+      .entities(connectionId)
       .then((l) => (all = l))
       .catch((err) => (error = errorMessage(err)));
   });
@@ -33,9 +38,14 @@
 <form
   onsubmit={(e) => {
     e.preventDefault();
-    onsave({ entities: selected });
+    onsave(withConnectionChoice({ entities: selected }, connectionId));
   }}
 >
+  <ConnectionSelect
+    services={['homeassistant']}
+    load={connections}
+    bind:value={() => connectionId, (id) => ((connectionId = id), (selected = []))}
+  />
   <label class="field"
     ><span>{t('smarthome.search_entities')}</span><input
       class="input"

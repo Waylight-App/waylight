@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { speedtestSetup } from './speedtestSetup';
   import { usePolling } from '../../../shared/refresh';
@@ -11,8 +12,12 @@
   /** Props of the speedtest widget (#60). */
   interface Props {
     speedtest: SpeedtestUseCases;
+    config: Record<string, unknown>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { speedtest }: Props = $props();
+  let { speedtest, config, connections, onsave }: Props = $props();
   const poll = usePolling();
 
   let range = $state<Range>(24);
@@ -29,7 +34,7 @@
     void reload;
     const load = () =>
       speedtest
-        .results(hours)
+        .results(hours, connectionIdOf(config))
         .then((d) => ((data = d), (error = ''), (missing = false)))
         .catch((err) => {
           missing = err instanceof ApiError && err.status === 404;
@@ -41,7 +46,13 @@
 </script>
 
 {#if missing && !data}
-  <SetupInPlace text={error} descriptor={setup} instance ondone={() => reload++} />
+  <SetupInPlace
+    text={error}
+    descriptor={setup}
+    instance
+    connections={savedConnections(['speedtest'], connections, config, onsave)}
+    ondone={() => reload++}
+  />
 {:else if error && !data}
   <p class="error">{error}</p>
 {:else if data}

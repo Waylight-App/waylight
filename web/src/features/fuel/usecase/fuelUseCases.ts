@@ -21,7 +21,7 @@ export interface FuelGateway {
   settings(): Promise<FuelSettings>;
   saveSettings(input: FuelSettingsInput): Promise<FuelSettings>;
   setFavourites(list: Favourite[]): Promise<FuelSettings>;
-  overview(): Promise<FuelOverview>;
+  overview(connection?: string): Promise<FuelOverview>;
 }
 
 /** Application logic of the fuel price feature (#53). */
@@ -43,7 +43,8 @@ export class FuelUseCases {
     return this.gateway.setFavourites(list);
   }
 
-  overview(): Promise<FuelOverview> {
-    return this.gateway.overview();
+  /** Reads through the named connection; without one, through the module settings. */
+  overview(connection?: string): Promise<FuelOverview> {
+    return this.gateway.overview(connection);
   }
 }

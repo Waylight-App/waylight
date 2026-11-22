@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { nextcloudSetup } from './nextcloudSetup';
   import { usePolling } from '../../../shared/refresh';
@@ -12,8 +13,12 @@
   /** Props of the Nextcloud widget. */
   interface Props {
     nextcloud: NextcloudUseCases;
+    config: Record<string, unknown>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { nextcloud }: Props = $props();
+  let { nextcloud, config, connections, onsave }: Props = $props();
   const poll = usePolling();
 
   const POLL_MS = 5 * 60_000;
@@ -23,7 +28,7 @@
 
   const load = () =>
     nextcloud
-      .status()
+      .status(connectionIdOf(config))
       .then((s) => ((status = s), (error = ''), (unconfigured = false)))
       .catch((err) => {
         unconfigured = err instanceof ApiError && err.status === 404;
@@ -40,6 +45,7 @@
     text={t('nextcloud.connect_nextcloud_under_settings_nextclo')}
     descriptor={setup}
     instance
+    connections={savedConnections(['nextcloud'], connections, config, onsave)}
     ondone={() => void load().catch(() => undefined)}
   />
 {:else if error && !status}

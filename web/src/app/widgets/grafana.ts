@@ -1,5 +1,5 @@
 import { t } from '../../shared/i18n';
-import { lazy, type WidgetDefinition } from '../widgetKit';
+import { choicesOf, lazy, type WidgetDefinition } from '../widgetKit';
 
 /** The Grafana widgets (#574): one panel as an image or its values (#579), and the alerts. */
 export const widgets: WidgetDefinition[] = [
@@ -23,7 +23,7 @@ export const widgets: WidgetDefinition[] = [
     ),
     settings: lazy(
       () => import('../../features/grafana/ui/GrafanaPanelSettings.svelte'),
-      (config, c) => ({ config, grafana: c.grafana }),
+      (config, c) => ({ config, grafana: c.grafana, connections: choicesOf(c) }),
     ),
   },
   {
@@ -42,7 +42,16 @@ export const widgets: WidgetDefinition[] = [
     icon: 'gauge',
     view: lazy(
       () => import('../../features/grafana/ui/GrafanaAlertsWidget.svelte'),
-      (_config, c) => ({ grafana: c.grafana, discover: () => c.discovery.find('grafana') }),
+      (config, c) => ({
+        config,
+        grafana: c.grafana,
+        discover: () => c.discovery.find('grafana'),
+        connections: choicesOf(c),
+      }),
+    ),
+    settings: lazy(
+      () => import('../../shared/connection/ConnectionSettings.svelte'),
+      (config, c) => ({ services: ['grafana'], config, connections: choicesOf(c) }),
     ),
   },
 ];

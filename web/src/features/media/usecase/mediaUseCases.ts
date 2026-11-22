@@ -4,7 +4,7 @@ import type { MediaOverview, MediaProvider, MediaSettings } from '../domain/medi
 export interface MediaGateway {
   settings(): Promise<MediaSettings>;
   saveSettings(provider: MediaProvider, url: string, token: string): Promise<MediaSettings>;
-  overview(): Promise<MediaOverview>;
+  overview(connection?: string): Promise<MediaOverview>;
 }
 
 /** Application logic of the media server feature (#61). */
@@ -20,7 +20,8 @@ export class MediaUseCases {
     return this.gateway.saveSettings(provider, url.trim(), token.trim());
   }
 
-  overview(): Promise<MediaOverview> {
-    return this.gateway.overview();
+  /** Reads through the named connection; without one, through the module settings. */
+  overview(connection?: string): Promise<MediaOverview> {
+    return this.gateway.overview(connection);
   }
 }

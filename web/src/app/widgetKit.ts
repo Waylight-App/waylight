@@ -5,6 +5,7 @@
 import type { Component } from 'svelte';
 import type { WidgetType } from '../features/dashboard';
 import type { IconName } from '../shared/ui/icons/paths';
+import type { ChoiceLoader } from '../shared/connection/connection';
 import type { Container } from './container';
 
 /** Configuration object stored per widget. */
@@ -25,7 +26,7 @@ export interface WidgetDefinition {
   /** Rendered without card chrome outside edit mode. */
   chromeless?: boolean;
   view: Renderer;
-  /** Settings form; it additionally receives an `onsave(config)` prop. */
+  /** Settings form; it additionally receives an `onsave(config)` prop, as does the view. */
   settings?: Renderer;
   /**
    * The source of the compact state (GET /api/<module>/compact, #597) the
@@ -43,6 +44,12 @@ export interface WidgetDefinition {
    */
   alerts?: boolean;
 }
+
+/** The saved connections of a service, for the pickers and setups of widgets (#709). */
+export const choicesOf =
+  (c: Container): ChoiceLoader =>
+  (service) =>
+    c.integrations.choices(service);
 
 /**
  * Type-checks props against the lazily imported component and erases the

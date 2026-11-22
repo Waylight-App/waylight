@@ -8,10 +8,15 @@ describe('media domain', () => {
   });
   it('builds proxied poster URLs', () => {
     expect(posterUrl('a b')).toBe('/api/media/posters/a%20b');
+    expect(posterUrl('a', 'c1')).toBe('/api/media/posters/a?connection=c1');
   });
   it('shows both parts unless switched off', () => {
-    expect(parseWidgetConfig({})).toEqual({ showRecent: true, showSessions: true });
-    expect(parseWidgetConfig({ showRecent: false })).toEqual({ showRecent: false, showSessions: true });
+    expect(parseWidgetConfig({})).toEqual({ showRecent: true, showSessions: true, connectionId: '' });
+    expect(parseWidgetConfig({ showRecent: false })).toEqual({
+      showRecent: false,
+      showSessions: true,
+      connectionId: '',
+    });
     expect(providerName('plex')).toBe('Plex');
   });
 });

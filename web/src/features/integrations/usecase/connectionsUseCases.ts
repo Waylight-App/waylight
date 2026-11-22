@@ -1,4 +1,5 @@
 import { errorMessage } from '../../../shared/api-client/http';
+import type { ConnectionChoice } from '../../../shared/connection/connection';
 import {
   type Connection,
   type ConnectionDraft,
@@ -18,6 +19,7 @@ export interface ConnectionChange {
 export interface ConnectionsGateway {
   services(): Promise<ConnectionService[]>;
   list(): Promise<Connection[]>;
+  choices(service: string): Promise<ConnectionChoice[]>;
   add(d: ConnectionDraft): Promise<Connection>;
   update(id: string, change: ConnectionChange): Promise<Connection>;
   replaceCredential(id: string, credential: Record<string, string>): Promise<Connection>;
@@ -35,6 +37,11 @@ export class ConnectionsUseCases {
 
   list(): Promise<Connection[]> {
     return this.gateway.list();
+  }
+
+  /** The connections of a service for a widget's picker; open to everyone who edits widgets. */
+  choices(service: string): Promise<ConnectionChoice[]> {
+    return this.gateway.choices(service);
   }
 
   add(d: ConnectionDraft): Promise<Connection> {

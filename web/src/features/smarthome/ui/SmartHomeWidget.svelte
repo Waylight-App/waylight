@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { type ChoiceLoader, savedConnections } from '../../../shared/connection/connection';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -14,12 +15,16 @@
     config: Record<string, unknown>;
     /** Services found in the home network for the setup (#590). */
     discover?: () => Promise<FoundService[]>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { smarthome, config, discover }: Props = $props();
+  let { smarthome, config, discover, connections, onsave }: Props = $props();
   const poll = usePolling();
 
   const POLL_MS = 30_000;
   const ids = $derived(parseWidgetConfig(config).entities);
+  const connection = $derived(parseWidgetConfig(config).connectionId);
   let entities = $state<Entity[] | null>(null);
   let error = $state('');
   let unconfigured = $state(false);
@@ -28,7 +33,7 @@
 
   const load = () =>
     smarthome
-      .states(ids)
+      .states(ids, connection)
       .then((list) => ((entities = list), (error = ''), (unconfigured = false), (now = new Date())))
       .catch((err) => {
         unconfigured = err instanceof ApiError && err.status === 404;
@@ -38,6 +43,7 @@
 
   $effect(() => {
     void ids;
+    void connection;
     return poll(load, POLL_MS);
   });
   // svelte-ignore state_referenced_locally
@@ -48,7 +54,7 @@
     if (!confirm(t(question, { name: e.name }))) return;
     busy = e.id;
     try {
-      await smarthome.act(e.id);
+      await smarthome.act(e.id, connection);
       await load();
     } catch (err) {
       error = errorMessage(err);
@@ -63,6 +69,7 @@
     text={t('smarthome.connect_under_settings')}
     descriptor={setup}
     instance
+    connections={savedConnections(['homeassistant'], connections, config, onsave)}
     ondone={() => void load().catch(() => undefined)}
   />
 {:else if ids.length === 0}

@@ -38,7 +38,7 @@ export function immichSetup(
         images: o.memories
           .flatMap((m) => m.assetIds)
           .slice(0, 3)
-          .map(thumbnailUrl),
+          .map((id) => thumbnailUrl(id)),
       };
     },
   };

@@ -5,7 +5,8 @@ import { t } from '../shared/i18n';
  * other; this file is the only place that combines them.
  */
 import type { IconName } from '../shared/ui/icons/paths';
-import { lazy, type Renderer, type WidgetDefinition } from './widgetKit';
+import { choicesOf, lazy, type Renderer, type WidgetDefinition } from './widgetKit';
+import { connectionParams } from '../shared/connection/connection';
 import { compactSource } from '../features/compact/domain/compact';
 import { parseWeatherConfig } from '../features/weather/domain/weather';
 import { parseWidgetConfig as parseAdGuardConfig } from '../features/adguard/domain/adguard';
@@ -322,15 +323,24 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 4, h: 4 },
     },
     icon: 'shield',
-    compact: (config) => compactSource('adguard', { provider: parseAdGuardConfig(config).provider }),
+    compact: (config) =>
+      compactSource('adguard', {
+        provider: parseAdGuardConfig(config).provider,
+        ...connectionParams(config),
+      }),
     compactExample: () => t('compact.example.adguard'),
     view: lazy(
       () => import('../features/adguard/ui/AdGuardWidget.svelte'),
-      (config, c) => ({ config, adguard: c.adguard, discover: () => c.discovery.find('adguard') }),
+      (config, c) => ({
+        config,
+        adguard: c.adguard,
+        discover: () => c.discovery.find('adguard'),
+        connections: choicesOf(c),
+      }),
     ),
     settings: lazy(
       () => import('../features/adguard/ui/AdGuardWidgetSettings.svelte'),
-      (config) => ({ config }),
+      (config, c) => ({ config, connections: choicesOf(c) }),
     ),
   },
   {
@@ -349,7 +359,11 @@ const legacyDefinitions: WidgetDefinition[] = [
     icon: 'cloud',
     view: lazy(
       () => import('../features/nextcloud/ui/NextcloudWidget.svelte'),
-      (_config, c) => ({ nextcloud: c.nextcloud }),
+      (config, c) => ({ nextcloud: c.nextcloud, config, connections: choicesOf(c) }),
+    ),
+    settings: lazy(
+      () => import('../shared/connection/ConnectionSettings.svelte'),
+      (config, c) => ({ services: ['nextcloud'], config, connections: choicesOf(c) }),
     ),
   },
   {
@@ -368,11 +382,16 @@ const legacyDefinitions: WidgetDefinition[] = [
     icon: 'router',
     view: lazy(
       () => import('../features/fritzbox/ui/FritzBoxWidget.svelte'),
-      (config, c) => ({ config, fritzbox: c.fritzbox, discover: () => c.discovery.find('fritzbox') }),
+      (config, c) => ({
+        config,
+        fritzbox: c.fritzbox,
+        discover: () => c.discovery.find('fritzbox'),
+        connections: choicesOf(c),
+      }),
     ),
     settings: lazy(
       () => import('../features/fritzbox/ui/FritzBoxWidgetSettings.svelte'),
-      (config) => ({ config }),
+      (config, c) => ({ config, connections: choicesOf(c) }),
     ),
   },
   {
@@ -555,11 +574,15 @@ const legacyDefinitions: WidgetDefinition[] = [
       defaultSize: { w: 3, h: 4 },
     },
     icon: 'gauge',
-    compact: () => 'speedtest',
+    compact: (config) => compactSource('speedtest', connectionParams(config)),
     compactExample: () => t('compact.example.speedtest'),
     view: lazy(
       () => import('../features/speedtest/ui/SpeedtestWidget.svelte'),
-      (_config, c) => ({ speedtest: c.speedtest }),
+      (config, c) => ({ speedtest: c.speedtest, config, connections: choicesOf(c) }),
+    ),
+    settings: lazy(
+      () => import('../shared/connection/ConnectionSettings.svelte'),
+      (config, c) => ({ services: ['speedtest'], config, connections: choicesOf(c) }),
     ),
   },
 ];

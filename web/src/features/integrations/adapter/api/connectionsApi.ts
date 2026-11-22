@@ -1,5 +1,10 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
-import type { ConnectionDTO, ServiceDTO } from '../../../../shared/api-client/generated/integrations';
+import type { ConnectionChoice } from '../../../../shared/connection/connection';
+import type {
+  ChoiceDTO,
+  ConnectionDTO,
+  ServiceDTO,
+} from '../../../../shared/api-client/generated/integrations';
 import type {
   ConnectionChangeDTO,
   ConnectionInputDTO,
@@ -39,6 +44,11 @@ export class ConnectionsApi implements ConnectionsGateway {
     return (await this.http.get<ConnectionDTO[]>('/api/integrations/connections')).map(toConnection);
   }
 
+  async choices(service: string): Promise<ConnectionChoice[]> {
+    const q = new URLSearchParams({ service });
+    return (await this.http.get<ChoiceDTO[]>(`/api/integrations/choices?${q}`)).map((d) => ({ ...d }));
+  }
+
   async add(d: ConnectionDraft): Promise<Connection> {
     const body: ConnectionInputDTO = { ...d };
     return toConnection(await this.http.post<ConnectionDTO>('/api/integrations/connections', body));
@@ -59,6 +69,7 @@ export class ConnectionsApi implements ConnectionsGateway {
   }
 
   remove(id: string): Promise<void> {
-    return this.http.delete(path(id));
+    // The settings page asks for confirmation first, also for a connection in use.
+    return this.http.delete(`${path(id)}?confirm=true`);
   }
 }

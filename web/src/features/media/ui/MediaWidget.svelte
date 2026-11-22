@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { type ChoiceLoader, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { mediaSetup } from './mediaSetup';
   import type { FoundService } from '../../../shared/setup/setup';
@@ -14,8 +15,11 @@
     config: Record<string, unknown>;
     /** Jellyfin found in the home network for the setup (#627). */
     discover?: () => Promise<FoundService[]>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { media, config, discover }: Props = $props();
+  let { media, config, discover, connections, onsave }: Props = $props();
   const poll = usePolling();
   const cfg = $derived(parseWidgetConfig(config));
 
@@ -26,7 +30,7 @@
 
   const load = () =>
     media
-      .overview()
+      .overview(cfg.connectionId)
       .then((o) => ((overview = o), (error = ''), (unconfigured = false)))
       .catch((err) => {
         unconfigured = err instanceof ApiError && err.status === 404;
@@ -43,6 +47,7 @@
     text={t('media.connect_under_settings')}
     descriptor={setup}
     instance
+    connections={savedConnections(['jellyfin', 'plex'], connections, config, onsave)}
     ondone={() => void load().catch(() => undefined)}
   />
 {:else if error && !overview}
@@ -74,7 +79,7 @@
     <ul class="posters">
       {#each overview.recent as item (item.id)}
         <li title={displayTitle(item)}>
-          <img src={posterUrl(item.id)} alt="" loading="lazy" />
+          <img src={posterUrl(item.id, cfg.connectionId)} alt="" loading="lazy" />
           <span class="small">{item.series || item.title}</span>
         </li>
       {/each}

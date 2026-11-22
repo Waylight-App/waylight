@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { type ChoiceLoader, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { fuelSetup } from './fuelSetup';
   import { usePolling } from '../../../shared/refresh';
@@ -23,8 +24,11 @@
     config: Record<string, unknown>;
     /** Place search of the weather module for the setup; without it the settings page sets fuel up. */
     searchPlaces?: (query: string) => Promise<PlaceResult[]>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { fuel, config, searchPlaces }: Props = $props();
+  let { fuel, config, searchPlaces, connections, onsave }: Props = $props();
   const poll = usePolling();
   const cfg = $derived(parseWidgetConfig(config));
 
@@ -38,7 +42,7 @@
   );
 
   const load = () =>
-    Promise.all([fuel.overview(), fuel.settings()])
+    Promise.all([fuel.overview(cfg.connectionId), fuel.settings()])
       .then(([o, s]) => ((overview = o), (favourites = s.favourites), (error = ''), (unconfigured = false)))
       .catch((err) => {
         unconfigured = err instanceof ApiError && err.status === 404;
@@ -64,6 +68,7 @@
     text={t('fuel.connect_under_settings')}
     descriptor={setup}
     instance
+    connections={savedConnections(['tankerkoenig'], connections, config, onsave)}
     ondone={() => void load().catch(() => undefined)}
   />
 {:else if unconfigured}

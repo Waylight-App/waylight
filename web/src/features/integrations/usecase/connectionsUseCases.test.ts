@@ -16,6 +16,7 @@ function gateway(over: Partial<ConnectionsGateway> = {}): ConnectionsGateway {
   return {
     services: vi.fn().mockResolvedValue([]),
     list: vi.fn().mockResolvedValue([saved]),
+    choices: vi.fn().mockResolvedValue([{ id: 'c1', service: 'immich', name: 'Home' }]),
     add: vi.fn().mockResolvedValue(saved),
     update: vi.fn().mockResolvedValue(saved),
     replaceCredential: vi.fn().mockResolvedValue(saved),
@@ -56,5 +57,13 @@ describe('ConnectionsUseCases', () => {
     const g = gateway({ check: vi.fn().mockRejectedValue(new Error('refused')) });
     const state = await new ConnectionsUseCases(g).check('c1');
     expect(state.kind).toBe('failing');
+  });
+
+  it('lists the choices of one service', async () => {
+    const g = gateway();
+    expect(await new ConnectionsUseCases(g).choices('immich')).toEqual([
+      { id: 'c1', service: 'immich', name: 'Home' },
+    ]);
+    expect(g.choices).toHaveBeenCalledWith('immich');
   });
 });

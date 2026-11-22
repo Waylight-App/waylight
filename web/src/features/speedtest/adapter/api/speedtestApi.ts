@@ -1,3 +1,4 @@
+import { withConnection } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type {
   MeasurementDTO,
@@ -14,8 +15,10 @@ const toMeasurement = (d: MeasurementDTO): Measurement => ({ ...d, at: new Date(
 export class SpeedtestApi implements SpeedtestGateway {
   constructor(private readonly http: HttpClient) {}
 
-  async results(hours: Range): Promise<SpeedResults> {
-    const d = await this.http.get<ResultsDTO>(`/api/speedtest/results?hours=${hours}`);
+  async results(hours: Range, connection?: string): Promise<SpeedResults> {
+    const d = await this.http.get<ResultsDTO>(
+      withConnection(`/api/speedtest/results?hours=${hours}`, connection),
+    );
     return {
       latest: d.latest ? toMeasurement(d.latest) : null,
       history: d.history.map(toMeasurement),

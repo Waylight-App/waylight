@@ -1,3 +1,5 @@
+import { connectionIdOf } from '../../../shared/connection/connection';
+
 /** Connection settings as shown in the UI (the token secret is never returned). */
 export interface ProxmoxSettings {
   configured: boolean;
@@ -62,11 +64,13 @@ export function availableAction(g: Pick<ProxmoxGuest, 'actions' | 'status'>): Gu
 export interface ProxmoxWidgetConfig {
   /** Only list guests that are running. */
   runningOnly: boolean;
+  /** Named connection to read through (#709); empty reads the module settings. */
+  connectionId: string;
 }
 
 /** Reads the widget configuration. */
 export function parseWidgetConfig(raw: Record<string, unknown>): ProxmoxWidgetConfig {
-  return { runningOnly: raw['runningOnly'] === true };
+  return { runningOnly: raw['runningOnly'] === true, connectionId: connectionIdOf(raw) };
 }
 
 /** Applies the widget configuration. */

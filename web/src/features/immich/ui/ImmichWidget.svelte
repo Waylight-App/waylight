@@ -6,6 +6,7 @@
   import Meter from '../../../shared/ui/Meter.svelte';
   import { type ImmichOverview, parseWidgetConfig, thumbnailUrl } from '../domain/immich';
   import type { ImmichUseCases } from '../usecase/immichUseCases';
+  import { type ChoiceLoader, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import type { FoundService } from '../../../shared/setup/setup';
   import { immichSetup } from './immichSetup';
@@ -16,8 +17,11 @@
     config: Record<string, unknown>;
     /** Services found in the home network for the setup (#590). */
     discover?: () => Promise<FoundService[]>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { immich, config, discover }: Props = $props();
+  let { immich, config, discover, connections, onsave }: Props = $props();
   const poll = usePolling();
   const cfg = $derived(parseWidgetConfig(config));
 
@@ -28,7 +32,7 @@
 
   const load = () =>
     immich
-      .overview()
+      .overview(cfg.connectionId)
       .then((o) => ((overview = o), (error = ''), (unconfigured = false)))
       .catch((err) => {
         unconfigured = err instanceof ApiError && err.status === 404;
@@ -45,6 +49,7 @@
     text={t('immich.connect_under_settings')}
     descriptor={setup}
     instance
+    connections={savedConnections(['immich'], connections, config, onsave)}
     ondone={() => void load().catch(() => undefined)}
   />
 {:else if error && !overview}
@@ -67,7 +72,11 @@
       <ul class="thumbs">
         {#each m.assetIds as id, i (id + i)}
           <li>
-            <img src={thumbnailUrl(id)} alt={t('immich.memory_photo', { n: m.yearsAgo })} loading="lazy" />
+            <img
+              src={thumbnailUrl(id, cfg.connectionId)}
+              alt={t('immich.memory_photo', { n: m.yearsAgo })}
+              loading="lazy"
+            />
           </li>
         {/each}
       </ul>

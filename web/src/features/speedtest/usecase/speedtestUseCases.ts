@@ -10,7 +10,7 @@ export interface SpeedtestSettingsInput {
 
 /** Output port: speedtest backend. */
 export interface SpeedtestGateway {
-  results(hours: Range): Promise<SpeedResults>;
+  results(hours: Range, connection?: string): Promise<SpeedResults>;
   settings(): Promise<SpeedtestSettings>;
   saveSettings(input: SpeedtestSettingsInput): Promise<SpeedtestSettings>;
 }
@@ -19,8 +19,9 @@ export interface SpeedtestGateway {
 export class SpeedtestUseCases {
   constructor(private readonly gateway: SpeedtestGateway) {}
 
-  results(hours: Range): Promise<SpeedResults> {
-    return this.gateway.results(hours);
+  /** Reads through the named connection; without one, through the module settings. */
+  results(hours: Range, connection?: string): Promise<SpeedResults> {
+    return this.gateway.results(hours, connection);
   }
 
   settings(): Promise<SpeedtestSettings> {

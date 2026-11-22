@@ -3,9 +3,12 @@ import { needsUsername, parseWidgetConfig, providerName } from './adguard';
 
 describe('DNS filter domain', () => {
   it('keeps widgets from before Pi-hole support on AdGuard Home', () => {
-    expect(parseWidgetConfig({})).toEqual({ provider: 'adguard' });
-    expect(parseWidgetConfig({ provider: 'bind' })).toEqual({ provider: 'adguard' });
-    expect(parseWidgetConfig({ provider: 'pihole' })).toEqual({ provider: 'pihole' });
+    expect(parseWidgetConfig({})).toEqual({ provider: 'adguard', connectionId: '' });
+    expect(parseWidgetConfig({ provider: 'bind' })).toEqual({ provider: 'adguard', connectionId: '' });
+    expect(parseWidgetConfig({ provider: 'pihole', connectionId: 'c1' })).toEqual({
+      provider: 'pihole',
+      connectionId: 'c1',
+    });
   });
   it('names providers and their login fields', () => {
     expect(providerName('pihole')).toBe('Pi-hole');

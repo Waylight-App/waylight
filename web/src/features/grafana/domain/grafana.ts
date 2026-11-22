@@ -1,3 +1,5 @@
+import { connectionIdOf, withConnection } from '../../../shared/connection/connection';
+
 /** Connection settings as shown in the UI (the token is never returned). */
 export interface GrafanaSettings {
   configured: boolean;
@@ -46,6 +48,8 @@ export interface PanelConfig {
   range: string;
   /** Minutes between two images. */
   refreshMinutes: number;
+  /** Named connection to read through (#709); empty reads the module settings. */
+  connectionId: string;
 }
 
 const RANGE = /^[1-9][0-9]{0,2}[mhdw]$/;
@@ -63,6 +67,7 @@ export function parsePanelConfig(raw: Record<string, unknown>): PanelConfig {
     panelTitle: str('panelTitle'),
     range: RANGE.test(range) ? range : '6h',
     refreshMinutes: Math.min(Math.max(refresh, 1), 60),
+    connectionId: connectionIdOf(raw),
   };
 }
 
@@ -88,7 +93,10 @@ export function renderUrl(
     theme: dark ? 'dark' : 'light',
     t: String(stamp),
   });
-  return `/api/grafana/render/${encodeURIComponent(c.dashboardUid)}/${c.panelId}?${q}`;
+  return withConnection(
+    `/api/grafana/render/${encodeURIComponent(c.dashboardUid)}/${c.panelId}?${q}`,
+    c.connectionId,
+  );
 }
 
 /** Link to the panel in Grafana, or to the dashboard when the address is unknown. */
@@ -196,5 +204,6 @@ export function formatPanelValue(
 
 /** Address of the panel's values through Waylight (#579). */
 export function dataUrl(c: PanelConfig): string {
-  return `/api/grafana/data/${encodeURIComponent(c.dashboardUid)}/${c.panelId}?${new URLSearchParams({ range: c.range })}`;
+  const path = `/api/grafana/data/${encodeURIComponent(c.dashboardUid)}/${c.panelId}?${new URLSearchParams({ range: c.range })}`;
+  return withConnection(path, c.connectionId);
 }

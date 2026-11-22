@@ -3,7 +3,13 @@ import { appName, defaultPort, emptyInstance, parseWidgetConfig, validateInstanc
 
 describe('arr domain', () => {
   it('shows every section by default', () => {
-    expect(parseWidgetConfig({})).toEqual({ upcoming: true, queue: true, health: true });
+    expect(parseWidgetConfig({})).toEqual({
+      upcoming: true,
+      queue: true,
+      health: true,
+      connectionIds: [],
+    });
+    expect(parseWidgetConfig({ connectionIds: ['a', 2] }).connectionIds).toEqual(['a']);
     expect(parseWidgetConfig({ queue: false }).queue).toBe(false);
   });
   it('requires a URL and, for new instances, an API key', () => {

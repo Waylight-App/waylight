@@ -6,7 +6,7 @@ export interface ArrGateway {
   add(input: ArrInstanceInput): Promise<ArrInstance>;
   update(id: string, input: ArrInstanceInput): Promise<ArrInstance>;
   delete(id: string): Promise<void>;
-  overview(): Promise<ArrOverview>;
+  overview(connections?: string[]): Promise<ArrOverview>;
 }
 
 /** Application logic of the Sonarr/Radarr/Prowlarr feature (#86). */
@@ -29,7 +29,8 @@ export class ArrUseCases {
     return this.gateway.delete(id);
   }
 
-  overview(): Promise<ArrOverview> {
-    return this.gateway.overview();
+  /** Reads through the named connections; without any, through every instance of the module. */
+  overview(connections?: string[]): Promise<ArrOverview> {
+    return this.gateway.overview(connections);
   }
 }

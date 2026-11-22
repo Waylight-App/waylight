@@ -10,8 +10,8 @@ import type {
 export interface FritzBoxGateway {
   settings(): Promise<FritzBoxSettings>;
   saveSettings(url: string, username: string, password: string): Promise<FritzBoxSettings>;
-  status(): Promise<FritzBoxStatus>;
-  calls(filter: CallFilterKind, limit: number): Promise<CallList>;
+  status(connection?: string): Promise<FritzBoxStatus>;
+  calls(filter: CallFilterKind, limit: number, connection?: string): Promise<CallList>;
 }
 
 /** Application logic of the FRITZ!Box feature. */
@@ -27,12 +27,13 @@ export class FritzBoxUseCases {
     return this.gateway.saveSettings(url.trim(), username.trim(), password);
   }
 
-  status(): Promise<FritzBoxStatus> {
-    return this.gateway.status();
+  /** Reads through the named connection; without one, through the module settings. */
+  status(connection?: string): Promise<FritzBoxStatus> {
+    return this.gateway.status(connection);
   }
 
   /** The call list of a calls widget; fetched by the server only when asked (#168). */
-  calls(options: CallsOptions): Promise<CallList> {
-    return this.gateway.calls(options.filter, options.limit);
+  calls(options: CallsOptions, connection?: string): Promise<CallList> {
+    return this.gateway.calls(options.filter, options.limit, connection);
   }
 }

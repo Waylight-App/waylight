@@ -5,9 +5,9 @@ export interface SmartHomeGateway {
   settings(): Promise<SmartHomeSettings>;
   /** signIn is a finished sign-in of the setup assistant (#654) that replaces the token. */
   saveSettings(url: string, token: string, signIn?: string): Promise<SmartHomeSettings>;
-  entities(): Promise<Entity[]>;
-  states(ids: string[]): Promise<Entity[]>;
-  act(id: string): Promise<void>;
+  entities(connection?: string): Promise<Entity[]>;
+  states(ids: string[], connection?: string): Promise<Entity[]>;
+  act(id: string, connection?: string): Promise<void>;
 }
 
 /** Application logic of the smart home feature (#49). */
@@ -29,17 +29,18 @@ export class SmarthomeUseCases {
   }
 
   /** Every entity, for the widget's entity picker. */
-  entities(): Promise<Entity[]> {
-    return this.gateway.entities();
+  /** Reads through the named connection; without one, through the module settings. */
+  entities(connection?: string): Promise<Entity[]> {
+    return this.gateway.entities(connection);
   }
 
   /** The widget's entities in their configured order; none means no request. */
-  states(ids: string[]): Promise<Entity[]> {
-    return ids.length === 0 ? Promise.resolve([]) : this.gateway.states(ids);
+  states(ids: string[], connection?: string): Promise<Entity[]> {
+    return ids.length === 0 ? Promise.resolve([]) : this.gateway.states(ids, connection);
   }
 
   /** Toggles or presses an entity; the UI asks for confirmation first. */
-  act(id: string): Promise<void> {
-    return this.gateway.act(id);
+  act(id: string, connection?: string): Promise<void> {
+    return this.gateway.act(id, connection);
   }
 }

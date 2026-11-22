@@ -10,7 +10,7 @@ export interface NextcloudGateway {
     appPassword: string,
     signIn?: string,
   ): Promise<NextcloudSettings>;
-  status(): Promise<NextcloudStatus>;
+  status(connection?: string): Promise<NextcloudStatus>;
 }
 
 /** Application logic of the Nextcloud feature. */
@@ -31,7 +31,8 @@ export class NextcloudUseCases {
     return this.gateway.saveSettings('', '', '', signIn);
   }
 
-  status(): Promise<NextcloudStatus> {
-    return this.gateway.status();
+  /** Reads through the named connection; without one, through the module settings. */
+  status(connection?: string): Promise<NextcloudStatus> {
+    return this.gateway.status(connection);
   }
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ChoiceLoader } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { arrSetup } from './arrSetup';
   import { usePolling } from '../../../shared/refresh';
@@ -12,8 +13,11 @@
   interface Props {
     arr: ArrUseCases;
     config: Record<string, unknown>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { arr, config }: Props = $props();
+  let { arr, config, connections, onsave }: Props = $props();
   const poll = usePolling();
   const cfg = $derived(parseWidgetConfig(config));
 
@@ -27,7 +31,7 @@
 
   const load = () =>
     arr
-      .overview()
+      .overview(cfg.connectionIds)
       .then((o) => ((overview = o), (error = ''), (unconfigured = false)))
       .catch((err) => {
         unconfigured = err instanceof ApiError && err.status === 404;
@@ -44,6 +48,13 @@
     text={t('arr.connect_under_settings')}
     descriptor={setup}
     instance
+    connections={connections && onsave
+      ? {
+          services: ['sonarr', 'radarr', 'prowlarr'],
+          load: connections,
+          choose: (id) => onsave({ ...config, connectionIds: [id] }),
+        }
+      : undefined}
     ondone={() => void load().catch(() => undefined)}
   />
 {:else if error && !overview}
