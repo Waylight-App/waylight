@@ -114,7 +114,7 @@ answered.
 
 | Template | Today | My things | System (admins) |
 | --- | --- | --- | --- |
-| Family | Weather, to-dos, calendar strip, waste collection | Shopping list, birthdays, notes | Services strip |
+| Family | Weather, to-dos, calendar strip, waste collection, parcels, meal plan, chores, family board | Shopping list, birthdays, notes | Services strip |
 | Homelab | Clock, to-dos | Bookmarks | Services strip, containers, backups, drive health, host metrics |
 | Work | Calendar strip, to-dos, focus timer | Mail, notes, bookmarks | Services strip |
 | Wall tablet | Large clock, weather, calendar | Departures | Services strip |
