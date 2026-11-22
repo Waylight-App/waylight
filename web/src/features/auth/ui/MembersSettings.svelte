@@ -2,6 +2,7 @@
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { accountLink, type Group, type Guest, type Member } from '../domain/auth';
+  import { roleTexts } from '../domain/role';
   import type { AuthUseCases } from '../usecase/authUseCases';
   import AccountLinkBox from './AccountLinkBox.svelte';
 
@@ -45,7 +46,7 @@
   // Groups can hold members and guests; both lists feed the checkboxes.
   const accounts = $derived([
     ...members.map((m) => ({ id: m.id, name: m.name })),
-    ...guests.map((g) => ({ id: g.id, name: `${g.name} (${t('auth.member_guest')})` })),
+    ...guests.map((g) => ({ id: g.id, name: `${g.name} (${t(roleTexts.guest.label)})` })),
   ]);
 
   async function load() {
@@ -157,7 +158,7 @@
   {#each members as m (m.id)}
     <li>
       <strong>{m.name}</strong>
-      {#if m.role === 'admin'}<span class="badge">{t('auth.role_admin')}</span>{/if}
+      <span class="badge" title={t(roleTexts[m.role].hint)}>{t(roleTexts[m.role].label)}</span>
       {#if m.disabled}<span class="muted">({t('auth.guest_disabled')})</span>{/if}
       <!-- Admins manage everything except backups, the export and API tokens;
            nobody changes the own role (ADR 0022). -->
@@ -175,7 +176,8 @@
             run(() => auth.setMemberRole(m, on ? 'admin' : 'member'));
           }}
         />
-        {t('auth.role_admin_switch')}
+        {t(roleTexts.admin.label)}
+        <span class="muted small">{t(roleTexts.admin.hint)}</span>
         {#if m.roleSource === 'sso'}<span class="muted small">{t('auth.role_from_sso')}</span>{/if}
         {#if m.roleSource === 'directory'}<span class="muted small">{t('auth.role_from_directory')}</span
           >{/if}
