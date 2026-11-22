@@ -2,6 +2,7 @@
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { accountLink, type Invite, remainingTime } from '../domain/auth';
+  import { roleTexts } from '../domain/role';
   import type { AuthUseCases } from '../usecase/authUseCases';
   import AccountLinkBox from './AccountLinkBox.svelte';
 
@@ -91,9 +92,7 @@
   {#each invites as i (i.id)}
     <li>
       <strong>{i.name}</strong>
-      <span class="muted"
-        >({i.role === 'member' ? t('auth.invite_role_member') : t('auth.member_guest')})</span
-      >
+      <span class="muted">({t(roleTexts[i.role].label)})</span>
       <span class="muted small" title={t('auth.invite_expires', { time: when(i.expiresAt) })}
         >{remainingLabel(i.expiresAt)}</span
       >
@@ -117,9 +116,10 @@
   <label class="field"
     ><span>{t('auth.invite_role')}</span>
     <select class="input" bind:value={role}>
-      <option value="guest">{t('auth.member_guest')}</option>
-      {#if membersAvailable}<option value="member">{t('auth.invite_role_member')}</option>{/if}
+      <option value="guest">{t(roleTexts.guest.label)}</option>
+      {#if membersAvailable}<option value="member">{t(roleTexts.member.label)}</option>{/if}
     </select>
+    <span class="muted small">{t(roleTexts[role].hint)}</span>
   </label>
   {#if role === 'guest' && tabs.length}
     <fieldset>
