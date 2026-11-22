@@ -139,6 +139,25 @@ compiler lists missing keys, the English original is in a comment above each
 entry). The frontend translates known messages and falls back to the English
 text.
 
+**Plain words (#699).** Texts that people see without setting up a server use
+everyday words. Explain a technical term once, where it is asked for, and show
+no status codes, internal names or file formats. Names that another product
+shows on its own screen stay as they are, so people can find them there.
+
+| Prefer | Avoid |
+| --- | --- |
+| access key, access token | API key, bearer token (outside the API tokens settings) |
+| address | URL, endpoint |
+| file | JSON, payload |
+| certificate | TLS certificate, SSL |
+| connection | integration, provider |
+| does not work, cannot be reached | error code, HTTP 5xx, timeout |
+| password | credential, secret |
+
+The German texts follow the same rule: Zugangsschlüssel instead of API-Key,
+Adresse instead of URL, Datei instead of JSON, Verbindung instead of
+Integration.
+
 **Adding a language** (e.g. French):
 
 1. Copy `web/src/shared/i18n/locales/de.ts` to `fr.ts`, rename the export and
