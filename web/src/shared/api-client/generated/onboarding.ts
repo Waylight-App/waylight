@@ -13,4 +13,8 @@ Ring: Interface Adapters.
  */
 export interface StatusDTO {
   completed: boolean;
+  /**
+   * Step is the wizard step the account stopped at; empty before it started.
+   */
+  step: string;
 }

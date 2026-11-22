@@ -10,7 +10,10 @@ import (
 	"waylight/internal/modules/onboarding/usecase"
 )
 
-type fakeUC struct{ completed, restarted bool }
+type fakeUC struct {
+	completed, restarted bool
+	step                 string
+}
 
 func (f *fakeUC) Status(context.Context) (usecase.StatusResponse, error) {
 	return usecase.StatusResponse{}, nil
@@ -22,6 +25,11 @@ func (f *fakeUC) Complete(context.Context) (usecase.StatusResponse, error) {
 func (f *fakeUC) Restart(context.Context) (usecase.StatusResponse, error) {
 	f.restarted = true
 	return usecase.StatusResponse{}, nil
+}
+
+func (f *fakeUC) Resume(_ context.Context, step string) (usecase.StatusResponse, error) {
+	f.step = step
+	return usecase.StatusResponse{Step: step}, nil
 }
 
 func TestUpdate(t *testing.T) {
@@ -36,5 +44,10 @@ func TestUpdate(t *testing.T) {
 	}
 	if !uc.completed || !uc.restarted {
 		t.Fatal("use cases not called")
+	}
+	rec := httptest.NewRecorder()
+	h.Update(rec, httptest.NewRequest(http.MethodPut, "/api/onboarding", strings.NewReader(`{"completed":false,"step":"widgets"}`)))
+	if uc.step != "widgets" || !strings.Contains(rec.Body.String(), `"step":"widgets"`) {
+		t.Fatalf("step: %q %s", uc.step, rec.Body)
 	}
 }

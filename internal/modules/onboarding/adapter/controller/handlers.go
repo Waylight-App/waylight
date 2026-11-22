@@ -34,9 +34,12 @@ func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 		res usecase.StatusResponse
 		err error
 	)
-	if dto.Completed {
+	switch {
+	case dto.Completed:
 		res, err = h.uc.Complete(r.Context())
-	} else {
+	case dto.Step != "":
+		res, err = h.uc.Resume(r.Context(), dto.Step)
+	default:
 		res, err = h.uc.Restart(r.Context())
 	}
 	h.respond(w, r, res, err)
