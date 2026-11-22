@@ -30,7 +30,7 @@ const base: Service = {
 describe('services domain', () => {
   it('validates input', () => {
     expect(validateServiceInput({ ...emptyServiceInput(), url: 'https://x' })).toMatch(/name/);
-    expect(validateServiceInput({ ...emptyServiceInput(), name: 'x', url: 'ftp://x' })).toMatch(/URL/);
+    expect(validateServiceInput({ ...emptyServiceInput(), name: 'x', url: 'ftp://x' })).toMatch(/address/);
     expect(validateServiceInput({ ...emptyServiceInput(), name: 'x', url: 'http://x:8080' })).toBeNull();
   });
   it('detects image icons', () => {
