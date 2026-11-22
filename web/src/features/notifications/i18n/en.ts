@@ -1,6 +1,6 @@
 /** English texts of the Slack, Teams and app channels (#324, #325, #564). */
 export const en = {
-  'notifications.chat_webhook_url': 'Webhook URL',
+  'notifications.chat_webhook_url': 'Webhook address',
   'notifications.slack_hint':
     'In Slack, add the app “Incoming Webhooks” to a channel (or create a Slack app with incoming webhooks) and paste the webhook URL here. It is stored encrypted and never shown again.',
   'notifications.teams_hint':

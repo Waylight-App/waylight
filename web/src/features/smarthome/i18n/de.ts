@@ -18,7 +18,7 @@ export const de: Record<keyof typeof en, string> = {
   'smarthome.confirm_press': '{name} drücken?',
   'smarthome.search_entities': 'Entitäten suchen',
   'smarthome.selected': '{count} von höchstens {max} ausgewählt',
-  'smarthome.url': 'Home-Assistant-URL',
+  'smarthome.url': 'Home-Assistant-Adresse',
   'smarthome.token': 'Langlebiges Zugriffstoken {value}',
   'smarthome.token_hint':
     'Lege das Token in Home Assistant unter Profil → Sicherheit → Langlebige Zugriffstoken an. Es wird verschlüsselt gespeichert und nie wieder angezeigt.',

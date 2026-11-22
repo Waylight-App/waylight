@@ -12,8 +12,8 @@ export const de: Record<keyof typeof en, string> = {
   'immich.years_ago': 'Heute vor {n} Jahren',
   'immich.memory_photo': 'Foto von vor {n} Jahren',
   'immich.show_memories': 'Erinnerungen des Tages anzeigen',
-  'immich.url': 'Immich-URL',
-  'immich.api_key': 'API-Schlüssel {value}',
+  'immich.url': 'Immich-Adresse',
+  'immich.api_key': 'Zugangsschlüssel {value}',
   'immich.key_hint':
     'Lege einen API-Schlüssel unter Kontoeinstellungen → API-Schlüssel mit den Berechtigungen asset.statistics, server.storage, memory.read und asset.view an. Er wird verschlüsselt gespeichert; Fotos lädt Waylight selbst.',
   'immich.setup_step_profile': 'Öffne Immich und klicke oben rechts auf dein Profilbild.',
@@ -21,6 +21,6 @@ export const de: Record<keyof typeof en, string> = {
   'immich.setup_step_permissions':
     'Nenne ihn Waylight, hake asset.statistics, server.storage, memory.read und asset.view an und klicke Erstellen.',
   'immich.setup_step_copy': 'Kopiere den Schlüssel und füge ihn unten ein.',
-  'immich.setup_key': 'API-Schlüssel',
+  'immich.setup_key': 'Zugangsschlüssel',
   'immich.setup_photos': '{n} Fotos, {videos} Videos',
 };

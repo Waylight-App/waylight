@@ -26,7 +26,7 @@ export const en = {
   'birthdays.book_title': 'CardDAV address book',
   'birthdays.book_hint':
     'Read when you save and then every six hours. Its entries are changed in the address book, not here. Use an app password.',
-  'birthdays.book_url': 'Address book URL',
+  'birthdays.book_url': 'Address book server address',
   'birthdays.username': 'User name',
   'birthdays.password': 'App password',
   'birthdays.password_stored': 'stored – leave empty to keep it',

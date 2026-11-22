@@ -7,7 +7,7 @@ export const en = {
   'widget.grafana-alerts.description': 'Firing and pending alerts of Grafana Alerting.',
   'settings.section.grafana': 'Grafana',
   'grafana.connect_under_settings': 'Connect Grafana under Settings → Grafana.',
-  'grafana.url': 'Grafana URL',
+  'grafana.url': 'Grafana address',
   'grafana.token': 'Service account token {value}',
   'grafana.token_hint':
     'In Grafana, add a service account with the role Viewer under Administration → Users and access → Service accounts, and give it a token. The token is stored encrypted; panels and alerts are loaded through Waylight.',

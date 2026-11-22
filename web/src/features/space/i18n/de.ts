@@ -10,7 +10,7 @@ export const de: Record<keyof typeof en, string> = {
     'Beide Quellen sind aus, bis du sie einschaltest; danach werden sie nur geladen, solange ein Widget sie zeigt.',
   'space.launches_on': 'Raketenstarts anzeigen (Launch Library 2)',
   'space.picture_on': 'Astronomiebild des Tages anzeigen (NASA)',
-  'space.nasa_key': 'NASA-API-Schlüssel (optional)',
+  'space.nasa_key': 'NASA-Zugangsschlüssel (optional)',
   'space.nasa_key_stored': 'gespeichert – leer lassen, um ihn zu behalten',
   'space.nasa_key_hint':
     'Ohne eigenen kostenlosen Schlüssel von api.nasa.gov wird der gemeinsame DEMO_KEY genutzt, der pro IP-Adresse stark begrenzt ist.',

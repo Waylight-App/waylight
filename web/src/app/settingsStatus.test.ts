@@ -31,7 +31,7 @@ describe('area statuses on the settings start page (#600)', () => {
     );
     expect(s.account).toEqual({ text: 'Two-factor off', tone: 'warn' });
     expect(s.notifications).toEqual({ text: '2 channels on', tone: 'ok' });
-    expect(s.connections).toEqual({ text: '4 integrations', tone: 'info' });
+    expect(s.connections).toEqual({ text: '4 connections', tone: 'info' });
     expect(s.data?.tone).toBe('ok');
     expect(s.data?.text).toMatch(/^Last backup today 03:00.*, all good$/);
     expect(s.system).toEqual({ text: 'Update to 0.3.0 available', tone: 'warn' });

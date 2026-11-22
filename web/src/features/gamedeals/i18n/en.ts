@@ -10,7 +10,7 @@ export const en = {
   'gamedeals.wishlist': 'Steam wishlist on sale',
   'gamedeals.nothing': 'No deals right now.',
   'gamedeals.unreachable': '{source} could not be loaded.',
-  'gamedeals.steam_id': 'Steam profile URL or ID (optional)',
+  'gamedeals.steam_id': 'Steam profile link or ID (optional)',
   'gamedeals.steam_hint':
     'The wishlist must be public (Steam → Edit profile → Privacy settings → Game details: Public).',
   'gamedeals.country': 'Country',
