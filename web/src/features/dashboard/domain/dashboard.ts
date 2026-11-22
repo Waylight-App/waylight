@@ -137,14 +137,6 @@ export interface TemplateLocation {
   placeId?: string;
 }
 
-/**
- * The grid rows a template's preview needs: the lowest bottom edge of its
- * widgets, at least one.
- */
-export function previewRows(t: Pick<BuiltinTemplate, 'widgets'>): number {
-  return Math.max(1, ...t.widgets.map((w) => w.y + w.h));
-}
-
 export interface TabTemplate {
   id: string;
   name: string;

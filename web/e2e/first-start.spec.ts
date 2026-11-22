@@ -20,7 +20,7 @@ test('first start asks the essentials, offers the templates and Family replaces 
   const wizard = page.getByRole('region', { name: 'Set up Waylight' });
   await expect(wizard.getByRole('heading', { name: 'Glad you are here.' })).toBeVisible();
   await expect(page.getByTestId('dashboard')).toHaveCount(0);
-  await expect(wizard.getByRole('progressbar')).toHaveAttribute('aria-valuetext', 'Step 1 of 4');
+  await expect(wizard.getByRole('progressbar')).toHaveAttribute('aria-valuetext', 'Step 1 of 5');
   await wizard.getByRole('button', { name: "Let's go" }).click();
 
   await expect(wizard.getByRole('heading', { name: 'What should we call you?' })).toBeVisible();
@@ -39,6 +39,19 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await expect(wizard.getByRole('heading', { name: 'What goes on your start page?' })).toBeVisible();
 
   await expect(wizard.getByRole('button', { name: 'Family' })).toHaveAttribute('aria-pressed', 'true');
+  await wizard.getByRole('button', { name: 'Next' }).click();
+
+  // The search step answers with the real search; an example types itself in.
+  await expect(wizard.getByRole('heading', { name: 'Just ask.' })).toBeVisible();
+  const field = wizard.getByRole('textbox', { name: 'Try a question' });
+  // The examples follow the template chosen before: Family starts with the agenda.
+  await expect(field).toHaveValue('What is on today?');
+  await expect(wizard.getByRole('article').first()).toBeVisible();
+  await wizard.getByRole('button', { name: 'Who has a birthday soon?' }).click();
+  await expect(field).toHaveValue('Who has a birthday soon?');
+  await expect(wizard.getByRole('article').first()).toBeVisible();
+  await field.fill('3 * 17 + 4');
+  await expect(wizard.getByRole('article', { name: '3 * 17 + 4 =' })).toContainText('55');
   await wizard.getByRole('button', { name: 'Next' }).click();
 
   await expect(wizard.getByRole('heading', { name: "All done, let's go." })).toBeVisible();

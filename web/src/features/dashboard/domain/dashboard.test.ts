@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   initialTabId,
-  previewRows,
   isCidr,
   parseNetworks,
   reorder,
@@ -78,19 +77,5 @@ describe('tab rules (#71)', () => {
     expect(initialTabId(ids, { manual: 'gone', byRule: '', lastUsed: 'srv' })).toBe('srv');
     expect(initialTabId(ids, { manual: '', byRule: 'gone', lastUsed: '' })).toBe('home');
     expect(initialTabId([], { manual: '', byRule: '', lastUsed: '' })).toBe('');
-  });
-});
-
-describe('previewRows (#589)', () => {
-  it('is the lowest bottom edge of the widgets', () => {
-    expect(
-      previewRows({
-        widgets: [
-          { kind: 'clock', x: 0, y: 0, w: 4, h: 2 },
-          { kind: 'weather', x: 4, y: 1, w: 4, h: 5 },
-        ],
-      }),
-    ).toBe(6);
-    expect(previewRows({ widgets: [] })).toBe(1);
   });
 });

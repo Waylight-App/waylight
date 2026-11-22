@@ -450,6 +450,13 @@ export const de: Record<BaseMessageKey, string> = {
   'wizard.widgets.count': '{n} Widgets gewählt',
   'wizard.widgets.count_one': '{n} Widget gewählt',
   'wizard.widgets.tab_name': 'Startseite',
+  'wizard.search.title': 'Frag einfach.',
+  'wizard.search.body':
+    'Die Suche findet nicht nur Seiten. Sie rechnet, rechnet um, zeigt Wetter und Termine und startet Timer. Probier es aus.',
+  'wizard.search.label': 'Eine Frage ausprobieren',
+  'wizard.search.examples': 'Beispiele',
+  'wizard.search.none': 'Dazu gibt es noch keine Antwort. Probier eines der Beispiele.',
+  'wizard.search.tip': 'Tipp: Mit Strg + K öffnest du die Suche von überall.',
   'wizard.done.title': "Fertig, los geht's.",
   'wizard.done.body': 'Deine Startseite ist bereit.',
   'wizard.done.body_widgets': 'Deine Startseite ist bereit. Diese Widgets haben wir für dich angelegt:',
@@ -859,25 +866,25 @@ export const de: Record<BaseMessageKey, string> = {
   'app.marked_done': '„{title}“ als erledigt markiert.',
   'tour.welcome.title': 'Willkommen bei Waylight 👋',
   'tour.welcome.body':
-    'Deine persönliche Startseite: Widgets für den Alltag und deinen Homeserver. Diese kurze Tour zeigt dir alles Wichtige – sie dauert weniger als eine Minute.',
+    'Deine persönliche Startseite: Widgets für den Alltag, dein Zuhause und deinen Server. Diese kurze Tour zeigt dir alles Wichtige. Sie dauert weniger als eine Minute.',
   'tour.tabs.title': 'Tabs',
   'tour.tabs.body':
-    'Gruppiere Widgets auf Tabs, z. B. „Home“ für jeden Tag und „Server“ für dein Homelab. Der gewählte Tab wird gemerkt.',
+    'Gruppiere Widgets auf Tabs, zum Beispiel „Home“ für jeden Tag und „Server“ für dein Homelab. Waylight merkt sich den gewählten Tab.',
   'tour.search.title': 'Suche',
   'tour.search.body':
-    'Sucht standardmäßig mit DuckDuckGo. Bangs wie !w oder !g funktionieren, und in den Einstellungen legst du eigene Kürzel an.',
+    'Die Suche findet nicht nur Seiten. Sie rechnet, rechnet Einheiten und Währungen um, zeigt Wetter und Termine, legt Aufgaben und Notizen an und startet Timer. Tippe eine Frage, oder „?“, um zu sehen, was geht.',
   'tour.edit.title': 'Bearbeitungsmodus',
   'tour.edit.body':
-    'Im Bearbeitungsmodus ziehst du Widgets an ihrer Titelleiste, änderst ihre Größe an der unteren rechten Ecke, fügst neue Widgets und Tabs hinzu und konfigurierst ein Widget mit ⚙.',
+    'Im Bearbeitungsmodus verschiebst du Widgets und änderst ihre Größe, fügst neue hinzu und öffnest die Einstellungen eines Widgets mit ⚙. Widgets, die noch etwas brauchen, zeigen einen Knopf „Einrichten“.',
   'tour.settings.title': 'Einstellungen',
   'tour.settings.body':
-    'Farbschema und Hintergrund, Suchmaschine, Dienst-Kacheln, RSS-Feeds, Lesezeichen-Ordner, dein CalDAV-Kalender und AdGuard Home – und dein Passwort.',
+    'Aussehen und Sprache, Orte, Suche, Verbindungen zu deinen Diensten, Kalender, Konten, Sicherung und dein Passwort. Die Suche in den Einstellungen findet jede Option.',
   'tour.server.title': 'Serverübersicht',
   'tour.server.body':
     'Der Tab „Server“ zeigt Host-Messwerte, Docker-Container und den Status deiner Dienste.',
   'tour.done.title': 'Alles bereit!',
   'tour.done.body':
-    'Die Beispieldaten sind nur ein Ausgangspunkt – ändere oder lösche, was du möchtest. Die Tour kannst du jederzeit unter Einstellungen → Konto neu starten.',
+    'Alles auf deiner Startseite ist ein Ausgangspunkt: Ändere oder lösche, was du möchtest. Die Tour kannst du jederzeit unter Einstellungen → Konto neu starten.',
   'common.set_up': 'Einrichten',
   'common.connected_saved': 'Verbunden und gespeichert.',
   'clock.unknown_time_zone': 'Unbekannte Zeitzone. Verwende einen IANA-Namen wie Europe/Berlin.',

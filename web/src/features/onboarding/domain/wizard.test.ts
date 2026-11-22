@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { laterSetup, startIndex, templateCards, templateKinds, wizardSteps } from './wizard';
+import { calculate } from '../../search/domain/calc/calc';
+import {
+  exampleSetOf,
+  laterSetup,
+  searchExamples,
+  startIndex,
+  templateCards,
+  templateKinds,
+  wizardSteps,
+} from './wizard';
 
 describe('wizardSteps', () => {
   it('asks everything of an owner on a fresh dashboard', () => {
@@ -8,6 +17,7 @@ describe('wizardSteps', () => {
       'profile',
       'extra:instance',
       'widgets',
+      'search',
       'done',
     ]);
   });
@@ -16,6 +26,7 @@ describe('wizardSteps', () => {
     expect(wizardSteps({ personal: true, owner: false, widgets: false, extra: ['instance'] })).toEqual([
       'welcome',
       'profile',
+      'search',
       'done',
     ]);
   });
@@ -58,5 +69,25 @@ describe('laterSetup', () => {
   it('asks for a place before the weather works', () => {
     expect(laterSetup('weather', false)).toBe('set_up');
     expect(laterSetup('weather', true)).toBeUndefined();
+  });
+});
+
+describe('searchExamples', () => {
+  it('follows the template and leaves out examples whose module is off', () => {
+    expect(exampleSetOf('family')).toBe('family');
+    expect(exampleSetOf('empty')).toBe('home');
+    const all = new Set(['calendar', 'birthdays', 'waste', 'weather', 'shopping']);
+    expect(searchExamples('en', 'family', all)[0]).toBe('What is on today?');
+    expect(searchExamples('de', 'family', new Set(['waste']))).toEqual([
+      'Wann kommt die Biotonne?',
+      '19 % von 240',
+      '5 km in mi',
+    ]);
+  });
+
+  it('keeps the calculator examples answerable', () => {
+    for (const lang of ['de', 'en'] as const)
+      for (const q of searchExamples(lang, 'home', new Set()).slice(0, 2))
+        expect(calculate(q)).not.toBeNull();
   });
 });

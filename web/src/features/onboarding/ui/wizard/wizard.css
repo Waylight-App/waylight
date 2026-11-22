@@ -465,3 +465,100 @@
     }
   }
 }
+
+/* Search */
+.wz-search {
+  width: min(680px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: var(--wz-surface);
+  border: 1px solid var(--wz-amber);
+  box-shadow: 0 0 0 4px rgb(242 180 65 / 15%);
+  border-radius: 16px;
+  color: var(--wz-amber);
+  text-align: left;
+}
+.wz-search input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--wz-text);
+  font:
+    500 20px/1.3 'Figtree Variable',
+    var(--font-sans);
+}
+.wz-search input:focus-visible {
+  outline: none;
+}
+.wz-search:has(input:focus-visible) {
+  outline: 3px solid var(--wz-amber-hover);
+  outline-offset: 3px;
+}
+.wz-answer {
+  width: min(680px, 100%);
+  min-height: 112px;
+  text-align: left;
+}
+/* The answer sits on warm paper, like a product preview on a lit screen. */
+.wz-paper {
+  --color-surface: #fff3d6;
+  --color-border: #ead9ae;
+  --color-text: #1b2238;
+  --color-text-muted: #6b5f45;
+  --color-accent-text: #a86400;
+  --font-display: var(--font-wordmark);
+  --radius-small: 16px;
+  padding: 0;
+  color: var(--color-text);
+}
+.wz-paper .answer {
+  padding: 20px 24px;
+}
+.wz-paper .chips {
+  display: none;
+}
+.wz-paper .value {
+  font-size: clamp(32px, 4vw, 44px);
+  line-height: 1;
+}
+.wz-examples {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  max-width: 760px;
+}
+.wz-examples button {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--wz-line);
+  background: var(--wz-surface);
+  color: var(--wz-text);
+  font:
+    500 16px/1.2 'Figtree Variable',
+    var(--font-sans);
+  cursor: pointer;
+}
+.wz-examples button[aria-pressed='true'] {
+  border-color: var(--wz-amber);
+  background: var(--wz-warm);
+  color: var(--wz-amber-hover);
+}
+.wz-caption {
+  margin: 0;
+  color: var(--wz-subtle);
+  font-size: 14px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wz-paper {
+    animation: wz-in 0.28s ease both;
+  }
+}

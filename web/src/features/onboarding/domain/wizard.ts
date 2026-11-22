@@ -4,7 +4,7 @@ import type { BuiltinTemplate } from '../../dashboard/domain/dashboard';
  * The onboarding wizard (#739): one screen per step, before the dashboard.
  * Plugin steps are "extra:<id>".
  */
-export type WizardStepId = 'welcome' | 'profile' | 'widgets' | 'done' | `extra:${string}`;
+export type WizardStepId = 'welcome' | 'profile' | 'widgets' | 'search' | 'done' | `extra:${string}`;
 
 /**
  * The steps in order. The profile needs the personal settings; plugin steps
@@ -21,7 +21,7 @@ export function wizardSteps(o: {
   if (o.personal) steps.push('profile');
   if (o.owner) steps.push(...o.extra.map((id) => `extra:${id}` as const));
   if (o.widgets) steps.push('widgets');
-  steps.push('done');
+  steps.push('search', 'done');
   return steps;
 }
 
@@ -68,4 +68,83 @@ const LATER_SETUP: Readonly<Record<string, LaterSetup>> = {
 export function laterSetup(kind: string, hasPlace: boolean): LaterSetup | undefined {
   if (kind === 'weather' && !hasPlace) return 'set_up';
   return LATER_SETUP[kind];
+}
+
+/** A query offered in the search step, with the module it needs, if any. */
+export interface SearchExample {
+  query: string;
+  module?: string;
+}
+
+/** The example sets: they follow the template chosen in the widget step. */
+export type ExampleSet = 'family' | 'home' | 'homelab';
+
+/** The set for a chosen template; the empty template and single widgets get the home set. */
+export function exampleSetOf(template: string): ExampleSet {
+  return template === 'family' || template === 'homelab' ? template : 'home';
+}
+
+/**
+ * The queries offered to try, per language and set, in display order; the
+ * first one is typed by the animation. Each is answered by the real search
+ * (a test checks this), and shown only when its module is on. To change the
+ * wording, edit the lists; nothing else refers to them.
+ */
+export const SEARCH_EXAMPLES: Record<'de' | 'en', Record<ExampleSet, readonly SearchExample[]>> = {
+  de: {
+    family: [
+      { query: 'Was steht heute an?', module: 'calendar' },
+      { query: 'Wer hat bald Geburtstag?', module: 'birthdays' },
+      { query: 'Wann kommt die Biotonne?', module: 'waste' },
+      { query: 'Brauche ich morgen einen Regenschirm?', module: 'weather' },
+      { query: 'Was steht auf der Einkaufsliste?', module: 'shopping' },
+    ],
+    home: [
+      { query: 'Wann kommt die Biotonne?', module: 'waste' },
+      { query: 'Wie warm wird es am Wochenende?', module: 'weather' },
+      { query: 'Was steht auf der Einkaufsliste?', module: 'shopping' },
+      { query: 'Was steht heute an?', module: 'calendar' },
+      { query: 'Wann sind die nächsten Ferien?', module: 'holidays' },
+    ],
+    homelab: [
+      { query: 'Läuft alles bei meinem Server?', module: 'services' },
+      // Only typed in: the wizard never runs an action.
+      { query: 'Starte Jellyfin neu', module: 'docker' },
+      { query: 'Wie viel Speicher ist frei?', module: 'system' },
+      { query: 'Was steht heute an?', module: 'calendar' },
+    ],
+  },
+  en: {
+    family: [
+      { query: 'What is on today?', module: 'calendar' },
+      { query: 'Who has a birthday soon?', module: 'birthdays' },
+      { query: 'When is the organic waste collected?', module: 'waste' },
+      { query: 'Do I need an umbrella tomorrow?', module: 'weather' },
+      { query: 'What is on the shopping list?', module: 'shopping' },
+    ],
+    home: [
+      { query: 'When is the organic waste collected?', module: 'waste' },
+      { query: 'Will it rain on the weekend?', module: 'weather' },
+      { query: 'What is on the shopping list?', module: 'shopping' },
+      { query: 'What is on today?', module: 'calendar' },
+      { query: 'When are the next holidays?', module: 'holidays' },
+    ],
+    homelab: [
+      { query: 'Is everything running on my server?', module: 'services' },
+      { query: 'Restart Jellyfin', module: 'docker' },
+      { query: 'How much storage is free?', module: 'system' },
+      { query: 'What is on today?', module: 'calendar' },
+    ],
+  },
+};
+
+/** The calculator needs no module; it fills the list up when few modules are on. */
+const FALLBACK = { de: ['19 % von 240', '5 km in mi'], en: ['19 % of 240', '5 km in mi'] } as const;
+
+/** The examples of a language and set whose module is on, at least two. */
+export function searchExamples(lang: 'de' | 'en', set: ExampleSet, modules: ReadonlySet<string>): string[] {
+  const own = SEARCH_EXAMPLES[lang][set]
+    .filter((e) => e.module === undefined || modules.has(e.module))
+    .map((e) => e.query);
+  return own.length >= 2 ? own : [...own, ...FALLBACK[lang]].slice(0, 3);
 }
