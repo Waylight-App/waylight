@@ -143,7 +143,7 @@ export const de: Record<BaseMessageKey, string> = {
   'notifications.a_container_stops_or_becomes_unhealthy': 'ein Container stoppt oder unhealthy wird',
   'notifications.a_disk_is_more_than': 'ein Datenträger zu mehr als',
   'notifications.full': '% voll ist',
-  'notifications.a_tls_certificate_expires_within': 'ein TLS-Zertifikat innerhalb von',
+  'notifications.a_tls_certificate_expires_within': 'ein Zertifikat einer Webseite innerhalb von',
   'notifications.days': 'Tagen abläuft',
   'notifications.a_monitored_backup_fails_or_is': 'ein überwachtes Backup fehlschlägt oder überfällig ist',
   'notifications.last_delivery_failed': 'Letzte Zustellung fehlgeschlagen: {lastError}',
@@ -400,7 +400,7 @@ export const de: Record<BaseMessageKey, string> = {
   'calendar.cancel': 'Abbrechen',
   'transfer.export': 'Export',
   'transfer.downloads_your_layout_bookmarks_notes_to':
-    'Lädt dein Layout, Lesezeichen, Notizen, To-dos, Feeds, Dienste und Einstellungen als JSON herunter. Passwörter, Tokens und API-Keys sind nie enthalten.',
+    'Lädt dein Layout, Lesezeichen, Notizen, To-dos, Feeds, Dienste und Einstellungen als Datei herunter. Passwörter und Zugangsschlüssel sind nie enthalten.',
   'transfer.download_export': 'Export herunterladen',
   'transfer.import': 'Import',
   'transfer.restores_an_export_e_g_on':
@@ -543,7 +543,7 @@ export const de: Record<BaseMessageKey, string> = {
   'services.no_services_yet_add_them_under':
     'Noch keine Dienste. Füge sie unter Einstellungen → Dienste hinzu.',
   'services.response_time_of_over_24_hours': 'Antwortzeit von {name} der letzten 24 Stunden',
-  'services.tls_certificate_expires': 'TLS-Zertifikat läuft ab am {value}',
+  'services.tls_certificate_expires': 'Zertifikat läuft ab am {value}',
   'services.wake_up_wake_on_lan': 'Aufwecken (Wake-on-LAN)',
   'services.wake_up': '{name} aufwecken',
   'wireguard.the_wireguard_widget_reads_a_file':
@@ -991,7 +991,8 @@ export const de: Record<BaseMessageKey, string> = {
   'services.invalid_url': 'Die URL muss mit http:// oder https:// beginnen.',
   'services.invalid_check_url': 'Die Prüf-URL muss mit http:// oder https:// beginnen.',
   'services.invalid_mac': 'Die MAC-Adresse muss wie aa:bb:cc:dd:ee:ff aussehen.',
-  'transfer.invalid_json': 'Die Datei ist kein gültiges JSON.',
+  'transfer.invalid_json':
+    'Diese Datei kann nicht gelesen werden. Wähle eine Datei, die du aus Waylight exportiert hast.',
   'transfer.not_export': 'Das ist keine Exportdatei von Waylight.',
   'transfer.result_imported': 'Importiert: {list}.',
   'transfer.nothing': 'nichts',

@@ -3,7 +3,7 @@ import { describeConfigResult, describeResult, parseExportFile } from './transfe
 
 describe('transfer domain', () => {
   it('validates export files', () => {
-    expect(parseExportFile('nope')).toMatch(/JSON/);
+    expect(parseExportFile('nope')).toMatch(/cannot be read/);
     expect(parseExportFile('{"format":"other"}')).toMatch(/not a Waylight/);
     expect(parseExportFile('{"format":"waylight-export","version":1,"sections":{}}')).toMatchObject({
       version: 1,
