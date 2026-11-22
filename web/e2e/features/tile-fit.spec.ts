@@ -44,23 +44,25 @@ test('the default templates show every primary action without scrolling (#737)',
     id: string;
   }[];
   expect(templates.length).toBeGreaterThan(0);
+  // Not named after the template: other specs look for a tab called "Home" by substring.
+  const tabName = (id: string) => `Layout ${templates.findIndex((x) => x.id === id) + 1}`;
   for (const tpl of templates) {
     const res = await page.request.post(`/api/dashboard/templates/builtin/${tpl.id}/tabs`, {
       headers,
-      data: { name: `Fit ${tpl.id}` },
+      data: { name: tabName(tpl.id) },
     });
     expect(res.ok(), tpl.id).toBeTruthy();
   }
   await page.reload();
 
   for (const tpl of templates) {
-    await page.getByRole('button', { name: `Fit ${tpl.id}`, exact: true }).click();
+    await page.getByRole('button', { name: tabName(tpl.id), exact: true }).click();
     await expect(page.locator('[aria-busy="true"]')).toHaveCount(0, { timeout: 15_000 });
     await expect.poll(() => cutOff(page), { message: tpl.id }).toEqual([]);
   }
 
   // The family template has a shopping list: however long it gets, the add field stays in place.
-  await page.getByRole('button', { name: 'Fit family', exact: true }).click();
+  await page.getByRole('button', { name: tabName('family'), exact: true }).click();
   const tile = page.locator('article.widget', { has: page.getByRole('heading', { name: /Shopping list/ }) });
   // The specs share one account: an earlier one may have made a list already.
   const create = tile.getByRole('button', { name: 'Create list' });

@@ -15,6 +15,7 @@ test('the FRITZ!Box has separate internet and calls widgets (#168)', async ({ pa
   await settings.getByRole('combobox', { name: 'Calls' }).selectOption('missed');
   await settings.getByRole('button', { name: 'Save', exact: true }).click();
   await account(page, 'Done');
-  // No box configured in the smoke test: the widget says where to connect it.
-  await expect(page.getByText('Connect your FRITZ!Box under Settings → FRITZ!Box.')).toBeVisible();
+  // No box configured in the smoke test: the widget offers to connect it.
+  await expect(page.getByText('How your FRITZ!Box is doing.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Connect', exact: true }).first()).toBeVisible();
 });
