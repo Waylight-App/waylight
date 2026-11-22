@@ -30,6 +30,7 @@ export const serverMessages = {
   srv_fc9cd325f2b0b2ac: "The background must be an http(s) image URL, an uploaded picture or a built-in background.",
   srv_32f1f2343e831224: "The certificate is not trusted. Use the http:// address in your home network, or give the service a certificate this server trusts.",
   srv_73afeaf5a99f225a: "The certificate of the server is not trusted.",
+  srv_ed9b451f9d66eaa7: "The file is empty.",
   srv_23575e607ab8d86b: "The guest does not exist.",
   srv_48527dc59bd9b8f6: "The key is not accepted. Was it copied completely?",
   srv_28cc0a1c84155db5: "The licence key has expired or covers fewer accounts than this instance has; the data stays readable, but changes need a valid key.",

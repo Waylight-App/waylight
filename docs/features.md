@@ -21,6 +21,7 @@ modules in detail.
 | Chores (`chores`) | Recurring household tasks with assignees who take turns, a done button and "2 tasks today" in the compact view. [Details](modules/chores.md) |
 | Family board (`board`) | Short notes for the household, pinned or with a last day, readable on a wall display. [Details](modules/board.md) |
 | Contracts (`contracts`) | Contracts with cost, notice period and automatic renewal; shows the next cancellation deadline and reminds through your notification channels. [Details](modules/contracts.md) |
+| Warranty and documents (`documents`) | Receipts and warranty papers with the purchase day and the end of the warranty; photos and PDFs up to 10 MB are stored on your server and included in backups. [Details](modules/documents.md) |
 | Countdowns (`countdown`) | Days left until exams, holidays or deadlines, highlighted when the date is close. |
 | Focus timer (`focus`) | Pomodoro timer kept per account on the server, so every device and the compact view show the same timer (in the extension's local mode it stays in the browser), with an optional browser notification and a count of finished sessions per day. |
 | Meal plan (`meals`) | A week of dishes with recipe links and ingredients that go onto the shopping list with one click. [Details](modules/meals.md) |

@@ -12,8 +12,6 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_992a3c76b72d1b0a: 'Gib einen Text oder einen Link ein.',
   // The drop zone is full (200 MB, 100 items). Delete items first.
   srv_b7ede1495726d216: 'Die Ablage ist voll (200 MB, 100 Einträge). Lösche zuerst etwas.',
-  // The file is empty.
-  srv_ed9b451f9d66eaa7: 'Die Datei ist leer.',
   // The file must be at most 25 MB.
   srv_7fe59f42ecfd9d12: 'Die Datei darf höchstens 25 MB groß sein.',
   // The item does not exist or has expired.

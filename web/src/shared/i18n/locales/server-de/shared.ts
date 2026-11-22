@@ -64,6 +64,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // The Wake-on-LAN relay did not answer. Is COMPOSE_PROFILES=wol set (see docs/host-integrations.md)?
   srv_39f1fbfcd5e03469:
     'Das Wake-on-LAN-Relay hat nicht geantwortet. Ist COMPOSE_PROFILES=wol gesetzt (siehe docs/host-integrations.md)?',
+  // The file is empty.
+  srv_ed9b451f9d66eaa7: 'Die Datei ist leer.',
   // The guest does not exist.
   srv_23575e607ab8d86b: 'Der Gast existiert nicht.',
   // The name must be at most 40 characters long.

@@ -47,6 +47,7 @@ describe('widget registry (#116)', () => {
       chores: 'chores',
       board: 'board',
       contracts: 'contracts',
+      documents: 'documents',
     });
     // A connected to-do list has no compact state on the server.
     expect(definitionFor('todos')?.compact?.({ source: 'caldav-1' })).toBeUndefined();

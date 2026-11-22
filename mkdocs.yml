@@ -82,6 +82,7 @@ nav:
           - Chores: modules/chores.md
           - Contracts: modules/contracts.md
           - Device display mode: modules/device.md
+          - Documents: modules/documents.md
           - Drop zone: modules/drop.md
           - Electricity prices: modules/electricity.md
           - Family board: modules/board.md
