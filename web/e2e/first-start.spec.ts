@@ -44,12 +44,14 @@ test('first start asks the essentials, offers the templates and Family replaces 
   // The search step answers with the real search; an example types itself in.
   await expect(wizard.getByRole('heading', { name: 'Just ask.' })).toBeVisible();
   const field = wizard.getByRole('textbox', { name: 'Try a question' });
+  // Without a set-up widget the example shows a note instead of an answer card.
+  const answerOrNote = wizard.getByRole('article').or(wizard.getByText('Once the widget is set up'));
   // The examples follow the template chosen before: Family starts with the agenda.
   await expect(field).toHaveValue('What is on today?');
-  await expect(wizard.getByRole('article').first()).toBeVisible();
+  await expect(answerOrNote.first()).toBeVisible();
   await wizard.getByRole('button', { name: 'Who has a birthday soon?' }).click();
   await expect(field).toHaveValue('Who has a birthday soon?');
-  await expect(wizard.getByRole('article').first()).toBeVisible();
+  await expect(answerOrNote.first()).toBeVisible();
   await field.fill('3 * 17 + 4');
   await expect(wizard.getByRole('article', { name: '3 * 17 + 4 =' })).toContainText('55');
   await wizard.getByRole('button', { name: 'Next' }).click();
