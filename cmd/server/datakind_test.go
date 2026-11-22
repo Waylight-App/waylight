@@ -24,7 +24,7 @@ func TestDataKinds(t *testing.T) {
 	defer a.db.Close()
 	want := map[modules.DataKind][]string{
 		modules.PersonalContent: {"birthdays", "board", "bookmarks", "chores", "contracts", "countdown", "dashboard", "documents", "drop", "focus", "gamedeals", "gifts", "habits",
-			"markets", "meals", "notes", "parcels", "photos", "places", "readlater", "releases", "rss", "shopping", "study", "todos"},
+			"markets", "meals", "meters", "notes", "parcels", "photos", "places", "readlater", "releases", "rss", "shopping", "study", "todos"},
 		modules.PersonalSettings: {"appearance", "attention", "briefing", "calendar", "mail", "onboarding", "search"},
 	}
 	got := map[modules.DataKind][]string{}

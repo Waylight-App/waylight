@@ -1,0 +1,46 @@
+/** English UI texts of the meters feature (#689). */
+export const en = {
+  'widget.meters.title': 'Meter readings',
+  'widget.meters.description':
+    'Electricity, gas, water and heat meters with a quick entry for readings and a chart of the consumption.',
+  'compact.example.meters': 'Electricity: read 12 days ago',
+  'meters.new': 'New meter',
+  'meters.edit': 'Change meter',
+  'meters.name': 'Name',
+  'meters.kind': 'Kind',
+  'meters.kind.electricity': 'Electricity',
+  'meters.kind.gas': 'Gas',
+  'meters.kind.water': 'Water',
+  'meters.kind.heat': 'Heat',
+  'meters.kind.other': 'Other',
+  'meters.unit': 'Unit',
+  'meters.unit_hint': 'e.g. kWh or m³',
+  'meters.select': 'Meter',
+  'meters.edit_named': 'Change {name}',
+  'meters.remove': 'Remove {name}',
+  'meters.empty': 'No meters yet.',
+  'meters.day': 'Day',
+  'meters.value': 'Counter value',
+  'meters.add_reading': 'Add reading',
+  'meters.no_readings': 'No readings yet.',
+  'meters.last': 'Last reading: {value} on {date}',
+  'meters.chart': 'Consumption per month, {year}',
+  'meters.month': '{month}: {value}',
+  'meters.month_unknown': '{month}: not enough readings',
+  'meters.year': 'Year',
+  'meters.year_total': 'Consumption {year}: {value}',
+  'meters.year_total_partial': 'Consumption {year} so far: {value}',
+  'meters.year_unknown': 'No consumption for {year} yet; it needs readings on both sides.',
+  'meters.reading_line': '{date}: {value}',
+  'meters.remove_reading': 'Remove the reading of {date}',
+  'meters.error.name': 'Enter a name of up to 60 characters.',
+  'meters.error.unit': 'Enter a unit of up to 12 characters.',
+  'meters.error.day': 'Choose a day that is not in the future.',
+  'meters.error.value': 'Enter the counter value, zero or more.',
+  'meters.error.lower': 'The reading cannot be lower than an earlier one.',
+  'meters.error.higher': 'The reading cannot be higher than a later one.',
+} as const;
+
+declare module '../../../shared/i18n/registry' {
+  interface FeatureMessages extends Record<keyof typeof en, string> {}
+}
