@@ -23,10 +23,8 @@
   import DashboardPage from './DashboardPage.svelte';
   import { branding } from './branding/branding.svelte';
   import { loadPlugins, type OnboardingStep } from './plugins/loader';
-  import PluginHost from './plugins/PluginHost.svelte';
   import type { Personal } from '../features/onboarding/domain/profile';
-  import type { WizardContext } from '../features/onboarding/ui/wizard/wizardContext';
-  import { startIndex, wizardSteps, type WizardStepId } from '../features/onboarding/domain/wizard';
+  import { stageOf } from '../features/onboarding/domain/stage';
   import { definitionFor, widgetDefinitions } from './widgets';
   import { searchActions } from './searchActions';
   import { registeredSections } from './settingsSections';
@@ -464,12 +462,13 @@
         appearanceLoaded = true;
       }
       if (!container.auth.guest && info.modules.has('onboarding')) {
-        const { stage, step } = await container.onboarding.state();
+        const status = await container.onboarding.status();
+        const stage = stageOf(status);
         // The public demo shares one account and keeps its showcase, and
         // the local mode has no server to ask: both go straight to the tour.
         if (stage !== 'finished' && (container.localMode || container.auth.demo)) setTimeout(startTour, 600);
         // The wizard comes first (#739), the tour after it.
-        else if (stage === 'wizard') await openWizard(step);
+        else if (stage === 'wizard') wizardStep = status.step;
         // Wait a moment so the dashboard is rendered before the tour measures it.
         else if (stage === 'tour') setTimeout(startTour, 600);
       }
@@ -482,62 +481,17 @@
 
   /** The dashboard waits until it is known whether the wizard comes first (#739). */
   let onboardingChecked = $state(false);
-  /** The wizard's steps and where it opens; null while it is not shown. */
-  let wizard = $state<{ steps: WizardStepId[]; start: number; sample: boolean } | null>(null);
+  /** The step the wizard opens at (empty before it started); null while it is not shown. */
+  let wizardStep = $state<string | null>(null);
 
   /** Saves personal settings from the wizard (#671). */
   async function savePersonal(patch: Partial<Personal>) {
     appearance = await container.appearance.save({ ...appearance, ...patch });
   }
 
-  const wizardContext = $derived<WizardContext>({
-    owner: container.auth.owner,
-    personal: modules?.has('appearance') ? appearance : undefined,
-    savePersonal,
-    preview: (patch) => (lookPreview = patch),
-    places: modules?.has('places')
-      ? {
-          search: modules.has('weather')
-            ? async (q) =>
-                (await container.weather.searchPlaces(q)).map((p) => ({
-                  name: '',
-                  label: [p.name, p.region, p.country].filter(Boolean).join(', '),
-                  lat: p.lat,
-                  lon: p.lon,
-                }))
-            : undefined,
-          save: (p) => container.places.add(p),
-        }
-      : undefined,
-    widgets: wizard?.steps.includes('widgets')
-      ? {
-          uc: container.dashboard,
-          types: widgetDefinitions
-            .filter((d) => widgetKinds.has(d.type.kind))
-            .map((d) => ({ type: d.type, icon: d.icon })),
-          sample: wizard.sample,
-        }
-      : undefined,
-    extraSteps: onboardingSteps.map((s) => ({ id: s.id, title: s.title() })),
-    extra: wizardExtra,
-    widgetName: (kind) => definitionFor(kind)?.type.title ?? kind,
-  });
-
-  /** Opens the onboarding wizard, at the step the account stopped at. */
-  async function openWizard(stored: string) {
-    const fresh = await freshDashboard();
-    const steps = wizardSteps({
-      personal: modules?.has('appearance') ?? false,
-      owner: container.auth.owner,
-      widgets: fresh !== 'no',
-      extra: onboardingSteps.map((s) => s.id),
-    });
-    wizard = { steps, start: startIndex(steps, stored), sample: fresh === 'sample' };
-  }
-
   /** The wizard is finished or skipped: the dashboard opens, then the tour. */
   async function wizardDone() {
-    wizard = null;
+    wizardStep = null;
     lookPreview = null;
     try {
       await container.onboarding.finishWizard();
@@ -551,22 +505,6 @@
   // help result of the search. Kiosk displays offer neither.
   let helpKind = $state<string | null>(null);
   const showHelp = $derived(container.auth.kiosk ? undefined : (kind: string) => (helpKind = kind));
-
-  /**
-   * Whether the dashboard is still as setup left it: one tab with at most
-   * the default widget ('empty'), or only the untouched example tabs of the
-   * sample data ('sample', #670). An applied waylight.yaml or a dashboard
-   * someone arranged counts as set up ('no').
-   */
-  async function freshDashboard(): Promise<'empty' | 'sample' | 'no'> {
-    try {
-      const tabs = await container.dashboard.load();
-      if (tabs.length > 0 && tabs.every((tab) => tab.sample)) return 'sample';
-      return tabs.length <= 1 && tabs.every((tab) => tab.widgets.length <= 1) ? 'empty' : 'no';
-    } catch {
-      return 'no';
-    }
-  }
 
   function startTour() {
     editing = false;
@@ -673,7 +611,7 @@
 <svelte:window ononline={() => (offline = false)} onoffline={() => (offline = true)} />
 
 <!-- Top bar and hero (#189): brand · date, weather, to-dos · status, launcher, account. -->
-{#if !wizard}
+{#if wizardStep === null}
   <header class="topbar">
     <a class="brand" href="/">
       {#if branding().logo}
@@ -793,7 +731,7 @@
     </p>{/if}
   <SyncStatus sync={container.offline} />
   {#if error}<p class="error" role="alert">{error}</p>{/if}
-  {#if modules && onboardingChecked && !wizard}
+  {#if modules && onboardingChecked && wizardStep === null}
     {#if modules.has('notifications') && container.auth.admin}<MaintenanceBanner
         notifications={container.notifications}
       />{/if}
@@ -837,21 +775,18 @@
   {/await}
 {/if}
 
-{#snippet wizardExtra(id: string, setSubmit: (save: () => Promise<void>) => void)}
-  {@const step = onboardingSteps.find((s) => s.id === id)}
-  {#if step}
-    <PluginHost mountable={step.mountable} context={step.context} props={{ setSubmit }} />
-  {/if}
-{/snippet}
-
-{#if wizard}
-  {#await import('../features/onboarding/ui/wizard/Wizard.svelte') then { default: Wizard }}
-    <Wizard
-      steps={wizard.steps}
-      start={wizard.start}
-      onstep={(step) => void container.onboarding.saveStep(step).catch(() => undefined)}
-      onfinish={() => void wizardDone()}
-      ctx={wizardContext}
+{#if wizardStep !== null && modules}
+  {#await import('./OnboardingWizard.svelte') then { default: OnboardingWizard }}
+    <OnboardingWizard
+      {container}
+      {modules}
+      {widgetKinds}
+      {appearance}
+      {onboardingSteps}
+      stored={wizardStep}
+      {savePersonal}
+      preview={(patch) => (lookPreview = patch)}
+      ondone={() => void wizardDone()}
     />
   {/await}
 {/if}

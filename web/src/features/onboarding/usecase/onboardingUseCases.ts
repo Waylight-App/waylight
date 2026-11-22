@@ -1,4 +1,4 @@
-import { stageOf, WIZARD_FINISHED, type Stage } from '../domain/wizard';
+import { WIZARD_FINISHED } from '../domain/stage';
 
 /** The stored onboarding state of the account. */
 export interface OnboardingStatus {
@@ -19,10 +19,9 @@ export interface OnboardingGateway {
 export class OnboardingUseCases {
   constructor(private readonly gateway: OnboardingGateway) {}
 
-  /** What to show now, and the wizard step to continue at. */
-  async state(): Promise<{ stage: Stage; step: string }> {
-    const status = await this.gateway.status();
-    return { stage: stageOf(status), step: status.step };
+  /** The stored state; the shell decides from it what to show. */
+  status(): Promise<OnboardingStatus> {
+    return this.gateway.status();
   }
 
   /** Remembers the wizard step, so a reload continues there. */

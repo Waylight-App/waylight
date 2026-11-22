@@ -11,17 +11,11 @@ function setup(status: { completed: boolean; step: string }) {
 }
 
 describe('OnboardingUseCases', () => {
-  it('starts the wizard for a fresh account and continues where it stopped', async () => {
-    expect(await setup({ completed: false, step: '' }).uc.state()).toEqual({ stage: 'wizard', step: '' });
-    expect(await setup({ completed: false, step: 'widgets' }).uc.state()).toEqual({
-      stage: 'wizard',
+  it('reads the stored state', async () => {
+    expect(await setup({ completed: false, step: 'widgets' }).uc.status()).toEqual({
+      completed: false,
       step: 'widgets',
     });
-  });
-
-  it('shows the tour after the wizard and nothing after both', async () => {
-    expect((await setup({ completed: false, step: 'done' }).uc.state()).stage).toBe('tour');
-    expect((await setup({ completed: true, step: '' }).uc.state()).stage).toBe('finished');
   });
 
   it('restarts the tour alone, past the wizard', async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { laterSetup, stageOf, startIndex, templateCards, templateKinds, wizardSteps } from './wizard';
+import { laterSetup, startIndex, templateCards, templateKinds, wizardSteps } from './wizard';
 
 describe('wizardSteps', () => {
   it('asks everything of an owner on a fresh dashboard', () => {
@@ -27,15 +27,6 @@ describe('startIndex', () => {
   it('starts at the beginning without a known step', () => {
     expect(startIndex(steps, '')).toBe(0);
     expect(startIndex(steps, 'gone')).toBe(0);
-  });
-});
-
-describe('stageOf', () => {
-  it('runs the wizard, then the tour', () => {
-    expect(stageOf({ completed: false, step: '' })).toBe('wizard');
-    expect(stageOf({ completed: false, step: 'profile' })).toBe('wizard');
-    expect(stageOf({ completed: false, step: 'done' })).toBe('tour');
-    expect(stageOf({ completed: true, step: '' })).toBe('finished');
   });
 });
 

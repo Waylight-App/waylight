@@ -6,9 +6,6 @@ import type { BuiltinTemplate } from '../../dashboard/domain/dashboard';
  */
 export type WizardStepId = 'welcome' | 'profile' | 'widgets' | 'done' | `extra:${string}`;
 
-/** The stored step that ends the wizard; the tour follows. */
-export const WIZARD_FINISHED = 'done';
-
 /**
  * The steps in order. The profile needs the personal settings; plugin steps
  * (the instance name) concern the whole installation, so owners only; the
@@ -31,15 +28,6 @@ export function wizardSteps(o: {
 /** Where a stored step continues; an unknown or empty one starts at the beginning. */
 export function startIndex(steps: readonly string[], stored: string): number {
   return Math.max(0, steps.indexOf(stored));
-}
-
-/** Which stage of the onboarding an account is in. */
-export type Stage = 'wizard' | 'tour' | 'finished';
-
-/** The wizard comes first, then the tour; a finished tour ends both. */
-export function stageOf(status: { completed: boolean; step: string }): Stage {
-  if (status.completed) return 'finished';
-  return status.step === WIZARD_FINISHED ? 'tour' : 'wizard';
 }
 
 /** Widgets offered one by one, in this order; kinds that are switched off are left out. */
