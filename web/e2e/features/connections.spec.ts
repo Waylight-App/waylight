@@ -13,8 +13,8 @@ test('admins add, rename and remove a named connection (#708)', async ({ page })
 
   // The first listed service is enough: the form asks for whatever it needs.
   await section.getByLabel('Service').selectOption({ index: 1 });
-  await section.getByRole('textbox', { name: 'Name' }).fill('Home');
-  const address = section.getByRole('textbox', { name: 'Address' });
+  await section.getByRole('textbox', { name: 'Name', exact: true }).fill('Home');
+  const address = section.getByRole('textbox', { name: 'Address', exact: true });
   if (await address.isVisible()) await address.fill('http://service.invalid');
   for (const input of await section.locator('form input[autocomplete="off"]').all()) {
     await input.fill('secret-value');
@@ -26,7 +26,7 @@ test('admins add, rename and remove a named connection (#708)', async ({ page })
   await expect(item).toContainText('Not used by any widget');
 
   await item.getByRole('button', { name: 'Rename or move Home' }).click();
-  await section.getByRole('textbox', { name: 'Name' }).fill('Office');
+  await section.getByRole('textbox', { name: 'Name', exact: true }).fill('Office');
   await section.getByRole('button', { name: 'Save', exact: true }).click();
   const renamed = section.getByRole('listitem').filter({ hasText: 'Office' });
   await expect(renamed).toBeVisible();
