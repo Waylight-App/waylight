@@ -1,5 +1,5 @@
 import { t } from '../../shared/i18n';
-import { lazy, type WidgetDefinition } from '../widgetKit';
+import { choicesOf, lazy, type WidgetDefinition } from '../widgetKit';
 
 /** The arr widget. */
 export const widgets: WidgetDefinition[] = [
@@ -19,11 +19,11 @@ export const widgets: WidgetDefinition[] = [
     icon: 'package',
     view: lazy(
       () => import('../../features/arr/ui/ArrWidget.svelte'),
-      (config, c) => ({ config, arr: c.arr }),
+      (config, c) => ({ config, arr: c.arr, connections: choicesOf(c) }),
     ),
     settings: lazy(
       () => import('../../features/arr/ui/ArrWidgetSettings.svelte'),
-      (config) => ({ config }),
+      (config, c) => ({ config, connections: choicesOf(c) }),
     ),
   },
 ];

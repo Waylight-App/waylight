@@ -12,9 +12,9 @@ import {
 export interface GrafanaGateway {
   settings(): Promise<GrafanaSettings>;
   saveSettings(url: string, token: string): Promise<GrafanaSettings>;
-  alerts(): Promise<GrafanaAlerts>;
-  dashboards(query: string): Promise<GrafanaDashboard[]>;
-  panels(uid: string): Promise<GrafanaPanel[]>;
+  alerts(connection?: string): Promise<GrafanaAlerts>;
+  dashboards(query: string, connection?: string): Promise<GrafanaDashboard[]>;
+  panels(uid: string, connection?: string): Promise<GrafanaPanel[]>;
   /** The panel's values without the image renderer (#579), by their address. */
   panelValues(url: string): Promise<PanelValues>;
 }
@@ -32,16 +32,17 @@ export class GrafanaUseCases {
     return this.gateway.saveSettings(url.trim(), token.trim());
   }
 
-  alerts(): Promise<GrafanaAlerts> {
-    return this.gateway.alerts();
+  /** Reads through the named connection; without one, through the module settings. */
+  alerts(connection?: string): Promise<GrafanaAlerts> {
+    return this.gateway.alerts(connection);
   }
 
-  dashboards(query: string): Promise<GrafanaDashboard[]> {
-    return this.gateway.dashboards(query.trim());
+  dashboards(query: string, connection?: string): Promise<GrafanaDashboard[]> {
+    return this.gateway.dashboards(query.trim(), connection);
   }
 
-  panels(uid: string): Promise<GrafanaPanel[]> {
-    return this.gateway.panels(uid);
+  panels(uid: string, connection?: string): Promise<GrafanaPanel[]> {
+    return this.gateway.panels(uid, connection);
   }
 
   /** The values of the chosen panel, for a stat and sparkline (#579). */

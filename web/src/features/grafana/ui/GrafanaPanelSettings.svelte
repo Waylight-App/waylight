@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { ChoiceLoader } from '../../../shared/connection/connection';
+  import ConnectionSelect from '../../../shared/connection/ConnectionSelect.svelte';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import { type GrafanaDashboard, type GrafanaPanel, parsePanelConfig } from '../domain/grafana';
@@ -9,8 +11,9 @@
     config: Record<string, unknown>;
     grafana: GrafanaUseCases;
     onsave: (config: Record<string, unknown>) => Promise<void>;
+    connections: ChoiceLoader;
   }
-  let { config, grafana, onsave }: Props = $props();
+  let { config, grafana, onsave, connections }: Props = $props();
   // svelte-ignore state_referenced_locally
   let form = $state(parsePanelConfig(config));
   let query = $state('');
@@ -22,7 +25,7 @@
     const q = query;
     const timer = setTimeout(() => {
       grafana
-        .dashboards(q)
+        .dashboards(q, form.connectionId)
         .then((list) => ((dashboards = list), (error = '')))
         .catch((err) => (error = errorMessage(err)));
     }, 250);
@@ -31,9 +34,10 @@
 
   $effect(() => {
     const uid = form.dashboardUid;
+    const connection = form.connectionId;
     if (!uid) return;
     grafana
-      .panels(uid)
+      .panels(uid, connection)
       .then((list) => (panels = list))
       .catch((err) => (error = errorMessage(err)));
   });
@@ -59,6 +63,11 @@
     onsave({ ...form });
   }}
 >
+  <ConnectionSelect
+    services={['grafana']}
+    load={connections}
+    bind:value={() => form.connectionId, (id) => ((form.connectionId = id), chooseDashboard(''))}
+  />
   <label class="field"
     ><span>{t('grafana.search_dashboards')}</span><input
       class="input"

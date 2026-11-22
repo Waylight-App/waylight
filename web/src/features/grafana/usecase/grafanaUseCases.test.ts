@@ -16,7 +16,7 @@ describe('GrafanaUseCases', () => {
     await uc.saveSettings(' http://g ', ' glsa_1 ');
     await uc.dashboards(' node ');
     expect(gateway.saveSettings).toHaveBeenCalledWith('http://g', 'glsa_1');
-    expect(gateway.dashboards).toHaveBeenCalledWith('node');
+    expect(gateway.dashboards).toHaveBeenCalledWith('node', undefined);
   });
 
   it('asks for the values of the chosen panel (#579)', async () => {

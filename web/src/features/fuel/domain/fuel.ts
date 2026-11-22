@@ -1,3 +1,4 @@
+import { connectionIdOf } from '../../../shared/connection/connection';
 import { t } from '../../../shared/i18n';
 
 /** Fuel types (#53). */
@@ -84,11 +85,16 @@ export function toggleFavourite(
 /** Widget configuration: which list to show. */
 export interface FuelWidgetConfig {
   view: 'cheapest' | 'favourites';
+  /** Named connection to read through (#709); empty reads the module settings. */
+  connectionId: string;
 }
 
 /** Reads the widget configuration. */
 export function parseWidgetConfig(raw: Record<string, unknown>): FuelWidgetConfig {
-  return { view: raw['view'] === 'favourites' ? 'favourites' : 'cheapest' };
+  return {
+    view: raw['view'] === 'favourites' ? 'favourites' : 'cheapest',
+    connectionId: connectionIdOf(raw),
+  };
 }
 
 /** Validates the settings form. */

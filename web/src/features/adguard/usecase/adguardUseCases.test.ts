@@ -16,7 +16,10 @@ describe('AdGuardUseCases', () => {
     await uc.stats();
     await uc.stats('pihole');
     await uc.settings('pihole');
-    expect(g.stats.mock.calls).toEqual([['adguard'], ['pihole']]);
+    expect(g.stats.mock.calls).toEqual([
+      ['adguard', undefined],
+      ['pihole', undefined],
+    ]);
     expect(g.settings).toHaveBeenCalledWith('pihole');
   });
 });

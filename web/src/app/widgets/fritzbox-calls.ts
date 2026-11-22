@@ -1,5 +1,5 @@
 import { t } from '../../shared/i18n';
-import { lazy, type WidgetDefinition } from '../widgetKit';
+import { choicesOf, lazy, type WidgetDefinition } from '../widgetKit';
 
 /** The FRITZ!Box call list, separate from the internet widget (#168). */
 export const widgets: WidgetDefinition[] = [
@@ -19,11 +19,16 @@ export const widgets: WidgetDefinition[] = [
     icon: 'history',
     view: lazy(
       () => import('../../features/fritzbox/ui/FritzBoxCallsWidget.svelte'),
-      (config, c) => ({ config, fritzbox: c.fritzbox, discover: () => c.discovery.find('fritzbox') }),
+      (config, c) => ({
+        config,
+        fritzbox: c.fritzbox,
+        discover: () => c.discovery.find('fritzbox'),
+        connections: choicesOf(c),
+      }),
     ),
     settings: lazy(
       () => import('../../features/fritzbox/ui/FritzBoxCallsSettings.svelte'),
-      (config) => ({ config }),
+      (config, c) => ({ config, connections: choicesOf(c) }),
     ),
   },
 ];

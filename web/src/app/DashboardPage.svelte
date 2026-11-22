@@ -214,12 +214,12 @@
     return module !== undefined && emptyModules.has(module);
   }}
 >
-  {#snippet content(widget: Widget)}
+  {#snippet content(widget: Widget, save: (config: WidgetConfig) => Promise<void>)}
     {@const def = definitionFor(widget.kind)}
     {#if def}
       <LazyComponent
         renderer={def.view}
-        props={def.view.props(widget.config, container)}
+        props={{ ...def.view.props(widget.config, container), onsave: save }}
         scheduler={container.refresh}
         label={def.type.title}
       />

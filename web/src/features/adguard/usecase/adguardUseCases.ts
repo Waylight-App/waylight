@@ -9,8 +9,8 @@ export interface AdGuardGateway {
     username: string,
     password: string,
   ): Promise<AdGuardSettings>;
-  stats(provider: DnsProvider): Promise<AdGuardStats>;
-  pause(provider: DnsProvider, minutes: PauseMinutes): Promise<AdGuardStats>;
+  stats(provider: DnsProvider, connection?: string): Promise<AdGuardStats>;
+  pause(provider: DnsProvider, minutes: PauseMinutes, connection?: string): Promise<AdGuardStats>;
 }
 
 /** Application logic of the DNS filter feature (AdGuard Home and Pi-hole). */
@@ -31,12 +31,13 @@ export class AdGuardUseCases {
     return this.gateway.saveSettings(provider, url.trim(), username.trim(), password);
   }
 
-  stats(provider: DnsProvider = 'adguard'): Promise<AdGuardStats> {
-    return this.gateway.stats(provider);
+  /** Reads through the named connection; without one, through the module settings. */
+  stats(provider: DnsProvider = 'adguard', connection?: string): Promise<AdGuardStats> {
+    return this.gateway.stats(provider, connection);
   }
 
   /** Pauses blocking (#177); only allowed when the server enables it. */
-  pause(provider: DnsProvider, minutes: PauseMinutes): Promise<AdGuardStats> {
-    return this.gateway.pause(provider, minutes);
+  pause(provider: DnsProvider, minutes: PauseMinutes, connection?: string): Promise<AdGuardStats> {
+    return this.gateway.pause(provider, minutes, connection);
   }
 }

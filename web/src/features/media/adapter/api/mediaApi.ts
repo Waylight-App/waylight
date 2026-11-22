@@ -1,3 +1,4 @@
+import { withConnection } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { OverviewDTO, SettingsDTO } from '../../../../shared/api-client/generated/media';
 import type { SettingsInputDTO } from '../../../../shared/api-client/generated/media-requests';
@@ -15,8 +16,8 @@ export class MediaApi implements MediaGateway {
     const body: SettingsInputDTO = { provider, url, token };
     return { ...(await this.http.put<SettingsDTO>('/api/media/settings', body)) };
   }
-  async overview(): Promise<MediaOverview> {
-    const d = await this.http.get<OverviewDTO>('/api/media/overview');
+  async overview(connection?: string): Promise<MediaOverview> {
+    const d = await this.http.get<OverviewDTO>(withConnection('/api/media/overview', connection));
     return { serverName: d.serverName, recent: d.recent, sessions: d.sessions };
   }
 }

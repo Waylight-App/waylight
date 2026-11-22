@@ -1,3 +1,5 @@
+import { connectionIdOf, withConnection } from '../../../shared/connection/connection';
+
 /** Media servers the widget can show (#61). */
 export type MediaProvider = 'jellyfin' | 'plex';
 
@@ -43,8 +45,8 @@ export interface MediaOverview {
 }
 
 /** URL of the proxied poster of an item. */
-export function posterUrl(id: string): string {
-  return `/api/media/posters/${encodeURIComponent(id)}`;
+export function posterUrl(id: string, connection?: string): string {
+  return withConnection(`/api/media/posters/${encodeURIComponent(id)}`, connection);
 }
 
 /** "Show – Pilot" for episodes, otherwise the title. */
@@ -56,9 +58,15 @@ export function displayTitle(i: Pick<MediaItem, 'title' | 'series'>): string {
 export interface MediaWidgetConfig {
   showRecent: boolean;
   showSessions: boolean;
+  /** Named connection to read through (#709); empty reads the module settings. */
+  connectionId: string;
 }
 
 /** Reads the widget configuration; both parts are shown by default. */
 export function parseWidgetConfig(raw: Record<string, unknown>): MediaWidgetConfig {
-  return { showRecent: raw['showRecent'] !== false, showSessions: raw['showSessions'] !== false };
+  return {
+    showRecent: raw['showRecent'] !== false,
+    showSessions: raw['showSessions'] !== false,
+    connectionId: connectionIdOf(raw),
+  };
 }

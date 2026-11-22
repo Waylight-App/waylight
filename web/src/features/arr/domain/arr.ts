@@ -1,3 +1,4 @@
+import { connectionIdsOf } from '../../../shared/connection/connection';
 import { t } from '../../../shared/i18n';
 
 /** Supported apps (#86). */
@@ -72,6 +73,8 @@ export interface ArrWidgetConfig {
   upcoming: boolean;
   queue: boolean;
   health: boolean;
+  /** Named connections to read through (#709); none reads every instance of the module. */
+  connectionIds: string[];
 }
 
 /** Reads the widget configuration; every section is shown by default. */
@@ -80,6 +83,7 @@ export function parseWidgetConfig(raw: Record<string, unknown>): ArrWidgetConfig
     upcoming: raw['upcoming'] !== false,
     queue: raw['queue'] !== false,
     health: raw['health'] !== false,
+    connectionIds: connectionIdsOf(raw),
   };
 }
 

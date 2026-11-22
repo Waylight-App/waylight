@@ -1,5 +1,5 @@
 import { t } from '../../shared/i18n';
-import { lazy, type WidgetDefinition } from '../widgetKit';
+import { choicesOf, lazy, type WidgetDefinition } from '../widgetKit';
 
 /** The media widget. */
 export const widgets: WidgetDefinition[] = [
@@ -19,11 +19,16 @@ export const widgets: WidgetDefinition[] = [
     icon: 'activity',
     view: lazy(
       () => import('../../features/media/ui/MediaWidget.svelte'),
-      (config, c) => ({ config, media: c.media, discover: () => c.discovery.find('media') }),
+      (config, c) => ({
+        config,
+        media: c.media,
+        discover: () => c.discovery.find('media'),
+        connections: choicesOf(c),
+      }),
     ),
     settings: lazy(
       () => import('../../features/media/ui/MediaWidgetSettings.svelte'),
-      (config) => ({ config }),
+      (config, c) => ({ config, connections: choicesOf(c) }),
     ),
   },
 ];

@@ -46,8 +46,8 @@
     widgetTypes: WidgetType[];
     /** Picker icon per widget kind (#104). */
     widgetIcon: (kind: string) => IconName | undefined;
-    /** Renders the content of a widget. */
-    content: Snippet<[Widget]>;
+    /** Renders the content of a widget; `save` persists a new config (#709). */
+    content: Snippet<[Widget, (config: WidgetConfig) => Promise<void>]>;
     /** Renders the settings form of a widget; `save` persists a new config. */
     settings: Snippet<[Widget, (config: WidgetConfig) => Promise<void>]>;
     /** Whether a widget kind has a settings form. */
@@ -731,7 +731,7 @@
         {#if view === 'compact' && compact}
           {@render compact(widget, { strip: size === 'strip' })}
         {:else}
-          {@render content(widget)}
+          {@render content(widget, (config) => saveConfig(widget, config))}
         {/if}
       </WidgetFrame>
     {/snippet}
@@ -852,7 +852,7 @@
     onclose={() => (detail = null)}
     actions={mayEdit || notify ? panelActions : undefined}
   >
-    {@render content(widget)}
+    {@render content(widget, (config) => saveConfig(widget, config))}
   </DetailPanel>
   {#snippet panelActions()}
     {#if notify}

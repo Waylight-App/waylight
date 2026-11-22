@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { proxmoxSetup } from './proxmoxSetup';
   import { usePolling } from '../../../shared/refresh';
@@ -20,8 +21,11 @@
   interface Props {
     proxmox: ProxmoxUseCases;
     config: Record<string, unknown>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { proxmox, config }: Props = $props();
+  let { proxmox, config, connections, onsave }: Props = $props();
   // svelte-ignore state_referenced_locally
   const setup = proxmoxSetup(proxmox);
   const poll = usePolling();
@@ -42,7 +46,7 @@
 
   const load = () =>
     proxmox
-      .status()
+      .status(connectionIdOf(config))
       .then((s) => ((status = s), (error = ''), (unconfigured = false)))
       .catch((err) => {
         unconfigured = err instanceof ApiError && err.status === 404;
@@ -59,7 +63,7 @@
     if (!confirm(t(question, { name: g.name || String(g.id) }))) return;
     busy = g.id;
     try {
-      await proxmox.act(g.id, action);
+      await proxmox.act(g.id, action, connectionIdOf(config));
       await load();
     } catch (err) {
       error = errorMessage(err);
@@ -74,6 +78,7 @@
     text={t('proxmox.connect_under_settings')}
     descriptor={setup}
     instance
+    connections={savedConnections(['proxmox'], connections, config, onsave)}
     ondone={() => void load().catch(() => undefined)}
   />
 {:else if error && !status}

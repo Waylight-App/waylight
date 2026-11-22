@@ -1,5 +1,5 @@
 import { t } from '../../shared/i18n';
-import { lazy, type WidgetDefinition } from '../widgetKit';
+import { choicesOf, lazy, type WidgetDefinition } from '../widgetKit';
 
 /** The fuel widget. */
 export const widgets: WidgetDefinition[] = [
@@ -20,11 +20,16 @@ export const widgets: WidgetDefinition[] = [
     view: lazy(
       () => import('../../features/fuel/ui/FuelWidget.svelte'),
       // The setup assistant finds the place with the weather module's search.
-      (config, c) => ({ config, fuel: c.fuel, searchPlaces: (q: string) => c.weather.searchPlaces(q) }),
+      (config, c) => ({
+        config,
+        fuel: c.fuel,
+        searchPlaces: (q: string) => c.weather.searchPlaces(q),
+        connections: choicesOf(c),
+      }),
     ),
     settings: lazy(
       () => import('../../features/fuel/ui/FuelWidgetSettings.svelte'),
-      (config) => ({ config }),
+      (config, c) => ({ config, connections: choicesOf(c) }),
     ),
   },
 ];

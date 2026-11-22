@@ -1,3 +1,5 @@
+import { connectionIdOf } from '../../../shared/connection/connection';
+
 /** DNS filters the widget can show (#83). */
 export type DnsProvider = 'adguard' | 'pihole';
 
@@ -42,11 +44,13 @@ export interface AdGuardStats {
 /** Widget configuration. */
 export interface AdGuardWidgetConfig {
   provider: DnsProvider;
+  /** Named connection to read through (#709); empty reads the module settings. */
+  connectionId: string;
 }
 
 /** Reads the widget configuration; widgets from before #83 show AdGuard Home. */
 export function parseWidgetConfig(raw: Record<string, unknown>): AdGuardWidgetConfig {
-  return { provider: raw['provider'] === 'pihole' ? 'pihole' : 'adguard' };
+  return { provider: raw['provider'] === 'pihole' ? 'pihole' : 'adguard', connectionId: connectionIdOf(raw) };
 }
 
 /** Offered pause durations in minutes (#177). */

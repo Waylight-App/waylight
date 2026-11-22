@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { ChoiceLoader } from '../../../shared/connection/connection';
+  import ConnectionSelect from '../../../shared/connection/ConnectionSelect.svelte';
   import { t } from '../../../shared/i18n';
   import { parseWidgetConfig } from '../domain/fuel';
 
@@ -6,8 +8,9 @@
   interface Props {
     config: Record<string, unknown>;
     onsave: (config: Record<string, unknown>) => Promise<void>;
+    connections: ChoiceLoader;
   }
-  let { config, onsave }: Props = $props();
+  let { config, onsave, connections }: Props = $props();
   // svelte-ignore state_referenced_locally
   let form = $state(parseWidgetConfig(config));
 </script>
@@ -18,6 +21,7 @@
     onsave({ ...form });
   }}
 >
+  <ConnectionSelect services={['tankerkoenig']} load={connections} bind:value={form.connectionId} />
   <label class="field"
     ><span>{t('fuel.view')}</span><select class="input" bind:value={form.view}>
       <option value="cheapest">{t('fuel.view_cheapest')}</option>

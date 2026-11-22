@@ -1,3 +1,4 @@
+import { connectionIdOf } from '../../../shared/connection/connection';
 import { t } from '../../../shared/i18n';
 
 /** Connection settings as shown in the UI (the token is never returned). */
@@ -26,12 +27,17 @@ export const MAX_ENTITIES = 50;
 /** Widget configuration: the entities in display order. */
 export interface SmartHomeWidgetConfig {
   entities: string[];
+  /** Named connection to read through (#709); empty reads the module settings. */
+  connectionId: string;
 }
 
 /** Reads the widget configuration. */
 export function parseWidgetConfig(raw: Record<string, unknown>): SmartHomeWidgetConfig {
   const list = Array.isArray(raw['entities']) ? raw['entities'] : [];
-  return { entities: list.filter((x): x is string => typeof x === 'string').slice(0, MAX_ENTITIES) };
+  return {
+    entities: list.filter((x): x is string => typeof x === 'string').slice(0, MAX_ENTITIES),
+    connectionId: connectionIdOf(raw),
+  };
 }
 
 /** Whether a toggleable entity is on. */

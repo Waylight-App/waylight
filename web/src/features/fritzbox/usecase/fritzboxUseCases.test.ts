@@ -20,6 +20,6 @@ describe('FritzBoxUseCases', () => {
       calls: vi.fn(),
     } satisfies FritzBoxGateway;
     await new FritzBoxUseCases(gateway).calls({ filter: 'missed', limit: 20, showNumbers: false });
-    expect(gateway.calls).toHaveBeenCalledWith('missed', 20);
+    expect(gateway.calls).toHaveBeenCalledWith('missed', 20, undefined);
   });
 });

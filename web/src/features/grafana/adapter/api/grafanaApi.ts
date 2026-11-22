@@ -1,3 +1,4 @@
+import { withConnection } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type {
   AlertsDTO,
@@ -40,8 +41,8 @@ export class GrafanaApi implements GrafanaGateway {
     const body: SettingsInputDTO = { url, token };
     return { ...(await this.http.put<SettingsDTO>('/api/grafana/settings', body)) };
   }
-  async alerts(): Promise<GrafanaAlerts> {
-    const dto = await this.http.get<AlertsDTO>('/api/grafana/alerts');
+  async alerts(connection?: string): Promise<GrafanaAlerts> {
+    const dto = await this.http.get<AlertsDTO>(withConnection('/api/grafana/alerts', connection));
     return {
       url: dto.url,
       alerts: dto.alerts.map((a) => ({
@@ -53,13 +54,14 @@ export class GrafanaApi implements GrafanaGateway {
       })),
     };
   }
-  async dashboards(query: string): Promise<GrafanaDashboard[]> {
+  async dashboards(query: string, connection?: string): Promise<GrafanaDashboard[]> {
     const q = new URLSearchParams({ q: query });
-    return (await this.http.get<DashboardDTO[]>(`/api/grafana/dashboards?${q}`)).map((d) => ({ ...d }));
+    return (
+      await this.http.get<DashboardDTO[]>(withConnection(`/api/grafana/dashboards?${q}`, connection))
+    ).map((d) => ({ ...d }));
   }
-  async panels(uid: string): Promise<GrafanaPanel[]> {
-    return (await this.http.get<PanelDTO[]>(`/api/grafana/dashboards/${encodeURIComponent(uid)}/panels`)).map(
-      (p) => ({ ...p }),
-    );
+  async panels(uid: string, connection?: string): Promise<GrafanaPanel[]> {
+    const path = `/api/grafana/dashboards/${encodeURIComponent(uid)}/panels`;
+    return (await this.http.get<PanelDTO[]>(withConnection(path, connection))).map((p) => ({ ...p }));
   }
 }

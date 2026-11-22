@@ -1,3 +1,4 @@
+import { withConnection } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { CallsDTO, SettingsDTO, StatusDTO } from '../../../../shared/api-client/generated/fritzbox';
 import type { SettingsInputDTO } from '../../../../shared/api-client/generated/fritzbox-requests';
@@ -15,8 +16,8 @@ export class FritzBoxApi implements FritzBoxGateway {
     const body: SettingsInputDTO = { url, username, password };
     return { ...(await this.http.put<SettingsDTO>('/api/fritzbox/settings', body)) };
   }
-  async status(): Promise<FritzBoxStatus> {
-    const d = await this.http.get<StatusDTO>('/api/fritzbox/status');
+  async status(connection?: string): Promise<FritzBoxStatus> {
+    const d = await this.http.get<StatusDTO>(withConnection('/api/fritzbox/status', connection));
     return {
       model: d.model,
       wan: { ...d.wan },
@@ -24,9 +25,9 @@ export class FritzBoxApi implements FritzBoxGateway {
       error: d.error,
     };
   }
-  async calls(filter: CallFilterKind, limit: number): Promise<CallList> {
+  async calls(filter: CallFilterKind, limit: number, connection?: string): Promise<CallList> {
     const q = new URLSearchParams({ filter, limit: String(limit) });
-    const d = await this.http.get<CallsDTO>(`/api/fritzbox/calls?${q}`);
+    const d = await this.http.get<CallsDTO>(withConnection(`/api/fritzbox/calls?${q}`, connection));
     return {
       calls: d.calls.map((c) => ({ ...c, at: new Date(c.at) })),
       hint: d.hint,

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { grafanaSetup } from './grafanaSetup';
   import type { FoundService } from '../../../shared/setup/setup';
@@ -13,8 +14,12 @@
     /** Grafana found in the home network for the setup (#627). */
     discover?: () => Promise<FoundService[]>;
     grafana: GrafanaUseCases;
+    config: Record<string, unknown>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { grafana, discover }: Props = $props();
+  let { grafana, discover, config, connections, onsave }: Props = $props();
   const poll = usePolling();
 
   const POLL_MS = 60_000;
@@ -24,7 +29,7 @@
 
   const load = () =>
     grafana
-      .alerts()
+      .alerts(connectionIdOf(config))
       .then((a) => ((data = a), (error = ''), (unconfigured = false)))
       .catch((err) => {
         unconfigured = err instanceof ApiError && err.status === 404;
@@ -44,6 +49,7 @@
     text={t('grafana.connect_under_settings')}
     descriptor={setup}
     instance
+    connections={savedConnections(['grafana'], connections, config, onsave)}
     ondone={() => void load().catch(() => undefined)}
   />
 {:else if error && !data}

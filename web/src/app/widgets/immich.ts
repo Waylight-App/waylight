@@ -1,5 +1,5 @@
 import { t } from '../../shared/i18n';
-import { lazy, type WidgetDefinition } from '../widgetKit';
+import { choicesOf, lazy, type WidgetDefinition } from '../widgetKit';
 
 /** The Immich widget. */
 export const widgets: WidgetDefinition[] = [
@@ -19,11 +19,16 @@ export const widgets: WidgetDefinition[] = [
     icon: 'archive',
     view: lazy(
       () => import('../../features/immich/ui/ImmichWidget.svelte'),
-      (config, c) => ({ config, immich: c.immich, discover: () => c.discovery.find('immich') }),
+      (config, c) => ({
+        config,
+        immich: c.immich,
+        discover: () => c.discovery.find('immich'),
+        connections: choicesOf(c),
+      }),
     ),
     settings: lazy(
       () => import('../../features/immich/ui/ImmichWidgetSettings.svelte'),
-      (config) => ({ config }),
+      (config, c) => ({ config, connections: choicesOf(c) }),
     ),
   },
 ];

@@ -3,8 +3,11 @@ import { changedAgo, filterEntities, MAX_ENTITIES, parseWidgetConfig, stateText 
 
 describe('smart home domain', () => {
   it('reads only string entity IDs and caps the list', () => {
-    expect(parseWidgetConfig({})).toEqual({ entities: [] });
-    expect(parseWidgetConfig({ entities: ['switch.a', 3, null] })).toEqual({ entities: ['switch.a'] });
+    expect(parseWidgetConfig({})).toEqual({ entities: [], connectionId: '' });
+    expect(parseWidgetConfig({ entities: ['switch.a', 3, null] })).toEqual({
+      entities: ['switch.a'],
+      connectionId: '',
+    });
     const many = Array.from({ length: MAX_ENTITIES + 5 }, (_, i) => `sensor.s${i}`);
     expect(parseWidgetConfig({ entities: many }).entities).toHaveLength(MAX_ENTITIES);
   });

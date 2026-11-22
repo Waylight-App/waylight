@@ -4,7 +4,7 @@ import type { ImmichOverview, ImmichSettings } from '../domain/immich';
 export interface ImmichGateway {
   settings(): Promise<ImmichSettings>;
   saveSettings(url: string, apiKey: string): Promise<ImmichSettings>;
-  overview(): Promise<ImmichOverview>;
+  overview(connection?: string): Promise<ImmichOverview>;
 }
 
 /** Application logic of the Immich feature (#85). */
@@ -20,7 +20,8 @@ export class ImmichUseCases {
     return this.gateway.saveSettings(url.trim(), apiKey.trim());
   }
 
-  overview(): Promise<ImmichOverview> {
-    return this.gateway.overview();
+  /** Reads through the named connection; without one, through the module settings. */
+  overview(connection?: string): Promise<ImmichOverview> {
+    return this.gateway.overview(connection);
   }
 }

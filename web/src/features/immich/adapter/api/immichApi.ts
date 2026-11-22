@@ -1,3 +1,4 @@
+import { withConnection } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { OverviewDTO, SettingsDTO } from '../../../../shared/api-client/generated/immich';
 import type { SettingsInputDTO } from '../../../../shared/api-client/generated/immich-requests';
@@ -15,7 +16,7 @@ export class ImmichApi implements ImmichGateway {
     const body: SettingsInputDTO = { url, apiKey };
     return { ...(await this.http.put<SettingsDTO>('/api/immich/settings', body)) };
   }
-  async overview(): Promise<ImmichOverview> {
-    return { ...(await this.http.get<OverviewDTO>('/api/immich/overview')) };
+  async overview(connection?: string): Promise<ImmichOverview> {
+    return { ...(await this.http.get<OverviewDTO>(withConnection('/api/immich/overview', connection))) };
   }
 }

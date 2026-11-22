@@ -1,3 +1,4 @@
+import { withConnection } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { SettingsDTO, StatusDTO } from '../../../../shared/api-client/generated/nextcloud';
 import type { SettingsInputDTO } from '../../../../shared/api-client/generated/nextcloud-requests';
@@ -20,8 +21,8 @@ export class NextcloudApi implements NextcloudGateway {
     const body: SettingsInputDTO = { url, username, appPassword, signIn };
     return { ...(await this.http.put<SettingsDTO>('/api/nextcloud/settings', body)) };
   }
-  async status(): Promise<NextcloudStatus> {
-    const d = await this.http.get<StatusDTO>('/api/nextcloud/status');
+  async status(connection?: string): Promise<NextcloudStatus> {
+    const d = await this.http.get<StatusDTO>(withConnection('/api/nextcloud/status', connection));
     return {
       version: d.version,
       maintenance: d.maintenance,

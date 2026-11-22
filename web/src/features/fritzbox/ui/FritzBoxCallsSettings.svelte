@@ -1,4 +1,10 @@
 <script lang="ts">
+  import {
+    type ChoiceLoader,
+    connectionIdOf,
+    withConnectionChoice,
+  } from '../../../shared/connection/connection';
+  import ConnectionSelect from '../../../shared/connection/ConnectionSelect.svelte';
   import { t } from '../../../shared/i18n';
   import { CALL_FILTERS, callsOptions } from '../domain/fritzbox';
 
@@ -6,8 +12,11 @@
   interface Props {
     config: Record<string, unknown>;
     onsave: (config: Record<string, unknown>) => Promise<void>;
+    connections: ChoiceLoader;
   }
-  let { config, onsave }: Props = $props();
+  let { config, onsave, connections }: Props = $props();
+  // svelte-ignore state_referenced_locally
+  let connectionId = $state(connectionIdOf(config));
 
   // svelte-ignore state_referenced_locally
   const initial = callsOptions(config);
@@ -19,9 +28,10 @@
 <form
   onsubmit={(e) => {
     e.preventDefault();
-    onsave({ ...config, filter, limit, showNumbers });
+    onsave(withConnectionChoice({ ...config, filter, limit, showNumbers }, connectionId));
   }}
 >
+  <ConnectionSelect services={['fritzbox']} load={connections} bind:value={connectionId} />
   <label class="field">
     <span>{t('fritzbox.calls_filter')}</span>
     <select class="input" bind:value={filter}>

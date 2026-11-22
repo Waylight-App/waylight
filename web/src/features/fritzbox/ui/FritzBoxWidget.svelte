@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { fritzboxSetup } from './fritzboxSetup';
   import type { FoundService } from '../../../shared/setup/setup';
@@ -16,8 +17,11 @@
     config: Record<string, unknown>;
     /** The FRITZ!Box found in the home network for the setup (#627). */
     discover?: () => Promise<FoundService[]>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { fritzbox, config, discover }: Props = $props();
+  let { fritzbox, config, discover, connections, onsave }: Props = $props();
   const show = $derived(internetOptions(config));
   const poll = usePolling();
 
@@ -35,7 +39,7 @@
     void reload;
     const load = () =>
       fritzbox
-        .status()
+        .status(connectionIdOf(config))
         .then((s) => ((status = s), (error = ''), (unconfigured = false)))
         .catch((err) => {
           unconfigured = err instanceof ApiError && err.status === 404;
@@ -51,6 +55,7 @@
     text={t('fritzbox.connect_your_fritz_box_under_settings')}
     descriptor={setup}
     instance
+    connections={savedConnections(['fritzbox'], connections, config, onsave)}
     ondone={() => reload++}
   />
 {:else if error && !status}

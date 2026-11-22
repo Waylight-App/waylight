@@ -1,7 +1,8 @@
 import { t } from '../../shared/i18n';
+import { connectionParams } from '../../shared/connection/connection';
 import { compactSource } from '../../features/compact/domain/compact';
 import { parseWidgetConfig } from '../../features/smarthome/domain/smarthome';
-import { lazy, type WidgetDefinition } from '../widgetKit';
+import { choicesOf, lazy, type WidgetDefinition } from '../widgetKit';
 
 /** The smarthome widget. */
 export const widgets: WidgetDefinition[] = [
@@ -24,17 +25,22 @@ export const widgets: WidgetDefinition[] = [
     compact: (config) => {
       const { entities } = parseWidgetConfig(config);
       return entities.length === 1 && entities[0]
-        ? compactSource('smarthome', { entity: entities[0] })
+        ? compactSource('smarthome', { entity: entities[0], ...connectionParams(config) })
         : undefined;
     },
     compactExample: () => t('compact.example.smarthome'),
     view: lazy(
       () => import('../../features/smarthome/ui/SmartHomeWidget.svelte'),
-      (config, c) => ({ config, smarthome: c.smarthome, discover: () => c.discovery.find('smarthome') }),
+      (config, c) => ({
+        config,
+        smarthome: c.smarthome,
+        discover: () => c.discovery.find('smarthome'),
+        connections: choicesOf(c),
+      }),
     ),
     settings: lazy(
       () => import('../../features/smarthome/ui/SmartHomeWidgetSettings.svelte'),
-      (config, c) => ({ config, smarthome: c.smarthome }),
+      (config, c) => ({ config, smarthome: c.smarthome, connections: choicesOf(c) }),
     ),
   },
 ];

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { type ChoiceLoader, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { adguardSetup } from './adguardSetup';
   import type { FoundService } from '../../../shared/setup/setup';
@@ -23,9 +24,13 @@
     config: Record<string, unknown>;
     /** AdGuard Home found in the home network for the setup (#627). */
     discover?: () => Promise<FoundService[]>;
+    /** Saved connections to offer in the setup, and storing the choice (#709). */
+    connections?: ChoiceLoader;
+    onsave?: (config: Record<string, unknown>) => Promise<void>;
   }
-  let { adguard, config, discover }: Props = $props();
+  let { adguard, config, discover, connections, onsave }: Props = $props();
   const provider = $derived(parseWidgetConfig(config).provider);
+  const connection = $derived(parseWidgetConfig(config).connectionId);
   const poll = usePolling();
   const setup = $derived(adguardSetup(adguard, provider, discover));
   // Bumped after the setup assistant saved, so the effect loads again.
@@ -58,7 +63,7 @@
     if (!confirm(t('adguard.pause_confirm', { name: providerName(provider), minutes }))) return;
     pausing = true;
     try {
-      stats = await adguard.pause(provider, minutes);
+      stats = await adguard.pause(provider, minutes, connection);
       now = new Date();
       error = '';
     } catch (err) {
@@ -72,7 +77,7 @@
     void reload;
     const load = () =>
       adguard
-        .stats(provider)
+        .stats(provider, connection)
         .then((s) => ((stats = s), (now = new Date()), (error = ''), (unconfigured = false)))
         .catch((err) => {
           unconfigured = err instanceof ApiError && err.status === 404;
@@ -89,6 +94,7 @@
       text={t('adguard.connect_under_settings', { name: providerName(provider) })}
       descriptor={setup}
       instance
+      connections={savedConnections([provider], connections, config, onsave)}
       ondone={() => {
         reload++;
         void adguard

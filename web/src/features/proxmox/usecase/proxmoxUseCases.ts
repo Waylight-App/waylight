@@ -12,8 +12,8 @@ export interface ProxmoxSettingsInput {
 export interface ProxmoxGateway {
   settings(): Promise<ProxmoxSettings>;
   saveSettings(input: ProxmoxSettingsInput): Promise<ProxmoxSettings>;
-  status(): Promise<ProxmoxStatus>;
-  act(guestId: number, action: GuestAction): Promise<void>;
+  status(connection?: string): Promise<ProxmoxStatus>;
+  act(guestId: number, action: GuestAction, connection?: string): Promise<void>;
 }
 
 /** Application logic of the Proxmox feature (#84). */
@@ -34,12 +34,13 @@ export class ProxmoxUseCases {
     });
   }
 
-  status(): Promise<ProxmoxStatus> {
-    return this.gateway.status();
+  /** Reads through the named connection; without one, through the module settings. */
+  status(connection?: string): Promise<ProxmoxStatus> {
+    return this.gateway.status(connection);
   }
 
   /** Starts or shuts down a guest; the UI asks for confirmation first. */
-  act(guestId: number, action: GuestAction): Promise<void> {
-    return this.gateway.act(guestId, action);
+  act(guestId: number, action: GuestAction, connection?: string): Promise<void> {
+    return this.gateway.act(guestId, action, connection);
   }
 }

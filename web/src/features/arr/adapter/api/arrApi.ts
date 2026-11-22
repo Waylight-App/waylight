@@ -1,3 +1,4 @@
+import { withConnections } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { InstanceDTO, OverviewDTO } from '../../../../shared/api-client/generated/arr';
 import type { InstanceInputDTO } from '../../../../shared/api-client/generated/arr-requests';
@@ -22,8 +23,8 @@ export class ArrApi implements ArrGateway {
   delete(id: string): Promise<void> {
     return this.http.delete(`/api/arr/instances/${encodeURIComponent(id)}`);
   }
-  async overview(): Promise<ArrOverview> {
-    const d = await this.http.get<OverviewDTO>('/api/arr/overview');
+  async overview(connections?: string[]): Promise<ArrOverview> {
+    const d = await this.http.get<OverviewDTO>(withConnections('/api/arr/overview', connections));
     return {
       upcoming: d.upcoming.map((r) => ({ ...r, date: new Date(r.date) })),
       queue: d.queue,

@@ -1,3 +1,4 @@
+import { withConnection } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { EntityDTO, SettingsDTO } from '../../../../shared/api-client/generated/smarthome';
 import type { SettingsInputDTO } from '../../../../shared/api-client/generated/smarthome-requests';
@@ -22,14 +23,20 @@ export class SmarthomeApi implements SmartHomeGateway {
     const body: SettingsInputDTO = { url, token, signIn };
     return { ...(await this.http.put<SettingsDTO>('/api/smarthome/settings', body)) };
   }
-  async entities(): Promise<Entity[]> {
-    return (await this.http.get<EntityDTO[]>('/api/smarthome/entities')).map(toEntity);
+  async entities(connection?: string): Promise<Entity[]> {
+    return (await this.http.get<EntityDTO[]>(withConnection('/api/smarthome/entities', connection))).map(
+      toEntity,
+    );
   }
-  async states(ids: string[]): Promise<Entity[]> {
+  async states(ids: string[], connection?: string): Promise<Entity[]> {
     const q = new URLSearchParams({ ids: ids.join(',') });
-    return (await this.http.get<EntityDTO[]>(`/api/smarthome/states?${q}`)).map(toEntity);
+    return (await this.http.get<EntityDTO[]>(withConnection(`/api/smarthome/states?${q}`, connection))).map(
+      toEntity,
+    );
   }
-  act(id: string): Promise<void> {
-    return this.http.post(`/api/smarthome/entities/${encodeURIComponent(id)}/action`);
+  act(id: string, connection?: string): Promise<void> {
+    return this.http.post(
+      withConnection(`/api/smarthome/entities/${encodeURIComponent(id)}/action`, connection),
+    );
   }
 }

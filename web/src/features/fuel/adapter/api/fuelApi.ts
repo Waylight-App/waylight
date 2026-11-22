@@ -1,3 +1,4 @@
+import { withConnection } from '../../../../shared/connection/connection';
 import type { HttpClient } from '../../../../shared/api-client/http';
 import type { OverviewDTO, SettingsDTO } from '../../../../shared/api-client/generated/fuel';
 import type { FavouriteDTO, SettingsInputDTO } from '../../../../shared/api-client/generated/fuel-requests';
@@ -26,7 +27,7 @@ export class FuelApi implements FuelGateway {
     const body: FavouriteDTO[] = list;
     return { ...(await this.http.put<SettingsDTO>('/api/fuel/favourites', body)) };
   }
-  async overview(): Promise<FuelOverview> {
-    return toOverview(await this.http.get<OverviewDTO>('/api/fuel/overview'));
+  async overview(connection?: string): Promise<FuelOverview> {
+    return toOverview(await this.http.get<OverviewDTO>(withConnection('/api/fuel/overview', connection)));
   }
 }

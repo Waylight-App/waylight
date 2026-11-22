@@ -859,6 +859,11 @@ export const en = {
   'setup.done': 'Done',
   'setup.connect': 'Connect',
   'setup.found': '{service} found at {url}',
+  // Which connection a widget reads through (#709).
+  'connection.which': 'Which connection?',
+  'connection.default': 'Standard connection',
+  'connection.all_hint': 'Without a choice, the widget shows all of them.',
+  'setup.use_connection': 'Use {name}',
   'setup.signin': 'Sign in with {service}',
   'setup.signin_intro':
     'Sign in with your {service} account in a new window. Waylight gets its own access there, so you do not have to copy a key.',
