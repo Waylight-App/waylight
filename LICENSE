@@ -1,8 +1,4 @@
-waylight is published under two licences:
-
-- Everything inside the "ee/" directory is licensed under the Elastic License
-  2.0 by Tristan L. Farinella, with no future licence. See ee/LICENSE.md.
-- Everything outside the "ee/" directory is licensed under the MIT License
+MIT License
   below.
 
 MIT License
@@ -26,3 +22,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+This licence applies to everything in this repository except the "ee/"
+directory. The "ee/" directory is licensed separately under the Elastic
+License 2.0; see ee/LICENSE.md.
