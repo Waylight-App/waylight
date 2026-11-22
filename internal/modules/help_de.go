@@ -3,6 +3,7 @@ package modules
 // helpDE are the German texts of the widget help, by English template. The
 // web interface translates the same texts by key in server-de; keep both in
 // step. TestWidgetHelpCoversEveryKind fails for a help text without one.
+//nolint:gosec // G101: widget help texts that mention keys and passwords, no credentials
 var helpDE = map[string]string{
 	"The time and date, optionally in another time zone.":                                                                                                              "Uhrzeit und Datum, auf Wunsch in einer anderen Zeitzone.",
 	"Open the widget settings to pick a time zone, a 12-hour clock, seconds, the date or the week number.":                                                             "In den Widget-Einstellungen wählst du Zeitzone, 12-Stunden-Uhr, Sekunden, Datum oder Kalenderwoche.",
