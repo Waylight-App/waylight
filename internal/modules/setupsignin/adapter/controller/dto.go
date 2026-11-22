@@ -20,3 +20,24 @@ type SetupSignInDTO struct {
 type SetupSignInStatusDTO struct {
 	Status string `json:"status"`
 }
+
+// SetupPasteDTO is a started code for Paste from phone: what the QR code
+// carries and when it ends.
+type SetupPasteDTO struct {
+	Code string `json:"code"`
+	// ExpiresAt is an RFC 3339 time.
+	ExpiresAt string `json:"expiresAt"`
+}
+
+// SetupPasteInputDTO is the body of PUT /api/setup/paste/{code}: the key
+// copied on the phone.
+type SetupPasteInputDTO struct {
+	Value string `json:"value"`
+}
+
+// SetupPasteStatusDTO answers GET /api/setup/paste/{code}. The value is
+// set once, in the answer that hands it over.
+type SetupPasteStatusDTO struct {
+	Status string `json:"status"`
+	Value  string `json:"value,omitempty"`
+}

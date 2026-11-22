@@ -12,12 +12,13 @@ import (
 	"waylight/internal/shared/kernel"
 )
 
-// Module serves the sign-ins of the setup assistant and hands their
-// credentials to the modules that are set up.
+// Module serves the sign-ins and the pastes from the phone of the setup
+// assistant and hands the credentials to the modules that are set up.
 type Module struct {
 	modules.Base
 	uc       usecase.SignIns
 	handlers *controller.Handlers
+	paste    *controller.PasteHandlers
 }
 
 // New builds the module. client must follow the integration URL rules;
@@ -30,7 +31,8 @@ func New(client *http.Client, publicURL *url.URL, clock kernel.Clock) *Module {
 		Clock:         clock,
 		Token:         oauth.NewVerifier,
 	})
-	return &Module{uc: uc, handlers: controller.NewHandlers(uc)}
+	pastes := usecase.NewPastes(usecase.PasteDeps{Clock: clock, Token: oauth.NewVerifier})
+	return &Module{uc: uc, handlers: controller.NewHandlers(uc), paste: controller.NewPasteHandlers(pastes)}
 }
 
 // Name implements modules.Module.
@@ -48,5 +50,9 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("POST /api/setup/signin", m.handlers.Start)
 	r.Protected("GET /api/setup/signin/{id}", m.handlers.Status)
 	r.Protected("DELETE /api/setup/signin/{id}", m.handlers.Cancel)
+	r.Protected("POST /api/setup/paste", m.paste.Create)
+	r.Protected("PUT /api/setup/paste/{code}", m.paste.Submit)
+	r.Protected("GET /api/setup/paste/{code}", m.paste.Take)
+	r.Protected("DELETE /api/setup/paste/{code}", m.paste.Cancel)
 	r.Public("GET "+CallbackPath, m.handlers.Callback)
 }

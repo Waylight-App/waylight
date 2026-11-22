@@ -1,4 +1,4 @@
-# OpenAPI fragment of the sign-ins of the setup assistant (#654).
+# OpenAPI fragment of the sign-ins and pastes from the phone of the setup assistant (#654, #618).
 tags:
   - name: setupsignin
 
@@ -63,7 +63,68 @@ paths:
         "200": { description: Signed in, content: { text/html: {} } }
         "400": { description: Unknown state or refused code, content: { text/html: {} } }
 
+  /api/setup/paste:
+    post:
+      tags: [setupsignin]
+      summary: "Start Paste from phone: a code the assistant shows as a QR code with the text waylight://paste?server=<address>&code=<code>. The signed-in mobile app answers it with PUT. One code per account, valid for five minutes. Not for guests, kiosk displays or API tokens."
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "200":
+          description: Started
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SetupPaste" }
+        "403": { description: Guest, kiosk display or API token }
+        "429": { description: Too many codes at once }
+  /api/setup/paste/{code}:
+    parameters:
+      - { name: code, in: path, required: true, schema: { type: string } }
+    put:
+      tags: [setupsignin]
+      summary: "Send the copied key from the phone. Only the account that created the code may, and a code takes one value."
+      security: [{ session: [], csrf: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [value]
+              properties:
+                value: { type: string, maxLength: 4096 }
+      responses:
+        "204": { description: Stored }
+        "403": { description: Guest, kiosk display or API token }
+        "422": { $ref: "#/components/responses/Invalid" }
+    get:
+      tags: [setupsignin]
+      summary: "Ask whether the phone has sent the value. The answer that carries it is the last one: the value is handed over once, and only to the account that created the code."
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: { type: string, enum: [pending, ready] }
+                  value: { type: string, description: Set once, with status ready }
+        "422": { $ref: "#/components/responses/Invalid" }
+    delete:
+      tags: [setupsignin]
+      summary: Forget a code, e.g. when the assistant closes
+      security: [{ session: [], csrf: [] }]
+      responses:
+        "204": { description: Gone }
+
 schemas:
+  SetupPaste:
+    type: object
+    required: [code, expiresAt]
+    properties:
+      code: { type: string }
+      expiresAt: { type: string, format: date-time }
   SetupSignIn:
     type: object
     required: [id, loginUrl]

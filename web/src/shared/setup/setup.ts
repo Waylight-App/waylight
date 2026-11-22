@@ -77,6 +77,11 @@ export function signInAddress(d: SetupDescriptor, values: Record<string, string>
   return address ? address.trim().replace(/\/+$/, '') : null;
 }
 
+/** The field a key copied on the phone goes into: the first secret of the credential step. */
+export function pasteTarget(d: SetupDescriptor): SetupField | undefined {
+  return d.fields.find((f) => f.stage === 'credential' && f.type === 'password');
+}
+
 /** The value of the first address field, normalised for links. */
 export function addressOf(d: SetupDescriptor, values: Record<string, string>): string {
   const field = d.fields.find((f) => f.stage === 'address');

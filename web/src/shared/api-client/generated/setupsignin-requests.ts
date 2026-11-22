@@ -27,3 +27,29 @@ export interface SetupSignInDTO {
 export interface SetupSignInStatusDTO {
   status: string;
 }
+/**
+ * SetupPasteDTO is a started code for Paste from phone: what the QR code
+ * carries and when it ends.
+ */
+export interface SetupPasteDTO {
+  code: string;
+  /**
+   * ExpiresAt is an RFC 3339 time.
+   */
+  expiresAt: string;
+}
+/**
+ * SetupPasteInputDTO is the body of PUT /api/setup/paste/{code}: the key
+ * copied on the phone.
+ */
+export interface SetupPasteInputDTO {
+  value: string;
+}
+/**
+ * SetupPasteStatusDTO answers GET /api/setup/paste/{code}. The value is
+ * set once, in the answer that hands it over.
+ */
+export interface SetupPasteStatusDTO {
+  status: string;
+  value?: string;
+}
