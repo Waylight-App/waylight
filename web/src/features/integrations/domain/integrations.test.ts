@@ -34,7 +34,12 @@ const conn = (id: string, service: string, name: string): Connection => ({
 describe('integrations', () => {
   it('groups connections by service title and sorts them by name', () => {
     const groups = groupByService(
-      [conn('1', 'tankerkoenig', 'Key'), conn('2', 'immich', 'Office'), conn('3', 'immich', 'Home'), conn('4', 'gone', 'Old')],
+      [
+        conn('1', 'tankerkoenig', 'Key'),
+        conn('2', 'immich', 'Office'),
+        conn('3', 'immich', 'Home'),
+        conn('4', 'gone', 'Old'),
+      ],
       [immich, fuel],
       'en',
     );
@@ -43,7 +48,12 @@ describe('integrations', () => {
   });
 
   it('validates a draft against its service', () => {
-    const ok = { service: 'immich', name: ' Home ', url: 'http://192.168.178.20:2283', credential: { apiKey: 'k' } };
+    const ok = {
+      service: 'immich',
+      name: ' Home ',
+      url: 'http://192.168.178.20:2283',
+      credential: { apiKey: 'k' },
+    };
     expect(validateDraft(ok, immich)).toBeNull();
     expect(validateDraft(ok, undefined)).toBe('integrations.error_service');
     expect(validateDraft({ ...ok, name: ' ' }, immich)).toBe('integrations.error_name');
@@ -55,7 +65,9 @@ describe('integrations', () => {
   });
 
   it('drops empty credential fields', () => {
-    expect(cleanCredential({ username: ' anna ', password: '', fingerprint: '  ' })).toEqual({ username: 'anna' });
+    expect(cleanCredential({ username: ' anna ', password: '', fingerprint: '  ' })).toEqual({
+      username: 'anna',
+    });
   });
 
   it('names the widgets that use a connection, without other accounts’ tabs', () => {

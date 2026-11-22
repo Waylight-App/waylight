@@ -53,10 +53,7 @@ export interface ConnectionDraft {
 
 /** The result of the last check of a connection. */
 export type ConnectionState =
-  | { kind: 'unchecked' }
-  | { kind: 'checking' }
-  | { kind: 'ok' }
-  | { kind: 'failing'; message: string };
+  { kind: 'unchecked' } | { kind: 'checking' } | { kind: 'ok' } | { kind: 'failing'; message: string };
 
 /** Connections of one service, as the settings page groups them. */
 export interface ServiceGroup {
