@@ -105,7 +105,6 @@ export const SEARCH_EXAMPLES: Record<'de' | 'en', Record<ExampleSet, readonly Se
       { query: 'Was steht auf der Einkaufsliste?', module: 'shopping' },
       { query: 'Was steht heute an?', module: 'calendar' },
       { query: 'Wann sind die nächsten Ferien?', module: 'holidays' },
-      { query: 'Wer hat bald Geburtstag?', module: 'birthdays' },
     ],
     homelab: [
       { query: 'Läuft alles bei meinem Server?', module: 'services' },
@@ -129,7 +128,6 @@ export const SEARCH_EXAMPLES: Record<'de' | 'en', Record<ExampleSet, readonly Se
       { query: 'What is on the shopping list?', module: 'shopping' },
       { query: 'What is on today?', module: 'calendar' },
       { query: 'When are the next holidays?', module: 'holidays' },
-      { query: 'Who has a birthday soon?', module: 'birthdays' },
     ],
     homelab: [
       { query: 'Is everything running on my server?', module: 'services' },
