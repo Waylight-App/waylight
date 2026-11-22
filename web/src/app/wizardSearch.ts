@@ -1,4 +1,4 @@
-import { locale } from '../shared/i18n';
+import { locale, t } from '../shared/i18n';
 import type { Container } from './container';
 import type { Place } from '../features/onboarding/domain/profile';
 import { exampleSetOf, searchExamples } from '../features/onboarding/domain/wizard';
@@ -46,7 +46,9 @@ export function wizardSearch(c: Container, modules: Set<string>): WizardContext[
           weatherLocation: () => (place ? weatherAt(place) : null),
         });
       }
-      return smart.answer(query, signal);
+      // Before any widget is set up the sources fail; those cards say nothing useful here.
+      const unavailable = t('smart.unavailable_title');
+      return (await smart.answer(query, signal)).filter((a) => a.title !== unavailable);
     },
   };
 }

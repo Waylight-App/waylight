@@ -445,6 +445,7 @@ export const en = {
     'The search finds more than pages. It calculates, converts, shows the weather and your appointments, and starts timers. Try it.',
   'wizard.search.label': 'Try a question',
   'wizard.search.examples': 'Examples',
+  'wizard.search.pending': 'Once the widget is set up, the answer with your real data appears here.',
   'wizard.search.none': 'No answer to this one yet. Try one of the examples.',
   'wizard.search.tip': 'Tip: Press Ctrl + K to open the search from anywhere.',
   'wizard.done.title': "All done, let's go.",
