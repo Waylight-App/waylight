@@ -1,0 +1,95 @@
+# OpenAPI fragment of the documents module (#688). `make openapi` merges it
+# with api/openapi.base.yaml and checks it.
+tags:
+  - name: documents
+
+paths:
+  /api/documents:
+    get:
+      tags: [documents]
+      summary: List the visible documents, running warranties first
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Document" } } } } }
+    post:
+      tags: [documents]
+      summary: Enter a document
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/DocumentInput" } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Document" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/documents/{id}:
+    put:
+      tags: [documents]
+      summary: Change a document, not its file (creator only)
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/DocumentInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Document" } } } }
+        "403": { description: Not the creator, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+    delete:
+      tags: [documents]
+      summary: Remove a document with its file (creator only)
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      responses:
+        "204": { description: Deleted }
+        "403": { description: Not the creator, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+  /api/documents/{id}/file:
+    post:
+      tags: [documents]
+      summary: Attach or replace the file (creator only); a photo (JPEG, PNG, WebP) or a PDF of up to 10 MB
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: { type: object, required: [file], properties: { file: { type: string, format: binary } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Document" } } } }
+        "403": { description: Not the creator, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "415": { description: Not multipart/form-data, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+    get:
+      tags: [documents]
+      summary: Download the file of a visible document as an attachment
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      responses:
+        "200": { description: The file, content: { image/jpeg: {}, image/png: {}, image/webp: {}, application/pdf: {} } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/documents/compact:
+    get:
+      tags: [documents]
+      summary: Compact state, the warranty that ends first
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
+
+schemas:
+  DocumentInput:
+    type: object
+    required: [title]
+    properties:
+      title: { type: string, maxLength: 80 }
+      purchasedOn: { type: string, format: date, description: Purchase day; empty when not entered }
+      warrantyEnd: { type: string, format: date, description: Last day of the warranty; empty when not entered }
+      note: { type: string, maxLength: 500 }
+      visibility: { type: string, description: "private, everyone or group:<id>; empty uses the default for new records" }
+  Document:
+    type: object
+    properties:
+      id: { type: string }
+      title: { type: string }
+      purchasedOn: { type: string }
+      warrantyEnd: { type: string }
+      note: { type: string }
+      status: { type: string, enum: [none, running, ending, ended] }
+      fileName: { type: string, description: Empty when no file is attached }
+      contentType: { type: string }
+      fileSize: { type: integer }
+      visibility: { type: string }
+      mine: { type: boolean }

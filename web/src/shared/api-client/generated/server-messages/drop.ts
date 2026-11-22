@@ -7,7 +7,6 @@ export const serverMessages = {
   srv_992a3c76b72d1b0a: "Enter some text or a link.",
   srv_6c1dd18a11888a9a: "Text, links and files you send between your devices; they disappear after a while.",
   srv_b7ede1495726d216: "The drop zone is full (200 MB, 100 items). Delete items first.",
-  srv_ed9b451f9d66eaa7: "The file is empty.",
   srv_7fe59f42ecfd9d12: "The file must be at most 25 MB.",
   srv_05f4e0f511133638: "The item does not exist or has expired.",
   srv_c4d9d288aedb26d3: "The text must be at most 100 KB.",
