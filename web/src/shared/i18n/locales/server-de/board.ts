@@ -14,4 +14,9 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_8d7c330447920af1: '{count} Notizen',
   // {text}
   srv_819da5ee53f51a44: '{text}',
+  // Short notes for the household, pinned or with a last day.
+  srv_5b593a8f5989e9b3: 'Kurze Notizen für den Haushalt, angeheftet oder mit einem letzten Tag.',
+  // Write a note with New note. Pin the ones that should stay on top and give short-lived ones a last day.
+  srv_831ec27836aa7cd6:
+    'Schreibe mit „Neue Notiz“ eine Notiz. Hefte an, was oben bleiben soll, und gib kurzlebigen einen letzten Tag.',
 };

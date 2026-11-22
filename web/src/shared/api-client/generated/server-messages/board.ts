@@ -5,7 +5,9 @@ export const serverMessages = {
   srv_2af3ab7187e51be0: "1 note",
   srv_6446fa577a473ff5: "A note must be between 1 and 500 characters long.",
   srv_46125f90eda403ad: "Choose today or a later day.",
+  srv_5b593a8f5989e9b3: "Short notes for the household, pinned or with a last day.",
   srv_69d75fbb47619635: "The board is empty",
+  srv_831ec27836aa7cd6: "Write a note with New note. Pin the ones that should stay on top and give short-lived ones a last day.",
   srv_8d7c330447920af1: "{count} notes",
   srv_819da5ee53f51a44: "{text}",
 } as const;
