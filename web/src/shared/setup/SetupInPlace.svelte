@@ -1,5 +1,7 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { t } from '../i18n';
+  import EmptyState from '../ui/EmptyState.svelte';
   import SetupAssistant from './SetupAssistant.svelte';
   import type { SavedConnections } from '../connection/connection';
   import { type SetupDescriptor, useMaySetUp } from './setup';
@@ -18,8 +20,12 @@
     instance: boolean;
     ondone: () => void;
     connections?: SavedConnections;
+    /** An action of the widget that comes before connecting, e.g. creating a list. */
+    children?: Snippet;
+    /** Names the connect button where "Connect" alone is vague. */
+    label?: string;
   }
-  let { text, descriptor, instance, ondone, connections }: Props = $props();
+  let { text, descriptor, instance, ondone, connections, children, label }: Props = $props();
   // svelte-ignore state_referenced_locally
   const allowed = useMaySetUp(instance);
   let open = $state(false);
@@ -34,33 +40,19 @@
 {#if open}
   <SetupAssistant {descriptor} {ondone} />
 {:else}
-  <div class="hint">
-    <p class="muted">{text}</p>
+  <EmptyState {text}>
     {#if allowed}
+      {@render children?.()}
       {#each saved as c (c.id)}
         <button class="btn btn-primary" type="button" onclick={() => void connections?.choose(c.id)}
           >{t('setup.use_connection', { name: c.name })}</button
         >
       {/each}
-      <button class={saved.length ? 'btn' : 'btn btn-primary'} type="button" onclick={() => (open = true)}
-        >{t('common.set_up')}</button
+      <button
+        class={saved.length || children ? 'btn' : 'btn btn-primary'}
+        type="button"
+        onclick={() => (open = true)}>{label ?? t('setup.connect')}</button
       >
     {/if}
-  </div>
+  </EmptyState>
 {/if}
-
-<style>
-  .hint {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
-    height: 100%;
-    text-align: center;
-  }
-  .hint p {
-    margin: 0;
-    max-width: 30ch;
-  }
-</style>

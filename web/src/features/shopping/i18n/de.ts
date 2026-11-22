@@ -4,7 +4,7 @@ import type { en } from './en';
 export const de: Record<keyof typeof en, string> = {
   'shopping.list': 'Liste',
   'shopping.caldav_list': 'CalDAV-Aufgabenliste',
-  'shopping.no_list': 'Noch keine Einkaufsliste. Lege hier eine an.',
+  'shopping.no_list': 'Deine Einkaufsliste, immer griffbereit.',
   'shopping.new_list_name': 'Name der neuen Liste',
   'shopping.default_list_name': 'Einkaufen',
   'shopping.create_list': 'Liste anlegen',
@@ -26,7 +26,7 @@ export const de: Record<keyof typeof en, string> = {
   'shopping.import_caldav': 'Aus CalDAV übernehmen',
   'shopping.imported': '{count} offene Einträge aus der CalDAV-Liste übernommen.',
   'shopping.caldav_title': 'CalDAV-Aufgabenliste',
-  'shopping.setup_hint': 'Oder verbinde eine CalDAV-Aufgabenliste, z. B. eine Liste in Nextcloud Tasks.',
+  'shopping.connect_list': 'Liste verbinden',
   'shopping.setup_list_url': 'Adresse der Aufgabenliste (Aufgaben → ⋯ der Liste → Privaten Link kopieren)',
   'shopping.setup_username': 'Benutzername',
   'shopping.setup_password': 'App-Passwort',

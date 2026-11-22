@@ -47,7 +47,7 @@
 
 {#if missing && !data}
   <SetupInPlace
-    text={error}
+    text={t('speedtest.not_set_up')}
     descriptor={setup}
     instance
     connections={savedConnections(['speedtest'], connections, config, onsave)}

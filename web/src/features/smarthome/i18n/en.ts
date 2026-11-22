@@ -4,7 +4,7 @@ export const en = {
   'widget.smarthome.description':
     'States of Home Assistant devices and sensors; optional switches and buttons.',
   'settings.section.smarthome': 'Home Assistant',
-  'smarthome.connect_under_settings': 'Connect Home Assistant under Settings → Home Assistant.',
+  'smarthome.connect_under_settings': 'Your lights and devices from Home Assistant.',
   'smarthome.choose_entities': 'Choose entities in the widget settings.',
   'smarthome.unavailable': 'unavailable',
   'smarthome.on': 'on',

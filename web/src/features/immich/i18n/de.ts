@@ -5,7 +5,7 @@ export const de: Record<keyof typeof en, string> = {
   'widget.immich.title': 'Immich',
   'widget.immich.description': 'Statistik der Fotobibliothek und Erinnerungen des Tages.',
   'settings.section.immich': 'Immich',
-  'immich.connect_under_settings': 'Verbinde Immich unter Einstellungen → Immich.',
+  'immich.connect_under_settings': 'Deine Bilder aus Immich.',
   'immich.photos': 'Fotos',
   'immich.videos': 'Videos',
   'immich.storage': 'Speicher',

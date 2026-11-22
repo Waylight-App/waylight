@@ -17,7 +17,6 @@ test('a shopping list on Waylight works without CalDAV and can be exported (#471
   await account(page, 'Done');
 
   // Without any list the widget offers to create one; no CalDAV needed.
-  await page.getByRole('textbox', { name: 'Name of the new list' }).fill('Groceries');
   await page.getByRole('button', { name: 'Create list' }).click();
 
   const item = page.getByRole('textbox', { name: 'New item' });

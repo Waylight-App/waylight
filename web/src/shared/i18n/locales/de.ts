@@ -328,7 +328,7 @@ export const de: Record<BaseMessageKey, string> = {
   'nextcloud.app_password': 'App-Passwort {value}',
   'nextcloud.the_app_password_is_stored_encrypted':
     'Das App-Passwort wird verschlüsselt gespeichert und nie wieder angezeigt.',
-  'nextcloud.connect_nextcloud_under_settings_nextclo': 'Verbinde Nextcloud unter Einstellungen → Nextcloud.',
+  'nextcloud.connect_nextcloud_under_settings_nextclo': 'Deine Dateien und Neuigkeiten aus Nextcloud.',
   'nextcloud.nextcloud': 'Nextcloud {value}',
   'nextcloud.maintenance': 'Wartung',
   'nextcloud.setup_username': 'Benutzername',
@@ -363,8 +363,7 @@ export const de: Record<BaseMessageKey, string> = {
     'Nextcloud: Öffne die Kalender-App, klicke neben einem Kalender auf „…“ → „Privaten Link kopieren“ und verwende diese URL. Ein App-Passwort legst du unter Einstellungen → Sicherheit an.',
   'calendar.username': 'Benutzername',
   'calendar.app_password': 'App-Passwort {value}',
-  'calendar.connect_a_caldav_calendar_under_settings':
-    'Verbinde einen CalDAV-Kalender oder füge ein ICS-Abo unter Einstellungen → Kalender hinzu.',
+  'calendar.connect_a_caldav_calendar_under_settings': 'Deine Termine aus einem Kalender.',
   'calendar.no_events_in_the_next_days': 'Keine Termine in den nächsten {days} Tagen.',
   'calendar.new_event': 'Neuer Termin',
   'calendar.view': 'Ansicht',
@@ -412,8 +411,7 @@ export const de: Record<BaseMessageKey, string> = {
   'fritzbox.password': 'Passwort {value}',
   'fritzbox.the_password_is_stored_encrypted_and':
     'Das Passwort wird verschlüsselt gespeichert und nie wieder angezeigt.',
-  'fritzbox.connect_your_fritz_box_under_settings':
-    'Verbinde deine FRITZ!Box unter Einstellungen → FRITZ!Box.',
+  'fritzbox.connect_your_fritz_box_under_settings': 'So geht es deiner FRITZ!Box.',
   'fritzbox.for': 'seit {value}',
   'fritzbox.loading': 'Wird geladen …',
   'fritzbox.external_ip': 'Externe IP',
@@ -470,7 +468,7 @@ export const de: Record<BaseMessageKey, string> = {
   'adguard.password': 'Passwort {value}',
   'adguard.the_password_is_stored_encrypted_and':
     'Das Passwort wird verschlüsselt gespeichert und nie wieder angezeigt.',
-  'adguard.connect_under_settings': 'Verbinde {name} unter Einstellungen → AdGuard / Pi-hole.',
+  'adguard.connect_under_settings': 'So schützt {name} dein Netzwerk.',
   'adguard.queries': 'Anfragen',
   'adguard.blocked': 'blockiert',
   'adguard.ms': '{value} ms',
@@ -724,8 +722,7 @@ export const de: Record<BaseMessageKey, string> = {
   'waste.icon': 'Symbol',
   'waste.color': 'Farbe',
   'waste.remove_rule': 'Regel entfernen',
-  'waste.add_the_ics_link_of_your':
-    'Trage den ICS-Link deines Abfuhrkalenders unter Einstellungen → Abfall ein oder lade dort die .ics-Datei hoch.',
+  'waste.add_the_ics_link_of_your': 'Zeigt, wann welche Tonne rauskommt.',
   'waste.no_upcoming_collections': 'Keine anstehenden Abholungen.',
   'waste.loading': 'Wird geladen …',
   'notes.title': 'Titel',
@@ -1539,6 +1536,7 @@ export const de: Record<BaseMessageKey, string> = {
   'widget.speedtest.description':
     'Download, Upload und Ping aus Speedtest Tracker mit Verlauf über 24 h / 7 Tage.',
   'settings.section.speedtest': 'Speedtest Tracker',
+  'speedtest.not_set_up': 'So schnell ist dein Internet.',
   'speedtest.download': 'Download',
   'speedtest.upload': 'Upload',
   'speedtest.ping': 'Ping',

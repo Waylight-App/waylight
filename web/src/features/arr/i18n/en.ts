@@ -4,7 +4,7 @@ export const en = {
   'widget.arr.description':
     'Upcoming episodes and movies, the download queue and health warnings of Sonarr, Radarr and Prowlarr.',
   'settings.section.arr': 'Sonarr / Radarr',
-  'arr.connect_under_settings': 'Add Sonarr, Radarr or Prowlarr under Settings → Sonarr / Radarr.',
+  'arr.connect_under_settings': 'Downloads and requests from Sonarr and Radarr.',
   'arr.queue': 'Downloads',
   'arr.queue_empty': 'No downloads.',
   'arr.upcoming': 'Upcoming',

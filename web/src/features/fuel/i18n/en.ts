@@ -4,7 +4,7 @@ export const en = {
   'widget.fuel.description':
     'Cheapest stations around you or your favourite stations (Germany, Tankerkönig).',
   'settings.section.fuel': 'Fuel prices',
-  'fuel.connect_under_settings': 'Set up fuel prices under Settings → Fuel prices.',
+  'fuel.connect_under_settings': 'Fuel prices near you.',
   'fuel.closed': 'closed',
   'fuel.favourite': 'Favourite {name}',
   'fuel.no_favourites': 'Mark stations with ☆ to see them here.',

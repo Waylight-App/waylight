@@ -8,7 +8,7 @@ export const de: Record<keyof typeof en, string> = {
   'widget.grafana-alerts.title': 'Grafana-Alarme',
   'widget.grafana-alerts.description': 'Aktive und ausstehende Alarme von Grafana Alerting.',
   'settings.section.grafana': 'Grafana',
-  'grafana.connect_under_settings': 'Verbinde Grafana unter Einstellungen → Grafana.',
+  'grafana.connect_under_settings': 'Meldungen aus Grafana auf einen Blick.',
   'grafana.url': 'Grafana-Adresse',
   'grafana.token': 'Token des Dienstkontos {value}',
   'grafana.token_hint':

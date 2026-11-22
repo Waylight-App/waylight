@@ -3,7 +3,7 @@ export const en = {
   'widget.proxmox.title': 'Proxmox VE',
   'widget.proxmox.description': 'Node load and the status of VMs and LXC containers.',
   'settings.section.proxmox': 'Proxmox',
-  'proxmox.connect_under_settings': 'Connect Proxmox VE under Settings → Proxmox.',
+  'proxmox.connect_under_settings': 'Your servers and machines from Proxmox.',
   'proxmox.uptime': 'up {value}',
   'proxmox.offline': 'offline',
   'proxmox.cpu': 'CPU ({cpus} cores)',

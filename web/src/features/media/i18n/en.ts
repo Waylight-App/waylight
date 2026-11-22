@@ -3,7 +3,7 @@ export const en = {
   'widget.media.title': 'Media server',
   'widget.media.description': 'Now playing and recently added on Jellyfin or Plex.',
   'settings.section.media': 'Media server',
-  'media.connect_under_settings': 'Connect Jellyfin or Plex under Settings → Media server.',
+  'media.connect_under_settings': 'Your films and shows from Jellyfin or Plex.',
   'media.now_playing': 'Now playing',
   'media.nothing_playing': 'Nothing is playing.',
   'media.recently_added': 'Recently added',

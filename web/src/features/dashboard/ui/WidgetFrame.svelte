@@ -2,6 +2,7 @@
   import { t } from '../../../shared/i18n';
   import type { Snippet } from 'svelte';
   import WidgetHeader from '../../../shared/ui/WidgetHeader.svelte';
+  import { provideWidgetIcon } from '../../../shared/ui/widgetIcon';
   import type { IconName } from '../../../shared/ui/icons/paths';
   import { WIDGET_SIZES, type WidgetSize } from '../domain/sizes';
   import { ZONES, type Zone } from '../domain/zones';
@@ -60,6 +61,7 @@
     children,
   }: Props = $props();
 
+  provideWidgetIcon(() => icon);
   let content = $state<HTMLElement>();
   $effect(() => {
     const el = content;
