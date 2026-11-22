@@ -3,6 +3,7 @@
   import type { OnboardingStep } from './plugins/loader';
   import PluginHost from './plugins/PluginHost.svelte';
   import { definitionFor, widgetDefinitions } from './widgets';
+  import { wizardSearch } from './wizardSearch';
   import type { Personal } from '../features/onboarding/domain/profile';
   import { startIndex, wizardSteps } from '../features/onboarding/domain/wizard';
   import Wizard from '../features/onboarding/ui/wizard/Wizard.svelte';
@@ -67,6 +68,10 @@
   }
   const opening = plan();
 
+  // Created once, so the answers of the search step are cached.
+  // svelte-ignore state_referenced_locally
+  const search = wizardSearch(container, modules);
+
   const context = (sample: boolean, withWidgets: boolean): WizardContext => ({
     owner: container.auth.owner,
     personal: modules.has('appearance') ? appearance : undefined,
@@ -97,6 +102,7 @@
       : undefined,
     extraSteps: onboardingSteps.map((s) => ({ id: s.id, title: s.title() })),
     extra: pluginStep,
+    search,
     widgetName: (kind) => definitionFor(kind)?.type.title ?? kind,
   });
 </script>

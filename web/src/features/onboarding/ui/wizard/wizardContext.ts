@@ -2,6 +2,7 @@ import type { Snippet } from 'svelte';
 import type { DashboardUseCases } from '../../../dashboard/usecase/dashboardUseCases';
 import type { WidgetType } from '../../../dashboard/domain/dashboard';
 import type { IconName } from '../../../../shared/ui/icons/paths';
+import type { Answer } from '../../../search/domain/smart/answer';
 import type { Personal, Place } from '../../domain/profile';
 import type { WizardStepId } from '../../domain/wizard';
 import type { StepControl, WizardSession } from './wizardState.svelte';
@@ -34,6 +35,13 @@ export interface WizardContext {
   extraSteps: { id: string; title: string }[];
   /** Draws a plugin step; it registers what Next saves. */
   extra?: Snippet<[string, (save: () => Promise<void>) => void]>;
+  /** The search of the app, for the try-it step; its answers are the real ones. */
+  search: {
+    /** Example queries that work for this account, in the current language, for the chosen template. */
+    examples: (template: string) => Promise<string[]>;
+    /** The answers of the smart search; the saved place serves the weather. */
+    answer: (query: string, signal: AbortSignal, place?: Place) => Promise<Answer[]>;
+  };
   /** Title of a widget kind. */
   widgetName: (kind: string) => string;
 }

@@ -440,6 +440,13 @@ export const en = {
   'wizard.widgets.count': '{n} widgets chosen',
   'wizard.widgets.count_one': '{n} widget chosen',
   'wizard.widgets.tab_name': 'Start page',
+  'wizard.search.title': 'Just ask.',
+  'wizard.search.body':
+    'The search finds more than pages. It calculates, converts, shows the weather and your appointments, and starts timers. Try it.',
+  'wizard.search.label': 'Try a question',
+  'wizard.search.examples': 'Examples',
+  'wizard.search.none': 'No answer to this one yet. Try one of the examples.',
+  'wizard.search.tip': 'Tip: Press Ctrl + K to open the search from anywhere.',
   'wizard.done.title': "All done, let's go.",
   'wizard.done.body': 'Your start page is ready.',
   'wizard.done.body_widgets': 'Your start page is ready. We created these widgets for you:',
@@ -828,25 +835,25 @@ export const en = {
   'app.marked_done': '“{title}” marked as done.',
   'tour.welcome.title': 'Welcome to Waylight 👋',
   'tour.welcome.body':
-    'Your personal start page: widgets for everyday life and your home server. This short tour shows you around — it takes less than a minute.',
+    'Your personal start page: widgets for everyday life, your home and your server. This short tour shows you around. It takes less than a minute.',
   'tour.tabs.title': 'Tabs',
   'tour.tabs.body':
-    'Group widgets on tabs, e.g. "Home" for every day and "Server" for your homelab. The selected tab is remembered.',
+    'Group widgets on tabs, for example "Home" for every day and "Server" for your homelab. Waylight remembers the tab you chose.',
   'tour.search.title': 'Search',
   'tour.search.body':
-    'Searches with DuckDuckGo by default. Bangs like !w or !g work, and you can define your own shortcuts in the settings.',
+    'The search finds more than pages. It calculates, converts units and currencies, shows the weather and your appointments, adds to-dos and notes, and starts timers. Type a question, or "?" to see what works.',
   'tour.edit.title': 'Edit mode',
   'tour.edit.body':
-    'Switch to edit mode to drag widgets by their title bar, resize them at the bottom-right corner, add new widgets and tabs, and configure a widget with ⚙.',
+    'Switch to edit mode to move and resize widgets, add new ones, and open the settings of a widget with ⚙. Widgets that still need something show a "Set up" button.',
   'tour.settings.title': 'Settings',
   'tour.settings.body':
-    'Theme and background, search engine, service tiles, RSS feeds, bookmark folders, your CalDAV calendar and AdGuard Home — and your password.',
+    'Look and language, places, search, connections to your services, calendar, accounts, backup and your password. The search in the settings finds any option.',
   'tour.server.title': 'Server overview',
   'tour.server.body':
     'The "Server" tab shows host metrics, Docker containers and the status of your services.',
   'tour.done.title': "You're all set!",
   'tour.done.body':
-    'The sample data is just a starting point — change or delete whatever you like. You can restart this tour any time under Settings → Account.',
+    'Everything on your start page is a starting point: change or delete whatever you like. You can restart this tour any time under Settings → Account.',
   'common.set_up': 'Set up',
   'common.connected_saved': 'Connected and saved.',
   'clock.unknown_time_zone': 'Unknown time zone. Use an IANA name such as Europe/Berlin.',
