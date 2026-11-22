@@ -883,6 +883,7 @@
 {#if dialog?.kind === 'add-widget'}
   <WidgetPicker
     initialQuery={dialog.query}
+    selected={new Set(active?.widgets.map((w) => w.kind))}
     types={widgetTypes}
     icon={widgetIcon}
     onpick={addWidget}

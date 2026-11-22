@@ -39,6 +39,20 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await expect(wizard.getByRole('heading', { name: 'What goes on your start page?' })).toBeVisible();
 
   await expect(wizard.getByRole('button', { name: 'Family' })).toHaveAttribute('aria-pressed', 'true');
+  // The suggestions follow the template: its core is chosen, a few more are offered.
+  await expect(wizard.getByRole('heading', { name: 'Suggestions for Family' })).toBeVisible();
+  await expect(wizard.getByRole('button', { name: 'Calendar' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(wizard.getByRole('button', { name: 'Weather' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(wizard.getByText('You can change everything anytime')).toBeVisible();
+  // More opens the add-widget dialog, which marks what is chosen already.
+  await wizard.getByRole('button', { name: 'More' }).click();
+  const picker = page.getByRole('dialog', { name: 'Add widget' });
+  await expect(picker.getByRole('button', { name: /^Calendar/ })).toContainText('Already added');
+  await expect(picker.getByRole('button', { name: /^Services/ })).not.toContainText('Already added');
+  await picker.getByRole('button', { name: /^Services/ }).click();
+  await expect(picker.getByRole('button', { name: /^Services/ })).toContainText('Already added');
+  await picker.getByRole('button', { name: 'Done' }).click();
+  await expect(wizard.getByRole('button', { name: 'Services' })).toHaveAttribute('aria-pressed', 'true');
   await wizard.getByRole('button', { name: 'Next' }).click();
 
   // The search step answers with the real search; an example types itself in.
@@ -90,10 +104,9 @@ test('first start asks the essentials, offers the templates and Family replaces 
   };
   expect(dashboard.tabs.map((t) => t.name)).toEqual(['Family']);
   expect(dashboard.tabs[0]?.zoned).toBe(true);
-  expect(dashboard.tabs[0]?.widgets.find((w) => w.kind === 'services')).toMatchObject({
-    size: 'strip',
-    zone: 'system',
-  });
+  expect(dashboard.tabs[0]?.widgets.map((w) => w.kind).sort()).toEqual(
+    ['calendar', 'meals', 'services', 'shopping', 'todos'].sort(),
+  );
 
   // The answers are stored where the settings pages store them.
   const stored = (await (await page.request.get('/api/appearance')).json()) as Record<string, unknown>;

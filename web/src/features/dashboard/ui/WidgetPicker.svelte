@@ -26,6 +26,10 @@
     footer?: Snippet;
     /** Text the search starts with, e.g. "weather" from "add widget weather" (#476). */
     initialQuery?: string;
+    /** Kinds that are already chosen or on the page; their tiles are marked. */
+    selected?: ReadonlySet<string>;
+    /** Offers the size previews next to each tile; the onboarding wizard has none. */
+    sizes?: boolean;
   }
   let {
     types,
@@ -34,6 +38,8 @@
     onclose,
     footer,
     initialQuery = '',
+    selected = new Set<string>(),
+    sizes = true,
     compactExample = () => undefined,
   }: Props = $props();
 
@@ -156,6 +162,7 @@
                   <li>
                     <button
                       class="tile"
+                      class:selected={selected.has(type.kind)}
                       type="button"
                       bind:this={
                         () => tiles[c]?.[r],
@@ -170,15 +177,18 @@
                       {#if ic}<span class="icon"><Icon name={ic} size={28} /></span>{/if}
                       <strong>{type.title}</strong>
                       <span class="desc">{type.description}</span>
+                      {#if selected.has(type.kind)}<span class="check" aria-hidden="true">✓</span><span
+                          class="sr-only">{t('picker.selected')}</span
+                        >{/if}
                     </button>
                     <!-- A click on the tile adds the widget at once; this opens the size previews. -->
-                    <button
-                      class="sizes-button"
-                      type="button"
-                      aria-label={t('picker.choose_size', { name: type.title })}
-                      title={t('picker.choose_size', { name: type.title })}
-                      onclick={() => (sizing = type)}>⊞</button
-                    >
+                    {#if sizes}<button
+                        class="sizes-button"
+                        type="button"
+                        aria-label={t('picker.choose_size', { name: type.title })}
+                        title={t('picker.choose_size', { name: type.title })}
+                        onclick={() => (sizing = type)}>⊞</button
+                      >{/if}
                   </li>
                 {/each}
               </ul>
@@ -232,6 +242,7 @@
     min-height: 4.5rem;
     padding: var(--space-2);
     padding-right: 36px;
+    position: relative;
     text-align: left;
     border: 1px solid var(--color-border, rgba(127, 127, 127, 0.3));
     border-radius: var(--radius-small);
@@ -245,6 +256,24 @@
   }
   .tile:hover {
     border-color: var(--color-accent);
+  }
+  .tile.selected {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface-2));
+  }
+  .check {
+    position: absolute;
+    bottom: var(--space-1);
+    right: var(--space-1);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
   }
   .tile:focus-visible {
     outline: 2px solid var(--color-accent-text);
