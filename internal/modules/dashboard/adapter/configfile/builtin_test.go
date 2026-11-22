@@ -60,6 +60,31 @@ func TestBuiltin(t *testing.T) {
 	}
 }
 
+// TestFamilyWidgets checks that the family template gives the household
+// widgets of #675 and #676 a place.
+func TestFamilyWidgets(t *testing.T) {
+	list, err := Builtin()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, b := range list {
+		if b.ID != "family" {
+			continue
+		}
+		var kinds []string
+		for _, w := range b.Tab.Widgets {
+			kinds = append(kinds, w.Kind)
+		}
+		for _, want := range []string{"meals", "chores", "board", "parcels", "waste"} {
+			if !slices.Contains(kinds, want) {
+				t.Errorf("family has no %s widget", want)
+			}
+		}
+		return
+	}
+	t.Fatal("no family template")
+}
+
 func TestMergeConfig(t *testing.T) {
 	got, err := MergeConfig(`{"days":4,"lat":1}`, map[string]any{"lat": 53.1, "label": "Home"})
 	if err != nil || got != `{"days":4,"label":"Home","lat":53.1}` {
