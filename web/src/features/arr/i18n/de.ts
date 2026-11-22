@@ -6,8 +6,7 @@ export const de: Record<keyof typeof en, string> = {
   'widget.arr.description':
     'Kommende Folgen und Filme, Download-Warteschlange und Warnungen von Sonarr, Radarr und Prowlarr.',
   'settings.section.arr': 'Sonarr / Radarr',
-  'arr.connect_under_settings':
-    'Füge Sonarr, Radarr oder Prowlarr unter Einstellungen → Sonarr / Radarr hinzu.',
+  'arr.connect_under_settings': 'Downloads und Wünsche aus Sonarr und Radarr.',
   'arr.queue': 'Downloads',
   'arr.queue_empty': 'Keine Downloads.',
   'arr.upcoming': 'Demnächst',

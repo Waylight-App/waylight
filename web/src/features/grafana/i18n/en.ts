@@ -6,7 +6,7 @@ export const en = {
   'widget.grafana-alerts.title': 'Grafana alerts',
   'widget.grafana-alerts.description': 'Firing and pending alerts of Grafana Alerting.',
   'settings.section.grafana': 'Grafana',
-  'grafana.connect_under_settings': 'Connect Grafana under Settings → Grafana.',
+  'grafana.connect_under_settings': 'Alerts from Grafana at a glance.',
   'grafana.url': 'Grafana address',
   'grafana.token': 'Service account token {value}',
   'grafana.token_hint':

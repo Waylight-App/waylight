@@ -2,7 +2,7 @@
 export const en = {
   'shopping.list': 'List',
   'shopping.caldav_list': 'CalDAV task list',
-  'shopping.no_list': 'No shopping list yet. Create one here.',
+  'shopping.no_list': 'Your shopping list, always at hand.',
   'shopping.new_list_name': 'Name of the new list',
   'shopping.default_list_name': 'Shopping',
   'shopping.create_list': 'Create list',
@@ -24,7 +24,7 @@ export const en = {
   'shopping.import_caldav': 'Import from CalDAV',
   'shopping.imported': '{count} open items copied from the CalDAV list.',
   'shopping.caldav_title': 'CalDAV task list',
-  'shopping.setup_hint': 'Or connect a CalDAV task list, e.g. a list in Nextcloud Tasks.',
+  'shopping.connect_list': 'Connect a list',
   'shopping.setup_list_url': 'Address of the task list (Tasks → ⋯ of the list → Copy private link)',
   'shopping.setup_username': 'User name',
   'shopping.setup_password': 'App password',

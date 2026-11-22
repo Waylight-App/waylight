@@ -5,7 +5,7 @@ export const de: Record<keyof typeof en, string> = {
   'widget.proxmox.title': 'Proxmox VE',
   'widget.proxmox.description': 'Auslastung der Knoten und Status von VMs und LXC-Containern.',
   'settings.section.proxmox': 'Proxmox',
-  'proxmox.connect_under_settings': 'Verbinde Proxmox VE unter Einstellungen → Proxmox.',
+  'proxmox.connect_under_settings': 'Deine Server und Maschinen aus Proxmox.',
   'proxmox.uptime': 'läuft seit {value}',
   'proxmox.offline': 'offline',
   'proxmox.cpu': 'CPU ({cpus} Kerne)',

@@ -6,7 +6,7 @@ export const de: Record<keyof typeof en, string> = {
   'widget.fuel.description':
     'Günstigste Tankstellen in der Nähe oder deine Lieblingstankstellen (Deutschland, Tankerkönig).',
   'settings.section.fuel': 'Spritpreise',
-  'fuel.connect_under_settings': 'Richte Spritpreise unter Einstellungen → Spritpreise ein.',
+  'fuel.connect_under_settings': 'Spritpreise in deiner Nähe.',
   'fuel.closed': 'geschlossen',
   'fuel.favourite': '{name} merken',
   'fuel.no_favourites': 'Markiere Tankstellen mit ☆, um sie hier zu sehen.',

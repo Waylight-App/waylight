@@ -6,7 +6,7 @@ export const de: Record<keyof typeof en, string> = {
   'widget.smarthome.description':
     'Zustände von Home-Assistant-Geräten und -Sensoren; optional Schalter und Taster.',
   'settings.section.smarthome': 'Home Assistant',
-  'smarthome.connect_under_settings': 'Verbinde Home Assistant unter Einstellungen → Home Assistant.',
+  'smarthome.connect_under_settings': 'Deine Lampen und Geräte aus Home Assistant.',
   'smarthome.choose_entities': 'Wähle Entitäten in den Widget-Einstellungen.',
   'smarthome.unavailable': 'nicht verfügbar',
   'smarthome.on': 'an',

@@ -1,5 +1,6 @@
 <script lang="ts">
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
+  import TileLayout from '../../../shared/ui/TileLayout.svelte';
   import { shoppingSetup } from './shoppingSetup';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
@@ -28,7 +29,6 @@
   let items = $state<ShoppingItem[]>([]);
   let loaded = $state(false);
   let draft = $state('');
-  let listName = $state('');
   let error = $state('');
   let busy = $state(false);
   const source = $derived(current ? shopping.source(current) : null);
@@ -66,15 +66,11 @@
     }
   }
 
-  async function createList(e: SubmitEvent) {
-    e.preventDefault();
+  async function createList() {
     busy = true;
     try {
-      const list = await shopping.createList(listName || t('shopping.default_list_name'));
-      if (list) {
-        listName = '';
-        await pick(list.id);
-      }
+      const list = await shopping.createList(t('shopping.default_list_name'));
+      if (list) await pick(list.id);
     } catch (err) {
       error = errorMessage(err);
     } finally {
@@ -139,73 +135,70 @@
 </script>
 
 {#if loaded && !current}
-  <p class="muted">{t('shopping.no_list')}</p>
-  <form class="add" onsubmit={createList}>
-    <input
-      class="input"
-      bind:value={listName}
-      placeholder={t('shopping.default_list_name')}
-      aria-label={t('shopping.new_list_name')}
-      maxlength="100"
-    />
-    <button class="btn" type="submit" disabled={busy}>{t('shopping.create_list')}</button>
-  </form>
-  {#if error}<p class="error small" role="alert">{error}</p>{/if}
-  {#if !overview.caldav}
-    <SetupInPlace
-      text={t('shopping.setup_hint')}
-      descriptor={setup}
-      instance={false}
-      ondone={() => void load().catch(() => undefined)}
-    />
-  {/if}
+  <SetupInPlace
+    text={t('shopping.no_list')}
+    descriptor={setup}
+    instance={false}
+    label={t('shopping.connect_list')}
+    ondone={() => void load().catch(() => undefined)}
+  >
+    <button class="btn btn-primary" type="button" disabled={busy} onclick={() => void createList()}
+      >{t('shopping.create_list')}</button
+    >
+  </SetupInPlace>
 {:else}
-  {#if choices > 1}
-    <label class="pick"
-      ><span class="sr-only">{t('shopping.list')}</span>
-      <select class="input" value={current} onchange={(e) => pick(e.currentTarget.value)}>
-        {#each overview.lists as l (l.id)}
-          <option value={l.id}>{l.name}</option>
-        {/each}
-        {#if overview.caldav}<option value={CALDAV}>{t('shopping.caldav_list')}</option>{/if}
-      </select></label
-    >
-  {/if}
-  <form class="add" onsubmit={add}>
-    <input
-      class="input"
-      bind:value={draft}
-      placeholder={t('shopping.add_item')}
-      aria-label={t('shopping.new_item')}
-      maxlength="200"
-      disabled={!loaded}
-    />
-    <button class="btn" type="submit" disabled={busy || !draft.trim()}>{t('shopping.add')}</button>
-  </form>
-  {#if error}<p class="error small" role="alert">{error}</p>{/if}
-  <ul class="items">
-    {#each items as it (it.id)}
-      <li class:done={it.done}>
-        <label
-          ><input type="checkbox" checked={it.done} onchange={() => toggle(it)} />
-          <span>{it.summary}</span></label
+  <TileLayout>
+    {#if choices > 1}
+      <label class="pick"
+        ><span class="sr-only">{t('shopping.list')}</span>
+        <select class="input" value={current} onchange={(e) => pick(e.currentTarget.value)}>
+          {#each overview.lists as l (l.id)}
+            <option value={l.id}>{l.name}</option>
+          {/each}
+          {#if overview.caldav}<option value={CALDAV}>{t('shopping.caldav_list')}</option>{/if}
+        </select></label
+      >
+    {/if}
+    <ul class="items">
+      {#each items as it (it.id)}
+        <li class:done={it.done}>
+          <label
+            ><input type="checkbox" checked={it.done} onchange={() => toggle(it)} />
+            <span>{it.summary}</span></label
+          >
+          <button
+            class="btn link remove"
+            type="button"
+            aria-label={t('shopping.remove_item', { name: it.summary })}
+            onclick={() => remove(it)}>×</button
+          >
+        </li>
+      {:else}
+        {#if loaded}<li class="muted">{t('shopping.the_list_is_empty')}</li>{/if}
+      {/each}
+    </ul>
+    {#if doneCount}
+      <button class="btn link" type="button" onclick={clear}
+        >{t('shopping.remove_done', { doneCount: doneCount })}</button
+      >
+    {/if}
+    {#snippet footer()}
+      {#if error}<p class="error small" role="alert">{error}</p>{/if}
+      <form class="add" onsubmit={add}>
+        <input
+          class="input"
+          bind:value={draft}
+          placeholder={t('shopping.add_item')}
+          aria-label={t('shopping.new_item')}
+          maxlength="200"
+          disabled={!loaded}
+        />
+        <button class="btn btn-primary" type="submit" disabled={busy || !draft.trim()}
+          >{t('shopping.add')}</button
         >
-        <button
-          class="btn link remove"
-          type="button"
-          aria-label={t('shopping.remove_item', { name: it.summary })}
-          onclick={() => remove(it)}>×</button
-        >
-      </li>
-    {:else}
-      {#if loaded}<li class="muted">{t('shopping.the_list_is_empty')}</li>{/if}
-    {/each}
-  </ul>
-  {#if doneCount}
-    <button class="btn link" type="button" onclick={clear}
-      >{t('shopping.remove_done', { doneCount: doneCount })}</button
-    >
-  {/if}
+      </form>
+    {/snippet}
+  </TileLayout>
 {/if}
 
 <style>
@@ -219,7 +212,6 @@
   .add {
     display: flex;
     gap: var(--space-1);
-    margin-bottom: var(--space-2);
   }
   .add .input {
     flex: 1;

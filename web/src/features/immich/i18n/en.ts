@@ -3,7 +3,7 @@ export const en = {
   'widget.immich.title': 'Immich',
   'widget.immich.description': "Photo library statistics and today's memories.",
   'settings.section.immich': 'Immich',
-  'immich.connect_under_settings': 'Connect Immich under Settings → Immich.',
+  'immich.connect_under_settings': 'Your photos from Immich.',
   'immich.photos': 'photos',
   'immich.videos': 'videos',
   'immich.storage': 'Storage',
