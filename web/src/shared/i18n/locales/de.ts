@@ -991,7 +991,8 @@ export const de: Record<BaseMessageKey, string> = {
   'services.invalid_url': 'Die URL muss mit http:// oder https:// beginnen.',
   'services.invalid_check_url': 'Die Prüf-URL muss mit http:// oder https:// beginnen.',
   'services.invalid_mac': 'Die MAC-Adresse muss wie aa:bb:cc:dd:ee:ff aussehen.',
-  'transfer.invalid_json': 'Diese Datei kann nicht gelesen werden. Wähle eine Datei, die du aus Waylight exportiert hast.',
+  'transfer.invalid_json':
+    'Diese Datei kann nicht gelesen werden. Wähle eine Datei, die du aus Waylight exportiert hast.',
   'transfer.not_export': 'Das ist keine Exportdatei von Waylight.',
   'transfer.result_imported': 'Importiert: {list}.',
   'transfer.nothing': 'nichts',
