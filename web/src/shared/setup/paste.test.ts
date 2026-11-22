@@ -70,8 +70,6 @@ describe('followPaste', () => {
 
 describe('pasteLink', () => {
   it('carries the address and the code', () => {
-    expect(pasteLink('https://waylight.example', 'abc')).toBe(
-      'waylight://paste?server=https%3A%2F%2Fwaylight.example&code=abc',
-    );
+    expect(pasteLink('https://waylight.example', 'abc')).toBe('https://waylight.example/paste/abc');
   });
 });

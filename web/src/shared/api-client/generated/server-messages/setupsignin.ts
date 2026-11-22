@@ -8,6 +8,7 @@ export const serverMessages = {
   srv_d765b701fb776c4a: "The sign-in was cancelled. Sign in again or create a key instead.",
   srv_7368f0d8826fd013: "The value must not be empty or longer than 4096 characters.",
   srv_b4e2abb05e1e39c8: "This service has no sign-in.",
+  srv_787054103eba10b2: "Too many wrong codes. Please wait a few minutes.",
 } as const;
 
 /** Key of a backend message. */

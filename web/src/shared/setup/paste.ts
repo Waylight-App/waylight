@@ -1,6 +1,6 @@
 /**
  * Paste from phone in the setup assistant: the assistant shows a QR code,
- * the signed-in mobile app answers it with the key copied on the phone, and
+ * the phone answers it with the key, in the browser or in the signed-in mobile app, and
  * the server hands the key to the assistant once.
  */
 import { getContext, setContext } from 'svelte';
@@ -41,9 +41,13 @@ export class PasteApi implements PasteGateway {
   }
 }
 
-/** The text of the QR code; the app reads the address and the code from it. */
+/**
+ * The text of the QR code: the address of the server's page for the code. A
+ * phone camera opens it in the browser, and the page offers the
+ * waylight://paste link for the app.
+ */
 export function pasteLink(serverUrl: string, code: string): string {
-  return `waylight://paste?${new URLSearchParams({ server: serverUrl, code })}`;
+  return `${serverUrl.replace(/\/+$/, '')}/paste/${encodeURIComponent(code)}`;
 }
 
 /** Raised when the code ended before the phone answered. */

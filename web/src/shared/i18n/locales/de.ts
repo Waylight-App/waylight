@@ -892,7 +892,7 @@ export const de: Record<BaseMessageKey, string> = {
   'setup.signin_instead': 'Stattdessen mit {service} anmelden',
   'setup.paste': 'Vom Handy einfügen',
   'setup.paste_hint':
-    'Kopiere den Schlüssel auf deinem Handy, scanne dann diesen Code mit der Waylight-App und sende ihn.',
+    'Kopiere den Schlüssel auf deinem Handy, scanne dann diesen Code mit der Kamera oder der Waylight-App und sende ihn.',
   'setup.paste_qr_alt': 'QR-Code für Vom Handy einfügen',
   'setup.paste_waiting': 'Warte auf den Schlüssel von deinem Handy …',
   'setup.paste_received': 'Schlüssel erhalten. Prüfe die Verbindung, um fortzufahren.',

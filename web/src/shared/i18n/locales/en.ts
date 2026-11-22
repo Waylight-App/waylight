@@ -873,7 +873,8 @@ export const en = {
   'setup.signin_manual': 'Paste a key instead',
   'setup.signin_instead': 'Sign in with {service} instead',
   'setup.paste': 'Paste from phone',
-  'setup.paste_hint': 'Copy the key on your phone, then scan this code with the Waylight app and send it.',
+  'setup.paste_hint':
+    'Copy the key on your phone, then scan this code with the camera or the Waylight app and send it.',
   'setup.paste_qr_alt': 'QR code for Paste from phone',
   'setup.paste_waiting': 'Waiting for the key from your phone…',
   'setup.paste_received': 'Key received. Check the connection to continue.',
