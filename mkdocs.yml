@@ -98,6 +98,7 @@ nav:
           - Mail: modules/mail.md
           - Markets: modules/markets.md
           - Meal plan: modules/meals.md
+          - Meter readings: modules/meters.md
           - Music releases: modules/releases.md
           - Parcels from e-mails: parcels-mail.md
           - Photo frame: modules/photos.md

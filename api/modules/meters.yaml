@@ -1,0 +1,123 @@
+# OpenAPI fragment of the meters module (#689). `make openapi` merges it with
+# api/openapi.base.yaml and checks it.
+tags:
+  - name: meters
+
+paths:
+  /api/meters:
+    get:
+      tags: [meters]
+      summary: List the visible meters with their latest reading
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Meter" } } } } }
+    post:
+      tags: [meters]
+      summary: Create a meter, shared with everyone unless a visibility is given
+      security: [{ session: [], csrf: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MeterInput" } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Meter" } } } }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/meters/{id}:
+    get:
+      tags: [meters]
+      summary: A visible meter with its readings and the consumption of one year
+      parameters:
+        - { $ref: "#/components/parameters/id" }
+        - { name: year, in: query, required: false, schema: { type: integer, minimum: 2000, maximum: 9999 }, description: Defaults to the current year }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/MeterDetail" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+    put:
+      tags: [meters]
+      summary: Change a meter (creator only)
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MeterInput" } } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Meter" } } } }
+        "403": { description: Not the creator, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+    delete:
+      tags: [meters]
+      summary: Remove a meter with its readings (creator only)
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      responses:
+        "204": { description: Deleted }
+        "403": { description: Not the creator, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+  /api/meters/{id}/readings:
+    post:
+      tags: [meters]
+      summary: Add a reading to a visible meter; a reading on a day that has one replaces it
+      security: [{ session: [], csrf: [] }]
+      parameters: [{ $ref: "#/components/parameters/id" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MeterReadingInput" } } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/MeterReading" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Invalid" }
+  /api/meters/{id}/readings/{day}:
+    delete:
+      tags: [meters]
+      summary: Remove the reading of a day (meter creator only)
+      security: [{ session: [], csrf: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/id" }
+        - { name: day, in: path, required: true, schema: { type: string, format: date } }
+      responses:
+        "204": { description: Deleted }
+        "403": { description: Not the creator, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorBody" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/meters/compact:
+    get:
+      tags: [meters]
+      summary: Compact state, the meter read longest ago
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/CompactState" } } } }
+
+schemas:
+  MeterInput:
+    type: object
+    required: [name, kind, unit]
+    properties:
+      name: { type: string, maxLength: 60 }
+      kind: { type: string, enum: [electricity, gas, water, heat, other] }
+      unit: { type: string, maxLength: 12, description: "What the counter counts, e.g. kWh or m³" }
+      visibility: { type: string, description: "private, everyone or group:<id>; empty shares a new meter with everyone" }
+  MeterReadingInput:
+    type: object
+    required: [day, value]
+    properties:
+      day: { type: string, format: date, description: Not in the future }
+      value: { type: number, minimum: 0, description: Counter value; not lower than an earlier reading nor higher than a later one }
+  MeterReading:
+    type: object
+    properties:
+      day: { type: string, format: date }
+      value: { type: number }
+  Meter:
+    type: object
+    properties:
+      id: { type: string }
+      name: { type: string }
+      kind: { type: string, enum: [electricity, gas, water, heat, other] }
+      unit: { type: string }
+      last: { allOf: [{ $ref: "#/components/schemas/MeterReading" }], nullable: true, description: Newest reading; null while there is none }
+      visibility: { type: string }
+      mine: { type: boolean }
+  MeterDetail:
+    type: object
+    properties:
+      meter: { $ref: "#/components/schemas/Meter" }
+      readings: { type: array, items: { $ref: "#/components/schemas/MeterReading" }, description: Newest first }
+      years: { type: array, items: { type: integer }, description: Calendar years with readings, the latest first }
+      consumption:
+        type: object
+        properties:
+          year: { type: integer }
+          months: { type: array, items: { type: number, nullable: true }, description: Twelve entries, January first; null where the readings do not cover the month }
+          total: { type: number, nullable: true, description: Consumption between the first and the last reading of the year }
+          complete: { type: boolean, description: True when total covers the whole year }

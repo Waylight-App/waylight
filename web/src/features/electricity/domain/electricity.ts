@@ -1,4 +1,5 @@
 import { t } from '../../../shared/i18n';
+import { barHeights } from '../../../shared/ui/bars';
 
 /** Bidding zones (#288). */
 export const ZONES = ['DE-LU', 'AT'] as const;
@@ -68,14 +69,7 @@ export function currentHour(hours: readonly PriceHour[], now: Date): PriceHour |
  * prices hang below the base line. Returns the base line position too.
  */
 export function bars(hours: readonly PriceHour[]): { heights: number[]; zero: number } {
-  const values = hours.map((h) => h.centPerKWh);
-  const max = Math.max(0, ...values);
-  const min = Math.min(0, ...values);
-  const span = max - min || 1;
-  return {
-    heights: values.map((v) => (Math.abs(v) / span) * 100),
-    zero: (max / span) * 100,
-  };
+  return barHeights(hours.map((h) => h.centPerKWh));
 }
 
 /** "12.34 ct" in the UI language. */
