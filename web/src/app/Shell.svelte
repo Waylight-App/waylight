@@ -490,6 +490,12 @@
     appearance = await container.appearance.save({ ...appearance, ...patch });
   }
 
+  /** Applies a design from the wizard and shows it. */
+  async function applyDesign(id: string) {
+    appearance = await container.appearance.applyTheme(id);
+    return appearance;
+  }
+
   /** The wizard is finished or skipped: the dashboard opens, then the tour. */
   async function wizardDone() {
     wizardStep = null;
@@ -788,6 +794,7 @@
       {onboardingSteps}
       stored={wizardStep}
       {savePersonal}
+      {applyDesign}
       preview={(patch) => (lookPreview = patch)}
       ondone={() => void wizardDone()}
     />

@@ -6,6 +6,7 @@
   import { setupWalk } from '../shared/setup/walk.svelte';
   import { DOCS_URL } from '../shared/product';
   import { wizardSearch } from './wizardSearch';
+  import type { Appearance } from '../features/appearance';
   import type { Personal } from '../features/onboarding/domain/profile';
   import { startIndex, wizardSteps } from '../features/onboarding/domain/wizard';
   import Wizard from '../features/onboarding/ui/wizard/Wizard.svelte';
@@ -26,6 +27,7 @@
     /** The step the account stopped at; empty before it started. */
     stored: string;
     savePersonal: (patch: Partial<Personal>) => Promise<void>;
+    applyDesign: (id: string) => Promise<Appearance>;
     preview: (patch: Partial<Personal> | null) => void;
     ondone: () => void;
   }
@@ -37,6 +39,7 @@
     onboardingSteps,
     stored,
     savePersonal,
+    applyDesign,
     preview,
     ondone,
   }: Props = $props();
@@ -78,6 +81,9 @@
     owner: container.auth.owner,
     personal: modules.has('appearance') ? appearance : undefined,
     savePersonal,
+    design: modules.has('appearance')
+      ? { gallery: () => container.appearance.gallery(), apply: applyDesign }
+      : undefined,
     preview,
     places: modules.has('places')
       ? {

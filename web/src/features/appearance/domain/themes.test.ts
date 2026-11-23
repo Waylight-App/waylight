@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { FONT_STACKS, previewStyle, resolvedTokens, themeSides } from './themes';
+import { FONT_STACKS, filterThemes, previewSide, previewStyle, resolvedTokens, themeSides } from './themes';
 
 describe('theme preview (#111)', () => {
   it('only lets colors and radii through', () => {
@@ -53,5 +53,24 @@ describe('theme import (#111)', () => {
     await expect(uc.importTheme({ size: (16 << 10) + 1, text: () => Promise.resolve('') })).rejects.toThrow();
     await uc.importTheme({ size: 2, text: () => Promise.resolve('{}') });
     expect(importTheme).toHaveBeenCalledWith('{}');
+  });
+});
+
+describe('filterThemes and previewSide', () => {
+  const light = { scheme: 'light' as const, builtIn: true };
+  const dark = { scheme: 'dark' as const, builtIn: true };
+  const both = { scheme: '' as const, variants: { light: {}, dark: {} }, builtIn: true };
+  const own = { scheme: 'dark' as const, builtIn: false };
+  it('filters by scheme and origin', () => {
+    const all = [light, dark, both, own];
+    expect(filterThemes(all, 'all')).toHaveLength(4);
+    expect(filterThemes(all, 'light')).toEqual([light, both]);
+    expect(filterThemes(all, 'dark')).toEqual([dark, both, own]);
+    expect(filterThemes(all, 'own')).toEqual([own]);
+  });
+  it('previews a design with both variants in the scheme in use', () => {
+    expect(previewSide(both, true)).toBe('dark');
+    expect(previewSide(both, false)).toBe('light');
+    expect(previewSide(light, true)).toBe('light');
   });
 });

@@ -2,7 +2,8 @@
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import type { Appearance } from '../domain/appearance';
-  import { previewStyle, themeSides, type ThemeGallery } from '../domain/themes';
+  import type { ThemeGallery } from '../domain/themes';
+  import DesignGallery from './DesignGallery.svelte';
   import type { AppearanceUseCases } from '../usecase/appearanceUseCases';
 
   /** Theme gallery (#111): ready-made themes to apply, import and share. */
@@ -47,72 +48,52 @@
 <section aria-labelledby="theme-gallery">
   <h3 id="theme-gallery">{t('appearance.gallery')}</h3>
   <p class="muted small">{t('appearance.gallery_hint')}</p>
-  <ul class="grid">
-    {#each gallery.themes as theme (theme.id)}
-      {@const sides = themeSides(theme)}
-      <li class="card" class:active={gallery.applied === theme.id} style={previewStyle(theme, sides[0])}>
-        <!-- One preview per side: light and dark next to each other for a theme with variants. -->
-        <div class="previews" aria-hidden="true">
-          {#each sides as side (side)}
-            <div class="preview" style={previewStyle(theme, side)}>
-              <span class="bar"></span>
-              <span class="tile"
-                ><span class="line"></span><span class="line short"></span><span class="dot"></span></span
-              >
-            </div>
-          {/each}
-        </div>
-        {#if theme.variants}<span class="muted small">{t('appearance.theme_light_dark')}</span>{/if}
-        <span class="name">{theme.name}</span>
-        {#if theme.author}<span class="muted small">{theme.author}</span>{/if}
-        <span class="actions">
-          <button
-            class="btn btn-primary"
-            type="button"
-            disabled={busy || gallery.applied === theme.id}
-            aria-label={t('appearance.apply_theme', { name: theme.name })}
-            onclick={() => run(() => appearance.applyTheme(theme.id), true)}
-            >{gallery.applied === theme.id ? t('appearance.applied') : t('appearance.apply')}</button
-          >
-          <a
-            class="btn btn-icon"
-            href={appearance.exportUrl(theme.id)}
-            download
-            aria-label={t('appearance.export_theme', { name: theme.name })}>⬇</a
-          >
-          {#if !theme.builtIn}
-            <button
-              class="btn btn-icon"
-              type="button"
-              disabled={busy}
-              aria-label={t('appearance.delete_theme', { name: theme.name })}
-              onclick={() => run(() => appearance.deleteTheme(theme.id))}>✕</button
-            >
-          {/if}
-        </span>
-      </li>
-    {/each}
-  </ul>
-  <div class="row">
-    {#if gallery.canRestore}
-      <button
-        class="btn"
-        type="button"
-        disabled={busy}
-        onclick={() => run(() => appearance.restoreStyle(), true)}>{t('appearance.restore_own')}</button
+  <DesignGallery
+    themes={gallery.themes}
+    selected={gallery.applied}
+    filters={['all', 'light', 'dark', 'own']}
+    disabled={busy}
+    onselect={(id) => run(() => appearance.applyTheme(id), true)}
+  >
+    {#snippet extra()}
+      <label class="btn import"
+        >{t('appearance.import_theme')}<input
+          class="file"
+          bind:this={picker}
+          type="file"
+          accept="application/json,.json"
+          disabled={busy}
+          onchange={importFile}
+        /></label
       >
-    {/if}
-    <label class="btn"
-      >{t('appearance.import_theme')}<input
-        class="file"
-        bind:this={picker}
-        type="file"
-        accept="application/json,.json"
-        disabled={busy}
-        onchange={importFile}
-      /></label
+    {/snippet}
+    {#snippet detail(theme)}
+      {#if theme.author}<span class="muted">{theme.author}</span>{/if}
+      <a
+        class="btn btn-icon"
+        href={appearance.exportUrl(theme.id)}
+        download
+        aria-label={t('appearance.export_theme', { name: theme.name })}>⬇</a
+      >
+      {#if !theme.builtIn}
+        <button
+          class="btn btn-icon"
+          type="button"
+          disabled={busy}
+          aria-label={t('appearance.delete_theme', { name: theme.name })}
+          onclick={() => run(() => appearance.deleteTheme(theme.id))}>✕</button
+        >
+      {/if}
+    {/snippet}
+  </DesignGallery>
+  {#if gallery.canRestore}
+    <button
+      class="btn"
+      type="button"
+      disabled={busy}
+      onclick={() => run(() => appearance.restoreStyle(), true)}>{t('appearance.restore_own')}</button
     >
-  </div>
+  {/if}
   {#if error}<p class="error" role="alert">{error}</p>{/if}
 </section>
 
@@ -121,96 +102,22 @@
     margin: var(--space-4) 0 var(--space-1);
     font-size: var(--fs-sm);
   }
-  .grid {
-    list-style: none;
-    padding: 0;
-    margin: var(--space-2) 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
-    gap: var(--space-2);
-  }
-  /* The card renders with the theme's own tokens: a live preview. */
-  .card {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: var(--space-2);
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-surface);
-    color: var(--color-text);
-  }
-  .card.active {
-    border-color: var(--color-accent);
-  }
-  .card .muted {
+  .muted {
     color: var(--color-text-muted);
-  }
-  .previews {
-    display: flex;
-    gap: 4px;
-    margin-bottom: var(--space-1);
-  }
-  .preview {
-    flex: 1;
-    min-width: 0;
-    display: grid;
-    gap: 4px;
-    padding: 6px;
-    border-radius: var(--radius-sm);
-    background: var(--color-bg);
-  }
-  .bar {
-    height: 6px;
-    border-radius: var(--radius-sm);
-    background: var(--color-surface-2, var(--color-surface));
-  }
-  .tile {
-    display: grid;
-    gap: 3px;
-    padding: 6px;
-    border-radius: var(--radius-sm);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-  }
-  .line {
-    height: 5px;
-    border-radius: var(--radius-sm);
-    background: var(--color-text);
-    opacity: 0.8;
-  }
-  .line.short {
-    width: 60%;
-    background: var(--color-text-muted);
-  }
-  .dot {
-    width: 30%;
-    height: 8px;
-    border-radius: var(--radius-sm);
-    background: var(--color-accent);
-  }
-  .name {
-    font-family: var(--font-display);
-    font-weight: 600;
   }
   .small {
     font-size: var(--fs-xs);
   }
-  .actions {
+  .import {
     display: flex;
-    gap: 4px;
-    margin-top: auto;
-    padding-top: var(--space-1);
-  }
-  .actions .btn-primary {
-    flex: 1;
-    background: var(--color-accent);
-    color: var(--color-accent-contrast);
-  }
-  .row {
-    display: flex;
-    gap: var(--space-2);
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 6rem;
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
   }
   .file {
     position: absolute;
@@ -218,7 +125,7 @@
     height: 1px;
     opacity: 0;
   }
-  .row label:has(:focus-visible) {
+  .import:has(:focus-visible) {
     outline: 2px solid var(--color-accent-text);
   }
 </style>

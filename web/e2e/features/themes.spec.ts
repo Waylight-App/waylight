@@ -12,7 +12,10 @@ test('the theme gallery applies, restores, imports and exports themes (#111)', a
   await openSettings(page, 'Appearance & language', 'Appearance');
 
   await page.getByRole('button', { name: 'Apply theme Nord' }).click();
-  await expect(page.getByRole('button', { name: 'Apply theme Nord' })).toHaveText('Applied');
+  await expect(page.getByRole('button', { name: 'Apply theme Nord' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
   await expect.poll(bg).toBe('#2e3440');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 
@@ -32,6 +35,8 @@ test('the theme gallery applies, restores, imports and exports themes (#111)', a
     mimeType: 'application/json',
     buffer: Buffer.from(JSON.stringify(theme)),
   });
+  // The details of a design show once it is chosen.
+  await page.getByRole('button', { name: 'Apply theme E2E Mint' }).click();
   const exported = page.getByRole('link', { name: 'Download theme E2E Mint' });
   await expect(exported).toBeVisible();
   const res = await page.request.get((await exported.getAttribute('href')) ?? '');

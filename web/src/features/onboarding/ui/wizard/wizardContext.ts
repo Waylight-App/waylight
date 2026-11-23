@@ -3,6 +3,8 @@ import type { DashboardUseCases } from '../../../dashboard/usecase/dashboardUseC
 import type { WidgetType } from '../../../dashboard/domain/dashboard';
 import type { IconName } from '../../../../shared/ui/icons/paths';
 import type { Answer } from '../../../search/domain/smart/answer';
+import type { Appearance } from '../../../appearance';
+import type { ThemeGallery } from '../../../appearance/domain/themes';
 import type { Personal, Place } from '../../domain/profile';
 import type { WizardStepId } from '../../domain/wizard';
 import type { StepControl, WizardSession } from './wizardState.svelte';
@@ -17,6 +19,12 @@ export interface WizardContext {
   savePersonal: (patch: Partial<Personal>) => Promise<void>;
   /** Shows a change right away (the language); null undoes the preview. */
   preview: (patch: Partial<Personal> | null) => void;
+  /** The designs of the look step; undefined hides it. */
+  design?: {
+    gallery: () => Promise<ThemeGallery>;
+    /** Applies a design at once; the result holds the accent colour it sets. */
+    apply: (id: string) => Promise<Appearance>;
+  };
   /** Saved places (#591); undefined hides the place field. */
   places?: {
     /** Place search (the weather geocoder); omitted when it is off. */

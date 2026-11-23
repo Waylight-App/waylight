@@ -4,10 +4,11 @@ import type { BuiltinTemplate } from '../../dashboard/domain/dashboard';
  * The onboarding wizard (#739): one screen per step, before the dashboard.
  * Plugin steps are "extra:<id>".
  */
-export type WizardStepId = 'welcome' | 'profile' | 'widgets' | 'search' | 'done' | `extra:${string}`;
+export type WizardStepId =
+  'welcome' | 'profile' | 'appearance' | 'widgets' | 'search' | 'done' | `extra:${string}`;
 
 /**
- * The steps in order. The profile needs the personal settings; plugin steps
+ * The steps in order. The profile and the look need the personal settings; plugin steps
  * (the instance name) concern the whole installation, so owners only; the
  * widget choice only makes sense while the dashboard is still untouched.
  */
@@ -18,7 +19,7 @@ export function wizardSteps(o: {
   extra: readonly string[];
 }): WizardStepId[] {
   const steps: WizardStepId[] = ['welcome'];
-  if (o.personal) steps.push('profile');
+  if (o.personal) steps.push('profile', 'appearance');
   if (o.owner) steps.push(...o.extra.map((id) => `extra:${id}` as const));
   if (o.widgets) steps.push('widgets');
   steps.push('search', 'done');

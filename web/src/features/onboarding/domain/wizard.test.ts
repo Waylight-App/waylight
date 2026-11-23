@@ -18,6 +18,7 @@ describe('wizardSteps', () => {
     expect(wizardSteps({ personal: true, owner: true, widgets: true, extra: ['instance'] })).toEqual([
       'welcome',
       'profile',
+      'appearance',
       'extra:instance',
       'widgets',
       'search',
@@ -29,6 +30,7 @@ describe('wizardSteps', () => {
     expect(wizardSteps({ personal: true, owner: false, widgets: false, extra: ['instance'] })).toEqual([
       'welcome',
       'profile',
+      'appearance',
       'search',
       'done',
     ]);

@@ -23,6 +23,25 @@ export interface ThemeGallery {
   canRestore: boolean;
 }
 
+/** The filters of a design gallery; "own" shows the designs that were imported. */
+export type ThemeFilter = 'all' | ThemeSide | 'own';
+
+/** The designs a filter shows; a design with both variants is in both scheme filters. */
+export function filterThemes<T extends Pick<ThemeInfo, 'scheme' | 'variants' | 'builtIn'>>(
+  themes: readonly T[],
+  filter: ThemeFilter,
+): T[] {
+  if (filter === 'all') return [...themes];
+  if (filter === 'own') return themes.filter((th) => !th.builtIn);
+  return themes.filter((th) => themeSides(th).includes(filter));
+}
+
+/** The side a live preview shows: the scheme in use for a design with both, else its own. */
+export function previewSide(theme: Pick<ThemeInfo, 'scheme' | 'variants'>, dark: boolean): ThemeSide {
+  const sides = themeSides(theme);
+  return sides.length > 1 ? (dark ? 'dark' : 'light') : (sides[0] ?? 'light');
+}
+
 /** Largest theme file accepted for import. */
 export const MAX_THEME_BYTES = 16 << 10;
 
