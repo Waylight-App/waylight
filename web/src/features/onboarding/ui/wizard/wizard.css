@@ -562,3 +562,23 @@
     animation: wz-in 0.28s ease both;
   }
 }
+
+/* The "More" tile opens the add-widget dialog. */
+.wz-tile-more {
+  border: 2px dashed var(--wz-outline);
+  background: transparent;
+  color: var(--wz-amber-hover);
+}
+
+/* The note at the bottom left: a small flag with a notched end. */
+.wz-flag {
+  align-self: flex-start;
+  margin: auto 0 12px;
+  padding: 7px 16px 7px 12px;
+  border-left: 3px solid var(--wz-amber);
+  background: rgb(242 180 65 / 8%);
+  color: #e4cf9f;
+  font-weight: 600;
+  font-size: 13px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 9px) 50%, 100% 100%, 0 100%);
+}

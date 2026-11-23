@@ -30,8 +30,55 @@ export function startIndex(steps: readonly string[], stored: string): number {
   return Math.max(0, steps.indexOf(stored));
 }
 
-/** Widgets offered one by one, in this order; kinds that are switched off are left out. */
+/** Widgets offered one by one for the empty start page, in this order; kinds that are switched off are left out. */
 export const SINGLE_WIDGETS = ['calendar', 'shopping', 'todos', 'weather', 'waste', 'immich'] as const;
+
+/** The widget tiles of the step: those a template starts with and a few more that fit it. */
+export interface Suggestions {
+  selected: readonly string[];
+  offered: readonly string[];
+}
+
+/**
+ * The suggestions per built-in template. The preselected ones are the core of
+ * the template; the offered ones are its other widgets and close relatives.
+ * Anything else comes through the add-widget dialog.
+ */
+const SUGGESTIONS: Readonly<Record<string, Suggestions>> = {
+  family: {
+    selected: ['calendar', 'todos', 'shopping', 'meals'],
+    offered: ['weather', 'waste', 'birthdays', 'chores'],
+  },
+  homelab: {
+    selected: ['clock', 'todos', 'bookmarks', 'services'],
+    offered: ['docker', 'backup-status', 'diskhealth', 'grafana-alerts'],
+  },
+  work: {
+    selected: ['calendar', 'todos', 'focus', 'notes'],
+    offered: ['mail', 'bookmarks', 'services', 'readlater'],
+  },
+};
+
+/** Without a template (the empty start page) nothing is preselected and the single widgets are offered. */
+const NO_TEMPLATE: Suggestions = { selected: [], offered: SINGLE_WIDGETS };
+
+/** The suggestions of a template id; unknown ids and the empty template get the single widgets. */
+export function suggestionsOf(template: string): Suggestions {
+  return SUGGESTIONS[template] ?? NO_TEMPLATE;
+}
+
+/**
+ * The tiles to draw: the suggestions that are available, then any other
+ * selected kind (chosen in the add-widget dialog) so every choice stays visible.
+ */
+export function suggestionTiles(
+  s: Suggestions,
+  chosen: readonly string[],
+  available: ReadonlySet<string>,
+): string[] {
+  const own = [...s.selected, ...s.offered].filter((k) => available.has(k));
+  return [...own, ...chosen.filter((k) => !own.includes(k))];
+}
 
 /** Built-in templates shown as cards, in this order. */
 const TEMPLATE_CARDS = ['family', 'homelab', 'work'] as const;

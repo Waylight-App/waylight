@@ -5,6 +5,8 @@ import {
   laterSetup,
   searchExamples,
   startIndex,
+  suggestionsOf,
+  suggestionTiles,
   templateCards,
   templateKinds,
   wizardSteps,
@@ -56,6 +58,22 @@ describe('templates', () => {
   });
   it('lists each kind once', () => {
     expect(templateKinds(t('x', ['todos', 'todos', 'weather']))).toEqual(['todos', 'weather']);
+  });
+});
+
+describe('suggestions', () => {
+  it('preselects the core of a template and offers more that fit', () => {
+    const s = suggestionsOf('homelab');
+    expect(s.selected).toEqual(['clock', 'todos', 'bookmarks', 'services']);
+    expect(s.offered).not.toContain('clock');
+  });
+  it('offers the single widgets, none selected, without a template', () => {
+    expect(suggestionsOf('empty').selected).toEqual([]);
+    expect(suggestionsOf('').offered).toContain('weather');
+  });
+  it('draws the available suggestions and appends other chosen kinds', () => {
+    const s = { selected: ['a', 'b'], offered: ['c', 'd'] };
+    expect(suggestionTiles(s, ['a', 'x'], new Set(['a', 'b', 'd', 'x']))).toEqual(['a', 'b', 'd', 'x']);
   });
 });
 

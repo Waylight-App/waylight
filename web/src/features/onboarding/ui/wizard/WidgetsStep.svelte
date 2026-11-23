@@ -3,9 +3,11 @@
   import { t, type MessageKey } from '../../../../shared/i18n';
   import { errorMessage } from '../../../../shared/api-client/http';
   import Icon from '../../../../shared/ui/icons/Icon.svelte';
+  import WidgetPicker from '../../../dashboard/ui/WidgetPicker.svelte';
   import { PLACE_ID_KEY } from '../../../../shared/places/places';
-  import type { BuiltinTemplate, Tab, WidgetConfig } from '../../../dashboard/domain/dashboard';
-  import { SINGLE_WIDGETS, templateCards, templateKinds } from '../../domain/wizard';
+  import type { BuiltinTemplate, Tab, Widget, WidgetConfig } from '../../../dashboard/domain/dashboard';
+  import type { DashboardUseCases } from '../../../dashboard/usecase/dashboardUseCases';
+  import { suggestionsOf, suggestionTiles, templateCards, templateKinds } from '../../domain/wizard';
   import type { StepProps } from './wizardContext';
 
   let { ctx, session, ctl }: StepProps = $props();
@@ -20,9 +22,12 @@
   // svelte-ignore state_referenced_locally
   let kinds = $state<string[]>(session.selection?.kinds ?? []);
   let error = $state('');
+  let picking = $state(false);
 
-  const singles = $derived(
-    SINGLE_WIDGETS.flatMap((kind) => {
+  const available = $derived(new Set(widgets?.types.map((x) => x.type.kind)));
+  const suggestions = $derived(suggestionsOf(template));
+  const tiles = $derived(
+    suggestionTiles(suggestions, kinds, available).flatMap((kind) => {
       const entry = widgets?.types.find((x) => x.type.kind === kind);
       return entry ? [{ kind, title: entry.type.title, icon: entry.icon }] : [];
     }),
@@ -42,7 +47,7 @@
 
   function choose(card: BuiltinTemplate) {
     template = card.id;
-    kinds = templateKinds(card);
+    kinds = suggestionsOf(card.id).selected.filter((k) => available.has(k));
   }
 
   function chooseEmpty() {
@@ -51,7 +56,6 @@
   }
 
   function toggle(kind: string) {
-    template = '';
     kinds = kinds.includes(kind) ? kinds.filter((k) => k !== kind) : [...kinds, kind];
   }
 
@@ -67,6 +71,9 @@
     return text === key ? card.title : text;
   };
 
+  const sameKinds = (a: readonly string[], b: readonly string[]) =>
+    a.length === b.length && a.every((k) => b.includes(k));
+
   /** The place of a new weather widget, so it is not asked again. */
   function configOf(kind: string): WidgetConfig | undefined {
     const place = session.place;
@@ -74,31 +81,36 @@
     return { lat: place.lat, lon: place.lon, label: place.label, [PLACE_ID_KEY]: place.id };
   }
 
+  /** Adds one widget of a kind to the tab, with the saved place for the weather. */
+  async function addOfKind(uc: DashboardUseCases, tab: Tab, kind: string): Promise<Widget> {
+    const type = widgets?.types.find((x) => x.type.kind === kind)?.type;
+    if (!type) throw new Error(`unknown widget kind ${kind}`);
+    const config = { ...structuredClone(type.defaultConfig ?? {}), ...configOf(kind) };
+    return uc.addWidget(tab, type, config);
+  }
+
   /** Creates the chosen widgets; the setup of those that need one happens on the dashboard. */
   async function apply() {
     const uc = widgets?.uc;
     if (!uc) return;
-    const sameAsBefore =
-      session.selection?.template === template &&
-      session.selection.kinds.length === kinds.length &&
-      session.selection.kinds.every((k) => kinds.includes(k));
-    if (sameAsBefore) return;
+    if (session.selection?.template === template && sameKinds(session.selection.kinds, kinds)) return;
     const place = session.place;
-    const unchanged = current !== undefined && kinds.join() === templateKinds(current).join();
-    if (current && unchanged) {
-      await uc.createTabFromBuiltin(
+    // A template keeps its layout; the widgets that were switched off are
+    // removed from the new tab and the others are added to it.
+    if (current && kinds.length > 0) {
+      let tab = await uc.createTabFromBuiltin(
         current.id,
         titleOf(current),
         place ? { lat: place.lat, lon: place.lon, label: place.label, placeId: place.id } : undefined,
       );
+      for (const w of tab.widgets.filter((w) => !kinds.includes(w.kind))) await uc.deleteWidget(w.id);
+      tab = { ...tab, widgets: tab.widgets.filter((w) => kinds.includes(w.kind)) };
+      for (const kind of kinds.filter((k) => !tab.widgets.some((w) => w.kind === k))) {
+        tab = { ...tab, widgets: [...tab.widgets, await addOfKind(uc, tab, kind)] };
+      }
     } else if (kinds.length > 0) {
       let tab: Tab = await uc.createTab(t('wizard.widgets.tab_name'));
-      for (const kind of kinds) {
-        const type = widgets?.types.find((x) => x.type.kind === kind)?.type;
-        if (!type) continue;
-        const config = { ...structuredClone(type.defaultConfig ?? {}), ...configOf(kind) };
-        tab = { ...tab, widgets: [...tab.widgets, await uc.addWidget(tab, type, config)] };
-      }
+      for (const kind of kinds) tab = { ...tab, widgets: [...tab.widgets, await addOfKind(uc, tab, kind)] };
     }
     // A choice, also the empty one, replaces the example tabs of the setup.
     if (widgets?.sample && (kinds.length > 0 || template === EMPTY)) await uc.discardSample();
@@ -129,9 +141,13 @@
     <b>{t('wizard.widgets.empty')}</b><span>{t('wizard.widgets.empty_hint')}</span>
   </button>
 </div>
-<h2 class="wz-eyebrow">{t('wizard.widgets.single')}</h2>
+<h2 class="wz-eyebrow">
+  {template === EMPTY || !current
+    ? t('wizard.widgets.suggestions')
+    : t('wizard.widgets.suggestions_for', { name: titleOf(current) })}
+</h2>
 <div class="wz-tiles">
-  {#each singles as s (s.kind)}
+  {#each tiles as s (s.kind)}
     {@const on = kinds.includes(s.kind)}
     <button class="wz-tile" type="button" aria-pressed={on} onclick={() => toggle(s.kind)}>
       {#if on}
@@ -152,5 +168,46 @@
       {s.title}
     </button>
   {/each}
+  <button class="wz-tile wz-tile-more" type="button" onclick={() => (picking = true)}>
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg
+    >
+    {t('wizard.widgets.more')}
+  </button>
 </div>
 {#if error}<p class="wz-error" role="alert">{error}</p>{/if}
+<p class="wz-flag" role="note">{t('wizard.widgets.flag')}</p>
+
+{#if picking}
+  <WidgetPicker
+    types={widgets?.types.map((x) => x.type) ?? []}
+    icon={(kind) => widgets?.types.find((x) => x.type.kind === kind)?.icon}
+    selected={new Set(kinds)}
+    sizes={false}
+    onpick={(type) => toggle(type.kind)}
+    onclose={() => (picking = false)}
+  >
+    {#snippet footer()}
+      <div class="picker-end">
+        <button class="btn btn-primary" type="button" onclick={() => (picking = false)}
+          >{t('dashboard.done')}</button
+        >
+      </div>
+    {/snippet}
+  </WidgetPicker>
+{/if}
+
+<style>
+  .picker-end {
+    display: flex;
+    justify-content: flex-end;
+  }
+</style>
