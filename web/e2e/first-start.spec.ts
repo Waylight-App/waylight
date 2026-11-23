@@ -52,6 +52,10 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await calendar.click();
   await expect(calendar).toHaveAttribute('aria-pressed', 'true');
   await expect(wizard.getByText('You can change everything anytime')).toBeVisible();
+  // The waste calendar is offered, not chosen; it needs the municipality's address later.
+  const waste = wizard.getByRole('button', { name: 'Waste collection', exact: true });
+  await waste.click();
+  await expect(waste).toHaveAttribute('aria-pressed', 'true');
   // More opens the add-widget dialog, which marks what is chosen already.
   await wizard.getByRole('button', { name: 'More' }).click();
   const picker = page.getByRole('dialog', { name: 'Add widget' });
@@ -124,7 +128,7 @@ test('first start asks the essentials, offers the templates and Family replaces 
   expect(dashboard.tabs.map((t) => t.name)).toEqual(['Family']);
   expect(dashboard.tabs[0]?.zoned).toBe(true);
   expect(dashboard.tabs[0]?.widgets.map((w) => w.kind).sort()).toEqual(
-    ['calendar', 'meals', 'services', 'shopping', 'todos'].sort(),
+    ['calendar', 'meals', 'services', 'shopping', 'todos', 'waste'].sort(),
   );
 
   // The answers are stored where the settings pages store them.
