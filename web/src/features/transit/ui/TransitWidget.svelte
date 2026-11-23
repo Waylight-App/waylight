@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -52,18 +53,22 @@
   {#if error}<p class="error small">{error}</p>{/if}
   <ul class="deps">
     {#each departures as d, i (i)}
-      <li class:cancelled={d.cancelled}>
-        <span class="line" title={d.mode}>{modeIcon(d.mode)} {d.line}</span>
-        <span class="dir">{d.headsign}{d.track ? ` · ${d.track}` : ''}</span>
-        <span class="when" title={t('transit.planned', { value: time(d.planned) })}>
-          {#if d.cancelled}
-            <span class="late">{t('transit.cancelled')}</span>
-          {:else}
-            {minutesUntil(d, now)}
-            {#if d.delayMinutes > 0}<span class="late">+{d.delayMinutes}</span>{/if}
-          {/if}
-        </span>
-      </li>
+      <ListRow nowrap>
+        {#snippet lead()}<span class="line" class:cancelled={d.cancelled} title={d.mode}
+            >{modeIcon(d.mode)} {d.line}</span
+          >{/snippet}
+        <span class:cancelled={d.cancelled}>{d.headsign}{d.track ? ` · ${d.track}` : ''}</span>
+        {#snippet value()}
+          <span class="when" title={t('transit.planned', { value: time(d.planned) })}>
+            {#if d.cancelled}
+              <span class="late">{t('transit.cancelled')}</span>
+            {:else}
+              {minutesUntil(d, now)}
+              {#if d.delayMinutes > 0}<span class="late">+{d.delayMinutes}</span>{/if}
+            {/if}
+          </span>
+        {/snippet}
+      </ListRow>
     {:else}
       {#if loaded}<li class="muted">{t('transit.no_departures_in_the_near_future')}</li>{/if}
     {/each}
@@ -81,34 +86,19 @@
     margin: 0;
     padding: 0;
   }
-  li {
-    display: flex;
-    gap: var(--space-2);
-    align-items: baseline;
-    padding: var(--space-1) 0;
-  }
   .line {
     flex: none;
     min-width: 3.6em;
     font-weight: 600;
   }
-  .dir {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
   .when {
     white-space: nowrap;
-    font-variant-numeric: tabular-nums;
   }
   .late {
     color: var(--color-danger);
     font-size: var(--fs-xs);
   }
-  .cancelled .dir,
-  .cancelled .line {
+  .cancelled {
     text-decoration: line-through;
     color: var(--color-text-muted);
   }

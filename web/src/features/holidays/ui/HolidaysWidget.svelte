@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -56,25 +57,25 @@
   <p class="state muted">{stateName(overview.state)}</p>
   <ul>
     {#each overview.entries as e (e.kind + e.key + e.name + e.start.getTime())}
-      <li class:current={e.current} class:school={e.kind === 'school'}>
-        <span class="what">
-          <span class="name">{entryName(e)}</span>
-          <span class="muted small">
-            {#if e.kind === 'school'}
-              {t('holidays.school')} · {date(e.start)} – {date(e.end)} · {t('holidays.days', {
-                n: periodDays(e),
-              })}
-            {:else}
-              {date(e.start)}
-            {/if}
+      <ListRow nowrap urgent class="entry {e.current ? 'current' : ''} {e.kind === 'school' ? 'school' : ''}">
+        {entryName(e)}
+        {#snippet sub()}
+          {#if e.kind === 'school'}
+            {t('holidays.school')} · {date(e.start)} – {date(e.end)} · {t('holidays.days', {
+              n: periodDays(e),
+            })}
+          {:else}
+            {date(e.start)}
+          {/if}
+        {/snippet}
+        {#snippet value()}
+          <span class="when">
+            {#if e.current && e.kind === 'school'}{t('holidays.until', { date: date(e.end) })}{:else}{when(
+                e.daysUntil,
+              )}{/if}
           </span>
-        </span>
-        <span class="when">
-          {#if e.current && e.kind === 'school'}{t('holidays.until', { date: date(e.end) })}{:else}{when(
-              e.daysUntil,
-            )}{/if}
-        </span>
-      </li>
+        {/snippet}
+      </ListRow>
     {:else}
       <li class="muted">{t('holidays.none')}</li>
     {/each}
@@ -91,46 +92,23 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
   }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-1) var(--space-1);
+  /* The row element belongs to the shared ListRow, so it is styled globally. */
+  ul :global(.entry) {
+    padding-left: var(--space-1);
     border-left: 3px solid transparent;
-    border-radius: var(--radius-sm);
   }
-  li.school {
+  ul :global(.entry.school) {
     border-left-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
   }
-  li.current {
+  ul :global(.entry.current) {
     border-left-color: var(--color-accent);
     background: color-mix(in srgb, var(--color-accent) 12%, transparent);
   }
-  .what {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .name,
-  .small {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
   .when {
-    flex: none;
     font-size: var(--fs-xs);
-    color: var(--color-accent-text);
-    font-variant-numeric: tabular-nums;
   }
-  .current .when {
+  ul :global(.current .when) {
     font-weight: 600;
-  }
-  .small {
-    font-size: var(--fs-xs);
   }
 </style>

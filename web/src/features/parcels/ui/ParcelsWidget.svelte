@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -92,16 +93,16 @@
 <ul class="parcels">
   {#each list as p (p.id)}
     {@const info = statusInfo[p.status]}
-    <li>
-      <div class="row">
-        <span class="name" title={p.trackingNumber}
-          >{#if p.discovered}<span title={t('parcels.discovered')} aria-label={t('parcels.discovered')}
-              >✉
-            </span>{/if}{parcelName(p)}</span
-        >
-        {#if p.trackable}
-          <span class="badge" style="color: {info.color}">{t(info.label)}</span>
-        {/if}
+    <ListRow nowrap showValue={p.trackable}>
+      <span class="name" title={p.trackingNumber}
+        >{#if p.discovered}<span title={t('parcels.discovered')} aria-label={t('parcels.discovered')}
+            >✉
+          </span>{/if}{parcelName(p)}</span
+      >
+      {#snippet value()}
+        <span class="badge" style="color: {info.color}">{t(info.label)}</span>
+      {/snippet}
+      {#snippet trail()}
         {#if p.trackingUrl}
           <a
             class="btn btn-icon"
@@ -117,19 +118,19 @@
           aria-label={t('parcels.remove', { value: parcelName(p) })}
           onclick={() => remove(p)}>✕</button
         >
-      </div>
-      {#if !p.trackable}
-        <div class="muted small">{t('parcels.link_only', { carrier: carrierName(p.carrier) })}</div>
-      {:else if p.error}
-        <div class="muted small">{p.error}</div>
-      {:else}
-        <div class="muted small">
+      {/snippet}
+      {#snippet sub()}
+        {#if !p.trackable}
+          {t('parcels.link_only', { carrier: carrierName(p.carrier) })}
+        {:else if p.error}
+          {p.error}
+        {:else}
           {p.description}{p.location ? ` · ${p.location}` : ''}
           {#if p.estimatedDelivery && p.status !== 'delivered'}
             · expected {day(p.estimatedDelivery)}{/if}
-        </div>
-      {/if}
-    </li>
+        {/if}
+      {/snippet}
+    </ListRow>
   {:else}
     {#if loaded}<li class="muted">{t('parcels.no_parcels_tracked')}</li>{/if}
   {/each}
@@ -149,20 +150,8 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
-  }
-  .row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
   }
   .name {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     font-weight: 600;
   }
   .badge {
@@ -171,8 +160,5 @@
   }
   .rm {
     padding: 0 var(--space-1);
-  }
-  .small {
-    font-size: var(--fs-xs);
   }
 </style>
