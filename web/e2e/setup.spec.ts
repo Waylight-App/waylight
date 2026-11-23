@@ -16,12 +16,12 @@ test('setup, logout and login lead to the dashboard', async ({ page }) => {
   // goes through its steps. The other specs build on the example dashboard,
   // so it is skipped here.
   const wizard = page.getByRole('region', { name: 'Set up Waylight' });
-  await expect(wizard.getByRole('heading', { name: 'Glad you are here.' })).toBeVisible();
+  await expect(wizard.getByRole('heading', { name: 'Glad you are here' })).toBeVisible();
   await expect(page.getByTestId('dashboard')).toHaveCount(0);
   await wizard.getByRole('button', { name: 'Set up later' }).click();
 
   // The guided tour follows the wizard.
-  const tour = page.getByRole('dialog', { name: 'Welcome to Waylight 👋' });
+  const tour = page.getByRole('dialog', { name: 'Welcome to Waylight' });
   await expect(tour).toBeVisible();
   for (const title of ['Tabs', 'Search', 'Edit mode', 'Settings', 'Server overview']) {
     await page.getByRole('button', { name: 'Next', exact: true }).click();
@@ -33,7 +33,7 @@ test('setup, logout and login lead to the dashboard', async ({ page }) => {
   // After the first setup the dashboard is filled with sample widgets and data.
   await expect(page.getByRole('combobox', { name: 'Quick search (Ctrl+K or /)' })).toBeVisible();
   await expect(page.locator('time')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Welcome to Waylight 👋' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welcome to Waylight' })).toBeVisible();
   await expect(page.getByText('Try edit mode: drag and resize a widget')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Docker documentation' })).toBeVisible();
   await page.getByRole('button', { name: 'Server', exact: true }).click();

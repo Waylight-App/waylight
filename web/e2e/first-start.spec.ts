@@ -18,7 +18,7 @@ test('first start asks the essentials, offers the templates and Family replaces 
 
   // The dashboard stays hidden until the wizard is over.
   const wizard = page.getByRole('region', { name: 'Set up Waylight' });
-  await expect(wizard.getByRole('heading', { name: 'Glad you are here.' })).toBeVisible();
+  await expect(wizard.getByRole('heading', { name: 'Glad you are here' })).toBeVisible();
   await expect(page.getByTestId('dashboard')).toHaveCount(0);
   await expect(wizard.getByRole('progressbar')).toHaveAttribute('aria-valuetext', 'Step 1 of 6');
   await wizard.getByRole('button', { name: "Let's go" }).click();
@@ -79,7 +79,7 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await wizard.getByRole('button', { name: 'Next' }).click();
 
   // The search step answers with the real search; an example types itself in.
-  await expect(wizard.getByRole('heading', { name: 'Just ask.' })).toBeVisible();
+  await expect(wizard.getByRole('heading', { name: 'Just ask' })).toBeVisible();
   const field = wizard.getByRole('textbox', { name: 'Try a question' });
   // Without a set-up widget the example shows a note instead of an answer card.
   const answerOrNote = wizard.getByRole('article').or(wizard.getByText('Once the widget is set up'));
@@ -95,7 +95,7 @@ test('first start asks the essentials, offers the templates and Family replaces 
 
   // The done page lists the widgets that still need the user: Family has a
   // waste calendar, which needs the municipality's address.
-  await expect(wizard.getByRole('heading', { name: 'Almost done.' })).toBeVisible();
+  await expect(wizard.getByRole('heading', { name: 'Almost done' })).toBeVisible();
   await expect(wizard.getByRole('heading', { name: 'Still to set up (1)' })).toBeVisible();
   await expect(page.getByTestId('dashboard')).toHaveCount(0);
   // Setting up leads to the dashboard and opens the guided setup of that widget.
@@ -106,7 +106,7 @@ test('first start asks the essentials, offers the templates and Family replaces 
   // Later leaves it; the tour follows the walk.
   await setup.getByRole('button', { name: 'Later' }).click();
 
-  const tour = page.getByRole('dialog', { name: 'Welcome to Waylight 👋' });
+  const tour = page.getByRole('dialog', { name: 'Welcome to Waylight' });
   await expect(tour).toBeVisible();
   await tour.getByRole('button', { name: 'Skip tour' }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
