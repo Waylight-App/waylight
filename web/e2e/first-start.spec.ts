@@ -60,7 +60,10 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await picker.getByRole('button', { name: /^Services/ }).click();
   await expect(picker.getByRole('button', { name: /^Services/ })).toContainText('Already added');
   await picker.getByRole('button', { name: 'Done' }).click();
-  await expect(wizard.getByRole('button', { name: 'Services' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(wizard.getByRole('button', { name: 'Services', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
   await wizard.getByRole('button', { name: 'Next' }).click();
 
   // The search step answers with the real search; an example types itself in.
