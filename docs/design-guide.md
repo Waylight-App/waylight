@@ -51,7 +51,7 @@ else is neutral: surfaces, borders and text come from one tinted ramp.
 | `--color-text-muted`      | `#a7aebb` | `#5f6988` |
 | `--color-accent`          | `#f2b441` | `#f2b441` |
 | `--color-accent-contrast` | `#1a1206` | `#1a1206` |
-| `--color-accent-text`     | `#f2b441` | `#9c5d00` |
+| `--color-accent-text`     | `#f2b441` | `#935800` |
 
 Text and the accent used as text reach 4.5:1 on the surface they sit on.
 Status colours carry meaning only: green for healthy, amber for a warning,
