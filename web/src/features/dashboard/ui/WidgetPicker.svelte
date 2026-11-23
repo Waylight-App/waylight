@@ -261,6 +261,10 @@
     border-color: var(--color-accent);
     background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface-2));
   }
+  /* The muted description falls below 4.5:1 on the tinted background. */
+  .tile.selected .desc {
+    color: var(--color-text);
+  }
   .check {
     position: absolute;
     bottom: var(--space-1);
