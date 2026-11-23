@@ -91,7 +91,8 @@ func NewRules(rules []Rule) ([]Rule, error) {
 	return clean, nil
 }
 
-// Style is how a collection type is shown.
+// Style is how a collection type is shown. Icon is only set by a custom rule;
+// the widget draws a line icon when it is empty.
 type Style struct {
 	Label string
 	Color string
@@ -101,20 +102,19 @@ type Style struct {
 type builtin struct {
 	keywords []string
 	color    string
-	icon     string
 }
 
 // builtins recognise common German and English summaries. Order matters:
 // more specific keywords come first.
 var builtins = []builtin{
-	{[]string{"grünschnitt", "gruenschnitt", "garden", "baum"}, "#16a34a", "🌳"},
-	{[]string{"schadstoff", "hazard"}, "#dc2626", "☣️"},
-	{[]string{"sperr", "bulky"}, "#a855f7", "🛋️"},
-	{[]string{"bio", "organic", "kompost"}, "#8b5a2b", "🍂"},
-	{[]string{"papier", "pappe", "paper", "blau"}, "#2563eb", "📦"},
-	{[]string{"gelb", "wertstoff", "verpackung", "plastic", "recycl"}, "#eab308", "♻️"},
-	{[]string{"glas", "glass"}, "#10b981", "🍾"},
-	{[]string{"rest", "residual", "grau", "schwarz", "general"}, "#6b7280", "🗑️"},
+	{[]string{"grünschnitt", "gruenschnitt", "garden", "baum"}, "#16a34a"},
+	{[]string{"schadstoff", "hazard"}, "#dc2626"},
+	{[]string{"sperr", "bulky"}, "#a855f7"},
+	{[]string{"bio", "organic", "kompost"}, "#8b5a2b"},
+	{[]string{"papier", "pappe", "paper", "blau"}, "#2563eb"},
+	{[]string{"gelb", "wertstoff", "verpackung", "plastic", "recycl"}, "#eab308"},
+	{[]string{"glas", "glass"}, "#10b981"},
+	{[]string{"rest", "residual", "grau", "schwarz", "general"}, "#6b7280"},
 }
 
 // Classify returns the style of a summary: the first matching custom rule
@@ -122,10 +122,10 @@ var builtins = []builtin{
 func Classify(summary string, rules []Rule) Style {
 	summary = strings.TrimSpace(summary)
 	lower := strings.ToLower(summary)
-	s := Style{Label: summary, Color: "#64748b", Icon: "🗓️"}
+	s := Style{Label: summary, Color: "#64748b", Icon: ""}
 	for _, b := range builtins {
 		if slices.ContainsFunc(b.keywords, func(k string) bool { return strings.Contains(lower, k) }) {
-			s.Color, s.Icon = b.color, b.icon
+			s.Color = b.color
 			break
 		}
 	}

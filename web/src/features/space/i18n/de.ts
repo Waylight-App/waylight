@@ -16,7 +16,7 @@ export const de: Record<keyof typeof en, string> = {
     'Ohne eigenen kostenlosen Schlüssel von api.nasa.gov wird der gemeinsame DEMO_KEY genutzt, der pro IP-Adresse stark begrenzt ist.',
   'space.background': 'Bild des Tages als Hintergrund',
   'space.background_hint':
-    'Nutze diese Adresse als Tab-Hintergrund (Bearbeiten → 🖼) oder unter Erscheinungsbild. Sie zeigt immer das heutige Bild, geladen von diesem Server.',
+    'Nutze diese Adresse als Tab-Hintergrund (Bearbeiten → Hintergrund) oder unter Erscheinungsbild. Sie zeigt immer das heutige Bild, geladen von diesem Server.',
   'space.background_copy': 'Hintergrund-Adresse kopieren',
   'space.saved': 'Gespeichert.',
   'space.show': 'Anzeigen',

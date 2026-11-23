@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import Modal from '../../../shared/ui/Modal.svelte';
@@ -67,7 +68,7 @@
       aria-pressed={brokenOnly}
       title={t('bookmarks.broken_only')}
       aria-label={t('bookmarks.broken_only')}
-      onclick={() => (brokenOnly = !brokenOnly)}>⚠</button
+      onclick={() => (brokenOnly = !brokenOnly)}><Icon name="warning" size={16} /></button
     >
   {/if}
   <button
@@ -101,7 +102,8 @@
             class:broken={b.link.state === 'broken'}
             title={problem}
             aria-label={problem}
-            role="img">{b.link.state === 'broken' ? '⚠' : '↪'}</span
+            role="img"
+            >{#if b.link.state === 'broken'}<Icon name="warning" size={16} />{:else}↪{/if}</span
           >{/if}
         {#each b.tags as t (t)}<span class="tag">#{t}</span>{/each}
         {#if b.mine}
@@ -117,7 +119,7 @@
             class="shared"
             title={t('bookmarks.shared_with_you')}
             aria-label={t('bookmarks.shared_with_you')}
-            role="img">👥</span
+            role="img"><Icon name="users" size={16} /></span
           >
         {/if}
       </li>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -111,7 +112,8 @@
               target="_blank"
               rel="noopener noreferrer"
               title={u.newerTag ? t('docker.newer_tag', { tag: u.newerTag }) : t('docker.update_available')}
-              aria-label={t('docker.update_available_for', { name: c.name })}>⬆</a
+              aria-label={t('docker.update_available_for', { name: c.name })}
+              ><Icon name="upload" size={16} /></a
             >
           {/if}
           {#if canAct(actions, c.name)}

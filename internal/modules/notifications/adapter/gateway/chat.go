@@ -17,11 +17,11 @@ import (
 func severityLabel(s domain.Severity) string {
 	switch s {
 	case domain.SeverityCritical:
-		return "🔴 Critical"
+		return "Critical"
 	case domain.SeverityWarning:
-		return "🟠 Warning"
+		return "Warning"
 	}
-	return "🔵 Info"
+	return "Info"
 }
 
 // slackHeaderLimit is the longest header text Slack accepts.

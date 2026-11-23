@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { intlLocale, t } from '../../../shared/i18n';
   import TodoEditDialog from './TodoEditDialog.svelte';
   import HintChip from '../../../shared/ui/HintChip.svelte';
@@ -105,11 +106,11 @@
       {#snippet trail()}
         {#if todo.repeat.kind}
           {@const text = describeRepeat(todo.repeat, dayName)}
-          <span class="icon" title={text} aria-label={text} role="img">🔁</span>
+          <span class="icon" title={text} aria-label={text} role="img"><Icon name="repeat" size={16} /></span>
         {/if}
         {#if todo.reminder.at}
           {@const text = describeReminder(todo.reminder)}
-          <span class="icon" title={text} aria-label={text} role="img">🔔</span>
+          <span class="icon" title={text} aria-label={text} role="img"><Icon name="bell" size={16} /></span>
         {/if}
         <button
           class="btn btn-icon del"

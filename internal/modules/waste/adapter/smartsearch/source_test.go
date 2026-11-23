@@ -18,11 +18,11 @@ func (f fakeWaste) Upcoming(context.Context) (usecase.Overview, error) { return 
 
 func TestWasteAnswer(t *testing.T) {
 	s := New(fakeWaste{o: usecase.Overview{Types: []domain.Upcoming{
-		{Style: domain.Style{Label: "Gelber Sack", Icon: "♻️"}, DaysUntil: 1},
+		{Style: domain.Style{Label: "Gelber Sack", Icon: "*"}, DaysUntil: 1},
 		{Style: domain.Style{Label: "Restmüll"}, DaysUntil: 5},
 	}}})
 	a, _ := s.Resolve(context.Background(), answers.Request{Match: answers.Match{Intent: intents[0]}, Lang: answers.German})
-	if a.Title != "Müllabfuhr" || a.Items[0].Label != "♻️ Gelber Sack" || a.Items[0].Value != "Morgen" ||
+	if a.Title != "Müllabfuhr" || a.Items[0].Label != "* Gelber Sack" || a.Items[0].Value != "Morgen" ||
 		a.Items[0].State != answers.StateWarning || a.Items[1].Value != "in 5 Tagen" || a.Items[1].State != "" {
 		t.Errorf("answer = %+v", a)
 	}

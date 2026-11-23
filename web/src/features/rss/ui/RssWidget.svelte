@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import { type FeedItem, itemMeta, parseRssConfig } from '../domain/feed';
@@ -108,7 +109,11 @@
             disabled={savedLater.includes(item.id)}
             title={savedLater.includes(item.id) ? t('readlater.saved_for_later') : t('readlater.read_later')}
             aria-label={t('readlater.read_later_item', { title: item.title })}
-            onclick={() => saveForLater(item)}>{savedLater.includes(item.id) ? '✓' : '🔖'}</button
+            onclick={() => saveForLater(item)}
+            >{#if savedLater.includes(item.id)}<Icon name="done" size={16} />{:else}<Icon
+                name="bookmark"
+                size={16}
+              />{/if}</button
           >
         {/if}
         {#if canSummarise && summarizer && item.link}

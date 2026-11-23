@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import {
@@ -112,7 +113,8 @@
           class="btn btn-icon"
           type="button"
           aria-label={t('readlater.archive_item', { title: a.title })}
-          onclick={() => run(() => readlater.setStatus(a.id, 'archived'))}>🗄</button
+          onclick={() => run(() => readlater.setStatus(a.id, 'archived'))}
+          ><Icon name="archive" size={16} /></button
         >
       {:else}
         <button

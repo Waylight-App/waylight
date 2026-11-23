@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -61,7 +62,7 @@
 <ul>
   {#each items as b (b.id)}
     <ListRow nowrap urgent={b.inDays === 0}>
-      {#snippet lead()}<span class="icon" aria-hidden="true">{b.inDays === 0 ? '🎂' : '🎈'}</span>{/snippet}
+      {#snippet lead()}<span class="icon" aria-hidden="true"><Icon name="gift" size={16} /></span>{/snippet}
       <span class:today={b.inDays === 0}>{b.name}</span>
       {#snippet sub()}{date(b)}{#if b.age > 0}&nbsp;· {t('birthdays.turns', { age: b.age })}{/if}{/snippet}
       {#snippet value()}<span class:soon={b.inDays > 0 && b.inDays < SOON_DAYS}>{when(b)}</span>{/snippet}
@@ -69,7 +70,7 @@
         <span class="actions">
           {#if b.source === 'carddav'}
             <span class="muted small" title={t('birthdays.from_book')} aria-label={t('birthdays.from_book')}
-              >☁</span
+              ><Icon name="cloud" size={16} /></span
             >
           {:else}
             <button

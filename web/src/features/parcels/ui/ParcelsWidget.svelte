@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -96,7 +97,7 @@
     <ListRow nowrap showValue={p.trackable}>
       <span class="name" title={p.trackingNumber}
         >{#if p.discovered}<span title={t('parcels.discovered')} aria-label={t('parcels.discovered')}
-            >✉
+            ><Icon name="mail" size={16} />
           </span>{/if}{parcelName(p)}</span
       >
       {#snippet value()}

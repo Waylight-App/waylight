@@ -147,13 +147,7 @@
           aria-label={t('waste.label')}
           maxlength="40"
         />
-        <input
-          class="input icon"
-          bind:value={r.icon}
-          placeholder="🗑️"
-          aria-label={t('waste.icon')}
-          maxlength="8"
-        />
+        <input class="input icon" bind:value={r.icon} aria-label={t('waste.icon')} maxlength="8" />
         <input
           type="color"
           value={r.color || '#64748b'}

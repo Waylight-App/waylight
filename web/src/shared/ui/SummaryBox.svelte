@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from './icons/Icon.svelte';
   import { t } from '../i18n';
   import { errorMessage } from '../api-client/http';
   import type { SummaryOutput } from './summarizer';
@@ -42,7 +43,9 @@
   aria-label={label ?? t('ai_summary.button')}
   title={t('ai_summary.button')}
   onclick={summarise}
-  >✨{#if !compact}&nbsp;{busy ? t('ai_summary.working') : t('ai_summary.button')}{/if}</button
+  ><Icon name="sparkles" size={16} />{#if !compact}&nbsp;{busy
+      ? t('ai_summary.working')
+      : t('ai_summary.button')}{/if}</button
 >
 {#if busy && compact}<span class="muted small" role="status">{t('ai_summary.working')}</span>{/if}
 {#if result}

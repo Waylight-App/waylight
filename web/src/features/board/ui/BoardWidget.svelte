@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -69,7 +70,7 @@
       <p class="text">{n.text}</p>
       <div class="foot">
         <span class="muted small">
-          {#if n.pinned}<span aria-hidden="true">📌</span> {t('board.pinned')}{/if}
+          {#if n.pinned}<Icon name="pin" size={16} /> {t('board.pinned')}{/if}
           {#if n.expiresOn}{n.pinned ? ' · ' : ''}{until(n.expiresOn)}{/if}
         </span>
         {#if n.mine}
@@ -79,7 +80,7 @@
               type="button"
               aria-pressed={n.pinned}
               aria-label={n.pinned ? t('board.unpin') : t('board.pin')}
-              onclick={() => pin(n)}>📌</button
+              onclick={() => pin(n)}><Icon name="pin" size={16} /></button
             >
             <button
               class="btn btn-icon"

@@ -1,9 +1,10 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
-  import { type Departure, minutesUntil, modeIcon, parseTransitConfig } from '../domain/transit';
+  import { type Departure, minutesUntil, parseTransitConfig } from '../domain/transit';
   import type { TransitUseCases } from '../usecase/transitUseCases';
 
   /** Props of the transit widget. */
@@ -55,7 +56,7 @@
     {#each departures as d, i (i)}
       <ListRow nowrap>
         {#snippet lead()}<span class="line" class:cancelled={d.cancelled} title={d.mode}
-            >{modeIcon(d.mode)} {d.line}</span
+            ><Icon name="bus" size={16} /> {d.line}</span
           >{/snippet}
         <span class:cancelled={d.cancelled}>{d.headsign}{d.track ? ` · ${d.track}` : ''}</span>
         {#snippet value()}

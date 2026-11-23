@@ -59,6 +59,25 @@ export const iconPaths = {
   smartphone: ['M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2', 'M11 18h2'],
   upload: ['M12 16V4', 'M7 9l5-5l5 5', 'M4 20h16'],
   info: ['M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18', 'M12 11v6', 'M12 7.5h.01'],
+  download: ['M12 4v12', 'M7 11l5 5l5-5', 'M4 20h16'],
+  pin: ['M9 3h6l-1 6l3 3v2H7v-2l3-3z', 'M12 14v7'],
+  flame: ['M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4c0 2 1 3 2 3c0-3-1-5 1-9z'],
+  warning: ['M12 3l10 18H2z', 'M12 10v5', 'M12 18h.01'],
+  sparkles: ['M11 3l2 6l6 2l-6 2l-2 6l-2-6l-6-2l6-2z', 'M19 3v4M17 5h4'],
+  mail: ['M3 5h18v14H3z', 'M3 6l9 7l9-7'],
+  copy: ['M8 8h12v12H8z', 'M16 8V4H4v12h4'],
+  star: ['M12 3l2.7 5.6l6.1.9l-4.4 4.3l1 6.1L12 17l-5.4 2.9l1-6.1L3.2 9.5l6.1-.9z'],
+  lock: ['M5 11h14v10H5z', 'M8 11V8a4 4 0 0 1 8 0v3'],
+  repeat: ['M4 11V9a3 3 0 0 1 3-3h12', 'M16 3l3 3l-3 3', 'M20 13v2a3 3 0 0 1-3 3H5', 'M8 21l-3-3l3-3'],
+  expand: ['M4 9V4h5', 'M20 9V4h-5', 'M4 15v5h5', 'M20 15v5h-5'],
+  wrench: ['M14 6a4 4 0 0 0 5 5l-9 9a2 2 0 0 1-3-3l9-9a4 4 0 0 1-2-2z'],
+  gift: [
+    'M4 10h16v10H4z',
+    'M3 7h18v3H3z',
+    'M12 7v13',
+    'M12 7c-3 0-4-4-1-4c2 0 1 4 1 4z',
+    'M12 7c3 0 4-4 1-4c-2 0-1 4-1 4z',
+  ],
 } as const;
 
 export type IconName = keyof typeof iconPaths;

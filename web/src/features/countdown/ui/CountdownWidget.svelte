@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -81,7 +82,9 @@
   {#each items as c (c.id)}
     {@const r = remainingAt(c, now)}
     <li class:soon={isSoon(r, cfg.highlightDays)} class:past={r.kind === 'past'}>
-      <span class="emoji" aria-hidden="true">{c.emoji || '⏳'}</span>
+      <span class="emoji" aria-hidden="true"
+        >{#if c.emoji}{c.emoji}{:else}<Icon name="hourglass" size={16} />{/if}</span
+      >
       <span class="main">
         <span class="title">{c.title}</span>
         <span class="when muted">{when(c)}</span>

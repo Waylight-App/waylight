@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { t } from '../../../shared/i18n';
   import type { Snippet } from 'svelte';
   import WidgetHeader from '../../../shared/ui/WidgetHeader.svelte';
@@ -117,7 +118,7 @@
       aria-label={t('dashboard.widget_settings')}
       title={t('dashboard.widget_settings')}
       onpointerdown={(e) => e.stopPropagation()}
-      onclick={onsettings}>⚙</button
+      onclick={onsettings}><Icon name="gear" size={16} /></button
     >
   {/if}
   {#if onduplicate}

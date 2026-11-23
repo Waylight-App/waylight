@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../shared/ui/icons/Icon.svelte';
   import { t } from '../shared/i18n';
   import { timerAlerts } from './timerAlerts.svelte';
   import { timerTitle } from './timers';
@@ -11,7 +12,7 @@
 <div class="toasts">
   {#each timerAlerts.list as timer (timer.id)}
     <div class="toast" role="alert">
-      <span>⏰ <strong>{timerTitle(timer)}</strong> · {time(timer.end)}</span>
+      <span><Icon name="timer" size={16} /> <strong>{timerTitle(timer)}</strong> · {time(timer.end)}</span>
       <button class="btn" type="button" onclick={() => dismiss(timer.id)}>{t('timers.dismiss')}</button>
     </div>
   {/each}

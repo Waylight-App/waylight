@@ -20,9 +20,9 @@ func NewSeedSampleData(d Deps) SeedSampleData { return &seedSampleData{d: d} }
 
 // sampleServices are public sites, so their status is meaningful anywhere.
 var sampleServices = []ServiceInput{
-	{Name: "DuckDuckGo", URL: "https://duckduckgo.com/", Icon: "🦆", Description: "Example tile – replace with your services"},
-	{Name: "OpenStreetMap", URL: "https://www.openstreetmap.org/", Icon: "🗺️", Description: "Example tile"},
-	{Name: "Open-Meteo", URL: "https://open-meteo.com/", Icon: "🌦️", Description: "Weather data source"},
+	{Name: "DuckDuckGo", URL: "https://duckduckgo.com/", Description: "Example tile – replace with your services"},
+	{Name: "OpenStreetMap", URL: "https://www.openstreetmap.org/", Description: "Example tile"},
+	{Name: "Open-Meteo", URL: "https://open-meteo.com/", Description: "Weather data source"},
 }
 
 // Execute implements SeedSampleData. Tiles are stored without the immediate

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import EmptyState from '../../../shared/ui/EmptyState.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -84,7 +85,7 @@
             class="cert"
             title={t('services.tls_certificate_expires', {
               value: s.certExpiresAt?.toLocaleDateString(intlLocale()) ?? '',
-            })}>🔒 {days}d</span
+            })}><Icon name="lock" size={12} /> {days}d</span
           >
         {/if}
         <span class="dot {s.state}" role="img" aria-label={statusText(s)}></span>
