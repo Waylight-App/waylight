@@ -641,7 +641,7 @@ func TestAPIEndToEnd(t *testing.T) {
 	c.json(http.MethodPut, "/api/waste/settings", obj{"url": up.URL + "/abfall.ics", "rules": []obj{}}, http.StatusOK, nil)
 	var waste struct{ Types []obj }
 	c.json(http.MethodGet, "/api/waste/upcoming", nil, http.StatusOK, &waste)
-	if len(waste.Types) != 1 || waste.Types[0]["daysUntil"] != float64(1) || waste.Types[0]["icon"] != "🍂" || len(waste.Types[0]["dates"].([]any)) != 3 {
+	if len(waste.Types) != 1 || waste.Types[0]["daysUntil"] != float64(1) || waste.Types[0]["color"] != "#8b5a2b" || len(waste.Types[0]["dates"].([]any)) != 3 {
 		t.Fatalf("waste: %+v", waste)
 	}
 
