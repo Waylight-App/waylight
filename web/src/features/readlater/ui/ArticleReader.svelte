@@ -76,7 +76,7 @@
   .reader :global(td),
   .reader :global(th) {
     border: 1px solid var(--color-border);
-    padding: 2px var(--space-1);
+    padding: var(--space-1) var(--space-1);
   }
   .reader :global(figcaption) {
     font-size: var(--fs-xs);

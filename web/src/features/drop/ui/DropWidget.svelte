@@ -186,7 +186,7 @@
     margin: var(--space-2) 0 0;
     padding: 0;
     display: grid;
-    gap: 4px;
+    gap: var(--space-1);
   }
   li {
     display: flex;

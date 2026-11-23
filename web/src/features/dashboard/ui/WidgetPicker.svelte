@@ -216,7 +216,7 @@
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: var(--space-4);
     overflow-y: auto;
-    padding: 2px;
+    padding: var(--space-1);
   }
   h3 {
     margin: 0 0 var(--space-2);
@@ -241,7 +241,7 @@
     width: 100%;
     min-height: 4.5rem;
     padding: var(--space-2);
-    padding-right: 36px;
+    padding-right: var(--space-8);
     position: relative;
     text-align: left;
     border: 1px solid var(--color-border, rgba(127, 127, 127, 0.3));
@@ -372,11 +372,11 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 4px;
+    gap: var(--space-1);
     width: calc(var(--w) / 6 * 100%);
     aspect-ratio: calc(var(--w) * 1.5) / var(--h);
     max-height: 120px;
-    padding: 6px;
+    padding: var(--space-2);
     overflow: hidden;
     border: 1px solid var(--color-border, rgba(127, 127, 127, 0.3));
     border-radius: var(--radius-sm);

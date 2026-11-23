@@ -76,7 +76,7 @@
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 4px;
+    gap: var(--space-1);
   }
   li {
     display: grid;

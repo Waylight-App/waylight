@@ -207,7 +207,7 @@
   }
   .num {
     width: 4.5rem;
-    padding: 2px 6px;
+    padding: var(--space-1) var(--space-2);
   }
   .time {
     width: 7rem;

@@ -194,7 +194,7 @@
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
   }
   li {
     display: flex;
@@ -214,7 +214,7 @@
     gap: var(--space-1);
   }
   .chip {
-    padding: 2px var(--space-2);
+    padding: var(--space-1) var(--space-2);
   }
   .open {
     justify-self: start;

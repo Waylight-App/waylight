@@ -181,7 +181,7 @@
     margin: var(--space-2) 0;
   }
   .pause .btn {
-    padding: 2px var(--space-2);
+    padding: var(--space-1) var(--space-2);
     font-size: var(--fs-xs);
   }
   .paused {
@@ -191,7 +191,7 @@
   }
   .top {
     margin: 0;
-    padding-left: 1.2em;
+    padding-left: var(--space-4);
     font-size: var(--fs-xs);
   }
   .top li span {

@@ -223,7 +223,7 @@
     background: none;
     color: var(--color-text);
     border-radius: 999px;
-    padding: 2px var(--space-3);
+    padding: var(--space-1) var(--space-3);
     font: inherit;
     cursor: pointer;
   }
@@ -272,7 +272,7 @@
   }
   .tile {
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
     padding: var(--space-2) var(--space-3);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);

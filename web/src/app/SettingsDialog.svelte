@@ -416,7 +416,7 @@
     background: none;
     color: inherit;
     font: inherit;
-    padding: 6px var(--space-2);
+    padding: var(--space-2) var(--space-2);
     border-radius: var(--radius-sm);
     cursor: pointer;
   }
@@ -460,7 +460,7 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
-    padding: 10px var(--space-3);
+    padding: var(--space-2) var(--space-3);
   }
   .back {
     display: none;

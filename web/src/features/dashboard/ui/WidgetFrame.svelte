@@ -270,7 +270,7 @@
   }
   .size {
     width: auto;
-    padding: 2px var(--space-1);
+    padding: var(--space-1) var(--space-1);
     font-size: var(--fs-xs);
   }
   .chromeless .content {

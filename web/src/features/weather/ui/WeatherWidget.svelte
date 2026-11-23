@@ -198,7 +198,7 @@
     width: 100%;
     text-align: left;
     margin: 0 0 var(--space-1);
-    padding: 2px 6px;
+    padding: var(--space-1) var(--space-2);
     border: 0;
     border-left: 5px solid var(--sev);
     border-radius: var(--radius-sm);
@@ -210,7 +210,7 @@
   }
   .detail {
     display: block;
-    margin-top: 2px;
+    margin-top: var(--space-1);
     font-size: var(--fs-sm);
   }
   .weather {
@@ -222,7 +222,7 @@
   }
   .now {
     display: flex;
-    gap: 0.6em;
+    gap: var(--space-2);
     align-items: center;
     justify-content: center;
   }
@@ -258,7 +258,7 @@
   .days li {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-1);
   }
   .day-icon {
     font-size: clamp(1.2rem, 8cqmin, 3rem);
@@ -268,7 +268,7 @@
   }
   .health {
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
     font-size: var(--fs-xs);
   }
   .health-head,

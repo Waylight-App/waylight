@@ -21,8 +21,8 @@
   .chip {
     display: inline-flex;
     align-items: baseline;
-    gap: 0.3em;
-    padding: 0.1em 0.65em;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
     border-radius: 999px;
     font-size: var(--fs-xs);
     line-height: 1.4;

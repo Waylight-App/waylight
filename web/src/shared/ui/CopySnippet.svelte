@@ -39,7 +39,7 @@
   pre {
     margin: 0;
     padding: var(--space-2) var(--space-3);
-    padding-right: 6rem;
+    padding-right: var(--space-12);
     overflow-x: auto;
     border-radius: var(--radius-sm);
     background: var(--color-surface-2, rgba(127, 127, 127, 0.12));

@@ -193,7 +193,7 @@
   }
   .dots {
     display: flex;
-    gap: 4px;
+    gap: var(--space-1);
   }
   .dots span {
     width: 8px;
@@ -215,7 +215,7 @@
     margin: var(--space-2) 0 0;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: var(--space-1);
     width: 100%;
     max-width: 16rem;
   }

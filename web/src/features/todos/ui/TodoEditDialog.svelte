@@ -182,21 +182,21 @@
 
 <style>
   fieldset {
-    margin: 0 0 0.75rem;
+    margin: 0 0 var(--space-3);
     display: grid;
-    gap: 0.5rem;
+    gap: var(--space-2);
   }
   .row,
   .days {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem 0.75rem;
+    gap: var(--space-1) var(--space-3);
     align-items: center;
   }
   .inline {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: var(--space-2);
   }
   .num {
     width: 5em;

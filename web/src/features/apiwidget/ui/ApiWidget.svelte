@@ -75,13 +75,13 @@
   dl {
     margin: 0;
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
   }
   .row {
     display: flex;
     justify-content: space-between;
     gap: var(--space-2);
-    padding: 2px var(--space-1);
+    padding: var(--space-1) var(--space-1);
     border-left: 3px solid transparent;
   }
   .row.warning {

@@ -38,7 +38,7 @@
     flex: none;
     width: 1.9rem;
     height: 1.9rem;
-    margin-top: 2px;
+    margin-top: var(--space-1);
     border-radius: 50%;
     background: color-mix(in srgb, var(--color-accent) 14%, transparent);
     color: var(--color-accent-text);
@@ -62,6 +62,6 @@
   }
   .hint :global(ol) {
     margin: 0;
-    padding-left: 1.3em;
+    padding-left: var(--space-6);
   }
 </style>

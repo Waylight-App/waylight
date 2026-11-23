@@ -221,7 +221,7 @@
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
     /* Tight spacing so the widgets start right below the search and the tabs. */
-    gap: 6px;
+    gap: var(--space-2);
     padding: var(--space-3) var(--space-4) var(--space-2);
     max-width: 1600px;
     margin: 0 auto;
@@ -274,7 +274,7 @@
     font-size: var(--fs-xs);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    padding: 0 6px;
+    padding: 0 var(--space-2);
     white-space: nowrap;
   }
   .tabs {

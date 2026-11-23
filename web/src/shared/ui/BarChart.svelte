@@ -36,7 +36,7 @@
   .chart,
   .ticks {
     display: flex;
-    gap: 2px;
+    gap: var(--space-1);
     margin: 0;
     padding: 0;
     list-style: none;

@@ -63,7 +63,7 @@
     grid-template-columns: repeat(12, minmax(0, 1fr));
     grid-auto-rows: var(--row-height);
     grid-auto-flow: row dense;
-    gap: 12px;
+    gap: var(--space-3);
   }
   .cell {
     grid-column: span var(--w);

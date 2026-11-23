@@ -136,13 +136,13 @@
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas: 'check name streak' 'heat heat heat';
     align-items: center;
-    gap: 2px var(--space-2);
+    gap: var(--space-1) var(--space-2);
   }
   .today {
     grid-area: check;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--space-1);
     cursor: pointer;
   }
   .today input {
@@ -179,7 +179,7 @@
     grid-area: heat;
     display: grid;
     grid-template-columns: repeat(28, 1fr);
-    gap: 2px;
+    gap: var(--space-1);
     max-width: 22rem;
   }
   .cell {

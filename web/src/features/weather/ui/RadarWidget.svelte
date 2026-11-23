@@ -74,6 +74,6 @@
   figcaption {
     font-size: var(--fs-xs);
     color: #e5e7eb;
-    padding: 2px 6px;
+    padding: var(--space-1) var(--space-2);
   }
 </style>

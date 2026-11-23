@@ -73,7 +73,7 @@
   }
   .help :global(svg) {
     flex: none;
-    margin-top: 2px;
+    margin-top: var(--space-1);
     color: var(--color-accent-text);
   }
   .foot {

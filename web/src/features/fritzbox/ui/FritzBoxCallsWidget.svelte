@@ -102,7 +102,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    padding: 1px 0;
+    padding: var(--space-1) 0;
   }
   .party {
     flex: 1;

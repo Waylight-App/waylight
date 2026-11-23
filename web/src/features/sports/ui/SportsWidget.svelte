@@ -106,7 +106,7 @@
     font-size: var(--fs-sm);
   }
   h5 {
-    margin: var(--space-2) 0 2px;
+    margin: var(--space-2) 0 var(--space-1);
     font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -149,7 +149,7 @@
   }
   td {
     text-align: right;
-    padding: 2px 0;
+    padding: var(--space-1) 0;
   }
   td.name {
     text-align: left;

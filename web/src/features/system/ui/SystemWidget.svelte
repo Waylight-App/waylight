@@ -82,7 +82,7 @@
 
 <style>
   .forecast {
-    margin: -0.25em 0 0.25em;
+    margin: -0.25em 0 var(--space-1);
     font-size: var(--fs-xs);
   }
   .forecast.soon {

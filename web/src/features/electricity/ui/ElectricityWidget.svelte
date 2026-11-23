@@ -123,7 +123,7 @@
   .chart {
     position: relative;
     display: flex;
-    gap: 2px;
+    gap: var(--space-1);
     height: 72px;
     margin: 0;
     padding: 0;

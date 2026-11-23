@@ -882,7 +882,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    padding: 4px var(--space-3);
+    padding: var(--space-1) var(--space-3);
     border: 1px solid var(--color-border);
     border-radius: 999px;
     background: var(--color-surface);
@@ -932,7 +932,7 @@
   @media (max-width: 600px) {
     .status {
       font-size: 0;
-      padding: 8px;
+      padding: var(--space-2);
     }
   }
   .content {

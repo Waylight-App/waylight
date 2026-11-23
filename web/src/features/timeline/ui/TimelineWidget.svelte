@@ -94,7 +94,7 @@
   .event {
     display: flex;
     gap: var(--space-2);
-    padding: 2px 0 2px var(--space-2);
+    padding: var(--space-1) 0 var(--space-1) var(--space-2);
     border-left: 3px solid var(--color-border, rgba(127, 127, 127, 0.3));
   }
   .event.warning {

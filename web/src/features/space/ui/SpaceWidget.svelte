@@ -165,7 +165,7 @@
   }
   .status {
     font-size: var(--fs-xs);
-    padding: 0 4px;
+    padding: 0 var(--space-1);
     border-radius: var(--radius-sm);
     background: var(--color-surface-2);
   }

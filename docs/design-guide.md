@@ -38,4 +38,5 @@ and `--space-12`.
 ## Checks
 
 `npm run lint` in `web/` runs stylelint, which rejects a `font-size` or
-`border-radius` that is not one of the tokens.
+`border-radius` that is not one of the tokens and a `padding`, `margin` or
+`gap` with a fixed size. Negative offsets and `calc()` are left alone.

@@ -54,6 +54,6 @@
   }
   .markdown :global(ul),
   .markdown :global(ol) {
-    padding-left: 1.4em;
+    padding-left: var(--space-6);
   }
 </style>

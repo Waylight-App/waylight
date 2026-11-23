@@ -119,7 +119,7 @@
   .capture {
     max-width: 32rem;
     margin: 0 auto;
-    padding: var(--space-4, 1.5rem) var(--space-3);
+    padding: var(--space-4, var(--space-6)) var(--space-3);
   }
   h1 {
     font-size: var(--fs-md);

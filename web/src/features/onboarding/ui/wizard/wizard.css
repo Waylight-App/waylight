@@ -41,12 +41,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 48px;
+  padding: var(--space-6) var(--space-12);
 }
 .wz-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
   font-family: var(--font-wordmark);
   font-size: var(--fs-md);
   color: var(--wz-text);
@@ -56,7 +56,7 @@
 }
 .wz-dots {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .wz-dots i {
   width: 28px;
@@ -73,8 +73,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
-  padding: 6px 64px 0;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-12) 0;
   text-align: center;
 }
 .wz-main-center {
@@ -82,8 +82,8 @@
   padding-top: 0;
 }
 .wz-glow-middle .wz-main {
-  gap: 22px;
-  padding: 0 48px;
+  gap: var(--space-6);
+  padding: 0 var(--space-12);
 }
 
 .wz-title {
@@ -127,7 +127,7 @@
     var(--font-sans);
   border: 0;
   border-radius: var(--radius-md);
-  padding: 15px 30px;
+  padding: var(--space-4) var(--space-8);
   background: var(--wz-amber);
   color: var(--wz-on-amber);
   cursor: pointer;
@@ -136,13 +136,13 @@
   background: var(--wz-amber-hover);
 }
 .wz-btn-lg {
-  padding: 16px 34px;
-  margin-top: 6px;
+  padding: var(--space-4) var(--space-8);
+  margin-top: var(--space-2);
 }
 .wz-link {
   background: none;
   border: 0;
-  padding: 6px 4px;
+  padding: var(--space-2) var(--space-1);
   color: var(--wz-subtle);
   font:
     500 16px/1.2 'Figtree Variable',
@@ -167,28 +167,28 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 14px;
+  gap: var(--space-3);
   align-items: center;
-  margin-top: 10px;
+  margin-top: var(--space-2);
 }
 
 .wz-foot {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  padding: 24px 48px;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-12);
 }
 .wz-foot-end {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 18px;
+  gap: var(--space-4);
   align-items: center;
 }
 .wz-foot-hint {
   justify-content: center;
-  padding: 28px 48px;
+  padding: var(--space-6) var(--space-12);
   color: var(--wz-subtle);
   font-size: var(--fs-sm);
   text-align: center;
@@ -203,9 +203,9 @@
   width: min(520px, 100%);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-4);
   text-align: left;
-  margin-top: 10px;
+  margin-top: var(--space-2);
 }
 .wz-field {
   border: 0;
@@ -218,13 +218,13 @@
 .wz-label {
   display: block;
   padding: 0;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
   font-weight: 600;
   font-size: var(--fs-sm);
 }
 .wz-field label.wz-chip {
   margin: 0;
-  padding: 12px 22px;
+  padding: var(--space-3) var(--space-6);
   font-size: var(--fs-sm);
 }
 .wz-input {
@@ -232,7 +232,7 @@
   background: var(--wz-surface);
   border: 1px solid var(--wz-line);
   border-radius: var(--radius-md);
-  padding: 15px 16px;
+  padding: var(--space-4) var(--space-4);
   color: var(--wz-text);
   font:
     500 18px/1.3 'Figtree Variable',
@@ -244,11 +244,11 @@
 .wz-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-2);
 }
 .wz-chip {
   position: relative;
-  padding: 12px 22px;
+  padding: var(--space-3) var(--space-6);
   border-radius: var(--radius-md);
   border: 1px solid var(--wz-line);
   background: var(--wz-surface);
@@ -271,9 +271,9 @@
 .wz-sub {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  padding: 4px 0;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  padding: var(--space-1) 0;
   background: none;
   border: 0;
   color: var(--wz-amber);
@@ -287,7 +287,7 @@
 }
 .wz-results {
   list-style: none;
-  margin: 6px 0 0;
+  margin: var(--space-2) 0 0;
   padding: 0;
   border: 1px solid var(--wz-line);
   border-radius: var(--radius-md);
@@ -296,7 +296,7 @@
 }
 .wz-results button {
   width: 100%;
-  padding: 11px 16px;
+  padding: var(--space-3) var(--space-4);
   text-align: left;
   background: none;
   border: 0;
@@ -322,7 +322,7 @@
 /* Widgets */
 .wz-eyebrow {
   align-self: flex-start;
-  margin: 14px 0 0;
+  margin: var(--space-3) 0 0;
   font-size: var(--fs-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -332,14 +332,14 @@
 .wz-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 14px;
+  gap: var(--space-3);
   width: 100%;
 }
 .wz-card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 16px;
+  gap: var(--space-2);
+  padding: var(--space-4);
   text-align: left;
   border: 1px solid var(--wz-line);
   background: var(--wz-surface);
@@ -362,17 +362,17 @@
 .wz-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
+  gap: var(--space-3);
   width: 100%;
-  padding-bottom: 8px;
+  padding-bottom: var(--space-2);
 }
 .wz-tile {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 14px 8px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-2);
   border: 1px solid var(--wz-line);
   background: var(--wz-surface);
   border-radius: var(--radius-md);
@@ -424,7 +424,7 @@
   max-width: 720px;
 }
 .wz-chips-done li {
-  padding: 9px 18px;
+  padding: var(--space-2) var(--space-4);
   border-radius: 999px;
   border: 1px solid var(--wz-line);
   background: var(--wz-surface);
@@ -439,18 +439,18 @@
 @media (max-width: 640px) {
   .wz-top,
   .wz-foot {
-    padding: 18px 20px;
+    padding: var(--space-4) var(--space-4);
   }
   .wz-main,
   .wz-glow-middle .wz-main {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
   }
   .wz-dots i {
     width: 18px;
   }
   .wz-foot-hint {
-    padding: 20px;
+    padding: var(--space-4);
   }
 }
 
@@ -471,8 +471,8 @@
   width: min(680px, 100%);
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 20px;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4);
   background: var(--wz-surface);
   border: 1px solid var(--wz-amber);
   box-shadow: 0 0 0 4px rgb(242 180 65 / 15%);
@@ -516,7 +516,7 @@
   color: var(--color-text);
 }
 .wz-paper .answer {
-  padding: 20px 24px;
+  padding: var(--space-4) var(--space-6);
 }
 .wz-paper .chips {
   display: none;
@@ -531,12 +531,12 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-2);
   justify-content: center;
   max-width: 760px;
 }
 .wz-examples button {
-  padding: 10px 18px;
+  padding: var(--space-2) var(--space-4);
   border-radius: 999px;
   border: 1px solid var(--wz-line);
   background: var(--wz-surface);
@@ -573,8 +573,8 @@
 /* The note at the bottom left: a small flag with a notched end. */
 .wz-flag {
   align-self: flex-start;
-  margin: auto 0 12px;
-  padding: 7px 16px 7px 12px;
+  margin: auto 0 var(--space-3);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
   border-left: 3px solid var(--wz-amber);
   background: rgb(242 180 65 / 8%);
   color: #e4cf9f;
@@ -589,7 +589,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 48px 72px;
+  gap: var(--space-12) var(--space-12);
   width: 100%;
   text-align: left;
 }
@@ -597,7 +597,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 18px;
+  gap: var(--space-4);
   width: min(400px, 100%);
 }
 .wz-done-left .wz-title,
@@ -608,16 +608,16 @@
 .wz-done-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
-  margin-top: 6px;
+  margin-top: var(--space-2);
 }
 .wz-btn-line {
   background: transparent;
   color: var(--wz-text);
   border: 1px solid var(--wz-line);
   font-size: var(--fs-sm);
-  padding: 14px 26px;
+  padding: var(--space-3) var(--space-6);
 }
 .wz-btn-line:hover:not(:disabled) {
   background: var(--wz-surface);
@@ -664,7 +664,7 @@
 .wz-done-right {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
   width: min(520px, 100%);
 }
 .wz-done-right .wz-eyebrow {
@@ -672,12 +672,12 @@
   font-size: var(--fs-xs);
 }
 .wz-done-right .wz-eyebrow:not(:first-child) {
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 .wz-todo {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -685,8 +685,8 @@
 .wz-todo li {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 13px 16px;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--wz-outline);
   border-radius: var(--radius-md);
   background: var(--wz-surface);
@@ -723,7 +723,7 @@
   font:
     600 15px/1.2 'Figtree Variable',
     var(--font-sans);
-  padding: 8px 14px;
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--wz-outline);
   border-radius: var(--radius-sm);
   background: transparent;
@@ -736,9 +736,9 @@
 .wz-ready {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
   margin: 0;
-  padding: 4px;
+  padding: var(--space-1);
   font-weight: 600;
   font-size: var(--fs-sm);
   color: #8fd6a8;

@@ -85,7 +85,7 @@
     display: flex;
     gap: var(--space-2);
     align-items: baseline;
-    padding: 1px 0;
+    padding: var(--space-1) 0;
   }
   .line {
     flex: none;

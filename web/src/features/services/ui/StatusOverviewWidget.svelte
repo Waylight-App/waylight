@@ -149,9 +149,9 @@
   }
   .bars {
     display: flex;
-    gap: 2px;
+    gap: var(--space-1);
     height: 0.9rem;
-    margin-top: 2px;
+    margin-top: var(--space-1);
   }
   .bar {
     flex: 1;

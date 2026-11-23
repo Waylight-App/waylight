@@ -155,7 +155,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    padding: 2px 0;
+    padding: var(--space-1) 0;
   }
   .images .status-update_available {
     color: var(--color-warning);

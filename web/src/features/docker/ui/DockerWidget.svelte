@@ -156,7 +156,7 @@
     font-size: var(--fs-xs);
   }
   .act {
-    padding: 0 4px;
+    padding: 0 var(--space-1);
     line-height: 1.2;
     font-size: var(--fs-sm);
   }
@@ -192,7 +192,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    padding: 2px 0;
+    padding: var(--space-1) 0;
   }
   .name {
     flex: 1;
