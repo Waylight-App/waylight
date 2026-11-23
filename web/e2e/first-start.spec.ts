@@ -20,7 +20,7 @@ test('first start asks the essentials, offers the templates and Family replaces 
   const wizard = page.getByRole('region', { name: 'Set up Waylight' });
   await expect(wizard.getByRole('heading', { name: 'Glad you are here.' })).toBeVisible();
   await expect(page.getByTestId('dashboard')).toHaveCount(0);
-  await expect(wizard.getByRole('progressbar')).toHaveAttribute('aria-valuetext', 'Step 1 of 5');
+  await expect(wizard.getByRole('progressbar')).toHaveAttribute('aria-valuetext', 'Step 1 of 6');
   await wizard.getByRole('button', { name: "Let's go" }).click();
 
   await expect(wizard.getByRole('heading', { name: 'What should we call you?' })).toBeVisible();
@@ -31,6 +31,14 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await page.getByRole('radio', { name: 'English' }).check();
   await wizard.getByRole('button', { name: 'Use my location' }).click();
   await expect(wizard.getByRole('status')).toHaveText('Chosen: My location');
+  await wizard.getByRole('button', { name: 'Next' }).click();
+
+  // The look step applies a design with one click on its card.
+  await expect(wizard.getByRole('heading', { name: 'Pick a look' })).toBeVisible();
+  const nord = wizard.getByRole('button', { name: 'Apply theme Nord' });
+  await nord.click();
+  await expect(nord).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await wizard.getByRole('button', { name: 'Next' }).click();
 
   // Back and forth keeps the step; a reload continues where it stopped.

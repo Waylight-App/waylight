@@ -12,7 +12,10 @@ test('the theme gallery applies, restores, imports and exports themes (#111)', a
   await openSettings(page, 'Appearance & language', 'Appearance');
 
   await page.getByRole('button', { name: 'Apply theme Nord' }).click();
-  await expect(page.getByRole('button', { name: 'Apply theme Nord' })).toHaveText('Applied');
+  await expect(page.getByRole('button', { name: 'Apply theme Nord' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
   await expect.poll(bg).toBe('#2e3440');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 

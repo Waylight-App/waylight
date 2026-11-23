@@ -1,6 +1,7 @@
 import type { Component } from 'svelte';
 import type { MessageKey } from '../../../../shared/i18n';
 import type { StepDefinition, StepProps } from './wizardContext';
+import AppearanceStep from './AppearanceStep.svelte';
 import DoneStep from './DoneStep.svelte';
 import ProfileStep from './ProfileStep.svelte';
 import SearchStep from './SearchStep.svelte';
@@ -17,7 +18,10 @@ export interface RegisteredStep extends StepDefinition {
  * The wizard's steps as data; the shell does not know any of them. A new
  * step is one entry here and one component.
  */
-export const stepRegistry: Record<'welcome' | 'profile' | 'widgets' | 'search' | 'done', RegisteredStep> = {
+export const stepRegistry: Record<
+  'welcome' | 'profile' | 'appearance' | 'widgets' | 'search' | 'done',
+  RegisteredStep
+> = {
   welcome: {
     glow: 'middle',
     centered: true,
@@ -26,6 +30,7 @@ export const stepRegistry: Record<'welcome' | 'profile' | 'widgets' | 'search' |
     hint: 'wizard.welcome.foot',
   },
   profile: { glow: 'top', centered: true, footer: 'actions', component: ProfileStep },
+  appearance: { glow: 'top', centered: false, footer: 'actions', component: AppearanceStep },
   widgets: { glow: 'top', centered: false, footer: 'actions', component: WidgetsStep },
   search: { glow: 'top', centered: false, footer: 'actions', component: SearchStep },
   done: { glow: 'middle', centered: true, footer: 'hint', component: DoneStep, hint: 'wizard.done.foot' },

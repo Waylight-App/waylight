@@ -23,11 +23,15 @@ that text on buttons stays readable.
 
 The gallery offers ready-made themes: Amber (light and dark), Nord, Catppuccin Latte and Mocha,
 Gruvbox Dark, Solarized Light and Dark, Dracula, Tokyo Night, One Dark, a
-high-contrast theme and a classic portal look. *Apply* switches to a theme at once.
+high-contrast theme and a classic portal look. Each card shows the theme in its own
+colours; a click on a card switches to it at once. The filter above the cards
+shows all themes, light ones, dark ones or your own. Under the cards you find
+the author of the selected theme, its download and, for your own themes, the
+delete button. The first-start setup offers the same cards in its look step.
 
 Applying a theme replaces your accent colour and custom CSS. A theme made
-for light or for dark also switches to that scheme; a theme marked *Light and
-dark* brings both and follows your choice, including *System*. Your own
+for light or for dark also switches to that scheme; a theme that shows a light and a dark
+preview brings both and follows your choice, including *System*. Your own
 settings are kept, and **Restore my own style** brings them back.
 
 ### Default theme for everyone

@@ -104,6 +104,7 @@
       />
     </span>
   </label>
+  <p class="muted small">{t('appearance.accent_hint')}</p>
   {#if form.themeLocked}<p class="muted small">{t('appearance.theme_locked')}</p>{/if}
   <div class="field">
     <span>{t('appearance.background_image')}</span>
