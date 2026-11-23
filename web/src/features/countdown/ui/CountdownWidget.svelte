@@ -136,7 +136,7 @@
     min-width: 0;
   }
   .emoji {
-    font-size: 1.3rem;
+    font-size: var(--fs-md);
     width: 1.6rem;
     text-align: center;
   }
@@ -153,7 +153,7 @@
     white-space: nowrap;
   }
   .when {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   .left {
     font-variant-numeric: tabular-nums;

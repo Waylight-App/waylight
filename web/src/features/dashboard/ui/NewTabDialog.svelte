@@ -114,7 +114,7 @@
 <style>
   fieldset {
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     display: grid;
     gap: var(--space-1);
     margin: var(--space-2) 0 var(--space-3);

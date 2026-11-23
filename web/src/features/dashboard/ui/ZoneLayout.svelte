@@ -52,7 +52,7 @@
   }
   .zone h2 {
     margin: 0 0 var(--space-2);
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -75,7 +75,7 @@
     margin: 0;
     padding: var(--space-3);
     border: 1px dashed var(--color-border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     text-align: center;
   }
   /* Zones stack on phones: one column, each widget the full width. */

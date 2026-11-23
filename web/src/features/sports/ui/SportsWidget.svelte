@@ -103,11 +103,11 @@
 <style>
   .team {
     margin: 0;
-    font-size: 1rem;
+    font-size: var(--fs-sm);
   }
   h5 {
     margin: var(--space-2) 0 2px;
-    font-size: max(0.8rem, 0.8em);
+    font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--color-text-muted);
@@ -133,7 +133,7 @@
     color: var(--color-danger);
   }
   .small {
-    font-size: max(0.8rem, 0.85em);
+    font-size: var(--fs-xs);
     margin: 0;
   }
   table {
@@ -144,7 +144,7 @@
   th {
     font-weight: 500;
     color: var(--color-text-muted);
-    font-size: max(0.8rem, 0.8em);
+    font-size: var(--fs-xs);
     text-align: right;
   }
   td {

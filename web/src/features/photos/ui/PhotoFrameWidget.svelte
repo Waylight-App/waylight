@@ -73,7 +73,7 @@
     height: 100%;
     min-height: 6rem;
     overflow: hidden;
-    border-radius: var(--radius-sm, 6px);
+    border-radius: var(--radius-sm);
   }
   img {
     position: absolute;

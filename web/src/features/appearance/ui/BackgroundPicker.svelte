@@ -251,7 +251,7 @@
   }
   .preview {
     height: 9rem;
-    border-radius: var(--radius-small, 6px);
+    border-radius: var(--radius-sm);
     border: 1px solid var(--color-border);
     background-color: var(--color-bg);
     background-size: cover;
@@ -273,7 +273,7 @@
   }
   h3 {
     margin: var(--space-2) 0 0;
-    font-size: 0.95em;
+    font-size: var(--fs-sm);
   }
   .swatches {
     list-style: none;
@@ -289,7 +289,7 @@
     width: 100%;
     aspect-ratio: 16 / 10;
     border: 2px solid var(--color-border);
-    border-radius: var(--radius-small, 6px);
+    border-radius: var(--radius-sm);
     background-size: cover;
     background-position: center;
     cursor: pointer;
@@ -309,7 +309,7 @@
     right: 0;
   }
   .add {
-    font-size: 1.4rem;
+    font-size: var(--fs-md);
     color: var(--color-text-muted, var(--color-text));
   }
   .add.busy {
@@ -332,7 +332,7 @@
     flex: 1;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     margin: 0;
   }
   .actions {

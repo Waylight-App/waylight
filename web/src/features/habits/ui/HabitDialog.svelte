@@ -116,7 +116,7 @@
     gap: var(--space-2);
   }
   .small {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     margin: 0 0 var(--space-1);
   }
   .actions {

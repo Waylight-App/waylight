@@ -83,7 +83,7 @@
 <style>
   .forecast {
     margin: -0.25em 0 0.25em;
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .forecast.soon {
     color: var(--color-warning);
@@ -100,6 +100,6 @@
     flex-wrap: wrap;
     gap: var(--space-3);
     margin: var(--space-2) 0 0;
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

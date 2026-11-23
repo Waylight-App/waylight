@@ -223,7 +223,7 @@
     margin: 0 0 var(--space-3);
     padding: var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   legend {
     padding: 0 var(--space-1);
@@ -260,7 +260,7 @@
     padding: var(--space-2) var(--space-3);
     background: color-mix(in srgb, var(--color-danger) 12%, transparent);
     border: 1px solid var(--color-danger);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .warning p {
     margin: var(--space-1) 0;
@@ -269,6 +269,6 @@
     padding: var(--space-2) var(--space-3);
     background: var(--color-surface-2);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
 </style>

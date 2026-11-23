@@ -96,7 +96,7 @@
   }
   .change {
     text-align: right;
-    font-size: max(0.8rem, 0.85em);
+    font-size: var(--fs-xs);
     min-width: 5.5em;
   }
   .up {
@@ -109,7 +109,7 @@
     grid-column: 2 / -1;
   }
   .small {
-    font-size: max(0.8rem, 0.85em);
+    font-size: var(--fs-xs);
     margin: var(--space-1) 0 0;
   }
 </style>

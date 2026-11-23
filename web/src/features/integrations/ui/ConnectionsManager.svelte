@@ -297,7 +297,7 @@
     gap: var(--space-2);
     padding: var(--space-2) var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .text {
     display: flex;
@@ -305,7 +305,7 @@
     min-width: 0;
   }
   .small {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
   .actions,
   .row {

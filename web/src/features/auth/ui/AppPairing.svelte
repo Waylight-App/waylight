@@ -53,14 +53,14 @@
     height: 180px;
     image-rendering: pixelated;
     background: #fff; /* scanners need a light quiet zone in dark themes */
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .code {
     max-width: 16rem;
-    font-size: 1.25rem;
+    font-size: var(--fs-md);
     letter-spacing: 0.08em;
   }
   .small {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
 </style>

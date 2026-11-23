@@ -58,7 +58,7 @@
     bottom: calc(100% - var(--zero));
     height: var(--h);
     background: color-mix(in srgb, var(--color-accent) 45%, transparent);
-    border-radius: 2px 2px 0 0;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   }
   .bar.empty::before {
     display: none;
@@ -66,7 +66,7 @@
   .ticks li {
     flex: 1;
     text-align: center;
-    font-size: 0.7rem;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
 </style>

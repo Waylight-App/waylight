@@ -153,16 +153,16 @@
     gap: var(--space-2);
     padding: var(--space-4);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     background: var(--color-surface-2);
   }
   h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--fs-sm);
   }
   p {
     margin: 0;
-    font-size: 0.92em;
+    font-size: var(--fs-sm);
     line-height: 1.4;
   }
   .drop {
@@ -173,7 +173,7 @@
     gap: var(--space-1);
     padding: var(--space-4);
     border: 2px dashed var(--color-text-muted);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     text-align: center;
     cursor: pointer;
     overflow-wrap: anywhere;

@@ -110,7 +110,7 @@
     padding: var(--space-1) 0;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .name {
     flex: 1;

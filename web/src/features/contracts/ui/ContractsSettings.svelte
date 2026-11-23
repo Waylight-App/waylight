@@ -29,6 +29,6 @@
 
 <style>
   .small {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
 </style>

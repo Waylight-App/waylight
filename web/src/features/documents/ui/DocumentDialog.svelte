@@ -108,6 +108,6 @@
     flex: 1 1 9rem;
   }
   .small {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
 </style>

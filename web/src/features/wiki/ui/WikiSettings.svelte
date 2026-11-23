@@ -167,7 +167,7 @@
     gap: var(--space-2);
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     margin: 0;
   }
 </style>

@@ -81,7 +81,7 @@
 
 <style>
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .disks,
   .findings {
@@ -100,7 +100,7 @@
   }
   .badge {
     margin-left: auto;
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .dot {
     width: 0.6em;

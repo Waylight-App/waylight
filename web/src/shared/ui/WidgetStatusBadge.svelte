@@ -55,7 +55,7 @@
     display: flex;
     gap: 4px;
     align-items: center;
-    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
     /* visibility (not only opacity) keeps the hidden badge away from screen
        readers; it switches at the end of the fade-out. */
@@ -93,7 +93,7 @@
     cursor: pointer;
     padding: 0;
     font: inherit;
-    font-size: 0.9rem;
+    font-size: var(--fs-sm);
   }
   @media (prefers-reduced-motion: reduce) {
     .badge {

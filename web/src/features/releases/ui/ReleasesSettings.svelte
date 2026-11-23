@@ -121,6 +121,6 @@
     flex: 1;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

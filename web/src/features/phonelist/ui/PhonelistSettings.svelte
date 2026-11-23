@@ -100,10 +100,10 @@
   }
   h3 {
     margin: 0;
-    font-size: 1em;
+    font-size: inherit;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     margin: 0;
   }
 </style>

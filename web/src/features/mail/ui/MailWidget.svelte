@@ -91,7 +91,7 @@
     white-space: nowrap;
   }
   .age {
-    font-size: max(0.8rem, 0.85em);
+    font-size: var(--fs-xs);
   }
   .subject {
     grid-column: 1 / -1;
@@ -101,6 +101,6 @@
     color: var(--color-text-muted);
   }
   .small {
-    font-size: max(0.8rem, 0.85em);
+    font-size: var(--fs-xs);
   }
 </style>

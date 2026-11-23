@@ -83,7 +83,7 @@
     flex: 1;
   }
   .small {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   .badge {
     margin-left: var(--space-2);
@@ -91,6 +91,6 @@
     border-radius: 999px;
     background: var(--color-accent);
     color: var(--color-accent-contrast);
-    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
 </style>

@@ -198,7 +198,7 @@
     padding: var(--space-1);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-pop);
   }
   .menu button {
@@ -208,7 +208,7 @@
     color: inherit;
     font: inherit;
     padding: 8px var(--space-3);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     min-height: 32px;
   }

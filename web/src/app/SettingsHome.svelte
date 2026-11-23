@@ -75,7 +75,7 @@
     color: inherit;
     background: color-mix(in srgb, var(--color-warning) 18%, transparent);
     border: 1px solid var(--color-warning);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     cursor: pointer;
   }
   .attention .dot {
@@ -107,7 +107,7 @@
     color: inherit;
     background: var(--color-surface-2);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     cursor: pointer;
   }
   .tile:hover {
@@ -131,12 +131,12 @@
     font-weight: 600;
   }
   .hint {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   .status {
     margin-top: var(--space-1);
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -161,7 +161,7 @@
   }
   .recent-title {
     margin: var(--space-4) 0 var(--space-2);
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;

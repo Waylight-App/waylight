@@ -1053,8 +1053,8 @@
     padding: var(--space-1) var(--space-3);
     border-left: 3px solid var(--color-accent);
     background: color-mix(in srgb, var(--color-accent) 10%, transparent);
-    border-radius: var(--radius-small);
-    font-size: 0.9rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-sm);
   }
   .toast.above-bar {
     bottom: calc(var(--space-4) + 64px);
@@ -1068,7 +1068,7 @@
     gap: var(--space-3);
     align-items: center;
     padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     box-shadow: 0 4px 16px rgb(0 0 0 / 20%);
@@ -1077,7 +1077,7 @@
   :global(.flash) {
     outline: 3px solid var(--color-accent-text);
     outline-offset: 2px;
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     transition: outline-color 1.5s;
   }
 </style>

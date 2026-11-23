@@ -94,7 +94,7 @@
 
 <style>
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .latest {
     display: grid;
@@ -106,7 +106,7 @@
     flex-direction: column;
   }
   .latest strong {
-    font-size: 1.4em;
+    font-size: var(--fs-md);
     font-variant-numeric: tabular-nums;
   }
   .ranges {

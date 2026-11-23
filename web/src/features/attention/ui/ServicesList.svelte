@@ -118,7 +118,7 @@
     gap: var(--space-3);
     padding: var(--space-2) var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .dot {
     width: 10px;
@@ -138,7 +138,7 @@
     min-width: 0;
   }
   .small {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
   .summary {
     font-weight: 600;

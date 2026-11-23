@@ -140,11 +140,11 @@
     white-space: nowrap;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     margin: 0 0 var(--space-1);
   }
   .tiny {
-    font-size: max(0.8rem, 0.7em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     margin: var(--space-1) 0 0;
   }
 </style>

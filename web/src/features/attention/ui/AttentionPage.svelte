@@ -97,7 +97,7 @@
     gap: var(--space-2);
   }
   .count {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     padding: 0 var(--space-2);
     border-radius: 999px;
@@ -118,7 +118,7 @@
     gap: var(--space-3);
     padding: var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface);
   }
   .dot {
@@ -137,13 +137,13 @@
     gap: 2px;
   }
   .meta {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
   .empty {
     padding: var(--space-4);
     text-align: center;
     border: 1px dashed var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   /* Phones: the button moves under the text. */
   @media (max-width: 480px) {

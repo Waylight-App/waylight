@@ -83,7 +83,7 @@
     gap: var(--space-2);
     margin: 0 0 var(--space-2);
     padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: color-mix(in srgb, var(--color-warning) 18%, transparent);
   }
   .conflict {
@@ -105,6 +105,6 @@
     margin: var(--space-1) 0;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
 </style>

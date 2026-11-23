@@ -57,18 +57,18 @@
   }
   h3 {
     margin: 0 0 0.25rem;
-    font-size: 1rem;
+    font-size: var(--fs-sm);
   }
   h4 {
     margin: 0.75rem 0 0.25rem;
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--color-text-muted);
   }
   .intro {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
   ul {
     list-style: none;
@@ -92,7 +92,7 @@
   }
   .example {
     font: inherit;
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     padding: 0.1rem 0.5rem;
     border: 1px solid var(--color-border);
     border-radius: 999px;

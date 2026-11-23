@@ -172,14 +172,14 @@
     margin: 0;
   }
   .phase {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--color-text-muted);
   }
   .clock {
     font-family: var(--font-display);
-    font-size: 2.6rem;
+    font-size: var(--fs-lg);
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     line-height: 1.1;
@@ -230,14 +230,14 @@
     width: 60%;
     min-height: 2px;
     background: var(--color-accent);
-    border-radius: 2px 2px 0 0;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   }
   .label {
-    font-size: max(0.8rem, 0.7rem); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   figcaption {
     grid-column: 1 / -1;
-    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
 </style>

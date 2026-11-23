@@ -125,7 +125,7 @@
     margin: var(--space-2) 0 0;
     padding: 0;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   li {
     display: flex;
@@ -144,7 +144,7 @@
     font-weight: 600;
   }
   .meta {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   .none {

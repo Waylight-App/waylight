@@ -18,8 +18,8 @@
   .warning {
     margin: calc(-1 * var(--space-1)) 0 var(--space-2);
     padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-small);
-    font-size: 0.85rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-xs);
     background: color-mix(in srgb, var(--color-warning) 18%, transparent);
   }
 </style>

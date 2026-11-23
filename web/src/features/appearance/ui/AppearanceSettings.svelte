@@ -181,7 +181,7 @@
   .bg-preview {
     width: 5rem;
     aspect-ratio: 16 / 10;
-    border-radius: var(--radius-small, 6px);
+    border-radius: var(--radius-sm);
     border: 1px solid var(--color-border);
     background-color: var(--color-bg);
     background-size: cover;
@@ -194,17 +194,17 @@
   }
   .css {
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     margin: 0;
   }
   .access {
     margin: 0 0 var(--space-3);
     padding: var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .access legend {
     padding: 0 var(--space-1);

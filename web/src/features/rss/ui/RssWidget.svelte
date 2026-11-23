@@ -134,7 +134,7 @@
   }
   .summarise :global(.btn-icon) {
     padding: 0 var(--space-1);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .list {
     list-style: none;
@@ -168,10 +168,10 @@
     color: var(--color-text-muted);
   }
   .meta {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
   .later {
     padding: 0 var(--space-1);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

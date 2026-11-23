@@ -18,7 +18,7 @@
 <style>
   .locked {
     padding: var(--space-3);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     background: var(--color-surface-2, rgba(127, 127, 127, 0.12));
   }
   .locked p {

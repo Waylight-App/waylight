@@ -106,7 +106,7 @@
   .code {
     margin: var(--space-3) 0;
     font-family: var(--font-mono);
-    font-size: 1.8rem;
+    font-size: var(--fs-lg);
     letter-spacing: 0.15em;
     text-align: center;
   }
@@ -117,7 +117,7 @@
     flex-wrap: wrap;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     text-align: center;
   }
 </style>

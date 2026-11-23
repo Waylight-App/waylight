@@ -185,7 +185,7 @@
 <style>
   .health {
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     display: grid;
     gap: var(--space-1);
     margin: var(--space-2) 0;
@@ -197,7 +197,7 @@
   }
   .types .small {
     flex-basis: 100%;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .search {
     display: flex;

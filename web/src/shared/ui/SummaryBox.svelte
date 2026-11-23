@@ -59,8 +59,8 @@
     padding: var(--space-2);
     border-left: 3px solid var(--color-accent);
     background: var(--color-surface-2);
-    border-radius: var(--radius-small);
-    font-size: 0.9em;
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-sm);
   }
   .summary p {
     margin: 0;
@@ -70,6 +70,6 @@
     margin-top: var(--space-1);
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

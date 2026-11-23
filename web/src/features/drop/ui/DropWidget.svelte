@@ -150,7 +150,7 @@
 <style>
   .zone {
     border: 2px dashed transparent;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .zone.over {
     border-color: var(--color-accent);
@@ -205,14 +205,14 @@
     white-space: nowrap;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .thumb {
     flex: none;
     width: 48px;
     height: 48px;
     object-fit: cover;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2);
   }
 </style>

@@ -148,7 +148,7 @@
     margin: 0;
     padding: var(--space-1) var(--space-3);
     text-align: center;
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
     background: var(--color-accent);
     color: var(--color-accent-contrast);
   }
