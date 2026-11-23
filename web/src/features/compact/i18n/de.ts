@@ -26,6 +26,7 @@ export const de: Record<keyof typeof en, string> = {
   'compact.example.adguard': '12 % blockiert',
   'compact.example.wireguard': '2 von 3 Peers verbunden',
   'compact.example.weather': '7° · Bedeckt',
+  'compact.example.tonight': '19:42 · 7°',
   'compact.example.electricity': '28 ct jetzt · Günstig ab 14:00',
   'compact.example.smarthome': 'Kaffeemaschine · Aus',
 };

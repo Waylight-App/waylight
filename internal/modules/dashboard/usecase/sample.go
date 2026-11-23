@@ -33,25 +33,26 @@ func EverydayLayout(weatherConfig string) []SampleTab {
 	return SampleLayout(weatherConfig)[:1]
 }
 
-// SampleLayout returns the layout shown after the first setup. It presents
-// every widget kind; weatherConfig is the JSON configuration of the weather
-// widget (location chosen by the operator).
+// SampleLayout returns the layout shown after the first setup; weatherConfig
+// is the JSON configuration of the Tonight card (location chosen by the
+// operator). Widths vary on purpose (#769): Home opens with the wide Tonight
+// card and goes on with three, four and five column widgets; Server puts
+// one wide chart next to a list, then equal lists.
 func SampleLayout(weatherConfig string) []SampleTab {
 	return []SampleTab{
 		{Name: "Home", Widgets: []SampleWidget{
-			{Kind: "clock", X: 0, Y: 0, W: 3, H: 3},
-			{Kind: "weather", X: 3, Y: 0, W: 4, H: 4, Config: weatherConfig},
+			{Kind: "tonight", X: 0, Y: 0, W: 7, H: 4, Config: weatherConfig},
 			{Kind: "todos", X: 7, Y: 0, W: 5, H: 4},
-			{Kind: "notes", X: 0, Y: 3, W: 3, H: 6, Config: `{"scope":"pinned"}`},
+			{Kind: "notes", X: 0, Y: 4, W: 3, H: 5, Config: `{"scope":"pinned"}`},
 			{Kind: "bookmarks", X: 3, Y: 4, W: 4, H: 5},
-			{Kind: "rss", X: 7, Y: 4, W: 5, H: 6, Config: `{"unreadOnly":true,"limit":15}`},
-			{Kind: "calendar", X: 0, Y: 9, W: 3, H: 3, Config: `{"days":7}`},
+			{Kind: "rss", X: 7, Y: 4, W: 5, H: 5, Config: `{"unreadOnly":true,"limit":15}`},
+			{Kind: "calendar", X: 0, Y: 9, W: 4, H: 3, Config: `{"days":7}`},
 		}},
 		{Name: "Server", Widgets: []SampleWidget{
-			{Kind: "services", X: 0, Y: 0, W: 12, H: 2},
-			{Kind: "system", X: 0, Y: 2, W: 4, H: 5},
-			{Kind: "docker", X: 4, Y: 2, W: 4, H: 7},
-			{Kind: "adguard", X: 8, Y: 2, W: 4, H: 4},
+			{Kind: "system", X: 0, Y: 0, W: 8, H: 5},
+			{Kind: "services", X: 8, Y: 0, W: 4, H: 5},
+			{Kind: "docker", X: 0, Y: 5, W: 6, H: 5},
+			{Kind: "adguard", X: 6, Y: 5, W: 6, H: 5},
 		}},
 	}
 }

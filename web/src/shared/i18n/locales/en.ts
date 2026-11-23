@@ -1860,6 +1860,8 @@ export const en = {
   'countdown.invalid_title': 'The title must be between 1 and 120 characters long.',
   'countdown.invalid_date': 'Enter a date.',
   'countdown.invalid_time': 'Enter a time like 07:00.',
+  'widget.tonight.title': 'Tonight',
+  'widget.tonight.description': 'Time, date and the current weather with the next days in one card',
   'widget.focus.title': 'Focus timer',
   'widget.focus.description': 'Pomodoro timer with breaks and a weekly count of focus sessions',
   'focus.phase.work': 'Focus',

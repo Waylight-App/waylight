@@ -82,4 +82,10 @@ export const serverDe: Record<ServerMessageKey, string> = {
   // The forecast for a place: today, the next hours and days, and in Germany official weather warnings.
   srv_fef0c29ef6184c8d:
     'Die Vorhersage für einen Ort: heute, die nächsten Stunden und Tage und in Deutschland die amtlichen Wetterwarnungen.',
+  // One card with the time, the date, the current weather, the active weather warning and the next four days.
+  srv_86d4e80701f9be1d:
+    'Eine Karte mit Uhrzeit, Datum, aktuellem Wetter, der aktiven Wetterwarnung und den nächsten vier Tagen.',
+  // Open the widget settings and pick a saved place or search for one. Small and strip tiles show the time, the temperature and a dot for a warning.
+  srv_be0f83762b83b0e6:
+    'Öffne die Widget-Einstellungen und wähle einen gespeicherten Ort oder suche einen. Kleine Kacheln und Streifen zeigen Uhrzeit, Temperatur und einen Punkt bei einer Warnung.',
 };

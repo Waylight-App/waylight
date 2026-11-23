@@ -15,6 +15,12 @@ func (m *Module) WidgetHelp() []modules.WidgetHelp {
 			Docs:  "features/#information",
 		},
 		{
+			Kind:  "tonight",
+			Shows: kernel.NewText("One card with the time, the date, the current weather, the active weather warning and the next four days."),
+			SetUp: kernel.NewText("Open the widget settings and pick a saved place or search for one. Small and strip tiles show the time, the temperature and a dot for a warning."),
+			Docs:  "features/#information",
+		},
+		{
 			Kind:  "radar",
 			Shows: kernel.NewText("A rain radar map of the last and next hours around a place in Germany."),
 			SetUp: kernel.NewText("Open the widget settings and pick the place the map should centre on."),

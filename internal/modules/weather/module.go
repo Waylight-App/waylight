@@ -46,7 +46,7 @@ func (m *Module) Name() string { return "weather" }
 func (m *Module) DataKind() modules.DataKind { return modules.InstanceData }
 
 // WidgetKinds implements modules.Module.
-func (m *Module) WidgetKinds() []string { return []string{"weather", "radar"} }
+func (m *Module) WidgetKinds() []string { return []string{"weather", "radar", "tonight"} }
 
 // RegisterRoutes implements modules.Module.
 func (m *Module) RegisterRoutes(r modules.Router) {

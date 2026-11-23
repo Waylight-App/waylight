@@ -249,7 +249,14 @@
   {#snippet compact(widget: Widget, opts: { strip: boolean })}
     {@const def = definitionFor(widget.kind)}
     {@const module = compactModule(widget)}
-    {#if def && module}
+    {#if def?.compactView && module}
+      <LazyComponent
+        renderer={def.compactView}
+        props={{ ...def.compactView.props(widget.config, container), strip: opts.strip }}
+        scheduler={container.refresh}
+        label={def.type.title}
+      />
+    {:else if def && module}
       <LazyComponent
         renderer={compactView}
         props={{

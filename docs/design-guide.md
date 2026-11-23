@@ -52,8 +52,15 @@ else is neutral: surfaces, borders and text come from one tinted ramp.
 | `--color-accent`          | `#f2b441` | `#f2b441` |
 | `--color-accent-contrast` | `#1a1206` | `#1a1206` |
 | `--color-accent-text`     | `#f2b441` | `#935800` |
+| `--color-lit`             | `#fff3d6` | `#1b2238` |
+| `--color-lit-text`        | `#1b2238` | `#f2efe8` |
+| `--color-lit-muted`       | `#525c7c` | `#a7aebb` |
+| `--color-lit-accent`      | `#855000` | `#f2b441` |
 
 Text and the accent used as text reach 4.5:1 on the surface they sit on.
+The `--color-lit-*` tokens belong to the lit card (see Surfaces) and keep that
+ratio on it; `--color-lit-warning` and `--color-lit-danger` colour the dot of a
+weather warning there.
 Status colours carry meaning only: green for healthy, amber for a warning,
 red for a failure. A status is always a dot plus a word, never colour alone.
 
@@ -64,8 +71,8 @@ from a 1 px border. There is no glow, no coloured shadow and no gradient
 from one hue to another. The page background is a single colour.
 
 Each screen has at most one lit card, such as the clock and weather card on
-the Home tab. It inverts the scheme: warm paper (`#fff3d6` with ink
-`#1b2238`) on the night theme, navy on the paper theme. Nothing else on the
+the Home tab (the Tonight widget). It inverts the scheme: warm paper
+(`#fff3d6` with ink `#1b2238`) on the night theme, navy on the paper theme. Nothing else on the
 screen competes with it.
 
 ## Icons
