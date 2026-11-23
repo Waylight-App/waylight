@@ -3,6 +3,8 @@
   import type { OnboardingStep } from './plugins/loader';
   import PluginHost from './plugins/PluginHost.svelte';
   import { definitionFor, widgetDefinitions } from './widgets';
+  import { setupWalk } from '../shared/setup/walk.svelte';
+  import { DOCS_URL } from '../shared/product';
   import { wizardSearch } from './wizardSearch';
   import type { Appearance } from '../features/appearance';
   import type { Personal } from '../features/onboarding/domain/profile';
@@ -110,6 +112,15 @@
     extra: pluginStep,
     search,
     widgetName: (kind) => definitionFor(kind)?.type.title ?? kind,
+    widgetIcon: (kind) => definitionFor(kind)?.icon,
+    setupHelp: async (kind) => {
+      const help = await container.help.widget(kind).catch(() => undefined);
+      return {
+        needs: help?.setUp ?? definitionFor(kind)?.type.description ?? '',
+        docsUrl: help?.docsUrl ?? DOCS_URL,
+      };
+    },
+    startSetup: (kinds) => setupWalk.start(kinds),
   });
 </script>
 

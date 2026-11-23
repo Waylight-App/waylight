@@ -33,5 +33,5 @@ export const stepRegistry: Record<
   appearance: { glow: 'top', centered: false, footer: 'actions', component: AppearanceStep },
   widgets: { glow: 'top', centered: false, footer: 'actions', component: WidgetsStep },
   search: { glow: 'top', centered: false, footer: 'actions', component: SearchStep },
-  done: { glow: 'middle', centered: true, footer: 'hint', component: DoneStep, hint: 'wizard.done.foot' },
+  done: { glow: 'middle', centered: true, footer: 'hint', component: DoneStep },
 };

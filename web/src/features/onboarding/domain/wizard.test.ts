@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculate } from '../../search/domain/calc/calc';
 import {
+  doneProgress,
   exampleSetOf,
   laterSetup,
   searchExamples,
@@ -109,5 +110,20 @@ describe('searchExamples', () => {
     for (const lang of ['de', 'en'] as const)
       for (const q of searchExamples(lang, 'home', new Set()).slice(0, 2))
         expect(calculate(q)).not.toBeNull();
+  });
+});
+
+describe('doneProgress', () => {
+  it('lists the widgets that still need the user and those that are ready', () => {
+    expect(doneProgress(['todos', 'waste', 'immich', 'weather', 'calendar'], true)).toEqual({
+      open: [
+        { kind: 'waste', action: 'set_up' },
+        { kind: 'immich', action: 'connect' },
+      ],
+      ready: ['todos', 'weather', 'calendar'],
+    });
+  });
+  it('counts the weather as open without a place', () => {
+    expect(doneProgress(['weather'], false).open).toEqual([{ kind: 'weather', action: 'set_up' }]);
   });
 });

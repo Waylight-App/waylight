@@ -2,6 +2,7 @@
   import EmptyState from '../../../shared/ui/EmptyState.svelte';
   import WasteSetup from './WasteSetup.svelte';
   import { useMaySetUp } from '../../../shared/setup/setup';
+  import { takeSetupTurn } from '../../../shared/setup/walk.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -23,6 +24,10 @@
   let now = $state(new Date());
   let setupOpen = $state(false);
   let reload = $state(0);
+  const endTurn = takeSetupTurn(
+    () => allowed && unconfigured,
+    () => (setupOpen = true),
+  );
 
   $effect(() => {
     void reload;
@@ -53,10 +58,14 @@
   {#if setupOpen}
     <WasteSetup
       {waste}
-      onclose={() => (setupOpen = false)}
+      onclose={() => {
+        setupOpen = false;
+        endTurn();
+      }}
       ondone={() => {
         setupOpen = false;
         reload++;
+        endTurn();
       }}
     />
   {/if}

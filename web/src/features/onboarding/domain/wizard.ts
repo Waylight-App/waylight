@@ -118,6 +118,30 @@ export function laterSetup(kind: string, hasPlace: boolean): LaterSetup | undefi
   return LATER_SETUP[kind];
 }
 
+/** A created widget that still needs the user, for the done page. */
+export interface OpenWidget {
+  kind: string;
+  action: LaterSetup;
+}
+
+/**
+ * Splits the widgets the wizard created into those that still need setting
+ * up and those that are ready, by the rule that decides the not-set-up tile.
+ */
+export function doneProgress(
+  created: readonly string[],
+  hasPlace: boolean,
+): { open: OpenWidget[]; ready: string[] } {
+  const open: OpenWidget[] = [];
+  const ready: string[] = [];
+  for (const kind of created) {
+    const action = laterSetup(kind, hasPlace);
+    if (action) open.push({ kind, action });
+    else ready.push(kind);
+  }
+  return { open, ready };
+}
+
 /** A query offered in the search step, with the module it needs, if any. */
 export interface SearchExample {
   query: string;

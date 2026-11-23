@@ -52,6 +52,12 @@ export interface WizardContext {
   };
   /** Title of a widget kind. */
   widgetName: (kind: string) => string;
+  /** Icon of a widget kind. */
+  widgetIcon: (kind: string) => IconName | undefined;
+  /** What a widget needs to be set up and where the documentation explains it. */
+  setupHelp: (kind: string) => Promise<{ needs: string; docsUrl: string } | undefined>;
+  /** Hands the widgets that still need setting up to the dashboard, which leads through them. */
+  startSetup: (kinds: string[]) => void;
 }
 
 /** What a step can ask the shell to do. */
