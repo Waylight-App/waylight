@@ -1,0 +1,45 @@
+name: Accessibility finding
+description: A problem found with a screen reader or the keyboard (part of the manual audit, #354)
+labels: ["accessibility", "type: bug"]
+body:
+  - type: input
+    id: tech
+    attributes:
+      label: Screen reader, browser and versions
+      placeholder: NVDA 2025.3 + Firefox 140, Windows 11
+    validations:
+      required: true
+  - type: input
+    id: flow
+    attributes:
+      label: Flow or view
+      description: For example "quick search", "move a widget in edit mode", "settings > security".
+    validations:
+      required: true
+  - type: textarea
+    id: heard
+    attributes:
+      label: What did you hear or do?
+      description: What the screen reader said, or where the focus went.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1. 
+        2. 
+    validations:
+      required: true
+  - type: input
+    id: audit
+    attributes:
+      label: Audit issue
+      value: "Refs #354"

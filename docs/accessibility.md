@@ -70,6 +70,19 @@ The `?` overview in the app is the reference; this table can lag behind it. Dial
   - The same message is not repeated within five minutes, so polling widgets cannot flood it.
 - Form errors use `role="alert"`.
 
+## Testing with a screen reader
+
+Automated checks cannot judge reading order or whether an announcement is useful, so the manual audit ([#354](https://github.com/Waylight-App/waylight/issues/354)) needs a person with a screen reader. The pairs to cover are NVDA with Firefox on Windows, and VoiceOver with Safari on macOS or iOS.
+
+1. Start a local install (`docker compose up`, see [getting started](getting-started.md)) or open the public demo.
+2. Turn the screen reader on and use only the keyboard (or the screen reader's touch gestures on iOS).
+3. Go through one flow from the checklist in #354, for example quick search: `Ctrl+K`, type a word, listen to the results, pick one with `Enter`.
+4. For each problem, open an issue with the *Accessibility finding* form. Say which screen reader, browser and version you used, what you heard and what you expected. Short notes are enough.
+
+Useful things to listen for: a button or field read without a name, a dialog that does not take the focus or does not give it back on `Esc`, a status change that is not announced, and an announcement that repeats.
+
+When the audit is done, the result (readers, browsers, date) goes under *Known limitations* below.
+
 ## Motion
 
 With _reduce motion_ switched on in the operating system:
