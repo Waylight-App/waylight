@@ -45,10 +45,12 @@ test('first start asks the essentials, offers the templates and Family replaces 
     'aria-pressed',
     'true',
   );
-  await expect(wizard.getByRole('button', { name: 'Weather', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'false',
-  );
+  // A tile can be switched off and on again.
+  const calendar = wizard.getByRole('button', { name: 'Calendar', exact: true });
+  await calendar.click();
+  await expect(calendar).toHaveAttribute('aria-pressed', 'false');
+  await calendar.click();
+  await expect(calendar).toHaveAttribute('aria-pressed', 'true');
   await expect(wizard.getByText('You can change everything anytime')).toBeVisible();
   // More opens the add-widget dialog, which marks what is chosen already.
   await wizard.getByRole('button', { name: 'More' }).click();
