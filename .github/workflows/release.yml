@@ -159,6 +159,56 @@ jobs:
           npx --yes web-ext@8.3.0 sign --source-dir . --artifacts-dir ../dist/amo \
             --channel listed --amo-metadata ../store/amo-metadata.json --approval-timeout 0 \
             --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET"
+      - name: Submit the extension to the Chrome Web Store (#290)
+        # Runs once the maintainer has created the Web Store item and an
+        # OAuth client (steps in docs/development.md) and stored the four
+        # secrets below; without them it skips.
+        env:
+          EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+        working-directory: extension
+        run: |
+          if [ -z "$EXTENSION_ID" ] || [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ] || [ -z "$REFRESH_TOKEN" ]; then
+            echo "Chrome Web Store credentials not set; skipping the store submission"
+            exit 0
+          fi
+          npx --yes chrome-webstore-upload-cli@3.3.1 upload --source dist/waylight-extension-*.zip --auto-publish
+      - name: Submit the extension to Microsoft Edge Add-ons (#290)
+        # Runs once the maintainer has created the Edge product and an API
+        # key (steps in docs/development.md) and stored the three secrets
+        # below; without them it skips. The package is the same zip as for
+        # Chrome.
+        env:
+          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+        working-directory: extension
+        run: |
+          if [ -z "$EDGE_PRODUCT_ID" ] || [ -z "$EDGE_CLIENT_ID" ] || [ -z "$EDGE_API_KEY" ]; then
+            echo "Edge Add-ons credentials not set; skipping the store submission"
+            exit 0
+          fi
+          api="https://api.addons.microsoftedge.microsoft.com/v1/products/$EDGE_PRODUCT_ID/submissions"
+          auth="Authorization: ApiKey $EDGE_API_KEY"
+          client="X-ClientID: $EDGE_CLIENT_ID"
+          # The upload is processed asynchronously: wait for it, then submit
+          # the draft for review.
+          op=$(curl -fsS -D - -o /dev/null -X POST "$api/draft/package" -H "$auth" -H "$client" \
+            -H "Content-Type: application/zip" --data-binary @dist/waylight-extension-*.zip \
+            | tr -d '\r' | sed -n 's/^[Ll]ocation: *//p')
+          for _ in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            status=$(curl -fsS "$api/draft/package/operations/${op##*/}" -H "$auth" -H "$client" \
+              | node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(0)).status)')
+            [ "$status" = "InProgress" ] || break
+            sleep 5
+          done
+          if [ "$status" != "Succeeded" ]; then
+            echo "Edge package upload ended with status: $status" >&2
+            exit 1
+          fi
+          curl -fsS -X POST "$api" -H "$auth" -H "$client" -H "Content-Length: 0"
 
   # Native .deb packages for amd64 and arm64 (ADR 0015), attached to the release.
   packages:

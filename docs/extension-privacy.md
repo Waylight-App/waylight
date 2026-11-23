@@ -1,6 +1,6 @@
 # Privacy of the browser extension
 
-This page describes what the Waylight browser extension stores and sends. It is the privacy statement of the listing on addons.mozilla.org.
+This page describes what the Waylight browser extension stores and sends. It is the privacy statement of the store listings on addons.mozilla.org, the Chrome Web Store and Microsoft Edge Add-ons.
 
 ## What it stores
 
@@ -29,7 +29,7 @@ Apart from that, nothing is sent to the developers of Waylight or to any third p
 
 The extension has no access to other websites and injects no scripts into pages.
 
-Firefox shows these data types when you install the add-on: *browsing activity* (the URL and title of a page you save). It is declared because the data leaves the browser, even though it only goes to your own server.
+Firefox shows these data types when you install the add-on: *browsing activity* (the URL and title of a page you save). The Chrome Web Store and Edge Add-ons list the same data as *web history*. It is declared because the data leaves the browser, even though it only goes to your own server.
 
 ## Questions
 
