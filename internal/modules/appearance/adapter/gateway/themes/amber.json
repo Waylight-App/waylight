@@ -5,20 +5,20 @@
   "tokens": {
     "--font-sans": "figtree",
     "--font-display": "fraunces",
-    "--radius": "14px",
-    "--radius-small": "10px",
+    "--radius": "12px",
+    "--radius-small": "8px",
     "--color-accent": "#f2b441",
     "--color-accent-contrast": "#1a1206"
   },
   "variants": {
     "light": {
-      "--color-bg": "#fff3d6",
-      "--color-surface": "#fffbf0",
-      "--color-surface-2": "#fdf0cf",
-      "--color-border": "#ead9ae",
+      "--color-bg": "#f6f2e9",
+      "--color-surface": "#fffdf8",
+      "--color-surface-2": "#f1ebdc",
+      "--color-border": "#e4dccb",
       "--color-text": "#1b2238",
-      "--color-text-muted": "#6b5f45",
-      "--color-accent-text": "#9c5d00",
+      "--color-text-muted": "#5f6988",
+      "--color-accent-text": "#935800",
       "--color-danger": "#b3261e",
       "--color-success": "#1f7a45",
       "--color-warning": "#8a5a00",
@@ -28,7 +28,7 @@
     "dark": {
       "--color-bg": "#131829",
       "--color-surface": "#1b2238",
-      "--color-surface-2": "#222a44",
+      "--color-surface-2": "#232b45",
       "--color-border": "#2e3650",
       "--color-text": "#f2efe8",
       "--color-text-muted": "#a7aebb",
@@ -37,7 +37,7 @@
       "--color-success": "#8fd6a8",
       "--color-warning": "#f5c04e",
       "--shadow": "0 1px 2px #00000040",
-      "--glow": "0 0 80px #f2b4412e"
+      "--glow": "none"
     }
   }
 }

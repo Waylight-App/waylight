@@ -81,11 +81,7 @@ const light = rules.get(':root') ?? {};
 const dark = { ...light, ...rules.get(":root[data-theme='dark']") };
 
 describe('contrast of the light and dark tokens (#113)', () => {
-  // --color-accent-text is var(--color-accent) unless a theme sets it (#504).
-  const schemes = {
-    light: { ...light, '--color-accent-text': light['--color-accent'] ?? '' },
-    dark: { ...dark, '--color-accent-text': dark['--color-accent'] ?? '' },
-  };
+  const schemes = { light, dark };
 
   it.each(Object.entries(schemes))('%s meets WCAG AA (4.5:1) for text', (_name, t) => {
     expect(failing(t, 4.5)).toEqual([]);

@@ -92,7 +92,7 @@
     <span class="color">
       <input
         type="color"
-        value={form.accentColor || '#3365e8'}
+        value={form.accentColor || '#f2b441'}
         disabled={form.themeLocked}
         oninput={(e) => (form.accentColor = e.currentTarget.value)}
       />

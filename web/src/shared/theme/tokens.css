@@ -3,25 +3,24 @@
  * user CSS can restyle the whole app by overriding them.
  */
 :root {
-  --color-bg: #eef1f6;
-  --color-surface: #ffffff;
-  --color-surface-2: #f5f7fb;
-  --color-border: #dde2ec;
-  --color-text: #1b2130;
-  --color-text-muted: #5d6679;
-  --color-accent: #3365e8; /* white text on it: 5.0:1 (WCAG AA) */
-  --color-accent-contrast: #ffffff;
+  --color-bg: #f6f2e9;
+  --color-surface: #fffdf8;
+  --color-surface-2: #f1ebdc;
+  --color-border: #e4dccb;
+  --color-text: #1b2238;
+  --color-text-muted: #5f6988;
+  --color-accent: #f2b441; /* ink text on it: 10:1 (WCAG AA) */
+  --color-accent-contrast: #1a1206;
   /*
    * The accent as text or icon colour on surfaces. Separate from the fill
    * colour because a bright accent (amber, yellow) that works as a button
-   * background is unreadable as text on a light surface. It follows the
-   * accent unless a theme sets it.
+   * background is unreadable as text on a light surface. A theme may set it.
    */
-  --color-accent-text: var(--color-accent);
+  --color-accent-text: #935800;
   /* Status colors are also used as text: 4.5:1 on the surfaces (#113). */
-  --color-danger: #c93434;
+  --color-danger: #bd2f2f;
   --color-success: #18794e;
-  --color-warning: #9a6200;
+  --color-warning: #8a5700;
   /*
    * Healthy status marks such as an online dot. Neutral by default, so a
    * dashboard where all is well stays calm and colour is left for attention
@@ -79,14 +78,15 @@
 }
 
 :root[data-theme='dark'] {
-  --color-bg: #10141c;
-  --color-surface: #1a202b;
-  --color-surface-2: #222937;
-  --color-border: #2e3646;
-  --color-text: #e6e9f0;
-  --color-text-muted: #9aa3b5;
-  --color-accent: #6c93ff;
-  --color-accent-contrast: #0b1020;
+  --color-bg: #131829;
+  --color-surface: #1b2238;
+  --color-surface-2: #232b45;
+  --color-border: #2e3650;
+  --color-text: #f2efe8;
+  --color-text-muted: #a7aebb;
+  --color-accent: #f2b441;
+  --color-accent-contrast: #1a1206;
+  --color-accent-text: #f2b441;
   --color-danger: #ff6b6b;
   --color-success: #3dd68c;
   --color-warning: #f5c04e;
