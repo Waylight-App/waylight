@@ -41,8 +41,14 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await expect(wizard.getByRole('button', { name: 'Family' })).toHaveAttribute('aria-pressed', 'true');
   // The suggestions follow the template: its core is chosen, a few more are offered.
   await expect(wizard.getByRole('heading', { name: 'Suggestions for Family' })).toBeVisible();
-  await expect(wizard.getByRole('button', { name: 'Calendar', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await expect(wizard.getByRole('button', { name: 'Weather', exact: true })).toHaveAttribute('aria-pressed', 'false');
+  await expect(wizard.getByRole('button', { name: 'Calendar', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(wizard.getByRole('button', { name: 'Weather', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
   await expect(wizard.getByText('You can change everything anytime')).toBeVisible();
   // More opens the add-widget dialog, which marks what is chosen already.
   await wizard.getByRole('button', { name: 'More' }).click();
