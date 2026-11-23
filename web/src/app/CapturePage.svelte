@@ -122,7 +122,7 @@
     padding: var(--space-4, 1.5rem) var(--space-3);
   }
   h1 {
-    font-size: 1.3em;
+    font-size: var(--fs-md);
     margin: 0 0 var(--space-3);
   }
   form {
@@ -132,7 +132,7 @@
   .targets {
     display: inline-flex;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     overflow: hidden;
     justify-self: start;
   }

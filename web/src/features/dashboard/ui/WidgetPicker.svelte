@@ -220,7 +220,7 @@
   }
   h3 {
     margin: 0 0 var(--space-2);
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--color-text-muted);
@@ -245,7 +245,7 @@
     position: relative;
     text-align: left;
     border: 1px solid var(--color-border, rgba(127, 127, 127, 0.3));
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2);
     color: inherit;
     font: inherit;
@@ -274,7 +274,7 @@
     border-radius: 50%;
     background: var(--color-accent);
     color: var(--color-accent-contrast);
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
     font-weight: 700;
     line-height: 20px;
     text-align: center;
@@ -293,7 +293,7 @@
   }
   .desc {
     grid-column: 2;
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
     overflow: hidden;
     display: -webkit-box;
@@ -312,7 +312,7 @@
     height: 28px;
     padding: 0;
     border: none;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: transparent;
     color: var(--color-text-muted);
     cursor: pointer;
@@ -335,7 +335,7 @@
   }
   .sizes-head h3 {
     margin: 0;
-    font-size: 1rem;
+    font-size: var(--fs-sm);
     text-transform: none;
     letter-spacing: normal;
     color: var(--color-text);
@@ -353,7 +353,7 @@
     padding: var(--space-2);
     text-align: left;
     border: 1px solid var(--color-border, rgba(127, 127, 127, 0.3));
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2);
     color: inherit;
     font: inherit;
@@ -379,14 +379,14 @@
     padding: 6px;
     overflow: hidden;
     border: 1px solid var(--color-border, rgba(127, 127, 127, 0.3));
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface);
-    font-size: 0.7rem;
+    font-size: var(--fs-xs);
   }
   .mini-title {
     color: var(--color-text-muted);
     text-transform: uppercase;
-    font-size: 0.6rem;
+    font-size: var(--fs-xs);
   }
   .mini-title,
   .mini-state {
@@ -403,7 +403,7 @@
   }
   .skeleton {
     height: 4px;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     background: var(--color-border, rgba(127, 127, 127, 0.3));
   }
   .skeleton.short {

@@ -124,7 +124,7 @@
     align-items: center;
     gap: var(--space-2);
     margin: var(--space-3) 0;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   .divider::before,

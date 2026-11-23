@@ -161,7 +161,7 @@
     margin: var(--space-2) 0 0;
     display: grid;
     gap: var(--space-1);
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
   .guests li {
     display: flex;
@@ -186,6 +186,6 @@
     background: var(--color-border);
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

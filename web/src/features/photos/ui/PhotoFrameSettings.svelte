@@ -204,7 +204,7 @@
   }
   fieldset {
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm, 6px);
+    border-radius: var(--radius-sm);
     padding: var(--space-2);
     display: grid;
     gap: var(--space-2);
@@ -236,7 +236,7 @@
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2, transparent);
   }
   .tools {
@@ -247,7 +247,7 @@
     width: 100%;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     margin: 0;
   }
 </style>

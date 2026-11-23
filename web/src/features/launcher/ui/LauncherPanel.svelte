@@ -198,7 +198,7 @@
     padding: 0 var(--space-3);
     height: 2.6rem;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     color: var(--color-text-muted);
   }
   .filter:focus-within {
@@ -243,7 +243,7 @@
   }
   h3 {
     margin: 0;
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--color-text-muted);
@@ -253,7 +253,7 @@
     border: none;
     background: none;
     padding: 0;
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
     cursor: pointer;
   }
@@ -275,7 +275,7 @@
     gap: 2px;
     padding: var(--space-2) var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     color: inherit;
     text-decoration: none;
   }
@@ -287,7 +287,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-1);
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   .status[data-state='offline'] {
@@ -316,7 +316,7 @@
     align-items: center;
     gap: var(--space-2);
     padding: var(--space-1);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     color: inherit;
     text-decoration: none;
   }
@@ -331,7 +331,7 @@
     border-radius: 50%;
     display: grid;
     place-items: center;
-    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     font-weight: 600;
     color: var(--color-accent-text);
     background: color-mix(in srgb, var(--color-accent) 12%, transparent);
@@ -344,7 +344,7 @@
     white-space: nowrap;
   }
   .folder {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   footer {
@@ -354,7 +354,7 @@
     gap: var(--space-2);
     padding-top: var(--space-2);
     border-top: 1px solid var(--color-border);
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
   .settings-link {
     border: none;

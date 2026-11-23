@@ -102,6 +102,6 @@
     align-items: flex-start;
     padding: var(--space-2);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
 </style>

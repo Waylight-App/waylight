@@ -130,12 +130,12 @@
     min-width: 0;
   }
   .title {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   .stat {
     font-family: var(--font-display);
-    font-size: 2rem;
+    font-size: var(--fs-lg);
     font-weight: 600;
     line-height: 1.1;
   }
@@ -148,7 +148,7 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
   img {
     display: block;

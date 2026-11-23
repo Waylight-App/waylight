@@ -814,7 +814,7 @@
   .offline {
     margin: 0 0 var(--space-3);
     padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: color-mix(in srgb, var(--color-warning) 22%, transparent);
   }
   /* Top bar (#189): brand left, information centred, actions right. */
@@ -916,7 +916,7 @@
     .center {
       grid-column: 1 / -1;
       grid-row: 2;
-      font-size: 0.85rem;
+      font-size: var(--fs-xs);
     }
   }
   @media (max-width: 600px) {

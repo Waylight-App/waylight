@@ -28,7 +28,7 @@
   .glyph {
     display: grid;
     place-items: center;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2);
     font-weight: 600;
   }

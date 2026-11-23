@@ -79,9 +79,9 @@
     align-items: center;
     margin: var(--space-3) 0 0;
     padding: var(--space-2);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     background: var(--color-surface-2, rgba(127, 127, 127, 0.12));
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
   .hint span {
     flex: 1;

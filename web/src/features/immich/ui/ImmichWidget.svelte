@@ -116,10 +116,10 @@
     width: 100%;
     aspect-ratio: 1;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: var(--color-border);
   }
   .small {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
 </style>

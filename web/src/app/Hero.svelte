@@ -228,7 +228,7 @@
   }
   h1 {
     margin: 0;
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-size: var(--fs-lg);
     font-weight: 700;
     text-align: center;
     overflow-wrap: anywhere; /* a long name wraps instead of widening the page */
@@ -266,14 +266,14 @@
     border: none;
     background: none;
     font: inherit;
-    font-size: 1.05rem;
+    font-size: var(--fs-sm);
     color: var(--color-text);
     outline: none;
   }
   kbd {
-    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     border: 1px solid var(--color-border);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     padding: 0 6px;
     white-space: nowrap;
   }

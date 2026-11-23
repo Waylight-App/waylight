@@ -33,7 +33,7 @@
     gap: var(--space-3);
     align-items: flex-start;
     padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     font-weight: 600;
     background: color-mix(in srgb, var(--color-danger) 14%, transparent);
     color: var(--color-danger);
@@ -56,6 +56,6 @@
     width: 100%;
     aspect-ratio: 1;
     object-fit: cover;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
 </style>

@@ -202,7 +202,7 @@
     align-items: center;
   }
   .small {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     margin: 0;
   }
   .sr-only {

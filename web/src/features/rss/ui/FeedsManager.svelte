@@ -199,7 +199,7 @@
 <style>
   .catalogue {
     border: 1px solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     padding: var(--space-3);
     margin-bottom: var(--space-3);
   }
@@ -230,14 +230,14 @@
     overflow-wrap: anywhere;
   }
   .small {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   .badge {
     background: var(--color-accent);
     color: var(--color-accent-contrast);
     border-radius: 999px;
     padding: 0 6px;
-    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
   .add {
     display: flex;
@@ -245,7 +245,7 @@
   }
   .category {
     margin: var(--space-3) 0 0;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   .opml {

@@ -119,7 +119,7 @@
 <style>
   h3 {
     margin: var(--space-4) 0 var(--space-1);
-    font-size: 1rem;
+    font-size: var(--fs-sm);
   }
   .grid {
     display: grid;
@@ -133,6 +133,6 @@
     margin-bottom: var(--space-2);
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
 </style>

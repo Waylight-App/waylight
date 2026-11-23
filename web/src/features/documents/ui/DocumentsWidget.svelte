@@ -127,7 +127,7 @@
     white-space: nowrap;
   }
   .meta {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   li.ending .meta {
     color: var(--color-warning);

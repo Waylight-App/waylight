@@ -43,24 +43,24 @@
 <style>
   .meta {
     margin-top: 0;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .reader {
     max-width: 42rem;
     line-height: 1.6;
-    font-size: 1.05em;
+    font-size: var(--fs-sm);
     overflow-wrap: anywhere;
   }
   .reader :global(img) {
     max-width: 100%;
     height: auto;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .reader :global(pre) {
     overflow-x: auto;
     padding: var(--space-2);
     background: var(--color-surface-2);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .reader :global(blockquote) {
     margin: var(--space-2) 0;
@@ -79,7 +79,7 @@
     padding: 2px var(--space-1);
   }
   .reader :global(figcaption) {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
 </style>

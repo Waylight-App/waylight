@@ -195,7 +195,7 @@
   }
   fieldset {
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     display: grid;
     gap: var(--space-1);
     margin: var(--space-3) 0;
@@ -226,7 +226,7 @@
     gap: var(--space-2);
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .actions {
     display: flex;

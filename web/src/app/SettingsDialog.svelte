@@ -417,7 +417,7 @@
     color: inherit;
     font: inherit;
     padding: 6px var(--space-2);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     cursor: pointer;
   }
   .areas button.open {
@@ -425,7 +425,7 @@
   }
   .areas button.sub {
     padding-left: var(--space-6);
-    font-size: 0.92rem;
+    font-size: var(--fs-sm);
   }
   .areas button:hover,
   .list button:hover {
@@ -451,7 +451,7 @@
     margin: 0;
     padding: 0;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .list li + li {
     border-top: 1px solid var(--color-border);
@@ -472,7 +472,7 @@
   }
   .advanced p {
     margin: var(--space-1) 0 0;
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
   .advanced-attention {
     display: flex;
@@ -506,7 +506,7 @@
   .content :global(.settings-found) {
     outline: 2px solid var(--color-accent-text);
     outline-offset: 4px;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     transition: outline-color 0.3s;
   }
   /* Phones: one page at a time with a back link instead of the area column. */

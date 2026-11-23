@@ -51,7 +51,7 @@
     display: flex;
     flex-direction: column;
     background: #1f2937;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     overflow: hidden;
   }
   img {
@@ -72,7 +72,7 @@
     box-shadow: 0 0 0 2px #fff;
   }
   figcaption {
-    font-size: max(0.8rem, 0.7em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     color: #e5e7eb;
     padding: 2px 6px;
   }

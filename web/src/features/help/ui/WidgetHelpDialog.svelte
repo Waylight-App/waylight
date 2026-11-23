@@ -42,7 +42,7 @@
 <style>
   h3 {
     margin: var(--space-3) 0 var(--space-1);
-    font-size: 0.95rem;
+    font-size: var(--fs-sm);
   }
   h3:first-child {
     margin-top: 0;

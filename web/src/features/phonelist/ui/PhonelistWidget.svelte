@@ -257,13 +257,13 @@
     flex-direction: column;
   }
   .who .muted {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .how {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
   .edit-btn {
     opacity: 0;
@@ -274,15 +274,15 @@
     gap: var(--space-1);
   }
   .copy {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     padding: 0 var(--space-1);
   }
   .team {
     margin: var(--space-2) 0 0;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .book {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     opacity: 0.6;
   }
   li:hover .edit-btn,

@@ -173,10 +173,10 @@
     margin-top: var(--space-3);
   }
   h3 {
-    font-size: 1rem;
+    font-size: var(--fs-sm);
     margin: 0;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
 </style>

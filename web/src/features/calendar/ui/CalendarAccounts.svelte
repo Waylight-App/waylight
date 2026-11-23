@@ -170,11 +170,11 @@
 <style>
   h3 {
     margin: var(--space-3) 0 var(--space-1);
-    font-size: 1em;
+    font-size: inherit;
   }
   .account {
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small, 6px);
+    border-radius: var(--radius-sm);
     padding: var(--space-2);
     margin-bottom: var(--space-2);
   }
@@ -212,6 +212,6 @@
     word-break: break-all;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
 </style>

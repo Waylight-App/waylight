@@ -167,10 +167,10 @@
     width: 7rem;
   }
   .small {
-    font-size: max(0.8rem, 0.85em);
+    font-size: var(--fs-xs);
   }
   h3 {
-    font-size: 1rem;
+    font-size: var(--fs-sm);
     margin: var(--space-3) 0 var(--space-2);
   }
 </style>

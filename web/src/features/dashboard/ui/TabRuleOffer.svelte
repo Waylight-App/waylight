@@ -75,7 +75,7 @@
     margin: 0 0 var(--space-2);
     padding: var(--space-2);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .offer p {
     margin: 0;

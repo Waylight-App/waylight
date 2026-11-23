@@ -119,7 +119,7 @@
 <style>
   h3 {
     margin: var(--space-4) 0 var(--space-1);
-    font-size: 1rem;
+    font-size: var(--fs-sm);
   }
   .grid {
     list-style: none;
@@ -136,7 +136,7 @@
     gap: 2px;
     padding: var(--space-2);
     border: 2px solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     background: var(--color-surface);
     color: var(--color-text);
   }
@@ -157,25 +157,25 @@
     display: grid;
     gap: 4px;
     padding: 6px;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-bg);
   }
   .bar {
     height: 6px;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2, var(--color-surface));
   }
   .tile {
     display: grid;
     gap: 3px;
     padding: 6px;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
   }
   .line {
     height: 5px;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     background: var(--color-text);
     opacity: 0.8;
   }
@@ -186,7 +186,7 @@
   .dot {
     width: 30%;
     height: 8px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: var(--color-accent);
   }
   .name {
@@ -194,7 +194,7 @@
     font-weight: 600;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .actions {
     display: flex;

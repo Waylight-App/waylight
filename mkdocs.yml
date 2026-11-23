@@ -131,6 +131,7 @@ nav:
   - Develop:
       - Development setup: development.md
       - Developer guide: developer-guide.md
+      - Design guide: design-guide.md
       - Adding a module: adding-a-module.md
       - Architecture: architecture.md
       - Decision records:

@@ -124,17 +124,17 @@
   }
   .body {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: var(--fs-sm);
   }
   .preview {
     min-height: 12em;
     padding: var(--space-2);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .count {
     margin: var(--space-1) 0;
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   .actions {
     display: flex;

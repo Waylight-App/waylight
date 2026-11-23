@@ -236,7 +236,7 @@
   .link {
     padding: var(--space-3);
     border: 2px solid var(--color-accent);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     margin-bottom: var(--space-3);
   }
   .link code {
@@ -245,10 +245,10 @@
     margin: var(--space-2) 0;
   }
   h3 {
-    font-size: 1rem;
+    font-size: var(--fs-sm);
     margin: var(--space-4) 0 var(--space-2);
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
 </style>

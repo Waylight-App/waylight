@@ -123,7 +123,7 @@
   }
   li:not(.empty) {
     border: 1px solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     padding: var(--space-2);
     background: var(--color-surface);
   }
@@ -143,7 +143,7 @@
     margin-top: var(--space-1);
   }
   .small {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   .actions {
     display: flex;

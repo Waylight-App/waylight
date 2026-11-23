@@ -74,7 +74,7 @@
 <style>
   .stop {
     margin: 0 0 var(--space-1);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .deps {
     list-style: none;
@@ -105,7 +105,7 @@
   }
   .late {
     color: var(--color-danger);
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .cancelled .dir,
   .cancelled .line {
@@ -113,10 +113,10 @@
     color: var(--color-text-muted);
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .source {
     margin: var(--space-1) 0 0;
-    font-size: max(0.8rem, 0.65em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
 </style>

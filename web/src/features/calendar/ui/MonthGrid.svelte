@@ -133,16 +133,16 @@
   }
   .wd {
     text-align: center;
-    font-size: max(0.8rem, 0.7em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   .day {
     min-height: clamp(1.9em, 6cqh, 6em);
     padding: 2px 3px;
     border: 1px solid transparent;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     display: flex;
     flex-direction: column;
     gap: 1px;
@@ -177,7 +177,7 @@
     background: var(--event-color, var(--color-accent));
   }
   .more {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     line-height: 1;
     color: var(--color-text-muted);
   }
@@ -193,10 +193,10 @@
       min-width: 0;
     }
     .title {
-      border-radius: 3px;
+      border-radius: var(--radius-sm);
       background: color-mix(in srgb, var(--event-color, var(--color-accent)) 20%, transparent);
       padding: 0 3px;
-      font-size: 0.85em;
+      font-size: var(--fs-xs);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

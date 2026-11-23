@@ -100,12 +100,12 @@
   }
   .average {
     margin-top: var(--space-1);
-    font-size: 1.1em;
+    font-size: var(--fs-sm);
     font-weight: 600;
   }
   h4 {
     margin: var(--space-2) 0 var(--space-1);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   ul {
@@ -117,7 +117,7 @@
     display: flex;
     justify-content: space-between;
     gap: var(--space-2);
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
   .name {
     overflow: hidden;
@@ -125,6 +125,6 @@
     white-space: nowrap;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

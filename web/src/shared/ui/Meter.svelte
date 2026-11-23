@@ -35,11 +35,11 @@
   .row {
     display: flex;
     justify-content: space-between;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .bar {
     height: clamp(6px, 1.6cqmin, 14px);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2);
     overflow: hidden;
   }

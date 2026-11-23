@@ -201,7 +201,7 @@
   }
   h3 {
     margin: var(--space-3) 0 var(--space-1);
-    font-size: 1em;
+    font-size: inherit;
   }
   table {
     width: 100%;
@@ -215,7 +215,7 @@
     border-bottom: 1px solid var(--color-border);
   }
   th {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   tr.passed td:first-child {

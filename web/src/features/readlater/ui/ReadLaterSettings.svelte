@@ -190,7 +190,7 @@
     display: inline-flex;
     margin: var(--space-3) 0 var(--space-2);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     overflow: hidden;
   }
   .tabs label {
@@ -238,10 +238,10 @@
     overflow-wrap: anywhere;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   h3 {
-    font-size: 1rem;
+    font-size: var(--fs-sm);
     margin: var(--space-4) 0 var(--space-2);
   }
   .file {

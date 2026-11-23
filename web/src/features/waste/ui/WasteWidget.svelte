@@ -102,7 +102,7 @@
     gap: var(--space-2);
     padding: 2px 6px;
     border-left: 4px solid var(--type-color);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   li.soon {
     background: color-mix(in srgb, var(--type-color) 22%, transparent);
@@ -122,6 +122,6 @@
     white-space: nowrap;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

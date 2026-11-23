@@ -188,12 +188,12 @@
   .notice,
   .warning {
     padding: var(--space-2);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     background: var(--color-warning-bg, rgba(234, 179, 8, 0.18));
     margin: 0;
   }
   h3 {
-    font-size: 1rem;
+    font-size: var(--fs-sm);
     margin: var(--space-3) 0 var(--space-1);
   }
   ul {
@@ -212,7 +212,7 @@
     flex-direction: column;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .file {
     position: relative;

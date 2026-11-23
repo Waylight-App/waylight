@@ -41,9 +41,9 @@
     padding: var(--space-2) var(--space-3);
     padding-right: 6rem;
     overflow-x: auto;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2, rgba(127, 127, 127, 0.12));
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     user-select: all;
   }
   .btn {

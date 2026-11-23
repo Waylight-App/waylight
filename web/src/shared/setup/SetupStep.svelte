@@ -56,7 +56,7 @@
   }
   .hint {
     color: var(--color-text-muted);
-    font-size: 0.92em;
+    font-size: var(--fs-sm);
     line-height: 1.45;
     margin-bottom: var(--space-1);
   }

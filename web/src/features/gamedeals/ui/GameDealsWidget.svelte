@@ -101,12 +101,12 @@
   .badge {
     background: var(--color-success);
     color: var(--color-accent-contrast);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     padding: 0 4px;
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     font-weight: 600;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

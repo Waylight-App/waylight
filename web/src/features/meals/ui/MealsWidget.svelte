@@ -188,7 +188,7 @@
     min-width: 0;
   }
   .label {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
   .dish {
     min-width: 0;
@@ -197,7 +197,7 @@
     white-space: nowrap;
   }
   .meal {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     margin-right: var(--space-1);
   }
   .actions {

@@ -64,7 +64,7 @@
 <style>
   .summary {
     margin: 0 0 var(--space-2);
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
   .peers {
     list-style: none;
@@ -85,7 +85,7 @@
     white-space: nowrap;
   }
   .small {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     white-space: nowrap;
   }
   .dot {

@@ -103,6 +103,6 @@
     background: var(--color-warning, var(--color-accent));
   }
   .small {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
 </style>

@@ -166,7 +166,7 @@
     gap: var(--space-2);
     padding: var(--space-2) var(--space-3);
     border: none;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: none;
     color: var(--color-text);
     font: inherit;
@@ -186,7 +186,7 @@
     display: grid;
   }
   .hint {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     max-width: 16rem;
     white-space: normal;
   }

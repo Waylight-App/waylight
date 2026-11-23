@@ -135,7 +135,7 @@
   }
   h4 {
     margin: var(--space-2) 0 var(--space-1);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   section:first-child h4 {
@@ -156,7 +156,7 @@
     width: 4.5em;
     font-variant-numeric: tabular-nums;
     color: var(--color-accent-text);
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .summary {
     overflow: hidden;
@@ -164,6 +164,6 @@
     white-space: nowrap;
   }
   .small {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
 </style>

@@ -138,7 +138,7 @@
     outline: 2px solid var(--color-accent-text);
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .preview {
     display: grid;
@@ -150,6 +150,6 @@
   pre {
     max-height: 16rem;
     overflow: auto;
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

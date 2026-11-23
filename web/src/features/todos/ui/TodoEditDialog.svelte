@@ -205,7 +205,7 @@
     width: auto;
   }
   .small {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     margin: 0;
   }
 </style>

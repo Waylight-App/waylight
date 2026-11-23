@@ -41,7 +41,7 @@
     background: var(--color-surface);
     color: var(--color-text);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow);
   }
   .toast.critical {
@@ -55,7 +55,7 @@
     overflow-wrap: anywhere;
   }
   .body {
-    font-size: 0.9rem;
+    font-size: var(--fs-sm);
     color: var(--color-text-muted);
   }
 </style>

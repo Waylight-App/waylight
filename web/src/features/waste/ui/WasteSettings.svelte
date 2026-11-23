@@ -183,7 +183,7 @@
   .modes {
     display: inline-flex;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     overflow: hidden;
     margin-bottom: var(--space-2);
   }
@@ -232,11 +232,11 @@
     color: var(--color-warning);
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   fieldset {
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     margin: var(--space-3) 0;
     display: grid;
     gap: var(--space-1);

@@ -136,7 +136,7 @@
 
 <style>
   .heading {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     margin: var(--space-1) 0;
     color: var(--color-text-muted);
@@ -171,7 +171,7 @@
     white-space: nowrap;
   }
   .meta {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   li.overdue .meta {
     color: var(--color-accent-text);

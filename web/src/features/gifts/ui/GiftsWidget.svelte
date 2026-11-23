@@ -137,7 +137,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    font-size: 0.9rem;
+    font-size: var(--fs-sm);
     margin: 0;
   }
   .person {
@@ -145,7 +145,7 @@
   }
   .birthday {
     flex: 1;
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     font-weight: normal;
   }
   ul {
@@ -174,7 +174,7 @@
     min-width: 0;
   }
   .note {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

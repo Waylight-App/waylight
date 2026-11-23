@@ -75,7 +75,7 @@
     white-space: nowrap;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     white-space: nowrap;
   }
   .dot {

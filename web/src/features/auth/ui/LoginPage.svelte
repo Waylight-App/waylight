@@ -256,7 +256,7 @@
   .powered {
     margin: var(--space-3) 0 0;
     text-align: center;
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .hidden {
     display: none;
@@ -275,7 +275,7 @@
     align-items: center;
     gap: var(--space-2);
     margin: var(--space-3) 0;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   .divider::before,
@@ -293,19 +293,19 @@
     margin-bottom: var(--space-4);
     padding: var(--space-3) var(--space-4);
     border: 1px solid var(--color-accent);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2);
   }
   .demo h2 {
     margin: 0;
-    font-size: 1rem;
+    font-size: var(--fs-sm);
   }
   .demo p {
     margin: 0;
   }
   .demo-password code {
     font-family: var(--font-mono);
-    font-size: 1.1rem;
+    font-size: var(--fs-sm);
     user-select: all;
   }
   .demo .btn {
@@ -314,6 +314,6 @@
   .code {
     font-family: var(--font-mono);
     letter-spacing: 0.15em;
-    font-size: 1.2rem;
+    font-size: var(--fs-md);
   }
 </style>

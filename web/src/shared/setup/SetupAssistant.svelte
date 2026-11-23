@@ -341,7 +341,7 @@
     gap: var(--space-3);
     padding: var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
   }
   .qr-box {
     display: flex;

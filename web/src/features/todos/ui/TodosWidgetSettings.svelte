@@ -52,6 +52,6 @@
     margin-bottom: var(--space-2);
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
 </style>
