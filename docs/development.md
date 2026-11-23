@@ -122,4 +122,36 @@ repository secrets exist:
 The next release tag then uploads the add-on for review. Mozilla reviews
 listed add-ons before they appear; the workflow does not wait for that. The
 privacy statement of the listing is [extension-privacy.md](extension-privacy.md).
-Chrome Web Store and Edge Add-ons are not set up yet.
+
+## Publishing to the Chrome Web Store and Edge Add-ons
+
+The same release step builds one zip for all three browsers. The release
+workflow submits it to the Chrome Web Store and to Microsoft Edge Add-ons
+once the secrets of the store exist; a store without secrets is skipped and
+the zip is still attached to the release. The listing texts, permission
+justifications and data-use answers are in `extension/store/listing.md`.
+
+**Chrome Web Store**
+
+1. Register at the [Chrome Web Store developer dashboard](https://chrome.google.com/webstore/devconsole)
+   and pay the one-time registration fee.
+2. Create the item once by uploading a release zip by hand, and fill in the
+   listing from `extension/store/listing.md`, with the privacy statement
+   link [extension-privacy.md](extension-privacy.md) and screenshots.
+3. Create an OAuth client and a refresh token for the Chrome Web Store API
+   (see the
+   [chrome-webstore-upload-cli guide](https://github.com/fregante/chrome-webstore-upload-keys)).
+4. Store these repository secrets: `CWS_EXTENSION_ID`, `CWS_CLIENT_ID`,
+   `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN`.
+
+**Microsoft Edge Add-ons**
+
+1. Register in the [Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/overview)
+   for Microsoft Edge.
+2. Create the product by uploading a release zip by hand and fill in the
+   listing from `extension/store/listing.md`.
+3. Under *Publish API* create an API key.
+4. Store these repository secrets: `EDGE_PRODUCT_ID`, `EDGE_CLIENT_ID`,
+   `EDGE_API_KEY`.
+
+The next release tag then uploads the version and submits it for review.

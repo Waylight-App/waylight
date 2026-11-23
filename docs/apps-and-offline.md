@@ -43,17 +43,20 @@ with the current page, the link you right-clicked or the selected text.
 
 It works in Chrome, Edge and Firefox:
 
-1. Download `waylight-extension-<version>.zip` from the
+1. Install it from the store of your browser once it is listed there:
+   [addons.mozilla.org](https://addons.mozilla.org/) for Firefox, the
+   [Chrome Web Store](https://chrome.google.com/webstore) for Chrome and
+   Microsoft Edge Add-ons for Edge. Search for *Waylight*. A store install
+   updates itself. The listings are being set up (#290); until a store
+   lists it, use the zip below.
+2. Or install the zip: download `waylight-extension-<version>.zip` from the
    [latest release](https://github.com/Waylight-App/waylight/releases/latest)
-   and unzip it.
-2. Load it:
+   and unzip it, then
    - **Chrome and Edge:** open `chrome://extensions`, switch on
      *Developer mode*, choose *Load unpacked* and select the unzipped folder.
-   - **Firefox:** once the add-on is listed on addons.mozilla.org (#290), install
-     it from there like any other add-on; it then updates itself. Until then,
-     open `about:debugging#/runtime/this-firefox`, choose *Load Temporary
-     Add-on* and select `manifest.json`; Firefox removes temporary add-ons on
-     restart.
+   - **Firefox:** open `about:debugging#/runtime/this-firefox`, choose *Load
+     Temporary Add-on* and select `manifest.json`; Firefox removes temporary
+     add-ons on restart.
 3. Open a new tab and choose *Use without a server* or *Connect my server*.
    For a server, enter the address of your dashboard in the options, for
    example `http://homeserver:8090`.
