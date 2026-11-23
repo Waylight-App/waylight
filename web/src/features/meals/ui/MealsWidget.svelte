@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -122,7 +123,7 @@
                 type="button"
                 aria-label={t('meals.add_to_shopping', { dish: e.dish })}
                 title={t('meals.add_to_shopping', { dish: e.dish })}
-                onclick={() => shop(e)}>🛒</button
+                onclick={() => shop(e)}><Icon name="cart" size={16} /></button
               >
             {/if}
             {#if e.mine}

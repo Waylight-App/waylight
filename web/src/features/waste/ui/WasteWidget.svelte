@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import EmptyState from '../../../shared/ui/EmptyState.svelte';
   import WasteSetup from './WasteSetup.svelte';
@@ -76,7 +77,9 @@
   <ul class="types">
     {#each overview.types as t (t.label)}
       <ListRow nowrap class="type {isDueSoon(t, now) ? 'soon' : ''}" style="--type-color: {t.color}">
-        {#snippet lead()}<span class="icon" aria-hidden="true">{t.icon}</span>{/snippet}
+        {#snippet lead()}<span class="icon" aria-hidden="true"
+            >{#if t.icon}{t.icon}{:else}<Icon name="trash" size={16} />{/if}</span
+          >{/snippet}
         {t.label}
         {#snippet value()}
           <span class="when">

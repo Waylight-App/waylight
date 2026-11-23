@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
   import { copyToClipboard } from '../../../shared/ui/clipboard';
@@ -192,7 +193,11 @@
                 type="button"
                 aria-label={copied === e.id ? t('phonelist.copied') : t('phonelist.copy', { phone: e.phone })}
                 title={copied === e.id ? t('phonelist.copied') : t('phonelist.copy', { phone: e.phone })}
-                onclick={() => copy(e)}>{copied === e.id ? '✓' : '⧉'}</button
+                onclick={() => copy(e)}
+                >{#if copied === e.id}<Icon name="done" size={16} />{:else}<Icon
+                    name="copy"
+                    size={16}
+                  />{/if}</button
               >
             </span>
           {/if}
@@ -200,7 +205,7 @@
         </div>
         {#if e.readOnly}
           <span class="book" title={t('phonelist.from_book')} aria-label={t('phonelist.from_book')} role="img"
-            >📇</span
+            ><Icon name="user" size={16} /></span
           >
         {:else if admin}
           <button

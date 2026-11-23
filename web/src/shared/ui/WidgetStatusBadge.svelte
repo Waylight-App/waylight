@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from './icons/Icon.svelte';
   import { type Freshness, minutesAgo } from '../freshness/status';
   import { intlLocale, t } from '../i18n';
 
@@ -30,7 +31,7 @@
 </script>
 
 <div class="badge {freshness}" title={title || undefined}>
-  {#if freshness === 'error'}<span aria-hidden="true">⚠</span>{/if}
+  {#if freshness === 'error'}<Icon name="warning" size={16} />{/if}
   <span class="age">
     {freshness === 'stale'
       ? t('freshness.stale', { age })

@@ -109,5 +109,5 @@ export const callIcons: Record<CallType, string> = {
   missed: '✗',
   outgoing: '↗',
   rejected: '⊘',
-  active: '☎',
+  active: '↔',
 };

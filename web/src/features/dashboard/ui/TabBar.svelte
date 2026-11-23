@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { t } from '../../../shared/i18n';
   import type { Tab } from '../domain/dashboard';
 
@@ -136,7 +137,8 @@
           }
         }}
       >
-        {#if !tab.mine}<span class="team" aria-hidden="true">👥</span>{/if}{tab.name}
+        {#if !tab.mine}<span class="team" aria-hidden="true"><Icon name="users" size={16} /></span
+          >{/if}{tab.name}
       </button>
       <!-- Team tabs (#295) are maintained by their owner only. -->
       {#if editing && tab.mine}

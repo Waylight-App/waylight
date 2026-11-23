@@ -43,19 +43,3 @@ export function minutesUntil(d: Pick<Departure, 'planned' | 'expected'>, now: Da
   const min = Math.round((at.getTime() - now.getTime()) / 60_000);
   return min <= 0 ? t('time.now') : t('time.minutes', { n: min });
 }
-
-/** Icon per transport mode (MOTIS modes). */
-export function modeIcon(mode: string): string {
-  if (mode.includes('bus')) return '🚌';
-  if (mode.includes('tram')) return '🚊';
-  if (mode.includes('subway') || mode.includes('metro')) return '🚇';
-  if (mode.includes('ferry')) return '⛴️';
-  if (
-    mode.includes('rail') ||
-    mode.includes('train') ||
-    mode.includes('regional') ||
-    mode.includes('suburban')
-  )
-    return '🚆';
-  return '🚏';
-}

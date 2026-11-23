@@ -346,7 +346,7 @@ func (uc *birthdays) Remind(ctx context.Context) (int, error) {
 		if u.Age > 0 {
 			body = fmt.Sprintf("Turns %d today.", u.Age)
 		}
-		uc.d.Alerts.Alert(ctx, kernel.Alert{Kind: "reminder", Title: "🎂 " + u.Name, Body: body})
+		uc.d.Alerts.Alert(ctx, kernel.Alert{Kind: "reminder", Title: u.Name, Body: body})
 	}
 	return len(today), nil
 }

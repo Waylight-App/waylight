@@ -127,7 +127,7 @@ func TestBirthdays(t *testing.T) {
 		t.Fatal("before 08:00")
 	}
 	c.t = c.t.Add(2 * time.Hour)
-	if n, _ := uc.Remind(ctx); n != 1 || al.got[0].Title != "🎂 Carla" || al.got[0].Body != "Turns 46 today." {
+	if n, _ := uc.Remind(ctx); n != 1 || al.got[0].Title != "Carla" || al.got[0].Body != "Turns 46 today." {
 		t.Fatalf("%v %+v", n, al.got)
 	}
 	if n, _ := uc.Remind(ctx); n != 0 {

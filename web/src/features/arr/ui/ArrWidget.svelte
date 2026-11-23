@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import type { ChoiceLoader } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { arrSetup } from './arrSetup';
@@ -99,7 +100,10 @@
       {#each overview.upcoming as r, i (i)}
         <li>
           <span class="muted small date">{day(r.date)}</span>
-          <span class="title" title="{r.title} · {r.detail}">{r.hasFile ? '✓ ' : ''}{r.title}</span>
+          <span class="title" title="{r.title} · {r.detail}"
+            >{#if r.hasFile}<Icon name="done" size={16} />
+            {/if}{r.title}</span
+          >
           <span class="muted small">{r.detail}</span>
         </li>
       {:else}

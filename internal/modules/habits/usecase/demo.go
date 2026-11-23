@@ -25,10 +25,10 @@ func SeedDemo(ctx context.Context, d Deps) error {
 	now := d.Clock.Now()
 	started := now.AddDate(0, 0, -30)
 	habits := []demoHabit{
-		{name: "Drink water", emoji: "💧", skip: func(n int) bool { return n == 9 }},
-		{name: "Read 20 minutes", emoji: "📚", skip: func(n int) bool { return n%6 == 5 }},
-		{name: "Workout", emoji: "🏃", days: []int{1, 3, 5}, skip: func(n int) bool { return n == 14 }},
-		{name: "No phone after 10 pm", emoji: "🌙", skip: func(n int) bool { return n%4 == 2 || n == 0 }},
+		{name: "Drink water", skip: func(n int) bool { return n == 9 }},
+		{name: "Read 20 minutes", skip: func(n int) bool { return n%6 == 5 }},
+		{name: "Workout", days: []int{1, 3, 5}, skip: func(n int) bool { return n == 14 }},
+		{name: "No phone after 10 pm", skip: func(n int) bool { return n%4 == 2 || n == 0 }},
 	}
 	for i, dh := range habits {
 		s, err := domain.NewSchedule(dh.days)

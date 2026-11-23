@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -114,7 +115,7 @@
         {#if i.kind === 'link'}
           <a href={i.text} target="_blank" rel="noopener noreferrer" class="text">{i.text}</a>
         {:else if i.kind === 'file'}
-          <span class="text">📄 {i.fileName}</span>
+          <span class="text"><Icon name="note" size={16} /> {i.fileName}</span>
         {:else}
           <span class="text">{i.text}</span>
         {/if}
@@ -128,11 +129,14 @@
           class="btn btn-icon"
           href={drop.fileUrl(i.id)}
           download={i.fileName}
-          aria-label={t('drop.download', { name: i.fileName })}>⬇</a
+          aria-label={t('drop.download', { name: i.fileName })}><Icon name="download" size={16} /></a
         >
       {:else}
         <button class="btn btn-icon" type="button" aria-label={t('drop.copy')} onclick={() => copy(i)}
-          >{copied === i.id ? '✓' : '⧉'}</button
+          >{#if copied === i.id}<Icon name="done" size={16} />{:else}<Icon
+              name="copy"
+              size={16}
+            />{/if}</button
         >
       {/if}
       <button

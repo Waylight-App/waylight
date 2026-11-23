@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { minutesUntil, modeIcon, parseTransitConfig } from './transit';
+import { minutesUntil, parseTransitConfig } from './transit';
 
 describe('transit domain', () => {
   it('parses the widget config', () => {
@@ -12,9 +12,5 @@ describe('transit domain', () => {
     expect(minutesUntil({ planned, expected: null }, now)).toBe('3 min');
     expect(minutesUntil({ planned, expected: new Date('2026-11-11T20:10:00Z') }, now)).toBe('10 min');
     expect(minutesUntil({ planned: now, expected: null }, now)).toBe('now');
-  });
-  it('picks mode icons', () => {
-    expect(modeIcon('bus')).toBe('🚌');
-    expect(modeIcon('regional_rail')).toBe('🚆');
   });
 });

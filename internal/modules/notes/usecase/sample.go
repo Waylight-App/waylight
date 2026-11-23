@@ -6,13 +6,13 @@ import (
 )
 
 // WelcomeNote is the pinned Markdown note created on a fresh installation.
-const WelcomeNote = `# Welcome to Waylight 👋
+const WelcomeNote = `# Welcome to Waylight
 
 This start page was filled with **sample data** so you can see what it can do.
 
 - **Edit** (top right): drag widgets by their title bar, resize them at the
   bottom-right corner, add widgets and tabs.
-- **⚙ on a widget** (edit mode): configure it, e.g. choose your weather location.
+- **Gear icon on a widget** (edit mode): configure it, e.g. choose your weather location.
 - **Settings**: appearance, search engine & shortcuts, services, feeds,
   bookmark folders, calendar (CalDAV) and AdGuard Home.
 - **Search**: DuckDuckGo !bangs work — try ` + "`!w clean architecture`" + ` or the

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -66,7 +67,7 @@
             href={documents.fileUrl(d.id)}
             download={d.fileName}
             title={formatSize(d.fileSize)}
-            aria-label={t('documents.download', { name: d.fileName })}>⬇</a
+            aria-label={t('documents.download', { name: d.fileName })}><Icon name="download" size={16} /></a
           >
         {/if}
         {#if d.mine}

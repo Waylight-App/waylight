@@ -7,7 +7,7 @@ import (
 
 // demoNote is a second pinned note of the public demo: something a
 // household actually keeps on its start page.
-const demoNote = `# House notes 🏠
+const demoNote = `# House notes
 
 **Wi-Fi for guests:** Waylight-Guest (password on the fridge)
 

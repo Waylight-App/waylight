@@ -169,7 +169,7 @@ func (u *uc) Remind(ctx context.Context) (int, error) {
 		if err := u.d.Repo.MarkReminded(ctx, c.ID, deadline); err != nil {
 			return sent, err
 		}
-		u.d.Alerts.Alert(ctx, kernel.Alert{Kind: "reminder", Title: "📄 " + c.Name, Body: reminderBody(c, term)})
+		u.d.Alerts.Alert(ctx, kernel.Alert{Kind: "reminder", Title: c.Name, Body: reminderBody(c, term)})
 		sent++
 	}
 	return sent, nil

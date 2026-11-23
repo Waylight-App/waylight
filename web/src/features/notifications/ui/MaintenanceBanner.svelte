@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { type MaintenanceWindow, activeMaintenance } from '../domain/notifications';
@@ -28,7 +29,8 @@
 
 {#each active as w (w.id)}
   <p class="banner" role="status">
-    🔧 {t('notifications.maintenance_banner', {
+    <Icon name="wrench" size={16} />
+    {t('notifications.maintenance_banner', {
       scope: w.scope.includes('*')
         ? t('notifications.everything')
         : w.scope.map((s) => s.split(':')[1]).join(', '),

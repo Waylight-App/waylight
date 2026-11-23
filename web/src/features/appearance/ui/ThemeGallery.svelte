@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import type { Appearance } from '../domain/appearance';
@@ -73,7 +74,7 @@
         class="btn btn-icon"
         href={appearance.exportUrl(theme.id)}
         download
-        aria-label={t('appearance.export_theme', { name: theme.name })}>⬇</a
+        aria-label={t('appearance.export_theme', { name: theme.name })}><Icon name="download" size={16} /></a
       >
       {#if !theme.builtIn}
         <button

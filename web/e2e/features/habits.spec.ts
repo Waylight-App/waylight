@@ -26,14 +26,16 @@ test('habits are checked off with streaks and a heatmap (#106)', async ({ page }
 
   const item = page.getByRole('listitem').filter({ hasText: 'Read' });
   await item.getByRole('checkbox', { name: 'Read done today' }).check();
-  await expect(item).toContainText('🔥 1');
+  await expect(item.locator('.streak')).toHaveText(/^\s*1\s*$/);
   // Forgot to tick it yesterday: the heatmap cell of yesterday is a button.
   await item.getByRole('button', { name: 'Read: check off yesterday' }).click();
-  await expect(item).toContainText('🔥 2');
+  await expect(item.locator('.streak')).toHaveText(/^\s*2\s*$/);
   // Undoing today keeps the streak from yesterday (today is still open).
   await item.getByRole('checkbox', { name: 'Read done today' }).uncheck();
-  await expect(item).toContainText('🔥 1');
+  await expect(item.locator('.streak')).toHaveText(/^\s*1\s*$/);
 
   await page.reload();
-  await expect(page.getByRole('listitem').filter({ hasText: 'Read' })).toContainText('🔥 1');
+  await expect(page.getByRole('listitem').filter({ hasText: 'Read' }).locator('.streak')).toHaveText(
+    /^\s*1\s*$/,
+  );
 });

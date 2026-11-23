@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -91,7 +92,8 @@
       aria-expanded={open === w.id}
       onclick={() => (open = open === w.id ? '' : w.id)}
     >
-      <strong>⚠ {w.event || w.headline}</strong> <span class="small">{validity(w, new Date())}</span>
+      <strong><Icon name="warning" size={16} /> {w.event || w.headline}</strong>
+      <span class="small">{validity(w, new Date())}</span>
       {#if open === w.id}
         <span class="detail"
           >{w.description}{w.instruction ? ` ${w.instruction}` : ''} <em>{t('weather.source_dwd')}</em></span

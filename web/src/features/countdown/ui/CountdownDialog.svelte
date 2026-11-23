@@ -62,7 +62,7 @@
       </label>
       <label class="field emoji">
         <span>{t('countdown.emoji')}</span>
-        <input class="input" bind:value={form.emoji} maxlength="8" placeholder="🎉" />
+        <input class="input" bind:value={form.emoji} maxlength="8" />
       </label>
     </div>
     {#if error}<p class="error" role="alert">{error}</p>{/if}

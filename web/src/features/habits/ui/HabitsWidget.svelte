@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -71,13 +72,15 @@
           aria-label={t('habits.done_today', { name: h.name })}
           onchange={() => run(habits.toggleToday(h.id))}
         />
-        <span class="emoji" aria-hidden="true">{h.emoji || '✓'}</span>
+        <span class="emoji" aria-hidden="true"
+          >{#if h.emoji}{h.emoji}{:else}<Icon name="done" size={16} />{/if}</span
+        >
       </label>
       <button class="name" type="button" onclick={() => (editing = h)} title={t('habits.edit')}
         >{h.name}</button
       >
       <span class="streak" title={t('habits.streak_title', { best: h.best })}>
-        {#if h.current > 0}🔥 {h.current}{:else}<span class="muted">–</span>{/if}
+        {#if h.current > 0}<Icon name="flame" size={16} /> {h.current}{:else}<span class="muted">–</span>{/if}
       </span>
       {#if cfg.showHeatmap}
         <div class="heat" role="group" aria-label={t('habits.last_weeks', { name: h.name })}>

@@ -14,7 +14,7 @@ export const en = {
     'Without your own free key from api.nasa.gov the shared DEMO_KEY is used, which has a low limit per IP address.',
   'space.background': 'Picture of the day as background',
   'space.background_hint':
-    'Use this address as tab background (Edit → 🖼) or under Appearance. It always shows today’s picture, loaded by this server.',
+    'Use this address as tab background (Edit → Background) or under Appearance. It always shows today’s picture, loaded by this server.',
   'space.background_copy': 'Copy background address',
   'space.saved': 'Saved.',
   'space.show': 'Show',

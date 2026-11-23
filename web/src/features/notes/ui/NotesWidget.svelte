@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
   import Markdown from '../../../shared/ui/Markdown.svelte';
@@ -119,7 +120,10 @@
     {#each list as n (n.id)}
       <li>
         <button type="button" onclick={() => (viewing = n)}>
-          <strong>{n.pinned ? '📌 ' : ''}{n.title}</strong>
+          <strong
+            >{#if n.pinned}<Icon name="pin" size={16} />
+            {/if}{n.title}</strong
+          >
           <span class="muted">{excerpt(n.body)}</span>
         </button>
       </li>

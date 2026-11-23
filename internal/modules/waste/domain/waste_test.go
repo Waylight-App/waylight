@@ -8,17 +8,17 @@ import (
 )
 
 func TestClassify(t *testing.T) {
-	if s := Classify("Restmüll 2-wöchentlich", nil); s.Icon != "🗑️" || s.Label != "Restmüll 2-wöchentlich" {
+	if s := Classify("Restmüll 2-wöchentlich", nil); s.Color != "#6b7280" || s.Label != "Restmüll 2-wöchentlich" {
 		t.Fatalf("%+v", s)
 	}
-	if s := Classify("Gelber Sack", nil); s.Icon != "♻️" {
+	if s := Classify("Gelber Sack", nil); s.Color != "#eab308" {
 		t.Fatalf("%+v", s)
 	}
-	if s := Classify("Grünschnitt", nil); s.Icon != "🌳" {
+	if s := Classify("Grünschnitt", nil); s.Color != "#16a34a" {
 		t.Fatal("garden waste must win over generic keywords")
 	}
 	rules := []Rule{{Match: "gelb", Label: "Yellow bag", Color: "#ffff00"}}
-	if s := Classify("Gelbe Tonne", rules); s.Label != "Yellow bag" || s.Color != "#ffff00" || s.Icon != "♻️" {
+	if s := Classify("Gelbe Tonne", rules); s.Label != "Yellow bag" || s.Color != "#ffff00" {
 		t.Fatalf("custom rule: %+v", s)
 	}
 }

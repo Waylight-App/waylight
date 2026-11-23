@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../shared/ui/icons/Icon.svelte';
   import { t } from '../shared/i18n';
   import { errorMessage } from '../shared/api-client/http';
 
@@ -41,10 +42,12 @@
 
 <section class="ai" aria-label={t('ai_ask.title')}>
   {#if !asked}
-    <button class="btn" type="button" onclick={start}>✨ {t('ai_ask.button')}</button>
+    <button class="btn" type="button" onclick={start}
+      ><Icon name="sparkles" size={16} /> {t('ai_ask.button')}</button
+    >
     <span class="muted small">{t('ai_ask.hint')}</span>
   {:else}
-    <p class="label muted small">✨ {t('ai_ask.generated')}</p>
+    <p class="label muted small"><Icon name="sparkles" size={16} /> {t('ai_ask.generated')}</p>
     <p class="answer" aria-live="polite" aria-busy={!!controller}>
       {answer}{#if controller && !answer}{t('ai_ask.thinking')}{/if}
     </p>

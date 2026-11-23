@@ -109,7 +109,7 @@ func TestRemindOncePerDeadlineAndOnlyWhatTheAdminSees(t *testing.T) {
 		t.Fatal(err)
 	}
 	n, err := c.Remind(context.Background())
-	if err != nil || n != 1 || len(sink.got) != 1 || sink.got[0].Kind != "reminder" || sink.got[0].Title != "📄 Mobile phone" {
+	if err != nil || n != 1 || len(sink.got) != 1 || sink.got[0].Kind != "reminder" || sink.got[0].Title != "Mobile phone" {
 		t.Fatalf("%d %v %+v", n, err, sink.got)
 	}
 	if want := "Cancel by 2026-12-31 to end the contract on 2027-03-31. Otherwise it renews for 12 months."; sink.got[0].Body != want {

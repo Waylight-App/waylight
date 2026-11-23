@@ -36,7 +36,7 @@ func (uc *seedSampleData) Execute(ctx context.Context) error {
 		{"Try edit mode: drag and resize a widget", today, false},
 		{"Add your own services under Settings → Services", today.AddDate(0, 0, 1), false},
 		{"Connect your calendar under Settings → Calendar", today.AddDate(0, 0, 3), false},
-		{"Choose your weather location (⚙ on the weather widget)", time.Time{}, false},
+		{"Choose your weather location (gear icon on the weather widget)", time.Time{}, false},
 	}
 	create, update := NewCreateTodo(uc.d), NewUpdateTodo(uc.d)
 	for _, s := range samples {

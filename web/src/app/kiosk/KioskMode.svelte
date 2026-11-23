@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../shared/ui/icons/Icon.svelte';
   import { t } from '../../shared/i18n';
   import { inNightWindow, type KioskOptions } from '../../features/auth/domain/auth';
 
@@ -101,7 +102,9 @@
 </script>
 
 {#if !fullscreen && typeof document !== 'undefined' && document.fullscreenEnabled}
-  <button class="btn fullscreen" type="button" onclick={enterFullscreen}>⛶ {t('kiosk.fullscreen')}</button>
+  <button class="btn fullscreen" type="button" onclick={enterFullscreen}
+    ><Icon name="expand" size={16} /> {t('kiosk.fullscreen')}</button
+  >
 {/if}
 {#if night}<div class="night" aria-hidden="true"></div>{/if}
 
