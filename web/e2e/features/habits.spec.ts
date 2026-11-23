@@ -35,5 +35,7 @@ test('habits are checked off with streaks and a heatmap (#106)', async ({ page }
   await expect(item.locator('.streak')).toHaveText(/^\s*1\s*$/);
 
   await page.reload();
-  await expect(page.getByRole('listitem').filter({ hasText: 'Read' })).toContainText('🔥 1');
+  await expect(page.getByRole('listitem').filter({ hasText: 'Read' }).locator('.streak')).toHaveText(
+    /^\s*1\s*$/,
+  );
 });
