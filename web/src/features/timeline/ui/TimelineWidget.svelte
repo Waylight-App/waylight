@@ -88,7 +88,6 @@
     margin-top: var(--space-2);
     font-size: var(--fs-xs);
     font-weight: 600;
-    text-transform: uppercase;
     color: var(--color-text-muted);
   }
   .event {

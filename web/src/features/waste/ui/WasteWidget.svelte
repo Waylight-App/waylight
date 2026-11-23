@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import EmptyState from '../../../shared/ui/EmptyState.svelte';
   import WasteSetup from './WasteSetup.svelte';
   import { useMaySetUp } from '../../../shared/setup/setup';
@@ -74,14 +75,16 @@
 {:else if overview}
   <ul class="types">
     {#each overview.types as t (t.label)}
-      <li class:soon={isDueSoon(t, now)} style="--type-color: {t.color}">
-        <span class="icon" aria-hidden="true">{t.icon}</span>
-        <span class="label">{t.label}</span>
-        <span class="when">
-          <strong>{dueLabel(t.daysUntil)}</strong>
-          {#if t.dates[0] && t.daysUntil > 1}<span class="muted small">{date(t.dates[0])}</span>{/if}
-        </span>
-      </li>
+      <ListRow nowrap class="type {isDueSoon(t, now) ? 'soon' : ''}" style="--type-color: {t.color}">
+        {#snippet lead()}<span class="icon" aria-hidden="true">{t.icon}</span>{/snippet}
+        {t.label}
+        {#snippet value()}
+          <span class="when">
+            <strong>{dueLabel(t.daysUntil)}</strong>
+            {#if t.dates[0] && t.daysUntil > 1}<span class="small">{date(t.dates[0])}</span>{/if}
+          </span>
+        {/snippet}
+      </ListRow>
     {:else}
       <li class="muted">{t('waste.no_upcoming_collections')}</li>
     {/each}
@@ -102,27 +105,15 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
   }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-1) var(--space-2);
+  /* The row element belongs to the shared ListRow, so it is styled globally. */
+  .types :global(.type) {
+    padding-left: var(--space-2);
     border-left: 4px solid var(--type-color);
-    border-radius: var(--radius-sm);
   }
-  li.soon {
+  .types :global(.type.soon) {
     background: color-mix(in srgb, var(--type-color) 22%, transparent);
     font-weight: 600;
-  }
-  .label {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .when {
     display: flex;

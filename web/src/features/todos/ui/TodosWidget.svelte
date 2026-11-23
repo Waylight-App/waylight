@@ -87,7 +87,7 @@
 {#if error}<p class="error">{error}</p>{/if}
 <ul class="list">
   {#each list as todo (todo.id)}
-    <ListRow>
+    <ListRow showValue={!!todo.due}>
       <label>
         <input type="checkbox" checked={todo.done} onchange={() => run(() => todos.toggle(todo))} />
         <span class="title" class:done={todo.done}>{todo.title}</span>

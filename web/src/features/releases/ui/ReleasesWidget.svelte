@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -41,13 +42,11 @@
 {:else if list}
   <ul class="releases">
     {#each list.releases as r (r.id)}
-      <li>
-        <img src={coverUrl(r.id)} alt="" loading="lazy" />
-        <span class="text">
-          <strong title={r.title}>{r.title}</strong>
-          <span class="muted small">{r.artist} · {r.type} · {date(r.date)}</span>
-        </span>
-      </li>
+      <ListRow nowrap>
+        {#snippet lead()}<img src={coverUrl(r.id)} alt="" loading="lazy" />{/snippet}
+        <strong title={r.title}>{r.title}</strong>
+        {#snippet sub()}{r.artist} · {r.type} · {date(r.date)}{/snippet}
+      </ListRow>
     {:else}
       <li class="muted">{t('releases.none', { weeks })}</li>
     {/each}
@@ -62,13 +61,6 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    display: grid;
-    gap: var(--space-2);
-  }
-  .releases li {
-    display: flex;
-    gap: var(--space-2);
-    align-items: center;
   }
   img {
     width: 3rem;
@@ -77,17 +69,5 @@
     border-radius: var(--radius-sm);
     background: var(--color-border);
     flex: none;
-  }
-  .text {
-    display: grid;
-    min-width: 0;
-  }
-  .text strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .small {
-    font-size: var(--fs-xs);
   }
 </style>

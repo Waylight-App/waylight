@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -42,11 +43,11 @@
   </p>
   <ul class="list">
     {#each inbox.messages as m, i (i)}
-      <li>
+      <ListRow nowrap>
         <span class="from">{m.from}</span>
-        <span class="age muted">{age(m.date, now)}</span>
-        <span class="subject">{m.subject}</span>
-      </li>
+        {#snippet sub()}<span class="subject">{m.subject}</span>{/snippet}
+        {#snippet value()}{age(m.date, now)}{/snippet}
+      </ListRow>
     {:else}
       <li class="muted">{t('mail.none')}</li>
     {/each}
@@ -76,29 +77,15 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
-  }
-  li {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: var(--space-2);
   }
   .from {
     font-weight: 600;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .age {
-    font-size: var(--fs-xs);
   }
   .subject {
-    grid-column: 1 / -1;
+    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: var(--color-text-muted);
   }
   .small {
     font-size: var(--fs-xs);

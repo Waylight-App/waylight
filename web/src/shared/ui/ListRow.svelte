@@ -20,7 +20,10 @@
     trail?: Snippet;
     /** Truncates the main text to one line with an ellipsis instead of wrapping. */
     nowrap?: boolean;
+    /** False when the row has no value, so no empty value box is drawn. */
+    showValue?: boolean;
     title?: string;
+    style?: string;
     class?: string;
     children: Snippet;
   }
@@ -31,19 +34,21 @@
     lead,
     trail,
     nowrap = false,
+    showValue = true,
+    style,
     title,
     class: cls = '',
     children,
   }: Props = $props();
 </script>
 
-<li class="row {cls}" {title}>
+<li class="row {cls}" {title} {style}>
   {#if lead}{@render lead()}{/if}
   <div class="main">
     <div class="text" class:nowrap>{@render children()}</div>
     {#if sub}<div class="sub">{@render sub()}</div>{/if}
   </div>
-  {#if value}<span class="value" class:urgent>{@render value()}</span>{/if}
+  {#if value && showValue}<span class="value" class:urgent>{@render value()}</span>{/if}
   {#if trail}{@render trail()}{/if}
 </li>
 
