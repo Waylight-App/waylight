@@ -73,7 +73,7 @@
   }
   ul {
     margin: 0;
-    padding-left: 1.2em;
+    padding-left: var(--space-4);
   }
   .link {
     border: none;

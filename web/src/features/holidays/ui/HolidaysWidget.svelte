@@ -92,13 +92,13 @@
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 3px;
+    gap: var(--space-1);
   }
   li {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    padding: 2px var(--space-1);
+    padding: var(--space-1) var(--space-1);
     border-left: 3px solid transparent;
     border-radius: var(--radius-sm);
   }

@@ -255,7 +255,7 @@
   }
   .field {
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
   }
   .actions {
     display: flex;

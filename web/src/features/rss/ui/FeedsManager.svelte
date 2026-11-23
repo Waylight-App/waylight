@@ -236,7 +236,7 @@
     background: var(--color-accent);
     color: var(--color-accent-contrast);
     border-radius: 999px;
-    padding: 0 6px;
+    padding: 0 var(--space-2);
     font-size: var(--fs-xs);
   }
   .add {

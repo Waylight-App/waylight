@@ -71,7 +71,7 @@
     padding-left: var(--space-3);
   }
   .groups li {
-    margin: var(--space-1, 0.25rem) 0;
+    margin: var(--space-1, var(--space-1)) 0;
   }
   .queries {
     display: block;

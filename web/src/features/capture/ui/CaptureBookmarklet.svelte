@@ -22,7 +22,7 @@
 
 <style>
   .bookmarklet {
-    margin-top: var(--space-4, 1.5rem);
+    margin-top: var(--space-4, var(--space-6));
   }
   h3 {
     margin: 0 0 var(--space-1);

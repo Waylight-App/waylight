@@ -197,7 +197,7 @@
     font-size: var(--fs-xs);
   }
   .add {
-    padding: 0 6px;
+    padding: 0 var(--space-2);
   }
   .body {
     display: grid;

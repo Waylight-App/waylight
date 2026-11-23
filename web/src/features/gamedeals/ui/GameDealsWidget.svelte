@@ -102,7 +102,7 @@
     background: var(--color-success);
     color: var(--color-accent-contrast);
     border-radius: var(--radius-sm);
-    padding: 0 4px;
+    padding: 0 var(--space-1);
     font-size: var(--fs-xs);
     font-weight: 600;
   }

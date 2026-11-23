@@ -80,7 +80,7 @@
     min-width: 0;
   }
   .section h4 {
-    margin: 0 0 2px;
+    margin: 0 0 var(--space-1);
     font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;

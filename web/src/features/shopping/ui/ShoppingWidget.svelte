@@ -233,7 +233,7 @@
     min-width: 0;
     gap: var(--space-2);
     align-items: center;
-    padding: 1px 0;
+    padding: var(--space-1) 0;
     cursor: pointer;
   }
   .done span {

@@ -56,11 +56,11 @@
     overflow-y: auto;
   }
   h3 {
-    margin: 0 0 0.25rem;
+    margin: 0 0 var(--space-1);
     font-size: var(--fs-sm);
   }
   h4 {
-    margin: 0.75rem 0 0.25rem;
+    margin: var(--space-3) 0 var(--space-1);
     font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -78,9 +78,9 @@
   li {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem 0.75rem;
+    gap: var(--space-1) var(--space-3);
     align-items: baseline;
-    padding: 0.25rem 0;
+    padding: var(--space-1) 0;
   }
   .text {
     flex: 1 1 14rem;
@@ -88,12 +88,12 @@
   .examples {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem;
+    gap: var(--space-1);
   }
   .example {
     font: inherit;
     font-size: var(--fs-xs);
-    padding: 0.1rem 0.5rem;
+    padding: var(--space-1) var(--space-2);
     border: 1px solid var(--color-border);
     border-radius: 999px;
     background: var(--color-surface);

@@ -111,7 +111,7 @@
     position: absolute;
     right: 4px;
     bottom: 2px;
-    padding: 0 4px;
+    padding: 0 var(--space-1);
     font-size: var(--fs-xs);
     line-height: 1.2;
   }

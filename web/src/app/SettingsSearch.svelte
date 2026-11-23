@@ -130,7 +130,7 @@
   li {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-1);
     padding: var(--space-2) var(--space-3);
     cursor: pointer;
   }

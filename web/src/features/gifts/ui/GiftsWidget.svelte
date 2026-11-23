@@ -164,7 +164,7 @@
   li input[type='checkbox'] {
     width: 1.25rem;
     height: 1.25rem;
-    margin: 0.75rem;
+    margin: var(--space-3);
     flex-shrink: 0;
   }
   .title {

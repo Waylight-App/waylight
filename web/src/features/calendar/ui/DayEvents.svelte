@@ -55,13 +55,13 @@
   }
   li {
     border-left: 3px solid var(--event-color, var(--color-accent));
-    margin-bottom: 2px;
+    margin-bottom: var(--space-1);
   }
   .ev {
     display: flex;
     gap: var(--space-2);
     width: 100%;
-    padding: 2px var(--space-1);
+    padding: var(--space-1) var(--space-1);
     border: 0;
     background: none;
     color: inherit;

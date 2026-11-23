@@ -53,7 +53,7 @@
     right: 4px;
     bottom: 2px;
     display: flex;
-    gap: 4px;
+    gap: var(--space-1);
     align-items: center;
     font-size: var(--fs-xs);
     color: var(--color-text-muted);

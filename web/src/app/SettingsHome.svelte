@@ -124,7 +124,7 @@
   .text {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-1);
     min-width: 0;
   }
   .label {
@@ -139,7 +139,7 @@
     font-size: var(--fs-xs);
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-2);
   }
   .status.ok {
     color: var(--color-success);

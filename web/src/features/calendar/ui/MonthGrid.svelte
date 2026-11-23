@@ -124,12 +124,12 @@
 <style>
   .grid {
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
   }
   .row {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 2px;
+    gap: var(--space-1);
   }
   .wd {
     text-align: center;
@@ -138,14 +138,14 @@
   }
   .day {
     min-height: clamp(1.9em, 6cqh, 6em);
-    padding: 2px 3px;
+    padding: var(--space-1) var(--space-1);
     border: 1px solid transparent;
     border-radius: var(--radius-sm);
     background: var(--color-surface-2);
     font-size: var(--fs-xs);
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: var(--space-1);
     overflow: hidden;
     cursor: pointer;
   }
@@ -167,7 +167,7 @@
   .dots {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: var(--space-1);
     min-height: 6px;
   }
   .dot {
@@ -189,13 +189,13 @@
     .titles {
       display: flex;
       flex-direction: column;
-      gap: 1px;
+      gap: var(--space-1);
       min-width: 0;
     }
     .title {
       border-radius: var(--radius-sm);
       background: color-mix(in srgb, var(--event-color, var(--color-accent)) 20%, transparent);
-      padding: 0 3px;
+      padding: 0 var(--space-1);
       font-size: var(--fs-xs);
       white-space: nowrap;
       overflow: hidden;

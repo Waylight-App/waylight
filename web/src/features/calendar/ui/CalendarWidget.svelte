@@ -130,7 +130,7 @@
   .add {
     float: right;
     margin: -4px 0 0 var(--space-1);
-    padding: 0 6px;
+    padding: 0 var(--space-2);
     line-height: 1.3;
   }
   h4 {
@@ -149,7 +149,7 @@
   li {
     display: flex;
     gap: var(--space-2);
-    padding: 1px 0;
+    padding: var(--space-1) 0;
   }
   .time {
     flex: none;

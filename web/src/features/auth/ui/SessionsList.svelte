@@ -87,7 +87,7 @@
   }
   .badge {
     margin-left: var(--space-2);
-    padding: 0 6px;
+    padding: 0 var(--space-2);
     border-radius: 999px;
     background: var(--color-accent);
     color: var(--color-accent-contrast);

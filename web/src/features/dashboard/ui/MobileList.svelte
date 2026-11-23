@@ -140,7 +140,7 @@
 <style>
   .list {
     display: grid;
-    gap: 12px;
+    gap: var(--space-3);
   }
   /* The stored height is the minimum; long lists are capped and scroll. */
   .cell {
@@ -171,7 +171,7 @@
   }
   .size {
     width: auto;
-    padding-block: 0.15rem;
+    padding-block: var(--space-1);
   }
   .content {
     flex: 1;
@@ -189,16 +189,16 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.25rem 0.5rem;
-    margin-bottom: 0.25rem;
+    gap: var(--space-1) var(--space-2);
+    margin-bottom: var(--space-1);
   }
   .mobile-bar {
     justify-content: space-between;
-    margin-bottom: 0.75rem;
+    margin-bottom: var(--space-3);
   }
   .hide {
     display: inline-flex;
-    gap: 0.25rem;
+    gap: var(--space-1);
     align-items: center;
   }
   .small {

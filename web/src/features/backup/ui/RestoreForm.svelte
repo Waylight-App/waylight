@@ -236,7 +236,7 @@
     list-style: none;
   }
   .facts li {
-    padding: 2px 0;
+    padding: var(--space-1) 0;
   }
   .choice,
   .check {

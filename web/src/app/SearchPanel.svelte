@@ -859,7 +859,7 @@
     margin-bottom: var(--space-2);
   }
   .group {
-    padding: var(--space-2) var(--space-2) 2px;
+    padding: var(--space-2) var(--space-2) var(--space-1);
     font-size: var(--fs-xs);
     font-weight: 600;
     text-transform: uppercase;
@@ -899,7 +899,7 @@
     font-size: var(--fs-xs);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    padding: 0 6px;
+    padding: 0 var(--space-2);
     color: var(--color-text-muted);
   }
   .hint {

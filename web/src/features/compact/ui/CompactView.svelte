@@ -145,14 +145,14 @@
   }
   .action {
     max-width: 100%;
-    padding: 2px var(--space-2);
+    padding: var(--space-1) var(--space-2);
     font-size: var(--fs-xs);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   .chip {
-    padding: 2px var(--space-2);
+    padding: var(--space-1) var(--space-2);
     border: 1px solid var(--color-border);
     border-radius: 999px;
     background: var(--color-surface);

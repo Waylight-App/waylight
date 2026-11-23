@@ -134,7 +134,7 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
-    gap: 2px;
+    gap: var(--space-1);
   }
   .meta {
     font-size: var(--fs-xs);

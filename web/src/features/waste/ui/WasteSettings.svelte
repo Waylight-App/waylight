@@ -213,7 +213,7 @@
   .file dl {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 2px var(--space-3);
+    gap: var(--space-1) var(--space-3);
     margin: var(--space-2) 0;
   }
   .file dt {

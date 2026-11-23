@@ -159,7 +159,7 @@
   .qr {
     image-rendering: pixelated;
     background: #fff;
-    padding: 4px;
+    padding: var(--space-1);
     border-radius: var(--radius-sm);
   }
   .codes {

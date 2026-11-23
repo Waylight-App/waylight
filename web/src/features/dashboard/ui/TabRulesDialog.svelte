@@ -118,8 +118,8 @@
 <style>
   .rule {
     display: grid;
-    gap: 0.5rem;
-    margin: 0 0 0.75rem;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-3);
     justify-items: start;
   }
   .rule .field {
@@ -129,7 +129,7 @@
   .times {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem 0.75rem;
+    gap: var(--space-1) var(--space-3);
   }
   .time {
     width: auto;
@@ -137,7 +137,7 @@
   .actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--space-2);
     justify-content: flex-end;
   }
   .small {

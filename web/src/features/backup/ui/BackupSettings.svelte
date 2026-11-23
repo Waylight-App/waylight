@@ -86,7 +86,7 @@
     display: flex;
     gap: var(--space-3);
     align-items: center;
-    padding: 2px 0;
+    padding: var(--space-1) 0;
   }
   .list li span:first-child {
     flex: 1;

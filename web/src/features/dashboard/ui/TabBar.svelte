@@ -207,7 +207,7 @@
     background: none;
     color: inherit;
     font: inherit;
-    padding: 8px var(--space-3);
+    padding: var(--space-2) var(--space-3);
     border-radius: var(--radius-sm);
     cursor: pointer;
     min-height: 32px;
@@ -234,7 +234,7 @@
     overflow-x: auto;
     scrollbar-width: none;
     max-width: 100%;
-    padding: 2px 12px;
+    padding: var(--space-1) var(--space-3);
     mask-image: linear-gradient(to right, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
   }
   .tabs::-webkit-scrollbar {

@@ -96,7 +96,7 @@
   }
   .session {
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
     margin-bottom: var(--space-2);
   }
   .title {
@@ -124,7 +124,7 @@
   }
   .posters li {
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
     min-width: 0;
   }
   .posters img {

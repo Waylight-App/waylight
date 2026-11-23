@@ -14,10 +14,20 @@ export default {
       'font-size': FONT_SIZE,
       'border-radius': RADIUS,
     },
+    // Spacing comes from --space-*; negative offsets and calc() are left alone.
+    'declaration-property-value-disallowed-list': {
+      '/^(padding|margin|gap|row-gap|column-gap)/': [/^(?!.*calc).*(^|\s)\d*\.?\d+(px|rem|em)\b/],
+    },
   },
   overrides: [
     { files: ['**/*.svelte'], customSyntax: 'postcss-html' },
     // The tokens themselves hold the raw values.
-    { files: ['src/shared/theme/tokens.css'], rules: { 'declaration-property-value-allowed-list': null } },
+    {
+      files: ['src/shared/theme/tokens.css'],
+      rules: {
+        'declaration-property-value-allowed-list': null,
+        'declaration-property-value-disallowed-list': null,
+      },
+    },
   ],
 };

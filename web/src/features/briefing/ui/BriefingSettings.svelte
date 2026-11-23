@@ -176,9 +176,9 @@
   }
   .layout {
     margin: 0;
-    padding-left: 1.4em;
+    padding-left: var(--space-6);
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
   }
   .layout li {
     display: flex;

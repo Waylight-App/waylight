@@ -128,8 +128,8 @@
   .trigger {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 8px 3px 3px;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
     border: 1px solid var(--color-border);
     border-radius: 999px;
     background: var(--color-surface);

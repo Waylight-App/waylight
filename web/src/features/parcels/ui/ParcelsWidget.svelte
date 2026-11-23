@@ -170,7 +170,7 @@
     white-space: nowrap;
   }
   .rm {
-    padding: 0 4px;
+    padding: 0 var(--space-1);
   }
   .small {
     font-size: var(--fs-xs);

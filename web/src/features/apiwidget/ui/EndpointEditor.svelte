@@ -254,7 +254,7 @@
   .preview dl {
     margin: 0;
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
   }
   .row {
     display: flex;

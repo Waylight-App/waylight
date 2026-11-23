@@ -230,7 +230,7 @@
   }
   .grid li {
     display: grid;
-    gap: 2px;
+    gap: var(--space-1);
   }
   .grid img {
     width: 100%;

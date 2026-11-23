@@ -38,7 +38,7 @@
     flex: none;
     width: 12px;
     height: 12px;
-    margin-top: 0.3em;
+    margin-top: var(--space-1);
     border-radius: 50%;
     background: var(--color-success);
   }
@@ -51,7 +51,7 @@
   .text {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-1);
     min-width: 0;
   }
   .reason {
