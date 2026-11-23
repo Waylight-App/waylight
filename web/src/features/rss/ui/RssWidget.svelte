@@ -4,6 +4,7 @@
   import { type FeedItem, itemMeta, parseRssConfig } from '../domain/feed';
   import type { RssUseCases } from '../usecase/rssUseCases';
   import type { Summarizer } from '../../../shared/ui/summarizer';
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import SummaryBox from '../../../shared/ui/SummaryBox.svelte';
 
   /** Props of the RSS widget. */
@@ -80,7 +81,7 @@
 {#if error}<p class="error">{error}</p>{/if}
 <ul class="list">
   {#each items as item (item.id)}
-    <li class:read={item.read}>
+    <ListRow class={item.read ? 'read' : ''}>
       {#if item.link}
         <a
           href={item.link}
@@ -98,30 +99,32 @@
           onclick={() => open(item)}>{item.title}</button
         >
       {/if}
-      {#if !cfg.compact}<span class="meta muted">{itemMeta(item, !!cfg.feedId, now)}</span>{/if}
-      {#if canReadLater && item.link}
-        <button
-          class="btn btn-icon later"
-          type="button"
-          disabled={savedLater.includes(item.id)}
-          title={savedLater.includes(item.id) ? t('readlater.saved_for_later') : t('readlater.read_later')}
-          aria-label={t('readlater.read_later_item', { title: item.title })}
-          onclick={() => saveForLater(item)}>{savedLater.includes(item.id) ? '✓' : '🔖'}</button
-        >
-      {/if}
-      {#if canSummarise && summarizer && item.link}
-        {@const link = item.link}
-        <span class="summarise"
-          ><SummaryBox
-            compact
-            label={t('ai_summary.summarise_item', { title: item.title })}
-            run={() => summarizer.link(link)}
-          /></span
-        >
-      {/if}
-    </li>
+      {#snippet sub()}{#if !cfg.compact}{itemMeta(item, !!cfg.feedId, now)}{/if}{/snippet}
+      {#snippet trail()}
+        {#if canReadLater && item.link}
+          <button
+            class="btn btn-icon later"
+            type="button"
+            disabled={savedLater.includes(item.id)}
+            title={savedLater.includes(item.id) ? t('readlater.saved_for_later') : t('readlater.read_later')}
+            aria-label={t('readlater.read_later_item', { title: item.title })}
+            onclick={() => saveForLater(item)}>{savedLater.includes(item.id) ? '✓' : '🔖'}</button
+          >
+        {/if}
+        {#if canSummarise && summarizer && item.link}
+          {@const link = item.link}
+          <span class="summarise"
+            ><SummaryBox
+              compact
+              label={t('ai_summary.summarise_item', { title: item.title })}
+              run={() => summarizer.link(link)}
+            /></span
+          >
+        {/if}
+      {/snippet}
+    </ListRow>
   {:else}
-    <li class="muted">{cfg.unreadOnly ? t('rss.all_caught_up') : t('rss.no_items')}</li>
+    <li class="muted empty">{cfg.unreadOnly ? t('rss.all_caught_up') : t('rss.no_items')}</li>
   {/each}
 </ul>
 {#if items.some((i) => !i.read)}
@@ -141,10 +144,8 @@
     margin: 0;
     padding: 0;
   }
-  li {
+  .empty {
     padding: var(--space-1) 0;
-    display: flex;
-    flex-direction: column;
   }
   a,
   .linklike {
@@ -162,13 +163,10 @@
     text-align: left;
     cursor: pointer;
   }
-  .read a,
-  .read .linklike {
+  :global(.read) a,
+  :global(.read) .linklike {
     font-weight: 400;
     color: var(--color-text-muted);
-  }
-  .meta {
-    font-size: var(--fs-xs);
   }
   .later {
     padding: 0 var(--space-1);

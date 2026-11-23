@@ -12,6 +12,7 @@
     parseDockerConfig,
   } from '../domain/container';
   import { type ImageUpdate, updatesByContainer } from '../domain/imageUpdate';
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import type { DockerUseCases } from '../usecase/dockerUseCases';
 
   /** Props of the docker widget. */
@@ -98,42 +99,44 @@
   <ul class="list">
     {#each shown as c (c.id)}
       {@const u = updates.get(c.name)}
-      <li title="{c.image}\n{c.status}">
-        <span class="dot {indicator(c)}" role="img" aria-label={c.state}></span>
-        <span class="name">{c.name}</span>
-        {#if u}
-          <a
-            class="update"
-            href={u.releaseUrl || undefined}
-            target="_blank"
-            rel="noopener noreferrer"
-            title={u.newerTag ? t('docker.newer_tag', { tag: u.newerTag }) : t('docker.update_available')}
-            aria-label={t('docker.update_available_for', { name: c.name })}>⬆</a
-          >
-        {/if}
-        <span class="muted small status">{c.status}</span>
-        {#if canAct(actions, c.name)}
-          <button
-            data-action
-            class="btn btn-icon act"
-            type="button"
-            title={t('docker.show_logs')}
-            aria-label={t('docker.logs_of', { name: c.name })}
-            onclick={() => showLogs(c.name)}>≡</button
-          >
-          <button
-            data-action
-            class="btn btn-icon act"
-            type="button"
-            title={t('docker.restart')}
-            aria-label={t('docker.restart_2', { name: c.name })}
-            disabled={busy === c.name}
-            onclick={() => restart(c.name)}>↻</button
-          >
-        {/if}
-      </li>
+      <ListRow nowrap title="{c.image}\n{c.status}">
+        {#snippet lead()}<span class="dot {indicator(c)}" role="img" aria-label={c.state}></span>{/snippet}
+        {c.name}
+        {#snippet value()}<span class="small status">{c.status}</span>{/snippet}
+        {#snippet trail()}
+          {#if u}
+            <a
+              class="update"
+              href={u.releaseUrl || undefined}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={u.newerTag ? t('docker.newer_tag', { tag: u.newerTag }) : t('docker.update_available')}
+              aria-label={t('docker.update_available_for', { name: c.name })}>⬆</a
+            >
+          {/if}
+          {#if canAct(actions, c.name)}
+            <button
+              data-action
+              class="btn btn-icon act"
+              type="button"
+              title={t('docker.show_logs')}
+              aria-label={t('docker.logs_of', { name: c.name })}
+              onclick={() => showLogs(c.name)}>≡</button
+            >
+            <button
+              data-action
+              class="btn btn-icon act"
+              type="button"
+              title={t('docker.restart')}
+              aria-label={t('docker.restart_2', { name: c.name })}
+              disabled={busy === c.name}
+              onclick={() => restart(c.name)}>↻</button
+            >
+          {/if}
+        {/snippet}
+      </ListRow>
     {:else}
-      <li class="muted">{cfg.problemsOnly ? t('docker.all_healthy') : t('docker.no_containers')}</li>
+      <li class="muted empty">{cfg.problemsOnly ? t('docker.all_healthy') : t('docker.no_containers')}</li>
     {/each}
   </ul>
 {/if}
@@ -188,18 +191,8 @@
     margin: 0;
     padding: 0;
   }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+  .empty {
     padding: var(--space-1) 0;
-  }
-  .name {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .status {
     white-space: nowrap;

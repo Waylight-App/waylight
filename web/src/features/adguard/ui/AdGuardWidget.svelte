@@ -16,6 +16,7 @@
     pauseMinutesLeft,
     providerName,
   } from '../domain/adguard';
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import type { AdGuardUseCases } from '../usecase/adguardUseCases';
 
   /** Props of the AdGuard widget. */
@@ -124,11 +125,14 @@
     detail="{stats.blockedPercent.toFixed(1)} %"
   />
   {#if stats.topBlocked.length}
-    <ol class="top">
+    <ul class="top">
       {#each stats.topBlocked as d (d.domain)}
-        <li><span class="domain">{d.domain}</span><span class="muted">{formatCount(d.count)}</span></li>
+        <ListRow nowrap>
+          {d.domain}
+          {#snippet value()}{formatCount(d.count)}{/snippet}
+        </ListRow>
       {/each}
-    </ol>
+    </ul>
   {/if}
   {#if minutesLeft > 0}
     <p class="paused" role="status">⏸ {t('adguard.paused_left', { minutes: minutesLeft })}</p>
@@ -190,19 +194,9 @@
     font-weight: 600;
   }
   .top {
+    list-style: none;
     margin: 0;
-    padding-left: var(--space-4);
+    padding: 0;
     font-size: var(--fs-xs);
-  }
-  .top li span {
-    display: inline-block;
-  }
-  .domain {
-    max-width: 75%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    vertical-align: bottom;
-    margin-right: var(--space-2);
   }
 </style>
