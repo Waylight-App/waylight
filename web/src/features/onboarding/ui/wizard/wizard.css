@@ -616,7 +616,7 @@
   background: transparent;
   color: var(--wz-text);
   border: 1px solid var(--wz-line);
-  font-size: 17px;
+  font-size: var(--fs-sm);
   padding: 14px 26px;
 }
 .wz-btn-line:hover:not(:disabled) {
@@ -624,7 +624,7 @@
 }
 .wz-done-note {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--fs-xs);
   color: var(--wz-subtle);
 }
 .wz-ring {
@@ -652,12 +652,12 @@
   display: block;
   font-family: var(--font-wordmark);
   font-weight: 500;
-  font-size: 38px;
+  font-size: var(--fs-lg);
   line-height: 1;
 }
 .wz-ring small {
   display: block;
-  font-size: 13px;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--wz-subtle);
 }
@@ -669,7 +669,7 @@
 }
 .wz-done-right .wz-eyebrow {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-xs);
 }
 .wz-done-right .wz-eyebrow:not(:first-child) {
   margin-top: 8px;
@@ -688,7 +688,7 @@
   gap: 14px;
   padding: 13px 16px;
   border: 1px solid var(--wz-outline);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--wz-surface);
 }
 .wz-todo-icon {
@@ -698,7 +698,7 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   background: var(--wz-warm);
   color: var(--wz-amber);
 }
@@ -708,14 +708,14 @@
 }
 .wz-todo-text b {
   display: block;
-  font-size: 17px;
+  font-size: var(--fs-sm);
 }
 .wz-todo-text span {
-  font-size: 14px;
+  font-size: var(--fs-xs);
   color: var(--wz-subtle);
 }
 .wz-todo a {
-  font-size: 13px;
+  font-size: var(--fs-xs);
   color: var(--wz-subtle);
   white-space: nowrap;
 }
@@ -725,7 +725,7 @@
     var(--font-sans);
   padding: 8px 14px;
   border: 1px solid var(--wz-outline);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--wz-amber-hover);
   cursor: pointer;
@@ -740,7 +740,7 @@
   margin: 0;
   padding: 4px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: var(--fs-sm);
   color: #8fd6a8;
 }
 .wz-ready-names {
