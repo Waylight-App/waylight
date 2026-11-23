@@ -5,6 +5,7 @@
   import SetupAssistant from './SetupAssistant.svelte';
   import type { SavedConnections } from '../connection/connection';
   import { type SetupDescriptor, useMaySetUp } from './setup';
+  import { takeSetupTurn } from './walk.svelte';
 
   /**
    * What a widget that is not set up shows (#588, #737): the shared symbol,
@@ -29,6 +30,10 @@
   // svelte-ignore state_referenced_locally
   const allowed = useMaySetUp(instance);
   let open = $state(false);
+  const endTurn = takeSetupTurn(
+    () => allowed,
+    () => (open = true),
+  );
   let saved = $state<{ id: string; name: string }[]>([]);
   // svelte-ignore state_referenced_locally
   if (connections)
@@ -40,10 +45,14 @@
 {#if open}
   <SetupAssistant
     {descriptor}
-    onclose={() => (open = false)}
+    onclose={() => {
+      open = false;
+      endTurn();
+    }}
     ondone={() => {
       open = false;
       ondone();
+      endTurn();
     }}
   />
 {/if}

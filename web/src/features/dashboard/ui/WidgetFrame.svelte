@@ -3,6 +3,7 @@
   import type { Snippet } from 'svelte';
   import WidgetHeader from '../../../shared/ui/WidgetHeader.svelte';
   import { provideWidgetIcon } from '../../../shared/ui/widgetIcon';
+  import { provideWidgetKind } from '../../../shared/setup/walk.svelte';
   import type { IconName } from '../../../shared/ui/icons/paths';
   import { WIDGET_SIZES, type WidgetSize } from '../domain/sizes';
   import { ZONES, type Zone } from '../domain/zones';
@@ -10,6 +11,8 @@
   /** Props of the card that wraps every widget. */
   interface Props {
     title: string;
+    /** The widget kind; the setup walk of the onboarding finds its widget by it. */
+    kind?: string;
     /** Icon of the widget kind, shown before the title. */
     icon?: IconName;
     editing: boolean;
@@ -43,6 +46,7 @@
   }
   let {
     title,
+    kind,
     icon,
     editing,
     handle,
@@ -62,6 +66,7 @@
   }: Props = $props();
 
   provideWidgetIcon(() => icon);
+  provideWidgetKind(() => kind);
   let content = $state<HTMLElement>();
   $effect(() => {
     const el = content;
