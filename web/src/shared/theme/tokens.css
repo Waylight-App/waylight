@@ -33,8 +33,16 @@
    * shadow, so there is none by default; a high-contrast theme draws one.
    */
   --color-widget-border: transparent;
+  /*
+   * Corner radii: 12 for tiles, cards, buttons and dialogs, 8 for fields and
+   * blocks inside cards; chips, toggles and badges are pills or circles.
+   * Components use --radius-md and --radius-sm; --radius and --radius-small
+   * stay the names a design saves, so saved designs keep working.
+   */
   --radius: 12px;
   --radius-small: 8px;
+  --radius-md: var(--radius);
+  --radius-sm: var(--radius-small);
   --shadow: 0 1px 2px rgb(16 24 40 / 6%), 0 4px 12px rgb(16 24 40 / 6%);
   /*
    * Text size of the accessibility options (#681). The root font size and
@@ -46,6 +54,13 @@
   --space-3: calc(12px * var(--text-scale));
   --space-4: calc(16px * var(--text-scale));
   --space-6: calc(24px * var(--text-scale));
+  --space-8: calc(32px * var(--text-scale));
+  --space-12: calc(48px * var(--text-scale));
+  /* Font sizes: 13 hints and labels, 15 text, 21 card and dialog titles, 32 page titles. */
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.9375rem;
+  --fs-md: 1.3125rem;
+  --fs-lg: 2rem;
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   /* The product wordmark; fixed, so it reads the same in every theme. */

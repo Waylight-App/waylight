@@ -146,7 +146,7 @@
   .action {
     max-width: 100%;
     padding: 2px var(--space-2);
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -158,7 +158,7 @@
     background: var(--color-surface);
     color: inherit;
     font: inherit;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     cursor: pointer;
   }
   .chip[aria-pressed='true'] {
@@ -167,7 +167,7 @@
   }
   .action-error {
     color: var(--color-danger);
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     pointer-events: auto;
   }
   .label {
@@ -184,18 +184,18 @@
     white-space: nowrap;
   }
   .state {
-    font-size: 1.15em;
+    font-size: var(--fs-md);
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: var(--space-1);
   }
   .strip .state {
-    font-size: 1em;
+    font-size: inherit;
   }
   .detail {
     color: var(--color-text-muted);
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
   /* Colour only for what needs action (#593): amber for attention, red for a problem. */
   .dot {

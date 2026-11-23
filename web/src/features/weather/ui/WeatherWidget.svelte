@@ -201,17 +201,17 @@
     padding: 2px 6px;
     border: 0;
     border-left: 5px solid var(--sev);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: color-mix(in srgb, var(--sev) 18%, transparent);
     color: inherit;
     font: inherit;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     cursor: pointer;
   }
   .detail {
     display: block;
     margin-top: 2px;
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
   .weather {
     height: 100%;
@@ -244,7 +244,7 @@
     text-align: center;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .days {
     list-style: none;
@@ -269,7 +269,7 @@
   .health {
     display: grid;
     gap: 2px;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .health-head,
   .health-row {
@@ -283,7 +283,7 @@
   }
   .chip {
     text-align: center;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     border-left: 4px solid var(--chip);
     background: color-mix(in srgb, var(--chip) 18%, transparent);
     font-variant-numeric: tabular-nums;

@@ -107,7 +107,7 @@
     flex-direction: column;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     overflow-wrap: anywhere;
   }
 </style>

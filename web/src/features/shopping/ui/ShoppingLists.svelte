@@ -173,6 +173,6 @@
     margin: var(--space-1) 0 0;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
 </style>

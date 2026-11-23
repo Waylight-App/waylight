@@ -31,19 +31,19 @@
   }
   /* Notes live in small widgets: keep headings modest. */
   .markdown :global(h1) {
-    font-size: 1.3rem;
+    font-size: var(--fs-md);
   }
   .markdown :global(h2) {
-    font-size: 1.15rem;
+    font-size: var(--fs-md);
   }
   .markdown :global(h3) {
-    font-size: 1rem;
+    font-size: var(--fs-sm);
   }
   .markdown :global(pre),
   .markdown :global(code) {
     font-family: var(--font-mono);
     background: var(--color-surface-2);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
   }
   .markdown :global(pre) {
     padding: var(--space-2);

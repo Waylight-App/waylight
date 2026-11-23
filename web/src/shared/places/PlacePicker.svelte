@@ -129,7 +129,7 @@
     gap: var(--space-2);
   }
   .hint {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     margin: var(--space-1) 0 var(--space-2);
   }
 </style>

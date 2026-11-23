@@ -151,7 +151,7 @@
     accent-color: var(--color-accent);
   }
   .emoji {
-    font-size: 1.1rem;
+    font-size: var(--fs-sm);
   }
   .name {
     grid-area: name;
@@ -184,7 +184,7 @@
   }
   .cell {
     aspect-ratio: 1;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     border: none;
     padding: 0;
     background: color-mix(in srgb, var(--color-text-muted) 10%, transparent);

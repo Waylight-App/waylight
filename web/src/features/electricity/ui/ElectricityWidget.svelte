@@ -100,21 +100,21 @@
     flex-wrap: wrap;
   }
   .now strong {
-    font-size: 1.3rem;
+    font-size: var(--fs-md);
   }
   .legend {
-    font-size: max(0.8rem, 0.8em);
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   .swatch {
     display: inline-block;
     width: 10px;
     height: 10px;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
   }
   h4 {
     margin: var(--space-2) 0 var(--space-1);
-    font-size: max(0.8rem, 0.8em);
+    font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--color-text-muted);
@@ -142,12 +142,12 @@
     bottom: calc(100% - var(--zero));
     height: var(--h);
     background: color-mix(in srgb, var(--color-accent) 45%, transparent);
-    border-radius: 2px 2px 0 0;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   }
   .bar.negative::before {
     bottom: auto;
     top: var(--zero);
-    border-radius: 0 0 2px 2px;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   }
   .bar.cheap::before,
   .swatch.cheap {
@@ -158,7 +158,7 @@
     outline-offset: 1px;
   }
   .small {
-    font-size: max(0.8rem, 0.85em);
+    font-size: var(--fs-xs);
     margin: var(--space-1) 0 0;
   }
   .warn {

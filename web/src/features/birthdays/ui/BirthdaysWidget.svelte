@@ -109,7 +109,7 @@
     min-width: 0;
   }
   .icon {
-    font-size: 1.2rem;
+    font-size: var(--fs-md);
     width: 1.6rem;
     text-align: center;
   }
@@ -126,7 +126,7 @@
     white-space: nowrap;
   }
   .small {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   .when {
     font-variant-numeric: tabular-nums;

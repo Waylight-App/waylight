@@ -138,7 +138,7 @@
   }
   fieldset {
     border: 1px solid var(--color-border, rgba(127, 127, 127, 0.3));
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     margin: var(--space-2) 0;
   }
   .registry {

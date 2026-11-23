@@ -217,7 +217,7 @@
   }
   h4 {
     margin: var(--space-2) 0 var(--space-1);
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
   ul {
     list-style: none;
@@ -241,7 +241,7 @@
     overflow-wrap: anywhere;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .edit {
     display: grid;

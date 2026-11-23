@@ -81,7 +81,7 @@
   }
   .section h4 {
     margin: 0 0 2px;
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--color-text-muted);
@@ -126,7 +126,7 @@
   .detail {
     flex: 0 1 auto;
     min-width: 0;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
     overflow-wrap: anywhere;
   }
@@ -139,7 +139,7 @@
     font-weight: 600;
   }
   .small {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     margin: 0;
   }
 </style>

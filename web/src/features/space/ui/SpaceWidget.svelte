@@ -117,7 +117,7 @@
     width: 100%;
     max-height: 40cqh;
     object-fit: cover;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   figcaption {
     margin-top: var(--space-1);
@@ -127,7 +127,7 @@
   }
   h4 {
     margin: 0 0 var(--space-1);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   .launches {
@@ -164,9 +164,9 @@
     font-variant-numeric: tabular-nums;
   }
   .status {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     padding: 0 4px;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2);
   }
   .status.good {
@@ -178,11 +178,11 @@
     background: color-mix(in srgb, var(--color-danger) 15%, transparent);
   }
   .live {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     color: var(--color-danger);
     font-weight: 600;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

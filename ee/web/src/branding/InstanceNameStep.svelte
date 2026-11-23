@@ -54,6 +54,6 @@
     gap: var(--space-1);
   }
   .small {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
 </style>

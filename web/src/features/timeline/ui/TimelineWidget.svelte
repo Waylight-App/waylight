@@ -86,7 +86,7 @@
   }
   .day {
     margin-top: var(--space-2);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     font-weight: 600;
     text-transform: uppercase;
     color: var(--color-text-muted);

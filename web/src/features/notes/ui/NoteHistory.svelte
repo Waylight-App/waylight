@@ -110,7 +110,7 @@
     text-align: left;
     border: 1px solid var(--color-border);
     background: var(--color-surface);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     padding: var(--space-1) var(--space-2);
     cursor: pointer;
   }
@@ -121,9 +121,9 @@
     max-height: 45vh;
     overflow: auto;
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     background: var(--color-surface-2);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     padding: var(--space-2);
     white-space: pre-wrap;
   }
@@ -143,6 +143,6 @@
     text-decoration: line-through;
   }
   .small {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
 </style>

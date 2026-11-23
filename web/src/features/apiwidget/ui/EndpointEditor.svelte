@@ -212,7 +212,7 @@
     gap: var(--space-2);
     padding: var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
   }
   .grid2 {
     display: grid;
@@ -226,7 +226,7 @@
   }
   fieldset {
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     display: grid;
     gap: var(--space-1);
     min-width: 0;
@@ -279,7 +279,7 @@
     overflow: auto;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .actions {
     display: flex;
@@ -287,7 +287,7 @@
     flex-wrap: wrap;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     margin: 0;
   }
 </style>

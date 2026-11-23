@@ -124,7 +124,7 @@
     padding: var(--space-2);
     border: 1px solid transparent;
     background: var(--color-surface-2);
-    border-radius: var(--radius, 8px);
+    border-radius: var(--radius-md);
   }
   .tiles li.on {
     border-color: var(--color-accent);
@@ -135,9 +135,9 @@
     white-space: nowrap;
   }
   .state {
-    font-size: 1.2em;
+    font-size: var(--fs-md);
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

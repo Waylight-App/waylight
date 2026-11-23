@@ -141,6 +141,6 @@
     justify-content: flex-end;
   }
   .small {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
 </style>

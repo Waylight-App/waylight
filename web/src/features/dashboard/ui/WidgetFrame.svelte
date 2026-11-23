@@ -266,7 +266,7 @@
   .size {
     width: auto;
     padding: 2px var(--space-1);
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   .chromeless .content {
     padding: 0;

@@ -39,7 +39,7 @@
     gap: var(--space-1);
     min-width: 0;
     margin: 0;
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;

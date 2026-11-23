@@ -45,7 +45,7 @@
 <style>
   h4 {
     margin: 0 0 var(--space-1);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   ul {
@@ -68,7 +68,7 @@
     font: inherit;
     text-align: left;
     cursor: pointer;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .ev:hover,
   .ev:focus-visible {
@@ -77,7 +77,7 @@
   .when {
     flex: none;
     width: 5.5em;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     color: var(--color-accent-text);
     font-variant-numeric: tabular-nums;
     display: flex;
@@ -98,6 +98,6 @@
     white-space: nowrap;
   }
   .where {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

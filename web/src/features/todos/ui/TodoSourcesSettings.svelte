@@ -286,14 +286,14 @@
     white-space: nowrap;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .redirect {
     overflow-wrap: anywhere;
     user-select: all;
   }
   h3 {
-    font-size: 1rem;
+    font-size: var(--fs-sm);
     margin: var(--space-3) 0 var(--space-2);
   }
 </style>

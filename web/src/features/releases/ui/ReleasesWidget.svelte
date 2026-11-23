@@ -74,7 +74,7 @@
     width: 3rem;
     height: 3rem;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: var(--color-border);
     flex: none;
   }
@@ -88,6 +88,6 @@
     white-space: nowrap;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

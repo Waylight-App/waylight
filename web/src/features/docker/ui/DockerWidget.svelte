@@ -153,35 +153,35 @@
   .update {
     color: var(--color-warning);
     text-decoration: none;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .act {
     padding: 0 4px;
     line-height: 1.2;
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
   .logs {
     max-height: 60vh;
     max-width: min(90vw, 900px);
     overflow: auto;
-    font-size: max(0.8rem, 0.75rem); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     white-space: pre-wrap;
     word-break: break-all;
     background: var(--color-surface-2);
     padding: var(--space-2);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .summary {
     display: flex;
     gap: var(--space-3);
     margin: 0 0 var(--space-2);
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .alert {
     color: var(--color-danger);
   }
   .small {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
   .list {
     list-style: none;

@@ -112,11 +112,11 @@
     right: 4px;
     bottom: 2px;
     padding: 0 4px;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     line-height: 1.2;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .tiles {
     list-style: none;
@@ -134,7 +134,7 @@
     align-items: center;
     gap: var(--space-2);
     padding: var(--space-2);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2);
     color: inherit;
     text-decoration: none;
@@ -155,10 +155,10 @@
     white-space: nowrap;
   }
   .desc {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .cert {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
     color: var(--color-warning);
     white-space: nowrap;
   }

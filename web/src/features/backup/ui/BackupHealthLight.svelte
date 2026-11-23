@@ -55,7 +55,7 @@
     min-width: 0;
   }
   .reason {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
     overflow-wrap: anywhere;
   }

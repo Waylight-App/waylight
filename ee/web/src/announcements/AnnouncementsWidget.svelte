@@ -208,14 +208,14 @@
     font: inherit;
   }
   .count {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
     padding: 0 var(--space-2);
     border-radius: 999px;
     background: var(--color-accent);
     color: var(--color-accent-contrast);
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   ul {
     list-style: none;
@@ -252,7 +252,7 @@
     cursor: pointer;
   }
   .meta {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .body {
     margin: var(--space-2) 0;

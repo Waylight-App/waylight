@@ -59,10 +59,10 @@
     overflow: auto;
     padding: var(--space-2) var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     background: var(--color-surface);
     box-shadow: var(--shadow);
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
   .top {
     display: flex;
@@ -77,6 +77,6 @@
     white-space: pre-line;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

@@ -127,7 +127,7 @@
   }
   /* Large text (#680): everything sized in rem grows with the root. */
   :global(html.kiosk-large) {
-    font-size: 125%;
+    font-size: var(--fs-md);
   }
   :global(html.kiosk-idle),
   :global(html.kiosk-idle *) {

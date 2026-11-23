@@ -345,12 +345,12 @@
     min-width: 10rem;
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .badge {
-    font-size: 0.75em;
+    font-size: var(--fs-xs);
     padding: 0 var(--space-1);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     background: var(--color-surface-2, rgba(127, 127, 127, 0.12));
     margin-left: var(--space-1);
   }
@@ -369,7 +369,7 @@
     align-items: flex-start;
     margin: var(--space-2) 0;
     padding: var(--space-2);
-    border-radius: var(--radius-2, 8px);
+    border-radius: var(--radius-sm);
   }
   .privacy.highlight {
     background: var(--color-surface-2, rgba(127, 127, 127, 0.12));
@@ -377,7 +377,7 @@
   }
   .notice {
     padding: var(--space-2);
-    border-radius: var(--radius-2, 8px);
+    border-radius: var(--radius-sm);
     background: var(--color-surface-2, rgba(127, 127, 127, 0.12));
   }
 </style>

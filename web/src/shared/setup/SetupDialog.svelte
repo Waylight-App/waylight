@@ -60,14 +60,14 @@
   .lead {
     margin: 0;
     color: var(--color-text-muted);
-    font-size: 1.05em;
+    font-size: var(--fs-sm);
     line-height: 1.5;
   }
   .help {
     display: flex;
     gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     background: color-mix(in srgb, var(--color-accent) 10%, transparent);
     line-height: 1.5;
   }

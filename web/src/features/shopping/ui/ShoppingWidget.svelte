@@ -250,9 +250,9 @@
   }
   .link {
     margin-top: var(--space-1);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

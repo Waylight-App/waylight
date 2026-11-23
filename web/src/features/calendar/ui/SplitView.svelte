@@ -194,7 +194,7 @@
   .today {
     margin-left: auto;
     padding: 0 var(--space-2);
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
   .add {
     padding: 0 6px;
@@ -224,6 +224,6 @@
     }
   }
   .small {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
 </style>

@@ -190,7 +190,7 @@
   mark {
     background: color-mix(in srgb, var(--color-accent) 30%, transparent);
     color: inherit;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
   }
   .actions {
     display: flex;
@@ -211,7 +211,7 @@
     text-align: left;
     border: none;
     background: var(--color-surface-2);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     padding: var(--space-2);
     cursor: pointer;
   }
@@ -220,6 +220,6 @@
     padding: 0;
   }
   .muted {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
 </style>

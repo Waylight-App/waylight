@@ -160,13 +160,13 @@
     image-rendering: pixelated;
     background: #fff;
     padding: 4px;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .codes {
     columns: 2;
     font-family: var(--font-mono);
   }
   .small {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
   }
 </style>

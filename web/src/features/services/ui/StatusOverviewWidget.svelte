@@ -155,7 +155,7 @@
   }
   .bar {
     flex: 1;
-    border-radius: 1px;
+    border-radius: var(--radius-sm);
     background: var(--color-border, rgba(127, 127, 127, 0.25));
   }
   .bar.good {
@@ -172,7 +172,7 @@
     grid-template-columns: repeat(4, auto auto);
     gap: 0 var(--space-2);
     margin: var(--space-1) 0;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .windows dd {
     margin: 0;
@@ -181,13 +181,13 @@
   .incidents {
     list-style: none;
     padding: 0;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .incidents li {
     display: flex;
     flex-direction: column;
   }
   .small {
-    font-size: 0.9em;
+    font-size: var(--fs-sm);
   }
 </style>

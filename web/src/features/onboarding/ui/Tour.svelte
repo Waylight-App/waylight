@@ -117,7 +117,7 @@
   /* The huge shadow darkens everything except the highlighted element. */
   .spotlight {
     position: fixed;
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     box-shadow: 0 0 0 9999px rgb(0 0 0 / 55%);
     outline: 2px solid var(--color-accent-text);
     transition: all 200ms ease;
@@ -134,11 +134,11 @@
   }
   h2 {
     margin: 0 0 var(--space-2);
-    font-size: 1.15rem;
+    font-size: var(--fs-md);
   }
   .progress {
     margin: 0;
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   .actions {
     display: flex;

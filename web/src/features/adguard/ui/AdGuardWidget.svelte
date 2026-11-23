@@ -171,7 +171,7 @@
   }
   .numbers span,
   .small {
-    font-size: max(0.8rem, 0.75em); /* at least 12 px (#317) */
+    font-size: var(--fs-xs);
   }
   .pause {
     display: flex;
@@ -182,7 +182,7 @@
   }
   .pause .btn {
     padding: 2px var(--space-2);
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .paused {
     margin: var(--space-2) 0;
@@ -192,7 +192,7 @@
   .top {
     margin: 0;
     padding-left: 1.2em;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .top li span {
     display: inline-block;

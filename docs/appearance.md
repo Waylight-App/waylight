@@ -139,7 +139,8 @@ nothing else, so changing a token changes every place that uses it.
 | `--color-danger`, `--color-success`, `--color-warning` | Status colours, also used as text |
 | `--color-ok` | Marks for a healthy state, such as the dot of a service that runs. Follows `--color-text-muted`, so only problems (`--color-danger`) and things that need a look (`--color-warning`) stand out; set a green here if you prefer one |
 | `--color-widget-border` | Outline of widget cards, `transparent` by default. Cards are told apart by spacing, background and shadow; the high-contrast theme draws a white line |
-| `--radius`, `--radius-small` | Corner radius of cards; of buttons and inputs |
+| `--radius`, `--radius-small` | Corner radius of cards, buttons and dialogs (12 px); of fields and blocks inside cards (8 px). Components read them as `--radius-md` and `--radius-sm` |
+| `--fs-xs`, `--fs-sm`, `--fs-md`, `--fs-lg` | The four font sizes: 13, 15, 21 and 32 px. They follow the text size option |
 | `--shadow`, `--shadow-pop` | Shadow of cards; of menus and panels that float above the page |
 | `--glow` | A soft light around the widget area, `none` by default |
 | `--page-gradient` | A gradient behind the page when no background picture is chosen, `none` by default |

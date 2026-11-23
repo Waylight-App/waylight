@@ -150,7 +150,7 @@
     gap: var(--gap);
     min-height: 200px;
     /* A theme's soft light around the widget area (#512); none by default. */
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     box-shadow: var(--glow);
   }
   .grid.editing {
@@ -167,7 +167,7 @@
   .cell:focus-visible {
     outline: 3px solid var(--color-accent-text);
     outline-offset: 2px;
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
   }
   .cell.active {
     z-index: 2;
@@ -195,7 +195,7 @@
     width: 16px;
     height: 16px;
     background: linear-gradient(135deg, transparent 50%, var(--color-accent) 50%);
-    border-radius: 0 0 var(--radius) 0;
+    border-radius: 0 0 var(--radius-md) 0;
   }
   @media (pointer: coarse) {
     .resize {

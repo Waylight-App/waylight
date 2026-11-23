@@ -135,7 +135,7 @@
   }
   .meta,
   .cost {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
   }
   .cost {
     white-space: nowrap;

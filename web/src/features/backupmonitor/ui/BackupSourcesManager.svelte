@@ -172,9 +172,9 @@
   }
   pre {
     overflow: auto;
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     background: var(--color-surface-2);
     padding: var(--space-2);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
 </style>

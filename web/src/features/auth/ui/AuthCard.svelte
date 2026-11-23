@@ -60,7 +60,7 @@
   }
   .frame {
     width: min(420px, 100%);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     box-shadow: var(--glow);
   }
   section {
@@ -70,7 +70,7 @@
   }
   h1 {
     margin: 0 0 var(--space-2);
-    font-size: 1.6rem;
+    font-size: var(--fs-md);
   }
   .logo {
     display: flex;
@@ -84,7 +84,7 @@
     gap: var(--space-2);
     margin: 0;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: var(--fs-sm);
   }
   .wordmark {
     font-family: var(--font-wordmark);

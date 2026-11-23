@@ -42,7 +42,7 @@
   .banner {
     margin: 0 0 var(--space-2);
     padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: color-mix(in srgb, var(--color-warning, #b45309) 18%, transparent);
   }
 </style>

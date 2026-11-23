@@ -114,7 +114,7 @@
     gap: var(--space-2);
   }
   .small {
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .add {
     display: grid;

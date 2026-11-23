@@ -31,7 +31,7 @@
   .link {
     padding: var(--space-3);
     border: 2px solid var(--color-accent);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     margin-bottom: var(--space-3);
   }
   .link code {

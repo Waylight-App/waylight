@@ -123,7 +123,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    font-size: 0.85em;
+    font-size: var(--fs-xs);
   }
   .health .error {
     color: var(--color-danger);
@@ -148,12 +148,12 @@
   .bar {
     height: 4px;
     background: var(--color-border);
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
   }
   .fill {
     height: 100%;
     background: var(--color-accent);
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
   }
   .upcoming {
     list-style: none;
@@ -171,6 +171,6 @@
     grid-column: 2;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>

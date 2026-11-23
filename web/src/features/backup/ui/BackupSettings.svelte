@@ -76,7 +76,7 @@
     padding: var(--space-3);
     background: var(--color-surface-2);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .list {
     list-style: none;

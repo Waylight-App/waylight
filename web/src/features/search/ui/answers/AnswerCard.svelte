@@ -113,7 +113,7 @@
   .answer {
     padding: var(--space-2) var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: var(--color-surface);
     display: grid;
     gap: var(--space-1);
@@ -126,7 +126,7 @@
   }
   h3 {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     color: var(--color-text-muted);
   }
@@ -135,7 +135,7 @@
   }
   .age,
   .detail {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
   /*
@@ -147,7 +147,7 @@
     align-items: center;
     gap: var(--space-2);
     font-family: var(--font-display);
-    font-size: 1.6rem;
+    font-size: var(--fs-md);
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     line-height: 1.2;
@@ -159,7 +159,7 @@
     height: 1em;
     vertical-align: -0.1em;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
   }
   .value[data-severity='warning'] {
     color: var(--color-warning);
@@ -218,7 +218,7 @@
   }
   .open {
     justify-self: start;
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     padding: 0;
     color: var(--color-accent-text);
   }

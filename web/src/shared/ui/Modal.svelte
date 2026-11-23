@@ -89,11 +89,11 @@
     align-items: center;
     gap: var(--space-3);
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--fs-sm);
   }
   dialog.medium h2 {
     font-family: var(--font-display);
-    font-size: 1.4rem;
+    font-size: var(--fs-md);
   }
   .badge {
     display: flex;

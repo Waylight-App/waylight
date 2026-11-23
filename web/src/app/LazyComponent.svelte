@@ -117,7 +117,7 @@
   .skeleton {
     height: 100%;
     min-height: 3rem;
-    border-radius: var(--radius-small);
+    border-radius: var(--radius-sm);
     background: linear-gradient(
       90deg,
       var(--color-surface-2) 25%,

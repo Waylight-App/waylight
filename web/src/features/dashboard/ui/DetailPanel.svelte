@@ -84,7 +84,7 @@
   }
   h2 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--fs-sm);
   }
   /* The same size container as a widget card, so the full view lays itself
      out as in a large tile. */
@@ -111,7 +111,7 @@
       width: 100vw;
       max-width: 100vw;
       height: 85dvh;
-      border-radius: var(--radius) var(--radius) 0 0;
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
     }
   }
 </style>

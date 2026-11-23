@@ -166,13 +166,13 @@
     font-weight: 600;
   }
   .badge {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
     white-space: nowrap;
   }
   .rm {
     padding: 0 4px;
   }
   .small {
-    font-size: 0.8em;
+    font-size: var(--fs-xs);
   }
 </style>
