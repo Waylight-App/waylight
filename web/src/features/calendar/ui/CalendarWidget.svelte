@@ -9,6 +9,7 @@
   import type { CalendarUseCases } from '../usecase/calendarUseCases';
   import MonthView from './MonthView.svelte';
   import QuickAddEvent from './QuickAddEvent.svelte';
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import SplitView from './SplitView.svelte';
 
   /** Props of the calendar widget. */
@@ -102,14 +103,14 @@
         <h4>{dayLabel(day.date)}</h4>
         <ul>
           {#each day.events as e (e.uid + e.start.getTime())}
-            <li
-              title={[e.location, e.calendar].filter(Boolean).join(' · ')}
-              class:colored={e.color !== ''}
-              style:--event-color={e.color || null}
-            >
-              <span class="time">{e.allDay ? t('calendar.all_day_short') : time(e.start)}</span>
-              <span class="summary">{e.summary}</span>
-            </li>
+            <ListRow title={[e.location, e.calendar].filter(Boolean).join(' · ')}>
+              {#snippet lead()}<span class="time"
+                  >{e.allDay ? t('calendar.all_day_short') : time(e.start)}</span
+                >{/snippet}
+              <span class="summary" class:colored={e.color !== ''} style:--event-color={e.color || null}
+                >{e.summary}</span
+              >
+            </ListRow>
           {/each}
         </ul>
       </section>
@@ -123,7 +124,7 @@
 {/if}
 
 <style>
-  li.colored {
+  .summary.colored {
     border-left: 3px solid var(--event-color);
     padding-left: var(--space-1);
   }
@@ -146,22 +147,12 @@
     margin: 0;
     padding: 0;
   }
-  li {
-    display: flex;
-    gap: var(--space-2);
-    padding: var(--space-1) 0;
-  }
   .time {
     flex: none;
     width: 4.5em;
     font-variant-numeric: tabular-nums;
     color: var(--color-accent-text);
     font-size: var(--fs-xs);
-  }
-  .summary {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .small {
     font-size: var(--fs-xs);

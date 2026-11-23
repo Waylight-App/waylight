@@ -2,6 +2,7 @@
   import { intlLocale, t } from '../../../shared/i18n';
   import TodoEditDialog from './TodoEditDialog.svelte';
   import HintChip from '../../../shared/ui/HintChip.svelte';
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
   import { usePolling } from '../../../shared/refresh';
   import {
@@ -86,42 +87,46 @@
 {#if error}<p class="error">{error}</p>{/if}
 <ul class="list">
   {#each list as todo (todo.id)}
-    <li class:done={todo.done}>
+    <ListRow>
       <label>
         <input type="checkbox" checked={todo.done} onchange={() => run(() => todos.toggle(todo))} />
-        <span class="title">{todo.title}</span>
+        <span class="title" class:done={todo.done}>{todo.title}</span>
       </label>
-      {#if todo.repeat.kind}
-        {@const text = describeRepeat(todo.repeat, dayName)}
-        <span class="icon" title={text} aria-label={text} role="img">🔁</span>
-      {/if}
-      {#if todo.reminder.at}
-        {@const text = describeReminder(todo.reminder)}
-        <span class="icon" title={text} aria-label={text} role="img">🔔</span>
-      {/if}
-      {#if todo.due}
-        {@const label = formatDue(todo.due, new Date())}
-        {#if todo.overdue || isDueToday(todo.due, new Date())}
-          <HintChip lead={label} tone={todo.overdue ? 'danger' : 'accent'} />
-        {:else}
-          <span class="due">{label}</span>
+      {#snippet value()}
+        {#if todo.due}
+          {@const label = formatDue(todo.due, new Date())}
+          {#if todo.overdue || isDueToday(todo.due, new Date())}
+            <HintChip lead={label} tone={todo.overdue ? 'danger' : 'accent'} />
+          {:else}
+            <span class="due">{label}</span>
+          {/if}
         {/if}
-      {/if}
-      <button
-        class="btn btn-icon del"
-        type="button"
-        aria-label={t('todos.edit', { title: todo.title })}
-        onclick={() => (editing = todo)}>✎</button
-      >
-      <button
-        class="btn btn-icon del"
-        type="button"
-        aria-label={t('todos.delete', { title: todo.title })}
-        onclick={() => run(() => todos.delete(todo.id))}>✕</button
-      >
-    </li>
+      {/snippet}
+      {#snippet trail()}
+        {#if todo.repeat.kind}
+          {@const text = describeRepeat(todo.repeat, dayName)}
+          <span class="icon" title={text} aria-label={text} role="img">🔁</span>
+        {/if}
+        {#if todo.reminder.at}
+          {@const text = describeReminder(todo.reminder)}
+          <span class="icon" title={text} aria-label={text} role="img">🔔</span>
+        {/if}
+        <button
+          class="btn btn-icon del"
+          type="button"
+          aria-label={t('todos.edit', { title: todo.title })}
+          onclick={() => (editing = todo)}>✎</button
+        >
+        <button
+          class="btn btn-icon del"
+          type="button"
+          aria-label={t('todos.delete', { title: todo.title })}
+          onclick={() => run(() => todos.delete(todo.id))}>✕</button
+        >
+      {/snippet}
+    </ListRow>
   {:else}
-    <li class="muted">{t('todos.nothing_to_do')}</li>
+    <li class="muted empty">{t('todos.nothing_to_do')}</li>
   {/each}
 </ul>
 {#if editing}
@@ -148,24 +153,19 @@
     margin: 0;
     padding: 0;
   }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+  .empty {
     padding: var(--space-1) 0;
   }
   label {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    flex: 1;
     min-width: 0;
   }
   .title {
-    overflow: hidden;
-    text-overflow: ellipsis;
+    min-width: 0;
   }
-  .done .title {
+  .title.done {
     text-decoration: line-through;
     color: var(--color-text-muted);
   }
@@ -180,7 +180,7 @@
   .del {
     opacity: 0;
   }
-  li:hover .del,
+  :global(.row:hover) .del,
   .del:focus {
     opacity: 1;
   }

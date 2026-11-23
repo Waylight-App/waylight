@@ -11,17 +11,20 @@
   interface Props {
     title: string;
     icon?: IconName;
+    /** Quiet text after the title, such as a count or a date. */
+    meta?: string;
     /** Controls at the end of the line, such as the edit buttons. */
     action?: Snippet;
   }
-  let { title, icon, action }: Props = $props();
+  let { title, icon, meta, action }: Props = $props();
 </script>
 
 <div class="widget-header">
   <h3>
-    {#if icon}<Icon name={icon} />{/if}
+    {#if icon}<Icon name={icon} size={16} />{/if}
     <span class="title">{title}</span>
   </h3>
+  {#if meta}<span class="meta">{meta}</span>{/if}
   {#if action}<span class="action">{@render action()}</span>{/if}
 </div>
 
@@ -39,17 +42,24 @@
     gap: var(--space-1);
     min-width: 0;
     margin: 0;
-    font-size: var(--fs-xs);
+    font-size: var(--fs-sm);
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-text-muted);
+    color: var(--color-text);
   }
-  /* Sized in em so the icon follows the text size setting. */
+  /* 16px like every line icon; muted so the title leads. */
   h3 :global(svg) {
     flex: none;
-    width: 1.15em;
-    height: 1.15em;
+    color: var(--color-text-muted);
+  }
+  .meta {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
   }
   .title {
     overflow: hidden;
