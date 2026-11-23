@@ -137,6 +137,27 @@ display. If you run Waylight on a Pi, a short report in
 [#361](https://github.com/Waylight-App/waylight/issues/361) helps; the numbers
 will be added here.
 
+Copy this into a comment and fill in what you could check:
+
+```text
+Model:
+Storage (SD card / SSD, size):
+Display (HDMI monitor / official touch display / none):
+Waylight version:
+
+First boot reaches http://waylight.local (yes/no, minutes):
+Idle memory after 10 minutes (systemctl status waylight | grep Memory):
+Idle CPU (top -b -n 3 -d 5 | grep waylight):
+Database intact after pulling the plug (yes/no):
+
+Kiosk: Settings > Device > Server + display starts it without a reboot (yes/no):
+Kiosk: dashboard full screen on HDMI / touch display:
+Kiosk: night mode turns the screen off and on (yes/no):
+Kiosk: free -m and df -h / before and after:
+
+Anything else:
+```
+
 ## Troubleshooting
 
 | Problem | What to do |
