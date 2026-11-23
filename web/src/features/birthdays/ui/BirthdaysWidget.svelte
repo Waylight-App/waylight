@@ -63,7 +63,7 @@
     <ListRow nowrap urgent={b.inDays === 0}>
       {#snippet lead()}<span class="icon" aria-hidden="true">{b.inDays === 0 ? '🎂' : '🎈'}</span>{/snippet}
       <span class:today={b.inDays === 0}>{b.name}</span>
-      {#snippet sub()}{date(b)}{#if b.age > 0}{' · '}{t('birthdays.turns', { age: b.age })}{/if}{/snippet}
+      {#snippet sub()}{date(b)}{#if b.age > 0}&nbsp;· {t('birthdays.turns', { age: b.age })}{/if}{/snippet}
       {#snippet value()}<span class:soon={b.inDays > 0 && b.inDays < SOON_DAYS}>{when(b)}</span>{/snippet}
       {#snippet trail()}
         <span class="actions">
