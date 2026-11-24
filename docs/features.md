@@ -42,6 +42,7 @@ modules in detail.
 | Places (`places`) | Places entered once by address search or browser location and chosen by the weather, rain radar and fuel price settings; Settings shows which widgets use each one. [Details](modules/places.md) |
 | Integrations (`integrations`) | Named connections to a service with an encrypted credential, saved once by an admin and later chosen by every widget of that service; lists which widgets use each one. [Details](modules/integrations.md) |
 | Clock (`clock`) | Time and date, optionally in another time zone. |
+| Tonight (`tonight`, part of the weather module) | One lit card with the time, the date, the current weather, the active weather warning and a four-day forecast; small and strip tiles show the time, the temperature and a dot for a warning. The clock and weather widgets stay available. |
 | Daily briefing (`briefing`) | Weather warnings, failures since last evening, offline services, due to-dos, appointments and waste collection in one widget, optionally pushed at a set time each morning. |
 | Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export, and a built-in catalogue of news sources by topic and language (Settings → Feeds → Browse catalogue; no outside request until you subscribe; [format](https://github.com/Waylight-App/waylight/blob/main/web/src/features/rss/catalogue/README.md)). |
 | Public transport (`transit`) | Next departures of a stop with real-time delays, via [Transitous](https://transitous.org). |

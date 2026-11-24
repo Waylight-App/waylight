@@ -25,13 +25,13 @@ func TestSampleLayoutIsValid(t *testing.T) {
 }
 
 func TestSeedSampleData(t *testing.T) {
-	deps, repo := newDeps("clock", "weather")
+	deps, repo := newDeps("tonight", "clock")
 	uc := NewSeedSampleData(deps, SampleLayout(`{"lat":1,"lon":2}`))
 	if err := uc.Execute(ctx); err != nil {
 		t.Fatal(err)
 	}
-	if len(repo.tabs) != 2 || len(repo.widgets) != 2 {
-		t.Fatalf("expected 2 tabs and only the 2 available widgets, got %d/%d", len(repo.tabs), len(repo.widgets))
+	if len(repo.tabs) != 2 || len(repo.widgets) != 1 {
+		t.Fatalf("expected 2 tabs and only the available widget, got %d/%d", len(repo.tabs), len(repo.widgets))
 	}
 	for _, tab := range repo.tabs {
 		if !tab.Sample() {
@@ -40,6 +40,22 @@ func TestSeedSampleData(t *testing.T) {
 	}
 	if err := uc.Execute(ctx); err != nil || len(repo.tabs) != 2 {
 		t.Fatal("seeding must not run twice")
+	}
+}
+
+// Without the weather module the Tonight card gives way to the clock.
+func TestSeedSampleDataFallsBackToClock(t *testing.T) {
+	deps, repo := newDeps("clock")
+	if err := NewSeedSampleData(deps, SampleLayout(`{"lat":1}`)).Execute(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if len(repo.widgets) != 1 {
+		t.Fatalf("expected one widget, got %d", len(repo.widgets))
+	}
+	for _, w := range repo.widgets {
+		if w.Kind() != "clock" || w.Config() != "{}" {
+			t.Fatalf("expected the clock without config, got %s %q", w.Kind(), w.Config())
+		}
 	}
 }
 

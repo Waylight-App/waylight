@@ -65,6 +65,12 @@ const pairs: [string, string[]][] = [
   ['--color-success', ['--color-surface', '--color-surface-2']],
   ['--color-warning', ['--color-surface', '--color-surface-2']],
   ['--color-accent-contrast', ['--color-accent']],
+  // The lit card (#768) sits on its own background.
+  ['--color-lit-text', ['--color-lit']],
+  ['--color-lit-muted', ['--color-lit']],
+  ['--color-lit-accent', ['--color-lit']],
+  ['--color-lit-warning', ['--color-lit']],
+  ['--color-lit-danger', ['--color-lit']],
 ];
 
 function failing(t: Record<string, string>, min: number): string[] {
@@ -85,6 +91,28 @@ describe('contrast of the light and dark tokens (#113)', () => {
 
   it.each(Object.entries(schemes))('%s meets WCAG AA (4.5:1) for text', (_name, t) => {
     expect(failing(t, 4.5)).toEqual([]);
+  });
+});
+
+/** Mixes ink into a background like color-mix(in srgb, ink p, bg). */
+function tint(bg: string, ink: string, p: number): string {
+  const channel = (hex: string, i: number) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
+  const mixed = [0, 1, 2].map((i) =>
+    Math.round(channel(bg, i) * (1 - p) + channel(ink, i) * p)
+      .toString(16)
+      .padStart(2, '0'),
+  );
+  return `#${mixed.join('')}`;
+}
+
+describe('contrast on the cells inside the lit card (#768)', () => {
+  // The forecast days and the warning sit on a 9% tint of the text colour.
+  it.each(Object.entries({ light, dark }))('%s text stays readable on the tinted cells', (_name, t) => {
+    const cell = tint(t['--color-lit'] ?? '#000', t['--color-lit-text'] ?? '#fff', 0.09);
+    const low = ['--color-lit-text', '--color-lit-muted', '--color-lit-accent']
+      .map((fg) => [fg, contrast(t[fg] ?? '#000', cell)] as const)
+      .filter(([, c]) => c < 4.5);
+    expect(low).toEqual([]);
   });
 });
 

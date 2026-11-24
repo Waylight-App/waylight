@@ -36,6 +36,13 @@ export interface WidgetDefinition {
    * it keep their full view at every size.
    */
   compact?: (config: Config) => string | undefined;
+  /**
+   * A compact view of the widget's own, drawn instead of the generic one
+   * (title and detail of the compact state) in small and strip tiles. It
+   * receives the widget's configuration and `strip`; `compact` still
+   * decides whether the widget has a compact view at all.
+   */
+  compactView?: Renderer;
   /** Example of the compact view for the size previews of the picker (#596). */
   compactExample?: () => string;
   /**

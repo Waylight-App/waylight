@@ -1016,13 +1016,13 @@ func TestSampleDataAfterSetup(t *testing.T) {
 			kinds[w.Kind] = w.Config
 		}
 	}
-	for _, k := range []string{"clock", "weather", "todos", "notes", "bookmarks", "rss", "calendar", "services", "system", "docker", "adguard"} {
+	for _, k := range []string{"tonight", "todos", "notes", "bookmarks", "rss", "calendar", "services", "system", "docker", "adguard"} {
 		if _, ok := kinds[k]; !ok {
 			t.Errorf("sample dashboard lacks widget %q", k)
 		}
 	}
-	if kinds["weather"]["label"] != "Oldenburg" {
-		t.Errorf("weather widget not configured: %v", kinds["weather"])
+	if kinds["tonight"]["label"] != "Oldenburg" {
+		t.Errorf("tonight widget not configured: %v", kinds["tonight"])
 	}
 
 	var notes []obj

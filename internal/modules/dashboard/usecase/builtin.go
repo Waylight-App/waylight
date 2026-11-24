@@ -28,7 +28,7 @@ type Location struct {
 }
 
 // locationKinds are the widget kinds that take a location.
-var locationKinds = []string{"weather", "radar"}
+var locationKinds = []string{"weather", "radar", "tonight"}
 
 // ErrBuiltinNotFound is returned for an unknown built-in template.
 var ErrBuiltinNotFound = kernel.NewPublicError(kernel.ErrNotFound, "The template does not exist.")

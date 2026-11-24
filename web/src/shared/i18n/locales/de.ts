@@ -1901,6 +1901,8 @@ export const de: Record<BaseMessageKey, string> = {
   'countdown.invalid_title': 'Der Titel muss zwischen 1 und 120 Zeichen lang sein.',
   'countdown.invalid_date': 'Bitte ein Datum eingeben.',
   'countdown.invalid_time': 'Bitte eine Uhrzeit wie 07:00 eingeben.',
+  'widget.tonight.title': 'Heute Abend',
+  'widget.tonight.description': 'Uhrzeit, Datum und aktuelles Wetter mit den nächsten Tagen in einer Karte',
   'widget.focus.title': 'Fokus-Timer',
   'widget.focus.description': 'Pomodoro-Timer mit Pausen und wöchentlicher Zählung der Fokus-Einheiten',
   'focus.phase.work': 'Fokus',
