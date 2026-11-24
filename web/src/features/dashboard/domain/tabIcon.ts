@@ -6,13 +6,10 @@ import type { IconName } from '../../../shared/ui/icons/paths';
  * familiar one (English or German) and falls back to a neutral one.
  */
 const RULES: readonly [RegExp, IconName][] = [
-  [/home|start|heim|zuhause|overview|übersicht/i, 'home'],
-  [/server|system|lab|infra|netz|network|admin|docker/i, 'server'],
-  [/calendar|kalender|plan|termin/i, 'calendar'],
-  [/famil|haushalt|household|kids|kinder/i, 'users'],
-  [/news|feed|rss|read|lesen/i, 'rss'],
-  [/out|about|unterwegs|travel|reise|trip/i, 'pin'],
-  [/note|notiz|wiki|doc|work|arbeit|büro|office/i, 'note'],
+  [/home|heim|zuhause|start/i, 'home'],
+  [/server|system|lab|netz|network/i, 'server'],
+  [/kalender|calendar|plan/i, 'calendar'],
+  [/about|unterwegs|travel|reise/i, 'pin'],
 ];
 
 export function tabIcon(name: string): IconName {
