@@ -43,6 +43,22 @@ func TestSeedSampleData(t *testing.T) {
 	}
 }
 
+// Without the weather module the Tonight card gives way to the clock.
+func TestSeedSampleDataFallsBackToClock(t *testing.T) {
+	deps, repo := newDeps("clock")
+	if err := NewSeedSampleData(deps, SampleLayout(`{"lat":1}`)).Execute(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if len(repo.widgets) != 1 {
+		t.Fatalf("expected one widget, got %d", len(repo.widgets))
+	}
+	for _, w := range repo.widgets {
+		if w.Kind() != "clock" || w.Config() != "{}" {
+			t.Fatalf("expected the clock without config, got %s %q", w.Kind(), w.Config())
+		}
+	}
+}
+
 // The demo showcase is the demo itself, so its tabs are not example tabs
 // the template choice could replace (#670).
 func TestSeedShowcaseIsNoSample(t *testing.T) {

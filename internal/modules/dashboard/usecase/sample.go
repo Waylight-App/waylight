@@ -19,6 +19,9 @@ type SampleWidget struct {
 	Kind       string
 	X, Y, W, H int
 	Config     string
+	// Fallback replaces the widget, without its config, when its kind is
+	// unavailable (Tonight needs the weather module; the clock does not).
+	Fallback string
 }
 
 // SampleTab is a tab of the sample layout.
@@ -41,7 +44,7 @@ func EverydayLayout(weatherConfig string) []SampleTab {
 func SampleLayout(weatherConfig string) []SampleTab {
 	return []SampleTab{
 		{Name: "Home", Widgets: []SampleWidget{
-			{Kind: "tonight", X: 0, Y: 0, W: 7, H: 4, Config: weatherConfig},
+			{Kind: "tonight", X: 0, Y: 0, W: 7, H: 4, Config: weatherConfig, Fallback: "clock"},
 			{Kind: "todos", X: 7, Y: 0, W: 5, H: 4},
 			{Kind: "notes", X: 0, Y: 4, W: 3, H: 5, Config: `{"scope":"pinned"}`},
 			{Kind: "bookmarks", X: 3, Y: 4, W: 4, H: 5},
@@ -100,7 +103,10 @@ func (uc *seedSampleData) Execute(ctx context.Context) error {
 		}
 		for _, sw := range st.Widgets {
 			if !uc.deps.Kinds.Available(sw.Kind) {
-				continue
+				if sw.Fallback == "" || !uc.deps.Kinds.Available(sw.Fallback) {
+					continue
+				}
+				sw.Kind, sw.Config = sw.Fallback, ""
 			}
 			rect, err := domain.NewRect(sw.X, sw.Y, sw.W, sw.H)
 			if err != nil {
