@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '../../../shared/i18n';
-  import { compactText, type CompactState, isAlarming } from '../domain/compact';
+  import StatusDot, { type StatusLevel } from '../../../shared/ui/StatusDot.svelte';
+  import { compactText, type CompactLevel, type CompactState } from '../domain/compact';
 
   /**
    * Props of the system summary (#593): the compact states of a tab's
@@ -15,13 +16,18 @@
     ontoggle: () => void;
   }
   let { items, collapsed, ontoggle }: Props = $props();
+
+  // Every state with an answer gets a dot beside its text; "none" has nothing to show.
+  const dotLevel = (l: CompactLevel): StatusLevel | null =>
+    l === 'ok' ? 'ok' : l === 'attention' ? 'warning' : l === 'problem' ? 'failed' : null;
 </script>
 
 <div class="summary" data-testid="system-summary">
   <ul aria-label={t('compact.summary')}>
     {#each items as item (item.module)}
+      {@const dot = dotLevel(item.state.level)}
       <li data-level={item.state.level}>
-        {#if isAlarming(item.state.level)}<span class="dot" aria-hidden="true"></span>{/if}
+        {#if dot}<StatusDot level={dot} />{/if}
         <span class="name">{item.title}:</span>
         {compactText(item.state.title)}
       </li>
@@ -46,7 +52,7 @@
     flex: 1;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-1) var(--space-3);
+    gap: var(--space-1) var(--space-4);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -57,23 +63,7 @@
     align-items: center;
     gap: var(--space-1);
   }
-  li + li::before {
-    content: '·';
-    margin-right: var(--space-2);
-    color: var(--color-text-muted);
-  }
   .name {
     color: var(--color-text-muted);
-  }
-  .dot {
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 50%;
-  }
-  [data-level='attention'] .dot {
-    background: var(--color-warning);
-  }
-  [data-level='problem'] .dot {
-    background: var(--color-danger);
   }
 </style>

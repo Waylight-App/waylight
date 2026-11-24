@@ -5,7 +5,7 @@
   import { usePolling } from '../../../shared/refresh';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
-  import Sparkline from '../../../shared/ui/Sparkline.svelte';
+  import LineChart from '../../../shared/ui/LineChart.svelte';
   import { type Range, type SpeedResults, formatMbps, ranges } from '../domain/speedtest';
   import type { SpeedtestUseCases } from '../usecase/speedtestUseCases';
 
@@ -84,9 +84,15 @@
       >
     {/each}
   </div>
-  <Sparkline values={data.history.map((m) => m.downloadMbps)} label={t('speedtest.download_history')} />
-  <Sparkline values={data.history.map((m) => m.uploadMbps)} label={t('speedtest.upload_history')} />
-  <Sparkline values={data.history.map((m) => m.pingMs)} label={t('speedtest.ping_history')} />
+  <LineChart
+    times={data.history.map((m) => m.at)}
+    series={[
+      { label: t('speedtest.download'), values: data.history.map((m) => m.downloadMbps) },
+      { label: t('speedtest.upload'), values: data.history.map((m) => m.uploadMbps) },
+    ]}
+    unit="Mbit/s"
+    label={t('speedtest.history')}
+  />
   {#if data.error}<p class="error small">{data.error}</p>{/if}
 {:else}
   <p class="muted">{t('speedtest.loading')}</p>

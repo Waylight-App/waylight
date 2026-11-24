@@ -16,6 +16,9 @@ html {
 }
 
 body {
+  /* viewport-fit=cover lets the page reach under a notch; keep the content clear of it. */
+  padding-left: calc(env(safe-area-inset-left, 0px));
+  padding-right: calc(env(safe-area-inset-right, 0px));
   font-family: var(--font-sans);
   font-size: var(--fs-sm);
   line-height: 1.45;

@@ -58,6 +58,12 @@
     align-items: center;
     font-size: var(--fs-xs);
     color: var(--color-text-muted);
+    /* A chip of its own surface, so the text keeps 4.5:1 over any card,
+       including the lit one whose colours invert the scheme. */
+    padding: 0 var(--space-2);
+    border-radius: 999px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     /* visibility (not only opacity) keeps the hidden badge away from screen
        readers; it switches at the end of the fade-out. */
     opacity: 0;

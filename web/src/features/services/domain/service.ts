@@ -77,6 +77,16 @@ export function statusText(s: Service): string {
   return t('services.online', { status: s.httpStatus, ms: s.latencyMs });
 }
 
+/** The dot a state is drawn with; a service that was never checked reads as stopped. */
+export function serviceLevel(state: ServiceState): 'ok' | 'failed' | 'stopped' {
+  return state === 'online' ? 'ok' : state === 'offline' ? 'failed' : 'stopped';
+}
+
+/** The one word shown beside the dot of a service that is not online. */
+export function stateWord(s: Pick<Service, 'state'>): string {
+  return s.state === 'offline' ? t('services.offline_http') : t('services.not_checked');
+}
+
 /** Validates the form before it is sent and returns an error message or null. */
 export function validateServiceInput(input: ServiceInput): string | null {
   if (input.name.trim() === '') return t('services.enter_name');

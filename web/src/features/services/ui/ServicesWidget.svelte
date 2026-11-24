@@ -10,9 +10,12 @@
     certificateDaysLeft,
     type LatencyPoint,
     type Service,
+    serviceLevel,
+    stateWord,
     statusText,
   } from '../domain/service';
   import type { ServicesUseCases } from '../usecase/servicesUseCases';
+  import StatusDot from '../../../shared/ui/StatusDot.svelte';
   import ServiceIcon from './ServiceIcon.svelte';
 
   /** Props of the service tiles widget. */
@@ -88,7 +91,11 @@
             })}><Icon name="lock" size={12} /> {days}d</span
           >
         {/if}
-        <span class="dot {s.state}" role="img" aria-label={statusText(s)}></span>
+        <StatusDot
+          level={serviceLevel(s.state)}
+          label={s.state === 'online' ? statusText(s) : stateWord(s)}
+          word={s.state === 'offline' && !compact}
+        />
       </a>
       {#if canWake(s)}
         <button
@@ -162,18 +169,5 @@
     font-size: var(--fs-xs);
     color: var(--color-warning);
     white-space: nowrap;
-  }
-  .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex: none;
-    background: var(--color-border);
-  }
-  .dot.online {
-    background: var(--color-ok);
-  }
-  .dot.offline {
-    background: var(--color-danger);
   }
 </style>

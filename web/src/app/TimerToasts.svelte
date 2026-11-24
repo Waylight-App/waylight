@@ -21,7 +21,7 @@
 <style>
   .toasts {
     position: fixed;
-    bottom: var(--space-4);
+    bottom: calc(var(--space-4) + var(--bottom-nav-h, 0px));
     left: 50%;
     transform: translateX(-50%);
     display: flex;

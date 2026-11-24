@@ -1032,7 +1032,7 @@
   /* Stays at the bottom of the viewport while editing (#271). */
   .edit-actions {
     position: sticky;
-    bottom: 0;
+    bottom: var(--bottom-nav-h, 0px);
     z-index: 15;
     display: flex;
     gap: var(--space-2);
@@ -1057,12 +1057,12 @@
     font-size: var(--fs-sm);
   }
   .toast.above-bar {
-    bottom: calc(var(--space-4) + 64px);
+    bottom: calc(var(--space-4) + 64px + var(--bottom-nav-h, 0px));
   }
   .toast {
     position: fixed;
     left: 50%;
-    bottom: var(--space-4);
+    bottom: calc(var(--space-4) + var(--bottom-nav-h, 0px));
     transform: translateX(-50%);
     display: flex;
     gap: var(--space-3);

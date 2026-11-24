@@ -2,6 +2,8 @@
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { t } from '../../../shared/i18n';
   import type { Tab } from '../domain/dashboard';
+  import { BOTTOM_NAV_QUERY } from '../domain/mobile';
+  import { tabIcon } from '../domain/tabIcon';
 
   /** Props of the tab bar. */
   interface Props {
@@ -38,8 +40,36 @@
   // One actions menu per tab in edit mode instead of seven icon buttons
   // (#274). It is positioned fixed, because the tab bar scrolls sideways.
   type Item = { label: string; run: () => void; disabled?: boolean; danger?: boolean };
-  let menu = $state<{ tab: Tab; items: Item[]; x: number; y: number; opener: HTMLElement } | null>(null);
+  let menu = $state<{
+    tab: Tab;
+    items: Item[];
+    x: number;
+    y: number;
+    up: boolean;
+    opener: HTMLElement;
+  } | null>(null);
   let menuEl = $state<HTMLElement>();
+
+  // Below 640 px the tabs are a bottom navigation (#771). The CSS does the
+  // layout; this only tells the page how much room the bar takes and which
+  // way the actions menu opens.
+  const bottomQuery = typeof matchMedia === 'function' ? matchMedia(BOTTOM_NAV_QUERY) : null;
+  let bottomNav = $state(bottomQuery?.matches ?? false);
+  $effect(() => {
+    if (!bottomQuery) return;
+    const update = () => (bottomNav = bottomQuery.matches);
+    bottomQuery.addEventListener('change', update);
+    return () => bottomQuery.removeEventListener('change', update);
+  });
+  $effect(() => {
+    if (!bottomNav) return;
+    const root = document.documentElement;
+    root.style.setProperty(
+      '--bottom-nav-h',
+      'calc(var(--space-12) + var(--space-2) + env(safe-area-inset-bottom, 0px))',
+    );
+    return () => root.style.removeProperty('--bottom-nav-h');
+  });
 
   function openMenu(tab: Tab, i: number, opener: HTMLElement) {
     if (menu?.tab.id === tab.id) return closeMenu();
@@ -58,7 +88,16 @@
         danger: true,
       },
     ];
-    menu = { tab, items, x: Math.min(r.left, window.innerWidth - 260), y: r.bottom + 4, opener };
+    // The bottom navigation sits at the screen's edge, so its menu opens upwards.
+    const up = bottomNav;
+    menu = {
+      tab,
+      items,
+      x: Math.min(r.left, window.innerWidth - 260),
+      y: up ? window.innerHeight - r.top + 4 : r.bottom + 4,
+      up,
+      opener,
+    };
     queueMicrotask(() => menuEl?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus());
   }
 
@@ -137,8 +176,10 @@
           }
         }}
       >
-        {#if !tab.mine}<span class="team" aria-hidden="true"><Icon name="users" size={16} /></span
-          >{/if}{tab.name}
+        {#if !tab.mine}<span class="team" aria-hidden="true"><Icon name="users" size={16} /></span>{/if}<span
+          class="ico"
+          aria-hidden="true"><Icon name={tab.mine ? tabIcon(tab.name) : 'users'} size={16} /></span
+        ><span class="label">{tab.name}</span>
       </button>
       <!-- Team tabs (#295) are maintained by their owner only. -->
       {#if editing && tab.mine}
@@ -166,7 +207,8 @@
     tabindex="-1"
     aria-label={t('dashboard.tab_actions', { name: menu.tab.name })}
     style:left="{menu.x}px"
-    style:top="{menu.y}px"
+    style:top={menu.up ? undefined : `${menu.y}px`}
+    style:bottom={menu.up ? `${menu.y}px` : undefined}
     bind:this={menuEl}
     onkeydown={menuKey}
   >
@@ -270,5 +312,64 @@
   .name:focus-visible {
     outline: 2px solid var(--color-accent-text);
     outline-offset: 2px;
+  }
+  .ico {
+    display: none;
+  }
+  /* Phones (#771): a fixed bottom navigation with icon over label, 56 px
+     high plus the safe area, and at least 44 px wide targets. */
+  @media (max-width: 639px) {
+    .tabs {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: 40;
+      justify-content: safe space-around;
+      gap: 0;
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px));
+      padding-inline: 0;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      mask-image: none;
+    }
+    .tab {
+      flex: 1 0 auto;
+      min-width: 5rem;
+      border-radius: 0;
+      justify-content: center;
+    }
+    .name {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-1);
+      flex: 1;
+      min-height: calc(var(--space-12) + var(--space-2));
+      min-width: 44px;
+      padding: var(--space-2) var(--space-2);
+      border-radius: 0;
+      border-top: 2px solid transparent;
+      font-size: var(--fs-xs);
+    }
+    .ico {
+      display: inline-flex;
+    }
+    .team {
+      display: none;
+    }
+    .active .name {
+      background: none;
+      color: var(--color-text);
+      border-top-color: var(--color-accent);
+    }
+    .active .ico {
+      color: var(--color-accent-text);
+    }
+    .tabs > .btn-icon,
+    .more {
+      min-width: 44px;
+      min-height: 44px;
+      margin-left: 0;
+    }
   }
 </style>
