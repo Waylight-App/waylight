@@ -60,9 +60,14 @@ else is neutral: surfaces, borders and text come from one tinted ramp.
 Text and the accent used as text reach 4.5:1 on the surface they sit on.
 The `--color-lit-*` tokens belong to the lit card (see Surfaces) and keep that
 ratio on it; `--color-lit-warning` and `--color-lit-danger` colour the dot of a
-weather warning there.
+weather warning there. A theme that sets `--color-lit` sets the other
+`--color-lit-*` tokens with it.
+
 Status colours carry meaning only: green for healthy, amber for a warning,
 red for a failure. A status is always a dot plus a word, never colour alone.
+`StatusDot` (`web/src/shared/ui/StatusDot.svelte`) draws it with four levels:
+ok, warning, failed and stopped. Stopped is a hollow ring, so it differs from
+a filled dot by shape as well as by colour.
 
 ## Surfaces
 
@@ -72,8 +77,9 @@ from one hue to another. The page background is a single colour.
 
 Each screen has at most one lit card, such as the clock and weather card on
 the Home tab (the Tonight widget). It inverts the scheme: warm paper
-(`#fff3d6` with ink `#1b2238`) on the night theme, navy on the paper theme. Nothing else on the
-screen competes with it.
+(`#fff3d6` with ink `#1b2238`) on the night theme, navy on the paper theme.
+It shows the time, the date, the current weather, the active weather warning
+and a four-day forecast. Nothing else on the screen competes with it.
 
 ## Icons
 
@@ -84,15 +90,24 @@ into their own notes, habits or bookmarks stay as they are.
 
 ## Widgets
 
-A widget header has a line icon, the title in sentence case at `--fs-sm` and
-weight 600, and at most one icon button on the right. Titles are never set in
-capitals with wide letter spacing.
+Every widget starts with `WidgetHeader`
+(`web/src/shared/ui/WidgetHeader.svelte`): a line icon, the title in sentence
+case at `--fs-sm` and weight 600, and at most one icon button on the right.
+The full card and the compact view use the same header. Titles are never set
+in capitals with wide letter spacing.
 
-A list row is at least 40 px high, separated from the next by a 1 px line. It
+Widgets list their items with `ListRow` (`web/src/shared/ui/ListRow.svelte`).
+A row is at least 40 px high, separated from the next by a 1 px line. It
 has the main text, an optional second line at `--fs-xs` in the muted colour,
 and a value on the right. A value that needs attention, such as a due date,
 uses the accent text colour. Text that does not fit wraps or ends in an
 ellipsis; it is never cut off.
+
+A widget has four sizes: small, medium, large and strip. They show different
+content, not the same content scaled. Medium and large show the full widget.
+Small and strip show a compact view of one or two lines, such as
+"3 open · 1 overdue", and a click opens the full widget in a panel. A new
+widget therefore needs both a full view and a compact view.
 
 Numbers that line up use tabular figures. The clock and other large numbers
 use Fraunces at `--fs-lg`; there is no fifth size.
@@ -103,7 +118,17 @@ A screen has one main chart, clearly the largest data element. It uses a
 smooth line with a light area fill, a muted grid and axis labels at
 `--fs-xs`. The series the chart is about uses the accent; any other series
 uses a neutral step. Other widgets show data as lists and thin 4 px bars, not
-as a second chart of the same weight.
+as a second chart of the same weight. `LineChart`
+(`web/src/shared/ui/LineChart.svelte`) draws it. On the Server tab the main
+chart is the internet speed chart, with a 24 hour and a 7 day range.
+
+## Navigation
+
+Above 640 px the tabs sit in a bar under the search field, the selected tab
+filled with the accent. At 640 px and below they become a bottom navigation
+fixed to the bottom edge: an icon and a label per tab, the selected one marked
+with a line in the accent. The page leaves room for it, so no widget ends
+behind it.
 
 ## Copy
 

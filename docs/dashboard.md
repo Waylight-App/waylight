@@ -169,7 +169,8 @@ not come back for that tab.
 
 ## The phone layout
 
-On narrow screens the widgets are stacked in one column. By default the
+On narrow screens (640 px and below) the tabs move to a navigation bar at the
+bottom of the screen and the widgets are stacked in one column. By default the
 order follows the desktop layout, row by row. Each tab can have its own
 phone layout instead: in edit mode on a phone, move widgets up and down, make
 them shorter or taller, or hide them on phones only. **Reset from desktop
