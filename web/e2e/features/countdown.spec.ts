@@ -33,7 +33,7 @@ test('countdowns count the days and can be edited and deleted (#54)', async ({ p
   await expect(dialog).toHaveCount(0);
   const item = page.getByRole('listitem').filter({ hasText: 'Exam' });
   await expect(item).toContainText('3 days');
-  await expect(item).toHaveClass(/soon/);
+  await expect(item.locator('.value.urgent')).toHaveCount(1);
 
   await item.getByRole('button', { name: 'Edit Exam' }).click();
   const edit = page.getByRole('dialog', { name: 'Edit countdown' });
@@ -42,7 +42,7 @@ test('countdowns count the days and can be edited and deleted (#54)', async ({ p
   await edit.getByRole('button', { name: 'Save', exact: true }).click();
   const holiday = page.getByRole('listitem').filter({ hasText: 'Holiday' });
   await expect(holiday).toContainText('30 days');
-  await expect(holiday).not.toHaveClass(/soon/);
+  await expect(holiday.locator('.value.urgent')).toHaveCount(0);
 
   page.once('dialog', (d) => d.accept());
   await holiday.getByRole('button', { name: 'Delete Holiday' }).click();
