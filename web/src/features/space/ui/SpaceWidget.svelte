@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t, type MessageKey } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -89,18 +90,18 @@
     <h4>{t('space.next_launches')}</h4>
     <ul class="launches">
       {#each launches as l (l.id)}
-        <li title={l.description || undefined}>
-          <span class="what">
-            <span class="mission">{l.mission}</span>
-            <span class="muted small">{l.rocket} · {l.provider}{l.location ? ` · ${l.location}` : ''}</span>
-          </span>
-          <span class="when">
-            <span class="status {statusTone(l.status)}">{statusLabel(l.status)}</span>
-            {#if l.webcastLive}<span class="live">{t('space.live')}</span>{/if}
-            <time datetime={l.net.toISOString()} title={when(l.net)}>{countdown(l.net, now)}</time>
-            <span class="muted small">{when(l.net)}</span>
-          </span>
-        </li>
+        <ListRow nowrap title={l.description || undefined}>
+          {l.mission}
+          {#snippet sub()}{l.rocket} · {l.provider}{l.location ? ` · ${l.location}` : ''}{/snippet}
+          {#snippet value()}
+            <span class="when">
+              <span class="status {statusTone(l.status)}">{statusLabel(l.status)}</span>
+              {#if l.webcastLive}<span class="live">{t('space.live')}</span>{/if}
+              <time datetime={l.net.toISOString()} title={when(l.net)}>{countdown(l.net, now)}</time>
+              <span class="small">{when(l.net)}</span>
+            </span>
+          {/snippet}
+        </ListRow>
       {:else}
         <li class="muted">{t('space.no_launches')}</li>
       {/each}
@@ -134,34 +135,15 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
   }
-  li {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-2);
-  }
-  .what,
   .when {
     display: flex;
     flex-direction: column;
-    min-width: 0;
-  }
-  .when {
-    flex: none;
     align-items: flex-end;
-    text-align: right;
-  }
-  .mission,
-  .what .small {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   time {
     font-weight: 600;
-    font-variant-numeric: tabular-nums;
+    color: var(--color-text);
   }
   .status {
     font-size: var(--fs-xs);

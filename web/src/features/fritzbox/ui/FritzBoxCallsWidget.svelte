@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { fritzboxSetup } from './fritzboxSetup';
@@ -71,16 +72,20 @@
   {#if list.calls.length}
     <ul class="calls">
       {#each list.calls as c, i (i)}
-        <li
-          class:missed={c.type === 'missed'}
+        <ListRow
+          nowrap
           title="{options.showNumbers ? c.number : ''}{c.durationMinutes
             ? ` · ${t('time.minutes', { n: c.durationMinutes })}`
             : ''}"
         >
-          <span class="icon" aria-label={t(`fritzbox.call.${c.type}`)}>{callIcons[c.type]}</span>
-          <span class="party">{callParty(c, options.showNumbers)}</span>
-          <span class="muted small">{when(c.at)}</span>
-        </li>
+          {#snippet lead()}
+            <span class="icon" class:missed={c.type === 'missed'} aria-label={t(`fritzbox.call.${c.type}`)}
+              >{callIcons[c.type]}</span
+            >
+          {/snippet}
+          <span class:missed={c.type === 'missed'}>{callParty(c, options.showNumbers)}</span>
+          {#snippet value()}<span class="small">{when(c.at)}</span>{/snippet}
+        </ListRow>
       {/each}
     </ul>
   {:else if !list.hint}
@@ -97,19 +102,6 @@
     list-style: none;
     margin: 0;
     padding: 0;
-  }
-  .calls li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-1) 0;
-  }
-  .party {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .missed {
     color: var(--color-danger);

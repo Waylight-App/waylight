@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -42,16 +43,20 @@
   </p>
   <ul class="peers">
     {#each list.peers as p (p.publicKey)}
-      <li title="{p.allowedIps}{p.endpoint ? ` · ${p.endpoint}` : ''}">
-        <span
-          class="dot"
-          class:on={p.online}
-          aria-label={p.online ? t('wireguard.online') : t('wireguard.offline')}
-        ></span>
-        <span class="name">{p.name}</span>
-        <span class="muted small">{handshakeAgo(p.latestHandshake, now)}</span>
-        <span class="muted small traffic">↓{formatBytes(p.receivedBytes)} ↑{formatBytes(p.sentBytes)}</span>
-      </li>
+      <ListRow nowrap title="{p.allowedIps}{p.endpoint ? ` · ${p.endpoint}` : ''}">
+        {#snippet lead()}
+          <span
+            class="dot"
+            class:on={p.online}
+            aria-label={p.online ? t('wireguard.online') : t('wireguard.offline')}
+          ></span>
+        {/snippet}
+        {p.name}
+        {#snippet value()}
+          <span class="small">{handshakeAgo(p.latestHandshake, now)}</span>
+          <span class="small traffic">↓{formatBytes(p.receivedBytes)} ↑{formatBytes(p.sentBytes)}</span>
+        {/snippet}
+      </ListRow>
     {:else}
       <li class="muted">{t('wireguard.no_peers')}</li>
     {/each}
@@ -70,19 +75,6 @@
     list-style: none;
     margin: 0;
     padding: 0;
-  }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-1) 0;
-  }
-  .name {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .small {
     font-size: var(--fs-xs);

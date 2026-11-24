@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { grafanaSetup } from './grafanaSetup';
@@ -60,15 +61,16 @@
   {:else}
     <ul>
       {#each data.alerts as a, i (a.name + i)}
-        <li class:pending={a.state === 'pending'}>
-          <span class="dot" aria-hidden="true"></span>
-          <div>
-            <strong>{a.name}</strong>
-            {#if a.state === 'pending'}<span class="muted"> · {t('grafana.pending')}</span>{/if}
-            {#if a.summary}<div class="muted">{a.summary}</div>{/if}
-            {#if a.since}<div class="muted small">{since(a.since)}</div>{/if}
-          </div>
-        </li>
+        <ListRow>
+          {#snippet lead()}<span class="dot" class:pending={a.state === 'pending'} aria-hidden="true"
+            ></span>{/snippet}
+          <strong>{a.name}</strong>
+          {#if a.state === 'pending'}<span class="muted"> · {t('grafana.pending')}</span>{/if}
+          {#snippet sub()}
+            {#if a.summary}<div>{a.summary}</div>{/if}
+            {#if a.since}<div>{since(a.since)}</div>{/if}
+          {/snippet}
+        </ListRow>
       {/each}
     </ul>
   {/if}
@@ -84,13 +86,6 @@
     list-style: none;
     margin: 0 0 var(--space-2);
     padding: 0;
-    display: grid;
-    gap: var(--space-2);
-  }
-  li {
-    display: flex;
-    gap: var(--space-2);
-    align-items: baseline;
   }
   .dot {
     flex: none;
@@ -99,7 +94,7 @@
     border-radius: 50%;
     background: var(--color-danger);
   }
-  .pending .dot {
+  .dot.pending {
     background: var(--color-warning, var(--color-accent));
   }
   .small {

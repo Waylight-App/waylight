@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -66,13 +67,13 @@
 {#if error}<p class="error" role="alert">{error}</p>{/if}
 <ul>
   {#each notes as n (n.id)}
-    <li class:pinned={n.pinned}>
+    <ListRow>
       <p class="text">{n.text}</p>
-      <div class="foot">
-        <span class="muted small">
-          {#if n.pinned}<Icon name="pin" size={16} /> {t('board.pinned')}{/if}
-          {#if n.expiresOn}{n.pinned ? ' · ' : ''}{until(n.expiresOn)}{/if}
-        </span>
+      {#snippet sub()}
+        {#if n.pinned}<Icon name="pin" size={16} /> {t('board.pinned')}{/if}
+        {#if n.expiresOn}{n.pinned ? ' · ' : ''}{until(n.expiresOn)}{/if}
+      {/snippet}
+      {#snippet trail()}
         {#if n.mine}
           <span class="actions">
             <button
@@ -96,8 +97,8 @@
             >
           </span>
         {/if}
-      </div>
-    </li>
+      {/snippet}
+    </ListRow>
   {:else}
     <li class="muted empty">{t('board.empty')}</li>
   {/each}
@@ -119,32 +120,11 @@
     list-style: none;
     margin: 0 0 var(--space-2);
     padding: 0;
-    display: grid;
-    gap: var(--space-2);
-  }
-  li:not(.empty) {
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--space-2);
-    background: var(--color-surface);
-  }
-  li.pinned {
-    border-color: var(--color-accent);
   }
   .text {
     margin: 0;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-  }
-  .foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-2);
-    margin-top: var(--space-1);
-  }
-  .small {
-    font-size: var(--fs-xs);
   }
   .actions {
     display: flex;

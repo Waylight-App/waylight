@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import TileLayout from '../../../shared/ui/TileLayout.svelte';
   import { shoppingSetup } from './shoppingSetup';
@@ -161,18 +162,20 @@
     {/if}
     <ul class="items">
       {#each items as it (it.id)}
-        <li class:done={it.done}>
-          <label
+        <ListRow>
+          <label class="item" class:done={it.done}
             ><input type="checkbox" checked={it.done} onchange={() => toggle(it)} />
             <span>{it.summary}</span></label
           >
-          <button
-            class="btn link remove"
-            type="button"
-            aria-label={t('shopping.remove_item', { name: it.summary })}
-            onclick={() => remove(it)}>×</button
-          >
-        </li>
+          {#snippet trail()}
+            <button
+              class="btn link remove"
+              type="button"
+              aria-label={t('shopping.remove_item', { name: it.summary })}
+              onclick={() => remove(it)}>×</button
+            >
+          {/snippet}
+        </ListRow>
       {:else}
         {#if loaded}<li class="muted">{t('shopping.the_list_is_empty')}</li>{/if}
       {/each}
@@ -222,18 +225,10 @@
     margin: 0;
     padding: 0;
   }
-  li {
+  .item {
     display: flex;
-    align-items: center;
-    gap: var(--space-1);
-  }
-  li label {
-    display: flex;
-    flex: 1;
-    min-width: 0;
     gap: var(--space-2);
     align-items: center;
-    padding: var(--space-1) 0;
     cursor: pointer;
   }
   .done span {
@@ -241,6 +236,7 @@
     color: var(--color-text-muted);
   }
   .remove {
+    margin-top: 0;
     padding: 0 var(--space-1);
     opacity: 0.6;
   }

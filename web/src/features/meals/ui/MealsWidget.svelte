@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -106,43 +107,45 @@
           onclick={() => (editing = { entry: null, date: day.date })}>+</button
         >
       </div>
-      {#each day.entries as e (e.id)}
-        <div class="entry">
-          <span class="dish">
+      <ul class="entries">
+        {#each day.entries as e (e.id)}
+          <ListRow nowrap>
             {#if e.meal}<span class="meal muted">{t(`meals.meal.${e.meal}`)}</span>{/if}
             {#if e.link}
               <a href={e.link} target="_blank" rel="noopener noreferrer">{e.dish}</a>
             {:else}
               {e.dish}
             {/if}
-          </span>
-          <span class="actions">
-            {#if canShop && e.ingredients.length > 0}
-              <button
-                class="btn btn-icon"
-                type="button"
-                aria-label={t('meals.add_to_shopping', { dish: e.dish })}
-                title={t('meals.add_to_shopping', { dish: e.dish })}
-                onclick={() => shop(e)}><Icon name="cart" size={16} /></button
-              >
-            {/if}
-            {#if e.mine}
-              <button
-                class="btn btn-icon"
-                type="button"
-                aria-label={t('meals.edit_named', { dish: e.dish })}
-                onclick={() => (editing = { entry: e, date: e.date })}>✎</button
-              >
-              <button
-                class="btn btn-icon"
-                type="button"
-                aria-label={t('meals.remove', { dish: e.dish })}
-                onclick={() => remove(e)}>✕</button
-              >
-            {/if}
-          </span>
-        </div>
-      {/each}
+            {#snippet trail()}
+              <span class="actions">
+                {#if canShop && e.ingredients.length > 0}
+                  <button
+                    class="btn btn-icon"
+                    type="button"
+                    aria-label={t('meals.add_to_shopping', { dish: e.dish })}
+                    title={t('meals.add_to_shopping', { dish: e.dish })}
+                    onclick={() => shop(e)}><Icon name="cart" size={16} /></button
+                  >
+                {/if}
+                {#if e.mine}
+                  <button
+                    class="btn btn-icon"
+                    type="button"
+                    aria-label={t('meals.edit_named', { dish: e.dish })}
+                    onclick={() => (editing = { entry: e, date: e.date })}>✎</button
+                  >
+                  <button
+                    class="btn btn-icon"
+                    type="button"
+                    aria-label={t('meals.remove', { dish: e.dish })}
+                    onclick={() => remove(e)}>✕</button
+                  >
+                {/if}
+              </span>
+            {/snippet}
+          </ListRow>
+        {/each}
+      </ul>
     </li>
   {/each}
 </ol>
@@ -180,22 +183,20 @@
     color: var(--color-accent-text);
     font-weight: 600;
   }
-  .day,
-  .entry {
+  .day {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-2);
     min-width: 0;
   }
+  .entries {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
   .label {
     font-size: var(--fs-xs);
-  }
-  .dish {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .meal {
     font-size: var(--fs-xs);

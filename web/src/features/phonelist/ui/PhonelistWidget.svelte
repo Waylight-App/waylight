@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
@@ -177,45 +178,54 @@
   {#if grouped && g.entries.length > 0}<h4 class="team">{g.team || t('phonelist.other_team')}</h4>{/if}
   <ul>
     {#each g.entries as e (e.id)}
-      <li>
-        <div class="who">
-          <strong>{e.name}</strong>
-          {#if e.role || (!grouped && e.team)}<span class="muted"
-              >{[e.role, grouped ? '' : e.team].filter(Boolean).join(' · ')}</span
-            >{/if}
-        </div>
-        <div class="how">
-          {#if e.dial}
-            <span class="number">
-              <a href="tel:{e.dial}">{e.phone}</a>
-              <button
-                class="btn btn-icon copy"
-                type="button"
-                aria-label={copied === e.id ? t('phonelist.copied') : t('phonelist.copy', { phone: e.phone })}
-                title={copied === e.id ? t('phonelist.copied') : t('phonelist.copy', { phone: e.phone })}
-                onclick={() => copy(e)}
-                >{#if copied === e.id}<Icon name="done" size={16} />{:else}<Icon
-                    name="copy"
-                    size={16}
-                  />{/if}</button
-              >
-            </span>
+      <ListRow>
+        <strong>{e.name}</strong>
+        {#snippet sub()}
+          {#if e.role || (!grouped && e.team)}{[e.role, grouped ? '' : e.team]
+              .filter(Boolean)
+              .join(' · ')}{/if}
+        {/snippet}
+        {#snippet value()}
+          <span class="how">
+            {#if e.dial}
+              <span class="number">
+                <a href="tel:{e.dial}">{e.phone}</a>
+                <button
+                  class="btn btn-icon copy"
+                  type="button"
+                  aria-label={copied === e.id
+                    ? t('phonelist.copied')
+                    : t('phonelist.copy', { phone: e.phone })}
+                  title={copied === e.id ? t('phonelist.copied') : t('phonelist.copy', { phone: e.phone })}
+                  onclick={() => copy(e)}
+                  >{#if copied === e.id}<Icon name="done" size={16} />{:else}<Icon
+                      name="copy"
+                      size={16}
+                    />{/if}</button
+                >
+              </span>
+            {/if}
+            {#if e.email}<a href="mailto:{e.email}">{e.email}</a>{/if}
+          </span>
+        {/snippet}
+        {#snippet trail()}
+          {#if e.readOnly}
+            <span
+              class="book"
+              title={t('phonelist.from_book')}
+              aria-label={t('phonelist.from_book')}
+              role="img"><Icon name="user" size={16} /></span
+            >
+          {:else if admin}
+            <button
+              class="btn btn-icon edit-btn"
+              type="button"
+              aria-label={t('phonelist.edit', { name: e.name })}
+              onclick={() => edit(e)}>✎</button
+            >
           {/if}
-          {#if e.email}<a href="mailto:{e.email}">{e.email}</a>{/if}
-        </div>
-        {#if e.readOnly}
-          <span class="book" title={t('phonelist.from_book')} aria-label={t('phonelist.from_book')} role="img"
-            ><Icon name="user" size={16} /></span
-          >
-        {:else if admin}
-          <button
-            class="btn btn-icon edit-btn"
-            type="button"
-            aria-label={t('phonelist.edit', { name: e.name })}
-            onclick={() => edit(e)}>✎</button
-          >
-        {/if}
-      </li>
+        {/snippet}
+      </ListRow>
     {:else}
       <li class="muted">
         {query ? t('phonelist.none_match') : admin ? t('phonelist.empty_admin') : t('phonelist.empty')}
@@ -249,26 +259,10 @@
     margin: 0;
     padding: 0;
   }
-  li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0 var(--space-2);
-    padding: var(--space-1) 0;
-  }
-  .who {
-    flex: 1 1 10rem;
-    display: flex;
-    flex-direction: column;
-  }
-  .who .muted {
-    font-size: var(--fs-xs);
-  }
   .how {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    font-size: var(--fs-sm);
   }
   .edit-btn {
     opacity: 0;
@@ -290,7 +284,7 @@
     font-size: var(--fs-xs);
     opacity: 0.6;
   }
-  li:hover .edit-btn,
+  :global(.row:hover) .edit-btn,
   .edit-btn:focus {
     opacity: 1;
   }

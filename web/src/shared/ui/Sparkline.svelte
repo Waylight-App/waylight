@@ -31,7 +31,8 @@
     display: block;
     width: 100%;
     height: clamp(14px, 4cqh, 32px);
-    color: var(--color-accent-text);
-    opacity: 0.8;
+    /* A neutral step: the accent colour is kept for the one series a chart is about. */
+    color: var(--color-text-muted);
+    opacity: 0.6;
   }
 </style>

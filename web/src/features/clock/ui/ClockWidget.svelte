@@ -43,7 +43,7 @@
   }
   .date {
     color: var(--color-text-muted);
-    font-size: clamp(0.8rem, min(5.5cqi, 9cqh), 2rem);
+    font-size: clamp(0.8125rem, min(5.5cqi, 9cqh), 2rem);
   }
   .label {
     font-size: clamp(0.8125rem, min(4cqi, 7cqh), 1.4rem);

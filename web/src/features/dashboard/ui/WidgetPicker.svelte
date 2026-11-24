@@ -221,8 +221,6 @@
   h3 {
     margin: 0 0 var(--space-2);
     font-size: var(--fs-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
     color: var(--color-text-muted);
   }
   ul {
@@ -336,8 +334,6 @@
   .sizes-head h3 {
     margin: 0;
     font-size: var(--fs-sm);
-    text-transform: none;
-    letter-spacing: normal;
     color: var(--color-text);
   }
   .previews {
@@ -385,7 +381,6 @@
   }
   .mini-title {
     color: var(--color-text-muted);
-    text-transform: uppercase;
     font-size: var(--fs-xs);
   }
   .mini-title,

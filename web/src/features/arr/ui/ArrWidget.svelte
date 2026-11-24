@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import type { ChoiceLoader } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
@@ -98,14 +99,12 @@
     <h4>{t('arr.upcoming')}</h4>
     <ul class="upcoming">
       {#each overview.upcoming as r, i (i)}
-        <li>
-          <span class="muted small date">{day(r.date)}</span>
-          <span class="title" title="{r.title} · {r.detail}"
-            >{#if r.hasFile}<Icon name="done" size={16} />
-            {/if}{r.title}</span
-          >
-          <span class="muted small">{r.detail}</span>
-        </li>
+        <ListRow nowrap title="{r.title} · {r.detail}">
+          {#snippet lead()}<span class="date">{day(r.date)}</span>{/snippet}
+          {#if r.hasFile}<Icon name="done" size={16} />
+          {/if}{r.title}
+          {#snippet value()}<span class="small">{r.detail}</span>{/snippet}
+        </ListRow>
       {:else}
         <li class="muted">{t('arr.nothing_upcoming')}</li>
       {/each}
@@ -163,16 +162,12 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    display: grid;
-    gap: var(--space-1);
   }
-  .upcoming li {
-    display: grid;
-    grid-template-columns: 6.5em minmax(0, 1fr);
-    column-gap: var(--space-2);
-  }
-  .upcoming li > :last-child {
-    grid-column: 2;
+  .date {
+    flex: none;
+    width: 6.5em;
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
   }
   .small {
     font-size: var(--fs-xs);

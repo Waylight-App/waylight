@@ -62,8 +62,6 @@
   h4 {
     margin: var(--space-3) 0 var(--space-1);
     font-size: var(--fs-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
     color: var(--color-text-muted);
   }
   .intro {

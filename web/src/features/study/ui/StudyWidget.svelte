@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -67,7 +68,10 @@
       <h4>{t('study.in_progress')}</h4>
       <ul>
         {#each p.inProgress as m (m.id)}
-          <li><span class="name">{m.name}</span><span class="muted">{ects(m.ects)} ECTS</span></li>
+          <ListRow nowrap>
+            {m.name}
+            {#snippet value()}{ects(m.ects)} ECTS{/snippet}
+          </ListRow>
         {/each}
       </ul>
     {/if}
@@ -112,17 +116,6 @@
     list-style: none;
     margin: 0;
     padding: 0;
-  }
-  li {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-2);
-    font-size: var(--fs-sm);
-  }
-  .name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .small {
     font-size: var(--fs-xs);

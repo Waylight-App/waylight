@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -41,16 +42,17 @@
     <h4>{t('gamedeals.free')}</h4>
     <ul class="list">
       {#each overview.freeNow as g (g.title)}
-        <li>
+        <ListRow nowrap>
           <a href={g.url} target="_blank" rel="noopener noreferrer">{g.title}</a>
-          <span class="muted small">{t('gamedeals.until', { date: date(g.end) })}</span>
-        </li>
+          {#snippet value()}<span class="small">{t('gamedeals.until', { date: date(g.end) })}</span>{/snippet}
+        </ListRow>
       {/each}
       {#each overview.freeNext as g (g.title)}
-        <li class="next">
+        <ListRow nowrap class="next">
           <a href={g.url} target="_blank" rel="noopener noreferrer">{g.title}</a>
-          <span class="muted small">{t('gamedeals.from', { date: date(g.start) })}</span>
-        </li>
+          {#snippet value()}<span class="small">{t('gamedeals.from', { date: date(g.start) })}</span
+            >{/snippet}
+        </ListRow>
       {/each}
     </ul>
   {/if}
@@ -58,13 +60,15 @@
     <h4>{t('gamedeals.wishlist')}</h4>
     <ul class="list">
       {#each overview.deals as d (d.url)}
-        <li>
-          <span class="badge">−{d.discountPct} %</span>
+        <ListRow nowrap>
+          {#snippet lead()}<span class="badge">−{d.discountPct} %</span>{/snippet}
           <a href={d.url} target="_blank" rel="noopener noreferrer">{d.name}</a>
-          <span class="muted small"
-            >{d.finalPrice}{d.endsAt ? ` · ${t('gamedeals.until', { date: date(d.endsAt) })}` : ''}</span
-          >
-        </li>
+          {#snippet value()}
+            <span class="small"
+              >{d.finalPrice}{d.endsAt ? ` · ${t('gamedeals.until', { date: date(d.endsAt) })}` : ''}</span
+            >
+          {/snippet}
+        </ListRow>
       {/each}
     </ul>
   {/if}
@@ -86,16 +90,8 @@
     list-style: none;
     padding: 0;
     margin: 0 0 var(--space-2);
-    display: grid;
-    gap: var(--space-1);
   }
-  .list li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-1) var(--space-2);
-  }
-  .next a {
+  :global(.row.next) a {
     opacity: 0.75;
   }
   .badge {

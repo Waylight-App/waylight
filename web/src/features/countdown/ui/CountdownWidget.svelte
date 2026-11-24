@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -81,34 +82,38 @@
 <ul>
   {#each items as c (c.id)}
     {@const r = remainingAt(c, now)}
-    <li class:soon={isSoon(r, cfg.highlightDays)} class:past={r.kind === 'past'}>
-      <span class="emoji" aria-hidden="true"
-        >{#if c.emoji}{c.emoji}{:else}<Icon name="hourglass" size={16} />{/if}</span
-      >
-      <span class="main">
-        <span class="title">{c.title}</span>
-        <span class="when muted">{when(c)}</span>
-      </span>
-      {#if r.kind === 'today'}
-        <HintChip lead={label(r)} />
-      {:else}
-        <span class="left">{label(r)}</span>
-      {/if}
-      <span class="actions">
-        <button
-          class="btn btn-icon"
-          type="button"
-          aria-label={t('countdown.edit_named', { title: c.title })}
-          onclick={() => (editing = c)}>✎</button
+    <ListRow nowrap urgent={isSoon(r, cfg.highlightDays)} style={r.kind === 'past' ? 'opacity: 0.6' : ''}>
+      {#snippet lead()}
+        <span class="emoji" aria-hidden="true"
+          >{#if c.emoji}{c.emoji}{:else}<Icon name="hourglass" size={16} />{/if}</span
         >
-        <button
-          class="btn btn-icon"
-          type="button"
-          aria-label={t('countdown.remove', { title: c.title })}
-          onclick={() => remove(c)}>✕</button
-        >
-      </span>
-    </li>
+      {/snippet}
+      {c.title}
+      {#snippet sub()}{when(c)}{/snippet}
+      {#snippet value()}
+        {#if r.kind === 'today'}
+          <HintChip lead={label(r)} />
+        {:else}
+          <span class="left">{label(r)}</span>
+        {/if}
+      {/snippet}
+      {#snippet trail()}
+        <span class="actions">
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label={t('countdown.edit_named', { title: c.title })}
+            onclick={() => (editing = c)}>✎</button
+          >
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label={t('countdown.remove', { title: c.title })}
+            onclick={() => remove(c)}>✕</button
+          >
+        </span>
+      {/snippet}
+    </ListRow>
   {:else}
     <li class="muted">{t('countdown.empty')}</li>
   {/each}
@@ -129,53 +134,23 @@
     list-style: none;
     margin: 0 0 var(--space-2);
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
-  }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    min-width: 0;
   }
   .emoji {
     font-size: var(--fs-md);
     width: 1.6rem;
     text-align: center;
   }
-  .main {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-  }
-  .title,
-  .when {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .when {
-    font-size: var(--fs-xs);
-  }
   .left {
-    font-variant-numeric: tabular-nums;
     font-weight: 600;
     white-space: nowrap;
-  }
-  li.soon .left {
-    color: var(--color-accent-text);
-  }
-  li.past {
-    opacity: 0.6;
   }
   .actions {
     display: flex;
     opacity: 0;
     transition: opacity 0.15s;
   }
-  li:hover .actions,
-  li:focus-within .actions {
+  :global(.row:hover) .actions,
+  :global(.row:focus-within) .actions {
     opacity: 1;
   }
   @media (hover: none) {

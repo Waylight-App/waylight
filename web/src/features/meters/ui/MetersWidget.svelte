@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -214,19 +215,19 @@
     {:else}
       <ul class="readings">
         {#each detail.readings.slice(0, SHOWN_READINGS) as r (r.day)}
-          <li>
-            <span class="line"
-              >{t('meters.reading_line', { date: date(r.day), value: withUnit(r.value) })}</span
-            >
-            {#if selected.mine}
-              <button
-                class="btn btn-icon"
-                type="button"
-                aria-label={t('meters.remove_reading', { date: date(r.day) })}
-                onclick={() => removeReading(r.day)}>✕</button
-              >
-            {/if}
-          </li>
+          <ListRow>
+            {t('meters.reading_line', { date: date(r.day), value: withUnit(r.value) })}
+            {#snippet trail()}
+              {#if selected.mine}
+                <button
+                  class="btn btn-icon"
+                  type="button"
+                  aria-label={t('meters.remove_reading', { date: date(r.day) })}
+                  onclick={() => removeReading(r.day)}>✕</button
+                >
+              {/if}
+            {/snippet}
+          </ListRow>
         {/each}
       </ul>
     {/if}
@@ -271,17 +272,6 @@
     list-style: none;
     margin: var(--space-2) 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
-  }
-  .readings li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-  .line {
-    flex: 1;
-    min-width: 0;
   }
   .sr-only {
     position: absolute;

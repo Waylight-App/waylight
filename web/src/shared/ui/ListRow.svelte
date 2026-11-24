@@ -54,6 +54,7 @@
 
 <style>
   .row {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--space-2);

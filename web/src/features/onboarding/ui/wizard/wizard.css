@@ -324,8 +324,6 @@
   align-self: flex-start;
   margin: var(--space-3) 0 0;
   font-size: var(--fs-xs);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--wz-subtle);
   font-weight: 600;
 }

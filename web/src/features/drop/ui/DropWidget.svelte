@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -107,45 +108,47 @@
 {#if error}<p class="error small" role="alert">{error}</p>{/if}
 <ul class="list">
   {#each items as i (i.id)}
-    <li>
-      {#if i.kind === 'file' && isPreviewable(i.contentType)}
-        <img class="thumb" src={drop.fileUrl(i.id)} alt="" loading="lazy" width="48" height="48" />
-      {/if}
-      <span class="what">
-        {#if i.kind === 'link'}
-          <a href={i.text} target="_blank" rel="noopener noreferrer" class="text">{i.text}</a>
-        {:else if i.kind === 'file'}
-          <span class="text"><Icon name="note" size={16} /> {i.fileName}</span>
-        {:else}
-          <span class="text">{i.text}</span>
+    <ListRow nowrap>
+      {#snippet lead()}
+        {#if i.kind === 'file' && isPreviewable(i.contentType)}
+          <img class="thumb" src={drop.fileUrl(i.id)} alt="" loading="lazy" width="48" height="48" />
         {/if}
-        <span class="muted small">
-          {#if i.kind === 'file'}{formatSize(i.size, intlLocale())} ·
-          {/if}{t('drop.expires', { when: expiresIn(i, now) })}
-        </span>
-      </span>
-      {#if i.kind === 'file'}
-        <a
-          class="btn btn-icon"
-          href={drop.fileUrl(i.id)}
-          download={i.fileName}
-          aria-label={t('drop.download', { name: i.fileName })}><Icon name="download" size={16} /></a
-        >
+      {/snippet}
+      {#if i.kind === 'link'}
+        <a href={i.text} target="_blank" rel="noopener noreferrer">{i.text}</a>
+      {:else if i.kind === 'file'}
+        <span><Icon name="note" size={16} /> {i.fileName}</span>
       {:else}
-        <button class="btn btn-icon" type="button" aria-label={t('drop.copy')} onclick={() => copy(i)}
-          >{#if copied === i.id}<Icon name="done" size={16} />{:else}<Icon
-              name="copy"
-              size={16}
-            />{/if}</button
-        >
+        <span>{i.text}</span>
       {/if}
-      <button
-        class="btn btn-icon"
-        type="button"
-        aria-label={t('drop.delete')}
-        onclick={() => run(() => drop.remove(i.id))}>✕</button
-      >
-    </li>
+      {#snippet sub()}
+        {#if i.kind === 'file'}{formatSize(i.size, intlLocale())} ·
+        {/if}{t('drop.expires', { when: expiresIn(i, now) })}
+      {/snippet}
+      {#snippet trail()}
+        {#if i.kind === 'file'}
+          <a
+            class="btn btn-icon"
+            href={drop.fileUrl(i.id)}
+            download={i.fileName}
+            aria-label={t('drop.download', { name: i.fileName })}><Icon name="download" size={16} /></a
+          >
+        {:else}
+          <button class="btn btn-icon" type="button" aria-label={t('drop.copy')} onclick={() => copy(i)}
+            >{#if copied === i.id}<Icon name="done" size={16} />{:else}<Icon
+                name="copy"
+                size={16}
+              />{/if}</button
+          >
+        {/if}
+        <button
+          class="btn btn-icon"
+          type="button"
+          aria-label={t('drop.delete')}
+          onclick={() => run(() => drop.remove(i.id))}>✕</button
+        >
+      {/snippet}
+    </ListRow>
   {:else}
     <li class="muted">{t('drop.empty')}</li>
   {/each}
@@ -189,24 +192,6 @@
     list-style: none;
     margin: var(--space-2) 0 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
-  }
-  li {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-1);
-  }
-  .what {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .small {
     font-size: var(--fs-xs);

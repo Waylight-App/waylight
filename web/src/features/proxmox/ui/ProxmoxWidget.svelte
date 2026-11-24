@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { proxmoxSetup } from './proxmoxSetup';
@@ -113,27 +114,30 @@
     <ul class="guests">
       {#each guests as g (g.id)}
         {@const action = availableAction(g)}
-        <li>
-          <span class="dot" class:off={g.status !== 'running'} aria-hidden="true"></span>
-          <span class="name" title="{g.kind === 'lxc' ? 'LXC' : 'VM'} {g.id} · {g.node}">
-            <span class="muted">{g.id}</span>
-            {g.name}
-          </span>
-          <span class="muted small"
-            >{g.status === 'running' ? formatUptime(g.uptimeSeconds) : statusLabel(g.status)}</span
-          >
-          {#if action}
-            <button
-              data-action
-              class="btn btn-icon"
-              type="button"
-              disabled={busy !== null}
-              onclick={() => act(g)}
-              aria-label={t(action === 'start' ? 'proxmox.start' : 'proxmox.shutdown', { name: g.name })}
-              >{busy === g.id ? '…' : action === 'start' ? '▶' : '⏻'}</button
+        <ListRow nowrap title="{g.kind === 'lxc' ? 'LXC' : 'VM'} {g.id} · {g.node}">
+          {#snippet lead()}<span class="dot" class:off={g.status !== 'running'} aria-hidden="true"
+            ></span>{/snippet}
+          <span class="muted">{g.id}</span>
+          {g.name}
+          {#snippet value()}
+            <span class="small"
+              >{g.status === 'running' ? formatUptime(g.uptimeSeconds) : statusLabel(g.status)}</span
             >
-          {/if}
-        </li>
+          {/snippet}
+          {#snippet trail()}
+            {#if action}
+              <button
+                data-action
+                class="btn btn-icon"
+                type="button"
+                disabled={busy !== null}
+                onclick={() => act(g)}
+                aria-label={t(action === 'start' ? 'proxmox.start' : 'proxmox.shutdown', { name: g.name })}
+                >{busy === g.id ? '…' : action === 'start' ? '▶' : '⏻'}</button
+              >
+            {/if}
+          {/snippet}
+        </ListRow>
       {/each}
     </ul>
   {:else}
@@ -159,21 +163,7 @@
     list-style: none;
     padding: 0;
     margin: var(--space-2) 0 0;
-    display: grid;
-    gap: var(--space-1);
     font-size: var(--fs-sm);
-  }
-  .guests li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-  .name {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .dot {
     width: 0.6em;

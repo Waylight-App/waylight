@@ -32,6 +32,11 @@ h2 {
   font-family: var(--font-display);
 }
 
+/* The browser default (smaller) lands at about 12.5px; the guide's smallest size is 13. */
+small {
+  font-size: var(--fs-xs);
+}
+
 a {
   color: var(--color-accent-text);
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -56,37 +57,38 @@
 {/if}
 <ul>
   {#each items as c (c.id)}
-    <li class:soon={c.soon} class:ended={!c.open}>
-      <span class="main">
-        <span class="name"
-          >{c.name}{#if c.provider}<span class="muted"> · {c.provider}</span>{/if}</span
-        >
-        <span class="meta">
+    <ListRow nowrap showValue style={c.open ? '' : 'opacity: 0.6'}>
+      {c.name}{#if c.provider}<span class="muted">&nbsp;· {c.provider}</span>{/if}
+      {#snippet sub()}
+        <span class:soon={c.soon}>
           {#if c.open}
             {t('contracts.cancel_by', { date: date(c.deadline) })}
           {:else}
             {t('contracts.ended', { date: date(c.currentEnd) })}
           {/if}
         </span>
-      </span>
-      <span class="cost muted">{money(c.costCents)} {t(`contracts.per.${c.period}`)}</span>
-      {#if c.mine}
-        <span class="actions">
-          <button
-            class="btn btn-icon"
-            type="button"
-            aria-label={t('contracts.edit_named', { name: c.name })}
-            onclick={() => (editing = c)}>✎</button
-          >
-          <button
-            class="btn btn-icon"
-            type="button"
-            aria-label={t('contracts.remove', { name: c.name })}
-            onclick={() => remove(c)}>✕</button
-          >
-        </span>
-      {/if}
-    </li>
+      {/snippet}
+      {#snippet value()}<span class="cost">{money(c.costCents)} {t(`contracts.per.${c.period}`)}</span
+        >{/snippet}
+      {#snippet trail()}
+        {#if c.mine}
+          <span class="actions">
+            <button
+              class="btn btn-icon"
+              type="button"
+              aria-label={t('contracts.edit_named', { name: c.name })}
+              onclick={() => (editing = c)}>✎</button
+            >
+            <button
+              class="btn btn-icon"
+              type="button"
+              aria-label={t('contracts.remove', { name: c.name })}
+              onclick={() => remove(c)}>✕</button
+            >
+          </span>
+        {/if}
+      {/snippet}
+    </ListRow>
   {:else}
     <li class="muted">{t('contracts.empty')}</li>
   {/each}
@@ -112,40 +114,14 @@
     list-style: none;
     margin: 0 0 var(--space-2);
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
   }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    min-width: 0;
-  }
-  .main {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-  }
-  .name,
-  .meta {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .meta,
   .cost {
     font-size: var(--fs-xs);
-  }
-  .cost {
     white-space: nowrap;
   }
-  li.soon .meta {
+  .soon {
     color: var(--color-warning);
     font-weight: 600;
-  }
-  li.ended {
-    opacity: 0.6;
   }
   .actions {
     display: flex;

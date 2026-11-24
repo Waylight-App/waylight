@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -82,34 +83,38 @@
     </h3>
     <ul>
       {#each g.ideas as idea (idea.id)}
-        <li class:bought={idea.bought}>
-          <input
-            type="checkbox"
-            checked={idea.bought}
-            aria-label={t('gifts.bought_named', { title: idea.title })}
-            onchange={() => toggle(idea)}
-          />
-          <span class="title">
+        <ListRow>
+          {#snippet lead()}
+            <input
+              type="checkbox"
+              checked={idea.bought}
+              aria-label={t('gifts.bought_named', { title: idea.title })}
+              onchange={() => toggle(idea)}
+            />
+          {/snippet}
+          <span class:bought={idea.bought}>
             {#if idea.link}
               <a href={idea.link} target="_blank" rel="noopener noreferrer">{idea.title}</a>
             {:else}
               {idea.title}
             {/if}
-            {#if idea.note}<span class="note muted">{idea.note}</span>{/if}
           </span>
-          <button
-            class="btn btn-icon"
-            type="button"
-            aria-label={t('gifts.edit_named', { title: idea.title })}
-            onclick={() => (editing = { idea, person: idea.person })}>✎</button
-          >
-          <button
-            class="btn btn-icon"
-            type="button"
-            aria-label={t('gifts.remove', { title: idea.title })}
-            onclick={() => remove(idea)}>✕</button
-          >
-        </li>
+          {#snippet sub()}{#if idea.note}{idea.note}{/if}{/snippet}
+          {#snippet trail()}
+            <button
+              class="btn btn-icon"
+              type="button"
+              aria-label={t('gifts.edit_named', { title: idea.title })}
+              onclick={() => (editing = { idea, person: idea.person })}>✎</button
+            >
+            <button
+              class="btn btn-icon"
+              type="button"
+              aria-label={t('gifts.remove', { title: idea.title })}
+              onclick={() => remove(idea)}>✕</button
+            >
+          {/snippet}
+        </ListRow>
       {/each}
     </ul>
   </section>
@@ -152,34 +157,14 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
   }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    min-width: 0;
-  }
-  li input[type='checkbox'] {
+  input[type='checkbox'] {
     width: 1.25rem;
     height: 1.25rem;
     margin: var(--space-3);
     flex-shrink: 0;
   }
-  .title {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-  }
-  .note {
-    font-size: var(--fs-xs);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  li.bought .title {
+  .bought {
     text-decoration: line-through;
     opacity: 0.6;
   }
