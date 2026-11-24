@@ -244,8 +244,6 @@
   h3 {
     margin: 0;
     font-size: var(--fs-xs);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
     color: var(--color-text-muted);
   }
   /* "Show all" is a small, muted text link, not a button (#189). */

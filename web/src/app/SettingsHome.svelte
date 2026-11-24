@@ -163,8 +163,6 @@
     margin: var(--space-4) 0 var(--space-2);
     font-size: var(--fs-xs);
     font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
     color: var(--color-text-muted);
   }
   .recent {

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -84,7 +85,7 @@
     {#each sortBookmarks(data.bookmarks, cfg.sort, intlLocale()) as b (b.id)}
       {@const icon = iconSrc(b)}
       {@const problem = linkProblem(b.link, intlLocale())}
-      <li>
+      <ListRow nowrap>
         <a href={b.url} target="_blank" rel="noopener noreferrer" title={b.description || b.url}>
           {#if icon}<img
               src={icon}
@@ -97,32 +98,38 @@
             />{/if}
           <span class="title">{b.title}</span>
         </a>
-        {#if problem}<span
-            class="link-state"
-            class:broken={b.link.state === 'broken'}
-            title={problem}
-            aria-label={problem}
-            role="img"
-            >{#if b.link.state === 'broken'}<Icon name="warning" size={16} />{:else}↪{/if}</span
-          >{/if}
-        {#each b.tags as t (t)}<span class="tag">#{t}</span>{/each}
-        {#if b.mine}
-          <button
-            class="btn btn-icon edit"
-            type="button"
-            aria-label={t('bookmarks.edit', { title: b.title })}
-            onclick={() => (editing = b)}>✎</button
-          >
-        {:else}
-          <!-- Shared links (#298) are read-only and marked as such. -->
-          <span
-            class="shared"
-            title={t('bookmarks.shared_with_you')}
-            aria-label={t('bookmarks.shared_with_you')}
-            role="img"><Icon name="users" size={16} /></span
-          >
-        {/if}
-      </li>
+        {#snippet sub()}
+          {#if b.tags.length > 0}{#each b.tags as t (t)}<span class="tag">#{t}</span>{/each}{/if}
+        {/snippet}
+        {#snippet value()}
+          {#if problem}<span
+              class="link-state"
+              class:broken={b.link.state === 'broken'}
+              title={problem}
+              aria-label={problem}
+              role="img"
+              >{#if b.link.state === 'broken'}<Icon name="warning" size={16} />{:else}↪{/if}</span
+            >{/if}
+        {/snippet}
+        {#snippet trail()}
+          {#if b.mine}
+            <button
+              class="btn btn-icon edit"
+              type="button"
+              aria-label={t('bookmarks.edit', { title: b.title })}
+              onclick={() => (editing = b)}>✎</button
+            >
+          {:else}
+            <!-- Shared links (#298) are read-only and marked as such. -->
+            <span
+              class="shared"
+              title={t('bookmarks.shared_with_you')}
+              aria-label={t('bookmarks.shared_with_you')}
+              role="img"><Icon name="users" size={16} /></span
+            >
+          {/if}
+        {/snippet}
+      </ListRow>
     {:else}
       <li class="muted">
         {brokenOnly ? t('bookmarks.no_broken') : query ? t('bookmarks.none_match') : t('bookmarks.none_yet')}
@@ -168,12 +175,6 @@
     margin: 0;
     padding: 0;
   }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-1) 0;
-  }
   a {
     display: flex;
     align-items: center;
@@ -197,6 +198,9 @@
   .link-state.broken {
     color: var(--color-danger);
   }
+  .tag + .tag {
+    margin-left: var(--space-1);
+  }
   .tag {
     font-size: var(--fs-xs);
     color: var(--color-text-muted);
@@ -206,10 +210,9 @@
     opacity: 0.7;
   }
   .edit {
-    margin-left: auto;
     opacity: 0;
   }
-  li:hover .edit,
+  :global(.row:hover) .edit,
   .edit:focus {
     opacity: 1;
   }

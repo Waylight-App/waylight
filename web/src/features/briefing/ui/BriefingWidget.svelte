@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -49,13 +50,15 @@
           {#each s.items as item, i (i)}
             {@const time = itemTime(s.kind, item, intlLocale())}
             {@const detail = itemDetail(s.kind, item)}
-            <li class={item.severity}>
-              {#if time}<span class="time">{time}</span>{/if}
-              <span class="text">{item.text}</span>
-              {#if detail}<span class="detail">{detail}</span>{/if}
-            </li>
+            <ListRow>
+              {#snippet lead()}{#if time}<span class="time">{time}</span>{/if}{/snippet}
+              <span class={item.severity}>{item.text}</span>
+              {#snippet value()}{#if detail}{detail}{/if}{/snippet}
+            </ListRow>
           {/each}
-          {#if s.more > 0}<li class="detail">{t('briefing.more', { n: s.more })}</li>{/if}
+          {#if s.more > 0}<ListRow>
+              <span class="detail">{t('briefing.more', { n: s.more })}</span>
+            </ListRow>{/if}
         </ul>
       </section>
     {:else}
@@ -94,7 +97,6 @@
     font: inherit;
     color: inherit;
     cursor: pointer;
-    text-transform: inherit;
   }
   .link:hover {
     text-decoration: underline;
@@ -104,17 +106,6 @@
     margin: 0;
     padding: 0;
   }
-  li {
-    display: flex;
-    gap: var(--space-2);
-    align-items: baseline;
-    min-width: 0;
-  }
-  .text {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
   .time {
     flex: none;
     white-space: nowrap;
@@ -122,17 +113,13 @@
     color: var(--color-text-muted);
   }
   .detail {
-    flex: 0 1 auto;
-    min-width: 0;
     font-size: var(--fs-xs);
     color: var(--color-text-muted);
-    overflow-wrap: anywhere;
   }
-  li.warning .detail,
-  li.warning .text {
+  .warning {
     color: var(--color-warning, #b26a00);
   }
-  li.critical .text {
+  .critical {
     color: var(--color-danger);
     font-weight: 600;
   }

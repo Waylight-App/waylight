@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { type ChoiceLoader, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { fuelSetup } from './fuelSetup';
@@ -80,26 +81,26 @@
   <ul class="stations">
     {#each list as s (s.id)}
       {@const p = formatPrice(s.price, intlLocale())}
-      <li class:closed={!s.open}>
-        <span class="price"
-          >{#if p}{p.main}<sup>{p.tenth}</sup>{:else}–{/if}</span
-        >
-        <span class="name" title={s.address}>
-          {s.brand || s.name}
-          <small class="muted"
-            >{s.open ? '' : `${t('fuel.closed')} · `}{s.distanceKm > 0
-              ? `${s.distanceKm} km`
-              : s.address}</small
+      <ListRow nowrap title={s.address} style={s.open ? '' : 'opacity: 0.6'}>
+        {#snippet lead()}
+          <span class="price"
+            >{#if p}{p.main}<sup>{p.tenth}</sup>{:else}–{/if}</span
           >
-        </span>
-        <button
-          class="btn btn-icon"
-          type="button"
-          aria-pressed={isFavourite(favourites, s.id)}
-          aria-label={t('fuel.favourite', { name: s.brand || s.name })}
-          onclick={() => star(s)}>{isFavourite(favourites, s.id) ? '★' : '☆'}</button
-        >
-      </li>
+        {/snippet}
+        {s.brand || s.name}
+        {#snippet sub()}{s.open ? '' : `${t('fuel.closed')} · `}{s.distanceKm > 0
+            ? `${s.distanceKm} km`
+            : s.address}{/snippet}
+        {#snippet trail()}
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-pressed={isFavourite(favourites, s.id)}
+            aria-label={t('fuel.favourite', { name: s.brand || s.name })}
+            onclick={() => star(s)}>{isFavourite(favourites, s.id) ? '★' : '☆'}</button
+          >
+        {/snippet}
+      </ListRow>
     {:else}
       <li class="muted">{cfg.view === 'favourites' ? t('fuel.no_favourites') : t('fuel.no_stations')}</li>
     {/each}
@@ -115,29 +116,14 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    display: grid;
-    gap: var(--space-1);
   }
-  .stations li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-  .stations li.closed {
-    opacity: 0.6;
+  /* The tenth of a cent keeps the guide's smallest size instead of the browser's 12px. */
+  sup {
+    font-size: var(--fs-xs);
   }
   .price {
     font-weight: 600;
-    font-variant-numeric: tabular-nums;
     min-width: 3.6em;
-  }
-  .name {
-    flex: 1;
-    min-width: 0;
-    display: grid;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .small {
     font-size: var(--fs-xs);

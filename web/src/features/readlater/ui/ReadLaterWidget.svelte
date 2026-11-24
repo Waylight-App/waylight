@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -63,17 +64,19 @@
 {#if error}<p class="error small" role="alert">{error}</p>{/if}
 <ul class="list">
   {#each articles.slice(0, cfg.count) as a (a.id)}
-    <li>
-      <input
-        type="checkbox"
-        aria-label={t('readlater.mark_read', { title: a.title })}
-        onchange={() => run(() => readlater.setStatus(a.id, 'read'))}
-      />
+    <ListRow>
+      {#snippet lead()}
+        <input
+          type="checkbox"
+          aria-label={t('readlater.mark_read', { title: a.title })}
+          onchange={() => run(() => readlater.setStatus(a.id, 'read'))}
+        />
+      {/snippet}
       <button class="title" type="button" onclick={async () => (open = await readlater.open(a.id))}>
-        <span class="name">{a.title}</span>
-        <span class="muted small">{a.site} · {t('readlater.minutes', { n: a.readingMinutes })}</span>
+        {a.title}
       </button>
-    </li>
+      {#snippet sub()}{a.site} · {t('readlater.minutes', { n: a.readingMinutes })}{/snippet}
+    </ListRow>
   {:else}
     <li class="muted">{t('readlater.empty')}</li>
   {/each}
@@ -95,19 +98,9 @@
     list-style: none;
     margin: var(--space-2) 0 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
-  }
-  li {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-2);
   }
   .title {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
+    max-width: 100%;
     text-align: left;
     background: none;
     border: 0;
@@ -116,11 +109,11 @@
     font: inherit;
     cursor: pointer;
   }
-  .name,
-  .title .small {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  /* Stretches the title button over the whole row so the site line is clickable too. */
+  .title::after {
+    content: '';
+    position: absolute;
+    inset: 0;
   }
   .small {
     font-size: var(--fs-xs);

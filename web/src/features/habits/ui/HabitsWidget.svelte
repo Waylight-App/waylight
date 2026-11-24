@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -64,52 +65,63 @@
 {#if error}<p class="error">{error}</p>{/if}
 <ul class="habits">
   {#each list as h (h.id)}
-    <li>
-      <label class="today" class:done={h.doneToday}>
-        <input
-          type="checkbox"
-          checked={h.doneToday}
-          aria-label={t('habits.done_today', { name: h.name })}
-          onchange={() => run(habits.toggleToday(h.id))}
-        />
-        <span class="emoji" aria-hidden="true"
-          >{#if h.emoji}{h.emoji}{:else}<Icon name="done" size={16} />{/if}</span
-        >
-      </label>
-      <button class="name" type="button" onclick={() => (editing = h)} title={t('habits.edit')}
-        >{h.name}</button
+    <ListRow nowrap>
+      {#snippet lead()}
+        <label class="today" class:done={h.doneToday}>
+          <input
+            type="checkbox"
+            checked={h.doneToday}
+            aria-label={t('habits.done_today', { name: h.name })}
+            onchange={() => run(habits.toggleToday(h.id))}
+          />
+          <span class="emoji" aria-hidden="true"
+            >{#if h.emoji}{h.emoji}{:else}<Icon name="done" size={16} />{/if}</span
+          >
+        </label>
+      {/snippet}
+      <button
+        class="name"
+        class:done={h.doneToday}
+        type="button"
+        onclick={() => (editing = h)}
+        title={t('habits.edit')}>{h.name}</button
       >
-      <span class="streak" title={t('habits.streak_title', { best: h.best })}>
-        {#if h.current > 0}<Icon name="flame" size={16} /> {h.current}{:else}<span class="muted">–</span>{/if}
-      </span>
-      {#if cfg.showHeatmap}
-        <div class="heat" role="group" aria-label={t('habits.last_weeks', { name: h.name })}>
-          {#each heatWeeks(h.heatmap) as week, w (w)}
-            {#each week as c (c.date)}
-              {#if c.date === yesterday}
-                <button
-                  type="button"
-                  class="cell"
-                  class:due={c.due}
-                  class:done={c.done}
-                  aria-pressed={c.done}
-                  aria-label={t('habits.toggle_yesterday', { name: h.name })}
-                  title={t('habits.toggle_yesterday', { name: h.name })}
-                  onclick={() => run(habits.toggleYesterday(h.id))}
-                ></button>
-              {:else}
-                <span
-                  class="cell"
-                  class:due={c.due}
-                  class:done={c.done}
-                  title={`${dateLabel(c.date)}${c.done ? ' ✓' : ''}`}
-                ></span>
-              {/if}
+      {#snippet sub()}
+        {#if cfg.showHeatmap}
+          <div class="heat" role="group" aria-label={t('habits.last_weeks', { name: h.name })}>
+            {#each heatWeeks(h.heatmap) as week, w (w)}
+              {#each week as c (c.date)}
+                {#if c.date === yesterday}
+                  <button
+                    type="button"
+                    class="cell"
+                    class:due={c.due}
+                    class:done={c.done}
+                    aria-pressed={c.done}
+                    aria-label={t('habits.toggle_yesterday', { name: h.name })}
+                    title={t('habits.toggle_yesterday', { name: h.name })}
+                    onclick={() => run(habits.toggleYesterday(h.id))}
+                  ></button>
+                {:else}
+                  <span
+                    class="cell"
+                    class:due={c.due}
+                    class:done={c.done}
+                    title={`${dateLabel(c.date)}${c.done ? ' ✓' : ''}`}
+                  ></span>
+                {/if}
+              {/each}
             {/each}
-          {/each}
-        </div>
-      {/if}
-    </li>
+          </div>
+        {/if}
+      {/snippet}
+      {#snippet value()}
+        <span class="streak" title={t('habits.streak_title', { best: h.best })}>
+          {#if h.current > 0}<Icon name="flame" size={16} /> {h.current}{:else}<span class="muted">–</span
+            >{/if}
+        </span>
+      {/snippet}
+    </ListRow>
   {:else}
     <li class="muted">{t('habits.empty')}</li>
   {/each}
@@ -131,18 +143,8 @@
     list-style: none;
     margin: 0 0 var(--space-2);
     padding: 0;
-    display: grid;
-    gap: var(--space-2);
-  }
-  li {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-areas: 'check name streak' 'heat heat heat';
-    align-items: center;
-    gap: var(--space-1) var(--space-2);
   }
   .today {
-    grid-area: check;
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
@@ -157,7 +159,7 @@
     font-size: var(--fs-sm);
   }
   .name {
-    grid-area: name;
+    max-width: 100%;
     border: none;
     background: none;
     padding: 0;
@@ -169,17 +171,14 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .done + .name,
-  .today.done ~ .name {
+  .name.done {
     color: var(--color-text-muted);
   }
   .streak {
-    grid-area: streak;
-    font-variant-numeric: tabular-nums;
     white-space: nowrap;
+    color: var(--color-text);
   }
   .heat {
-    grid-area: heat;
     display: grid;
     grid-template-columns: repeat(28, 1fr);
     gap: var(--space-1);

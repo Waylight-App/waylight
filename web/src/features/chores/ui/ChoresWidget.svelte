@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -68,39 +69,43 @@
 </script>
 
 {#snippet row(c: Chore)}
-  <li class:overdue={c.overdue}>
-    {#if c.dueNow}
-      <button
-        class="btn btn-icon tick"
-        type="button"
-        disabled={busy === c.id}
-        aria-label={t('chores.done_named', { title: c.title })}
-        onclick={() => done(c)}>✓</button
+  <ListRow nowrap>
+    {#snippet lead()}
+      {#if c.dueNow}
+        <button
+          class="btn btn-icon tick"
+          type="button"
+          disabled={busy === c.id}
+          aria-label={t('chores.done_named', { title: c.title })}
+          onclick={() => done(c)}>✓</button
+        >
+      {/if}
+    {/snippet}
+    {c.title}
+    {#snippet sub()}
+      <span class:overdue={c.overdue}
+        >{when(c)}{#if c.assignee}&nbsp;· {t('chores.turn', { name: c.assignee })}{/if}</span
       >
-    {/if}
-    <span class="main">
-      <span class="title">{c.title}</span>
-      <span class="meta muted">
-        {when(c)}{#if c.assignee}&nbsp;· {t('chores.turn', { name: c.assignee })}{/if}
-      </span>
-    </span>
-    {#if c.mine}
-      <span class="actions">
-        <button
-          class="btn btn-icon"
-          type="button"
-          aria-label={t('chores.edit_named', { title: c.title })}
-          onclick={() => (editing = c)}>✎</button
-        >
-        <button
-          class="btn btn-icon"
-          type="button"
-          aria-label={t('chores.remove', { title: c.title })}
-          onclick={() => remove(c)}>✕</button
-        >
-      </span>
-    {/if}
-  </li>
+    {/snippet}
+    {#snippet trail()}
+      {#if c.mine}
+        <span class="actions">
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label={t('chores.edit_named', { title: c.title })}
+            onclick={() => (editing = c)}>✎</button
+          >
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label={t('chores.remove', { title: c.title })}
+            onclick={() => remove(c)}>✕</button
+          >
+        </span>
+      {/if}
+    {/snippet}
+  </ListRow>
 {/snippet}
 
 {#if error}<p class="error" role="alert">{error}</p>{/if}
@@ -145,35 +150,12 @@
     list-style: none;
     margin: 0 0 var(--space-2);
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
-  }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    min-width: 0;
   }
   .tick {
     min-width: 44px;
     min-height: 44px;
   }
-  .main {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-  }
-  .title,
-  .meta {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .meta {
-    font-size: var(--fs-xs);
-  }
-  li.overdue .meta {
+  .overdue {
     color: var(--color-accent-text);
   }
   .actions {

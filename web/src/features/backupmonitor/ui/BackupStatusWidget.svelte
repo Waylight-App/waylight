@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -49,19 +50,23 @@
 {#if error}<p class="error">{error}</p>{/if}
 <ul class="list">
   {#each sources as s (s.id)}
-    <li title={s.lastMessage}>
-      <StatusDot
-        level={backupLevel[s.state]}
-        label={t(labels[s.state])}
-        word={s.state !== 'ok' && s.state !== 'running'}
-      />
-      <span class="name">{s.name}</span>
-      <span class="muted small"
-        >{s.state === 'failed'
-          ? t('backupmonitor.failed_ago', { time: ago(s.lastFailureAt, now) })
-          : ago(s.lastSuccessAt, now)}</span
-      >
-    </li>
+    <ListRow nowrap title={s.lastMessage}>
+      {#snippet lead()}
+        <StatusDot
+          level={backupLevel[s.state]}
+          label={t(labels[s.state])}
+          word={s.state !== 'ok' && s.state !== 'running'}
+        />
+      {/snippet}
+      {s.name}
+      {#snippet value()}
+        <span class="when"
+          >{s.state === 'failed'
+            ? t('backupmonitor.failed_ago', { time: ago(s.lastFailureAt, now) })
+            : ago(s.lastSuccessAt, now)}</span
+        >
+      {/snippet}
+    </ListRow>
   {:else}
     <li class="muted">{t('backupmonitor.no_backups_monitored_yet_add_them')}</li>
   {/each}
@@ -73,20 +78,7 @@
     margin: 0;
     padding: 0;
   }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-1) 0;
-  }
-  .name {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .small {
+  .when {
     font-size: var(--fs-xs);
     white-space: nowrap;
   }

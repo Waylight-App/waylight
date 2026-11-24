@@ -54,8 +54,6 @@
     margin: 0 0 var(--space-2);
     font-size: var(--fs-xs);
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
     color: var(--color-text-muted);
   }
   .cells {

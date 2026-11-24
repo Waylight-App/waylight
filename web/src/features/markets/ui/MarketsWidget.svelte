@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -47,24 +48,30 @@
     {#each rows as r (r.symbol)}
       {@const name = displayName(r.symbol)}
       {@const spark = relative(r.history)}
-      <li>
+      <ListRow nowrap>
         <span class="name">{name}</span>
-        {#if r.value !== null}
-          <span class="spark"
-            ><Sparkline values={spark.values} max={spark.max} label={t('markets.trend', { name })} /></span
-          >
-          <span class="value">{formatValue(r.value, intlLocale())}</span>
-          <span class="change" class:up={r.changePct > 0} class:down={r.changePct < 0}
-            >{formatChange(r.changePct, intlLocale())}{#if r.stale}<span class="muted">
-                · {t('markets.stale')}</span
-              >{/if}</span
-          >
-        {:else}
-          <span class="muted small err"
-            >{t(r.error === 'no_data' ? 'markets.no_data' : 'markets.unavailable')}</span
-          >
-        {/if}
-      </li>
+        {#snippet value()}
+          {#if r.value !== null}
+            <span class="quote">
+              <span class="spark"
+                ><Sparkline
+                  values={spark.values}
+                  max={spark.max}
+                  label={t('markets.trend', { name })}
+                /></span
+              >
+              <span class="num">{formatValue(r.value, intlLocale())}</span>
+              <span class="change" class:up={r.changePct > 0} class:down={r.changePct < 0}
+                >{formatChange(r.changePct, intlLocale())}{#if r.stale}<span class="muted">
+                    · {t('markets.stale')}</span
+                  >{/if}</span
+              >
+            </span>
+          {:else}
+            <span class="small">{t(r.error === 'no_data' ? 'markets.no_data' : 'markets.unavailable')}</span>
+          {/if}
+        {/snippet}
+      </ListRow>
     {/each}
   </ul>
   <p class="muted small">{t('markets.closes_note')}</p>
@@ -75,15 +82,12 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
   }
-  li {
+  .quote {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 64px auto auto;
+    grid-template-columns: 64px auto auto;
     gap: var(--space-2);
     align-items: center;
-    font-variant-numeric: tabular-nums;
   }
   .name {
     font-weight: 600;
@@ -91,8 +95,9 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .value {
+  .num {
     text-align: right;
+    color: var(--color-text);
   }
   .change {
     text-align: right;
@@ -104,9 +109,6 @@
   }
   .down {
     color: var(--color-danger);
-  }
-  .err {
-    grid-column: 2 / -1;
   }
   .small {
     font-size: var(--fs-xs);

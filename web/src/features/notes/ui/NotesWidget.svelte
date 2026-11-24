@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -93,16 +94,16 @@
 {#if hits}
   <ul class="list" aria-label={t('notes.search_results')}>
     {#each hits as h (h.id)}
-      <li>
-        <button type="button" onclick={() => openHit(h.id)}>
+      <ListRow>
+        <button type="button" class="open" onclick={() => openHit(h.id)}>
           <strong
             >{#each h.title as s, i (i)}{#if s.hit}<mark>{s.text}</mark>{:else}{s.text}{/if}{/each}</strong
           >
-          <span class="muted"
-            >{#each h.snippet as s, i (i)}{#if s.hit}<mark>{s.text}</mark>{:else}{s.text}{/if}{/each}</span
-          >
         </button>
-      </li>
+        {#snippet sub()}
+          {#each h.snippet as s, i (i)}{#if s.hit}<mark>{s.text}</mark>{:else}{s.text}{/if}{/each}
+        {/snippet}
+      </ListRow>
     {:else}
       <li class="muted">{t('notes.no_matches')}</li>
     {/each}
@@ -118,15 +119,15 @@
 {:else}
   <ul class="list">
     {#each list as n (n.id)}
-      <li>
-        <button type="button" onclick={() => (viewing = n)}>
+      <ListRow>
+        <button type="button" class="open" onclick={() => (viewing = n)}>
           <strong
             >{#if n.pinned}<Icon name="pin" size={16} />
             {/if}{n.title}</strong
           >
-          <span class="muted">{excerpt(n.body)}</span>
         </button>
-      </li>
+        {#snippet sub()}{excerpt(n.body)}{/snippet}
+      </ListRow>
     {:else}
       <li class="muted">{cfg.scope === 'pinned' ? t('notes.no_pinned') : t('notes.none_yet')}</li>
     {/each}
@@ -204,24 +205,25 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
   }
-  .list button,
+  .open,
   .single {
     width: 100%;
     display: flex;
     flex-direction: column;
     text-align: left;
     border: none;
-    background: var(--color-surface-2);
-    border-radius: var(--radius-sm);
-    padding: var(--space-2);
-    cursor: pointer;
-  }
-  .single {
     background: none;
     padding: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  /* Stretches the title button over the whole row so the excerpt is clickable too. */
+  .open::after {
+    content: '';
+    position: absolute;
+    inset: 0;
   }
   .muted {
     font-size: var(--fs-xs);

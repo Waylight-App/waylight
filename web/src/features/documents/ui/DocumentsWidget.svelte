@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -55,37 +56,37 @@
 {#if error}<p class="error" role="alert">{error}</p>{/if}
 <ul>
   {#each items as d (d.id)}
-    <li class={d.status}>
-      <span class="main">
-        <span class="name">{d.title}</span>
-        <span class="meta">{warranty(d)}</span>
-      </span>
-      <span class="actions">
-        {#if d.fileName}
-          <a
-            class="btn btn-icon"
-            href={documents.fileUrl(d.id)}
-            download={d.fileName}
-            title={formatSize(d.fileSize)}
-            aria-label={t('documents.download', { name: d.fileName })}><Icon name="download" size={16} /></a
-          >
-        {/if}
-        {#if d.mine}
-          <button
-            class="btn btn-icon"
-            type="button"
-            aria-label={t('documents.edit_named', { name: d.title })}
-            onclick={() => (editing = d)}>✎</button
-          >
-          <button
-            class="btn btn-icon"
-            type="button"
-            aria-label={t('documents.remove', { name: d.title })}
-            onclick={() => remove(d)}>✕</button
-          >
-        {/if}
-      </span>
-    </li>
+    <ListRow nowrap style={d.status === 'ended' ? 'opacity: 0.6' : ''}>
+      {d.title}
+      {#snippet sub()}<span class:ending={d.status === 'ending'}>{warranty(d)}</span>{/snippet}
+      {#snippet trail()}
+        <span class="actions">
+          {#if d.fileName}
+            <a
+              class="btn btn-icon"
+              href={documents.fileUrl(d.id)}
+              download={d.fileName}
+              title={formatSize(d.fileSize)}
+              aria-label={t('documents.download', { name: d.fileName })}><Icon name="download" size={16} /></a
+            >
+          {/if}
+          {#if d.mine}
+            <button
+              class="btn btn-icon"
+              type="button"
+              aria-label={t('documents.edit_named', { name: d.title })}
+              onclick={() => (editing = d)}>✎</button
+            >
+            <button
+              class="btn btn-icon"
+              type="button"
+              aria-label={t('documents.remove', { name: d.title })}
+              onclick={() => remove(d)}>✕</button
+            >
+          {/if}
+        </span>
+      {/snippet}
+    </ListRow>
   {:else}
     <li class="muted">{t('documents.empty')}</li>
   {/each}
@@ -106,36 +107,10 @@
     list-style: none;
     margin: 0 0 var(--space-2);
     padding: 0;
-    display: grid;
-    gap: var(--space-1);
   }
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    min-width: 0;
-  }
-  .main {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-  }
-  .name,
-  .meta {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .meta {
-    font-size: var(--fs-xs);
-  }
-  li.ending .meta {
+  .ending {
     color: var(--color-warning);
     font-weight: 600;
-  }
-  li.ended {
-    opacity: 0.6;
   }
   .actions {
     display: flex;
