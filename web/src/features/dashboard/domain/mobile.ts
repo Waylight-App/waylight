@@ -36,6 +36,9 @@ export function usesGrid(items: readonly MobileItem[]): boolean {
   return items.some((i) => sizeCells(i.size) !== undefined);
 }
 
+/** Width below which the tabs become a bottom navigation (#771); matches the CSS breakpoint. */
+export const BOTTOM_NAV_QUERY = '(max-width: 639px)';
+
 /** Width below which the phone layout is used; matches the CSS breakpoint. */
 export const PHONE_QUERY = '(max-width: 720px)';
 

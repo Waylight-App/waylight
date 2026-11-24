@@ -281,6 +281,18 @@
   .chromeless .body {
     height: 100%;
   }
+  /* Cards on a phone use 16 px padding (#771). */
+  @media (max-width: 639px) {
+    header {
+      padding: var(--space-4) var(--space-4) 0;
+    }
+    .content {
+      padding: var(--space-2) var(--space-4) var(--space-4);
+    }
+    .compact .content {
+      padding: var(--space-3) var(--space-4);
+    }
+  }
   /* Stacked on phones the height comes from the content, so only the width
      can be used as container size. */
   @media (max-width: 720px) {

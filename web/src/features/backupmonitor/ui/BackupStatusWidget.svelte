@@ -2,6 +2,7 @@
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
+  import StatusDot from '../../../shared/ui/StatusDot.svelte';
   import { ago, type BackupSource } from '../domain/source';
   import type { BackupMonitorUseCases } from '../usecase/backupMonitorUseCases';
 
@@ -36,13 +37,24 @@
     waiting: 'backupmonitor.state.waiting',
     running: 'backupmonitor.state.running',
   } as const;
+  const backupLevel = {
+    ok: 'ok',
+    running: 'ok',
+    waiting: 'stopped',
+    overdue: 'warning',
+    failed: 'failed',
+  } as const;
 </script>
 
 {#if error}<p class="error">{error}</p>{/if}
 <ul class="list">
   {#each sources as s (s.id)}
     <li title={s.lastMessage}>
-      <span class="dot {s.state}" aria-label={t(labels[s.state])}></span>
+      <StatusDot
+        level={backupLevel[s.state]}
+        label={t(labels[s.state])}
+        word={s.state !== 'ok' && s.state !== 'running'}
+      />
       <span class="name">{s.name}</span>
       <span class="muted small"
         >{s.state === 'failed'
@@ -77,24 +89,5 @@
   .small {
     font-size: var(--fs-xs);
     white-space: nowrap;
-  }
-  .dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    flex: none;
-    background: var(--color-border);
-  }
-  .dot.running {
-    background: var(--color-text);
-  }
-  .dot.ok {
-    background: var(--color-ok);
-  }
-  .dot.overdue {
-    background: var(--color-warning);
-  }
-  .dot.failed {
-    background: var(--color-danger);
   }
 </style>

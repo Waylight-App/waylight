@@ -936,7 +936,8 @@
     }
   }
   .content {
-    padding: 0 var(--space-4) var(--space-6);
+    /* Leaves room for the bottom navigation of phones (#771). */
+    padding: 0 var(--space-4) calc(var(--space-6) + var(--bottom-nav-h, 0px));
     max-width: 1600px;
     margin: 0 auto;
   }
