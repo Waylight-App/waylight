@@ -301,9 +301,6 @@
     font: inherit;
     font-weight: 500;
     white-space: nowrap;
-    transition:
-      color 0.15s,
-      background-color 0.15s;
   }
   .name:hover {
     color: var(--color-text);
