@@ -220,7 +220,9 @@
     /* The first column may shrink below its content's width: otherwise the
        tab bar's min-content width stretches it, and with it the title and
        the search, past the screen (#226). */
-    grid-template-columns: minmax(0, 1fr) auto;
+    /* The tab column shrinks to the room left, so many tabs scroll inside
+       the bar instead of pushing the title and the page wider. */
+    grid-template-columns: minmax(8rem, 1fr) minmax(0, auto);
     grid-template-areas:
       'title tabs'
       'moment moment'
