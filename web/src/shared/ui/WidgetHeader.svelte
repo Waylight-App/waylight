@@ -29,16 +29,18 @@
 </div>
 
 <style>
+  /* Title, meta text and a compact view's status text share one baseline
+     (#794): the title's own baseline is its text, not the icon's edge. */
   .widget-header {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
     gap: var(--space-2);
     min-width: 0;
   }
   h3 {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: var(--space-1);
     min-width: 0;
     margin: 0;
@@ -49,6 +51,7 @@
   /* 16px like every line icon; muted so the title leads. */
   h3 :global(svg) {
     flex: none;
+    align-self: center;
     color: var(--color-text-muted);
   }
   .meta {
@@ -68,6 +71,7 @@
   }
   .action {
     display: flex;
+    align-self: center;
     align-items: center;
     gap: var(--space-1);
     flex: none;

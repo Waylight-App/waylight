@@ -268,11 +268,11 @@
   .menu button.danger {
     color: var(--color-danger);
   }
-  /* Centred tab pills below the search (#189); overflow scrolls with faded edges. */
+  /* Tab pills at the end of the title row (#791); overflow scrolls with faded edges. */
   .tabs {
     display: flex;
     flex-wrap: nowrap;
-    justify-content: safe center;
+    justify-content: safe flex-end;
     gap: var(--space-1);
     align-items: center;
     overflow-x: auto;

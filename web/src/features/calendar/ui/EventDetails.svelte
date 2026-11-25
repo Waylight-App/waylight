@@ -61,7 +61,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     background: var(--color-surface);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-pop);
     font-size: var(--fs-sm);
   }
   .top {

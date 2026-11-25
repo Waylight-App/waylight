@@ -192,7 +192,7 @@
     flex-direction: column;
     overflow: hidden;
     opacity: var(--widget-opacity);
-    /* Cards stand apart by spacing, surface and shadow, not by lines (#672). */
+    /* A 1 px hairline sets the card off (#792); .card draws the border. */
     border-color: var(--color-widget-border);
   }
   .widget.chromeless {

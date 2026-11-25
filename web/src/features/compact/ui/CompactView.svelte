@@ -187,7 +187,7 @@
     font-size: var(--fs-md);
     font-weight: 600;
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: var(--space-1);
   }
   .strip .state {
@@ -203,6 +203,7 @@
     width: 0.6em;
     height: 0.6em;
     border-radius: 50%;
+    align-self: center;
   }
   [data-level='attention'] .dot {
     background: var(--color-warning);

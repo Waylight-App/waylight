@@ -213,29 +213,38 @@
 </section>
 
 <style>
+  /* Title left and tabs right on one row, the search field below (#791). The
+     DOM keeps title, search, tabs, so the keyboard order is unchanged. */
   .hero {
     display: grid;
-    /* One column that may shrink below its content's width: otherwise the
-       tab bar's min-content width stretches the column, and with it the
-       greeting and the search, past the screen (#226). */
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
-    /* Tight spacing so the widgets start right below the search and the tabs. */
-    gap: var(--space-2);
+    /* The first column may shrink below its content's width: otherwise the
+       tab bar's min-content width stretches it, and with it the title and
+       the search, past the screen (#226). */
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'title tabs'
+      'moment moment'
+      'search search';
+    align-items: center;
+    column-gap: var(--space-4);
+    row-gap: var(--space-2);
     padding: var(--space-3) var(--space-4) var(--space-2);
     max-width: 1600px;
     margin: 0 auto;
   }
   h1 {
+    grid-area: title;
     margin: 0;
     font-size: var(--fs-lg);
-    font-weight: 700;
-    text-align: center;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     overflow-wrap: anywhere; /* a long name wraps instead of widening the page */
   }
   .search {
+    grid-area: search;
     position: relative;
-    width: min(40rem, 100%);
+    width: min(32.5rem, 100%);
+    margin-top: var(--space-2);
   }
   .pill {
     display: flex;
@@ -243,22 +252,19 @@
     gap: var(--space-3);
     width: 100%;
     box-sizing: border-box;
-    height: 3.2rem;
+    height: var(--space-12);
     padding: 0 var(--space-4);
-    border: 2px solid transparent; /* the active border must not move the layout */
-    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     background: var(--color-surface);
-    box-shadow: var(--shadow);
     color: var(--color-text-muted);
   }
   .pill.active {
-    border-color: var(--color-accent);
+    border-color: var(--color-accent-text);
   }
   .pill:focus-within {
     border-color: var(--color-accent-text);
-    box-shadow:
-      var(--shadow),
-      0 0 0 2px color-mix(in srgb, var(--color-accent) 45%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent) 45%, transparent);
   }
   .pill input {
     flex: 1;
@@ -270,6 +276,11 @@
     color: var(--color-text);
     outline: none;
   }
+  /* The example hint is the same size as typed text, only quieter. */
+  .pill input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+  }
   kbd {
     font-size: var(--fs-xs);
     border: 1px solid var(--color-border);
@@ -278,26 +289,36 @@
     white-space: nowrap;
   }
   .tabs {
+    grid-area: tabs;
     max-width: 100%;
+    min-width: 0;
   }
   .tabs:empty {
     display: none;
   }
-  @media (max-width: 600px) {
+  .moment {
+    grid-area: moment;
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+  /* Phones: title above, the tabs are the bottom navigation (#771). */
+  @media (max-width: 639px) {
     .hero {
-      padding: var(--space-2) var(--space-3) var(--space-3);
-      gap: var(--space-2);
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'title'
+        'moment'
+        'search';
+      padding: var(--space-2) var(--space-4) var(--space-3);
+    }
+    .search {
+      margin-top: 0;
     }
     .pill {
-      height: 2.8rem;
+      height: var(--space-12);
     }
     kbd {
       display: none;
     }
-  }
-  .moment {
-    margin: calc(-1 * var(--space-2)) 0 var(--space-2);
-    text-align: center;
-    color: var(--color-text-muted);
   }
 </style>

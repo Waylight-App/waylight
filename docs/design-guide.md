@@ -14,8 +14,10 @@ never a number of their own.
 | `--fs-md` | 21 px | Card titles, numbers, dialog titles                         |
 | `--fs-lg` | 32 px | Page titles, including the welcome page and the setup steps |
 
-Weights are 400, 500 and 600. Figtree is the face for the interface;
-Fraunces is only for titles from 21 px. The sizes are in `rem`, so the text
+Weights are 400, 500 and 600. Figtree (`--font-sans`) is the face for the
+interface; Fraunces (`--font-display`) is only for titles from 21 px and for
+large numbers such as the clock. Both are the defaults of every theme and
+bundled with the app. The sizes are in `rem`, so the text
 size option in the accessibility settings scales them.
 
 ## Corner radii
@@ -72,8 +74,11 @@ a filled dot by shape as well as by colour.
 ## Surfaces
 
 Depth comes from the step between background, surface and surface 2, and
-from a 1 px border. There is no glow, no coloured shadow and no gradient
-from one hue to another. The page background is a single colour.
+from a 1 px border. A card's border is `--color-widget-border`, which is
+`--color-border` by default and a stronger line in the high-contrast theme.
+`--shadow` is `none`: cards, the search field and tiles carry no shadow. Only
+menus, panels and toasts that float above the page use `--shadow-pop`. There
+is no glow, no coloured shadow and no gradient from one hue to another. The page background is a single colour.
 
 Each screen has at most one lit card, such as the clock and weather card on
 the Home tab (the Tonight widget). It inverts the scheme: warm paper
@@ -124,8 +129,10 @@ chart is the internet speed chart, with a 24 hour and a 7 day range.
 
 ## Navigation
 
-Above 640 px the tabs sit in a bar under the search field, the selected tab
-filled with the accent. At 640 px and below they become a bottom navigation
+Above 640 px the top of the page is two rows: the page title on the left with
+the tabs on the right of the same row, the selected tab filled with the
+accent, and the search field below the title. With one tab there is no tab
+row. At 640 px and below they become a bottom navigation
 fixed to the bottom edge: an icon and a label per tab, the selected one marked
 with a line in the accent. The page leaves room for it, so no widget ends
 behind it.
