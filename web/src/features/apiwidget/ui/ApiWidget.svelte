@@ -70,7 +70,7 @@
   .name {
     margin: 0 0 var(--space-1);
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   dl {
     margin: 0;

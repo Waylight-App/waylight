@@ -104,7 +104,7 @@
     font-size: var(--fs-sm);
   }
   .muted {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .small {
     font-size: var(--fs-xs);

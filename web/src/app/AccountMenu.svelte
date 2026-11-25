@@ -85,7 +85,6 @@
       onclick={() => (open = !open)}
     >
       <span class="avatar" aria-hidden="true">{initial}</span>
-      <Icon name="chevron" size={16} />
     </button></span
   >
   {#if open}
@@ -127,28 +126,27 @@
   }
   .trigger {
     display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    background: var(--color-surface);
-    color: var(--color-text-muted);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
     cursor: pointer;
   }
-  .trigger:hover,
-  .trigger[aria-expanded='true'] {
-    border-color: var(--color-accent);
+  .trigger:hover .avatar,
+  .trigger[aria-expanded='true'] .avatar {
+    background: var(--color-accent-hover);
   }
   .avatar {
-    width: 1.8rem;
-    height: 1.8rem;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: grid;
     place-items: center;
     background: var(--color-accent);
     color: var(--color-accent-contrast);
+    font-size: var(--fs-xs);
     font-weight: 600;
+    transition: background-color 0.15s;
   }
   .menu {
     position: absolute;
@@ -180,7 +178,7 @@
   }
   .locked {
     cursor: default;
-    color: var(--color-text-muted, var(--color-text));
+    color: var(--color-text-subtle, var(--color-text));
   }
   .label {
     display: grid;

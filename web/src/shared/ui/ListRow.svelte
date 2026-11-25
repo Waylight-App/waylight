@@ -57,11 +57,14 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-3);
     min-height: 40px;
-    padding: var(--space-1) 0;
+    padding: var(--space-2) 0;
     border-bottom: 1px solid var(--color-border);
     font-variant-numeric: tabular-nums;
+  }
+  .row:first-child {
+    padding-top: 0;
   }
   .row:last-child {
     border-bottom: none;
@@ -80,17 +83,21 @@
   }
   .sub {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    line-height: var(--lh-xs);
+    color: var(--color-text-subtle);
     overflow-wrap: anywhere;
   }
   .value {
     flex: none;
     max-width: 50%;
     text-align: right;
-    color: var(--color-text-muted);
+    font-size: var(--fs-xs);
+    line-height: var(--lh-xs);
+    color: var(--color-text-subtle);
     overflow-wrap: anywhere;
   }
   .value.urgent {
     color: var(--color-accent-text);
+    font-weight: 500;
   }
 </style>

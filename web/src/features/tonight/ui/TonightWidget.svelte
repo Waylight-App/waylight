@@ -11,6 +11,7 @@
   } from '../domain/tonight';
   import type { TonightUseCases } from '../usecase/tonightUseCases';
   import { useTonight } from './useTonight.svelte';
+  import WidgetHeader from '../../../shared/ui/WidgetHeader.svelte';
 
   /** Props of the Tonight card: the clock and the current weather in one lit card. */
   interface Props {
@@ -29,6 +30,10 @@
 </script>
 
 <section class="lit" aria-label={t('tonight.label')}>
+  <WidgetHeader
+    title={data.weather?.place ? t('tonight.title_in', { place: data.weather.place }) : t('tonight.title')}
+    icon="sun"
+  />
   <div class="head">
     <div class="clock">
       <time class="time" datetime={data.now.toISOString()}>{formatTime(data.now, cfg, intlLocale())}</time>
@@ -82,9 +87,13 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: var(--space-3);
-    padding: var(--space-4) var(--space-4) var(--space-6);
+    gap: var(--space-4);
+    padding: var(--space-6);
     border-radius: var(--radius-md);
+    /* The header and the text inside read the lit colours. */
+    --color-text: var(--color-lit-text);
+    --color-text-muted: var(--color-lit-muted);
+    --color-text-subtle: var(--color-lit-muted);
     background: var(--color-lit);
     color: var(--color-lit-text);
     box-shadow: var(--shadow);
@@ -103,8 +112,8 @@
   .time {
     display: block;
     font-family: var(--font-display);
-    font-size: clamp(2rem, min(12cqi, 22cqh), 5rem);
-    font-weight: 600;
+    font-size: clamp(var(--fs-lg), min(5cqi, 10cqh), 5rem);
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     line-height: 1.05;
   }
@@ -119,14 +128,14 @@
   }
   .icon {
     display: flex;
-    font-size: clamp(2rem, min(11cqi, 18cqh), 4rem);
+    font-size: clamp(var(--fs-md), min(5cqi, 9cqh), 4rem);
     line-height: 1;
     color: var(--color-lit-accent);
   }
   .temp {
     font-family: var(--font-display);
-    font-size: clamp(1.6rem, min(8cqi, 14cqh), 3rem);
-    font-weight: 600;
+    font-size: clamp(var(--fs-lg), min(5cqi, 10cqh), 3rem);
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     line-height: 1;
   }
@@ -138,17 +147,23 @@
     margin: 0;
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    align-items: center;
+    align-self: flex-start;
     gap: var(--space-1) var(--space-2);
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-sm);
+    min-height: 32px;
+    padding: var(--space-1) var(--space-3);
+    border-radius: 999px;
     background: color-mix(in srgb, var(--color-lit-text) 9%, transparent);
     font-size: var(--fs-xs);
+    font-weight: 500;
+  }
+  .warning strong {
+    font-weight: 500;
   }
   .dot {
     flex: none;
-    width: 0.6em;
-    height: 0.6em;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
     align-self: center;
     background: var(--color-lit-warning);
@@ -163,16 +178,15 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-2);
-    text-align: center;
+    padding-top: var(--space-4);
+    border-top: 1px solid color-mix(in srgb, var(--color-lit-text) 14%, transparent);
     font-size: var(--fs-sm);
   }
   .days li {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: var(--space-1);
-    padding: var(--space-1);
-    border-radius: var(--radius-sm);
-    background: color-mix(in srgb, var(--color-lit-text) 9%, transparent);
   }
   .days .muted,
   .rain {

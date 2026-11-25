@@ -124,7 +124,7 @@
     margin: var(--space-1) 0 0;
   }
   .facts dt {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .facts dd {
     margin: 0;

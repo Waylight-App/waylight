@@ -89,8 +89,8 @@
   }
   .dot {
     flex: none;
-    width: 0.6rem;
-    height: 0.6rem;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
     background: var(--color-danger);
   }

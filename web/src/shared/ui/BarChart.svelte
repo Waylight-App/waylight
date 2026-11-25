@@ -67,6 +67,6 @@
     flex: 1;
     text-align: center;
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
 </style>

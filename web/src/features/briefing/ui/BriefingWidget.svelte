@@ -85,7 +85,7 @@
   .section h4 {
     margin: 0 0 var(--space-1);
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .section.alert h4 {
     color: var(--color-danger);
@@ -110,11 +110,11 @@
     flex: none;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .detail {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .warning {
     color: var(--color-warning, #b26a00);

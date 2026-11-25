@@ -8,7 +8,9 @@
   --color-surface-2: #f1ebdc;
   --color-border: #e4dccb;
   --color-text: #1b2238;
-  --color-text-muted: #5f6988;
+  --color-text-muted: #4a5271;
+  /* Meta text, hints and the right-hand values of rows; a theme without its own falls back to its muted colour. */
+  --color-text-subtle: #5f6988;
   --color-accent: #f2b441; /* ink text on it: 10:1 (WCAG AA) */
   --color-accent-contrast: #1a1206;
   /*
@@ -18,7 +20,7 @@
    */
   --color-accent-text: #935800;
   /* Status colors are also used as text: 4.5:1 on the surfaces (#113). */
-  --color-danger: #bd2f2f;
+  --color-danger: #b3261e;
   --color-success: #18794e;
   --color-warning: #8a5700;
   /*
@@ -28,16 +30,20 @@
    */
   --color-lit: #1b2238;
   --color-lit-text: #f2efe8;
-  --color-lit-muted: #a7aebb;
+  --color-lit-muted: #c9ced8;
   --color-lit-accent: #f2b441;
   --color-lit-warning: #f5c04e;
   --color-lit-danger: #ff6b6b;
+  /* Healthy status marks such as an online dot; a theme may set its own. */
+  --color-ok: #1f7a45;
   /*
-   * Healthy status marks such as an online dot. Neutral by default, so a
-   * dashboard where all is well stays calm and colour is left for attention
-   * (warning) and problems (danger) (#672). A theme may set a green.
+   * The stronger hairline of quiet buttons, checkboxes, the selected tab and
+   * the keycap: the text colour at 20 % (16 % on night). Derived, so a theme
+   * that changes the text colour keeps it.
    */
-  --color-ok: var(--color-text-muted);
+  --color-border-strong: color-mix(in srgb, var(--color-text) 20%, transparent);
+  /* Hover on the accent fill, derived from the accent so a theme keeps its own. */
+  --color-accent-hover: color-mix(in srgb, var(--color-accent) 70%, #c47a00);
   /*
    * Outline of widget cards: a 1 px hairline in the border colour (#792);
    * a high-contrast theme draws a stronger one.
@@ -53,6 +59,9 @@
   --radius-small: 8px;
   --radius-md: var(--radius);
   --radius-sm: var(--radius-small);
+  /* The keycap and the habit week squares (4 px) and the checkbox (6 px). */
+  --radius-xs: 4px;
+  --radius-box: 6px;
   /* Cards are set off by surface step and border, not by a shadow (#792). */
   --shadow: none;
   /*
@@ -72,6 +81,11 @@
   --fs-sm: 0.9375rem;
   --fs-md: 1.3125rem;
   --fs-lg: 2rem;
+  /* Line heights that go with the sizes: 16, 24, 28 and 40 px. */
+  --lh-xs: 1rem;
+  --lh-sm: 1.5rem;
+  --lh-md: 1.75rem;
+  --lh-lg: 2.5rem;
   /* Figtree and Fraunces are bundled (fonts.css); without them the stacks fall back to the system. */
   --font-sans:
     'Figtree Variable', Figtree, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
@@ -97,11 +111,12 @@
   --color-surface-2: #232b45;
   --color-border: #2e3650;
   --color-text: #f2efe8;
-  --color-text-muted: #a7aebb;
+  --color-text-muted: #c9ced8;
+  --color-text-subtle: #a7aebb;
   --color-accent: #f2b441;
   --color-accent-contrast: #1a1206;
   --color-accent-text: #f2b441;
-  --color-danger: #ff6b6b;
+  --color-danger: #f2a199;
   --color-success: #3dd68c;
   --color-warning: #f5c04e;
   --color-lit: #fff3d6;
@@ -110,6 +125,9 @@
   --color-lit-accent: #855000;
   --color-lit-warning: #7c4a00;
   --color-lit-danger: #bd2f2f;
+  --color-ok: #8fd6a8;
+  --color-border-strong: color-mix(in srgb, var(--color-text) 16%, transparent);
+  --color-accent-hover: color-mix(in srgb, var(--color-accent) 70%, #fff);
   color-scheme: dark;
 }
 
@@ -134,6 +152,7 @@
   --color-border: #000000;
   --color-text: #000000;
   --color-text-muted: #2e2e2e;
+  --color-text-subtle: #2e2e2e;
   --color-accent: #0039a6;
   --color-accent-contrast: #ffffff;
   --color-accent-text: #0039a6;
@@ -147,6 +166,8 @@
   --color-lit-warning: #ffd400;
   --color-lit-danger: #ff8a8a;
   --color-ok: var(--color-text-muted);
+  --color-border-strong: var(--color-border);
+  --color-accent-hover: var(--color-accent);
   --color-widget-border: #000000;
   --glow: none;
   --page-gradient: none;
@@ -161,6 +182,7 @@
   --color-border: #ffffff;
   --color-text: #ffffff;
   --color-text-muted: #e0e0e0;
+  --color-text-subtle: #e0e0e0;
   --color-accent: #ffd400;
   --color-accent-contrast: #000000;
   --color-accent-text: #ffd400;
@@ -173,5 +195,8 @@
   --color-lit-accent: #0039a6;
   --color-lit-warning: #6b4400;
   --color-lit-danger: #a00000;
+  --color-ok: var(--color-text-muted);
+  --color-border-strong: var(--color-border);
+  --color-accent-hover: var(--color-accent);
   --color-widget-border: #ffffff;
 }

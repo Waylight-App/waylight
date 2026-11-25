@@ -64,6 +64,6 @@
     gap: var(--space-1);
   }
   .name {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
 </style>

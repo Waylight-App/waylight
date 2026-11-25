@@ -43,7 +43,7 @@
     width: 1%;
   }
   .or {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     font-size: var(--fs-xs);
   }
 </style>

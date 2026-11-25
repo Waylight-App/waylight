@@ -168,7 +168,7 @@
   {#if momentLine}<p class="moment">{momentLine}</p>{/if}
   <div class="search" bind:this={box}>
     <label class="pill" class:active={open} data-tour="search">
-      <Icon name="search" size={20} />
+      <Icon name="search" size={16} />
       <input
         bind:this={input}
         bind:value={query}
@@ -229,8 +229,8 @@
       'search search';
     align-items: center;
     column-gap: var(--space-4);
-    row-gap: var(--space-2);
-    padding: var(--space-3) var(--space-4) var(--space-2);
+    row-gap: var(--space-4);
+    padding: var(--space-6) var(--space-6) 0;
     max-width: 1600px;
     margin: 0 auto;
   }
@@ -246,7 +246,6 @@
     grid-area: search;
     position: relative;
     width: min(32.5rem, 100%);
-    margin-top: var(--space-2);
   }
   .pill {
     display: flex;
@@ -259,7 +258,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     background: var(--color-surface);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .pill.active {
     border-color: var(--color-accent-text);
@@ -280,13 +279,16 @@
   }
   /* The example hint is the same size as typed text, only quieter. */
   .pill input::placeholder {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     opacity: 1;
   }
   kbd {
+    font-family: var(--font-mono);
     font-size: var(--fs-xs);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
+    line-height: 1.375rem;
+    height: 1.5rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xs);
     padding: 0 var(--space-2);
     white-space: nowrap;
   }
@@ -301,7 +303,7 @@
   .moment {
     grid-area: moment;
     margin: 0;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   /* Phones: title above, the tabs are the bottom navigation (#771). */
   @media (max-width: 639px) {
@@ -311,13 +313,11 @@
         'title'
         'moment'
         'search';
-      padding: var(--space-2) var(--space-4) var(--space-3);
-    }
-    .search {
-      margin-top: 0;
+      row-gap: var(--space-3);
+      padding: var(--space-2) var(--space-4) 0;
     }
     .pill {
-      height: var(--space-12);
+      height: 2.75rem;
     }
     kbd {
       display: none;

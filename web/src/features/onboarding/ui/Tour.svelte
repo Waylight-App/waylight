@@ -149,6 +149,6 @@
   }
   .skip {
     margin-right: auto;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
 </style>

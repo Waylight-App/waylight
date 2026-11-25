@@ -52,7 +52,7 @@
     gap: var(--space-2);
     min-height: 100%;
     text-align: center;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .symbol {
     display: flex;

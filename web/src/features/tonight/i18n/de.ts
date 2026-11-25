@@ -8,5 +8,7 @@ export const de: Record<keyof typeof en, string> = {
   'tonight.loading': 'Wetter wird geladen',
   'tonight.more_warnings': '+{n} weitere',
   'tonight.warning': 'Wetterwarnung',
+  'tonight.title_in': 'Heute Abend in {place}',
+  'tonight.title': 'Heute Abend',
   'tonight.forecast': 'Vorhersage',
 };

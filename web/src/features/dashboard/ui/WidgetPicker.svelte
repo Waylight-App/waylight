@@ -221,7 +221,7 @@
   h3 {
     margin: 0 0 var(--space-2);
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   ul {
     list-style: none;
@@ -292,7 +292,7 @@
   .desc {
     grid-column: 2;
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -312,7 +312,7 @@
     border: none;
     border-radius: var(--radius-sm);
     background: transparent;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     cursor: pointer;
   }
   .sizes-button:hover,
@@ -380,7 +380,7 @@
     font-size: var(--fs-xs);
   }
   .mini-title {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     font-size: var(--fs-xs);
   }
   .mini-title,

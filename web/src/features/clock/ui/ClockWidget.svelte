@@ -42,7 +42,7 @@
     line-height: 1.1;
   }
   .date {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     font-size: clamp(0.8125rem, min(5.5cqi, 9cqh), 2rem);
   }
   .label {

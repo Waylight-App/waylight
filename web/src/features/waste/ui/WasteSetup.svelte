@@ -172,7 +172,7 @@
     align-items: center;
     gap: var(--space-1);
     padding: var(--space-4);
-    border: 2px dashed var(--color-text-muted);
+    border: 2px dashed var(--color-text-subtle);
     border-radius: var(--radius-md);
     text-align: center;
     cursor: pointer;

@@ -62,7 +62,7 @@
   h4 {
     margin: var(--space-3) 0 var(--space-1);
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .intro {
     margin: 0;

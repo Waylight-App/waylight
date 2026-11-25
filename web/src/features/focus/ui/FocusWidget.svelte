@@ -173,7 +173,7 @@
   }
   .phase {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .clock {
     font-family: var(--font-display);
@@ -197,7 +197,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    border: 1px solid var(--color-text-muted);
+    border: 1px solid var(--color-text-subtle);
   }
   .dots span.filled {
     background: var(--color-accent);
@@ -232,7 +232,7 @@
   }
   .label {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   figcaption {
     grid-column: 1 / -1;

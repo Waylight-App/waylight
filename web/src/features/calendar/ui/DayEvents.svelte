@@ -46,7 +46,7 @@
   h4 {
     margin: 0 0 var(--space-1);
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   ul {
     list-style: none;
@@ -84,7 +84,7 @@
     flex-direction: column;
   }
   .day {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .what {
     display: flex;

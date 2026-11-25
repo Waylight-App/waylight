@@ -83,7 +83,13 @@
     margin: 0;
     padding: 0;
   }
+  /* Figures stay on one line at every size; the name gives way first. */
+  :global(.value:has(> .quote)) {
+    max-width: none;
+  }
   .quote {
+    white-space: nowrap;
+    overflow-wrap: normal;
     display: grid;
     grid-template-columns: 64px auto auto;
     gap: var(--space-2);

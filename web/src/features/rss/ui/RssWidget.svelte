@@ -171,7 +171,7 @@
   :global(.read) a,
   :global(.read) .linklike {
     font-weight: 400;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .later {
     padding: 0 var(--space-1);

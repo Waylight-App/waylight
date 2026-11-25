@@ -655,22 +655,39 @@
           onclick={() => (launcherOpen = launcherOpen ? null : 'services')}
         >
           <span class="dot" aria-hidden="true"></span>
-          {serviceStatus.kind === 'ok'
-            ? t('launcher.all_online')
-            : t('launcher.some_offline', { n: serviceStatus.offline })}
+          <span class="long">
+            {serviceStatus.kind === 'ok'
+              ? t('launcher.all_online')
+              : t('launcher.some_offline', { n: serviceStatus.offline })}
+          </span>
+          <span class="short">
+            {serviceStatus.kind === 'ok'
+              ? t('launcher.online_short')
+              : t('launcher.some_offline', { n: serviceStatus.offline })}
+          </span>
         </button>
       {/if}
       {#if launcher}
         <button
           bind:this={launcherTrigger}
           type="button"
-          class="round"
+          class="icon-btn"
           data-launcher-trigger
           aria-haspopup="dialog"
           aria-expanded={launcherOpen !== null}
           aria-label={t('launcher.title')}
           title={t('launcher.title')}
-          onclick={() => (launcherOpen = launcherOpen ? null : 'all')}><Icon name="grid" size={22} /></button
+          onclick={() => (launcherOpen = launcherOpen ? null : 'all')}><Icon name="grid" size={16} /></button
+        >
+      {/if}
+      {#if !container.auth.guest && !simpleView && !dashboardManaged}
+        <button
+          type="button"
+          class="icon-btn edit"
+          aria-pressed={editing}
+          aria-label={t('app.edit_layout')}
+          title={t('app.edit_layout')}
+          onclick={() => (editing = !editing)}><Icon name={editing ? 'done' : 'pencil'} size={16} /></button
         >
       {/if}
       <AccountMenu
@@ -827,14 +844,15 @@
     border-radius: var(--radius-sm);
     background: color-mix(in srgb, var(--color-warning) 22%, transparent);
   }
-  /* Top bar (#189): brand left, information centred, actions right. */
+  /* Top bar (#189): 64 px, brand left, information centred, actions right. */
   .topbar {
     position: relative;
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-2) var(--space-4);
+    gap: var(--space-4);
+    height: 64px;
+    padding: 0 var(--space-6);
     max-width: 1600px;
     margin: 0 auto;
   }
@@ -855,14 +873,16 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    font-weight: 700;
+    font-weight: 600;
     color: inherit;
     text-decoration: none;
     white-space: nowrap;
   }
   .wordmark {
     font-family: var(--font-wordmark);
-    font-weight: 700;
+    font-size: var(--fs-sm);
+    line-height: var(--lh-sm);
+    font-weight: 600;
   }
   .logo {
     display: inline-grid;
@@ -882,14 +902,20 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-1) var(--space-3);
+    height: 32px;
+    padding: 0 var(--space-3);
     border: 1px solid var(--color-border);
     border-radius: 999px;
-    background: var(--color-surface);
-    color: var(--color-text);
+    background: none;
+    color: var(--color-text-muted);
     font: inherit;
+    font-size: var(--fs-xs);
+    font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
+  }
+  .status .short {
+    display: none;
   }
   .status .dot {
     width: 8px;
@@ -903,42 +929,62 @@
   .status[data-kind='offline'] .dot {
     background: var(--color-danger);
   }
-  .round {
-    width: 2.4rem;
-    height: 2.4rem;
-    border-radius: 50%;
+  /* Icon buttons of the bar: 32 px, subtle until hovered. */
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
     display: grid;
     place-items: center;
-    border: 1px solid var(--color-border);
-    background: var(--color-surface);
-    color: var(--color-accent-text);
+    border: 0;
+    background: none;
+    color: var(--color-text-subtle);
     cursor: pointer;
+    transition:
+      color 0.15s,
+      background-color 0.15s;
   }
-  .round[aria-expanded='true'] {
-    border-color: var(--color-accent);
+  .icon-btn:hover,
+  .icon-btn[aria-expanded='true'],
+  .icon-btn[aria-pressed='true'] {
+    color: var(--color-text);
+    background: var(--color-surface-2);
   }
-  /* Phones: brand and actions; the information line drops below. */
-  @media (max-width: 900px) {
+  /* The glance line needs the width; below 1100 px it goes. */
+  @media (max-width: 1100px) {
     .topbar {
       grid-template-columns: 1fr auto;
-      padding: var(--space-2) var(--space-3);
     }
     .center {
-      grid-column: 1 / -1;
-      grid-row: 2;
-      font-size: var(--fs-xs);
+      display: none;
     }
   }
-  @media (max-width: 600px) {
-    .status {
-      font-size: 0;
-      padding: var(--space-2);
+  /* Phones: 56 px bar with logo, a short status pill and the avatar. */
+  @media (max-width: 639px) {
+    .topbar {
+      height: 56px;
+      padding: 0 var(--space-4);
+    }
+    .icon-btn.edit {
+      display: none;
+    }
+    .status .long {
+      display: none;
+    }
+    .status .short {
+      display: inline;
     }
   }
   .content {
     /* Leaves room for the bottom navigation of phones (#771). */
-    padding: 0 var(--space-4) calc(var(--space-6) + var(--bottom-nav-h, 0px));
+    padding: var(--space-6) var(--space-6) calc(var(--space-6) + var(--bottom-nav-h, 0px));
     max-width: 1600px;
     margin: 0 auto;
+  }
+  @media (max-width: 639px) {
+    .content {
+      padding-inline: var(--space-4);
+      padding-top: var(--space-4);
+    }
   }
 </style>

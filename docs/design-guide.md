@@ -24,7 +24,7 @@ Fraunces is for titles from 21 px, large figures and the wordmark: weight 500,
 the wordmark 600, and the page title with a letter spacing of -0.01 em. Times,
 keycaps and axis labels use the system monospace face at `--fs-xs`. The sizes
 are in `rem`, so the text size option in the accessibility settings scales
-them. Numbers that line up use tabular figures. There is no fifth size.
+them. Numbers that line up use tabular figures. The line heights are 16, 24, 28 and 40 px (`--lh-xs` to `--lh-lg`). There is no fifth size.
 
 ## Corner radii
 
@@ -34,8 +34,8 @@ them. Numbers that line up use tabular figures. There is no fifth size.
 | `--radius-sm` | 8 px  | Fields, icon buttons, tiles, blocks inside cards |
 
 Chips, tabs, toggles and badges are pills or circles (`999px` or `50%`). The
-checkbox uses 6 px and the small squares of the habit week 4 px. No other
-radius is used. A design sets `--radius` and `--radius-small`; these are the
+checkbox uses 6 px (`--radius-box`) and the keycap and the small squares of the habit
+week 4 px (`--radius-xs`). No other radius is used. A design sets `--radius` and `--radius-small`; these are the
 names it saves, and `--radius-md` and `--radius-sm` read them.
 
 ## Spacing
@@ -69,18 +69,15 @@ looks, night (navy) and paper (warm light).
 | `--color-warning`         | `#f2b441` | `#8a5700` |
 | `--color-danger`          | `#f2a199` | `#b3261e` |
 
-The mockups use two things the tokens do not have yet: the second quiet text
-role `--color-text-subtle` and a green for healthy status (`--color-ok` is
-neutral in the code today). The app adopts both within the epic that brings it
-in line with the mockups (#796).
-
 Text has three roles. Primary text is `--color-text`. Muted text carries
 descriptions and the second line of a row. Subtle text carries meta text, hints
 and values on the right of a row. The hairline in the mockups is the text
 colour at 9 % on night and 10 % on paper, and 16 % and 20 % for a stronger
 line such as the border of a quiet button; `--color-border` holds the same
-colours as solid values. Hover on the accent is `#ffd27a` on night and
-`#e9a41f` on paper.
+colours as solid values. Hover on the accent is `--color-accent-hover`,
+mixed from the accent (about `#f6ca7a` on night and `#e4a32d` on paper), so a
+theme with another accent keeps a matching hover. The stronger line is
+`--color-border-strong`, the text colour at 16 % (night) or 20 % (paper).
 
 Text and the accent used as text reach 4.5:1 on the surface they sit on. Two
 mockup values fall short and use the next darker value in the app: the accent

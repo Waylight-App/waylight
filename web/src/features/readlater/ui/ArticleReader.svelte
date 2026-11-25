@@ -66,7 +66,7 @@
     margin: var(--space-2) 0;
     padding-left: var(--space-3);
     border-left: 3px solid var(--color-border);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .reader :global(table) {
     border-collapse: collapse;
@@ -80,6 +80,6 @@
   }
   .reader :global(figcaption) {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
 </style>

@@ -54,7 +54,7 @@
     margin: 0 0 var(--space-2);
     font-size: var(--fs-xs);
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .cells {
     display: grid;

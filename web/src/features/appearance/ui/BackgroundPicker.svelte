@@ -310,7 +310,7 @@
   }
   .add {
     font-size: var(--fs-md);
-    color: var(--color-text-muted, var(--color-text));
+    color: var(--color-text-subtle, var(--color-text));
   }
   .add.busy {
     opacity: 0.6;

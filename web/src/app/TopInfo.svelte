@@ -82,9 +82,20 @@
     margin: 0;
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
-    gap: 0 var(--space-2);
-    color: var(--color-text-muted);
+    gap: 0 var(--space-3);
+    color: var(--color-text-subtle);
+    font-size: var(--fs-xs);
+    line-height: var(--lh-xs);
     white-space: nowrap;
+  }
+  /* A small round dot instead of a typographic one between the items. */
+  .sep {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--color-border-strong);
+    font-size: 0;
   }
 </style>

@@ -193,7 +193,7 @@
   }
   .link-state {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .link-state.broken {
     color: var(--color-danger);
@@ -203,7 +203,7 @@
   }
   .tag {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .shared {
     font-size: var(--fs-xs);

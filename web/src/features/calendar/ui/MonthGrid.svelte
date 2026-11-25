@@ -134,7 +134,7 @@
   .wd {
     text-align: center;
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .day {
     min-height: clamp(1.9em, 6cqh, 6em);
@@ -179,7 +179,7 @@
   .more {
     font-size: var(--fs-xs);
     line-height: 1;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .titles {
     display: none;

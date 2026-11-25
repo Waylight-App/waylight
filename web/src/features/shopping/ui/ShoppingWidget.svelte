@@ -233,7 +233,7 @@
   }
   .done span {
     text-decoration: line-through;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .remove {
     margin-top: 0;

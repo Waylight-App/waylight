@@ -59,7 +59,7 @@
   }
   .lead {
     margin: 0;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     font-size: var(--fs-sm);
     line-height: 1.5;
   }
@@ -89,7 +89,7 @@
   .link {
     border-color: transparent;
     background: none;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   @media (prefers-reduced-motion: no-preference) {
     .foot .btn-primary {

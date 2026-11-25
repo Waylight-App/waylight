@@ -5,6 +5,7 @@
  */
 export const iconPaths = {
   search: ['M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14', 'M16.5 16.5L21 21'],
+  plus: ['M12 5v14M5 12h14'],
   home: ['M4 11l8-7l8 7', 'M6 9.5V20h12V9.5', 'M10 20v-6h4v6'],
   clock: ['M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18', 'M12 7v5l3 2'],
   sun: [

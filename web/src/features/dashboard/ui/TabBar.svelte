@@ -293,21 +293,26 @@
   .name {
     border: none;
     background: none;
-    padding: var(--space-1) var(--space-4);
+    min-height: 32px;
+    padding: 0 var(--space-4);
     border-radius: 999px;
     cursor: pointer;
     color: var(--color-text-muted);
     font: inherit;
     font-weight: 500;
     white-space: nowrap;
+    transition:
+      color 0.15s,
+      background-color 0.15s;
   }
   .name:hover {
     color: var(--color-text);
   }
+  /* The selected tab is a step lighter with a 1 px inner ring, not an accent fill. */
   .active .name {
-    background: var(--color-accent);
-    color: var(--color-accent-contrast);
-    font-weight: 600;
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    box-shadow: inset 0 0 0 1px var(--color-border-strong);
   }
   .name:focus-visible {
     outline: 2px solid var(--color-accent-text);
@@ -325,9 +330,8 @@
       z-index: 40;
       justify-content: safe space-around;
       gap: 0;
-      padding-bottom: calc(env(safe-area-inset-bottom, 0px));
-      padding-inline: 0;
-      background: var(--color-surface);
+      padding: var(--space-2) var(--space-2) calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+      background: var(--color-bg);
       border-top: 1px solid var(--color-border);
       mask-image: none;
     }
@@ -344,25 +348,27 @@
       justify-content: center;
       gap: var(--space-1);
       flex: 1;
-      min-height: calc(var(--space-12) + var(--space-2));
+      min-height: var(--space-12);
       min-width: 44px;
-      padding: var(--space-2) var(--space-2);
+      padding: 0 var(--space-2);
       border-radius: 0;
-      border-top: 2px solid transparent;
+      color: var(--color-text-subtle);
       font-size: var(--fs-xs);
+      line-height: var(--lh-xs);
     }
     .ico {
       display: inline-flex;
+    }
+    .ico :global(svg) {
+      width: 20px;
+      height: 20px;
     }
     .team {
       display: none;
     }
     .active .name {
       background: none;
-      color: var(--color-text);
-      border-top-color: var(--color-accent);
-    }
-    .active .ico {
+      box-shadow: none;
       color: var(--color-accent-text);
     }
     .tabs > .btn-icon,

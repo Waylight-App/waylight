@@ -129,9 +129,10 @@
     gap: var(--space-1);
     min-width: 0;
   }
+  /* Centred in the strip; label and state share one line height, so they share a baseline too (#794). */
   .compact.strip {
     flex-direction: row;
-    align-items: baseline;
+    align-items: center;
     justify-content: flex-start;
     gap: var(--space-2);
   }
@@ -192,16 +193,17 @@
   }
   .strip .state {
     font-size: inherit;
+    line-height: var(--lh-sm);
   }
   .detail {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     font-size: var(--fs-sm);
   }
   /* Colour only for what needs action (#593): amber for attention, red for a problem. */
   .dot {
     flex: none;
-    width: 0.6em;
-    height: 0.6em;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
     align-self: center;
   }

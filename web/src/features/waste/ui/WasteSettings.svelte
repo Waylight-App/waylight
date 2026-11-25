@@ -211,7 +211,7 @@
     margin: var(--space-2) 0;
   }
   .file dt {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .file dd {
     margin: 0;
