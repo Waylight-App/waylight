@@ -27,8 +27,7 @@ body {
     no-repeat;
 }
 
-h1,
-h2 {
+h1 {
   font-family: var(--font-display);
 }
 

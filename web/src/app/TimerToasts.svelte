@@ -39,6 +39,6 @@
     color: var(--color-text);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-pop);
   }
 </style>

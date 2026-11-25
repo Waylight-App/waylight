@@ -39,10 +39,10 @@
    */
   --color-ok: var(--color-text-muted);
   /*
-   * Outline of widget cards. Cards are told apart by spacing, surface and
-   * shadow, so there is none by default; a high-contrast theme draws one.
+   * Outline of widget cards: a 1 px hairline in the border colour (#792);
+   * a high-contrast theme draws a stronger one.
    */
-  --color-widget-border: transparent;
+  --color-widget-border: var(--color-border);
   /*
    * Corner radii: 12 for tiles, cards, buttons and dialogs, 8 for fields and
    * blocks inside cards; chips, toggles and badges are pills or circles.
@@ -53,7 +53,8 @@
   --radius-small: 8px;
   --radius-md: var(--radius);
   --radius-sm: var(--radius-small);
-  --shadow: 0 1px 2px rgb(16 24 40 / 6%), 0 4px 12px rgb(16 24 40 / 6%);
+  /* Cards are set off by surface step and border, not by a shadow (#792). */
+  --shadow: none;
   /*
    * Text size of the accessibility options (#681). The root font size and
    * the spacing follow it, so the whole interface grows, not only the text.
@@ -71,12 +72,14 @@
   --fs-sm: 0.9375rem;
   --fs-md: 1.3125rem;
   --fs-lg: 2rem;
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  /* Figtree and Fraunces are bundled (fonts.css); without them the stacks fall back to the system. */
+  --font-sans:
+    'Figtree Variable', Figtree, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   /* The product wordmark; fixed, so it reads the same in every theme. */
   --font-wordmark: 'Fraunces Variable', Fraunces, Georgia, serif;
-  /* Headings and large numerals; a theme may give them their own face. */
-  --font-display: var(--font-sans);
+  /* Titles from 21 px and large numerals; a theme may give them their own face. */
+  --font-display: 'Fraunces Variable', Fraunces, Georgia, serif;
   /* Menus and panels that float above the page (search, launcher, account). */
   --shadow-pop: 0 12px 40px rgb(0 0 0 / 18%);
   /* A soft light around the widget area; themes may set one (#505). */
@@ -107,7 +110,6 @@
   --color-lit-accent: #855000;
   --color-lit-warning: #7c4a00;
   --color-lit-danger: #bd2f2f;
-  --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 16px rgb(0 0 0 / 25%);
   color-scheme: dark;
 }
 

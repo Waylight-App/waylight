@@ -133,6 +133,7 @@
       left 200ms ease;
   }
   h2 {
+    font-family: var(--font-display);
     margin: 0 0 var(--space-2);
     font-size: var(--fs-md);
   }
