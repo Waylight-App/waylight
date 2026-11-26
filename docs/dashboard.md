@@ -114,14 +114,16 @@ answered.
 
 | Template | Today | My things | System (admins) |
 | --- | --- | --- | --- |
-| Family | Weather, to-dos, calendar strip, waste collection, parcels, meal plan, chores, family board | Shopping list, birthdays, notes | Services strip |
-| Homelab | Clock, to-dos | Bookmarks | Services strip, containers, backups, drive health, host metrics |
-| Work | Calendar strip, to-dos, focus timer | Mail, notes, bookmarks | Services strip |
-| Wall tablet | Large clock, weather, calendar | Departures | Services strip |
+| Family | Weather, to-dos, calendar, waste collection, parcels, meal plan, chores, family board | Shopping list, birthdays, notes | Services |
+| Homelab | Clock, to-dos | Bookmarks | Services, backups, host metrics, containers, drive health |
+| Work | Calendar, to-dos, focus timer | Mail, notes, bookmarks | Services |
+| Wall tablet | Large clock, weather, calendar, departures | | Services |
 
 A template creates a tab laid out in [zones](#zones) with its widgets
-placed, including the phone layout. Widgets with a compact view start small
-or as a strip; status widgets in the System zone feed the attention line.
+placed, including the phone layout. Every row of a zone fills the full
+width: Family starts with two rows of small tiles, Homelab and Work use
+medium tiles of a third of the width, and the services span the System zone.
+Status widgets in the System zone feed the attention line.
 Templates with a weather widget ask for a location first (search or *Use my
 location*; *Set it up later* skips it). Widgets that need a service or a
 setting show *Set up* or what is missing. Kiosk mode, night dimming and large
