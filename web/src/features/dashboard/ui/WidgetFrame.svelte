@@ -132,7 +132,7 @@
       aria-label={t('dashboard.duplicate_widget')}
       title={t('dashboard.duplicate_widget')}
       onpointerdown={(e) => e.stopPropagation()}
-      onclick={onduplicate}>⧉</button
+      onclick={onduplicate}><Icon name="copy" size={16} /></button
     >
   {/if}
   <button
@@ -141,7 +141,7 @@
     aria-label={t('dashboard.remove_widget')}
     title={t('dashboard.remove_widget')}
     onpointerdown={(e) => e.stopPropagation()}
-    onclick={ondelete}>✕</button
+    onclick={ondelete}><Icon name="trash" size={16} /></button
   >
 {/snippet}
 
@@ -179,6 +179,7 @@
   class="widget card"
   class:chromeless={chromeless && !editing}
   class:compact={compact && !editing}
+  class:own-header={editing && (compact || chromeless)}
   class:openable={!!onopen && !editing}
   class:strip-header={size === 'strip' && (editing || (!compact && !chromeless))}
 >
@@ -243,6 +244,12 @@
     flex: none;
     height: 0;
     padding-block: 0;
+  }
+  /* In edit mode the card's header row names the widget, so a compact view or
+     a chromeless widget that draws its own header would show it twice. */
+  .own-header .body :global(.compact > .label),
+  .own-header .body :global(.widget-header) {
+    display: none;
   }
   header.draggable {
     cursor: grab;

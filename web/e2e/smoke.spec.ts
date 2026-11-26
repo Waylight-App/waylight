@@ -692,6 +692,10 @@ test('edit mode: Done button, Esc, tab menu, rename by double-click, delete in a
   // The live region repeats the hint for screen readers; look at the visible one.
   await expect(page.getByTestId('dashboard').getByText('Edit mode: drag a title bar to move')).toBeVisible();
   const bar = page.getByRole('toolbar', { name: 'Edit actions' });
+  // The bar sits above the grid in the flow, so it never covers a resize handle (#837).
+  const barBox = await bar.boundingBox();
+  const gridBox = await page.getByTestId('dashboard').locator('.grid').boundingBox();
+  expect(barBox && gridBox && barBox.y + barBox.height <= gridBox.y).toBe(true);
   await bar.getByRole('button', { name: '✓ Done' }).click();
   await expect(bar).toBeHidden();
 
