@@ -327,7 +327,7 @@
       z-index: 40;
       justify-content: safe space-around;
       gap: 0;
-      padding: var(--space-2) var(--space-2) calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+      padding: var(--space-2) var(--space-2) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
       background: var(--color-bg);
       border-top: 1px solid var(--color-border);
       mask-image: none;

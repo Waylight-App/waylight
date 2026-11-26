@@ -316,6 +316,13 @@
       row-gap: var(--space-3);
       padding: var(--space-2) var(--space-4) 0;
     }
+    /* The tab bar is fixed to the bottom edge here. Out of the flow, the
+       host no longer names an area missing from the template, which would
+       add an implicit column and narrow the title and the search. */
+    .tabs {
+      grid-area: auto;
+      position: absolute;
+    }
     .pill {
       height: 2.75rem;
     }

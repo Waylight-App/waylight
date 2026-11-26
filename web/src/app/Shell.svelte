@@ -628,7 +628,7 @@
         <img class="brand-logo light" src={branding().logo} alt="" height="28" />
         <img class="brand-logo dark" src={branding().logoDark || branding().logo} alt="" height="28" />
       {:else}
-        <span class="logo"><WaylightMark size={22} /></span>
+        <span class="logo"><WaylightMark size={24} /></span>
       {/if}
       <span class:wordmark={branding().name === PRODUCT_NAME}>{branding().name}</span>
     </a>
@@ -870,6 +870,8 @@
     display: inline;
   }
   .brand {
+    /* Only the logo and the name are the link, not the whole first column. */
+    justify-self: start;
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
