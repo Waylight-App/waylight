@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
@@ -45,6 +46,22 @@
     overdue: 'warning',
     failed: 'failed',
   } as const;
+
+  // One short line for the whole list: the worst state and how many share it.
+  const summary = $derived.by(() => {
+    const total = sources.length;
+    const failed = sources.filter((s) => s.state === 'failed').length;
+    const overdue = sources.filter((s) => s.state === 'overdue').length;
+    if (!total) return null;
+    if (failed)
+      return { text: t('backupmonitor.summary_failed', { n: failed, total }), tone: 'danger' as const };
+    if (overdue)
+      return { text: t('backupmonitor.summary_overdue', { n: overdue, total }), tone: 'warning' as const };
+    return null;
+  });
+  // Shown in the card header (#809).
+  const setMeta = useHeaderMeta();
+  $effect(() => setMeta(summary));
 </script>
 
 {#if error}<p class="error">{error}</p>{/if}
@@ -52,18 +69,19 @@
   {#each sources as s (s.id)}
     <ListRow nowrap title={s.lastMessage}>
       {#snippet lead()}
-        <StatusDot
-          level={backupLevel[s.state]}
-          label={t(labels[s.state])}
-          word={s.state !== 'ok' && s.state !== 'running'}
-        />
+        <StatusDot level={backupLevel[s.state]} label={t(labels[s.state])} />
       {/snippet}
       {s.name}
       {#snippet value()}
-        <span class="when"
+        <!-- The value carries the word of the state wherever the state needs a look. -->
+        <span class="when" class:failed={s.state === 'failed'}
           >{s.state === 'failed'
             ? t('backupmonitor.failed_ago', { time: ago(s.lastFailureAt, now) })
-            : ago(s.lastSuccessAt, now)}</span
+            : s.state === 'overdue'
+              ? t('backupmonitor.overdue_ago', { time: ago(s.lastSuccessAt, now) })
+              : s.state === 'waiting'
+                ? t(labels.waiting)
+                : ago(s.lastSuccessAt, now)}</span
         >
       {/snippet}
     </ListRow>
@@ -79,7 +97,9 @@
     padding: 0;
   }
   .when {
-    font-size: var(--fs-xs);
     white-space: nowrap;
+  }
+  .when.failed {
+    color: var(--color-danger);
   }
 </style>

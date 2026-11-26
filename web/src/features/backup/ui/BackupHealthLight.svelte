@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '../../../shared/i18n';
   import type { BackupStatus } from '../domain/backup';
+  import StatusDot from '../../../shared/ui/StatusDot.svelte';
   import { healthText } from './healthText';
 
   /** Props of the backup traffic light (#677). */
@@ -13,10 +14,12 @@
   let { status, now = new Date(), details = false }: Props = $props();
 
   const line = $derived(healthText(status, now));
+  // The sentence names the state, so the dot needs no word of its own.
+  const level = $derived(line.tone === 'error' ? 'failed' : line.tone === 'warn' ? 'warning' : 'ok');
 </script>
 
-<div class="light {line.tone}" role="status">
-  <span class="dot" aria-hidden="true"></span>
+<div class="light" role="status">
+  <span class="dot"><StatusDot {level} /></span>
   <span class="text">
     <span>{line.text}</span>
     {#if details && status.health === 'failed' && status.error}
@@ -34,19 +37,10 @@
     align-items: flex-start;
     gap: var(--space-2);
   }
+  /* Centres the 8 px dot on the first line of text. */
   .dot {
-    flex: none;
-    width: 12px;
-    height: 12px;
-    margin-top: var(--space-1);
-    border-radius: 50%;
-    background: var(--color-success);
-  }
-  .warn .dot {
-    background: var(--color-warning);
-  }
-  .error .dot {
-    background: var(--color-danger);
+    display: flex;
+    height: var(--lh-sm);
   }
   .text {
     display: flex;

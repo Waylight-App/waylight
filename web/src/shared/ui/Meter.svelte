@@ -6,9 +6,17 @@
     percent: number;
     /** Text shown on the right, e.g. "3.1 / 7.6 GiB". */
     detail?: string;
+    /**
+     * Draws the bar in the accent: the one value of a group that needs
+     * attention. Without it a bar turns hot from 60 %, so a widget does not
+     * paint every bar amber.
+     */
+    hot?: boolean;
   }
-  let { label, percent, detail = '' }: Props = $props();
-  const level = $derived(percent >= 90 ? 'danger' : percent >= 75 ? 'warning' : 'ok');
+  let { label, percent, detail = '', hot }: Props = $props();
+  const level = $derived(
+    percent >= 90 ? 'danger' : percent >= 75 ? 'warning' : (hot ?? percent >= 60) ? 'hot' : 'ok',
+  );
 </script>
 
 <div class="meter">
@@ -40,6 +48,7 @@
     margin-bottom: var(--space-2);
   }
   .row .muted {
+    line-height: var(--lh-xs);
     font-family: var(--font-mono);
     font-size: var(--fs-xs);
     font-variant-numeric: tabular-nums;
@@ -56,6 +65,9 @@
     border-radius: 999px;
     background: var(--color-text-muted);
     transition: width 400ms ease;
+  }
+  .fill.hot {
+    background: var(--color-accent);
   }
   .fill.warning {
     background: var(--color-warning);

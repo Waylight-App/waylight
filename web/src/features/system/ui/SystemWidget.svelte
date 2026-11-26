@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -41,6 +42,20 @@
     };
   });
 
+  // Host and uptime go to the card header (#809).
+  const setMeta = useHeaderMeta();
+  $effect(() =>
+    setMeta(
+      snap
+        ? {
+            text: [snap.hostname, t('system.up', { value: formatUptime(snap.uptimeSeconds) })]
+              .filter(Boolean)
+              .join(' · '),
+          }
+        : null,
+    ),
+  );
+
   const usage = (u: { used: number; total: number }) => `${formatBytes(u.used)} / ${formatBytes(u.total)}`;
 </script>
 
@@ -71,8 +86,6 @@
       <span title={t('system.load_average_1_5_15_min')}
         >{t('system.load', { value: snap.load.map((l) => l.toFixed(2)).join(' · ') })}</span
       >
-      {#if snap.hostname}<span title={t('system.host_name')}>{snap.hostname}</span>{/if}
-      <span>{t('system.up', { value: formatUptime(snap.uptimeSeconds) })}</span>
       {#if snap.temperature > 0}<span>{snap.temperature.toFixed(0)} °C</span>{/if}
     </p>
   </div>
@@ -88,18 +101,26 @@
   .forecast.soon {
     color: var(--color-warning);
   }
-  /* Spread the meters over tall widgets instead of stacking them at the top. */
   .system {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+  }
+  /* The 24 hour trends are extra detail: only a tall box has room for them. */
+  .system > :global(svg) {
+    display: none;
+  }
+  @container widget (min-height: 520px) {
+    .system > :global(svg) {
+      display: block;
+    }
   }
   .facts {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
-    margin: var(--space-2) 0 0;
+    margin: auto 0 0;
     font-size: var(--fs-xs);
+    color: var(--color-text-subtle);
   }
 </style>
