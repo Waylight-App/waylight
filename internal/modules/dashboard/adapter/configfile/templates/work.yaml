@@ -1,5 +1,7 @@
 # Work: the working day in one tab (#589). The tab is zoned (#619): today's
-# appointments and to-dos as compact tiles (#595), the rest in My things.
+# appointments, to-dos and focus timer in Today, the rest in My things.
+# Every row of a zone adds up to the 12 columns (#793) with medium tiles of
+# four columns, as in the redesign (#825); the services span the full width.
 id: work
 title: Work
 tab:
@@ -7,39 +9,38 @@ tab:
   zones: true
   widgets:
     - kind: calendar
-      at: { x: 0, y: 0, w: 6, h: 1 }
-      size: strip
+      at: { x: 0, y: 0, w: 4, h: 4 }
+      size: medium
       zone: today
-      phone: { order: 1, rows: 1, size: strip }
+      phone: { order: 1, rows: 4 }
       config: { view: agenda, days: 1 }
     - kind: todos
-      at: { x: 6, y: 0, w: 3, h: 2 }
-      size: small
+      at: { x: 4, y: 0, w: 4, h: 4 }
+      size: medium
       zone: today
-      phone: { order: 2, rows: 2, size: small }
+      phone: { order: 2, rows: 4 }
     - kind: focus
-      at: { x: 9, y: 0, w: 3, h: 2 }
-      size: small
+      at: { x: 8, y: 0, w: 4, h: 4 }
+      size: medium
       zone: today
-      phone: { order: 3, rows: 2, size: small }
+      phone: { order: 3, rows: 4 }
     - kind: mail
-      at: { x: 0, y: 2, w: 4, h: 4 }
+      at: { x: 0, y: 4, w: 4, h: 4 }
       size: medium
       zone: mine
       phone: { order: 4, rows: 4 }
     - kind: notes
-      at: { x: 4, y: 2, w: 4, h: 4 }
+      at: { x: 4, y: 4, w: 4, h: 4 }
       size: medium
       zone: mine
       phone: { order: 5, rows: 4 }
       config: { scope: pinned }
     - kind: bookmarks
-      at: { x: 8, y: 2, w: 4, h: 4 }
+      at: { x: 8, y: 4, w: 4, h: 4 }
       size: medium
       zone: mine
       phone: { order: 6, rows: 4 }
     - kind: services
-      at: { x: 0, y: 6, w: 6, h: 1 }
-      size: strip
+      at: { x: 0, y: 8, w: 12, h: 3 }
       zone: system
-      phone: { order: 7, rows: 1, size: strip }
+      phone: { order: 7, rows: 3 }
