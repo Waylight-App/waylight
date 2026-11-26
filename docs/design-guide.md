@@ -157,6 +157,10 @@ Every widget starts with `WidgetHeader`
 title in sentence case at `--fs-sm` and weight 600 in the primary colour, then
 optional meta text at `--fs-xs` in the subtle colour on the right, or one 32 px
 icon button there. The full card and the compact view use the same header.
+A widget hands its meta text to the card with `useHeaderMeta` (in the warning
+or danger colour when it needs a look) and its add action with
+`useHeaderAction`; outside a card it shows the action in its own body. The
+help button sits right after the title and shows on hover.
 Titles are never set in capitals with wide letter spacing.
 
 Widgets list their items with `ListRow` (`web/src/shared/ui/ListRow.svelte`).

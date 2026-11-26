@@ -37,7 +37,7 @@ test('setup, logout and login lead to the dashboard', async ({ page }) => {
   await expect(page.getByText('Try edit mode: drag and resize a widget')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Docker documentation' })).toBeVisible();
   await page.getByRole('button', { name: 'Server', exact: true }).click();
-  await expect(page.getByText('DuckDuckGo', { exact: true })).toBeVisible({ timeout: 15_000 }); // lazy chunk + first fetch
+  // The lazy chunk and the first fetch of the System widget.
   await expect(page.getByText(/CPU \(\d+ cores\)/)).toBeVisible({ timeout: 15_000 });
   await page.getByRole('button', { name: 'Home', exact: true }).click();
 

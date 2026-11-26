@@ -7,6 +7,7 @@
   import type { Summarizer } from '../../../shared/ui/summarizer';
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import SummaryBox from '../../../shared/ui/SummaryBox.svelte';
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
 
   /** Props of the RSS widget. */
   interface Props {
@@ -44,6 +45,18 @@
   let items = $state<FeedItem[]>([]);
   let error = $state('');
   let now = $state(new Date());
+  // The header meta names where the items come from (#809): the feed, or how many feeds.
+  const setMeta = useHeaderMeta();
+  $effect(() => {
+    const feeds = new Set(items.map((i) => i.feedId)).size;
+    setMeta(
+      feeds === 0
+        ? null
+        : cfg.feedId
+          ? { text: items[0]?.feedTitle ?? '' }
+          : { text: feeds === 1 ? t('rss.meta_feeds_one') : t('rss.meta_feeds', { n: feeds }) },
+    );
+  });
 
   async function load() {
     try {
