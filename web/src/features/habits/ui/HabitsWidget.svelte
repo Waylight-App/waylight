@@ -1,12 +1,12 @@
 <script lang="ts">
   import ListRow from '../../../shared/ui/ListRow.svelte';
-  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
-  import { editableDays, type Habit, heatWeeks, parseHabitsConfig } from '../domain/habits';
+  import { editableDays, type Habit, parseHabitsConfig } from '../domain/habits';
   import type { HabitsUseCases } from '../usecase/habitsUseCases';
   import HabitDialog from './HabitDialog.svelte';
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
 
   /** Props of the habit tracker widget (#106). */
   interface Props {
@@ -53,6 +53,16 @@
     }
   }
 
+  // How many of today's habits are done is the card's header meta (#818).
+  const setMeta = useHeaderMeta();
+  $effect(() =>
+    setMeta(
+      list.length > 0
+        ? { text: t('habits.meta_today', { done: list.filter((h) => h.doneToday).length, of: list.length }) }
+        : null,
+    ),
+  );
+
   const yesterday = $derived(editableDays(new Date()).yesterday);
   const dateLabel = (iso: string) =>
     new Date(`${iso}T12:00:00`).toLocaleDateString(intlLocale(), {
@@ -65,7 +75,7 @@
 {#if error}<p class="error">{error}</p>{/if}
 <ul class="habits">
   {#each list as h (h.id)}
-    <ListRow nowrap>
+    <ListRow nowrap showValue={cfg.showHeatmap}>
       {#snippet lead()}
         <label class="today" class:done={h.doneToday}>
           <input
@@ -74,9 +84,7 @@
             aria-label={t('habits.done_today', { name: h.name })}
             onchange={() => run(habits.toggleToday(h.id))}
           />
-          <span class="emoji" aria-hidden="true"
-            >{#if h.emoji}{h.emoji}{:else}<Icon name="done" size={16} />{/if}</span
-          >
+          {#if h.emoji}<span class="emoji" aria-hidden="true">{h.emoji}</span>{/if}
         </label>
       {/snippet}
       <button
@@ -87,38 +95,38 @@
         title={t('habits.edit')}>{h.name}</button
       >
       {#snippet sub()}
-        {#if cfg.showHeatmap}
-          <div class="heat" role="group" aria-label={t('habits.last_weeks', { name: h.name })}>
-            {#each heatWeeks(h.heatmap) as week, w (w)}
-              {#each week as c (c.date)}
-                {#if c.date === yesterday}
-                  <button
-                    type="button"
-                    class="cell"
-                    class:due={c.due}
-                    class:done={c.done}
-                    aria-pressed={c.done}
-                    aria-label={t('habits.toggle_yesterday', { name: h.name })}
-                    title={t('habits.toggle_yesterday', { name: h.name })}
-                    onclick={() => run(habits.toggleYesterday(h.id))}
-                  ></button>
-                {:else}
-                  <span
-                    class="cell"
-                    class:due={c.due}
-                    class:done={c.done}
-                    title={`${dateLabel(c.date)}${c.done ? ' ✓' : ''}`}
-                  ></span>
-                {/if}
-              {/each}
-            {/each}
-          </div>
-        {/if}
+        <span class="streak" title={t('habits.streak_title', { best: h.best })}
+          >{h.current === 1
+            ? t('habits.streak_one')
+            : h.current > 1
+              ? t('habits.streak', { n: h.current })
+              : t('habits.no_streak')}</span
+        >
       {/snippet}
       {#snippet value()}
-        <span class="streak" title={t('habits.streak_title', { best: h.best })}>
-          {#if h.current > 0}<Icon name="flame" size={16} /> {h.current}{:else}<span class="muted">–</span
-            >{/if}
+        <!-- The last 7 days as squares; a wide tile shows all four weeks. -->
+        <span class="week" role="group" aria-label={t('habits.last_weeks', { name: h.name })}>
+          {#each h.heatmap as c (c.date)}
+            {#if c.date === yesterday}
+              <button
+                type="button"
+                class="cell"
+                class:due={c.due}
+                class:done={c.done}
+                aria-pressed={c.done}
+                aria-label={t('habits.toggle_yesterday', { name: h.name })}
+                title={t('habits.toggle_yesterday', { name: h.name })}
+                onclick={() => run(habits.toggleYesterday(h.id))}
+              ></button>
+            {:else}
+              <span
+                class="cell"
+                class:due={c.due}
+                class:done={c.done}
+                title={`${dateLabel(c.date)}${c.done ? ' ✓' : ''}`}
+              ></span>
+            {/if}
+          {/each}
         </span>
       {/snippet}
     </ListRow>
@@ -176,23 +184,34 @@
   }
   .streak {
     white-space: nowrap;
-    color: var(--color-text);
   }
-  .heat {
+  .week {
     display: grid;
-    grid-template-columns: repeat(28, 1fr);
+    grid-template-columns: repeat(7, 12px);
     gap: var(--space-1);
-    max-width: 22rem;
+  }
+  /* Four weeks of history; only the last one shows unless the tile is wide. */
+  .cell:nth-child(-n + 21) {
+    display: none;
+  }
+  @container widget (min-width: 560px) {
+    .week {
+      grid-template-columns: repeat(14, 12px);
+    }
+    .cell:nth-child(-n + 21) {
+      display: block;
+    }
   }
   .cell {
-    aspect-ratio: 1;
-    border-radius: var(--radius-sm);
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-xs);
     border: none;
     padding: 0;
-    background: color-mix(in srgb, var(--color-text-subtle) 10%, transparent);
+    background: var(--color-surface-2);
   }
-  .cell.due {
-    background: color-mix(in srgb, var(--color-text-subtle) 25%, transparent);
+  .cell.due:not(.done) {
+    box-shadow: inset 0 0 0 1px var(--color-border-strong);
   }
   .cell.done {
     background: var(--color-accent);

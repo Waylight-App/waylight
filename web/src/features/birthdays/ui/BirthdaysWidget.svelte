@@ -61,11 +61,11 @@
 {#if error}<p class="error">{error}</p>{/if}
 <ul>
   {#each items as b (b.id)}
-    <ListRow nowrap urgent={b.inDays === 0}>
-      {#snippet lead()}<span class="icon" aria-hidden="true"><Icon name="gift" size={16} /></span>{/snippet}
+    <!-- The value is accent text for the coming week (#818). -->
+    <ListRow nowrap urgent={b.inDays < SOON_DAYS}>
       <span class:today={b.inDays === 0}>{b.name}</span>
       {#snippet sub()}{date(b)}{#if b.age > 0}&nbsp;· {t('birthdays.turns', { age: b.age })}{/if}{/snippet}
-      {#snippet value()}<span class:soon={b.inDays > 0 && b.inDays < SOON_DAYS}>{when(b)}</span>{/snippet}
+      {#snippet value()}{when(b)}{/snippet}
       {#snippet trail()}
         <span class="actions">
           {#if b.source === 'carddav'}
@@ -99,32 +99,32 @@
     margin: 0 0 var(--space-2);
     padding: 0;
   }
-  .icon {
-    font-size: var(--fs-md);
-    width: 1.6rem;
-    text-align: center;
-  }
   .today {
     font-weight: 600;
     color: var(--color-accent-text);
   }
-  .soon {
-    font-weight: 600;
-  }
+  /* Actions lie over the end of the row and show on hover or focus, so the value keeps the right edge. */
   .actions {
+    position: absolute;
+    inset: 50% 0 auto auto;
+    transform: translateY(-50%);
     display: flex;
-    min-width: 2rem;
-    justify-content: center;
+    background: var(--color-surface);
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.15s;
   }
-  :global(.row:hover .actions),
-  :global(.row:focus-within .actions) {
+  :global(.row:hover) .actions,
+  .actions:focus-within {
     opacity: 1;
+    pointer-events: auto;
   }
   @media (hover: none) {
     .actions {
+      position: static;
+      transform: none;
       opacity: 1;
+      pointer-events: auto;
     }
   }
 </style>

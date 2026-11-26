@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -134,34 +135,48 @@
   $effect(() => setMeta(week.length > 0 ? { text: t('focus.week_total', { n: total }) } : null));
 </script>
 
+<!-- Time and controls on one line, the week's bars below (#818). -->
 <div class="focus" class:running={isRunning(timer)} data-phase={timer.phase}>
-  <p class="phase">{phaseLabel(timer.phase)}</p>
-  <p class="clock" role="timer" aria-live="off">{formatClock(left)}</p>
-  <p
-    class="dots"
-    role="img"
-    aria-label={t('focus.cycle', { done: timer.done % cfg.longEvery, of: cfg.longEvery })}
-  >
-    {#each Array.from({ length: cfg.longEvery }, (_, i) => i) as i (i)}
-      <span class:filled={i < timer.done % cfg.longEvery || (timer.phase === 'long' && timer.done > 0)}
-      ></span>
-    {/each}
-  </p>
-  <div class="controls">
-    {#if isRunning(timer)}
-      <button class="btn btn-primary" type="button" onclick={() => act('pause')}>{t('focus.pause')}</button>
-    {:else}
-      <button class="btn btn-primary" type="button" onclick={() => act('start')}>{t('focus.start')}</button>
-    {/if}
-    <button class="btn" type="button" onclick={() => act('reset')}>{t('focus.reset')}</button>
-    <button class="btn" type="button" onclick={() => act('skip')}>{t('focus.skip')}</button>
+  <div class="top">
+    <div class="time">
+      <p class="phase">
+        {phaseLabel(timer.phase)}
+        <span
+          class="dots"
+          role="img"
+          aria-label={t('focus.cycle', { done: timer.done % cfg.longEvery, of: cfg.longEvery })}
+        >
+          {#each Array.from({ length: cfg.longEvery }, (_, i) => i) as i (i)}
+            <span class:filled={i < timer.done % cfg.longEvery || (timer.phase === 'long' && timer.done > 0)}
+            ></span>
+          {/each}
+        </span>
+      </p>
+      <p class="clock" role="timer" aria-live="off">{formatClock(left)}</p>
+    </div>
+    <div class="controls">
+      {#if isRunning(timer)}
+        <button class="btn btn-primary" type="button" onclick={() => act('pause')}>{t('focus.pause')}</button>
+      {:else}
+        <button class="btn btn-primary" type="button" onclick={() => act('start')}>{t('focus.start')}</button>
+      {/if}
+      <button class="btn" type="button" onclick={() => act('skip')}>{t('focus.skip')}</button>
+      <button
+        class="btn btn-icon"
+        type="button"
+        aria-label={t('focus.reset')}
+        title={t('focus.reset')}
+        onclick={() => act('reset')}><Icon name="history" size={16} /></button
+      >
+    </div>
   </div>
   {#if error}<p class="error">{error}</p>{/if}
   {#if week.length > 0}
     <figure class="week" aria-label={t('focus.week_total', { n: total })}>
-      {#each week as d (d.date)}
+      {#each week as d, i (d.date)}
         <div class="day" title={t('focus.day_title', { n: d.sessions, minutes: d.minutes })}>
-          <span class="bar" style:height="{(d.sessions / max) * 100}%"></span>
+          <span class="bar" class:today={i === week.length - 1} style:height="{(d.sessions / max) * 100}%"
+          ></span>
           <span class="label">{weekday(d.date)}</span>
         </div>
       {/each}
@@ -173,23 +188,32 @@
 <style>
   .focus {
     display: grid;
-    justify-items: center;
-    gap: var(--space-1);
-    text-align: center;
+    gap: var(--space-4);
   }
   p {
     margin: 0;
   }
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
   .phase {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     font-size: var(--fs-xs);
+    line-height: var(--lh-xs);
     color: var(--color-text-subtle);
   }
   .clock {
     font-family: var(--font-display);
     font-size: var(--fs-lg);
-    font-weight: 600;
+    line-height: var(--lh-lg);
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
-    line-height: 1.1;
   }
   .running .clock {
     color: var(--color-accent-text);
@@ -215,32 +239,36 @@
   .controls {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-1);
+    gap: var(--space-2);
   }
+  /* 64 px of bars; today is the accent bar, the other days stay quiet. */
   .week {
-    margin: var(--space-2) 0 0;
+    margin: 0;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: var(--space-1);
-    width: 100%;
-    max-width: 16rem;
+    gap: var(--space-2);
   }
   .day {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    height: 3rem;
+    gap: var(--space-1);
+    height: 64px;
   }
   .bar {
-    width: 60%;
-    min-height: 2px;
+    width: 24px;
+    max-width: 100%;
+    min-height: 4px;
+    background: var(--color-surface-2);
+    border-radius: var(--radius-xs);
+  }
+  .bar.today {
     background: var(--color-accent);
-    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   }
   .label {
     font-size: var(--fs-xs);
+    line-height: var(--lh-xs);
     color: var(--color-text-subtle);
   }
   figcaption {

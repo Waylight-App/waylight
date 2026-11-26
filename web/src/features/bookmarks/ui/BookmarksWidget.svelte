@@ -7,6 +7,7 @@
   import {
     type Bookmark,
     iconSrc,
+    initials,
     linkProblem,
     parseBookmarksConfig,
     sortBookmarks,
@@ -31,9 +32,15 @@
   let brokenOnly = $state(false);
   const anyBroken = $derived(data?.bookmarks.some((b) => b.link.state === 'broken') ?? false);
 
+  // A short list needs no filter field; it appears once the list is long (#817).
+  const FILTER_FROM = 8;
+  let total = $state(0);
+  const filterable = $derived(total >= FILTER_FROM || query !== '' || brokenOnly);
+
   async function load() {
     try {
       data = await bookmarks.list({ folderId: cfg.folderId, tag: cfg.tag, query, broken: brokenOnly });
+      if (query === '' && !brokenOnly) total = data.bookmarks.length;
       error = '';
     } catch (err) {
       error = errorMessage(err);
@@ -61,56 +68,59 @@
   }
 </script>
 
-<div class="toolbar">
-  <input
-    class="input"
-    type="search"
-    placeholder={t('bookmarks.filter')}
-    bind:value={query}
-    aria-label={t('bookmarks.filter_bookmarks')}
-  />
-  {#if anyBroken || brokenOnly}
-    <button
-      class="btn btn-icon"
-      type="button"
-      aria-pressed={brokenOnly}
-      title={t('bookmarks.broken_only')}
-      aria-label={t('bookmarks.broken_only')}
-      onclick={() => (brokenOnly = !brokenOnly)}><Icon name="warning" size={16} /></button
-    >
-  {/if}
-  {#if !headerAction.inHeader}
-    <button
-      class="btn btn-icon"
-      type="button"
-      aria-label={t('bookmarks.add_bookmark')}
-      onclick={() => (editing = 'new')}><Icon name="plus" size={16} /></button
-    >
-  {/if}
-</div>
+{#if filterable || anyBroken || !headerAction.inHeader}
+  <div class="toolbar">
+    {#if filterable}<input
+        class="input"
+        type="search"
+        placeholder={t('bookmarks.filter')}
+        bind:value={query}
+        aria-label={t('bookmarks.filter_bookmarks')}
+      />{/if}
+    {#if anyBroken || brokenOnly}
+      <button
+        class="btn btn-icon"
+        type="button"
+        aria-pressed={brokenOnly}
+        title={t('bookmarks.broken_only')}
+        aria-label={t('bookmarks.broken_only')}
+        onclick={() => (brokenOnly = !brokenOnly)}><Icon name="warning" size={16} /></button
+      >
+    {/if}
+    {#if !headerAction.inHeader}
+      <button
+        class="btn btn-icon"
+        type="button"
+        aria-label={t('bookmarks.add_bookmark')}
+        onclick={() => (editing = 'new')}><Icon name="plus" size={16} /></button
+      >
+    {/if}
+  </div>
+{/if}
 {#if error}<p class="error">{error}</p>{/if}
 {#if data}
   <ul class="list">
     {#each sortBookmarks(data.bookmarks, cfg.sort, intlLocale()) as b (b.id)}
       {@const icon = iconSrc(b)}
       {@const problem = linkProblem(b.link, intlLocale())}
-      <ListRow nowrap>
+      <ListRow nowrap showValue={!!problem || b.tags.length > 0}>
+        <!-- The tile shows the site's icon; the initials under it show when there is none. -->
+        {#snippet lead()}<span class="tile" aria-hidden="true"
+            >{initials(b.title)}{#if icon}<img
+                src={icon}
+                alt=""
+                width="16"
+                height="16"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                onerror={(e) => (e.currentTarget as HTMLImageElement).remove()}
+              />{/if}</span
+          >{/snippet}
         <a href={b.url} target="_blank" rel="noopener noreferrer" title={b.description || b.url}>
-          {#if icon}<img
-              src={icon}
-              alt=""
-              width="16"
-              height="16"
-              loading="lazy"
-              referrerpolicy="no-referrer"
-              onerror={(e) => ((e.currentTarget as HTMLImageElement).style.visibility = 'hidden')}
-            />{/if}
           <span class="title">{b.title}</span>
         </a>
-        {#snippet sub()}
-          {#if b.tags.length > 0}{#each b.tags as t (t)}<span class="tag">#{t}</span>{/each}{/if}
-        {/snippet}
         {#snippet value()}
+          {#if b.tags.length > 0}<span class="tags">{b.tags.join(' ')}</span>{/if}
           {#if problem}<span
               class="link-state"
               class:broken={b.link.state === 'broken'}
@@ -122,12 +132,14 @@
         {/snippet}
         {#snippet trail()}
           {#if b.mine}
-            <button
-              class="btn btn-icon edit"
-              type="button"
-              aria-label={t('bookmarks.edit', { title: b.title })}
-              onclick={() => (editing = b)}>✎</button
-            >
+            <span class="tools">
+              <button
+                class="btn btn-icon"
+                type="button"
+                aria-label={t('bookmarks.edit', { title: b.title })}
+                onclick={() => (editing = b)}><Icon name="pencil" size={16} /></button
+              >
+            </span>
           {:else}
             <!-- Shared links (#298) are read-only and marked as such. -->
             <span
@@ -207,22 +219,60 @@
   .link-state.broken {
     color: var(--color-danger);
   }
-  .tag + .tag {
-    margin-left: var(--space-1);
-  }
-  .tag {
+  /* 32 px tile like the guide's bookmark rows: icon, or initials when there is none. */
+  .tile {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-2);
+    color: var(--color-text-muted);
     font-size: var(--fs-xs);
-    color: var(--color-text-subtle);
+    font-weight: 600;
+  }
+  /* The icon covers the initials; a broken icon removes itself and uncovers them. */
+  .tile img {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: var(--space-2);
+    border-radius: inherit;
+    background: var(--color-surface-2);
+  }
+  .tags {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .shared {
     font-size: var(--fs-xs);
     opacity: 0.7;
   }
-  .edit {
+  /* Edit lies over the end of the row and shows on hover or focus, so the tag stays at the right edge. */
+  .tools {
+    position: absolute;
+    inset: 50% 0 auto auto;
+    transform: translateY(-50%);
+    background: var(--color-surface);
     opacity: 0;
+    pointer-events: none;
   }
-  :global(.row:hover) .edit,
-  .edit:focus {
+  :global(.row:hover) .tools,
+  .tools:focus-within {
     opacity: 1;
+    pointer-events: auto;
+  }
+  @media (hover: none) {
+    .tools {
+      position: static;
+      transform: none;
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 </style>
