@@ -4,7 +4,7 @@
   import { speedtestSetup } from './speedtestSetup';
   import { usePolling } from '../../../shared/refresh';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
-  import { t } from '../../../shared/i18n';
+  import { intlLocale, t } from '../../../shared/i18n';
   import LineChart from '../../../shared/ui/LineChart.svelte';
   import { type Range, type SpeedResults, formatMbps, ranges } from '../domain/speedtest';
   import type { SpeedtestUseCases } from '../usecase/speedtestUseCases';
@@ -59,30 +59,34 @@
   {#if data.latest}
     <div class="latest">
       <div>
-        <span class="muted small">↓ {t('speedtest.download')}</span><strong
-          >{formatMbps(data.latest.downloadMbps)}</strong
-        ><span class="muted small">Mbit/s</span>
+        <span class="label">{t('speedtest.download')}</span>
+        <span class="figure">{formatMbps(data.latest.downloadMbps)} <span class="unit">Mbit/s</span></span>
       </div>
       <div>
-        <span class="muted small">↑ {t('speedtest.upload')}</span><strong
-          >{formatMbps(data.latest.uploadMbps)}</strong
-        ><span class="muted small">Mbit/s</span>
+        <span class="label">{t('speedtest.upload')}</span>
+        <span class="figure">{formatMbps(data.latest.uploadMbps)} <span class="unit">Mbit/s</span></span>
       </div>
       <div>
-        <span class="muted small">{t('speedtest.ping')}</span><strong>{data.latest.pingMs.toFixed(0)}</strong
-        ><span class="muted small">ms</span>
+        <span class="label">{t('speedtest.ping')}</span>
+        <span class="figure">{data.latest.pingMs.toFixed(0)} <span class="unit">ms</span></span>
       </div>
     </div>
-    <p class="muted small">{t('speedtest.measured', { time: data.latest.at.toLocaleString() })}</p>
   {:else}
     <p class="muted">{t('speedtest.no_results')}</p>
   {/if}
-  <div class="ranges" role="group" aria-label={t('speedtest.range')}>
-    {#each ranges as r (r)}
-      <button class="btn" class:active={range === r} onclick={() => (range = r)} aria-pressed={range === r}
-        >{t(r === 24 ? 'speedtest.range_day' : 'speedtest.range_week')}</button
-      >
-    {/each}
+  <div class="bar">
+    {#if data.latest}<p class="measured">
+        {t('speedtest.measured', {
+          time: data.latest.at.toLocaleString(intlLocale(), { dateStyle: 'short', timeStyle: 'short' }),
+        })}
+      </p>{/if}
+    <div class="ranges" role="group" aria-label={t('speedtest.range')}>
+      {#each ranges as r (r)}
+        <button type="button" class="chip" aria-pressed={range === r} onclick={() => (range = r)}
+          >{t(r === 24 ? 'speedtest.range_day' : 'speedtest.range_week')}</button
+        >
+      {/each}
+    </div>
   </div>
   <LineChart
     times={data.history.map((m) => m.at)}
@@ -102,25 +106,71 @@
   .small {
     font-size: var(--fs-xs);
   }
+  /* Three stats above the chart: a quiet label, the figure in the display face with its unit inline. */
   .latest {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-2);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
   }
   .latest div {
     display: flex;
     flex-direction: column;
+    min-width: 0;
   }
-  .latest strong {
+  .label,
+  .unit,
+  .measured {
+    font-size: var(--fs-xs);
+    line-height: var(--lh-xs);
+    color: var(--color-text-subtle);
+  }
+  .figure {
+    font-family: var(--font-display);
     font-size: var(--fs-md);
+    line-height: var(--lh-md);
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .unit {
+    font-family: var(--font-sans);
+    font-weight: 400;
+  }
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    margin: var(--space-4) 0;
+  }
+  .measured {
+    margin: 0;
   }
   .ranges {
     display: flex;
-    gap: var(--space-1);
-    margin: var(--space-1) 0;
+    gap: var(--space-2);
   }
-  .ranges .active {
-    font-weight: 600;
+  /* Chips of the guide: 32 px pills; the chosen range is filled like the selected tab. */
+  .chip {
+    min-height: 32px;
+    padding: 0 var(--space-3);
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s;
+  }
+  .chip:hover {
+    background: var(--color-surface-2);
+  }
+  .chip[aria-pressed='true'] {
+    background: var(--color-surface-2);
+    box-shadow: inset 0 0 0 1px var(--color-border-strong);
+    color: var(--color-text);
   }
 </style>

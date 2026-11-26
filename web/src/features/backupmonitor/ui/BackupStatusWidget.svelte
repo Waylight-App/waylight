@@ -45,25 +45,38 @@
     overdue: 'warning',
     failed: 'failed',
   } as const;
+
+  // One short line for the whole list: the worst state and how many share it.
+  const summary = $derived.by(() => {
+    const total = sources.length;
+    const failed = sources.filter((s) => s.state === 'failed').length;
+    const overdue = sources.filter((s) => s.state === 'overdue').length;
+    if (!total) return null;
+    if (failed) return { text: t('backupmonitor.summary_failed', { n: failed, total }), tone: 'danger' };
+    if (overdue) return { text: t('backupmonitor.summary_overdue', { n: overdue, total }), tone: 'warning' };
+    return { text: t('backupmonitor.summary_ok', { total }), tone: 'neutral' };
+  });
 </script>
 
 {#if error}<p class="error">{error}</p>{/if}
+{#if summary}<p class="summary" data-tone={summary.tone}>{summary.text}</p>{/if}
 <ul class="list">
   {#each sources as s (s.id)}
     <ListRow nowrap title={s.lastMessage}>
       {#snippet lead()}
-        <StatusDot
-          level={backupLevel[s.state]}
-          label={t(labels[s.state])}
-          word={s.state !== 'ok' && s.state !== 'running'}
-        />
+        <StatusDot level={backupLevel[s.state]} label={t(labels[s.state])} />
       {/snippet}
       {s.name}
       {#snippet value()}
-        <span class="when"
+        <!-- The value carries the word of the state wherever the state needs a look. -->
+        <span class="when" class:failed={s.state === 'failed'}
           >{s.state === 'failed'
             ? t('backupmonitor.failed_ago', { time: ago(s.lastFailureAt, now) })
-            : ago(s.lastSuccessAt, now)}</span
+            : s.state === 'overdue'
+              ? t('backupmonitor.overdue_ago', { time: ago(s.lastSuccessAt, now) })
+              : s.state === 'waiting'
+                ? t(labels.waiting)
+                : ago(s.lastSuccessAt, now)}</span
         >
       {/snippet}
     </ListRow>
@@ -79,7 +92,21 @@
     padding: 0;
   }
   .when {
-    font-size: var(--fs-xs);
     white-space: nowrap;
+  }
+  .when.failed {
+    color: var(--color-danger);
+  }
+  .summary {
+    margin: 0 0 var(--space-2);
+    font-size: var(--fs-xs);
+    line-height: var(--lh-xs);
+    color: var(--color-text-subtle);
+  }
+  .summary[data-tone='danger'] {
+    color: var(--color-danger);
+  }
+  .summary[data-tone='warning'] {
+    color: var(--color-warning);
   }
 </style>

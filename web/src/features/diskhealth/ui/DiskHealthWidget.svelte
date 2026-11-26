@@ -3,6 +3,8 @@
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
   import { formatBytes } from '../../../shared/ui/format';
+  import ListRow from '../../../shared/ui/ListRow.svelte';
+  import StatusDot, { type StatusLevel } from '../../../shared/ui/StatusDot.svelte';
   import { type Disk, type Finding, isKnownFinding, overallStatus, powerOnAge } from '../domain/disk';
   import type { DiskHealthUseCases } from '../usecase/diskHealthUseCases';
 
@@ -36,41 +38,65 @@
     const a = powerOnAge(h);
     return t('diskhealth.age', { years: a.years, days: a.days });
   };
+  const levels: Record<string, StatusLevel> = { ok: 'ok', warning: 'warning', critical: 'failed' };
+  // The second line of a row: the facts that matter at a glance, in one quiet line.
+  const facts = (d: Disk) =>
+    [
+      d.device,
+      d.temperature !== null ? `${d.temperature} °C` : '',
+      d.percentageUsed !== null ? t('diskhealth.wear_short', { value: d.percentageUsed }) : '',
+      d.reallocated ? t('diskhealth.reallocated_short', { n: d.reallocated }) : '',
+      d.powerOnHours !== null ? t('diskhealth.on_short', { age: age(d.powerOnHours) }) : '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+  const summary = $derived.by(() => {
+    if (!disks) return null;
+    const look = disks.filter((d) => d.status === 'warning' || d.status === 'critical');
+    if (!look.length) return { text: t(`diskhealth.overall.${overallStatus(disks)}`), tone: 'neutral' };
+    return {
+      text: t(look.length === 1 ? 'diskhealth.needs_look' : 'diskhealth.need_look', { n: look.length }),
+      tone: look.some((d) => d.status === 'critical') ? 'danger' : 'warning',
+    };
+  });
 </script>
 
 {#if error && !disks}
   <p class={missing ? 'muted' : 'error'}>{error}</p>
 {:else if disks}
-  <p class="summary status-{overallStatus(disks)}">{t(`diskhealth.overall.${overallStatus(disks)}`)}</p>
+  {#if summary}<p class="summary" data-tone={summary.tone}>{summary.text}</p>{/if}
   <ul class="disks">
     {#each disks as d (d.device)}
-      <li class="disk status-{d.status}">
-        <div class="head">
-          <span class="dot" aria-hidden="true"></span>
-          <strong>{d.model || d.device}</strong>
-          <span class="muted small"
-            >{d.device}{d.capacityBytes ? ` · ${formatBytes(d.capacityBytes)}` : ''}</span
-          >
-          <span class="badge">{t(`diskhealth.status.${d.status}`)}</span>
-        </div>
-        <dl class="facts small">
-          {#if d.temperature !== null}<dt>{t('diskhealth.temperature')}</dt>
-            <dd>{d.temperature} °C</dd>{/if}
-          {#if d.reallocated !== null}<dt>{t('diskhealth.reallocated')}</dt>
-            <dd>{d.reallocated}</dd>{/if}
-          {#if d.pending !== null}<dt>{t('diskhealth.pending')}</dt>
-            <dd>{d.pending}</dd>{/if}
-          {#if d.percentageUsed !== null}<dt>{t('diskhealth.wear')}</dt>
-            <dd>{d.percentageUsed} %</dd>{/if}
-          {#if d.powerOnHours !== null}<dt>{t('diskhealth.power_on')}</dt>
-            <dd title={t('diskhealth.hours', { hours: d.powerOnHours })}>{age(d.powerOnHours)}</dd>{/if}
-        </dl>
-        {#if d.findings.length}
-          <ul class="findings small">
-            {#each d.findings as f, i (i)}<li class="status-{f.status}">{describe(f)}</li>{/each}
-          </ul>
-        {/if}
-      </li>
+      <ListRow
+        class="disk status-{d.status}"
+        title={d.capacityBytes ? formatBytes(d.capacityBytes) : undefined}
+      >
+        {#snippet lead()}<span class="lead"><StatusDot level={levels[d.status] ?? 'stopped'} /></span
+          >{/snippet}
+        {d.model || d.device}
+        {#snippet sub()}
+          <span class="num">{facts(d)}</span>
+          {#if d.findings.length}
+            <ul class="findings">
+              {#each d.findings as f, i (i)}<li class="status-{f.status}">{describe(f)}</li>{/each}
+            </ul>
+          {/if}
+          <dl class="facts">
+            {#if d.temperature !== null}<dt>{t('diskhealth.temperature')}</dt>
+              <dd>{d.temperature} °C</dd>{/if}
+            {#if d.reallocated !== null}<dt>{t('diskhealth.reallocated')}</dt>
+              <dd>{d.reallocated}</dd>{/if}
+            {#if d.pending !== null}<dt>{t('diskhealth.pending')}</dt>
+              <dd>{d.pending}</dd>{/if}
+            {#if d.percentageUsed !== null}<dt>{t('diskhealth.wear')}</dt>
+              <dd>{d.percentageUsed} %</dd>{/if}
+            {#if d.powerOnHours !== null}<dt>{t('diskhealth.power_on')}</dt>
+              <dd title={t('diskhealth.hours', { hours: d.powerOnHours })}>{age(d.powerOnHours)}</dd>{/if}
+          </dl>
+        {/snippet}
+        {#snippet value()}<span class="state status-{d.status}">{t(`diskhealth.status.${d.status}`)}</span
+          >{/snippet}
+      </ListRow>
     {:else}
       <li class="muted">{t('diskhealth.no_disks')}</li>
     {/each}
@@ -80,61 +106,60 @@
 {/if}
 
 <style>
-  .small {
-    font-size: var(--fs-xs);
-  }
   .disks,
   .findings {
     list-style: none;
     padding: 0;
     margin: 0;
   }
-  .disk {
-    padding: var(--space-1) 0;
+  /* The dot sits on the first line of a two-line row. */
+  .disks :global(.disk) {
+    align-items: flex-start;
   }
-  .head {
+  .lead {
     display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    flex-wrap: wrap;
+    height: var(--lh-sm);
   }
-  .badge {
-    margin-left: auto;
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  .summary {
+    margin: 0 0 var(--space-2);
     font-size: var(--fs-xs);
+    line-height: var(--lh-xs);
+    color: var(--color-text-subtle);
   }
-  .dot {
-    width: 0.6em;
-    height: 0.6em;
-    border-radius: 50%;
-    background: var(--color-border);
+  .summary[data-tone='warning'],
+  .state.status-warning,
+  .findings li.status-warning {
+    color: var(--color-warning);
   }
-  .status-ok .dot {
-    background: var(--color-ok);
+  .summary[data-tone='danger'],
+  .state.status-critical,
+  .findings li.status-critical {
+    color: var(--color-danger);
   }
-  .status-warning .dot {
-    background: var(--color-warning);
-  }
-  .status-critical .dot {
-    background: var(--color-danger);
+  /* Every fact and finding of a drive is detail: only a tall box has room for it. */
+  .findings {
+    display: none;
+    margin-top: var(--space-1);
   }
   .facts {
-    display: grid;
+    display: none;
     grid-template-columns: auto 1fr;
     gap: 0 var(--space-2);
     margin: var(--space-1) 0 0;
   }
-  .facts dt {
-    color: var(--color-text-subtle);
-  }
   .facts dd {
     margin: 0;
+    color: var(--color-text-muted);
   }
-  .findings li.status-warning,
-  .summary.status-warning {
-    color: var(--color-warning);
-  }
-  .findings li.status-critical,
-  .summary.status-critical {
-    color: var(--color-danger);
+  @container widget (min-height: 480px) {
+    .facts {
+      display: grid;
+    }
+    .findings {
+      display: block;
+    }
   }
 </style>
