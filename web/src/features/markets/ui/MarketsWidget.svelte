@@ -95,6 +95,15 @@
     gap: var(--space-2);
     align-items: center;
   }
+  /* In a narrow tile the trend line goes before the figures get squeezed. */
+  @container widget (max-width: 320px) {
+    .spark {
+      display: none;
+    }
+    .quote {
+      grid-template-columns: auto auto;
+    }
+  }
   .name {
     font-weight: 600;
     overflow: hidden;

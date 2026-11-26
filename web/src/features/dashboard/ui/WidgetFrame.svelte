@@ -5,6 +5,7 @@
   import WidgetHeader from '../../../shared/ui/WidgetHeader.svelte';
   import { provideWidgetIcon } from '../../../shared/ui/widgetIcon';
   import { provideHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
+  import { provideHeaderAction } from '../../../shared/ui/widgetHeaderAction';
   import { provideWidgetKind } from '../../../shared/setup/walk.svelte';
   import type { IconName } from '../../../shared/ui/icons/paths';
   import { WIDGET_SIZES, type WidgetSize } from '../domain/sizes';
@@ -70,6 +71,7 @@
   provideWidgetIcon(() => icon);
   provideWidgetKind(() => kind);
   const headerMeta = provideHeaderMeta();
+  const headerAction = provideHeaderAction();
   let content = $state<HTMLElement>();
   $effect(() => {
     const el = content;
@@ -143,7 +145,7 @@
   >
 {/snippet}
 
-{#snippet headerActions()}
+{#snippet helpButton()}
   {#if onhelp}
     <button
       class="btn btn-icon help"
@@ -156,6 +158,20 @@
       onclick={onhelp}>?</button
     >
   {/if}
+{/snippet}
+
+{#snippet headerActions()}
+  {#if headerAction.action && !editing}
+    {@const a = headerAction.action}
+    <button
+      class="btn btn-icon"
+      type="button"
+      aria-label={a.label}
+      title={a.label}
+      onpointerdown={(e) => e.stopPropagation()}
+      onclick={a.onclick}><Icon name={a.icon} size={16} /></button
+    >
+  {/if}
   {#if editing}{@render editActions()}{/if}
 {/snippet}
 
@@ -164,6 +180,7 @@
   class:chromeless={chromeless && !editing}
   class:compact={compact && !editing}
   class:openable={!!onopen && !editing}
+  class:strip-header={size === 'strip' && (editing || (!compact && !chromeless))}
 >
   {#if editing || (!chromeless && !compact)}
     <!-- Dragging is pointer-only; settings and remove buttons stay keyboard accessible. -->
@@ -174,7 +191,8 @@
         {icon}
         meta={headerMeta.meta?.text}
         metaTone={headerMeta.meta?.tone}
-        action={onhelp || editing ? headerActions : undefined}
+        titleAction={onhelp ? helpButton : undefined}
+        action={editing || headerAction.action ? headerActions : undefined}
       />
     </header>
   {/if}
@@ -213,6 +231,18 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+  /* A strip that shows its header row (edit mode, or a widget without a
+     compact view) has no room for content: the header is centred in the
+     56 px with the same space above and below (#821). */
+  .strip-header header {
+    flex: 1;
+    padding-block: 0;
+  }
+  .strip-header .content {
+    flex: none;
+    height: 0;
+    padding-block: 0;
   }
   header.draggable {
     cursor: grab;
