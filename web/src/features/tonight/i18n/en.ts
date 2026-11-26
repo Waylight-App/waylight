@@ -8,6 +8,7 @@ export const en = {
   'tonight.warning': 'Weather warning',
   'tonight.title_in': 'Tonight in {place}',
   'tonight.title': 'Tonight',
+  'tonight.feels': 'feels {t}',
   'tonight.forecast': 'Forecast',
 } as const;
 

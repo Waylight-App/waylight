@@ -15,8 +15,9 @@
 
   /**
    * Props of the main chart of a screen (design guide, Charts): a smooth
-   * line with a light fill, a muted grid and axis labels at --fs-xs. The
-   * first series takes the accent, the others a neutral step.
+   * 2 px line with a fill fading to transparent, four hairlines and mono
+   * axis labels at --fs-xs. The first series takes the accent, the others a
+   * 1.5 px line in the subtle colour.
    */
   interface Props {
     series: Series[];
@@ -51,6 +52,8 @@
   const sameDay = $derived(
     times.length > 1 && times[0]?.toDateString() === times[times.length - 1]?.toDateString(),
   );
+  // Five evenly spaced labels; narrow boxes hide the second and fourth.
+  const ticks = $derived(times.length > 1 ? [0, 0.25, 0.5, 0.75, 1].map((f) => new Date(t0 + f * span)) : []);
   const stamp = (d: Date | undefined) =>
     d
       ? d.toLocaleString(
@@ -69,8 +72,8 @@
       <svg viewBox="0 0 {W} {H}" preserveAspectRatio="none" role="img" aria-label={label}>
         <defs>
           <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="var(--color-accent-text)" stop-opacity="0.22" />
-            <stop offset="1" stop-color="var(--color-accent-text)" stop-opacity="0" />
+            <stop offset="0" stop-color="var(--color-accent)" stop-opacity="0.22" />
+            <stop offset="1" stop-color="var(--color-accent)" stop-opacity="0" />
           </linearGradient>
         </defs>
         {#each [0, H / 3, (2 * H) / 3, H] as y (y)}
@@ -82,7 +85,7 @@
         {/each}
       </svg>
       <div class="xaxis" aria-hidden="true">
-        <span>{stamp(times[0])}</span><span>{stamp(times[times.length - 1])}</span>
+        {#each ticks as d, i (i)}<span>{stamp(d)}</span>{/each}
       </div>
     </div>
     <figcaption>
@@ -98,6 +101,7 @@
   .chart {
     margin: 0;
     font-size: var(--fs-xs);
+    line-height: var(--lh-xs);
     color: var(--color-text-subtle);
     font-variant-numeric: tabular-nums;
   }
@@ -117,8 +121,9 @@
   svg {
     display: block;
     width: 100%;
-    /* Grows with the widget's own box, like the rest of its content. */
-    height: clamp(96px, 68cqh, 280px);
+    /* 176 px when the box has room (design guide, Charts); a shorter box
+       gives the plot what is left after the stats, axis and legend. */
+    height: clamp(96px, 100cqh - 248px, 176px);
     overflow: visible;
   }
   .grid {
@@ -132,7 +137,7 @@
     stroke-linejoin: round;
   }
   .line.s0 {
-    stroke: var(--color-accent-text);
+    stroke: var(--color-accent);
   }
   .line.s1 {
     stroke: var(--color-text-subtle);
@@ -150,24 +155,41 @@
   .xaxis {
     display: flex;
     justify-content: space-between;
+    gap: var(--space-2);
+    white-space: nowrap;
     /* Second column of the plot grid: lines up past the y labels. */
     grid-column: 2;
     font-family: var(--font-mono);
+  }
+  .xaxis span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  @container widget (max-width: 559px) {
+    .xaxis span:nth-child(2n) {
+      display: none;
+    }
+  }
+  @container widget (max-width: 359px) {
+    .xaxis span:nth-child(3) {
+      display: none;
+    }
   }
   figcaption {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-1) var(--space-4);
-    margin-top: var(--space-1);
+    margin-top: var(--space-4);
   }
   .key {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
+    gap: var(--space-2);
   }
   .swatch {
-    width: var(--space-4);
-    border-top: 2px solid var(--color-accent-text);
+    width: 16px;
+    border-top: 2px solid var(--color-accent);
   }
   .key.s1 .swatch {
     border-top-color: var(--color-text-subtle);

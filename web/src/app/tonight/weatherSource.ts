@@ -22,6 +22,7 @@ export class WeatherTonightSource implements TonightSource {
     const now = describe(f.code, f.isDay);
     return {
       temperature: f.temperature,
+      feelsLike: f.apparentTemperature,
       condition: now.label,
       icon: now.icon,
       place: cfg.label,

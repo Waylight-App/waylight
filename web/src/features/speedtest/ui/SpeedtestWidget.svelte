@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { speedtestSetup } from './speedtestSetup';
   import { usePolling } from '../../../shared/refresh';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
-  import { t } from '../../../shared/i18n';
+  import { intlLocale, t } from '../../../shared/i18n';
   import LineChart from '../../../shared/ui/LineChart.svelte';
   import { type Range, type SpeedResults, formatMbps, ranges } from '../domain/speedtest';
   import type { SpeedtestUseCases } from '../usecase/speedtestUseCases';
@@ -28,6 +29,26 @@
   let reload = $state(0);
   // svelte-ignore state_referenced_locally
   const setup = speedtestSetup(speedtest);
+
+  // When the last measurement ran goes to the card header (#809).
+  const setMeta = useHeaderMeta();
+  $effect(() =>
+    setMeta(
+      data?.latest
+        ? {
+            text: t('speedtest.measured', {
+              time: data.latest.at.toLocaleString(
+                intlLocale(),
+                // Today the clock time is enough; the header has little room.
+                data.latest.at.toDateString() === new Date().toDateString()
+                  ? { timeStyle: 'short' }
+                  : { dateStyle: 'short', timeStyle: 'short' },
+              ),
+            }),
+          }
+        : null,
+    ),
+  );
 
   $effect(() => {
     const hours = range;
@@ -59,30 +80,29 @@
   {#if data.latest}
     <div class="latest">
       <div>
-        <span class="muted small">↓ {t('speedtest.download')}</span><strong
-          >{formatMbps(data.latest.downloadMbps)}</strong
-        ><span class="muted small">Mbit/s</span>
+        <span class="label">{t('speedtest.download')}</span>
+        <span class="figure">{formatMbps(data.latest.downloadMbps)} <span class="unit">Mbit/s</span></span>
       </div>
       <div>
-        <span class="muted small">↑ {t('speedtest.upload')}</span><strong
-          >{formatMbps(data.latest.uploadMbps)}</strong
-        ><span class="muted small">Mbit/s</span>
+        <span class="label">{t('speedtest.upload')}</span>
+        <span class="figure">{formatMbps(data.latest.uploadMbps)} <span class="unit">Mbit/s</span></span>
       </div>
       <div>
-        <span class="muted small">{t('speedtest.ping')}</span><strong>{data.latest.pingMs.toFixed(0)}</strong
-        ><span class="muted small">ms</span>
+        <span class="label">{t('speedtest.ping')}</span>
+        <span class="figure">{data.latest.pingMs.toFixed(0)} <span class="unit">ms</span></span>
       </div>
     </div>
-    <p class="muted small">{t('speedtest.measured', { time: data.latest.at.toLocaleString() })}</p>
   {:else}
     <p class="muted">{t('speedtest.no_results')}</p>
   {/if}
-  <div class="ranges" role="group" aria-label={t('speedtest.range')}>
-    {#each ranges as r (r)}
-      <button class="btn" class:active={range === r} onclick={() => (range = r)} aria-pressed={range === r}
-        >{t(r === 24 ? 'speedtest.range_day' : 'speedtest.range_week')}</button
-      >
-    {/each}
+  <div class="bar">
+    <div class="ranges" role="group" aria-label={t('speedtest.range')}>
+      {#each ranges as r (r)}
+        <button type="button" class="chip" aria-pressed={range === r} onclick={() => (range = r)}
+          >{t(r === 24 ? 'speedtest.range_day' : 'speedtest.range_week')}</button
+        >
+      {/each}
+    </div>
   </div>
   <LineChart
     times={data.history.map((m) => m.at)}
@@ -102,25 +122,59 @@
   .small {
     font-size: var(--fs-xs);
   }
+  /* Three stats above the chart: a quiet label, the figure in the display face with its unit inline. */
   .latest {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-2);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
   }
   .latest div {
-    display: flex;
-    flex-direction: column;
+    display: grid;
   }
-  .latest strong {
+  .label,
+  .unit {
+    font-size: var(--fs-xs);
+    line-height: var(--lh-xs);
+    color: var(--color-text-subtle);
+  }
+  .figure {
+    font-family: var(--font-display);
     font-size: var(--fs-md);
+    line-height: var(--lh-md);
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .unit {
+    font-family: var(--font-sans);
+    font-weight: 400;
+  }
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2) var(--space-4);
+    margin: var(--space-4) 0;
   }
   .ranges {
     display: flex;
-    gap: var(--space-1);
-    margin: var(--space-1) 0;
+    gap: var(--space-2);
   }
-  .ranges .active {
-    font-weight: 600;
+  /* 32 px chips of the guide; the chosen range is filled like the selected tab. */
+  .chip {
+    min-height: 32px;
+    padding: 0 var(--space-3);
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: var(--fs-xs);
+    font-weight: 500;
+  }
+  .chip[aria-pressed='true'] {
+    background: var(--color-surface-2);
+    box-shadow: inset 0 0 0 1px var(--color-border-strong);
   }
 </style>
