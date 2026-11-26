@@ -55,3 +55,8 @@ export function useHeaderMeta(): (meta: HeaderMeta | null) => void {
   onDestroy(() => holder.set(null));
   return (meta) => holder.set(meta);
 }
+
+/** Whether the widget sits in a card that shows header meta; outside one it keeps the text in its body. */
+export function hasHeaderMeta(): boolean {
+  return getContext<HeaderMetaHolder | undefined>(key) !== undefined;
+}

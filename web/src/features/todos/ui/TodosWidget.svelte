@@ -16,6 +16,7 @@
     type TodoSource,
   } from '../domain/todo';
   import type { TodoSourcesUseCases, TodosUseCases } from '../usecase/todosUseCases';
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
 
   /** Props of the to-do widget. */
   interface Props {
@@ -38,6 +39,21 @@
   let editing = $state<Todo | null>(null);
   const dayName = (d: number) =>
     new Date(2026, 10, 8 + d).toLocaleDateString(intlLocale(), { weekday: 'short' });
+
+  // What is due goes into the card header (#809): overdue first, since it needs a look.
+  const setMeta = useHeaderMeta();
+  $effect(() => {
+    const open = list.filter((x) => !x.done && x.due);
+    const overdue = open.filter((x) => x.overdue).length;
+    const today = open.filter((x) => !x.overdue && x.due && isDueToday(x.due, new Date())).length;
+    setMeta(
+      overdue > 0
+        ? { text: t('todos.meta_overdue', { n: overdue }), tone: 'warning' }
+        : today > 0
+          ? { text: t('todos.meta_due_today', { n: today }) }
+          : null,
+    );
+  });
 
   async function run(action: () => Promise<unknown>) {
     error = '';
