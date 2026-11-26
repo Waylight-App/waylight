@@ -132,7 +132,11 @@
 <div class="focus" class:running={isRunning(timer)} data-phase={timer.phase}>
   <p class="phase">{phaseLabel(timer.phase)}</p>
   <p class="clock" role="timer" aria-live="off">{formatClock(left)}</p>
-  <p class="dots" role="img" aria-label={t('focus.cycle', { done: timer.done % cfg.longEvery, of: cfg.longEvery })}>
+  <p
+    class="dots"
+    role="img"
+    aria-label={t('focus.cycle', { done: timer.done % cfg.longEvery, of: cfg.longEvery })}
+  >
     {#each Array.from({ length: cfg.longEvery }, (_, i) => i) as i (i)}
       <span class:filled={i < timer.done % cfg.longEvery || (timer.phase === 'long' && timer.done > 0)}
       ></span>
