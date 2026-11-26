@@ -64,8 +64,10 @@
     );
     if (diff === 0) return t('time.today');
     if (diff === 1) return t('time.tomorrow');
-    return d.toLocaleDateString(intlLocale(), { weekday: 'long', day: 'numeric', month: 'short' });
+    // Short like "Mon 23": the day is the row's value, the full date its tooltip.
+    return `${d.toLocaleDateString(intlLocale(), { weekday: 'short' })} ${d.getDate()}`;
   };
+  const isToday = (d: Date) => d.toDateString() === new Date().toDateString();
   // The add button sits in the card header (#809); the split view has its own per day.
   const headerAction = useHeaderAction();
   $effect(() =>
@@ -108,25 +110,29 @@
     <MonthView {calendar} weekStart={cfg.weekStart} {reload} onunconfigured={() => (unconfigured = true)} />
   {:else}
     {#if warning}<p class="error small">{warning}</p>{/if}
-    {#each days as day (day.key)}
-      <section>
-        <h4>{dayLabel(day.date)}</h4>
-        <ul>
-          {#each day.events as e (e.uid + e.start.getTime())}
-            <ListRow title={[e.location, e.calendar].filter(Boolean).join(' · ')}>
-              {#snippet lead()}<span class="time"
-                  >{e.allDay ? t('calendar.all_day_short') : time(e.start)}</span
-                >{/snippet}
-              <span class="summary" class:colored={e.color !== ''} style:--event-color={e.color || null}
-                >{e.summary}</span
-              >
-            </ListRow>
-          {/each}
-        </ul>
-      </section>
-    {:else}
-      {#if loaded}<p class="muted">{t('calendar.no_events_in_the_next_days', { days: cfg.days })}</p>{/if}
-    {/each}
+    <!-- One row per event: time, title and the day as value (#817). -->
+    <ul>
+      {#each days as day (day.key)}
+        {#each day.events as e (day.key + e.uid + e.start.getTime())}
+          <ListRow
+            nowrap
+            urgent={isToday(day.date)}
+            title={[e.location, e.calendar].filter(Boolean).join(' · ')}
+          >
+            {#snippet lead()}<span class="time">{e.allDay ? t('calendar.all_day_short') : time(e.start)}</span
+              >{/snippet}
+            <span class="summary" class:colored={e.color !== ''} style:--event-color={e.color || null}
+              >{e.summary}</span
+            >
+            {#snippet value()}<span title={day.date.toLocaleDateString(intlLocale(), { dateStyle: 'full' })}
+                >{dayLabel(day.date)}</span
+              >{/snippet}
+          </ListRow>
+        {/each}
+      {:else}
+        {#if loaded}<li class="muted">{t('calendar.no_events_in_the_next_days', { days: cfg.days })}</li>{/if}
+      {/each}
+    </ul>
   {/if}
 {/if}
 {#if adding}
@@ -144,25 +150,18 @@
     padding: 0 var(--space-2);
     line-height: 1.3;
   }
-  h4 {
-    margin: var(--space-2) 0 var(--space-1);
-    font-size: var(--fs-xs);
-    color: var(--color-text-subtle);
-  }
-  section:first-child h4 {
-    margin-top: 0;
-  }
   ul {
     list-style: none;
     margin: 0;
     padding: 0;
   }
+  /* A mono time column like the guide's calendar rows; 48 px fits "18:30". */
   .time {
     flex: none;
-    width: 4.5em;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-accent-text);
+    min-width: 48px;
+    font-family: var(--font-mono);
     font-size: var(--fs-xs);
+    color: var(--color-text-subtle);
   }
   .small {
     font-size: var(--fs-xs);

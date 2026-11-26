@@ -14,7 +14,11 @@ export const en = {
   'habits.streak_title': 'Current streak (best: {best})',
   'habits.last_weeks': '{name}: the last four weeks',
   'habits.toggle_yesterday': '{name}: check off yesterday',
-  'habits.show_heatmap': 'Show the 4-week heatmap',
+  'habits.show_heatmap': 'Show the recent days',
+  'habits.streak_one': '1-day streak',
+  'habits.streak': '{n}-day streak',
+  'habits.no_streak': 'No streak yet',
+  'habits.meta_today': '{done} of {of} today',
   'habits.invalid_name': 'The name must be between 1 and 60 characters long.',
 } as const;
 
