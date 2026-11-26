@@ -107,7 +107,7 @@
 {#if error}<p class="error">{error}</p>{/if}
 <ul class="list">
   {#each list as todo (todo.id)}
-    <ListRow showValue={!!todo.due}>
+    <ListRow nowrap showValue={!!todo.due}>
       <label>
         <input type="checkbox" checked={todo.done} onchange={() => run(() => todos.toggle(todo))} />
         <span class="title" class:done={todo.done}>{todo.title}</span>
@@ -131,18 +131,20 @@
           {@const text = describeReminder(todo.reminder)}
           <span class="icon" title={text} aria-label={text} role="img"><Icon name="bell" size={16} /></span>
         {/if}
-        <button
-          class="btn btn-icon del"
-          type="button"
-          aria-label={t('todos.edit', { title: todo.title })}
-          onclick={() => (editing = todo)}>✎</button
-        >
-        <button
-          class="btn btn-icon del"
-          type="button"
-          aria-label={t('todos.delete', { title: todo.title })}
-          onclick={() => run(() => todos.delete(todo.id))}>✕</button
-        >
+        <span class="tools">
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label={t('todos.edit', { title: todo.title })}
+            onclick={() => (editing = todo)}><Icon name="pencil" size={16} /></button
+          >
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label={t('todos.delete', { title: todo.title })}
+            onclick={() => run(() => todos.delete(todo.id))}><Icon name="trash" size={16} /></button
+          >
+        </span>
       {/snippet}
     </ListRow>
   {:else}
@@ -198,6 +200,9 @@
   }
   .title {
     min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .title.done {
     text-decoration: line-through;
@@ -219,11 +224,28 @@
   .icon {
     font-size: var(--fs-xs);
   }
-  .del {
+  /* Edit and delete lie over the end of the row and show on hover or focus,
+     so rows keep one line with the due date at the right edge. */
+  .tools {
+    position: absolute;
+    inset: 50% 0 auto auto;
+    transform: translateY(-50%);
+    display: flex;
+    background: var(--color-surface);
     opacity: 0;
+    pointer-events: none;
   }
-  :global(.row:hover) .del,
-  .del:focus {
+  :global(.row:hover) .tools,
+  .tools:focus-within {
     opacity: 1;
+    pointer-events: auto;
+  }
+  @media (hover: none) {
+    .tools {
+      position: static;
+      transform: none;
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 </style>

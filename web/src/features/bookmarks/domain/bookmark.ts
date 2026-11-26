@@ -44,6 +44,24 @@ export function iconSrc(b: Pick<Bookmark, 'id' | 'url' | 'hasIcon'>): string | n
   return faviconUrl(b.url);
 }
 
+/**
+ * Two letters for a bookmark's tile when it has no icon: the first letters
+ * of the first two words ("AdGuard Home" → "AH"), or the first two letters
+ * of a single word ("Nextcloud" → "NE").
+ */
+export function initials(title: string): string {
+  const words = title
+    .trim()
+    .split(/[\s\-_.]+/u)
+    .filter(Boolean);
+  const [first = '', second = ''] = words;
+  if (!first) return '?';
+  const letters = second
+    ? [...first].slice(0, 1).join('') + [...second].slice(0, 1).join('')
+    : [...first].slice(0, 2).join('');
+  return letters.toLocaleUpperCase();
+}
+
 /** Describes a link problem for a tooltip, or '' when the link is fine. */
 export function linkProblem(link: LinkStatus, locale?: string): string {
   const when = link.checkedAt ? new Date(link.checkedAt).toLocaleDateString(locale) : '';
