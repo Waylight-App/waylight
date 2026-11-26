@@ -686,6 +686,39 @@
   {#if error}<p class="error" role="alert">{error}</p>{/if}
   {#if editing && !editingTab}<p class="edit-hint">{t('dashboard.team_tab_read_only')}</p>
   {:else if editing}<p class="edit-hint">{t('dashboard.edit_mode_hint')}</p>{/if}
+  <!-- Above the grid and in the flow (#837): a bar pinned to the viewport covered
+       the resize handles of cards below it. -->
+  {#if editingTab && active}
+    <div class="edit-actions" role="toolbar" aria-label={t('dashboard.edit_actions')}>
+      <button class="btn btn-primary add" type="button" onclick={() => (dialog = { kind: 'add-widget' })}
+        >{t('dashboard.add_widget')}</button
+      >
+      {#if active}
+        {@const tab = active}
+        <button class="btn" type="button" onclick={() => openBackground(tab)}
+          >{t('dashboard.background_button')}</button
+        >
+        <button
+          class="btn"
+          type="button"
+          aria-pressed={tab.zoned}
+          title={t('dashboard.zones_hint')}
+          onclick={() => toggleZones(tab)}>{t('dashboard.zones_button')}</button
+        >
+      {/if}
+      <button class="btn" type="button" disabled={!canUndo} onclick={undo} aria-keyshortcuts="Control+Z"
+        >↶ {t('dashboard.undo')}</button
+      >
+      <button class="btn" type="button" disabled={!canRedo} onclick={redo} aria-keyshortcuts="Control+Shift+Z"
+        >↷ {t('dashboard.redo')}</button
+      >
+      {#if ondone}
+        <button class="btn btn-primary done" type="button" onclick={ondone} aria-keyshortcuts="Escape"
+          >✓ {t('dashboard.done')}</button
+        >
+      {/if}
+    </div>
+  {/if}
   {#if active && active.id === offerTabId}
     {@const tab = active}
     <TabRuleOffer
@@ -829,41 +862,6 @@
         {/if}
       </p>
     {/if}
-    {#if editingTab}
-      <div class="edit-actions" role="toolbar" aria-label={t('dashboard.edit_actions')}>
-        <button class="btn btn-primary add" type="button" onclick={() => (dialog = { kind: 'add-widget' })}
-          >{t('dashboard.add_widget')}</button
-        >
-        {#if active}
-          {@const tab = active}
-          <button class="btn" type="button" onclick={() => openBackground(tab)}
-            >{t('dashboard.background_button')}</button
-          >
-          <button
-            class="btn"
-            type="button"
-            aria-pressed={tab.zoned}
-            title={t('dashboard.zones_hint')}
-            onclick={() => toggleZones(tab)}>{t('dashboard.zones_button')}</button
-          >
-        {/if}
-        <button class="btn" type="button" disabled={!canUndo} onclick={undo} aria-keyshortcuts="Control+Z"
-          >↶ {t('dashboard.undo')}</button
-        >
-        <button
-          class="btn"
-          type="button"
-          disabled={!canRedo}
-          onclick={redo}
-          aria-keyshortcuts="Control+Shift+Z">↷ {t('dashboard.redo')}</button
-        >
-        {#if ondone}
-          <button class="btn btn-primary done" type="button" onclick={ondone} aria-keyshortcuts="Escape"
-            >✓ {t('dashboard.done')}</button
-          >
-        {/if}
-      </div>
-    {/if}
   {/if}
 </section>
 
@@ -899,7 +897,7 @@
 {/if}
 
 {#if toast}
-  <div class="toast" class:above-bar={editing} role="status">
+  <div class="toast" role="status">
     {toast.text}
     <button class="btn" type="button" onclick={undo}>{t('dashboard.undo')}</button>
   </div>
@@ -1029,21 +1027,13 @@
   .add {
     align-self: center;
   }
-  /* Stays at the bottom of the viewport while editing (#271). */
   .edit-actions {
-    position: sticky;
-    bottom: var(--bottom-nav-h, 0px);
-    z-index: 15;
     display: flex;
     gap: var(--space-2);
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    margin-top: var(--space-3);
-    padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
-    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
-    backdrop-filter: blur(6px);
-    border-top: 1px solid var(--color-border);
+    margin-bottom: var(--space-4);
   }
   .edit-actions .done {
     margin-left: auto;
@@ -1055,9 +1045,6 @@
     background: color-mix(in srgb, var(--color-accent) 10%, transparent);
     border-radius: var(--radius-sm);
     font-size: var(--fs-sm);
-  }
-  .toast.above-bar {
-    bottom: calc(var(--space-4) + 64px + var(--bottom-nav-h, 0px));
   }
   .toast {
     position: fixed;

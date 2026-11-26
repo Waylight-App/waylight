@@ -209,7 +209,7 @@ browser; in edit mode all widgets are shown.
 A tab can be laid out in three zones instead of the free grid: **Today**
 (clock, weather, calendar, waste collection, to-dos), **My things** and
 **System** (server and network widgets). Switch them on in edit mode with
-**Zones** in the bar at the bottom; the setting is stored with the tab.
+**Zones** in the action bar above the widgets; the setting is stored with the tab.
 
 Each widget falls into a zone by its kind. To put it somewhere else, pick
 another zone in the menu next to its size in edit mode. Within a zone the
