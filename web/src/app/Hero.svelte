@@ -217,12 +217,11 @@
      DOM keeps title, search, tabs, so the keyboard order is unchanged. */
   .hero {
     display: grid;
-    /* The first column may shrink below its content's width: otherwise the
-       tab bar's min-content width stretches it, and with it the title and
-       the search, past the screen (#226). */
-    /* The tab column shrinks to the room left, so many tabs scroll inside
-       the bar instead of pushing the title and the page wider. */
-    grid-template-columns: minmax(8rem, 1fr) minmax(0, auto);
+    /* The title takes the width it needs, up to half the row, so many tabs
+       do not break "Good evening" onto two lines. The tab column gets the
+       rest and may shrink to nothing, so many tabs scroll inside the bar
+       instead of pushing the title, the search and the page wider (#226). */
+    grid-template-columns: fit-content(50%) minmax(0, 1fr);
     grid-template-areas:
       'title tabs'
       'moment moment'
@@ -315,6 +314,13 @@
         'search';
       row-gap: var(--space-3);
       padding: var(--space-2) var(--space-4) 0;
+    }
+    /* The tab bar is fixed to the bottom edge here. Out of the flow, the
+       host no longer names an area missing from the template, which would
+       add an implicit column and narrow the title and the search. */
+    .tabs {
+      grid-area: auto;
+      position: absolute;
     }
     .pill {
       height: 2.75rem;

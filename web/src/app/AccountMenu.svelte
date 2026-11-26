@@ -84,7 +84,10 @@
       title={t('app.account')}
       onclick={() => (open = !open)}
     >
-      <span class="avatar" aria-hidden="true">{initial}</span>
+      <!-- Without a greeting name there is no initial; the person icon keeps the circle from looking empty. -->
+      <span class="avatar" aria-hidden="true"
+        >{#if initial}{initial}{:else}<Icon name="user" size={16} />{/if}</span
+      >
     </button></span
   >
   {#if open}

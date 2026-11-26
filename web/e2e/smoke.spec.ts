@@ -688,7 +688,8 @@ test('edit mode: Done button, Esc, tab menu, rename by double-click, delete in a
   await expect(page.getByTestId('dashboard')).toBeVisible();
 
   await account(page, 'Edit');
-  await expect(page.getByText('Edit mode: drag a title bar to move')).toBeVisible();
+  // Scoped to the dashboard: the live region repeats the hint 100 ms later.
+  await expect(page.getByTestId('dashboard').getByText('Edit mode: drag a title bar to move')).toBeVisible();
   const bar = page.getByRole('toolbar', { name: 'Edit actions' });
   await bar.getByRole('button', { name: '✓ Done' }).click();
   await expect(bar).toBeHidden();
