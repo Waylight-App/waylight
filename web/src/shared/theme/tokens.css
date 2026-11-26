@@ -42,8 +42,11 @@
    * that changes the text colour keeps it.
    */
   --color-border-strong: color-mix(in srgb, var(--color-text) 20%, transparent);
-  /* Hover on the accent fill, derived from the accent so a theme keeps its own. */
-  --color-accent-hover: color-mix(in srgb, var(--color-accent) 70%, #c47a00);
+  /*
+   * Hover on the accent fill, derived from the accent so a theme keeps its own.
+   * With the amber accent it lands on the mockup's #e9a41f (night: #ffd27a, closely).
+   */
+  --color-accent-hover: color-mix(in srgb, var(--color-accent) 45%, #e39703);
   /*
    * Outline of widget cards: a 1 px hairline in the border colour (#792);
    * a high-contrast theme draws a stronger one.
@@ -127,7 +130,7 @@
   --color-lit-danger: #bd2f2f;
   --color-ok: #8fd6a8;
   --color-border-strong: color-mix(in srgb, var(--color-text) 16%, transparent);
-  --color-accent-hover: color-mix(in srgb, var(--color-accent) 70%, #fff);
+  --color-accent-hover: color-mix(in srgb, var(--color-accent) 45%, #ffecb3);
   color-scheme: dark;
 }
 
