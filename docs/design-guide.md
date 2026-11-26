@@ -75,8 +75,9 @@ and values on the right of a row. The hairline in the mockups is the text
 colour at 9 % on night and 10 % on paper, and 16 % and 20 % for a stronger
 line such as the border of a quiet button; `--color-border` holds the same
 colours as solid values. Hover on the accent is `--color-accent-hover`,
-mixed from the accent (about `#f6ca7a` on night and `#e4a32d` on paper), so a
-theme with another accent keeps a matching hover. The stronger line is
+mixed from the accent (`#e9a41f` on paper as in the mockups, about `#f9d380`
+on night where the mockups draw `#ffd27a`), so a theme with another accent
+keeps a matching hover. The stronger line is
 `--color-border-strong`, the text colour at 16 % (night) or 20 % (paper).
 
 Text and the accent used as text reach 4.5:1 on the surface they sit on. Two
@@ -168,7 +169,10 @@ subtle colour. A value that needs attention, such as a due date, uses the
 accent text colour and weight 500. Text that does not fit wraps or ends in an
 ellipsis; it is never cut off.
 
-Controls follow one set of measurements.
+Controls follow one set of measurements. A button inside a widget header or an
+alert bar is 32 px high (`.btn-sm`). `Meter` draws a bar in the accent from
+60 % or when it is marked `hot`, and in the warning and danger colours from
+75 % and 90 %.
 
 | Control        | Size and look                                                             |
 | -------------- | ------------------------------------------------------------------------- |

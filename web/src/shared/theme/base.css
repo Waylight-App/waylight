@@ -36,6 +36,7 @@ h1 {
 /* The browser default (smaller) lands at about 12.5px; the guide's smallest size is 13. */
 small {
   font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
 }
 
 a {
@@ -85,6 +86,11 @@ textarea {
 }
 .btn-danger {
   color: var(--color-danger);
+}
+/* The smaller button of a widget header or an alert bar (32 px, guide). */
+.btn-sm {
+  min-height: 32px;
+  padding: 0 var(--space-3);
 }
 .btn-icon {
   justify-content: center;
@@ -151,6 +157,7 @@ input[type='checkbox']:disabled {
 }
 .field > span {
   font-size: var(--fs-xs);
+  line-height: var(--lh-xs);
   color: var(--color-text-subtle);
 }
 

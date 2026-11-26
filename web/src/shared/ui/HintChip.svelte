@@ -20,15 +20,22 @@
 <style>
   .chip {
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
     gap: var(--space-1);
-    padding: var(--space-1) var(--space-3);
+    /* 32 px pill of the guide (Chip). */
+    min-height: 32px;
+    padding: 0 var(--space-3);
     border-radius: 999px;
     font-size: var(--fs-xs);
-    line-height: 1.4;
+    font-weight: 500;
+    line-height: var(--lh-xs);
     white-space: nowrap;
     color: var(--color-text);
     background: color-mix(in srgb, var(--tone) 16%, var(--color-surface));
+  }
+  /* The guide has no weight above 600. */
+  .chip strong {
+    font-weight: 600;
   }
   .chip[data-tone='accent'] {
     --tone: var(--color-accent);
