@@ -60,6 +60,10 @@
     headerAction.set({ icon: 'plus', label: t('notes.new_note'), onclick: () => (open = 'new') }),
   );
 
+  // A short list needs no search field; it appears once there is something to search.
+  const SEARCH_FROM = 6;
+  const searchable = $derived(list.length >= SEARCH_FROM || query !== '');
+
   async function openHit(id: string) {
     try {
       viewing = await notes.get(id);
@@ -85,20 +89,25 @@
   });
 </script>
 
-<div class="head">
-  <input
-    class="input search"
-    type="search"
-    bind:value={query}
-    placeholder={t('notes.search')}
-    aria-label={t('notes.search_notes')}
-  />
-  {#if !headerAction.inHeader}
-    <button class="btn btn-icon" type="button" aria-label={t('notes.new_note')} onclick={() => (open = 'new')}
-      ><Icon name="plus" size={16} /></button
-    >
-  {/if}
-</div>
+{#if searchable || !headerAction.inHeader}
+  <div class="head">
+    {#if searchable}<input
+        class="input search"
+        type="search"
+        bind:value={query}
+        placeholder={t('notes.search')}
+        aria-label={t('notes.search_notes')}
+      />{/if}
+    {#if !headerAction.inHeader}
+      <button
+        class="btn btn-icon"
+        type="button"
+        aria-label={t('notes.new_note')}
+        onclick={() => (open = 'new')}><Icon name="plus" size={16} /></button
+      >
+    {/if}
+  </div>
+{/if}
 {#if error}<p class="error">{error}</p>{/if}
 {#if hits}
   <ul class="list" aria-label={t('notes.search_results')}>
@@ -236,5 +245,16 @@
   }
   .muted {
     font-size: var(--fs-xs);
+  }
+  .open strong {
+    font-weight: 600;
+  }
+  /* Two lines of the note under its title, like the guide's row second line. */
+  .list :global(.sub) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
   }
 </style>

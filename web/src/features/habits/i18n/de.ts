@@ -16,6 +16,10 @@ export const de: Record<keyof typeof en, string> = {
   'habits.streak_title': 'Aktuelle Serie (beste: {best})',
   'habits.last_weeks': '{name}: die letzten vier Wochen',
   'habits.toggle_yesterday': '{name}: gestern abhaken',
-  'habits.show_heatmap': '4-Wochen-Übersicht anzeigen',
+  'habits.show_heatmap': 'Letzte Tage anzeigen',
+  'habits.streak_one': '1 Tag in Folge',
+  'habits.streak': '{n} Tage in Folge',
+  'habits.no_streak': 'Noch keine Serie',
+  'habits.meta_today': '{done} von {of} heute',
   'habits.invalid_name': 'Der Name muss zwischen 1 und 60 Zeichen lang sein.',
 };

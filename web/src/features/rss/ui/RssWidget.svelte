@@ -115,30 +115,34 @@
       {/if}
       {#snippet sub()}{#if !cfg.compact}{itemMeta(item, !!cfg.feedId, now)}{/if}{/snippet}
       {#snippet trail()}
-        {#if canReadLater && item.link}
-          <button
-            class="btn btn-icon later"
-            type="button"
-            disabled={savedLater.includes(item.id)}
-            title={savedLater.includes(item.id) ? t('readlater.saved_for_later') : t('readlater.read_later')}
-            aria-label={t('readlater.read_later_item', { title: item.title })}
-            onclick={() => saveForLater(item)}
-            >{#if savedLater.includes(item.id)}<Icon name="done" size={16} />{:else}<Icon
-                name="bookmark"
-                size={16}
-              />{/if}</button
-          >
-        {/if}
-        {#if canSummarise && summarizer && item.link}
-          {@const link = item.link}
-          <span class="summarise"
-            ><SummaryBox
-              compact
-              label={t('ai_summary.summarise_item', { title: item.title })}
-              run={() => summarizer.link(link)}
-            /></span
-          >
-        {/if}
+        <span class="tools">
+          {#if canReadLater && item.link}
+            <button
+              class="btn btn-icon later"
+              type="button"
+              disabled={savedLater.includes(item.id)}
+              title={savedLater.includes(item.id)
+                ? t('readlater.saved_for_later')
+                : t('readlater.read_later')}
+              aria-label={t('readlater.read_later_item', { title: item.title })}
+              onclick={() => saveForLater(item)}
+              >{#if savedLater.includes(item.id)}<Icon name="done" size={16} />{:else}<Icon
+                  name="bookmark"
+                  size={16}
+                />{/if}</button
+            >
+          {/if}
+          {#if canSummarise && summarizer && item.link}
+            {@const link = item.link}
+            <span class="summarise"
+              ><SummaryBox
+                compact
+                label={t('ai_summary.summarise_item', { title: item.title })}
+                run={() => summarizer.link(link)}
+              /></span
+            >
+          {/if}
+        </span>
       {/snippet}
     </ListRow>
   {:else}
@@ -189,5 +193,28 @@
   .later {
     padding: 0 var(--space-1);
     font-size: var(--fs-xs);
+  }
+  /* Per-entry actions lie over the end of the row and show on hover or
+     focus, so rows have no button column (#818). */
+  .tools {
+    position: absolute;
+    inset: var(--space-2) 0 auto auto;
+    display: flex;
+    align-items: center;
+    background: var(--color-surface);
+    opacity: 0;
+    pointer-events: none;
+  }
+  :global(.row:hover) .tools,
+  .tools:focus-within {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  @media (hover: none) {
+    .tools {
+      position: static;
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 </style>

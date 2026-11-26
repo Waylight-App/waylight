@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { faviconUrl, iconSrc, linkProblem, parseBookmarksConfig, parseTags, sortBookmarks } from './bookmark';
+import {
+  faviconUrl,
+  iconSrc,
+  initials,
+  linkProblem,
+  parseBookmarksConfig,
+  parseTags,
+  sortBookmarks,
+} from './bookmark';
 
 describe('bookmarks domain', () => {
   it('parses tags', () => {
@@ -73,5 +81,15 @@ describe('bookmark sort order (#120)', () => {
   it('puts bookmarks with an unreadable date last', () => {
     const odd = [{ title: 'x', createdAt: '' }, ...list];
     expect(titles(sortBookmarks(odd, 'newest', 'en')).at(-1)).toBe('x');
+  });
+});
+
+describe('initials (#817)', () => {
+  it('takes the first letters of two words or two letters of one', () => {
+    expect(initials('AdGuard Home')).toBe('AH');
+    expect(initials('Nextcloud')).toBe('NE');
+    expect(initials('docker-docs')).toBe('DD');
+    expect(initials('  ')).toBe('?');
+    expect(initials('Ölkännchen')).toBe('ÖL');
   });
 });
