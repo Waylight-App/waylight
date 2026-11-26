@@ -4,6 +4,7 @@
   import type { Snippet } from 'svelte';
   import WidgetHeader from '../../../shared/ui/WidgetHeader.svelte';
   import { provideWidgetIcon } from '../../../shared/ui/widgetIcon';
+  import { provideHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import { provideWidgetKind } from '../../../shared/setup/walk.svelte';
   import type { IconName } from '../../../shared/ui/icons/paths';
   import { WIDGET_SIZES, type WidgetSize } from '../domain/sizes';
@@ -68,6 +69,7 @@
 
   provideWidgetIcon(() => icon);
   provideWidgetKind(() => kind);
+  const headerMeta = provideHeaderMeta();
   let content = $state<HTMLElement>();
   $effect(() => {
     const el = content;
@@ -167,7 +169,13 @@
     <!-- Dragging is pointer-only; settings and remove buttons stay keyboard accessible. -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <header class:draggable={editing} onpointerdown={handle.onpointerdown}>
-      <WidgetHeader {title} {icon} action={onhelp || editing ? headerActions : undefined} />
+      <WidgetHeader
+        {title}
+        {icon}
+        meta={headerMeta.meta?.text}
+        metaTone={headerMeta.meta?.tone}
+        action={onhelp || editing ? headerActions : undefined}
+      />
     </header>
   {/if}
   <div class="content" bind:this={content}><div class="body">{@render children()}</div></div>
