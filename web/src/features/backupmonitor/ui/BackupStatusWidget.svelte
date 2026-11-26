@@ -57,7 +57,7 @@
       return { text: t('backupmonitor.summary_failed', { n: failed, total }), tone: 'danger' as const };
     if (overdue)
       return { text: t('backupmonitor.summary_overdue', { n: overdue, total }), tone: 'warning' as const };
-    return { text: t('backupmonitor.summary_ok', { total }), tone: 'neutral' as const };
+    return null;
   });
   // Shown in the card header (#809).
   const setMeta = useHeaderMeta();

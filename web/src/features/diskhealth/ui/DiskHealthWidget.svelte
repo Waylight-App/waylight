@@ -47,6 +47,7 @@
       d.temperature !== null ? `${d.temperature} °C` : '',
       d.percentageUsed !== null ? t('diskhealth.wear_short', { value: d.percentageUsed }) : '',
       d.reallocated ? t('diskhealth.reallocated_short', { n: d.reallocated }) : '',
+      d.pending ? `${t('diskhealth.pending')} ${d.pending}` : '',
       d.powerOnHours !== null ? t('diskhealth.on_short', { age: age(d.powerOnHours) }) : '',
     ]
       .filter(Boolean)
@@ -85,18 +86,6 @@
               {#each d.findings as f, i (i)}<li class="status-{f.status}">{describe(f)}</li>{/each}
             </ul>
           {/if}
-          <dl class="facts">
-            {#if d.temperature !== null}<dt>{t('diskhealth.temperature')}</dt>
-              <dd>{d.temperature} °C</dd>{/if}
-            {#if d.reallocated !== null}<dt>{t('diskhealth.reallocated')}</dt>
-              <dd>{d.reallocated}</dd>{/if}
-            {#if d.pending !== null}<dt>{t('diskhealth.pending')}</dt>
-              <dd>{d.pending}</dd>{/if}
-            {#if d.percentageUsed !== null}<dt>{t('diskhealth.wear')}</dt>
-              <dd>{d.percentageUsed} %</dd>{/if}
-            {#if d.powerOnHours !== null}<dt>{t('diskhealth.power_on')}</dt>
-              <dd title={t('diskhealth.hours', { hours: d.powerOnHours })}>{age(d.powerOnHours)}</dd>{/if}
-          </dl>
         {/snippet}
         {#snippet value()}<span class="state status-{d.status}">{t(`diskhealth.status.${d.status}`)}</span
           >{/snippet}
@@ -135,25 +124,12 @@
   .findings li.status-critical {
     color: var(--color-danger);
   }
-  /* Every fact and finding of a drive is detail: only a tall box has room for it. */
+  /* The findings explain a state in full: only a tall box has room for them. */
   .findings {
     display: none;
     margin-top: var(--space-1);
   }
-  .facts {
-    display: none;
-    grid-template-columns: auto 1fr;
-    gap: 0 var(--space-2);
-    margin: var(--space-1) 0 0;
-  }
-  .facts dd {
-    margin: 0;
-    color: var(--color-text-muted);
-  }
   @container widget (min-height: 480px) {
-    .facts {
-      display: grid;
-    }
     .findings {
       display: block;
     }

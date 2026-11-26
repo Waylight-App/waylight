@@ -129,9 +129,7 @@
     gap: var(--space-4);
   }
   .latest div {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
+    display: grid;
   }
   .label,
   .unit {
@@ -163,26 +161,20 @@
     display: flex;
     gap: var(--space-2);
   }
-  /* Chips of the guide: 32 px pills; the chosen range is filled like the selected tab. */
+  /* 32 px chips of the guide; the chosen range is filled like the selected tab. */
   .chip {
     min-height: 32px;
     padding: 0 var(--space-3);
     border: 0;
     border-radius: 999px;
     background: none;
-    color: var(--color-text-muted);
+    color: inherit;
     font: inherit;
     font-size: var(--fs-xs);
     font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.15s;
-  }
-  .chip:hover {
-    background: var(--color-surface-2);
   }
   .chip[aria-pressed='true'] {
     background: var(--color-surface-2);
     box-shadow: inset 0 0 0 1px var(--color-border-strong);
-    color: var(--color-text);
   }
 </style>
