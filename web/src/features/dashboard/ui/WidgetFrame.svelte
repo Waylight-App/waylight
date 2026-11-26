@@ -180,6 +180,7 @@
   class:chromeless={chromeless && !editing}
   class:compact={compact && !editing}
   class:openable={!!onopen && !editing}
+  class:strip-header={size === 'strip' && (editing || (!compact && !chromeless))}
 >
   {#if editing || (!chromeless && !compact)}
     <!-- Dragging is pointer-only; settings and remove buttons stay keyboard accessible. -->
@@ -230,6 +231,18 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+  /* A strip that shows its header row (edit mode, or a widget without a
+     compact view) has no room for content: the header is centred in the
+     56 px with the same space above and below (#821). */
+  .strip-header header {
+    flex: 1;
+    padding-block: 0;
+  }
+  .strip-header .content {
+    flex: none;
+    height: 0;
+    padding-block: 0;
   }
   header.draggable {
     cursor: grab;
