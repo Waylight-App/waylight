@@ -1,6 +1,9 @@
 # Homelab: the state of a home server at a glance (#589). The tab is zoned
-# (#619); the status widgets sit in the System zone as compact tiles (#595)
-# and feed the attention line (#593).
+# (#619); the status widgets sit in the System zone and feed the attention
+# line (#593). Every row of a zone adds up to the 12 columns (#793), and the
+# System zone follows the Server tab of the redesign (#825): the services
+# (8 columns) next to the backups (4), then system, Docker and disk health
+# at four columns each.
 id: homelab
 title: Homelab
 tab:
@@ -8,42 +11,40 @@ tab:
   zones: true
   widgets:
     - kind: clock
-      at: { x: 0, y: 0, w: 3, h: 2 }
-      size: small
+      at: { x: 0, y: 0, w: 9, h: 2 }
       zone: today
       phone: { order: 1, rows: 2, size: small }
       config: { showDate: true, showSeconds: false }
     - kind: todos
-      at: { x: 3, y: 0, w: 3, h: 2 }
+      at: { x: 9, y: 0, w: 3, h: 2 }
       size: small
       zone: today
       phone: { order: 2, rows: 2, size: small }
     - kind: bookmarks
-      at: { x: 6, y: 0, w: 6, h: 4 }
+      at: { x: 0, y: 2, w: 12, h: 4 }
       zone: mine
       phone: { order: 3, rows: 4 }
     - kind: services
-      at: { x: 0, y: 4, w: 6, h: 1 }
-      size: strip
+      at: { x: 0, y: 6, w: 8, h: 4 }
       zone: system
-      phone: { order: 4, rows: 1, size: strip }
-    - kind: docker
-      at: { x: 6, y: 4, w: 3, h: 2 }
-      size: small
-      zone: system
-      phone: { order: 5, rows: 2, size: small }
+      phone: { order: 4, rows: 4 }
     - kind: backup-status
-      at: { x: 9, y: 4, w: 3, h: 2 }
-      size: small
+      at: { x: 8, y: 6, w: 4, h: 4 }
+      size: medium
       zone: system
-      phone: { order: 6, rows: 2, size: small }
-    - kind: diskhealth
-      at: { x: 0, y: 5, w: 3, h: 2 }
-      size: small
-      zone: system
-      phone: { order: 7, rows: 2, size: small }
+      phone: { order: 5, rows: 4 }
     - kind: system
-      at: { x: 0, y: 7, w: 4, h: 4 }
+      at: { x: 0, y: 10, w: 4, h: 4 }
+      size: medium
+      zone: system
+      phone: { order: 6, rows: 4 }
+    - kind: docker
+      at: { x: 4, y: 10, w: 4, h: 4 }
+      size: medium
+      zone: system
+      phone: { order: 7, rows: 4 }
+    - kind: diskhealth
+      at: { x: 8, y: 10, w: 4, h: 4 }
       size: medium
       zone: system
       phone: { order: 8, rows: 4 }

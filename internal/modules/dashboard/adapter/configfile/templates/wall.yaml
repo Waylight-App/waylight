@@ -1,6 +1,8 @@
 # Wall tablet: large and readable from across the room. Kiosk mode and night
 # dimming are set on the kiosk display itself (#589). The tab is zoned
-# (#619) with large tiles; the System zone shows only to admins.
+# (#619) with large tiles; the System zone shows only to admins. Every row
+# of a zone adds up to the 12 columns (#793), so the departures sit in Today
+# next to the agenda and the services span the full width.
 id: wall
 title: Wall tablet
 needs: [location]
@@ -26,10 +28,9 @@ tab:
     - kind: transit
       at: { x: 6, y: 4, w: 6, h: 6 }
       size: large
-      zone: mine
+      zone: today
       phone: { order: 4, rows: 4 }
     - kind: services
-      at: { x: 0, y: 10, w: 6, h: 1 }
-      size: strip
+      at: { x: 0, y: 10, w: 12, h: 3 }
       zone: system
-      phone: { order: 5, rows: 1, size: strip }
+      phone: { order: 5, rows: 3 }
