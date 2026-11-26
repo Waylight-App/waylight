@@ -37,6 +37,9 @@ test('study progress sums up credits and the weighted average (#57)', async ({ p
   await expect(page.getByText('15 of 210 ECTS')).toBeVisible();
   // (1.0 · 10 + 2.5 · 5) / 15 = 1.5
   await expect(page.getByText('Average 1.5')).toBeVisible();
-  await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '15');
+  await expect(page.getByRole('meter', { name: '15 of 210 ECTS' })).toHaveAttribute(
+    'aria-valuetext',
+    '15 of 210 ECTS',
+  );
   await expect(page.getByText('Programmieren')).toBeVisible();
 });
