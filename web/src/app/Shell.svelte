@@ -628,7 +628,7 @@
         <img class="brand-logo light" src={branding().logo} alt="" height="28" />
         <img class="brand-logo dark" src={branding().logoDark || branding().logo} alt="" height="28" />
       {:else}
-        <span class="logo"><WaylightMark size={22} /></span>
+        <span class="logo"><WaylightMark size={24} /></span>
       {/if}
       <span class:wordmark={branding().name === PRODUCT_NAME}>{branding().name}</span>
     </a>
