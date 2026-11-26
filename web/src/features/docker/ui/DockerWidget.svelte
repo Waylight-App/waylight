@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
@@ -14,6 +15,7 @@
   } from '../domain/container';
   import { type ImageUpdate, updatesByContainer } from '../domain/imageUpdate';
   import ListRow from '../../../shared/ui/ListRow.svelte';
+  import StatusDot, { type StatusLevel } from '../../../shared/ui/StatusDot.svelte';
   import type { DockerUseCases } from '../usecase/dockerUseCases';
 
   /** Props of the docker widget. */
@@ -75,6 +77,24 @@
     }
   }
 
+  const dotLevel: Record<string, StatusLevel> = {
+    ok: 'ok',
+    warning: 'warning',
+    error: 'failed',
+    off: 'stopped',
+  };
+  // Docker writes "Up 3 days"; the row value reads as a quiet phrase like the other rows.
+  const phrase = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+
+  // The counts go to the card header (#809); unhealthy containers colour it.
+  const setMeta = useHeaderMeta();
+  $effect(() => {
+    if (!data) return setMeta(null);
+    const parts = [`${data.running} ${t('docker.running')}`, `${data.stopped} ${t('docker.stopped')}`];
+    if (data.unhealthy) parts.push(`${data.unhealthy} ${t('docker.unhealthy')}`);
+    setMeta({ text: parts.join(' · '), tone: data.unhealthy ? 'danger' : 'neutral' });
+  });
+
   $effect(() => {
     const load = () =>
       docker
@@ -90,20 +110,14 @@
 
 {#if error}<p class="error">{error}</p>{/if}
 {#if data}
-  <p class="summary">
-    <span><strong>{data.running}</strong> {t('docker.running')}</span>
-    <span class:alert={data.stopped > 0}><strong>{data.stopped}</strong> {t('docker.stopped')}</span>
-    {#if data.unhealthy}<span class="alert"><strong>{data.unhealthy}</strong> {t('docker.unhealthy')}</span
-      >{/if}
-  </p>
   {#if data.error}<p class="error small">{data.error}</p>{/if}
   <ul class="list">
     {#each shown as c (c.id)}
       {@const u = updates.get(c.name)}
       <ListRow nowrap title="{c.image}\n{c.status}">
-        {#snippet lead()}<span class="dot {indicator(c)}" role="img" aria-label={c.state}></span>{/snippet}
+        {#snippet lead()}<StatusDot level={dotLevel[indicator(c)] ?? 'stopped'} label={c.state} />{/snippet}
         {c.name}
-        {#snippet value()}<span class="small status">{c.status}</span>{/snippet}
+        {#snippet value()}<span class="status">{phrase(c.status)}</span>{/snippet}
         {#snippet trail()}
           {#if u}
             <a
@@ -176,15 +190,6 @@
     padding: var(--space-2);
     border-radius: var(--radius-sm);
   }
-  .summary {
-    display: flex;
-    gap: var(--space-3);
-    margin: 0 0 var(--space-2);
-    font-size: var(--fs-xs);
-  }
-  .alert {
-    color: var(--color-danger);
-  }
   .small {
     font-size: var(--fs-xs);
   }
@@ -198,23 +203,5 @@
   }
   .status {
     white-space: nowrap;
-  }
-  .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex: none;
-  }
-  .ok {
-    background: var(--color-ok);
-  }
-  .warning {
-    background: var(--color-warning);
-  }
-  .error.dot {
-    background: var(--color-danger);
-  }
-  .off {
-    background: var(--color-border);
   }
 </style>

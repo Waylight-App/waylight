@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  sentenceCase,
   degrees,
   formatDate,
   formatTime,
@@ -63,5 +64,15 @@ describe('formatting', () => {
 
   it('rounds degrees', () => {
     expect(degrees(7.6)).toBe('8°');
+  });
+});
+
+describe('sentenceCase', () => {
+  it('lowers a title sent in capitals', () => {
+    expect(sentenceCase('STARKWIND')).toBe('Starkwind');
+    expect(sentenceCase('FROST AND ICE')).toBe('Frost and ice');
+  });
+  it('keeps a title that already has lower-case letters', () => {
+    expect(sentenceCase('Wind warning')).toBe('Wind warning');
   });
 });

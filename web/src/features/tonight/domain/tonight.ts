@@ -38,6 +38,8 @@ export interface TonightDay {
 /** The current weather and the next days, as the weather source describes them. */
 export interface TonightWeather {
   temperature: number;
+  /** Felt temperature; absent when the source does not report it. */
+  feelsLike?: number;
   condition: string;
   icon: string;
   /** Name of the place; empty when none was given. */
@@ -64,6 +66,17 @@ export function worstWarning(warnings: readonly TonightWarning[]): TonightWarnin
     (worst, w) => (!worst || RANK[w.severity] > RANK[worst.severity] ? w : worst),
     undefined,
   );
+}
+
+/**
+ * A warning title in sentence case: weather services send event names such
+ * as "STARKWIND" in capitals, which the chip of the card does not shout.
+ * Titles with lower-case letters already are written as meant.
+ */
+export function sentenceCase(title: string): string {
+  if (title !== title.toUpperCase()) return title;
+  const lower = title.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
 /** Severe and extreme warnings are problems; the others ask for attention. */

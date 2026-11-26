@@ -83,6 +83,8 @@
   }
   @media (max-width: 640px) {
     .alert {
+      font-size: var(--fs-xs);
+      line-height: var(--lh-xs);
       flex-wrap: wrap;
       gap: var(--space-1) var(--space-3);
     }
