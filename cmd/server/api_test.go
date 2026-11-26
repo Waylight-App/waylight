@@ -1016,7 +1016,7 @@ func TestSampleDataAfterSetup(t *testing.T) {
 			kinds[w.Kind] = w.Config
 		}
 	}
-	for _, k := range []string{"tonight", "todos", "notes", "bookmarks", "rss", "calendar", "services", "system", "docker", "adguard"} {
+	for _, k := range []string{"tonight", "todos", "notes", "bookmarks", "rss", "calendar", "habits", "birthdays", "focus", "system", "docker", "diskhealth"} {
 		if _, ok := kinds[k]; !ok {
 			t.Errorf("sample dashboard lacks widget %q", k)
 		}

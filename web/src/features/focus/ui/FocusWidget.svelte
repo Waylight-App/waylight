@@ -143,6 +143,7 @@
         {phaseLabel(timer.phase)}
         <span
           class="dots"
+          role="img"
           aria-label={t('focus.cycle', { done: timer.done % cfg.longEvery, of: cfg.longEvery })}
         >
           {#each Array.from({ length: cfg.longEvery }, (_, i) => i) as i (i)}

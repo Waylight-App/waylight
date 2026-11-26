@@ -5,38 +5,51 @@ package usecase
 // product can do. weatherConfig is the JSON configuration of the weather
 // card.
 func ShowcaseLayout(weatherConfig string) []SampleTab {
-	// Each tab opens with wide widgets (#769); the rest are equal three
-	// column tiles below, so the demo still shows as many widgets as possible.
-	tab := func(name string, lead []SampleWidget, kinds ...string) SampleTab {
-		widgets := lead
-		top := 0
-		if len(lead) > 0 {
-			top = 5
+	// Each tab opens with the composition of the design mockups (#796): a lead
+	// row, then a row of three four-column widgets; the rest are equal
+	// three-column tiles below, so the demo still shows as many widgets as
+	// possible. Every row adds up to the 12 columns.
+	type lead struct {
+		kind string
+		w    int
+	}
+	tab := func(name string, leads []lead, mid []string, kinds ...string) SampleTab {
+		var widgets []SampleWidget
+		x, y := 0, 0
+		for _, l := range leads {
+			cfg := showcaseConfig(l.kind)
+			if l.kind == "tonight" {
+				cfg = weatherConfig
+			}
+			widgets = append(widgets, SampleWidget{Kind: l.kind, X: x, Y: y, W: l.w, H: sampleRowHeight, Config: cfg})
+			x += l.w
 		}
+		if len(leads) > 0 {
+			y += sampleRowHeight
+		}
+		for i, k := range mid {
+			widgets = append(widgets, SampleWidget{Kind: k, X: (i % 3) * 4, Y: y + (i/3)*sampleRowHeight, W: 4, H: sampleRowHeight, Config: showcaseConfig(k)})
+		}
+		y += ((len(mid) + 2) / 3) * sampleRowHeight
 		for i, k := range kinds {
 			cfg := showcaseConfig(k)
 			if k == "weather" {
 				cfg = weatherConfig
 			}
-			widgets = append(widgets, SampleWidget{Kind: k, X: (i % 4) * 3, Y: top + (i/4)*5, W: 3, H: 5, Config: cfg})
+			widgets = append(widgets, SampleWidget{Kind: k, X: (i % 4) * 3, Y: y + (i/4)*sampleRowHeight, W: 3, H: sampleRowHeight, Config: cfg})
 		}
 		return SampleTab{Name: name, Widgets: widgets}
 	}
-	wide := func(kind string, x, w int, config string) SampleWidget {
-		return SampleWidget{Kind: kind, X: x, Y: 0, W: w, H: 5, Config: config}
-	}
 	return []SampleTab{
-		tab("Home", []SampleWidget{
-			wide("tonight", 0, 6, weatherConfig), wide("todos", 6, 3, showcaseConfig("todos")), wide("notes", 9, 3, showcaseConfig("notes")),
-		}, "clock", "weather", "calendar", "bookmarks", "rss", "countdown",
-			"habits", "focus", "birthdays", "holidays", "briefing", "timeline", "study", "readlater", "shopping", "drop"),
-		tab("Out and about", nil, "transit", "waste", "parcels", "fuel", "radar", "space", "sports", "markets",
+		tab("Home", []lead{{"tonight", 5}, {"todos", 4}, {"notes", 3}},
+			[]string{"calendar", "bookmarks", "rss", "habits", "birthdays", "focus"},
+			"clock", "weather", "countdown", "holidays", "briefing", "timeline", "study", "readlater", "shopping", "drop"),
+		tab("Out and about", nil, nil, "transit", "waste", "parcels", "fuel", "radar", "space", "sports", "markets",
 			"electricity", "gamedeals", "photo-frame", "immich", "media"),
-		tab("Server", []SampleWidget{
-			wide("system", 0, 8, showcaseConfig("system")), wide("services", 8, 4, showcaseConfig("services")),
-		}, "status-overview", "docker", "adguard", "diskhealth", "speedtest",
-			"backup-status", "proxmox", "wireguard", "releases", "nextcloud", "fritzbox", "fritzbox-calls", "arr", "apiwidget",
-			"smarthome", "phonelist", "grafana-panel", "grafana-alerts"),
+		tab("Server", []lead{{"speedtest", 8}, {"backup-status", 4}},
+			[]string{"system", "docker", "diskhealth"},
+			"services", "status-overview", "adguard", "proxmox", "wireguard", "releases", "nextcloud", "fritzbox", "fritzbox-calls",
+			"arr", "apiwidget", "smarthome", "phonelist", "grafana-panel", "grafana-alerts"),
 	}
 }
 

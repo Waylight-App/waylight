@@ -272,7 +272,8 @@ test('keyboard shortcuts switch tabs, toggle edit mode and show an overview (#95
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page.getByTestId('dashboard')).toBeVisible();
-  await page.locator('body').click();
+  // Click the page title: the middle of the body can land on a widget control.
+  await page.locator('h1').first().click();
 
   await page.keyboard.press('?');
   await expect(page.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeVisible();
@@ -688,7 +689,8 @@ test('edit mode: Done button, Esc, tab menu, rename by double-click, delete in a
   await expect(page.getByTestId('dashboard')).toBeVisible();
 
   await account(page, 'Edit');
-  await expect(page.getByText('Edit mode: drag a title bar to move')).toBeVisible();
+  // The live region repeats the hint for screen readers; look at the visible one.
+  await expect(page.getByTestId('dashboard').getByText('Edit mode: drag a title bar to move')).toBeVisible();
   const bar = page.getByRole('toolbar', { name: 'Edit actions' });
   await bar.getByRole('button', { name: '✓ Done' }).click();
   await expect(bar).toBeHidden();
