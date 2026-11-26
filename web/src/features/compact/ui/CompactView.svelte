@@ -129,6 +129,16 @@
     gap: var(--space-1);
     min-width: 0;
   }
+  /* Lines keep their height instead of being squeezed into each other when space runs short. */
+  .compact > * {
+    flex: none;
+  }
+  /* A small tile has no room for header, state, detail and an action: the detail goes first. */
+  @container widget (max-height: 120px) {
+    .compact:not(.strip):has(.actions) .detail {
+      display: none;
+    }
+  }
   /* Centred in the strip; label and state share one line height, so they share a baseline too (#794). */
   .compact.strip {
     flex-direction: row;
@@ -186,6 +196,7 @@
   }
   .state {
     font-size: var(--fs-md);
+    line-height: var(--lh-md);
     font-weight: 600;
     display: flex;
     align-items: baseline;

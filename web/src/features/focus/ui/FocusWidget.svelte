@@ -15,6 +15,7 @@
     type TimerState,
   } from '../domain/focus';
   import type { FocusUseCases } from '../usecase/focusUseCases';
+  import { hasHeaderMeta, useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
 
   /** Props of the focus timer widget (#58). */
   interface Props {
@@ -127,6 +128,10 @@
   const weekday = (date: string) =>
     new Date(`${date}T12:00:00`).toLocaleDateString(intlLocale(), { weekday: 'narrow' });
   const total = $derived(week.reduce((n, d) => n + d.sessions, 0));
+  // The week's total is the card's header meta (#809); without a card it stays under the bars.
+  const inHeader = hasHeaderMeta();
+  const setMeta = useHeaderMeta();
+  $effect(() => setMeta(week.length > 0 ? { text: t('focus.week_total', { n: total }) } : null));
 </script>
 
 <div class="focus" class:running={isRunning(timer)} data-phase={timer.phase}>
@@ -156,7 +161,7 @@
           <span class="label">{weekday(d.date)}</span>
         </div>
       {/each}
-      <figcaption class="muted">{t('focus.week_total', { n: total })}</figcaption>
+      {#if !inHeader}<figcaption class="muted">{t('focus.week_total', { n: total })}</figcaption>{/if}
     </figure>
   {/if}
 </div>

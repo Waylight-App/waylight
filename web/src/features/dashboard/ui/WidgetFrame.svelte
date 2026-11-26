@@ -5,6 +5,7 @@
   import WidgetHeader from '../../../shared/ui/WidgetHeader.svelte';
   import { provideWidgetIcon } from '../../../shared/ui/widgetIcon';
   import { provideHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
+  import { provideHeaderAction } from '../../../shared/ui/widgetHeaderAction';
   import { provideWidgetKind } from '../../../shared/setup/walk.svelte';
   import type { IconName } from '../../../shared/ui/icons/paths';
   import { WIDGET_SIZES, type WidgetSize } from '../domain/sizes';
@@ -70,6 +71,7 @@
   provideWidgetIcon(() => icon);
   provideWidgetKind(() => kind);
   const headerMeta = provideHeaderMeta();
+  const headerAction = provideHeaderAction();
   let content = $state<HTMLElement>();
   $effect(() => {
     const el = content;
@@ -143,7 +145,7 @@
   >
 {/snippet}
 
-{#snippet headerActions()}
+{#snippet helpButton()}
   {#if onhelp}
     <button
       class="btn btn-icon help"
@@ -154,6 +156,20 @@
       title={t('dashboard.widget_help', { name: title })}
       onpointerdown={(e) => e.stopPropagation()}
       onclick={onhelp}>?</button
+    >
+  {/if}
+{/snippet}
+
+{#snippet headerActions()}
+  {#if headerAction.action && !editing}
+    {@const a = headerAction.action}
+    <button
+      class="btn btn-icon"
+      type="button"
+      aria-label={a.label}
+      title={a.label}
+      onpointerdown={(e) => e.stopPropagation()}
+      onclick={a.onclick}><Icon name={a.icon} size={16} /></button
     >
   {/if}
   {#if editing}{@render editActions()}{/if}
@@ -174,7 +190,8 @@
         {icon}
         meta={headerMeta.meta?.text}
         metaTone={headerMeta.meta?.tone}
-        action={onhelp || editing ? headerActions : undefined}
+        titleAction={onhelp ? helpButton : undefined}
+        action={editing || headerAction.action ? headerActions : undefined}
       />
     </header>
   {/if}
