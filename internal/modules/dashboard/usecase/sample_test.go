@@ -109,3 +109,37 @@ func TestSampleTabs(t *testing.T) {
 		t.Fatalf("discard after keep: %v %d", err, len(repo.tabs))
 	}
 }
+
+// Every row of the sample layout fills the 12 columns (#793, #796).
+func TestSampleLayoutRowsFillTheGrid(t *testing.T) {
+	for _, tab := range SampleLayout(`{}`) {
+		width := map[int]int{}
+		for _, w := range tab.Widgets {
+			width[w.Y] += w.W
+		}
+		for y, sum := range width {
+			if sum != 12 {
+				t.Errorf("%s row at y=%d fills %d of 12 columns", tab.Name, y, sum)
+			}
+		}
+	}
+}
+
+// The first two rows of the demo tabs with a lead row fill the grid; the
+// tiles below may leave the last row short.
+func TestShowcaseLeadRowsFillTheGrid(t *testing.T) {
+	for _, tab := range ShowcaseLayout(`{}`) {
+		if tab.Name == "Out and about" {
+			continue
+		}
+		width := map[int]int{}
+		for _, w := range tab.Widgets {
+			width[w.Y] += w.W
+		}
+		for _, y := range []int{0, sampleRowHeight} {
+			if width[y] != 12 {
+				t.Errorf("%s row at y=%d fills %d of 12 columns", tab.Name, y, width[y])
+			}
+		}
+	}
+}

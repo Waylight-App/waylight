@@ -36,27 +36,55 @@ func EverydayLayout(weatherConfig string) []SampleTab {
 	return SampleLayout(weatherConfig)[:1]
 }
 
+// sampleRowHeight is the height, in grid rows, of the widgets of the sample
+// layouts: with the card padding of the design guide it leaves room for a
+// list of four items.
+const sampleRowHeight = 6
+
 // SampleLayout returns the layout shown after the first setup; weatherConfig
 // is the JSON configuration of the Tonight card (location chosen by the
-// operator). Widths vary on purpose (#769): Home opens with the wide Tonight
-// card and goes on with three, four and five column widgets; Server puts
-// one wide chart next to a list, then equal lists.
+// operator). It has the composition of the design mockups, and every row adds
+// up to the 12 columns (#793): Home opens with the Tonight card (5 columns),
+// the to-dos (4) and the notes (3), then three widgets of four columns twice;
+// Server puts the speed chart (8) next to the backups (4), then three lists
+// of four columns.
 func SampleLayout(weatherConfig string) []SampleTab {
+	row := func(y int, widgets ...SampleWidget) []SampleWidget {
+		x := 0
+		for i := range widgets {
+			widgets[i].X, widgets[i].Y, widgets[i].H = x, y, sampleRowHeight
+			x += widgets[i].W
+		}
+		return widgets
+	}
+	var home, server []SampleWidget
+	home = append(home, row(0,
+		SampleWidget{Kind: "tonight", W: 5, Config: weatherConfig, Fallback: "clock"},
+		SampleWidget{Kind: "todos", W: 4},
+		SampleWidget{Kind: "notes", W: 3, Config: `{"scope":"pinned"}`},
+	)...)
+	home = append(home, row(sampleRowHeight,
+		SampleWidget{Kind: "calendar", W: 4, Config: `{"days":7}`},
+		SampleWidget{Kind: "bookmarks", W: 4},
+		SampleWidget{Kind: "rss", W: 4, Config: `{"unreadOnly":true,"limit":15}`},
+	)...)
+	home = append(home, row(2*sampleRowHeight,
+		SampleWidget{Kind: "habits", W: 4},
+		SampleWidget{Kind: "birthdays", W: 4},
+		SampleWidget{Kind: "focus", W: 4},
+	)...)
+	server = append(server, row(0,
+		SampleWidget{Kind: "speedtest", W: 8},
+		SampleWidget{Kind: "backup-status", W: 4},
+	)...)
+	server = append(server, row(sampleRowHeight,
+		SampleWidget{Kind: "system", W: 4},
+		SampleWidget{Kind: "docker", W: 4},
+		SampleWidget{Kind: "diskhealth", W: 4},
+	)...)
 	return []SampleTab{
-		{Name: "Home", Widgets: []SampleWidget{
-			{Kind: "tonight", X: 0, Y: 0, W: 7, H: 4, Config: weatherConfig, Fallback: "clock"},
-			{Kind: "todos", X: 7, Y: 0, W: 5, H: 4},
-			{Kind: "notes", X: 0, Y: 4, W: 3, H: 5, Config: `{"scope":"pinned"}`},
-			{Kind: "bookmarks", X: 3, Y: 4, W: 4, H: 5},
-			{Kind: "rss", X: 7, Y: 4, W: 5, H: 5, Config: `{"unreadOnly":true,"limit":15}`},
-			{Kind: "calendar", X: 0, Y: 9, W: 4, H: 3, Config: `{"days":7}`},
-		}},
-		{Name: "Server", Widgets: []SampleWidget{
-			{Kind: "system", X: 0, Y: 0, W: 8, H: 5},
-			{Kind: "services", X: 8, Y: 0, W: 4, H: 5},
-			{Kind: "docker", X: 0, Y: 5, W: 6, H: 5},
-			{Kind: "adguard", X: 6, Y: 5, W: 6, H: 5},
-		}},
+		{Name: "Home", Widgets: home},
+		{Name: "Server", Widgets: server},
 	}
 }
 
