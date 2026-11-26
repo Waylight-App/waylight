@@ -77,8 +77,8 @@ and look.
 Then Waylight asks what you use it for and offers four dashboard templates: Family, Homelab, Work and Wall tablet (see
 [Templates](dashboard.md#templates)). Each one creates a tab laid out in
 zones: *Today* on top, *My things* below and *System* at the bottom, which
-only admins see. Widgets that have a compact view start small or as a
-one-line strip, and the services strip feeds the attention line above the
+only admins see. Every row fills the full width, and the services widget
+feeds the attention line above the
 zones, so a stopped service shows up there first. Templates with a weather
 widget use the place from the questions above, or ask for one; you can also
 set it later.
