@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { speedtestSetup } from './speedtestSetup';
@@ -28,6 +29,26 @@
   let reload = $state(0);
   // svelte-ignore state_referenced_locally
   const setup = speedtestSetup(speedtest);
+
+  // When the last measurement ran goes to the card header (#809).
+  const setMeta = useHeaderMeta();
+  $effect(() =>
+    setMeta(
+      data?.latest
+        ? {
+            text: t('speedtest.measured', {
+              time: data.latest.at.toLocaleString(
+                intlLocale(),
+                // Today the clock time is enough; the header has little room.
+                data.latest.at.toDateString() === new Date().toDateString()
+                  ? { timeStyle: 'short' }
+                  : { dateStyle: 'short', timeStyle: 'short' },
+              ),
+            }),
+          }
+        : null,
+    ),
+  );
 
   $effect(() => {
     const hours = range;
@@ -75,11 +96,6 @@
     <p class="muted">{t('speedtest.no_results')}</p>
   {/if}
   <div class="bar">
-    {#if data.latest}<p class="measured">
-        {t('speedtest.measured', {
-          time: data.latest.at.toLocaleString(intlLocale(), { dateStyle: 'short', timeStyle: 'short' }),
-        })}
-      </p>{/if}
     <div class="ranges" role="group" aria-label={t('speedtest.range')}>
       {#each ranges as r (r)}
         <button type="button" class="chip" aria-pressed={range === r} onclick={() => (range = r)}
@@ -118,8 +134,7 @@
     min-width: 0;
   }
   .label,
-  .unit,
-  .measured {
+  .unit {
     font-size: var(--fs-xs);
     line-height: var(--lh-xs);
     color: var(--color-text-subtle);
@@ -140,12 +155,9 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: var(--space-2) var(--space-4);
     margin: var(--space-4) 0;
-  }
-  .measured {
-    margin: 0;
   }
   .ranges {
     display: flex;

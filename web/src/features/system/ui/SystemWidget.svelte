@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
@@ -41,6 +42,20 @@
     };
   });
 
+  // Host and uptime go to the card header (#809).
+  const setMeta = useHeaderMeta();
+  $effect(() =>
+    setMeta(
+      snap
+        ? {
+            text: [snap.hostname, t('system.up', { value: formatUptime(snap.uptimeSeconds) })]
+              .filter(Boolean)
+              .join(' · '),
+          }
+        : null,
+    ),
+  );
+
   const usage = (u: { used: number; total: number }) => `${formatBytes(u.used)} / ${formatBytes(u.total)}`;
 </script>
 
@@ -48,13 +63,6 @@
   <p class="error">{error}</p>
 {:else if snap}
   <div class="system">
-    <p class="facts muted">
-      <span
-        >{[snap.hostname, t('system.up', { value: formatUptime(snap.uptimeSeconds) })]
-          .filter(Boolean)
-          .join(' · ')}</span
-      >
-    </p>
     <div class="meters">
       <div>
         <Meter label={t('system.cpu_cores', { cpuCount: snap.cpuCount })} percent={snap.cpuPercent} />
@@ -143,7 +151,7 @@
     line-height: var(--lh-xs);
     color: var(--color-text-subtle);
   }
-  .facts:last-child {
+  .facts {
     margin-top: auto;
   }
   /* The 24 hour trends are extra detail: only a tall box has room for them. */

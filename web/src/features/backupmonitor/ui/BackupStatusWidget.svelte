@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
@@ -52,14 +53,18 @@
     const failed = sources.filter((s) => s.state === 'failed').length;
     const overdue = sources.filter((s) => s.state === 'overdue').length;
     if (!total) return null;
-    if (failed) return { text: t('backupmonitor.summary_failed', { n: failed, total }), tone: 'danger' };
-    if (overdue) return { text: t('backupmonitor.summary_overdue', { n: overdue, total }), tone: 'warning' };
-    return { text: t('backupmonitor.summary_ok', { total }), tone: 'neutral' };
+    if (failed)
+      return { text: t('backupmonitor.summary_failed', { n: failed, total }), tone: 'danger' as const };
+    if (overdue)
+      return { text: t('backupmonitor.summary_overdue', { n: overdue, total }), tone: 'warning' as const };
+    return { text: t('backupmonitor.summary_ok', { total }), tone: 'neutral' as const };
   });
+  // Shown in the card header (#809).
+  const setMeta = useHeaderMeta();
+  $effect(() => setMeta(summary));
 </script>
 
 {#if error}<p class="error">{error}</p>{/if}
-{#if summary}<p class="summary" data-tone={summary.tone}>{summary.text}</p>{/if}
 <ul class="list">
   {#each sources as s (s.id)}
     <ListRow nowrap title={s.lastMessage}>
@@ -96,17 +101,5 @@
   }
   .when.failed {
     color: var(--color-danger);
-  }
-  .summary {
-    margin: 0 0 var(--space-2);
-    font-size: var(--fs-xs);
-    line-height: var(--lh-xs);
-    color: var(--color-text-subtle);
-  }
-  .summary[data-tone='danger'] {
-    color: var(--color-danger);
-  }
-  .summary[data-tone='warning'] {
-    color: var(--color-warning);
   }
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import { usePolling } from '../../../shared/refresh';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
   import { t } from '../../../shared/i18n';
@@ -53,18 +54,21 @@
   const summary = $derived.by(() => {
     if (!disks) return null;
     const look = disks.filter((d) => d.status === 'warning' || d.status === 'critical');
-    if (!look.length) return { text: t(`diskhealth.overall.${overallStatus(disks)}`), tone: 'neutral' };
+    if (!look.length)
+      return { text: t(`diskhealth.overall.${overallStatus(disks)}`), tone: 'neutral' as const };
     return {
       text: t(look.length === 1 ? 'diskhealth.needs_look' : 'diskhealth.need_look', { n: look.length }),
-      tone: look.some((d) => d.status === 'critical') ? 'danger' : 'warning',
+      tone: look.some((d) => d.status === 'critical') ? ('danger' as const) : ('warning' as const),
     };
   });
+  // Shown in the card header (#809).
+  const setMeta = useHeaderMeta();
+  $effect(() => setMeta(summary));
 </script>
 
 {#if error && !disks}
   <p class={missing ? 'muted' : 'error'}>{error}</p>
 {:else if disks}
-  {#if summary}<p class="summary" data-tone={summary.tone}>{summary.text}</p>{/if}
   <ul class="disks">
     {#each disks as d (d.device)}
       <ListRow
@@ -123,18 +127,10 @@
   .num {
     font-variant-numeric: tabular-nums;
   }
-  .summary {
-    margin: 0 0 var(--space-2);
-    font-size: var(--fs-xs);
-    line-height: var(--lh-xs);
-    color: var(--color-text-subtle);
-  }
-  .summary[data-tone='warning'],
   .state.status-warning,
   .findings li.status-warning {
     color: var(--color-warning);
   }
-  .summary[data-tone='danger'],
   .state.status-critical,
   .findings li.status-critical {
     color: var(--color-danger);

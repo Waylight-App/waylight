@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
@@ -85,6 +86,15 @@
   // Docker writes "Up 3 days"; the row value reads as a quiet phrase like the other rows.
   const phrase = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
+  // The counts go to the card header (#809); unhealthy containers colour it.
+  const setMeta = useHeaderMeta();
+  $effect(() => {
+    if (!data) return setMeta(null);
+    const parts = [`${data.running} ${t('docker.running')}`, `${data.stopped} ${t('docker.stopped')}`];
+    if (data.unhealthy) parts.push(`${data.unhealthy} ${t('docker.unhealthy')}`);
+    setMeta({ text: parts.join(' · '), tone: data.unhealthy ? 'danger' : 'neutral' });
+  });
+
   $effect(() => {
     const load = () =>
       docker
@@ -100,12 +110,6 @@
 
 {#if error}<p class="error">{error}</p>{/if}
 {#if data}
-  <p class="summary" class:alert={data.unhealthy > 0}>
-    {data.running}
-    {t('docker.running')} · {data.stopped}
-    {t('docker.stopped')}{#if data.unhealthy}
-      · {data.unhealthy} {t('docker.unhealthy')}{/if}
-  </p>
   {#if data.error}<p class="error small">{data.error}</p>{/if}
   <ul class="list">
     {#each shown as c (c.id)}
@@ -185,15 +189,6 @@
     background: var(--color-surface-2);
     padding: var(--space-2);
     border-radius: var(--radius-sm);
-  }
-  .summary {
-    margin: 0 0 var(--space-2);
-    font-size: var(--fs-xs);
-    line-height: var(--lh-xs);
-    color: var(--color-text-subtle);
-  }
-  .summary.alert {
-    color: var(--color-danger);
   }
   .small {
     font-size: var(--fs-xs);
