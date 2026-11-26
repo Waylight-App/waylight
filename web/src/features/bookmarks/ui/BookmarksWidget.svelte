@@ -13,6 +13,7 @@
   } from '../domain/bookmark';
   import type { BookmarkList, BookmarksUseCases } from '../usecase/bookmarksUseCases';
   import BookmarkForm from './BookmarkForm.svelte';
+  import { useHeaderAction } from '../../../shared/ui/widgetHeaderAction';
 
   /** Props of the bookmarks widget. */
   interface Props {
@@ -46,6 +47,12 @@
     load();
   });
 
+  // The add button sits in the card header (#809).
+  const headerAction = useHeaderAction();
+  $effect(() =>
+    headerAction.set({ icon: 'plus', label: t('bookmarks.add_bookmark'), onclick: () => (editing = 'new') }),
+  );
+
   async function remove(b: Bookmark) {
     if (!confirm(t('common.confirm_delete', { name: b.title }))) return;
     await bookmarks.delete(b.id).catch((err) => (error = errorMessage(err)));
@@ -72,12 +79,14 @@
       onclick={() => (brokenOnly = !brokenOnly)}><Icon name="warning" size={16} /></button
     >
   {/if}
-  <button
-    class="btn btn-icon"
-    type="button"
-    aria-label={t('bookmarks.add_bookmark')}
-    onclick={() => (editing = 'new')}>＋</button
-  >
+  {#if !headerAction.inHeader}
+    <button
+      class="btn btn-icon"
+      type="button"
+      aria-label={t('bookmarks.add_bookmark')}
+      onclick={() => (editing = 'new')}><Icon name="plus" size={16} /></button
+    >
+  {/if}
 </div>
 {#if error}<p class="error">{error}</p>{/if}
 {#if data}

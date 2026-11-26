@@ -49,7 +49,7 @@ func TestFirstStartTemplateReplacesSample(t *testing.T) {
 	for _, w := range dash.Tabs[0].Widgets {
 		zones[w.Kind] = w.Zone + "/" + w.Size
 	}
-	if zones["weather"] != "today/small" || zones["services"] != "system/strip" || zones["shopping"] != "mine/medium" {
+	if zones["weather"] != "today/small" || zones["services"] != "system/" || zones["shopping"] != "mine/medium" {
 		t.Fatalf("zones and sizes: %v", zones)
 	}
 

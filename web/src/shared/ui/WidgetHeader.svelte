@@ -13,10 +13,14 @@
     icon?: IconName;
     /** Quiet text after the title, such as a count or a date. */
     meta?: string;
+    /** Colour of the meta text: subtle by default, warning or danger when it needs a look. */
+    metaTone?: 'neutral' | 'warning' | 'danger';
+    /** A quiet control right after the title, such as the help button; it never pushes the meta text inwards. */
+    titleAction?: Snippet;
     /** Controls at the end of the line, such as the edit buttons. */
     action?: Snippet;
   }
-  let { title, icon, meta, action }: Props = $props();
+  let { title, icon, meta, metaTone = 'neutral', titleAction, action }: Props = $props();
 </script>
 
 <div class="widget-header">
@@ -24,7 +28,8 @@
     {#if icon}<Icon name={icon} size={16} />{/if}
     <span class="title">{title}</span>
   </h3>
-  {#if meta}<span class="meta">{meta}</span>{/if}
+  {#if titleAction}<span class="title-action">{@render titleAction()}</span>{/if}
+  {#if meta}<span class="meta" data-tone={metaTone} title={meta}>{meta}</span>{/if}
   {#if action}<span class="action">{@render action()}</span>{/if}
 </div>
 
@@ -68,10 +73,23 @@
     color: var(--color-text-subtle);
     font-variant-numeric: tabular-nums;
   }
+  .meta[data-tone='warning'] {
+    color: var(--color-warning);
+  }
+  .meta[data-tone='danger'] {
+    color: var(--color-danger);
+  }
   .title {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .title-action {
+    display: flex;
+    align-self: center;
+    flex: none;
+    /* Without meta text it stays next to the title instead of floating to the middle. */
+    margin: -4px auto -4px 0;
   }
   .action {
     display: flex;

@@ -12,6 +12,7 @@
   import type { Summarizer } from '../../../shared/ui/summarizer';
   import SummaryBox from '../../../shared/ui/SummaryBox.svelte';
   import NoteViewer from './NoteViewer.svelte';
+  import { useHeaderAction } from '../../../shared/ui/widgetHeaderAction';
 
   /** Props of the notes widget. */
   interface Props {
@@ -53,6 +54,12 @@
     return () => clearTimeout(searchTimer);
   });
 
+  // The add button sits in the card header (#809).
+  const headerAction = useHeaderAction();
+  $effect(() =>
+    headerAction.set({ icon: 'plus', label: t('notes.new_note'), onclick: () => (open = 'new') }),
+  );
+
   async function openHit(id: string) {
     try {
       viewing = await notes.get(id);
@@ -86,9 +93,11 @@
     placeholder={t('notes.search')}
     aria-label={t('notes.search_notes')}
   />
-  <button class="btn btn-icon" type="button" aria-label={t('notes.new_note')} onclick={() => (open = 'new')}
-    >{t('notes.note')}</button
-  >
+  {#if !headerAction.inHeader}
+    <button class="btn btn-icon" type="button" aria-label={t('notes.new_note')} onclick={() => (open = 'new')}
+      ><Icon name="plus" size={16} /></button
+    >
+  {/if}
 </div>
 {#if error}<p class="error">{error}</p>{/if}
 {#if hits}

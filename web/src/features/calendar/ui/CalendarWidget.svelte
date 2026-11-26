@@ -11,6 +11,7 @@
   import QuickAddEvent from './QuickAddEvent.svelte';
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import SplitView from './SplitView.svelte';
+  import { useHeaderAction } from '../../../shared/ui/widgetHeaderAction';
 
   /** Props of the calendar widget. */
   interface Props {
@@ -65,6 +66,15 @@
     if (diff === 1) return t('time.tomorrow');
     return d.toLocaleDateString(intlLocale(), { weekday: 'long', day: 'numeric', month: 'short' });
   };
+  // The add button sits in the card header (#809); the split view has its own per day.
+  const headerAction = useHeaderAction();
+  $effect(() =>
+    headerAction.set(
+      !unconfigured && cfg.view !== 'split'
+        ? { icon: 'plus', label: t('calendar.new_event'), onclick: () => (adding = new Date()) }
+        : null,
+    ),
+  );
   const time = (d: Date) => d.toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' });
 </script>
 
@@ -87,13 +97,13 @@
     onunconfigured={() => (unconfigured = true)}
   />
 {:else}
-  <button
-    class="btn btn-icon add"
-    type="button"
-    title={t('calendar.new_event')}
-    aria-label={t('calendar.new_event')}
-    onclick={() => (adding = new Date())}>+</button
-  >
+  {#if !headerAction.inHeader}<button
+      class="btn btn-icon add"
+      type="button"
+      title={t('calendar.new_event')}
+      aria-label={t('calendar.new_event')}
+      onclick={() => (adding = new Date())}>+</button
+    >{/if}
   {#if cfg.view === 'month'}
     <MonthView {calendar} weekStart={cfg.weekStart} {reload} onunconfigured={() => (unconfigured = true)} />
   {:else}
