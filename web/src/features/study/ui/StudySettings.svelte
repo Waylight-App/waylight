@@ -216,13 +216,13 @@
   }
   th {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   tr.passed td:first-child {
     font-weight: 600;
   }
   tr.open td {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .buttons {
     white-space: nowrap;

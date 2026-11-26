@@ -172,7 +172,7 @@
     white-space: nowrap;
   }
   .name.done {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .streak {
     white-space: nowrap;
@@ -189,10 +189,10 @@
     border-radius: var(--radius-sm);
     border: none;
     padding: 0;
-    background: color-mix(in srgb, var(--color-text-muted) 10%, transparent);
+    background: color-mix(in srgb, var(--color-text-subtle) 10%, transparent);
   }
   .cell.due {
-    background: color-mix(in srgb, var(--color-text-muted) 25%, transparent);
+    background: color-mix(in srgb, var(--color-text-subtle) 25%, transparent);
   }
   .cell.done {
     background: var(--color-accent);

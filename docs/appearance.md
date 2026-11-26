@@ -136,12 +136,12 @@ nothing else, so changing a token changes every place that uses it.
 | `--color-bg` | Page background behind the widgets |
 | `--color-surface`, `--color-surface-2` | Widget cards; inputs and nested areas inside them |
 | `--color-border` | Lines and outlines |
-| `--color-text`, `--color-text-muted` | Body text; secondary text |
+| `--color-text`, `--color-text-muted`, `--color-text-subtle` | Body text; secondary text; meta text, hints and the values on the right of a row (follows `--color-text-muted` in a theme that does not set it) |
 | `--color-accent` | Fill of buttons, the active tab and toggles |
 | `--color-accent-contrast` | Text on the accent fill |
 | `--color-accent-text` | The accent as text or icon colour on surfaces: links, highlighted values, the current day. Follows `--color-accent` unless set. Set it when the accent is light, such as yellow or amber, which reads well as a fill but not as text on a light card |
 | `--color-danger`, `--color-success`, `--color-warning` | Status colours, also used as text |
-| `--color-ok` | Marks for a healthy state, such as the dot of a service that runs. Follows `--color-text-muted`, so only problems (`--color-danger`) and things that need a look (`--color-warning`) stand out; set a green here if you prefer one |
+| `--color-ok` | Marks for a healthy state, such as the dot of a service that runs. Green by default (`#8fd6a8` on night, `#1f7a45` on paper); set your own here |
 | `--color-widget-border` | Outline of widget cards, a 1 px line in `--color-border` by default; the high-contrast theme draws a stronger one |
 | `--radius`, `--radius-small` | Corner radius of cards, buttons and dialogs (12 px); of fields and blocks inside cards (8 px). Components read them as `--radius-md` and `--radius-sm` |
 | `--fs-xs`, `--fs-sm`, `--fs-md`, `--fs-lg` | The four font sizes: 13, 15, 21 and 32 px. They follow the text size option |

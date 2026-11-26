@@ -65,8 +65,8 @@ export interface ParcelSettings {
 
 /** Short label and color per status. */
 export const statusInfo: Record<ParcelStatus, { label: MessageKey; color: string }> = {
-  unknown: { label: 'parcels.status.unknown', color: 'var(--color-text-muted)' },
-  'pre-transit': { label: 'parcels.status.pre_transit', color: 'var(--color-text-muted)' },
+  unknown: { label: 'parcels.status.unknown', color: 'var(--color-text-subtle)' },
+  'pre-transit': { label: 'parcels.status.pre_transit', color: 'var(--color-text-subtle)' },
   transit: { label: 'parcels.status.transit', color: 'var(--color-text)' },
   delivered: { label: 'parcels.status.delivered', color: 'var(--color-ok)' },
   failure: { label: 'parcels.status.failure', color: 'var(--color-danger)' },

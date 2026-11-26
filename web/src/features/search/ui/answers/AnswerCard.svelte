@@ -128,7 +128,7 @@
     margin: 0;
     font-size: var(--fs-xs);
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   p {
     margin: 0;
@@ -136,7 +136,7 @@
   .age,
   .detail {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   /*
    * The answer itself reads as the result (#511): large, in the display
@@ -178,7 +178,7 @@
     height: 9px;
     border-radius: 50%;
     flex: none;
-    background: var(--color-text-muted);
+    background: var(--color-text-subtle);
   }
   .dot[data-state='ok'] {
     background: var(--color-success, #2e9d55);

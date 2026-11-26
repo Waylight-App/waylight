@@ -43,23 +43,15 @@
 {/if}
 
 <style>
-  /* One bar for the most important failure; a quiet tint of its status, no glow. */
+  /* One bar for the most important failure: surface, a stronger hairline and a status dot; no tint, no glow. */
   .alert {
     display: flex;
     align-items: center;
     gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
     border-radius: var(--radius-md);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-border-strong);
     background: var(--color-surface);
-  }
-  .alert[data-level='attention'] {
-    border-color: var(--color-warning);
-    background: color-mix(in srgb, var(--color-warning) 8%, var(--color-surface));
-  }
-  .alert[data-level='problem'] {
-    border-color: var(--color-danger);
-    background: color-mix(in srgb, var(--color-danger) 8%, var(--color-surface));
   }
   .alert :global(.word) {
     color: var(--color-text);
@@ -71,20 +63,23 @@
   }
   .more {
     margin-left: var(--space-1);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .link {
     flex: none;
-    min-height: 44px;
-    padding: 0 var(--space-2);
-    border: 0;
+    min-height: 32px;
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
     background: none;
-    color: var(--color-accent-text);
+    color: var(--color-text);
     font: inherit;
-    font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    font-weight: 500;
     cursor: pointer;
+    transition: background-color 0.15s;
+  }
+  .link:hover {
+    background: var(--color-surface-2);
   }
   @media (max-width: 640px) {
     .alert {

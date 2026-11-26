@@ -22,5 +22,6 @@ export const de: Record<keyof typeof en, string> = {
   'launcher.footer_link': 'Einstellungen → Darstellung',
   'launcher.footer_ctrl_k': 'Alles ist auch mit Strg K durchsuchbar',
   'launcher.all_online': 'Alle Dienste online',
+  'launcher.online_short': 'Online',
   'launcher.some_offline': '{n} offline',
 };

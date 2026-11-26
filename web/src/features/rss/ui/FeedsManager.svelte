@@ -246,7 +246,7 @@
   .category {
     margin: var(--space-3) 0 0;
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .opml {
     display: flex;

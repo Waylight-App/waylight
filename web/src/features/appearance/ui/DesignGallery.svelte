@@ -177,7 +177,7 @@
   }
   .line.short {
     width: 60%;
-    background: var(--color-text-muted);
+    background: var(--color-text-subtle);
   }
   .dot {
     width: 30%;

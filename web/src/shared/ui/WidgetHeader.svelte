@@ -37,22 +37,24 @@
     justify-content: space-between;
     gap: var(--space-2);
     min-width: 0;
+    min-height: 24px;
   }
   h3 {
     display: flex;
     align-items: baseline;
-    gap: var(--space-1);
+    gap: var(--space-2);
     min-width: 0;
     margin: 0;
     font-size: var(--fs-sm);
+    line-height: var(--lh-sm);
     font-weight: 600;
     color: var(--color-text);
   }
-  /* 16px like every line icon; muted so the title leads. */
+  /* 16px like every line icon; subtle so the title leads. */
   h3 :global(svg) {
     flex: none;
     align-self: center;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .meta {
     flex: 1;
@@ -61,7 +63,9 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    line-height: var(--lh-xs);
+    text-align: right;
+    color: var(--color-text-subtle);
     font-variant-numeric: tabular-nums;
   }
   .title {
@@ -75,5 +79,7 @@
     align-items: center;
     gap: var(--space-1);
     flex: none;
+    /* Icon buttons are 32 px; they overhang the 24 px row and the card padding like in the guide. */
+    margin: -4px -8px -4px 0;
   }
 </style>

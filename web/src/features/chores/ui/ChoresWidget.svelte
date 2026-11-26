@@ -144,7 +144,7 @@
     font-size: var(--fs-xs);
     font-weight: 600;
     margin: var(--space-1) 0;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   ul {
     list-style: none;

@@ -2,7 +2,6 @@
   import Icon from '../../../shared/ui/icons/Icon.svelte';
   import { intlLocale, t } from '../../../shared/i18n';
   import TodoEditDialog from './TodoEditDialog.svelte';
-  import HintChip from '../../../shared/ui/HintChip.svelte';
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
   import { usePolling } from '../../../shared/refresh';
@@ -78,12 +77,16 @@
 </script>
 
 <form onsubmit={add}>
-  <input
-    class="input"
-    bind:value={text}
-    placeholder={t('todos.add_a_to_do_2026_12')}
-    aria-label={t('todos.new_to_do')}
-  />
+  <!-- The short placeholder keeps the field on one line; the date syntax stays in the title. -->
+  <span class="add"
+    ><Icon name="plus" size={16} /><input
+      class="input"
+      bind:value={text}
+      placeholder={t('todos.add_short')}
+      title={t('todos.add_a_to_do_2026_12')}
+      aria-label={t('todos.new_to_do')}
+    /></span
+  >
 </form>
 {#if error}<p class="error">{error}</p>{/if}
 <ul class="list">
@@ -96,11 +99,11 @@
       {#snippet value()}
         {#if todo.due}
           {@const label = formatDue(todo.due, new Date())}
-          {#if todo.overdue || isDueToday(todo.due, new Date())}
-            <HintChip lead={label} tone={todo.overdue ? 'danger' : 'accent'} />
-          {:else}
-            <span class="due">{label}</span>
-          {/if}
+          <span
+            class="due"
+            class:hot={!todo.overdue && isDueToday(todo.due, new Date())}
+            class:late={todo.overdue}>{label}</span
+          >
         {/if}
       {/snippet}
       {#snippet trail()}
@@ -147,7 +150,21 @@
 
 <style>
   form {
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+  .add {
+    position: relative;
+    display: block;
+  }
+  .add :global(svg) {
+    position: absolute;
+    inset: 50% auto auto var(--space-3);
+    transform: translateY(-50%);
+    color: var(--color-text-subtle);
+    pointer-events: none;
+  }
+  .add .input {
+    padding-left: var(--space-8);
   }
   .list {
     list-style: none;
@@ -160,7 +177,7 @@
   label {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-3);
     min-width: 0;
   }
   .title {
@@ -168,12 +185,20 @@
   }
   .title.done {
     text-decoration: line-through;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .due {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     white-space: nowrap;
+  }
+  .due.hot {
+    color: var(--color-accent-text);
+    font-weight: 500;
+  }
+  .due.late {
+    color: var(--color-danger);
+    font-weight: 500;
   }
   .icon {
     font-size: var(--fs-xs);

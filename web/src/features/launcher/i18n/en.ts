@@ -20,6 +20,7 @@ export const en = {
   'launcher.footer_link': 'Settings → Appearance',
   'launcher.footer_ctrl_k': 'Everything is also searchable with Ctrl K',
   'launcher.all_online': 'All services online',
+  'launcher.online_short': 'Online',
   'launcher.some_offline': '{n} offline',
 } as const;
 

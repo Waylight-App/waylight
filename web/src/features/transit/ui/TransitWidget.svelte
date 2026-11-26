@@ -101,7 +101,7 @@
   }
   .cancelled {
     text-decoration: line-through;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .small {
     font-size: var(--fs-xs);

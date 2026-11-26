@@ -28,12 +28,12 @@
   .status {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
+    gap: var(--space-2);
     flex: none;
   }
   .dot {
-    width: 0.6rem;
-    height: 0.6rem;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
     background: var(--color-ok);
   }
@@ -45,10 +45,10 @@
   }
   [data-level='stopped'] .dot {
     background: transparent;
-    box-shadow: inset 0 0 0 2px var(--color-text-muted);
+    box-shadow: inset 0 0 0 1.5px var(--color-text-subtle);
   }
   .word {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
 </style>

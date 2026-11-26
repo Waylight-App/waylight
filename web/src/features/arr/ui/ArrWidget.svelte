@@ -167,7 +167,7 @@
     flex: none;
     width: 6.5em;
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .small {
     font-size: var(--fs-xs);

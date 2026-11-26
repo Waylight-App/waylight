@@ -60,6 +60,7 @@ function blocks(css: string): Map<string, Record<string, string>> {
 const pairs: [string, string[]][] = [
   ['--color-text', ['--color-bg', '--color-surface', '--color-surface-2']],
   ['--color-text-muted', ['--color-bg', '--color-surface', '--color-surface-2']],
+  ['--color-text-subtle', ['--color-bg', '--color-surface', '--color-surface-2']],
   ['--color-accent-text', ['--color-surface', '--color-surface-2']],
   ['--color-danger', ['--color-surface', '--color-surface-2']],
   ['--color-success', ['--color-surface', '--color-surface-2']],

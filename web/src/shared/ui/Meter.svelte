@@ -30,22 +30,31 @@
 
 <style>
   .meter {
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-4);
   }
   .row {
     display: flex;
     justify-content: space-between;
-    font-size: var(--fs-xs);
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
   }
+  .row .muted {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    font-variant-numeric: tabular-nums;
+  }
+  /* A thin pill; the fill is quiet until a level asks for attention. */
   .bar {
-    height: clamp(6px, 1.6cqmin, 14px);
-    border-radius: var(--radius-sm);
+    height: 4px;
+    border-radius: 999px;
     background: var(--color-surface-2);
     overflow: hidden;
   }
   .fill {
     height: 100%;
-    background: var(--color-accent);
+    border-radius: 999px;
+    background: var(--color-text-muted);
     transition: width 400ms ease;
   }
   .fill.warning {

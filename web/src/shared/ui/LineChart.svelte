@@ -1,3 +1,8 @@
+<script module lang="ts">
+  let charts = 0;
+  const nextId = () => ++charts;
+</script>
+
 <script lang="ts">
   import { intlLocale } from '../i18n';
   import { areaPath, niceMax, type Point, smoothPath } from './chart';
@@ -39,6 +44,9 @@
     }),
   );
 
+  // The area fill's gradient needs an id of its own per chart on the page.
+  const fillId = `chart-fill-${nextId()}`;
+
   // Within a day the clock time is enough; longer ranges need the date.
   const sameDay = $derived(
     times.length > 1 && times[0]?.toDateString() === times[times.length - 1]?.toDateString(),
@@ -56,14 +64,20 @@
   <figure class="chart">
     <div class="plot">
       <div class="yaxis" aria-hidden="true">
-        <span>{top}</span><span>{top / 2}</span><span>0</span>
+        <span>{top}</span><span>0</span>
       </div>
       <svg viewBox="0 0 {W} {H}" preserveAspectRatio="none" role="img" aria-label={label}>
-        {#each [0, H / 2, H] as y (y)}
+        <defs>
+          <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--color-accent-text)" stop-opacity="0.22" />
+            <stop offset="1" stop-color="var(--color-accent-text)" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        {#each [0, H / 3, (2 * H) / 3, H] as y (y)}
           <line class="grid" x1="0" x2={W} y1={y} y2={y} vector-effect="non-scaling-stroke" />
         {/each}
         {#each lines as l, i (l.label)}
-          {#if i === 0}<path class="area" d={l.area} />{/if}
+          {#if i === 0}<path class="area" d={l.area} fill="url(#{fillId})" />{/if}
           <path class="line s{i === 0 ? 0 : 1}" d={l.line} vector-effect="non-scaling-stroke" />
         {/each}
       </svg>
@@ -84,7 +98,7 @@
   .chart {
     margin: 0;
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     font-variant-numeric: tabular-nums;
   }
   .plot {
@@ -96,6 +110,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    font-family: var(--font-mono);
     line-height: 1;
     text-align: right;
   }
@@ -103,7 +118,7 @@
     display: block;
     width: 100%;
     /* Grows with the widget's own box, like the rest of its content. */
-    height: clamp(96px, 34cqh, 280px);
+    height: clamp(96px, 68cqh, 280px);
     overflow: visible;
   }
   .grid {
@@ -120,20 +135,24 @@
     stroke: var(--color-accent-text);
   }
   .line.s1 {
-    stroke: var(--color-text-muted);
+    stroke: var(--color-text-subtle);
     stroke-width: 1.5;
-    stroke-dasharray: 4 3;
+    opacity: 0.7;
   }
   .area {
-    fill: var(--color-accent-text);
-    fill-opacity: 0.12;
     stroke: none;
+  }
+  @media (max-width: 639px) {
+    svg {
+      height: 96px;
+    }
   }
   .xaxis {
     display: flex;
     justify-content: space-between;
     /* Second column of the plot grid: lines up past the y labels. */
     grid-column: 2;
+    font-family: var(--font-mono);
   }
   figcaption {
     display: flex;
@@ -151,6 +170,6 @@
     border-top: 2px solid var(--color-accent-text);
   }
   .key.s1 .swatch {
-    border-top: 2px dashed var(--color-text-muted);
+    border-top-color: var(--color-text-subtle);
   }
 </style>

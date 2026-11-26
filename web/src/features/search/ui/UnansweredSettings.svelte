@@ -75,7 +75,7 @@
   }
   .queries {
     display: block;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     font-size: var(--fs-sm);
     overflow-wrap: anywhere;
   }

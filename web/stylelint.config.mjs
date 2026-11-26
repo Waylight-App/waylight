@@ -6,7 +6,7 @@ const FONT_SIZE = [
   /^clamp\(.*cq/, // fluid sizes of widget content, scaled by the widget's container
   'calc(100% * var(--text-scale))', // the root size, set once in base.css
 ];
-const RADIUS = [/^(var\(--radius-(sm|md)\)|0|50%|999px|inherit)( |$)/, /^0 0 var\(--radius-(sm|md)\)/];
+const RADIUS = [/^(var\(--radius-(sm|md|xs|box)\)|0|50%|999px|inherit)( |$)/, /^0 0 var\(--radius-(sm|md)\)/];
 
 export default {
   rules: {

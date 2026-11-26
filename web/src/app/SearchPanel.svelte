@@ -862,7 +862,7 @@
     padding: var(--space-2) var(--space-2) var(--space-1);
     font-size: var(--fs-xs);
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .row {
     display: flex;
@@ -898,7 +898,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     padding: 0 var(--space-2);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .hint {
     font-size: var(--fs-xs);

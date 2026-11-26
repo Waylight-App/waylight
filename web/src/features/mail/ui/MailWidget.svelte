@@ -70,7 +70,7 @@
     margin: 0 0 var(--space-2);
   }
   .count.zero {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     font-weight: 500;
   }
   .list {

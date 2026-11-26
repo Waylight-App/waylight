@@ -38,7 +38,7 @@
     items,
     editing,
     rowHeight = 56,
-    gap = 12,
+    gap = 16,
     onlayout,
     item,
     label = () => t('dashboard.widget'),

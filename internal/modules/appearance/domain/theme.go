@@ -17,6 +17,7 @@ import (
 // ThemeTokens are the design tokens a theme may set (see web tokens.css).
 var ThemeTokens = []string{
 	"--color-bg", "--color-surface", "--color-surface-2", "--color-border", "--color-text", "--color-text-muted",
+	"--color-text-subtle",
 	"--color-accent", "--color-accent-contrast", "--color-accent-text", "--color-danger", "--color-success", "--color-warning",
 	"--color-ok", "--color-widget-border",
 	"--radius", "--radius-small",
@@ -219,6 +220,15 @@ func writeBlock(b *strings.Builder, selector string, tokens map[string]string) {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
+	// A theme written before the subtle role existed keeps one quiet text
+	// colour: subtle follows muted unless the theme sets it.
+	if m, ok := tokens["--color-text-muted"]; ok {
+		if _, has := tokens["--color-text-subtle"]; !has {
+			keys = append(keys, "--color-text-subtle")
+			sort.Strings(keys)
+			tokens = merge(tokens, map[string]string{"--color-text-subtle": m})
+		}
+	}
 	b.WriteString(selector + " {\n")
 	for _, k := range keys {
 		b.WriteString("  " + k + ": " + cssValue(k, tokens[k]) + ";\n")

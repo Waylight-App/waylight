@@ -56,6 +56,6 @@
   }
   .body {
     font-size: var(--fs-sm);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
 </style>

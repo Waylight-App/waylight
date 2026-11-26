@@ -132,7 +132,7 @@
   }
   .hint {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .status {
     margin-top: var(--space-1);
@@ -145,7 +145,7 @@
     color: var(--color-success);
   }
   .status.info {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .status.warn {
     color: var(--color-warning);
@@ -163,7 +163,7 @@
     margin: var(--space-4) 0 var(--space-2);
     font-size: var(--fs-xs);
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .recent {
     display: flex;

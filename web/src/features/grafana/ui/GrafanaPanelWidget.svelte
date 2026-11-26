@@ -131,7 +131,7 @@
   }
   .title {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .stat {
     font-family: var(--font-display);

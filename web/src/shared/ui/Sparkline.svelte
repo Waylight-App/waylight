@@ -32,7 +32,7 @@
     width: 100%;
     height: clamp(14px, 4cqh, 32px);
     /* A neutral step: the accent colour is kept for the one series a chart is about. */
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     opacity: 0.6;
   }
 </style>

@@ -276,7 +276,7 @@
     gap: var(--space-2);
     margin: var(--space-3) 0;
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .divider::before,
   .divider::after {

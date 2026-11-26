@@ -88,7 +88,7 @@
     margin-top: var(--space-2);
     font-size: var(--fs-xs);
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .event {
     display: flex;
@@ -107,6 +107,6 @@
   }
   time {
     font-variant-numeric: tabular-nums;
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
 </style>

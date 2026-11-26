@@ -199,7 +199,7 @@
     height: 2.6rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .filter:focus-within {
     border-color: var(--color-accent);
@@ -244,7 +244,7 @@
   h3 {
     margin: 0;
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   /* "Show all" is a small, muted text link, not a button (#189). */
   .more {
@@ -252,7 +252,7 @@
     background: none;
     padding: 0;
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     cursor: pointer;
   }
   .more:hover {
@@ -286,7 +286,7 @@
     align-items: center;
     gap: var(--space-1);
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   .status[data-state='offline'] {
     color: var(--color-danger);
@@ -343,7 +343,7 @@
   }
   .folder {
     font-size: var(--fs-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
   }
   footer {
     display: flex;

@@ -201,8 +201,7 @@
     box-shadow: none;
   }
   header {
-    padding: var(--space-2) var(--space-3) 0;
-    min-height: 32px;
+    padding: var(--space-6) var(--space-6) 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -213,7 +212,7 @@
   /* The help stays quiet until the card is hovered or the button focused,
      so a dashboard of widgets does not show a row of question marks. */
   .help {
-    color: var(--color-text-muted);
+    color: var(--color-text-subtle);
     opacity: 0;
     transition: opacity 0.15s;
   }
@@ -234,15 +233,16 @@
     flex: 1;
     min-height: 0;
     overflow: auto;
-    padding: var(--space-2) var(--space-3) var(--space-3);
+    padding: var(--space-4) var(--space-6) var(--space-6);
     container: widget / size;
   }
   .body {
     height: 100%;
-    font-size: clamp(0.85rem, 0.7rem + 1.2cqmin, 1.3rem);
+    font-size: clamp(var(--fs-sm), 0.7rem + 1.2cqmin, 1.3rem);
   }
+  /* A compact card has no header row of its own: the content holds the header and is centred in the card. */
   .compact .content {
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-3) var(--space-6);
   }
   /* Clicks fall through the content to the stretched "show details" button
      below it; only controls that opt in with pointer-events: auto (quick
@@ -287,7 +287,7 @@
       padding: var(--space-4) var(--space-4) 0;
     }
     .content {
-      padding: var(--space-2) var(--space-4) var(--space-4);
+      padding: var(--space-4);
     }
     .compact .content {
       padding: var(--space-3) var(--space-4);
