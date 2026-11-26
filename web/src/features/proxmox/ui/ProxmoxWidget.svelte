@@ -1,5 +1,7 @@
 <script lang="ts">
   import ListRow from '../../../shared/ui/ListRow.svelte';
+  import Icon from '../../../shared/ui/icons/Icon.svelte';
+  import StatusDot from '../../../shared/ui/StatusDot.svelte';
   import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { proxmoxSetup } from './proxmoxSetup';
@@ -88,7 +90,7 @@
   {#each status.nodes as n (n.name)}
     <section class="node">
       <h4>
-        <span class="dot" class:off={!n.online} aria-hidden="true"></span>{n.name}
+        <StatusDot level={n.online ? 'ok' : 'failed'} />{n.name}
         <small class="muted"
           >{n.online
             ? t('proxmox.uptime', { value: formatUptime(n.uptimeSeconds) })
@@ -115,8 +117,10 @@
       {#each guests as g (g.id)}
         {@const action = availableAction(g)}
         <ListRow nowrap title="{g.kind === 'lxc' ? 'LXC' : 'VM'} {g.id} · {g.node}">
-          {#snippet lead()}<span class="dot" class:off={g.status !== 'running'} aria-hidden="true"
-            ></span>{/snippet}
+          {#snippet lead()}<StatusDot
+              level={g.status === 'running' ? 'ok' : 'stopped'}
+              label={statusLabel(g.status)}
+            />{/snippet}
           <span class="muted">{g.id}</span>
           {g.name}
           {#snippet value()}
@@ -133,7 +137,7 @@
                 disabled={busy !== null}
                 onclick={() => act(g)}
                 aria-label={t(action === 'start' ? 'proxmox.start' : 'proxmox.shutdown', { name: g.name })}
-                >{busy === g.id ? '…' : action === 'start' ? '▶' : '⏻'}</button
+                >{#if busy === g.id}…{:else}<Icon name="power" size={16} />{/if}</button
               >
             {/if}
           {/snippet}
@@ -164,16 +168,6 @@
     padding: 0;
     margin: var(--space-2) 0 0;
     font-size: var(--fs-sm);
-  }
-  .dot {
-    width: 0.6em;
-    height: 0.6em;
-    border-radius: 50%;
-    background: var(--color-ok);
-    flex: none;
-  }
-  .dot.off {
-    background: var(--color-border);
   }
   .small {
     font-size: var(--fs-xs);

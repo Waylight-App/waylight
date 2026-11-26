@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Meter from '../../../shared/ui/Meter.svelte';
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
@@ -42,22 +43,15 @@
     <p class="muted">{t('study.set_up')}</p>
   {:else}
     {@const p = progress}
-    <div class="head">
-      <strong>{t('study.of_ects', { passed: ects(p.passedEcts), total: ects(p.totalEcts) })}</strong>
-      <span class="muted">{t('study.percent', { n: Math.round(p.percent) })}</span>
-    </div>
-    <div
-      class="bar"
-      role="progressbar"
-      aria-valuemin="0"
-      aria-valuemax={p.totalEcts}
-      aria-valuenow={p.passedEcts}
-      aria-valuetext={t('study.of_ects', { passed: ects(p.passedEcts), total: ects(p.totalEcts) })}
-    >
-      <span class="passed" style:width="{p.percent}%"></span>
-      <span class="running" style:width="{Math.min(100 - p.percent, (p.inProgressEcts / p.totalEcts) * 100)}%"
-      ></span>
-    </div>
+    <!-- Passed ECTS is the one figure of this widget, so its bar takes the accent (#814). -->
+    <Meter
+      label={t('study.of_ects', { passed: ects(p.passedEcts), total: ects(p.totalEcts) })}
+      percent={p.percent}
+      detail={t('study.percent', { n: Math.round(p.percent) })}
+      hot
+      valueText={t('study.of_ects', { passed: ects(p.passedEcts), total: ects(p.totalEcts) })}
+      extra={(p.inProgressEcts / p.totalEcts) * 100}
+    />
     <p class="muted small">{t('study.passed_modules', { n: p.passedModules, total: p.modules })}</p>
     {#if p.average !== null}
       <p class="average" title={t('study.average_hint', { ects: ects(p.gradedEcts) })}>
@@ -79,26 +73,6 @@
 {/if}
 
 <style>
-  .head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--space-2);
-  }
-  .bar {
-    display: flex;
-    height: 0.8em;
-    margin: var(--space-1) 0;
-    border-radius: 999px;
-    overflow: hidden;
-    background: var(--color-surface-2);
-  }
-  .passed {
-    background: var(--color-accent);
-  }
-  .running {
-    background: color-mix(in srgb, var(--color-accent) 35%, transparent);
-  }
   p {
     margin: 0;
   }

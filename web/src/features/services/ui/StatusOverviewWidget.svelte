@@ -148,8 +148,8 @@
   }
   .bar {
     flex: 1;
-    border-radius: var(--radius-sm);
-    background: var(--color-border, rgba(127, 127, 127, 0.25));
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-2);
   }
   .bar.good {
     background: var(--color-ok);

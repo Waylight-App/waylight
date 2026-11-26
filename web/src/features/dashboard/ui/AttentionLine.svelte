@@ -35,7 +35,7 @@
     </span>
     {#if first.widgetId}
       {@const id = first.widgetId}
-      <button class="link" type="button" onclick={() => onview(id)}
+      <button class="btn btn-sm view" type="button" onclick={() => onview(id)}
         >{t('dashboard.attention_view')}<span class="sr-only">: {first.title}</span></button
       >
     {/if}
@@ -65,21 +65,8 @@
     margin-left: var(--space-1);
     color: var(--color-text-subtle);
   }
-  .link {
+  .view {
     flex: none;
-    min-height: 32px;
-    padding: 0 var(--space-4);
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-md);
-    background: none;
-    color: var(--color-text);
-    font: inherit;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.15s;
-  }
-  .link:hover {
-    background: var(--color-surface-2);
   }
   @media (max-width: 640px) {
     .alert {
@@ -92,7 +79,7 @@
       flex-basis: 100%;
       order: 2;
     }
-    .link {
+    .view {
       order: 1;
       margin-left: auto;
     }

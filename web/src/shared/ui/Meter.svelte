@@ -12,8 +12,13 @@
      * paint every bar amber.
      */
     hot?: boolean;
+    /** A second, lighter segment after the fill (0–100), e.g. work still in progress. */
+    extra?: number;
+    /** Overrides the meter's accessible value text, e.g. "35 of 180 ECTS". */
+    valueText?: string;
   }
-  let { label, percent, detail = '', hot }: Props = $props();
+  let { label, percent, detail = '', hot, extra = 0, valueText }: Props = $props();
+  const clamp = (n: number) => Math.min(100, Math.max(0, n));
   const level = $derived(
     percent >= 90 ? 'danger' : percent >= 75 ? 'warning' : (hot ?? percent >= 60) ? 'hot' : 'ok',
   );
@@ -31,8 +36,13 @@
     aria-valuenow={percent}
     aria-valuemin="0"
     aria-valuemax="100"
+    aria-valuetext={valueText}
   >
-    <div class="fill {level}" style:width="{Math.min(100, Math.max(0, percent))}%"></div>
+    <div class="fill {level}" style:width="{clamp(percent)}%"></div>
+    {#if extra > 0}<div
+        class="fill extra {level}"
+        style:width="{Math.min(extra, 100 - clamp(percent))}%"
+      ></div>{/if}
   </div>
 </div>
 
@@ -57,6 +67,7 @@
   .bar {
     height: 4px;
     border-radius: 999px;
+    display: flex;
     background: var(--color-surface-2);
     overflow: hidden;
   }
@@ -74,5 +85,8 @@
   }
   .fill.danger {
     background: var(--color-danger);
+  }
+  .fill.extra {
+    opacity: 0.35;
   }
 </style>

@@ -133,20 +133,20 @@
           {#if canAct(actions, c.name)}
             <button
               data-action
-              class="btn btn-icon act"
+              class="btn btn-icon"
               type="button"
               title={t('docker.show_logs')}
               aria-label={t('docker.logs_of', { name: c.name })}
-              onclick={() => showLogs(c.name)}>≡</button
+              onclick={() => showLogs(c.name)}><Icon name="note" size={16} /></button
             >
             <button
               data-action
-              class="btn btn-icon act"
+              class="btn btn-icon"
               type="button"
               title={t('docker.restart')}
               aria-label={t('docker.restart_2', { name: c.name })}
               disabled={busy === c.name}
-              onclick={() => restart(c.name)}>↻</button
+              onclick={() => restart(c.name)}><Icon name="repeat" size={16} /></button
             >
           {/if}
         {/snippet}
@@ -173,11 +173,6 @@
     color: var(--color-warning);
     text-decoration: none;
     font-size: var(--fs-xs);
-  }
-  .act {
-    padding: 0 var(--space-1);
-    line-height: 1.2;
-    font-size: var(--fs-sm);
   }
   .logs {
     max-height: 60vh;

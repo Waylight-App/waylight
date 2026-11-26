@@ -1,5 +1,7 @@
 <script lang="ts">
   import ListRow from '../../../shared/ui/ListRow.svelte';
+  import StatusDot from '../../../shared/ui/StatusDot.svelte';
+  import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
   import { ApiError, errorMessage } from '../../../shared/api-client/http';
@@ -32,25 +34,26 @@
         });
     return poll(load, POLL_MS);
   });
+
+  // "2 of 3 connected" is the card's header meta (#809).
+  const setMeta = useHeaderMeta();
+  $effect(() =>
+    setMeta(
+      list ? { text: `${list.online} ${t('wireguard.of_connected', { length: list.peers.length })}` } : null,
+    ),
+  );
 </script>
 
 {#if error && !list}
   <p class={missing ? 'muted' : 'error'}>{error}</p>
 {:else if list}
-  <p class="summary">
-    <strong>{list.online}</strong>
-    {t('wireguard.of_connected', { length: list.peers.length })}
-  </p>
   <ul class="peers">
     {#each list.peers as p (p.publicKey)}
       <ListRow nowrap title="{p.allowedIps}{p.endpoint ? ` · ${p.endpoint}` : ''}">
-        {#snippet lead()}
-          <span
-            class="dot"
-            class:on={p.online}
-            aria-label={p.online ? t('wireguard.online') : t('wireguard.offline')}
-          ></span>
-        {/snippet}
+        {#snippet lead()}<StatusDot
+            level={p.online ? 'ok' : 'stopped'}
+            label={p.online ? t('wireguard.online') : t('wireguard.offline')}
+          />{/snippet}
         {p.name}
         {#snippet value()}
           <span class="small">{handshakeAgo(p.latestHandshake, now)}</span>
@@ -67,10 +70,6 @@
 {/if}
 
 <style>
-  .summary {
-    margin: 0 0 var(--space-2);
-    font-size: var(--fs-sm);
-  }
   .peers {
     list-style: none;
     margin: 0;
@@ -79,16 +78,6 @@
   .small {
     font-size: var(--fs-xs);
     white-space: nowrap;
-  }
-  .dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    flex: none;
-    background: var(--color-border);
-  }
-  .dot.on {
-    background: var(--color-ok);
   }
   @container widget (max-width: 260px) {
     .traffic {

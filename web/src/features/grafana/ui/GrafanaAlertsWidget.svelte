@@ -1,5 +1,6 @@
 <script lang="ts">
   import ListRow from '../../../shared/ui/ListRow.svelte';
+  import StatusDot from '../../../shared/ui/StatusDot.svelte';
   import { type ChoiceLoader, connectionIdOf, savedConnections } from '../../../shared/connection/connection';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import { grafanaSetup } from './grafanaSetup';
@@ -62,8 +63,7 @@
     <ul>
       {#each data.alerts as a, i (a.name + i)}
         <ListRow>
-          {#snippet lead()}<span class="dot" class:pending={a.state === 'pending'} aria-hidden="true"
-            ></span>{/snippet}
+          {#snippet lead()}<StatusDot level={a.state === 'pending' ? 'warning' : 'failed'} />{/snippet}
           <strong>{a.name}</strong>
           {#if a.state === 'pending'}<span class="muted"> · {t('grafana.pending')}</span>{/if}
           {#snippet sub()}
@@ -86,16 +86,6 @@
     list-style: none;
     margin: 0 0 var(--space-2);
     padding: 0;
-  }
-  .dot {
-    flex: none;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: var(--color-danger);
-  }
-  .dot.pending {
-    background: var(--color-warning, var(--color-accent));
   }
   .small {
     font-size: var(--fs-xs);

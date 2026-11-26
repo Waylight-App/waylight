@@ -176,7 +176,8 @@ ellipsis; it is never cut off.
 Controls follow one set of measurements. A button inside a widget header or an
 alert bar is 32 px high (`.btn-sm`). `Meter` draws a bar in the accent from
 60 % or when it is marked `hot`, and in the warning and danger colours from
-75 % and 90 %.
+75 % and 90 %. A second, lighter segment after the fill shows a share that is
+still in progress, such as the credits of running modules in Study progress.
 
 | Control        | Size and look                                                             |
 | -------------- | ------------------------------------------------------------------------- |

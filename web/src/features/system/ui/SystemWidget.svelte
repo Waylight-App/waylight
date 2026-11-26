@@ -115,6 +115,13 @@
       display: block;
     }
   }
+  /* At the default height (4 x 5) five meters and the load line only fit with
+     8 px between the meters; taller boxes keep the guide's 16 px. */
+  @container widget (max-height: 300px) {
+    .system :global(div.meter) {
+      margin-bottom: var(--space-2);
+    }
+  }
   .facts {
     display: flex;
     flex-wrap: wrap;

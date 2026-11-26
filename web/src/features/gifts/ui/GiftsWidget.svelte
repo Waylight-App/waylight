@@ -166,6 +166,6 @@
   }
   .bought {
     text-decoration: line-through;
-    opacity: 0.6;
+    color: var(--color-text-subtle);
   }
 </style>

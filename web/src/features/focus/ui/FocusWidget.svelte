@@ -129,6 +129,8 @@
   const weekday = (date: string) =>
     new Date(`${date}T12:00:00`).toLocaleDateString(intlLocale(), { weekday: 'narrow' });
   const total = $derived(week.reduce((n, d) => n + d.sessions, 0));
+  // The accent marks the best day of the week, the one bar worth a look (#815).
+  const best = $derived(total > 0 ? week.findIndex((d) => d.sessions === max) : -1);
   // The week's total is the card's header meta (#809); without a card it stays under the bars.
   const inHeader = hasHeaderMeta();
   const setMeta = useHeaderMeta();
@@ -175,8 +177,10 @@
     <figure class="week" aria-label={t('focus.week_total', { n: total })}>
       {#each week as d, i (d.date)}
         <div class="day" title={t('focus.day_title', { n: d.sessions, minutes: d.minutes })}>
-          <span class="bar" class:today={i === week.length - 1} style:height="{(d.sessions / max) * 100}%"
-          ></span>
+          <span class="track"
+            ><span class="bar" class:best={i === best} style:height="{(d.sessions / max) * 100}%"
+            ></span></span
+          >
           <span class="label">{weekday(d.date)}</span>
         </div>
       {/each}
@@ -241,7 +245,7 @@
     flex-wrap: wrap;
     gap: var(--space-2);
   }
-  /* 64 px of bars; today is the accent bar, the other days stay quiet. */
+  /* 64 px in all: 40 px of bars and the day letter; only the best day is amber. */
   .week {
     margin: 0;
     display: grid;
@@ -254,7 +258,13 @@
     justify-content: flex-end;
     align-items: center;
     gap: var(--space-1);
-    height: 64px;
+  }
+  .track {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
   }
   .bar {
     width: 24px;
@@ -263,7 +273,7 @@
     background: var(--color-surface-2);
     border-radius: var(--radius-xs);
   }
-  .bar.today {
+  .bar.best {
     background: var(--color-accent);
   }
   .label {
