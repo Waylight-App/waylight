@@ -44,6 +44,9 @@ type mobileRow struct {
 	Hidden bool   `json:"hidden,omitempty"`
 	Rows   int    `json:"rows"`
 	Size   string `json:"size,omitempty"`
+	// Favourite is omitted when false, so layouts stored before #844 and
+	// layouts without favourites look the same.
+	Favourite bool `json:"favourite,omitempty"`
 }
 
 // encodeMobile returns NULL for a derived layout.
@@ -53,7 +56,7 @@ func encodeMobile(m []domain.MobileEntry) any {
 	}
 	rows := make([]mobileRow, 0, len(m))
 	for _, e := range m {
-		rows = append(rows, mobileRow{ID: e.WidgetID, Hidden: e.Hidden, Rows: e.Rows, Size: string(e.Size)})
+		rows = append(rows, mobileRow{ID: e.WidgetID, Hidden: e.Hidden, Rows: e.Rows, Size: string(e.Size), Favourite: e.Favourite})
 	}
 	b, _ := json.Marshal(rows) // plain structs, cannot fail
 	return string(b)
@@ -70,7 +73,7 @@ func decodeMobile(raw sql.NullString) []domain.MobileEntry {
 	}
 	out := make([]domain.MobileEntry, 0, len(rows))
 	for _, r := range rows {
-		out = append(out, domain.MobileEntry{WidgetID: r.ID, Hidden: r.Hidden, Rows: r.Rows, Size: domain.Size(r.Size)})
+		out = append(out, domain.MobileEntry{WidgetID: r.ID, Hidden: r.Hidden, Rows: r.Rows, Size: domain.Size(r.Size), Favourite: r.Favourite})
 	}
 	return out
 }

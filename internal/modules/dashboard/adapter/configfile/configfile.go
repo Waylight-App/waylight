@@ -64,6 +64,8 @@ type Phone struct {
 	// Size is small, medium, large or strip on the phone grid (#585).
 	Size   string `yaml:"size,omitempty"`
 	Hidden bool   `yaml:"hidden,omitempty"`
+	// Favourite shows the widget first on the phone's home screen (#844).
+	Favourite bool `yaml:"favourite,omitempty"`
 }
 
 var errConfig = kernel.NewValidationError("config", "A widget config must be a mapping of settings.")
@@ -88,7 +90,7 @@ func FromTabs(tabs []usecase.ConfigTab) (*Section, error) {
 			}
 			cw := Widget{Kind: w.Kind, At: Rect(w.Rect), Size: w.Size, Zone: w.Zone, Config: cfg}
 			if w.Phone != nil {
-				cw.Phone = &Phone{Order: w.Phone.Order, Rows: w.Phone.Rows, Hidden: w.Phone.Hidden, Size: w.Phone.Size}
+				cw.Phone = &Phone{Order: w.Phone.Order, Rows: w.Phone.Rows, Hidden: w.Phone.Hidden, Size: w.Phone.Size, Favourite: w.Phone.Favourite}
 			}
 			ct.Widgets = append(ct.Widgets, cw)
 		}
@@ -116,7 +118,7 @@ func (s Section) ToTabs() ([]usecase.ConfigTab, error) {
 			}
 			cw := usecase.ConfigWidget{Kind: w.Kind, Rect: domain.Rect(w.At), Size: w.Size, Zone: w.Zone, Config: cfg}
 			if w.Phone != nil {
-				cw.Phone = &usecase.ConfigPhone{Order: w.Phone.Order, Rows: w.Phone.Rows, Hidden: w.Phone.Hidden, Size: w.Phone.Size}
+				cw.Phone = &usecase.ConfigPhone{Order: w.Phone.Order, Rows: w.Phone.Rows, Hidden: w.Phone.Hidden, Size: w.Phone.Size, Favourite: w.Phone.Favourite}
 			}
 			ct.Widgets = append(ct.Widgets, cw)
 		}

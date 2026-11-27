@@ -101,6 +101,10 @@ export interface MobileItemInputDTO {
    * Size is small, medium, large or strip; empty keeps full width (#585).
    */
   size?: string;
+  /**
+   * Favourite shows the widget first on the phone's home screen (#844).
+   */
+  favourite?: boolean;
 }
 /**
  * MobileLayoutDTO is the body of PUT /api/dashboard/tabs/{id}/mobile-layout.

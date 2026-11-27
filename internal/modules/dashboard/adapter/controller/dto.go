@@ -80,6 +80,8 @@ type MobileItemInputDTO struct {
 	Rows   int    `json:"rows"`
 	// Size is small, medium, large or strip; empty keeps full width (#585).
 	Size string `json:"size,omitempty"`
+	// Favourite shows the widget first on the phone's home screen (#844).
+	Favourite bool `json:"favourite,omitempty"`
 }
 
 // MobileLayoutDTO is the body of PUT /api/dashboard/tabs/{id}/mobile-layout.

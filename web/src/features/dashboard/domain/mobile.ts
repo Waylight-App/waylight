@@ -13,6 +13,11 @@ export interface MobileItem {
   rows: number;
   /** Size on the phone grid of four columns (#585); unset means full width. */
   size?: MobileSize;
+  /**
+   * Shown first on the phone's home screen (#844). The mobile app sets it;
+   * the web keeps it so saving the layout here does not drop it.
+   */
+  favourite?: boolean;
 }
 
 /** Sizes of the phone grid, as on phone home screens (#585). */
@@ -65,7 +70,13 @@ export function resolveMobile(
     seen.add(e.id);
     // A size from a newer server falls back to full width.
     const size = sizeCells(e.size) ? e.size : undefined;
-    out.push({ id: e.id, hidden: e.hidden, rows: clampRows(e.rows), ...(size ? { size } : {}) });
+    out.push({
+      id: e.id,
+      hidden: e.hidden,
+      rows: clampRows(e.rows),
+      ...(size ? { size } : {}),
+      ...(e.favourite ? { favourite: true } : {}),
+    });
   }
   for (const item of deriveMobile(widgets)) if (!seen.has(item.id)) out.push(item);
   return out;

@@ -18,6 +18,8 @@ type ConfigPhone struct {
 	Hidden bool
 	// Size is the size on the phone grid (#585); empty means full width.
 	Size string
+	// Favourite shows the widget first on the phone's home screen (#844).
+	Favourite bool
 }
 
 // ConfigWidget is a widget in waylight.yaml (#88). Config is the opaque
@@ -97,7 +99,7 @@ func (uc *config) Export(ctx context.Context) ([]ConfigTab, error) {
 		phone := map[string]*ConfigPhone{}
 		if t.Mobile() != nil {
 			for i, e := range domain.ResolveMobileLayout(t.Mobile(), ws).Entries() {
-				phone[e.WidgetID] = &ConfigPhone{Order: i + 1, Rows: e.Rows, Hidden: e.Hidden, Size: string(e.Size)}
+				phone[e.WidgetID] = &ConfigPhone{Order: i + 1, Rows: e.Rows, Hidden: e.Hidden, Size: string(e.Size), Favourite: e.Favourite}
 			}
 		}
 		ct := ConfigTab{Name: t.Name(), Background: t.Background(), Zones: t.Zoned()}
@@ -192,7 +194,7 @@ func (uc *config) buildTab(id string, pos int, ct ConfigTab) (domain.Tab, []doma
 		}
 		widgets = append(widgets, w)
 		if cw.Phone != nil {
-			phone = append(phone, placed{cw.Phone.Order, domain.MobileEntry{WidgetID: w.ID(), Rows: cw.Phone.Rows, Hidden: cw.Phone.Hidden, Size: domain.Size(cw.Phone.Size)}})
+			phone = append(phone, placed{cw.Phone.Order, domain.MobileEntry{WidgetID: w.ID(), Rows: cw.Phone.Rows, Hidden: cw.Phone.Hidden, Size: domain.Size(cw.Phone.Size), Favourite: cw.Phone.Favourite}})
 		}
 	}
 	// Without any phone entry the tab keeps the layout derived from the grid.

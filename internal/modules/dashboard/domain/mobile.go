@@ -16,6 +16,10 @@ type MobileEntry struct {
 	Rows int
 	// Size places the widget on the phone grid; empty means full width.
 	Size Size
+	// Favourite shows the widget first on the phone's home screen (#844).
+	// It is stored with the layout rather than per device, so every phone
+	// of the account shows the same favourites.
+	Favourite bool
 }
 
 // MobileLayout is the phone layout of a tab: widgets in reading order.

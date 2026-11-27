@@ -46,6 +46,8 @@ type MobileView struct {
 	Rows     int
 	// Size is "small", "medium", "large", "strip" or empty (#585).
 	Size string
+	// Favourite shows the widget first on the phone's home screen (#844).
+	Favourite bool
 }
 
 // TemplateResponse describes a tab template.

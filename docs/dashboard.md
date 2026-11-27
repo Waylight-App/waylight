@@ -184,6 +184,10 @@ two cells high), **Large** (four by four) or **Strip** (one cell high). Widgets
 without a size keep the full width and their height. The mobile app shows the
 same grid.
 
+In the mobile app's edit mode, a star marks a widget as a favourite. The app
+shows favourites first on its home screen. The web interface keeps the
+favourites when you change the phone layout here.
+
 The phone layout belongs to the tab, not to the device, so it applies to
 every phone you use.
 

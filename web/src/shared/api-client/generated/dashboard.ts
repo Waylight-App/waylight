@@ -74,6 +74,10 @@ export interface MobileItemDTO {
    * full width (#585).
    */
   size?: string;
+  /**
+   * Favourite shows the widget first on the phone's home screen (#844).
+   */
+  favourite: boolean;
 }
 /**
  * WidgetDTO describes a widget. Config is the widget's JSON configuration.
