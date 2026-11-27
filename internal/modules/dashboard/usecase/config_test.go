@@ -29,7 +29,7 @@ func TestDashboardConfig(t *testing.T) {
 		Rules: []domain.RuleInput{{Days: []int{1, 2}, From: "07:00", To: "09:00"}},
 		Widgets: []ConfigWidget{
 			{Kind: "clock", Rect: domain.Rect{X: 0, Y: 0, W: 4, H: 2}, Phone: &ConfigPhone{Order: 2, Rows: 2}},
-			{Kind: "notes", Rect: domain.Rect{X: 4, Y: 0, W: 4, H: 3}, Phone: &ConfigPhone{Order: 1, Rows: 5, Hidden: true}, Config: `{"a":1}`},
+			{Kind: "notes", Rect: domain.Rect{X: 4, Y: 0, W: 4, H: 3}, Phone: &ConfigPhone{Order: 1, Rows: 5, Hidden: true, Favourite: true}, Config: `{"a":1}`},
 		},
 	}, {Name: "Server"}}
 	if err := uc.Apply(ctx, in); err != nil {
@@ -43,7 +43,7 @@ func TestDashboardConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 	w := out[0].Widgets
-	if w[0].Kind != "clock" || w[0].Phone.Order != 2 || w[1].Phone.Order != 1 || !w[1].Phone.Hidden || w[1].Config != `{"a":1}` {
+	if w[0].Kind != "clock" || w[0].Phone.Order != 2 || w[1].Phone.Order != 1 || !w[1].Phone.Hidden || !w[1].Phone.Favourite || w[0].Phone.Favourite || w[1].Config != `{"a":1}` {
 		t.Fatalf("%+v", w)
 	}
 	if out[0].Rules[0].From != "07:00" || out[1].Widgets != nil {

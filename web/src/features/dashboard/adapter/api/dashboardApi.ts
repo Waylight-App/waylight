@@ -69,6 +69,7 @@ const toTab = (dto: TabDTO): Tab => ({
     hidden: m.hidden,
     rows: m.rows,
     ...(sizeCells(m.size as MobileSize) ? { size: m.size as MobileSize } : {}),
+    ...(m.favourite ? { favourite: true } : {}),
   })),
   // Older servers do not send it; every tab was the viewer's own then.
   mine: dto.mine ?? true,
@@ -167,7 +168,13 @@ export class DashboardApi implements DashboardGateway {
 
   async saveMobileLayout(tabId: string, items: MobileItem[]): Promise<Tab> {
     const body: MobileLayoutDTO = {
-      items: items.map(({ id, hidden, rows, size }) => ({ id, hidden, rows, ...(size ? { size } : {}) })),
+      items: items.map(({ id, hidden, rows, size, favourite }) => ({
+        id,
+        hidden,
+        rows,
+        ...(size ? { size } : {}),
+        ...(favourite ? { favourite } : {}),
+      })),
     };
     return toTab(
       await this.http.put<TabDTO>(`/api/dashboard/tabs/${encodeURIComponent(tabId)}/mobile-layout`, body),

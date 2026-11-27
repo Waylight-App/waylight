@@ -66,4 +66,15 @@ describe('sizes on the phone grid (#585)', () => {
     expect(sized[0]?.size).toBe('medium');
     expect(updateMobile(sized, 'a', { size: undefined })[0]).not.toHaveProperty('size');
   });
+
+  it('keeps favourites set in the app (#844)', () => {
+    const stored = [
+      { id: 'a', hidden: false, rows: 2, favourite: true },
+      { id: 'b', hidden: false, rows: 3 },
+    ];
+    const out = resolveMobile(stored, widgets);
+    expect(out[0]?.favourite).toBe(true);
+    expect(out[1]).not.toHaveProperty('favourite');
+    expect(updateMobile(out, 'a', { rows: 4 })[0]?.favourite).toBe(true);
+  });
 });

@@ -135,11 +135,11 @@ func TestMobileLayoutHandlers(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 	mux.ServeHTTP(rec, httptest.NewRequest(http.MethodPut, "/api/dashboard/tabs/t1/mobile-layout",
-		strings.NewReader(`{"items":[{"id":"w1","hidden":true,"rows":3,"size":"small"}]}`)))
+		strings.NewReader(`{"items":[{"id":"w1","hidden":true,"rows":3,"size":"small","favourite":true}]}`)))
 	if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), `"mobileCustom":true`) {
 		t.Fatalf("put %d %s", rec.Code, rec.Body)
 	}
-	if ft.id != "t1" || len(ft.mobile) != 1 || !ft.mobile[0].Hidden || ft.mobile[0].Rows != 3 || ft.mobile[0].Size != "small" {
+	if ft.id != "t1" || len(ft.mobile) != 1 || !ft.mobile[0].Hidden || ft.mobile[0].Rows != 3 || ft.mobile[0].Size != "small" || !ft.mobile[0].Favourite {
 		t.Fatalf("request %+v", ft.mobile)
 	}
 	rec = httptest.NewRecorder()

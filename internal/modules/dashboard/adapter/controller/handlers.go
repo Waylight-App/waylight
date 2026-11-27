@@ -232,7 +232,7 @@ func (h *Handlers) SaveMobileLayout(w http.ResponseWriter, r *http.Request) {
 	}
 	in := make([]domain.MobileEntry, 0, len(dto.Items))
 	for _, x := range dto.Items {
-		in = append(in, domain.MobileEntry{WidgetID: x.ID, Hidden: x.Hidden, Rows: x.Rows, Size: domain.Size(x.Size)})
+		in = append(in, domain.MobileEntry{WidgetID: x.ID, Hidden: x.Hidden, Rows: x.Rows, Size: domain.Size(x.Size), Favourite: x.Favourite})
 	}
 	res, err := h.tabs.SaveMobileLayout(r.Context(), r.PathValue("id"), in)
 	if err != nil {
