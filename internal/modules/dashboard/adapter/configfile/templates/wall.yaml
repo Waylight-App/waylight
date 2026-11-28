@@ -29,7 +29,15 @@ tab:
       size: large
       zone: today
       phone: { order: 4, rows: 4 }
+    - kind: birthdays
+      at: { x: 0, y: 10, w: 6, h: 4 }
+      zone: today
+      phone: { order: 5, rows: 4 }
+    - kind: countdown
+      at: { x: 6, y: 10, w: 6, h: 4 }
+      zone: today
+      phone: { order: 6, rows: 4 }
     - kind: services
-      at: { x: 0, y: 10, w: 12, h: 3 }
+      at: { x: 0, y: 14, w: 12, h: 3 }
       zone: system
-      phone: { order: 5, rows: 3 }
+      phone: { order: 7, rows: 3 }

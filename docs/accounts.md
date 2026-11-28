@@ -217,9 +217,9 @@ The quickest way is **Set up a wall tablet** at the top of Settings → Kiosk
 displays. One form covers everything a family screen needs:
 
 - a name for the tablet (`wall-tablet` unless you change it);
-- what it shows: a new tab from the *Wall tablet* template (large clock,
-  weather, calendar and departures; the weather asks for a place, which you
-  can also set later) or tabs you already have;
+- what it shows: a new tab from the *Wall tablet* template (Tonight card,
+  weather, calendar, departures, birthdays and countdown; the weather asks for
+  a place, which you can also set later) or tabs you already have;
 - **large text**, on by default, so the screen reads from across the room;
 - **night mode**, on by default from 22:00 to 06:30;
 - a **tab rotation** when you pick more than one tab (every 60 seconds by

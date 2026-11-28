@@ -42,7 +42,23 @@ tab:
       size: medium
       zone: mine
       phone: { order: 7, rows: 4 }
+    - kind: habits
+      at: { x: 0, y: 12, w: 4, h: 4 }
+      size: medium
+      zone: mine
+      phone: { order: 8, rows: 4 }
+    - kind: rss
+      at: { x: 4, y: 12, w: 4, h: 4 }
+      size: medium
+      zone: mine
+      phone: { order: 9, rows: 4 }
+      config: { unreadOnly: true, limit: 15 }
+    - kind: countdown
+      at: { x: 8, y: 12, w: 4, h: 4 }
+      size: medium
+      zone: mine
+      phone: { order: 10, rows: 4 }
     - kind: services
-      at: { x: 0, y: 12, w: 12, h: 3 }
+      at: { x: 0, y: 16, w: 12, h: 3 }
       zone: system
-      phone: { order: 8, rows: 3 }
+      phone: { order: 11, rows: 3 }
