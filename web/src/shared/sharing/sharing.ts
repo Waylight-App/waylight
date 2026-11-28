@@ -41,3 +41,16 @@ export async function fetchShareGroups(http: HttpClient): Promise<ShareGroup[]> 
   const list = await http.get<{ id: string; name: string }[]>('/api/auth/my-groups');
   return list.map((g) => ({ id: g.id, name: g.name }));
 }
+
+/**
+ * What a widget says about who shares a record (#872): a group by name,
+ * everyone, a group the viewer does not know (an admin's share), or null
+ * for a private record, which needs no mark.
+ */
+export function sharedState(
+  value: Visibility,
+  groups: ShareGroup[],
+): { everyone: true } | { group: string } | { unknownGroup: true } | null {
+  if (!value || value === 'private') return null;
+  return sharedVia(value, groups) ?? { unknownGroup: true };
+}

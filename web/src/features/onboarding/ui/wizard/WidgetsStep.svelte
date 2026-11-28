@@ -102,6 +102,8 @@
         current.id,
         titleOf(current),
         place ? { lat: place.lat, lon: place.lon, label: place.label, placeId: place.id } : undefined,
+        // On first start there are no groups yet: the household is everyone (#871).
+        current.needs.includes('share') ? 'everyone' : undefined,
       );
       for (const w of tab.widgets.filter((w) => !kinds.includes(w.kind))) await uc.deleteWidget(w.id);
       tab = { ...tab, widgets: tab.widgets.filter((w) => kinds.includes(w.kind)) };

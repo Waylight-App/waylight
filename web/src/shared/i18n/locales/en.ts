@@ -1241,6 +1241,10 @@ export const en = {
   'sharing.group': 'Group: {name}',
   'sharing.unknown_group': 'A group that no longer exists (only you see this)',
   'sharing.not_yours': 'Shared with you; only its owner can change it.',
+  'sharing.shared_with_group': 'Shared with {group}',
+  'sharing.shared_with_everyone': 'Shared with everyone',
+  'sharing.shared_with_a_group': 'Shared with a group',
+  'sharing.template_share': 'Who shares the shopping list and board',
   'auth.private_by_default': 'My new entries are private',
   'auth.private_by_default_hint':
     'Until now your notes, to-dos and lists were visible to everyone on this instance. With members, choose whether your new entries are only for you. Existing entries stay as they are.',

@@ -210,6 +210,8 @@ describe('built-in templates (#589)', () => {
     const uc = new DashboardUseCases({ ...gateway, createTabFromBuiltin: create });
     const loc = { lat: 53.1, lon: 8.2, label: 'Oldenburg' };
     await uc.createTabFromBuiltin('family', ' Family ', loc);
-    expect(create).toHaveBeenCalledWith('family', 'Family', loc);
+    expect(create).toHaveBeenCalledWith('family', 'Family', loc, undefined);
+    await uc.createTabFromBuiltin('family', 'Family', undefined, 'group:g1');
+    expect(create).toHaveBeenLastCalledWith('family', 'Family', undefined, 'group:g1');
   });
 });

@@ -10,6 +10,7 @@ import type {
 } from '../domain/dashboard';
 import type { LayoutItem, Rect } from '../domain/layout';
 import type { MobileItem } from '../domain/mobile';
+import type { ShareGroup, Visibility } from '../../../shared/sharing/sharing';
 import type { WidgetSize } from '../domain/sizes';
 import type { Zone } from '../domain/zones';
 
@@ -45,7 +46,14 @@ export interface DashboardGateway {
   createTabFromTemplate(templateId: string, name: string): Promise<Tab>;
   /** Built-in templates (#589); absent where there is no server. */
   listBuiltinTemplates?(): Promise<BuiltinTemplate[]>;
-  createTabFromBuiltin?(id: string, name: string, location?: TemplateLocation): Promise<Tab>;
+  createTabFromBuiltin?(
+    id: string,
+    name: string,
+    location?: TemplateLocation,
+    visibility?: Visibility,
+  ): Promise<Tab>;
+  /** Groups the account may share with, for templates that need "share" (#871). */
+  shareGroups?(): Promise<ShareGroup[]>;
   /** Removes the example tabs of the setup (#670); absent where there is no server. */
   discardSample?(): Promise<void>;
   /** Keeps the example tabs of the setup as ordinary tabs (#670). */

@@ -32,7 +32,11 @@ export const widgets: WidgetDefinition[] = [
     compactExample: () => t('compact.example.board'),
     view: lazy(
       () => import('../../features/board/ui/BoardWidget.svelte'),
-      (_config, c) => ({ board: c.board }),
+      // A household template stores who sees new notes (#871).
+      (config, c) => ({
+        board: c.board,
+        defaultVisibility: typeof config.visibility === 'string' ? config.visibility : undefined,
+      }),
     ),
   },
 ];

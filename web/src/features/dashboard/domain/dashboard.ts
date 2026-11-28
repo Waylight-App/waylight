@@ -123,8 +123,11 @@ export interface BuiltinTemplate {
   id: string;
   /** English title; clients show the translated one by id. */
   title: string;
-  /** What the onboarding asks before applying it. */
-  needs: 'location'[];
+  /**
+   * What the onboarding asks before applying it: a location for the weather
+   * widgets, and who shares the household's list and board (#871).
+   */
+  needs: ('location' | 'share')[];
   /** Widgets with their cells, for the layout preview. */
   widgets: { kind: string; x: number; y: number; w: number; h: number }[];
 }

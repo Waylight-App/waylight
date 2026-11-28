@@ -15,6 +15,7 @@ import {
 } from '../domain/dashboard';
 import { collides, findFreeSpot, type LayoutItem, sameLayout } from '../domain/layout';
 import type { MobileItem } from '../domain/mobile';
+import type { ShareGroup, Visibility } from '../../../shared/sharing/sharing';
 import { sizeRect, type WidgetSize } from '../domain/sizes';
 import type { Zone } from '../domain/zones';
 import type { DashboardGateway } from './ports';
@@ -185,11 +186,22 @@ export class DashboardUseCases {
 
   /**
    * Creates a tab from a built-in template, with its phone layout; the
-   * location fills its weather widgets.
+   * location fills its weather widgets, and for a template that needs
+   * "share" the visibility says who shares its list and board (#871).
    */
-  createTabFromBuiltin(id: string, name: string, location?: TemplateLocation): Promise<Tab> {
+  createTabFromBuiltin(
+    id: string,
+    name: string,
+    location?: TemplateLocation,
+    visibility?: Visibility,
+  ): Promise<Tab> {
     if (!this.gateway.createTabFromBuiltin) return Promise.reject(new Error('templates need a server'));
-    return this.gateway.createTabFromBuiltin(id, name.trim(), location);
+    return this.gateway.createTabFromBuiltin(id, name.trim(), location, visibility);
+  }
+
+  /** Groups the account may share with; none without a server. */
+  async shareGroups(): Promise<ShareGroup[]> {
+    return (await this.gateway.shareGroups?.()) ?? [];
   }
 
   /**

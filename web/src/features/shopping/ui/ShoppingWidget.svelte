@@ -2,6 +2,8 @@
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import SetupInPlace from '../../../shared/setup/SetupInPlace.svelte';
   import TileLayout from '../../../shared/ui/TileLayout.svelte';
+  import SharedMark from '../../../shared/ui/SharedMark.svelte';
+  import type { ShareGroup } from '../../../shared/sharing/sharing';
   import { shoppingSetup } from './shoppingSetup';
   import { usePolling } from '../../../shared/refresh';
   import { t } from '../../../shared/i18n';
@@ -36,6 +38,9 @@
   const doneCount = $derived(items.filter((i) => i.done).length);
   // The choice only appears when there is something to choose between.
   const choices = $derived(overview.lists.length + (overview.caldav ? 1 : 0));
+  // Who else ticks off the shown list (#872); a CalDAV list has no mark.
+  const shownList = $derived(overview.lists.find((l) => l.id === current));
+  let groups = $state<ShareGroup[]>([]);
 
   // One poll reads both the lists and the shown items, so a list someone
   // shares with this account shows up without reloading the page.
@@ -54,6 +59,14 @@
 
   $effect(() => {
     return poll(load, POLL_MS);
+  });
+
+  // Group names for the mark; without them it says "a group".
+  $effect(() => {
+    shopping
+      .shareGroups()
+      .then((g) => (groups = g))
+      .catch(() => {});
   });
 
   async function pick(value: string) {
@@ -160,6 +173,7 @@
         </select></label
       >
     {/if}
+    {#if shownList}<SharedMark visibility={shownList.visibility} {groups} />{/if}
     <ul class="items">
       {#each items as it (it.id)}
         <ListRow>

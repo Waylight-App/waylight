@@ -1,6 +1,8 @@
 <script lang="ts">
   import ListRow from '../../../shared/ui/ListRow.svelte';
   import Icon from '../../../shared/ui/icons/Icon.svelte';
+  import SharedMark from '../../../shared/ui/SharedMark.svelte';
+  import type { ShareGroup } from '../../../shared/sharing/sharing';
   import { errorMessage } from '../../../shared/api-client/http';
   import { intlLocale, t } from '../../../shared/i18n';
   import { usePolling } from '../../../shared/refresh';
@@ -11,9 +13,12 @@
   /** Props of the family board widget (#685). */
   interface Props {
     board: BoardUseCases;
+    /** Who sees new notes unless the writer picks otherwise; everyone without one. */
+    defaultVisibility?: string;
   }
-  let { board }: Props = $props();
+  let { board, defaultVisibility }: Props = $props();
   const poll = usePolling();
+  let groups = $state<ShareGroup[]>([]);
 
   let notes = $state<BoardNote[]>([]);
   let error = $state('');
@@ -35,6 +40,14 @@
   }
 
   $effect(() => poll(load, 5 * 60_000));
+
+  // Group names for the marks of notes shared with a group (#872).
+  $effect(() => {
+    board
+      .shareGroups()
+      .then((g) => (groups = g))
+      .catch(() => {});
+  });
 
   function until(day: string): string {
     const date = new Date(`${day}T12:00:00`).toLocaleDateString(intlLocale(), {
@@ -72,6 +85,9 @@
       {#snippet sub()}
         {#if n.pinned}<Icon name="pin" size={16} /> {t('board.pinned')}{/if}
         {#if n.expiresOn}{n.pinned ? ' · ' : ''}{until(n.expiresOn)}{/if}
+        <!-- Everyone is the board's default, so only narrower shares are marked. -->
+        {#if n.visibility !== 'everyone'}<SharedMark visibility={n.visibility} {groups} />{/if}
+        {#if n.visibility === 'private'}<span class="muted small">{t('sharing.private')}</span>{/if}
       {/snippet}
       {#snippet trail()}
         {#if n.mine}
@@ -109,6 +125,7 @@
   <NoteDialog
     {board}
     note={editing}
+    {defaultVisibility}
     today={todayIso()}
     onsaved={() => load().catch(() => {})}
     onclose={() => (editing = undefined)}

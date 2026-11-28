@@ -4,6 +4,7 @@
   import Modal from '../../../shared/ui/Modal.svelte';
   import type { BuiltinTemplate, Tab, TabTemplate } from '../domain/dashboard';
   import type { DashboardUseCases } from '../usecase/dashboardUseCases';
+  import { groupVisibility, type ShareGroup } from '../../../shared/sharing/sharing';
 
   /** Props of the dialog that creates a tab, optionally from a template. */
   interface Props {
@@ -18,6 +19,8 @@
   let templates = $state<TabTemplate[]>([]);
   let builtins = $state<BuiltinTemplate[]>([]);
   let error = $state('');
+  let groups = $state<ShareGroup[]>([]);
+  let share = $state('');
 
   // Built-in templates (#589) are offered next to the account's own; their
   // ids carry a prefix so the two never collide.
@@ -35,14 +38,30 @@
     uc.listBuiltinTemplates()
       .then((b) => (builtins = b))
       .catch(() => {});
+    uc.shareGroups()
+      .then((g) => (groups = g))
+      .catch(() => {});
+  });
+
+  const chosenBuiltin = $derived(builtins.find((b) => BUILTIN + b.id === templateId));
+  const needsShare = $derived(chosenBuiltin?.needs.includes('share') ?? false);
+  // A household template shares its list and board with the group named
+  // like it (Family), or with everyone when there is no such group (#871).
+  $effect(() => {
+    if (!chosenBuiltin) return;
+    const title = builtinTitle(chosenBuiltin).toLowerCase();
+    const named = groups.find((g) => g.name.toLowerCase() === title);
+    share = named ? groupVisibility(named.id) : 'everyone';
   });
 
   function create(): Promise<Tab> {
     if (templateId.startsWith(BUILTIN)) {
-      const tpl = builtins.find((b) => BUILTIN + b.id === templateId);
+      const tpl = chosenBuiltin;
       return uc.createTabFromBuiltin(
         templateId.slice(BUILTIN.length),
         name || (tpl ? builtinTitle(tpl) : ''),
+        undefined,
+        needsShare ? share : undefined,
       );
     }
     return templateId ? uc.createTabFromTemplate(templateId, name) : uc.createTab(name);
@@ -105,6 +124,17 @@
           </div>
         {/each}
       </fieldset>
+    {/if}
+    {#if needsShare}
+      <label class="field"
+        ><span>{t('sharing.template_share')}</span>
+        <select class="input" bind:value={share}>
+          {#each groups as g (g.id)}
+            <option value={groupVisibility(g.id)}>{t('sharing.group', { name: g.name })}</option>
+          {/each}
+          <option value="everyone">{t('sharing.everyone')}</option>
+        </select></label
+      >
     {/if}
     {#if error}<p class="error" role="alert">{error}</p>{/if}
     <button class="btn btn-primary" type="submit">{t('dashboard.create')}</button>

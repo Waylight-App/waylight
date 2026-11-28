@@ -122,6 +122,25 @@ choice then shows *A group that no longer exists* until the owner picks
 something else. To-dos from an external list (CalDAV or another provider)
 cannot be shared and have no sharing choice.
 
+### Shared lists for the household
+
+Shopping lists are shared the same way, but with one difference: everyone
+who can see a shared list can also add, tick off and remove its items, so
+the whole household works on one list. Renaming, sharing and deleting the
+list stay with the person who created it. Guests in the group can read the
+list but not change it.
+
+The **Family** template sets this up. When you create a tab from it, choose
+who shares the shopping list and the board: a group (the one called Family
+is preselected if it exists) or everyone. Waylight then creates a shopping
+list named after the tab for that group, or picks the existing one, so a
+second member who applies the template lands on the same list. New notes on
+the board's widget go to the same group unless the writer picks otherwise.
+
+The widgets show who they are shared with: the shopping widget says
+*Shared with Family* (or *with everyone*) above the list, and board notes
+shared with a group or kept private say so under the text.
+
 ### Link directories for groups
 
 A bookmark folder can be shared the same way. In *Settings → Bookmarks*,

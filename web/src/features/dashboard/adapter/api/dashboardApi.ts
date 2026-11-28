@@ -1,4 +1,5 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
+import { fetchShareGroups, type ShareGroup, type Visibility } from '../../../../shared/sharing/sharing';
 import type {
   DashboardDTO,
   TabDTO,
@@ -205,16 +206,29 @@ export class DashboardApi implements DashboardGateway {
     return list.map((t) => ({
       id: t.id,
       title: t.title,
-      needs: t.needs.filter((n): n is 'location' => n === 'location'),
+      needs: t.needs.filter((n): n is 'location' | 'share' => n === 'location' || n === 'share'),
       widgets: t.widgets.map((w) => ({ ...w })),
     }));
   }
 
-  async createTabFromBuiltin(id: string, name: string, location?: TemplateLocation): Promise<Tab> {
-    const body: BuiltinTabDTO = { name, location: location ? { placeId: '', ...location } : undefined };
+  async createTabFromBuiltin(
+    id: string,
+    name: string,
+    location?: TemplateLocation,
+    visibility?: Visibility,
+  ): Promise<Tab> {
+    const body: BuiltinTabDTO = {
+      name,
+      location: location ? { placeId: '', ...location } : undefined,
+      visibility: visibility || undefined,
+    };
     return toTab(
       await this.http.post<TabDTO>(`/api/dashboard/templates/builtin/${encodeURIComponent(id)}/tabs`, body),
     );
+  }
+
+  shareGroups(): Promise<ShareGroup[]> {
+    return fetchShareGroups(this.http);
   }
 
   discardSample(): Promise<void> {

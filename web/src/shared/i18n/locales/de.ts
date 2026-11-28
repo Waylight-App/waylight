@@ -1269,6 +1269,10 @@ export const de: Record<BaseMessageKey, string> = {
   'sharing.group': 'Gruppe: {name}',
   'sharing.unknown_group': 'Eine Gruppe, die es nicht mehr gibt (nur du siehst das)',
   'sharing.not_yours': 'Mit dir geteilt; nur der Eigentümer kann es ändern.',
+  'sharing.shared_with_group': 'Geteilt mit {group}',
+  'sharing.shared_with_everyone': 'Mit allen geteilt',
+  'sharing.shared_with_a_group': 'Mit einer Gruppe geteilt',
+  'sharing.template_share': 'Wer Einkaufsliste und Pinnwand teilt',
   'auth.private_by_default': 'Meine neuen Einträge sind privat',
   'auth.private_by_default_hint':
     'Bisher waren deine Notizen, To-dos und Listen für alle auf dieser Instanz sichtbar. Mit Mitgliedern kannst du wählen, ob neue Einträge nur für dich sind. Bestehende Einträge bleiben, wie sie sind.',

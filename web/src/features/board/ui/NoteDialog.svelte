@@ -12,11 +12,13 @@
     board: BoardUseCases;
     /** The note to change, or null for a new one. */
     note: BoardNote | null;
+    /** Visibility of a new note; everyone without one. */
+    defaultVisibility?: string;
     today: string;
     onsaved: () => void;
     onclose: () => void;
   }
-  let { board, note, today, onsaved, onclose }: Props = $props();
+  let { board, note, defaultVisibility, today, onsaved, onclose }: Props = $props();
 
   // svelte-ignore state_referenced_locally
   let form = $state<BoardNoteInput>(
@@ -25,7 +27,7 @@
       : { text: '', pinned: false, expiresOn: '' },
   );
   // svelte-ignore state_referenced_locally
-  let visibility = $state(note?.visibility ?? 'everyone');
+  let visibility = $state(note?.visibility ?? defaultVisibility ?? 'everyone');
   let groups = $state<ShareGroup[]>([]);
   let error = $state('');
   let busy = $state(false);
