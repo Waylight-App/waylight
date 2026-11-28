@@ -461,7 +461,7 @@ test('header with greeting, search pill, launcher and account menu (#189)', asyn
   await page.keyboard.press('Escape');
   await page.keyboard.press('Escape');
 
-  // Launcher: filter across services and bookmarks; Esc returns the focus.
+  // Launcher (the icon): filter across services and bookmarks; Esc returns the focus.
   step = 'launcher';
   const trigger = page.getByRole('button', { name: 'Services and bookmarks' });
   await trigger.click();
@@ -473,6 +473,17 @@ test('header with greeting, search pill, launcher and account menu (#189)', asyn
   await page.keyboard.press('Escape');
   await expect(launcher).toHaveCount(0);
   await expect(trigger).toBeFocused();
+
+  // The status pill shows only the service status (#858), not the launcher.
+  step = 'status';
+  const pill = page.getByRole('button', { name: /^(All services online|\d+ offline)$/ });
+  await pill.click();
+  const status = page.getByRole('dialog', { name: 'Service status' });
+  await expect(status.getByRole('heading').first()).toBeVisible();
+  await expect(status.getByRole('searchbox')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(status).toHaveCount(0);
+  await expect(pill).toBeFocused();
 
   // Account menu: keyboard operable, Esc returns the focus.
   step = 'account';

@@ -22,6 +22,8 @@ export interface LauncherBookmark {
   title: string;
   url: string;
   folder: string;
+  /** Favicon URL, null when there is none; initials are the fallback. */
+  icon: string | null;
 }
 
 /** Rows shown per section before "Show all". */
@@ -119,6 +121,25 @@ export function statusSummary(services: readonly Pick<LauncherService, 'state' |
   if (own.length === 0) return { kind: 'empty', offline: 0 };
   const offline = own.filter((s) => s.state === 'offline').length;
   return { kind: offline > 0 ? 'offline' : 'ok', offline };
+}
+
+export interface StatusGroups {
+  /** Services that are down. */
+  offline: LauncherService[];
+  /** Services not checked yet. */
+  unknown: LauncherService[];
+  /** Services that answer. */
+  online: LauncherService[];
+}
+
+/**
+ * Services of the status popover (#858): what is down first, then what was
+ * not checked yet, then what is fine, each by name.
+ */
+export function statusGroups(services: readonly LauncherService[]): StatusGroups {
+  const byName = (a: LauncherService, b: LauncherService) => a.name.localeCompare(b.name);
+  const of = (state: ServiceState) => services.filter((s) => s.state === state).sort(byName);
+  return { offline: of('offline'), unknown: of('unknown'), online: of('online') };
 }
 
 /** The first letter (or digit) of a name for the avatar of a bookmark. */

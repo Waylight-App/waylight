@@ -1,3 +1,4 @@
+import { iconSrc } from '../features/bookmarks/domain/bookmark';
 import type { LauncherSources } from '../features/launcher/usecase/launcherUseCases';
 import type { Container } from './container';
 
@@ -28,6 +29,7 @@ export function launcherSources(c: Container, modules: Set<string>): LauncherSou
             title: b.title,
             url: b.url,
             folder: folders.get(b.folderId) ?? '',
+            icon: iconSrc(b),
           }));
         }
       : null,

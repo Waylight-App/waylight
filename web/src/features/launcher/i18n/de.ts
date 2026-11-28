@@ -27,4 +27,8 @@ export const de: Record<keyof typeof en, string> = {
   'launcher.no_services_yet': 'Noch keine Dienste',
   'launcher.add_one': 'Hinzufügen',
   'launcher.add_service': 'Dienst hinzufügen',
+  'launcher.status_title': 'Dienststatus',
+  'launcher.status_down': 'Ausgefallen',
+  'launcher.status_unchecked': 'Noch nicht geprüft',
+  'launcher.status_fine': 'Online',
 };

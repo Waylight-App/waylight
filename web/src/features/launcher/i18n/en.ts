@@ -25,6 +25,10 @@ export const en = {
   'launcher.no_services_yet': 'No services yet',
   'launcher.add_one': 'Add one',
   'launcher.add_service': 'Add a service',
+  'launcher.status_title': 'Service status',
+  'launcher.status_down': 'Down',
+  'launcher.status_unchecked': 'Not checked yet',
+  'launcher.status_fine': 'Online',
 } as const;
 
 declare module '../../../shared/i18n/registry' {
