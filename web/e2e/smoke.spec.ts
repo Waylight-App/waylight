@@ -443,6 +443,8 @@ test('header with greeting, search pill, launcher and account menu (#189)', asyn
   await page.getByRole('button', { name: 'Log in' }).click();
   await page.getByRole('button', { name: 'Home', exact: true }).click();
   await expect(page.locator('time')).toBeVisible();
+  // The glance line shows the time next to the date (#864).
+  await expect(page.locator('.topbar .time')).toHaveText(/^\d{2}:\d{2}(\s[AP]M)?$/);
 
   // Height budget (#189, decided against the mockup): top bar, greeting,
   // search pill and tab pills before the first widget.

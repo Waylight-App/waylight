@@ -132,7 +132,8 @@ logo is the lamp mark at 24 px next to the wordmark "Waylight" in Fraunces at
 
 The top bar is 64 px high with 24 px of padding at the sides, in three parts.
 On the left the logo. In the middle one line at `--fs-xs` in the subtle colour
-with the date, the temperature and the number of to-dos due today, separated by
+with the date, the time (updated on the minute, in the clock format of the
+interface language), the temperature and the number of to-dos due today, separated by
 small dots. On the right the status pill, the edit button and the avatar. The
 status pill is 32 px high with a hairline and a dot; the edit button is a 32 px
 icon button; the avatar is a 32 px amber circle with the initial in
