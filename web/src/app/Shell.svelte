@@ -785,7 +785,7 @@
     {/await}
   {/if}
   <LiveRegion />
-<UndoToast />
+  <UndoToast />
   {#if liveAlerts.list.length}
     {#await import('./LiveToasts.svelte') then { default: LiveToasts }}<LiveToasts />{/await}
   {/if}
