@@ -131,6 +131,11 @@ export interface BuiltinTabDTO {
    * Location fills the weather widgets; omitted leaves them to be set up.
    */
   location?: LocationDTO;
+  /**
+   * Visibility is who sees the shared records of a template that needs
+   * "share" ("everyone" or "group:<id>"); omitted shares nothing.
+   */
+  visibility?: string;
 }
 /**
  * LocationDTO is a place for the weather widgets of a template.

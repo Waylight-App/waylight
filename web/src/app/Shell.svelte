@@ -225,10 +225,12 @@
   let serviceStatus = $state<ReturnType<typeof statusSummary>>({ kind: 'none', offline: 0 });
   const launcher = $derived(modules ? new LauncherUseCases(launcherSources(container, modules)) : null);
 
-  // Status pill (#189): all online, or how many services are offline.
+  // Status pill (#189): all online, how many services are offline, or no own
+  // service yet (#854).
   $effect(() => {
     const l = launcher;
-    if (!l?.hasServices) return;
+    // The wizard may remove the example services, so the count starts after it.
+    if (!l?.hasServices || wizardStep !== null) return;
     const poll = () =>
       l
         .services()
@@ -624,172 +626,190 @@
 
 <svelte:window ononline={() => (offline = false)} onoffline={() => (offline = true)} />
 
-<!-- Top bar and hero (#189): brand · date, weather, to-dos · status, launcher, account. -->
-{#if wizardStep === null}
-  <header class="topbar">
-    <a class="brand" href="/">
-      {#if branding().logo}
-        <!-- An organisation's logo (#305); the dark variant follows the theme. -->
-        <img class="brand-logo light" src={branding().logo} alt="" height="28" />
-        <img class="brand-logo dark" src={branding().logoDark || branding().logo} alt="" height="28" />
-      {:else}
-        <span class="logo"><WaylightMark size={24} /></span>
-      {/if}
-      <span class:wordmark={branding().name === PRODUCT_NAME}>{branding().name}</span>
-    </a>
-    <div class="center">
-      <TopInfo
-        weather={modules?.has('weather') ? container.weather : null}
-        location={weatherLocation}
-        todos={modules?.has('todos') ? container.todos : null}
-      />
-    </div>
-    <div class="right">
-      {#if attention && attention.count > 0}
-        {@const state = attention}
-        {#await import('../features/attention/ui/AttentionBadge.svelte') then { default: AttentionBadge }}
-          <AttentionBadge {state} onopen={() => void openSettingsAt('attention')} />
+<!-- The app frame (#849) holds top bar, header and grid; kiosk displays stay full screen. -->
+<div class="app-frame" class:framed={!container.auth.kiosk && wizardStep === null}>
+  <!-- Top bar and hero (#189): brand · date, weather, to-dos · status, launcher, account. -->
+  {#if wizardStep === null}
+    <header class="topbar">
+      <a class="brand" href="/">
+        {#if branding().logo}
+          <!-- An organisation's logo (#305); the dark variant follows the theme. -->
+          <img class="brand-logo light" src={branding().logo} alt="" height="28" />
+          <img class="brand-logo dark" src={branding().logoDark || branding().logo} alt="" height="28" />
+        {:else}
+          <span class="logo"><WaylightMark size={24} /></span>
+        {/if}
+        <span class:wordmark={branding().name === PRODUCT_NAME}>{branding().name}</span>
+      </a>
+      <div class="center">
+        <TopInfo
+          weather={modules?.has('weather') ? container.weather : null}
+          location={weatherLocation}
+          todos={modules?.has('todos') ? container.todos : null}
+        />
+      </div>
+      <div class="right">
+        {#if attention && attention.count > 0}
+          {@const state = attention}
+          {#await import('../features/attention/ui/AttentionBadge.svelte') then { default: AttentionBadge }}
+            <AttentionBadge {state} onopen={() => void openSettingsAt('attention')} />
+          {/await}
+        {/if}
+        {#if serviceStatus.kind === 'empty'}
+          <!-- No own service yet (#854): the pill leads to adding one; guests cannot. -->
+          {#if !container.auth.guest}
+            <button
+              type="button"
+              class="status"
+              data-kind="empty"
+              title={t('launcher.add_service')}
+              onclick={() => void openSettingsAt('services')}
+            >
+              <span class="dot" aria-hidden="true"></span>
+              <span class="long">{t('launcher.no_services_yet')}</span>
+              <span class="add">{t('launcher.add_one')}</span>
+            </button>
+          {/if}
+        {:else if serviceStatus.kind !== 'none'}
+          <button
+            type="button"
+            class="status"
+            bind:this={statusTrigger}
+            data-kind={serviceStatus.kind}
+            data-launcher-trigger
+            aria-haspopup="dialog"
+            aria-expanded={popover === 'status'}
+            title={t('launcher.status_title')}
+            onclick={() => toggle('status')}
+          >
+            <span class="dot" aria-hidden="true"></span>
+            <span class="long">
+              {serviceStatus.kind === 'ok'
+                ? t('launcher.all_online')
+                : t('launcher.some_offline', { n: serviceStatus.offline })}
+            </span>
+            <span class="short">
+              {serviceStatus.kind === 'ok'
+                ? t('launcher.online_short')
+                : t('launcher.some_offline', { n: serviceStatus.offline })}
+            </span>
+          </button>
+        {/if}
+        {#if launcher}
+          <button
+            bind:this={launcherTrigger}
+            type="button"
+            class="icon-btn"
+            data-launcher-trigger
+            aria-haspopup="dialog"
+            aria-expanded={popover === 'launcher'}
+            aria-label={t('launcher.title')}
+            title={t('launcher.title')}
+            onclick={() => toggle('launcher')}><Icon name="grid" size={16} /></button
+          >
+        {/if}
+        {#if !container.auth.guest && !simpleView && !dashboardManaged}
+          <button
+            type="button"
+            class="icon-btn edit"
+            aria-pressed={editing}
+            aria-label={t('app.edit_layout')}
+            title={t('app.edit_layout')}
+            onclick={() => (editing = !editing)}><Icon name={editing ? 'done' : 'pencil'} size={16} /></button
+          >
+        {/if}
+        <AccountMenu
+          initial={accountInitial}
+          {editing}
+          canEdit={!container.auth.guest && !simpleView}
+          editLocked={dashboardManaged ? t('app.edit_managed') : ''}
+          onedit={() => (editing = !editing)}
+          onsettings={() => ((settingsSection = undefined), (settingsOpen = true))}
+          onlogout={logout}
+        />
+      </div>
+      {#if popover === 'launcher' && launcher}
+        {#await import('../features/launcher/ui/LauncherPanel.svelte') then { default: LauncherPanel }}
+          <LauncherPanel
+            {launcher}
+            content={appearance.launcher}
+            onclose={closePopover}
+            onsettings={() => ((popover = null), (settingsSection = 'appearance'), (settingsOpen = true))}
+          />
+        {/await}
+      {:else if popover === 'status' && launcher}
+        {#await import('../features/launcher/ui/ServiceStatusPanel.svelte') then { default: ServiceStatusPanel }}
+          <ServiceStatusPanel {launcher} onclose={closePopover} />
         {/await}
       {/if}
-      {#if serviceStatus.kind !== 'none'}
-        <button
-          bind:this={statusTrigger}
-          type="button"
-          class="status"
-          data-kind={serviceStatus.kind}
-          data-launcher-trigger
-          aria-haspopup="dialog"
-          aria-expanded={popover === 'status'}
-          title={t('launcher.status_title')}
-          onclick={() => toggle('status')}
-        >
-          <span class="dot" aria-hidden="true"></span>
-          <span class="long">
-            {serviceStatus.kind === 'ok'
-              ? t('launcher.all_online')
-              : t('launcher.some_offline', { n: serviceStatus.offline })}
-          </span>
-          <span class="short">
-            {serviceStatus.kind === 'ok'
-              ? t('launcher.online_short')
-              : t('launcher.some_offline', { n: serviceStatus.offline })}
-          </span>
-        </button>
-      {/if}
-      {#if launcher}
-        <button
-          bind:this={launcherTrigger}
-          type="button"
-          class="icon-btn"
-          data-launcher-trigger
-          aria-haspopup="dialog"
-          aria-expanded={popover === 'launcher'}
-          aria-label={t('launcher.title')}
-          title={t('launcher.title')}
-          onclick={() => toggle('launcher')}><Icon name="grid" size={16} /></button
-        >
-      {/if}
-      {#if !container.auth.guest && !simpleView && !dashboardManaged}
-        <button
-          type="button"
-          class="icon-btn edit"
-          aria-pressed={editing}
-          aria-label={t('app.edit_layout')}
-          title={t('app.edit_layout')}
-          onclick={() => (editing = !editing)}><Icon name={editing ? 'done' : 'pencil'} size={16} /></button
-        >
-      {/if}
-      <AccountMenu
-        initial={accountInitial}
-        {editing}
-        canEdit={!container.auth.guest && !simpleView}
-        editLocked={dashboardManaged ? t('app.edit_managed') : ''}
-        onedit={() => (editing = !editing)}
-        onsettings={() => ((settingsSection = undefined), (settingsOpen = true))}
-        onlogout={logout}
-      />
-    </div>
-    {#if popover === 'launcher' && launcher}
-      {#await import('../features/launcher/ui/LauncherPanel.svelte') then { default: LauncherPanel }}
-        <LauncherPanel
-          {launcher}
-          content={appearance.launcher}
-          onclose={closePopover}
-          onsettings={() => ((popover = null), (settingsSection = 'appearance'), (settingsOpen = true))}
-        />
-      {/await}
-    {:else if popover === 'status' && launcher}
-      {#await import('../features/launcher/ui/ServiceStatusPanel.svelte') then { default: ServiceStatusPanel }}
-        <ServiceStatusPanel {launcher} onclose={closePopover} />
-      {/await}
-    {/if}
-  </header>
-  <Hero
-    bind:this={hero}
-    name={appearance.greetingName}
-    moment={appearance.greetingMoment}
-    tabsId="header-tabs"
-    {container}
-    {modules}
-    {weatherLocation}
-    widgetConfig={(kind) => firstWidgetConfig(dashboardState.tabs, dashboardState.activeId, kind)}
-    {commandHandlers}
-  />
-{/if}
-
-{#if deviceSetup}
-  <!-- The setup step of an appliance (#140): asked once, until a mode is chosen. -->
-  {#await import('../features/device/ui/DeviceSetup.svelte') then { default: DeviceSetup }}
-    <DeviceSetup device={container.device} onclose={() => (deviceSetup = false)} />
-  {/await}
-{/if}
-{#if container.auth.kiosk}
-  {#await import('./kiosk/KioskMode.svelte') then { default: KioskMode }}
-    <KioskMode
-      loadOptions={() => container.auth.kioskOptions()}
-      tabCount={dashboardState.tabs.length}
-      activeIndex={Math.max(
-        0,
-        dashboardState.tabs.findIndex((tab) => tab.id === dashboardState.activeId),
-      )}
-      selectTabAt={(i) => dashboard?.selectTabAt(i)}
-    />
-  {/await}
-{/if}
-<LiveRegion />
-{#if liveAlerts.list.length}
-  {#await import('./LiveToasts.svelte') then { default: LiveToasts }}<LiveToasts />{/await}
-{/if}
-{#if timerAlerts.list.length}
-  {#await import('./TimerToasts.svelte') then { default: TimerToasts }}<TimerToasts />{/await}
-{/if}
-<main class="content">
-  {#if offline}<p class="offline" role="status">
-      {t('app.you_are_offline_showing_the_last')}
-    </p>{/if}
-  <SyncStatus sync={container.offline} />
-  {#if error}<p class="error" role="alert">{error}</p>{/if}
-  {#if modules && onboardingChecked && wizardStep === null}
-    {#if modules.has('notifications') && container.auth.admin}<MaintenanceBanner
-        notifications={container.notifications}
-      />{/if}
-    <DashboardPage
-      bind:this={dashboard}
+    </header>
+    <Hero
+      bind:this={hero}
+      name={appearance.greetingName}
+      moment={appearance.greetingMoment}
+      tabsId="header-tabs"
       {container}
-      {editing}
-      {widgetKinds}
-      profile={appearance.profile}
-      tabBarTarget="header-tabs"
-      onstate={(tabs, activeId) => (dashboardState = { tabs, activeId })}
-      onedit={container.auth.guest || dashboardManaged || simpleView ? undefined : () => (editing = true)}
-      {simpleView}
-      globalBackground={appearance.backgroundImage}
-      onappearance={(a) => (appearance = a)}
-      ondone={() => (editing = false)}
-      onhelp={showHelp}
+      {modules}
+      {weatherLocation}
+      widgetConfig={(kind) => firstWidgetConfig(dashboardState.tabs, dashboardState.activeId, kind)}
+      {commandHandlers}
     />
   {/if}
-</main>
+
+  {#if deviceSetup}
+    <!-- The setup step of an appliance (#140): asked once, until a mode is chosen. -->
+    {#await import('../features/device/ui/DeviceSetup.svelte') then { default: DeviceSetup }}
+      <DeviceSetup device={container.device} onclose={() => (deviceSetup = false)} />
+    {/await}
+  {/if}
+  {#if container.auth.kiosk}
+    {#await import('./kiosk/KioskMode.svelte') then { default: KioskMode }}
+      <KioskMode
+        loadOptions={() => container.auth.kioskOptions()}
+        tabCount={dashboardState.tabs.length}
+        activeIndex={Math.max(
+          0,
+          dashboardState.tabs.findIndex((tab) => tab.id === dashboardState.activeId),
+        )}
+        selectTabAt={(i) => dashboard?.selectTabAt(i)}
+      />
+    {/await}
+  {/if}
+  <LiveRegion />
+  {#if liveAlerts.list.length}
+    {#await import('./LiveToasts.svelte') then { default: LiveToasts }}<LiveToasts />{/await}
+  {/if}
+  {#if timerAlerts.list.length}
+    {#await import('./TimerToasts.svelte') then { default: TimerToasts }}<TimerToasts />{/await}
+  {/if}
+  <main class="content">
+    {#if offline}<p class="offline" role="status">
+        {t('app.you_are_offline_showing_the_last')}
+      </p>{/if}
+    <SyncStatus sync={container.offline} />
+    {#if error}<p class="error" role="alert">{error}</p>{/if}
+    {#if modules && onboardingChecked && wizardStep === null}
+      {#if modules.has('notifications') && container.auth.admin}<MaintenanceBanner
+          notifications={container.notifications}
+        />{/if}
+      <DashboardPage
+        bind:this={dashboard}
+        {container}
+        {editing}
+        {widgetKinds}
+        profile={appearance.profile}
+        tabBarTarget="header-tabs"
+        onstate={(tabs, activeId) => (dashboardState = { tabs, activeId })}
+        onedit={container.auth.guest || dashboardManaged || simpleView ? undefined : () => (editing = true)}
+        {simpleView}
+        globalBackground={appearance.backgroundImage}
+        onappearance={(a) => (appearance = a)}
+        ondone={() => (editing = false)}
+        onhelp={showHelp}
+      />
+    {/if}
+  </main>
+</div>
 
 {#if settingsOpen && modules}
   <!-- Loaded on first use: the settings are not needed for the first paint (ADR 0011). -->
@@ -943,6 +963,12 @@
   .status[data-kind='offline'] .dot {
     background: var(--color-danger);
   }
+  .status[data-kind='empty'] .dot {
+    background: var(--color-text-subtle);
+  }
+  .status .add {
+    color: var(--color-accent-text);
+  }
   /* Icon buttons of the bar: 32 px, subtle until hovered. */
   .icon-btn {
     width: 32px;
@@ -999,6 +1025,19 @@
     .content {
       padding-inline: var(--space-4);
       padding-top: var(--space-4);
+    }
+  }
+  /* App frame (#849): a hairline box up to 1440 px, centred on the page
+     background. Theme tokens only, so every theme draws it in its own border
+     colour, high contrast with its stronger one. It has no background, so
+     page and tab backgrounds show through, and it does not clip, so menus
+     and panels can open past its edge. Phones keep the full width. */
+  @media (min-width: 640px) {
+    .app-frame.framed {
+      width: min(1440px, 100% - 2 * var(--space-6));
+      margin: var(--space-6) auto;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
     }
   }
 </style>

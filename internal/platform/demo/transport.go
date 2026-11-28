@@ -76,13 +76,14 @@ func mustJSON(v any) string {
 // forecast is a plausible seven-day forecast starting today.
 func forecast(now time.Time) string {
 	days := 7
-	times := make([]string, days)
+	times, sunrise, sunset := make([]string, days), make([]string, days), make([]string, days)
 	for i := range days {
 		times[i] = now.AddDate(0, 0, i).Format(time.DateOnly)
+		sunrise[i], sunset[i] = times[i]+"T07:30", times[i]+"T17:30"
 	}
 	precip := []any{10, 40, 80, 20, 0, 5, 60}
 	return mustJSON(map[string]any{
-		"timezone": "Europe/Berlin",
+		"timezone": "Europe/Berlin", "utc_offset_seconds": 3600,
 		"current": map[string]any{
 			"temperature_2m": 14.2, "apparent_temperature": 12.8, "relative_humidity_2m": 68,
 			"wind_speed_10m": 11.5, "weather_code": 2, "is_day": 1,
@@ -93,6 +94,8 @@ func forecast(now time.Time) string {
 			"temperature_2m_max":            []float64{16, 15, 12, 14, 17, 18, 13},
 			"temperature_2m_min":            []float64{8, 9, 7, 6, 7, 9, 8},
 			"precipitation_probability_max": precip,
+			"sunrise":                       sunrise,
+			"sunset":                        sunset,
 		},
 	})
 }

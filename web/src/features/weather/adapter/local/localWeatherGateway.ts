@@ -17,6 +17,8 @@ export class WeatherNeedsServerError extends Error {
 
 /** The subset of Open-Meteo's forecast response the widget shows. */
 interface ForecastPayload {
+  /** The place's offset; daily times are local wall clock times without it. */
+  utc_offset_seconds?: number;
   current?: {
     temperature_2m?: number;
     apparent_temperature?: number;
@@ -32,7 +34,17 @@ interface ForecastPayload {
     temperature_2m_max?: number[];
     temperature_2m_min?: number[];
     precipitation_probability_max?: (number | null)[];
+    sunrise?: string[];
+    sunset?: string[];
   };
+}
+
+/** A wall clock time such as "2026-11-10T07:41" in the place's zone; null when missing. */
+function localTime(value: string | undefined, offsetSeconds: number): Date | null {
+  const m = value ? /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(value) : null;
+  if (!m) return null;
+  const [, y, mo, d, h, mi] = m.map(Number) as [number, number, number, number, number, number];
+  return new Date(Date.UTC(y, mo - 1, d, h, mi) - offsetSeconds * 1000);
 }
 
 interface GeocodingPayload {
@@ -43,6 +55,7 @@ interface GeocodingPayload {
 export function toForecast(p: ForecastPayload, now: Date): Forecast {
   const c = p.current ?? {};
   const d = p.daily ?? {};
+  const offset = p.utc_offset_seconds ?? 0;
   const days = (d.time ?? []).flatMap((day, i) => {
     const code = d.weather_code?.[i];
     const max = d.temperature_2m_max?.[i];
@@ -56,6 +69,8 @@ export function toForecast(p: ForecastPayload, now: Date): Forecast {
         max,
         code,
         precipitationProbability: d.precipitation_probability_max?.[i] ?? 0,
+        sunrise: localTime(d.sunrise?.[i], offset),
+        sunset: localTime(d.sunset?.[i], offset),
       },
     ];
   });
@@ -97,7 +112,8 @@ export class LocalWeatherGateway implements WeatherGateway {
       longitude: lon.toFixed(2),
       current:
         'temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code,is_day',
-      daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max',
+      daily:
+        'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset',
       timezone: 'auto',
       forecast_days: String(FORECAST_DAYS),
     });

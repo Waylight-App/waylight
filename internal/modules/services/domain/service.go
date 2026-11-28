@@ -37,6 +37,10 @@ type Service struct {
 	Hidden bool
 	// Edited records a manual change of a discovered tile.
 	Edited bool
+	// Example tiles come from the sample data (#854). They are left out of
+	// the status summaries and removed with the sample data; editing one
+	// makes it an own service.
+	Example bool
 }
 
 // ErrNoMAC is returned when waking a service without MAC address.

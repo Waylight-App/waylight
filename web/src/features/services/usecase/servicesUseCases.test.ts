@@ -17,6 +17,7 @@ const svc = (id: string): Service => ({
   certExpiresSoon: false,
   container: '',
   hidden: false,
+  example: false,
   mac: '',
 });
 
@@ -26,6 +27,7 @@ function setup() {
     create: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
+    discardExamples: vi.fn(),
     reorder: vi.fn().mockResolvedValue(undefined),
     checkNow: vi.fn(),
     history: vi.fn(),

@@ -29,6 +29,11 @@ export function useTonight(source: () => { tonight: TonightUseCases; config: Rec
 
   $effect(() => {
     const { tonight, config } = source();
+    return tonight.watch(config, (w) => (weather = w));
+  });
+
+  $effect(() => {
+    const { tonight, config } = source();
     return poll(
       () =>
         tonight

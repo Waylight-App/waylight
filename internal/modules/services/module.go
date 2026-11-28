@@ -84,6 +84,7 @@ func (m *Module) ConfigRoutes() []string {
 		"PUT /api/services/order",
 		"PUT /api/services/{id}",
 		"DELETE /api/services/{id}",
+		"DELETE /api/services/examples",
 	}
 }
 
@@ -140,6 +141,7 @@ func (m *Module) RegisterRoutes(r modules.Router) {
 	r.Protected("PUT /api/services/discovery", m.disc.Save)
 	r.Protected("POST /api/services/discovery/sync", m.disc.Sync)
 	r.Protected("PUT /api/services/{id}", h.Update)
+	r.Protected("DELETE /api/services/examples", h.DiscardExamples)
 	r.Protected("DELETE /api/services/{id}", h.Delete)
 	r.Protected("POST /api/services/{id}/wake", h.Wake)
 }

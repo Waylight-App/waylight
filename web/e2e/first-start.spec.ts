@@ -113,17 +113,18 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await expect(page.locator('.hero h1')).toHaveText(/, Sam$/);
 
   // Only the template's tab is left (a single tab shows no tab bar), laid
-  // out in zones; the owner sees System.
+  // out in zones. System holds only the services widget, which is empty
+  // once the example services are gone (#854), so the zone stays hidden.
   await expect(page.getByRole('button', { name: 'Server', exact: true })).toHaveCount(0);
   for (const [zone, heading] of [
     ['today', 'Today'],
     ['mine', 'My things'],
-    ['system', 'System'],
   ] as const) {
     await expect(
       page.locator(`section[data-zone="${zone}"]`).getByRole('heading', { name: heading }),
     ).toBeVisible();
   }
+  await expect(page.locator('section[data-zone="system"]')).toHaveCount(0);
 
   const dashboard = (await (await page.request.get('/api/dashboard')).json()) as {
     tabs: {
@@ -144,6 +145,11 @@ test('first start asks the essentials, offers the templates and Family replaces 
   expect(stored).toMatchObject({ greetingName: 'Sam', language: 'en' });
   const places = (await (await page.request.get('/api/places')).json()) as { name: string; lat: number }[];
   expect(places).toEqual([expect.objectContaining({ name: 'Home', lat: 53.14 })]);
-  // The example data of the modules stays.
+  // The example data of the modules stays, except the example services (#854):
+  // they go with the example tabs, and without an own service the status
+  // pill says so and leads to adding one.
   expect(((await (await page.request.get('/api/todos')).json()) as unknown[]).length).toBeGreaterThan(0);
+  expect(await (await page.request.get('/api/services')).json()).toEqual([]);
+  await page.getByRole('button', { name: /^No services yet/ }).click();
+  await expect(page.getByRole('dialog', { name: /Settings/ })).toBeVisible();
 });

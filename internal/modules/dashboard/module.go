@@ -52,7 +52,7 @@ func New(db *sql.DB, ids kernel.IDGenerator, clock kernel.Clock, widgetKinds []s
 	return &Module{Transferable: modules.Transferable{DB: db, Tables: gateway.TransferTables},
 		handlers: controller.NewHandlers(usecase.NewGetDashboard(deps), usecase.NewManageTabs(deps), usecase.NewManageWidgets(deps),
 			usecase.NewManageTemplates(deps)),
-		builtin:  controller.NewBuiltinHandlers(usecase.NewBuiltinTemplates(deps, builtinTemplates(), configfile.MergeConfig)),
+		builtin:  controller.NewBuiltinHandlers(usecase.NewBuiltinTemplates(deps, builtinTemplates(), configfile.MergeConfig, nil)),
 		sample:   controller.NewSampleHandlers(usecase.NewSampleTabs(deps)),
 		deps:     deps,
 		seed:     usecase.NewSeedSampleData(deps, usecase.SampleLayout(string(weatherConfig))),
@@ -67,6 +67,12 @@ func New(db *sql.DB, ids kernel.IDGenerator, clock kernel.Clock, widgetKinds []s
 func (m *Module) UseShowcase(weather SampleWeather) {
 	weatherConfig, _ := json.Marshal(map[string]any{"lat": weather.Lat, "lon": weather.Lon, "label": weather.Label, "days": 4}) // plain map, cannot fail
 	m.seed = usecase.NewSeedShowcase(m.deps, usecase.ShowcaseLayout(string(weatherConfig)))
+}
+
+// UseSharedSetup lets household templates set up shared records such as the
+// shopping list (#871). Call it before the module is registered.
+func (m *Module) UseSharedSetup(s usecase.SharedSetup) {
+	m.builtin = controller.NewBuiltinHandlers(usecase.NewBuiltinTemplates(m.deps, builtinTemplates(), configfile.MergeConfig, s))
 }
 
 // ConfigSection implements modules.Configurable.

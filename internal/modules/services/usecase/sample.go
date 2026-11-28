@@ -40,6 +40,7 @@ func (uc *seedSampleData) Execute(ctx context.Context) (bool, error) {
 		if err != nil {
 			return false, err
 		}
+		s.Example = true
 		if err := uc.d.Repo.Create(ctx, s); err != nil {
 			return false, fmt.Errorf("create service: %w", err)
 		}

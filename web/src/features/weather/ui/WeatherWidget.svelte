@@ -10,6 +10,7 @@
     forecastHint,
     type HintKind,
     type HealthReport,
+    isDayAt,
     parseWeatherConfig,
     severityColors,
     validity,
@@ -60,6 +61,20 @@
     return poll(load, POLL_MS);
   });
 
+  // Every display shows the newest observation, whoever loaded it (#853).
+  $effect(() => {
+    const c = cfg;
+    if (!c) return;
+    return weather.watch(c, (f) => ((forecast = f), (error = '')));
+  });
+
+  // Day and night follow sunrise and sunset, so the icon changes without a new forecast.
+  let clock = $state(new Date());
+  $effect(() => {
+    const id = setInterval(() => (clock = new Date()), 60_000);
+    return () => clearInterval(id);
+  });
+
   const weekday = (d: Date) => d.toLocaleDateString(intlLocale(), { weekday: 'short' });
   const deg = (v: number) => `${Math.round(v)}°`;
 
@@ -83,7 +98,7 @@
 {:else if error && !forecast}
   <p class="error">{error}</p>
 {:else if forecast}
-  {@const now = describe(forecast.code, forecast.isDay)}
+  {@const now = describe(forecast.code, isDayAt(forecast, clock))}
   {#each warnings as w (w.id)}
     <button
       type="button"

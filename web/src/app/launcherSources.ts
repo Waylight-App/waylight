@@ -17,6 +17,7 @@ export function launcherSources(c: Container, modules: Set<string>): LauncherSou
             url: s.url,
             state: s.state,
             latencyMs: s.latencyMs,
+            example: s.example,
           }))
       : null,
     bookmarks: modules.has('bookmarks')

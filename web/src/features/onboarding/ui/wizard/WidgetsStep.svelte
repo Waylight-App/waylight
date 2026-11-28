@@ -113,7 +113,7 @@
       for (const kind of kinds) tab = { ...tab, widgets: [...tab.widgets, await addOfKind(uc, tab, kind)] };
     }
     // A choice, also the empty one, replaces the example tabs of the setup.
-    if (widgets?.sample && (kinds.length > 0 || template === EMPTY)) await uc.discardSample();
+    if (widgets?.sample && (kinds.length > 0 || template === EMPTY)) await widgets.discardSample();
     session.selection = { template, kinds: [...kinds] };
     session.created = [...kinds];
   }

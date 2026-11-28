@@ -89,6 +89,39 @@ func TestForecastCacheAside(t *testing.T) {
 	}
 }
 
+// sunProvider reports a day flag from the fetch and the sun times of the day.
+type sunProvider struct{ fakeProvider }
+
+func (s *sunProvider) Forecast(ctx context.Context, loc domain.Location) (domain.Forecast, error) {
+	f, err := s.fakeProvider.Forecast(ctx, loc)
+	f.Current.IsDay = true
+	f.Days = []domain.Day{{
+		Sunrise: time.Date(2026, 1, 1, 8, 0, 0, 0, time.UTC), Sunset: time.Date(2026, 1, 1, 16, 0, 0, 0, time.UTC),
+	}}
+	return f, err
+}
+
+// The tile (compact state), the panel and the top bar (forecast) read one
+// observation; its day/night state follows the sunset, not the fetch (#853).
+func TestOneObservationForEveryDisplay(t *testing.T) {
+	ctx := context.Background()
+	c := &clock{now: time.Date(2026, 1, 1, 15, 50, 0, 0, time.UTC)}
+	uc := NewWeather(&sunProvider{}, newFakeCache(), c)
+	panel, _ := uc.GetForecast(ctx, ForecastRequest{Lat: 53.14, Lon: 8.21})
+	if !panel.IsDay {
+		t.Fatal("before sunset it is day")
+	}
+	c.now = c.now.Add(15 * time.Minute)
+	panel, _ = uc.GetForecast(ctx, ForecastRequest{Lat: 53.14, Lon: 8.21})
+	tile := CompactState(panel)
+	if panel.IsDay || panel.Temperature != 1 || tile.Title.Params["temp"] != "1" {
+		t.Fatalf("after sunset the cached observation must read as night: %+v, tile %+v", panel, tile)
+	}
+	if panel.Days[0].Sunset.IsZero() {
+		t.Fatal("the sun times must reach the clients")
+	}
+}
+
 func TestRefreshAllForgetsUnusedLocations(t *testing.T) {
 	ctx := context.Background()
 	p := &fakeProvider{}
