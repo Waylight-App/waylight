@@ -275,6 +275,8 @@ export const de: Record<BaseMessageKey, string> = {
   'dashboard.delete_template': 'Vorlage {name} löschen',
   'dashboard.tab': '+ Tab',
   'dashboard.dashboard_tabs': 'Dashboard-Tabs',
+  'dashboard.widgets_nav': 'Widgets',
+  'dashboard.widgets_nav_hint': 'Diesem Tab ein Widget hinzufügen',
   'dashboard.move_tab_left': 'Tab nach links',
   'dashboard.move_tab_right': 'Tab nach rechts',
   'dashboard.tab_background': 'Tab-Hintergrund',

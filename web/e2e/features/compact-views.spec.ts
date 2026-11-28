@@ -99,7 +99,7 @@ test('a compact view ticks off the next habit with its quick action (#598)', asy
   await expect(page.getByRole('dialog', { name: 'Habits' })).toHaveCount(0);
 });
 
-test('status widgets fold into the system summary and come back (#593)', async ({ page }) => {
+test('status widgets fold into the system summary and come back (#593, #846)', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
@@ -121,13 +121,41 @@ test('status widgets fold into the system summary and come back (#593)', async (
   await account(page, 'Done');
 
   const summary = page.getByTestId('system-summary');
-  await expect(summary).toContainText('Services:');
   const grid = page.locator('.grid [data-widget-id]');
+  // Nothing needs attention yet, so there is no summary (#846).
   await expect(grid).toHaveCount(2);
-  await summary.getByRole('button', { name: 'Collapse' }).click();
-  await expect(grid).toHaveCount(0);
-  // No "empty tab" hint while the widgets are folded away.
-  await expect(page.getByText('This tab is empty')).toHaveCount(0);
-  await summary.getByRole('button', { name: 'Show all' }).click();
+  await expect(summary).toHaveCount(0);
+
+  // A failed backup run brings the summary with all its items.
+  const status = await (await page.request.get('/api/auth/status')).json();
+  const headers = { 'X-CSRF-Token': status.csrfToken as string };
+  const created = await page.request.post('/api/backup-status/sources', {
+    headers,
+    data: { name: 'Nightly', maxAgeHours: 24 },
+  });
+  expect(created.ok()).toBe(true);
+  const { source, pingUrl } = await created.json();
+  try {
+    expect((await page.request.post(new URL(pingUrl, 'http://localhost').pathname + '/fail')).ok()).toBe(
+      true,
+    );
+    await page.reload();
+    await expect(summary).toContainText('Backups:');
+    await expect(summary).toContainText('Services:');
+    await summary.getByRole('button', { name: 'Collapse' }).click();
+    await expect(grid).toHaveCount(0);
+    // No "empty tab" hint while the widgets are folded away.
+    await expect(page.getByText('This tab is empty')).toHaveCount(0);
+    await summary.getByRole('button', { name: 'Show all' }).click();
+    await expect(grid).toHaveCount(2);
+    await summary.getByRole('button', { name: 'Collapse' }).click();
+    await expect(grid).toHaveCount(0);
+  } finally {
+    await page.request.delete(`/api/backup-status/sources/${source.id}`, { headers });
+  }
+
+  // All healthy again: the summary goes, and a fold cannot hide the widgets.
+  await page.reload();
   await expect(grid).toHaveCount(2);
+  await expect(summary).toHaveCount(0);
 });

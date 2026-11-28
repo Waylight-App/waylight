@@ -231,6 +231,7 @@
     collapsed: boolean;
     toggle: () => void;
     view: (widgetId: string) => void;
+    quiet: (quiet: boolean) => void;
   })}
     {@const sources = statusSources(o.status)}
     {#if !container.localMode}
@@ -242,6 +243,7 @@
           collapsed={o.collapsed}
           ontoggle={o.toggle}
           onview={o.view}
+          onquiet={o.quiet}
         />
       {/await}
     {/if}

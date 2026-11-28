@@ -28,10 +28,13 @@
     collapsed: boolean;
     ontoggle: () => void;
     onview: (widgetId: string) => void;
+    /** Tells whether the tab is known to be all healthy, so the summary stays hidden (#846). */
+    onquiet: (quiet: boolean) => void;
   }
-  let { compact, tabId, sources, collapsed, ontoggle, onview }: Props = $props();
+  let { compact, tabId, sources, collapsed, ontoggle, onview, onquiet }: Props = $props();
 
   let states = $state<Record<string, CompactState>>({});
+  let loaded = $state(false);
 
   async function load() {
     const wanted = sources;
@@ -42,6 +45,7 @@
       if (s && r.status === 'fulfilled') next[s.module] = r.value;
     });
     states = next;
+    loaded = true;
   }
 
   const poll = usePolling();
@@ -70,17 +74,25 @@
     );
     return byUrgency([...fromWidgets, ...listed]);
   });
+
+  const items = $derived(
+    sources.flatMap((s) => {
+      const state = states[s.module];
+      return state ? [{ module: s.module, title: s.title, state }] : [];
+    }),
+  );
+  // The summary only speaks up when something needs attention (#846). One
+  // status widget needs no summary; two or more fold into one line.
+  const shown = $derived(
+    sources.length > 1 && items.some((i) => i.state.level === 'attention' || i.state.level === 'problem'),
+  );
+  // Until the first answer the fold stays as chosen, so a folded tab with a
+  // failure does not flash its widgets; a known healthy tab shows them, as
+  // there is no summary to unfold them from.
+  $effect(() => onquiet(loaded && !shown));
 </script>
 
 <AttentionLine {entries} {onview} />
-<!-- One status widget needs no summary; two or more fold into one line. -->
-{#if sources.length > 1}
-  <SystemSummary
-    items={sources.flatMap((s) => {
-      const state = states[s.module];
-      return state ? [{ module: s.module, title: s.title, state }] : [];
-    })}
-    {collapsed}
-    {ontoggle}
-  />
+{#if shown}
+  <SystemSummary {items} {collapsed} {ontoggle} />
 {/if}
