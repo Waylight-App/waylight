@@ -29,6 +29,8 @@ export interface Service extends ServiceInput {
   container: string;
   /** The container is gone: the tile is kept but not shown on the dashboard. */
   hidden: boolean;
+  /** Example tile of the sample data; it does not count towards the status (#854). */
+  example: boolean;
 }
 
 /** One point of a service's response time history. */

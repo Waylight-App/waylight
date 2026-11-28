@@ -15,6 +15,8 @@ export interface ServicesGateway {
   create(input: ServiceInput): Promise<Service>;
   update(id: string, input: ServiceInput): Promise<Service>;
   delete(id: string): Promise<void>;
+  /** Removes the example tiles of the sample data (#854). */
+  discardExamples(): Promise<void>;
   reorder(ids: string[]): Promise<void>;
   checkNow(): Promise<Service[]>;
   history(hours: number): Promise<Record<string, LatencyPoint[]>>;
@@ -54,6 +56,11 @@ export class ServicesUseCases {
 
   delete(id: string): Promise<void> {
     return this.gateway.delete(id);
+  }
+
+  /** Removes the example tiles; they go away with the sample data (#854). */
+  discardExamples(): Promise<void> {
+    return this.gateway.discardExamples();
   }
 
   /** Moves a service by `delta` positions and persists the order. */

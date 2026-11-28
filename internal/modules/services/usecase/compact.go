@@ -9,13 +9,14 @@ import (
 
 // CompactState sums the services up for the compact view (#594, #597):
 // "11 of 12 running", with the service that is down (or the number of
-// them) as detail. Tiles that lost their container are left out; services
-// not checked yet count as neither up nor down.
+// them) as detail. Tiles that lost their container and example tiles of
+// the sample data (#854) are left out; services not checked yet count as
+// neither up nor down.
 func CompactState(list []ServiceView, now time.Time) kernel.CompactState {
 	total, online, offline := 0, 0, 0
 	var down string
 	for _, s := range list {
-		if s.Hidden {
+		if s.Hidden || s.Example {
 			continue
 		}
 		total++

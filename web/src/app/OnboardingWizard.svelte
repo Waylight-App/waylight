@@ -106,6 +106,10 @@
             .filter((d) => widgetKinds.has(d.type.kind))
             .map((d) => ({ type: d.type, icon: d.icon })),
           sample,
+          discardSample: async () => {
+            await container.dashboard.discardSample();
+            if (modules.has('services')) await container.services.discardExamples();
+          },
         }
       : undefined,
     extraSteps: onboardingSteps.map((s) => ({ id: s.id, title: s.title() })),

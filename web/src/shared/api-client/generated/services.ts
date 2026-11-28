@@ -64,6 +64,11 @@ export interface ServiceDTO {
    */
   container: string;
   hidden: boolean;
+  /**
+   * Example tiles come from the sample data; they do not count towards
+   * the status summaries (#854).
+   */
+  example: boolean;
 }
 /**
  * LatencyPointDTO is one point of a response time history.

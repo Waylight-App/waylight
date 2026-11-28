@@ -23,11 +23,11 @@ var intents = []answers.Intent{
 
 var messages = answers.Messages{
 	answers.English: {
-		"services": "Services: {online} of {total} online", "all_online": "All services are online.",
+		"services": "Services: {online} of {total} online", "all_online": "All services are online.", "none": "No services yet.",
 		"gone": "This service no longer exists.", "online": "online", "offline": "offline", "unknown": "not checked yet",
 	},
 	answers.German: {
-		"services": "Dienste: {online} von {total} online", "all_online": "Alle Dienste sind online.",
+		"services": "Dienste: {online} von {total} online", "all_online": "Alle Dienste sind online.", "none": "Noch keine Dienste.",
 		"gone": "Diesen Dienst gibt es nicht mehr.", "online": "online", "offline": "offline", "unknown": "noch nicht geprüft",
 	},
 }
@@ -80,6 +80,18 @@ func (s *Source) visible(ctx context.Context) ([]usecase.ServiceView, error) {
 	return out, nil
 }
 
+// ownServices leaves out the example tiles of the sample data, which do not
+// count towards the overview (#854).
+func ownServices(list []usecase.ServiceView) []usecase.ServiceView {
+	out := list[:0:0]
+	for _, v := range list {
+		if !v.Example {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
 // Resolve implements answers.Source.
 func (s *Source) Resolve(ctx context.Context, r answers.Request) (answers.Answer, error) {
 	list, err := s.visible(ctx)
@@ -88,6 +100,7 @@ func (s *Source) Resolve(ctx context.Context, r answers.Request) (answers.Answer
 	}
 	l := r.Lang
 	if r.Match.Intent.ID == "services.overview" {
+		list = ownServices(list)
 		var latest time.Time
 		a := answers.Answer{Kind: answers.List, Empty: messages.T(l, "all_online")}
 		for _, v := range list {
@@ -105,6 +118,9 @@ func (s *Source) Resolve(ctx context.Context, r answers.Request) (answers.Answer
 		}
 		a.At = latest
 		a.Title = messages.T(l, "services", "online", len(list)-len(a.Items), "total", len(list))
+		if len(list) == 0 {
+			a.Empty = messages.T(l, "none")
+		}
 		return a, nil
 	}
 	target, _ := r.Match.EntitySlot("service")

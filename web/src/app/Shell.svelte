@@ -222,10 +222,12 @@
   let serviceStatus = $state<ReturnType<typeof statusSummary>>({ kind: 'none', offline: 0 });
   const launcher = $derived(modules ? new LauncherUseCases(launcherSources(container, modules)) : null);
 
-  // Status pill (#189): all online, or how many services are offline.
+  // Status pill (#189): all online, how many services are offline, or no own
+  // service yet (#854).
   $effect(() => {
     const l = launcher;
-    if (!l?.hasServices) return;
+    // The wizard may remove the example services, so the count starts after it.
+    if (!l?.hasServices || wizardStep !== null) return;
     const poll = () =>
       l
         .services()
@@ -646,7 +648,22 @@
           <AttentionBadge {state} onopen={() => void openSettingsAt('attention')} />
         {/await}
       {/if}
-      {#if serviceStatus.kind !== 'none'}
+      {#if serviceStatus.kind === 'empty'}
+        <!-- No own service yet (#854): the pill leads to adding one; guests cannot. -->
+        {#if !container.auth.guest}
+          <button
+            type="button"
+            class="status"
+            data-kind="empty"
+            title={t('launcher.add_service')}
+            onclick={() => void openSettingsAt('services')}
+          >
+            <span class="dot" aria-hidden="true"></span>
+            <span class="long">{t('launcher.no_services_yet')}</span>
+            <span class="add">{t('launcher.add_one')}</span>
+          </button>
+        {/if}
+      {:else if serviceStatus.kind !== 'none'}
         <button
           type="button"
           class="status"
@@ -930,6 +947,12 @@
   }
   .status[data-kind='offline'] .dot {
     background: var(--color-danger);
+  }
+  .status[data-kind='empty'] .dot {
+    background: var(--color-text-subtle);
+  }
+  .status .add {
+    color: var(--color-accent-text);
   }
   /* Icon buttons of the bar: 32 px, subtle until hovered. */
   .icon-btn {

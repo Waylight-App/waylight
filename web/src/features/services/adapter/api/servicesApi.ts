@@ -37,6 +37,7 @@ const toService = (d: ServiceDTO): Service => ({
   certExpiresSoon: d.certExpiresSoon,
   container: d.container,
   hidden: d.hidden,
+  example: d.example,
 });
 
 const toDiscovery = (d: DiscoveryDTO): Discovery => ({
@@ -66,6 +67,9 @@ export class ServicesApi implements ServicesGateway {
   }
   delete(id: string): Promise<void> {
     return this.http.delete(`/api/services/${encodeURIComponent(id)}`);
+  }
+  discardExamples(): Promise<void> {
+    return this.http.delete('/api/services/examples');
   }
   reorder(ids: string[]): Promise<void> {
     const body: OrderDTO = { ids };

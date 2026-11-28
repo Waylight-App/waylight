@@ -65,6 +65,16 @@ func (h *Handlers) Delete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// DiscardExamples handles DELETE /api/services/examples: the example tiles
+// go away with the sample data (#854).
+func (h *Handlers) DiscardExamples(w http.ResponseWriter, r *http.Request) {
+	if err := h.uc.DiscardExamples(r.Context()); err != nil {
+		httpapi.WriteDomainError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // Wake handles POST /api/services/{id}/wake.
 func (h *Handlers) Wake(w http.ResponseWriter, r *http.Request) {
 	if err := h.uc.Wake(r.Context(), r.PathValue("id")); err != nil {

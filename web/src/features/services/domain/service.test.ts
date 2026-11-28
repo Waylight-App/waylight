@@ -24,6 +24,7 @@ const base: Service = {
   certExpiresSoon: false,
   container: '',
   hidden: false,
+  example: false,
   mac: '',
 };
 

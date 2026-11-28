@@ -34,6 +34,8 @@ type ServiceView struct {
 	// Container is set for discovered tiles; Hidden ones lost their container.
 	Container string
 	Hidden    bool
+	// Example tiles come from the sample data (#854).
+	Example bool
 }
 
 // Services is the input port of the services module.
@@ -52,6 +54,8 @@ type Services interface {
 	Uptime(ctx context.Context) ([]UptimeView, error)
 	// Incidents lists outages, newest first; empty serviceID = all services.
 	Incidents(ctx context.Context, serviceID string, limit int) ([]domain.Incident, error)
+	// DiscardExamples removes the example tiles of the sample data (#854).
+	DiscardExamples(ctx context.Context) error
 }
 
 // Waker sends Wake-on-LAN packets (output port).
@@ -174,7 +178,8 @@ func (uc *services) Update(ctx context.Context, id string, in ServiceInput) (Ser
 		return ServiceView{}, err
 	}
 	// A manual edit keeps the link to the container; with the merge rule
-	// "manual wins" the next sync then leaves the tile alone.
+	// "manual wins" the next sync then leaves the tile alone. An edited
+	// example tile is the user's own service from now on.
 	s.Container, s.Hidden, s.Edited = old.Container, old.Hidden, old.Container != ""
 	if err := uc.d.Repo.Update(ctx, s); err != nil {
 		return ServiceView{}, fmt.Errorf("update service: %w", err)
@@ -194,6 +199,24 @@ func (uc *services) Delete(ctx context.Context, id string) error {
 		return fmt.Errorf("delete service: %w", err)
 	}
 	uc.d.Status.Delete(id)
+	return nil
+}
+
+// DiscardExamples implements Services.
+func (uc *services) DiscardExamples(ctx context.Context) error {
+	list, err := uc.d.Repo.List(ctx)
+	if err != nil {
+		return fmt.Errorf("list services: %w", err)
+	}
+	for _, s := range list {
+		if !s.Example {
+			continue
+		}
+		if err := uc.d.Repo.Delete(ctx, s.ID); err != nil {
+			return fmt.Errorf("delete service: %w", err)
+		}
+		uc.d.Status.Delete(s.ID)
+	}
 	return nil
 }
 
@@ -309,7 +332,7 @@ func (uc *services) view(s domain.Service) ServiceView {
 	v := ServiceView{
 		ID: s.ID, Name: s.Name, URL: s.URL, CheckURL: s.CheckURL, Icon: s.Icon, Description: s.Description,
 		SkipTLSVerify: s.SkipTLSVerify, Position: s.Position, State: string(domain.StateUnknown), MAC: string(s.MAC),
-		Container: s.Container, Hidden: s.Hidden,
+		Container: s.Container, Hidden: s.Hidden, Example: s.Example,
 	}
 	if st, ok := uc.d.Status.Get(s.ID); ok {
 		v.State, v.HTTPStatus, v.LatencyMs, v.CheckedAt, v.Error = string(st.State), st.HTTPStatus, st.Latency.Milliseconds(), st.CheckedAt, st.Error
