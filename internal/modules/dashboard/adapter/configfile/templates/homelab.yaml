@@ -6,45 +6,44 @@
 # at four columns each.
 id: homelab
 title: Homelab
+needs: [location]
 tab:
   name: Homelab
   zones: true
   widgets:
-    - kind: clock
-      at: { x: 0, y: 0, w: 9, h: 2 }
+    - kind: tonight
+      at: { x: 0, y: 0, w: 6, h: 4 }
       zone: today
-      phone: { order: 1, rows: 2, size: small }
-      config: { showDate: true, showSeconds: false }
+      phone: { order: 1, rows: 4 }
     - kind: todos
-      at: { x: 9, y: 0, w: 3, h: 2 }
-      size: small
+      at: { x: 6, y: 0, w: 6, h: 4 }
       zone: today
-      phone: { order: 2, rows: 2, size: small }
+      phone: { order: 2, rows: 4 }
     - kind: bookmarks
-      at: { x: 0, y: 2, w: 12, h: 4 }
+      at: { x: 0, y: 4, w: 12, h: 4 }
       zone: mine
       phone: { order: 3, rows: 4 }
     - kind: services
-      at: { x: 0, y: 6, w: 8, h: 4 }
+      at: { x: 0, y: 8, w: 8, h: 4 }
       zone: system
       phone: { order: 4, rows: 4 }
     - kind: backup-status
-      at: { x: 8, y: 6, w: 4, h: 4 }
+      at: { x: 8, y: 8, w: 4, h: 4 }
       size: medium
       zone: system
       phone: { order: 5, rows: 4 }
     - kind: system
-      at: { x: 0, y: 10, w: 4, h: 4 }
+      at: { x: 0, y: 12, w: 4, h: 4 }
       size: medium
       zone: system
       phone: { order: 6, rows: 4 }
     - kind: docker
-      at: { x: 4, y: 10, w: 4, h: 4 }
+      at: { x: 4, y: 12, w: 4, h: 4 }
       size: medium
       zone: system
       phone: { order: 7, rows: 4 }
     - kind: diskhealth
-      at: { x: 8, y: 10, w: 4, h: 4 }
+      at: { x: 8, y: 12, w: 4, h: 4 }
       size: medium
       zone: system
       phone: { order: 8, rows: 4 }

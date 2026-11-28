@@ -114,18 +114,20 @@ answered.
 
 | Template | Today | My things | System (admins) |
 | --- | --- | --- | --- |
-| Family | Weather, to-dos, calendar, waste collection, parcels, meal plan, chores, family board | Shopping list, birthdays, notes | Services |
-| Homelab | Clock, to-dos | Bookmarks | Services, backups, host metrics, containers, drive health |
-| Work | Calendar, to-dos, focus timer | Mail, notes, bookmarks | Services |
-| Wall tablet | Large clock, weather, calendar, departures | | Services |
+| Family | Tonight card, to-dos, calendar, waste collection, parcels, meal plan, chores, family board | Shopping list, birthdays, notes | Services |
+| Homelab | Tonight card, to-dos | Bookmarks | Services, backups, host metrics, containers, drive health |
+| Work | Tonight card, calendar, to-dos, focus timer | Mail, notes, bookmarks | Services |
+| Wall tablet | Tonight card, weather, calendar, departures | | Services |
 
 A template creates a tab laid out in [zones](#zones) with its widgets
-placed, including the phone layout. Every row of a zone fills the full
-width: Family starts with two rows of small tiles, Homelab and Work use
-medium tiles of a third of the width, and the services span the System zone.
+placed, including the phone layout. Every template starts with the Tonight card
+in the Today zone, and every row of a zone fills the full width: Family adds
+small tiles beside it and medium tiles below, Homelab and Work pair it with
+half-width tiles, and the services span the System zone.
 Status widgets in the System zone feed the attention line.
-Templates with a weather widget ask for a location first (search or *Use my
-location*; *Set it up later* skips it). Widgets that need a service or a
+Every template asks for a location first (search or *Use my
+location*; *Set it up later* skips it), because the Tonight card shows its
+weather. Widgets that need a service or a
 setting show *Set up* or what is missing. Kiosk mode, night dimming and large
 text for a wall tablet are set on the kiosk display itself;
 [Set up a wall tablet](accounts.md#setting-up-a-wall-tablet) does both in
