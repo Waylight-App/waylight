@@ -38,7 +38,9 @@ func NewOpenMeteo(client *http.Client, forecastURL, geocodingURL, language strin
 // forecastPayload is the subset of the Open-Meteo forecast response we use.
 type forecastPayload struct {
 	Timezone string `json:"timezone"`
-	Current  struct {
+	// UTCOffset is the place's offset; daily times come as local wall clock times without it.
+	UTCOffset int `json:"utc_offset_seconds"`
+	Current   struct {
 		Temperature         float64 `json:"temperature_2m"`
 		ApparentTemperature float64 `json:"apparent_temperature"`
 		Humidity            float64 `json:"relative_humidity_2m"`
@@ -54,6 +56,8 @@ type forecastPayload struct {
 		TemperatureMax []float64  `json:"temperature_2m_max"`
 		TemperatureMin []float64  `json:"temperature_2m_min"`
 		Precipitation  []*float64 `json:"precipitation_probability_max"`
+		Sunrise        []string   `json:"sunrise"`
+		Sunset         []string   `json:"sunset"`
 	} `json:"daily"`
 }
 
@@ -63,7 +67,7 @@ func (o *OpenMeteo) Forecast(ctx context.Context, loc domain.Location) (domain.F
 	q.Set("latitude", strconv.FormatFloat(loc.Lat(), 'f', 2, 64))
 	q.Set("longitude", strconv.FormatFloat(loc.Lon(), 'f', 2, 64))
 	q.Set("current", "temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code,is_day")
-	q.Set("daily", "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max")
+	q.Set("daily", "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset")
 	q.Set("timezone", "auto")
 	q.Set("forecast_days", strconv.Itoa(forecastDays))
 	var p forecastPayload
@@ -83,6 +87,7 @@ func (o *OpenMeteo) Forecast(ctx context.Context, loc domain.Location) (domain.F
 		f.Current.HasWindDirection = true
 	}
 	d := p.Daily
+	zone := time.FixedZone("", p.UTCOffset)
 	for i, day := range d.Time {
 		if i >= len(d.WeatherCode) || i >= len(d.TemperatureMax) || i >= len(d.TemperatureMin) {
 			break
@@ -98,9 +103,23 @@ func (o *OpenMeteo) Forecast(ctx context.Context, loc domain.Location) (domain.F
 		f.Days = append(f.Days, domain.Day{
 			Date: date, WeatherCode: d.WeatherCode[i], TemperatureMax: d.TemperatureMax[i],
 			TemperatureMin: d.TemperatureMin[i], PrecipitationProbability: precip,
+			Sunrise: localTime(d.Sunrise, i, zone), Sunset: localTime(d.Sunset, i, zone),
 		})
 	}
 	return f, nil
+}
+
+// localTime reads the i-th wall clock time ("2026-11-10T07:58") in the
+// place's zone; zero when it is missing, as on polar days.
+func localTime(values []string, i int, zone *time.Location) time.Time {
+	if i >= len(values) {
+		return time.Time{}
+	}
+	t, err := time.ParseInLocation("2006-01-02T15:04", values[i], zone)
+	if err != nil {
+		return time.Time{}
+	}
+	return t
 }
 
 type geocodingPayload struct {

@@ -3,6 +3,7 @@ package domain
 import (
 	"math"
 	"testing"
+	"time"
 )
 
 func TestNewLocation(t *testing.T) {
@@ -29,5 +30,36 @@ func TestNormalizeDegrees(t *testing.T) {
 		if got := NormalizeDegrees(in); got != want {
 			t.Errorf("NormalizeDegrees(%v) = %v, want %v", in, got, want)
 		}
+	}
+}
+
+func TestIsDayAt(t *testing.T) {
+	at := func(day, h, m int) time.Time { return time.Date(2026, 11, day, h, m, 0, 0, time.UTC) }
+	f := Forecast{
+		// The service said "day" at the fetch; the sun times decide later.
+		Current: Current{IsDay: true},
+		Days: []Day{
+			{Sunrise: at(28, 7, 0), Sunset: at(28, 16, 0)},
+			{Sunrise: at(29, 7, 2), Sunset: at(29, 15, 59)},
+		},
+	}
+	for name, c := range map[string]struct {
+		now  time.Time
+		want bool
+	}{
+		"before the first sunrise": {at(28, 5, 0), false},
+		"at sunrise":               {at(28, 7, 0), true},
+		"afternoon":                {at(28, 15, 59), true},
+		"at sunset":                {at(28, 16, 0), false},
+		"night between two days":   {at(29, 2, 0), false},
+		"second day":               {at(29, 12, 0), true},
+		"past the forecast":        {at(30, 20, 0), true},
+	} {
+		if got := f.IsDayAt(c.now); got != c.want {
+			t.Errorf("%s: IsDayAt = %v, want %v", name, got, c.want)
+		}
+	}
+	if !(Forecast{Current: Current{IsDay: true}, Days: []Day{{}}}).IsDayAt(at(28, 23, 0)) {
+		t.Error("without sun times the service's flag must be used")
 	}
 }

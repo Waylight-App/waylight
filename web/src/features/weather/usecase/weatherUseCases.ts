@@ -24,10 +24,18 @@ export const FORECAST_SHARE_MS = 60_000;
 /** Minimum length of a place search. */
 export const MIN_PLACE_QUERY = 2;
 
+/** The forecast with the days a widget shows. */
+function trim(f: Forecast, cfg: Pick<WeatherConfig, 'days'>): Forecast {
+  return { ...f, days: f.days.slice(0, cfg.days) };
+}
+
 /** Application logic of the weather feature. */
 export class WeatherUseCases {
   /** Recent forecasts per place, so the widget and the greeting line (#167) share one request. */
   private readonly recent = new Map<string, { at: number; forecast: Promise<Forecast> }>();
+  /** The newest observation per place and who shows it (#853). */
+  private readonly latest = new Map<string, Forecast>();
+  private readonly watchers = new Map<string, Set<(f: Forecast) => void>>();
 
   constructor(
     private readonly gateway: WeatherGateway,
@@ -43,8 +51,30 @@ export class WeatherUseCases {
       this.recent.set(key, hit);
       hit.forecast.catch(() => this.recent.delete(key)); // a failure is not shared
     }
-    const f = await hit.forecast;
-    return { ...f, days: f.days.slice(0, cfg.days) };
+    return trim(this.keep(key, await hit.forecast), cfg);
+  }
+
+  /**
+   * Calls back with every newer observation of the place, whoever loaded it,
+   * so the tile, the detail panel and the top bar always show the same one
+   * (#853). Returns the function that stops watching.
+   */
+  watch(cfg: WeatherConfig, onforecast: (f: Forecast) => void): () => void {
+    const key = `${cfg.lat},${cfg.lon}`;
+    const cb = (f: Forecast) => onforecast(trim(f, cfg));
+    let set = this.watchers.get(key);
+    if (!set) this.watchers.set(key, (set = new Set()));
+    set.add(cb);
+    return () => set.delete(cb);
+  }
+
+  /** Keeps the newest observation of a place; an older answer that arrives late gives way to it. */
+  private keep(key: string, f: Forecast): Forecast {
+    const known = this.latest.get(key);
+    if (known && known.updatedAt >= f.updatedAt) return known;
+    this.latest.set(key, f);
+    for (const cb of this.watchers.get(key) ?? []) cb(f);
+    return f;
   }
 
   /** Searches places; short queries return no results without a request. */
