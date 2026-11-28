@@ -14,7 +14,14 @@ export function parseZone(value: string | undefined): Zone | undefined {
 }
 
 /** Kinds that answer "what is today like": time, weather, the Tonight card, next event, waste, to-dos. */
-const TODAY_KINDS: ReadonlySet<string> = new Set(['clock', 'tonight', 'weather', 'calendar', 'waste', 'todos']);
+const TODAY_KINDS: ReadonlySet<string> = new Set([
+  'clock',
+  'tonight',
+  'weather',
+  'calendar',
+  'waste',
+  'todos',
+]);
 
 /** Picker categories whose widgets watch the server or the network. */
 const SYSTEM_CATEGORIES: ReadonlySet<WidgetCategory> = new Set(['server', 'network']);
