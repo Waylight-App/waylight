@@ -32,15 +32,16 @@ type Repository struct{ db *sql.DB }
 // NewRepository returns a repository backed by db.
 func NewRepository(db *sql.DB) *Repository { return &Repository{db: db} }
 
-const columns = `id, name, url, check_url, icon, description, skip_tls_verify, position, mac, container, hidden, edited`
+const columns = `id, name, url, check_url, icon, description, skip_tls_verify, position, mac, container, hidden, edited, example`
 
 func scan(s interface{ Scan(...any) error }) (domain.Service, error) {
 	var svc domain.Service
-	var skip, hidden, edited int
+	var skip, hidden, edited, example int
 	var mac string
 	err := s.Scan(&svc.ID, &svc.Name, &svc.URL, &svc.CheckURL, &svc.Icon, &svc.Description, &skip, &svc.Position, &mac,
-		&svc.Container, &hidden, &edited)
+		&svc.Container, &hidden, &edited, &example)
 	svc.SkipTLSVerify, svc.MAC, svc.Hidden, svc.Edited = skip == 1, kernel.MAC(mac), hidden == 1, edited == 1
+	svc.Example = example == 1
 	return svc, err
 }
 
@@ -76,9 +77,9 @@ func (r *Repository) Get(ctx context.Context, id string) (domain.Service, error)
 
 // Create inserts a service.
 func (r *Repository) Create(ctx context.Context, s domain.Service) error {
-	_, err := r.db.ExecContext(ctx, `INSERT INTO services (`+columns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+	_, err := r.db.ExecContext(ctx, `INSERT INTO services (`+columns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		s.ID, s.Name, s.URL, s.CheckURL, s.Icon, s.Description, boolInt(s.SkipTLSVerify), s.Position, string(s.MAC),
-		s.Container, boolInt(s.Hidden), boolInt(s.Edited))
+		s.Container, boolInt(s.Hidden), boolInt(s.Edited), boolInt(s.Example))
 	if err != nil {
 		return fmt.Errorf("insert service: %w", err)
 	}
@@ -88,9 +89,9 @@ func (r *Repository) Create(ctx context.Context, s domain.Service) error {
 // Update stores all fields of a service.
 func (r *Repository) Update(ctx context.Context, s domain.Service) error {
 	_, err := r.db.ExecContext(ctx, `UPDATE services SET name = ?, url = ?, check_url = ?, icon = ?, description = ?,
-		skip_tls_verify = ?, position = ?, mac = ?, container = ?, hidden = ?, edited = ? WHERE id = ?`,
+		skip_tls_verify = ?, position = ?, mac = ?, container = ?, hidden = ?, edited = ?, example = ? WHERE id = ?`,
 		s.Name, s.URL, s.CheckURL, s.Icon, s.Description, boolInt(s.SkipTLSVerify), s.Position, string(s.MAC),
-		s.Container, boolInt(s.Hidden), boolInt(s.Edited), s.ID)
+		s.Container, boolInt(s.Hidden), boolInt(s.Edited), boolInt(s.Example), s.ID)
 	if err != nil {
 		return fmt.Errorf("update service: %w", err)
 	}
@@ -129,7 +130,7 @@ func (r *Repository) ReplaceManual(ctx context.Context, list []domain.Service) e
 		}
 	}
 	for _, s := range list {
-		if _, err := tx.ExecContext(ctx, `INSERT INTO services (`+columns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '', 0, 0)
+		if _, err := tx.ExecContext(ctx, `INSERT INTO services (`+columns+`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '', 0, 0, 0)
 			ON CONFLICT (id) DO UPDATE SET name = excluded.name, url = excluded.url, check_url = excluded.check_url,
 			icon = excluded.icon, description = excluded.description, skip_tls_verify = excluded.skip_tls_verify,
 			position = excluded.position, mac = excluded.mac`,

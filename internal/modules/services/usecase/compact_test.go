@@ -15,7 +15,11 @@ func TestCompactState(t *testing.T) {
 	if s := CompactState(nil, now); s.Title.String() != "No services yet" || s.Level != kernel.CompactNone || !s.Empty {
 		t.Fatalf("empty: %+v", s)
 	}
-	s := CompactState([]ServiceView{up("Wiki"), up("Git"), {Name: "Gone", State: "offline", Hidden: true}}, now)
+	// Example tiles of the sample data do not count (#854).
+	if s := CompactState([]ServiceView{{Name: "DuckDuckGo", State: "online", Example: true}}, now); !s.Empty {
+		t.Fatalf("examples only: %+v", s)
+	}
+	s := CompactState([]ServiceView{up("Wiki"), up("Git"), {Name: "Gone", State: "offline", Hidden: true}, {Name: "Ex", State: "offline", Example: true}}, now)
 	if s.Title.String() != "2 of 2 running" || s.Level != kernel.CompactOK || s.Empty || s.Detail.Template != "" || *s.Count != 0 {
 		t.Fatalf("all up: %+v", s)
 	}

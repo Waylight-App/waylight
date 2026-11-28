@@ -30,6 +30,9 @@ type ServiceDTO struct {
 	// manual tiles; Hidden tiles lost their container (#78).
 	Container string `json:"container"`
 	Hidden    bool   `json:"hidden"`
+	// Example tiles come from the sample data; they do not count towards
+	// the status summaries (#854).
+	Example bool `json:"example"`
 }
 
 // LatencyPointDTO is one point of a response time history.
@@ -45,7 +48,7 @@ func Service(v usecase.ServiceView) ServiceDTO {
 		ID: v.ID, Name: v.Name, URL: v.URL, CheckURL: v.CheckURL, Icon: v.Icon, Description: v.Description,
 		SkipTLSVerify: v.SkipTLSVerify, MAC: v.MAC, Position: v.Position, State: v.State, HTTPStatus: v.HTTPStatus,
 		LatencyMs: v.LatencyMs, CheckedAt: v.CheckedAt, Error: v.Error, CertExpiresSoon: v.CertExpiresSoon,
-		Container: v.Container, Hidden: v.Hidden,
+		Container: v.Container, Hidden: v.Hidden, Example: v.Example,
 	}
 	if !v.CertExpiresAt.IsZero() {
 		t := v.CertExpiresAt

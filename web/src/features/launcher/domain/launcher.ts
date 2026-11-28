@@ -13,6 +13,8 @@ export interface LauncherService {
   url: string;
   state: ServiceState;
   latencyMs: number;
+  /** Example tile of the sample data (#854). */
+  example?: boolean;
 }
 
 export interface LauncherBookmark {
@@ -104,13 +106,18 @@ export function buildView(
   };
 }
 
-/** Summary of the status pill: all online, or how many are offline. */
-export function statusSummary(services: readonly Pick<LauncherService, 'state'>[]): {
-  kind: 'none' | 'ok' | 'offline';
+/**
+ * Summary of the status pill: all online, how many are offline, or "empty"
+ * while there is no own service. Example tiles of the sample data do not
+ * count (#854); "none" is the state before the first load.
+ */
+export function statusSummary(services: readonly Pick<LauncherService, 'state' | 'example'>[]): {
+  kind: 'none' | 'empty' | 'ok' | 'offline';
   offline: number;
 } {
-  if (services.length === 0) return { kind: 'none', offline: 0 };
-  const offline = services.filter((s) => s.state === 'offline').length;
+  const own = services.filter((s) => !s.example);
+  if (own.length === 0) return { kind: 'empty', offline: 0 };
+  const offline = own.filter((s) => s.state === 'offline').length;
   return { kind: offline > 0 ? 'offline' : 'ok', offline };
 }
 

@@ -38,6 +38,8 @@ export interface WizardContext {
     types: { type: WidgetType; icon: IconName }[];
     /** The example tabs of the setup are still there (#670). */
     sample: boolean;
+    /** Removes the sample data: the example tabs and the example services (#854). */
+    discardSample: () => Promise<void>;
   };
   /** Plugin steps, e.g. the instance name (owner only). */
   extraSteps: { id: string; title: string }[];

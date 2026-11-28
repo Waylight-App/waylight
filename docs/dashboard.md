@@ -131,11 +131,16 @@ text for a wall tablet are set on the kiosk display itself;
 [Set up a wall tablet](accounts.md#setting-up-a-wall-tablet) does both in
 one go.
 
-With sample data, a template replaces the example tabs; the example to-dos,
-notes, bookmarks and services stay. *Keep the example dashboard* keeps the
-example tabs as ordinary tabs, and so does closing the dialog. *Start with
-an empty dashboard* removes them (with sample data) or just closes the
-question.
+With sample data, a template replaces the example tabs and removes the
+example services; the example to-dos, notes and bookmarks stay. *Keep the
+example dashboard* keeps the example tabs as ordinary tabs, and so does
+closing the dialog. *Start with an empty dashboard* removes them and the
+example services (with sample data) or just closes the question.
+
+Example services are checked like your own but do not count towards the
+status pill, the summary of the services widget or the attention line. Until
+you add a service of your own, the pill reads *No services yet* and opens
+Settings → Services. Editing an example service makes it your own.
 
 The same templates appear when you create a tab (**+ Tab**), above your own
 saved templates. They are YAML files in the format of the `dashboard`

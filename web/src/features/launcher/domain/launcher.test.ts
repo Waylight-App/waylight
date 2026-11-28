@@ -65,7 +65,13 @@ describe('launcher', () => {
   });
 
   it('summarises the service status', () => {
-    expect(statusSummary([])).toEqual({ kind: 'none', offline: 0 });
+    expect(statusSummary([])).toEqual({ kind: 'empty', offline: 0 });
+    // Example tiles of the sample data do not count (#854).
+    expect(statusSummary([{ state: 'online', example: true }])).toEqual({ kind: 'empty', offline: 0 });
+    expect(statusSummary([{ state: 'offline', example: true }, { state: 'online' }])).toEqual({
+      kind: 'ok',
+      offline: 0,
+    });
     expect(statusSummary(services)).toEqual({ kind: 'offline', offline: 1 });
     expect(statusSummary([{ state: 'online' }, { state: 'unknown' }])).toEqual({ kind: 'ok', offline: 0 });
   });
