@@ -81,6 +81,8 @@
 
   // In a card the header draws the badge (#851); elsewhere (detail panel)
   // it floats over the content as before.
+  // The context is only readable while the component initialises, so the flag is read once.
+  // svelte-ignore state_referenced_locally
   const card = showStatus ? widgetStatus() : undefined;
   const refreshAll = () => handles.forEach((h) => h.refreshNow());
   $effect(() => {
