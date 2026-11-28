@@ -73,6 +73,9 @@ test('the default templates show every primary action without scrolling (#737)',
     await item.press('Enter');
     await expect(tile.getByRole('checkbox', { name: `Item ${i}` })).toBeAttached();
   }
+  // Empty widgets stay visible (#860), so the tile may lie below the fold of the page: the field
+  // must still be whole and in its place within the tile once the page is scrolled to it.
+  await item.scrollIntoViewIfNeeded();
   await expect(item).toBeInViewport({ ratio: 1 });
   await expect(tile.getByRole('button', { name: 'Add', exact: true })).toBeInViewport({ ratio: 1 });
   await expect.poll(() => cutOff(page)).toEqual([]);

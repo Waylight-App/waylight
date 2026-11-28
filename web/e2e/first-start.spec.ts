@@ -113,8 +113,9 @@ test('first start asks the essentials, offers the templates and Family replaces 
   await expect(page.locator('.hero h1')).toHaveText(/, Sam$/);
 
   // Only the template's tab is left (a single tab shows no tab bar), laid
-  // out in zones. System holds only the services widget, which is empty
-  // once the example services are gone (#854), so the zone stays hidden.
+  // out in zones. System holds only the services widget; it is empty once
+  // the example services are gone (#854) and stays visible with its empty
+  // state (#860).
   await expect(page.getByRole('button', { name: 'Server', exact: true })).toHaveCount(0);
   for (const [zone, heading] of [
     ['today', 'Today'],
@@ -124,7 +125,7 @@ test('first start asks the essentials, offers the templates and Family replaces 
       page.locator(`section[data-zone="${zone}"]`).getByRole('heading', { name: heading }),
     ).toBeVisible();
   }
-  await expect(page.locator('section[data-zone="system"]')).toHaveCount(0);
+  await expect(page.locator('section[data-zone="system"]')).toHaveCount(1);
 
   const dashboard = (await (await page.request.get('/api/dashboard')).json()) as {
     tabs: {

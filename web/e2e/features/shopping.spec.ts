@@ -27,6 +27,8 @@ test('a shopping list on Waylight works without CalDAV and can be exported (#471
   await page.getByRole('checkbox', { name: 'Milk' }).check();
   await page.getByRole('button', { name: 'Remove “Bread”' }).click();
   await expect(page.getByRole('checkbox', { name: 'Bread' })).toHaveCount(0);
+  // Ticking off and removing wait for their undo toast (#867) before the server hears of them.
+  await expect(page.getByTestId('undo-toast')).toHaveCount(0, { timeout: 12_000 });
 
   // The ticked item survives a reload: it is stored on the server.
   await page.reload();
