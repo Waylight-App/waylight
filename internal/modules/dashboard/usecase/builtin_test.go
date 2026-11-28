@@ -1,11 +1,13 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"strings"
 	"testing"
 
 	"waylight/internal/modules/dashboard/domain"
+	"waylight/internal/shared/kernel"
 )
 
 func mergeForTest(config string, values map[string]any) (string, error) {
@@ -31,11 +33,11 @@ var familyTemplate = BuiltinTemplate{ID: "family", Title: "Family", Needs: []str
 // and the weather widget gets the location (#589).
 func TestBuiltinCreateTab(t *testing.T) {
 	deps, repo := newDeps("calendar", "weather")
-	uc := NewBuiltinTemplates(deps, []BuiltinTemplate{familyTemplate}, mergeForTest)
+	uc := NewBuiltinTemplates(deps, []BuiltinTemplate{familyTemplate}, mergeForTest, nil)
 	if len(uc.List()) != 1 {
 		t.Fatal("list")
 	}
-	res, err := uc.CreateTab(ctx, "family", "", &Location{Lat: 53.1, Lon: 8.2, Label: "Home"})
+	res, err := uc.CreateTab(ctx, "family", "", &Location{Lat: 53.1, Lon: 8.2, Label: "Home"}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,10 +70,59 @@ func TestBuiltinCreateTab(t *testing.T) {
 	if first.Kind() != "weather" {
 		t.Fatalf("phone order starts with %s", first.Kind())
 	}
-	if _, err := uc.CreateTab(ctx, "nope", "", nil); !errors.Is(err, ErrBuiltinNotFound) {
+	if _, err := uc.CreateTab(ctx, "nope", "", nil, ""); !errors.Is(err, ErrBuiltinNotFound) {
 		t.Fatalf("unknown: %v", err)
 	}
-	if _, err := uc.CreateTab(ctx, "family", "", &Location{Lat: 95}); err == nil {
+	if _, err := uc.CreateTab(ctx, "family", "", &Location{Lat: 95}, ""); err == nil {
 		t.Fatal("invalid location")
+	}
+}
+
+// TestBuiltinShare: a template that needs "share" sets up the shared
+// records of its widgets with the chosen visibility and merges what the
+// setup returns into the widget (#871). The visibility is checked like any
+// other share, and templates without the need share nothing.
+func TestBuiltinShare(t *testing.T) {
+	deps, _ := newDeps("calendar", "weather")
+	shared := familyTemplate
+	shared.Needs = []string{"location", "share"}
+	var calls []string
+	setup := func(_ context.Context, kind, tabName string, v kernel.Visibility) (map[string]any, error) {
+		calls = append(calls, kind+" "+tabName+" "+string(v))
+		if kind == "weather" {
+			return map[string]any{"label": "Shared"}, nil
+		}
+		return nil, nil
+	}
+	uc := NewBuiltinTemplates(deps, []BuiltinTemplate{shared}, mergeForTest, setup)
+	anna := kernel.WithPrincipal(ctx, kernel.Principal{AccountID: "anna", Role: "member", Groups: []string{"family"}})
+
+	res, err := uc.CreateTab(anna, "family", "Home", nil, "group:family")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Join(calls, ",") != "calendar Home group:family,weather Home group:family" {
+		t.Fatalf("setup calls %v", calls)
+	}
+	for _, w := range res.Widgets {
+		if w.Kind == "weather" && !strings.Contains(w.Config, `"label":"Shared"`) {
+			t.Fatalf("weather config %s", w.Config)
+		}
+	}
+
+	calls = nil
+	if _, err := uc.CreateTab(anna, "family", "", nil, "group:office"); !errors.Is(err, kernel.ErrShareNotAllowed) {
+		t.Fatalf("foreign group: %v", err)
+	}
+	if len(calls) != 0 {
+		t.Fatalf("set up despite refused share: %v", calls)
+	}
+	if _, err := uc.CreateTab(anna, "family", "", nil, ""); err != nil || len(calls) != 0 {
+		t.Fatalf("no share: %v %v", err, calls)
+	}
+
+	plain := NewBuiltinTemplates(deps, []BuiltinTemplate{familyTemplate}, mergeForTest, setup)
+	if _, err := plain.CreateTab(anna, "family", "", nil, "everyone"); err != nil || len(calls) != 0 {
+		t.Fatalf("template without share: %v %v", err, calls)
 	}
 }

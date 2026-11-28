@@ -85,6 +85,11 @@ export interface DayDTO {
   temperatureMax: number /* float64 */;
   weatherCode: number /* int */;
   precipitationProbability: number /* float64 */;
+  /**
+   * Sunrise and Sunset are null on polar days and nights.
+   */
+  sunrise?: string /* RFC 3339 */;
+  sunset?: string /* RFC 3339 */;
 }
 /**
  * ForecastDTO is returned by GET /api/weather.

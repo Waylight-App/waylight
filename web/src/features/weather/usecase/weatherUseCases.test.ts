@@ -8,6 +8,8 @@ const day = (n: number) => ({
   max: 1,
   code: 0,
   precipitationProbability: 0,
+  sunrise: null,
+  sunset: null,
 });
 const forecast: Forecast = {
   temperature: 1,
@@ -59,6 +61,30 @@ describe('WeatherUseCases', () => {
     const cfg = { lat: 1, lon: 2, label: '', days: 2, warnings: false, ...noHealth };
     await expect(shared.forecast(cfg)).rejects.toThrow('down');
     await expect(shared.forecast(cfg)).resolves.toBeDefined();
+  });
+  it('hands every display the newest observation of the place (#853)', async () => {
+    let clock = 0;
+    const older = { ...forecast, temperature: -3, updatedAt: new Date(1_000) };
+    const newer = { ...forecast, temperature: -2, updatedAt: new Date(2_000) };
+    const gw: WeatherGateway = {
+      ...gateway,
+      forecast: vi.fn().mockResolvedValueOnce(older).mockResolvedValueOnce(newer).mockResolvedValue(older),
+    };
+    const shared = new WeatherUseCases(gw, () => clock);
+    const cfg = { lat: 1, lon: 2, label: '', days: 2, warnings: false, ...noHealth };
+    const tile = vi.fn();
+    const stop = shared.watch(cfg, tile);
+    expect((await shared.forecast(cfg)).temperature).toBe(-3);
+    clock = 61_000;
+    // The panel loads a newer observation; the tile is told at once.
+    expect((await shared.forecast({ ...cfg, days: 5 })).temperature).toBe(-2);
+    expect(tile).toHaveBeenLastCalledWith(expect.objectContaining({ temperature: -2 }));
+    expect(tile.mock.lastCall?.[0].days).toHaveLength(2);
+    // A late, older answer does not take the newer one back.
+    clock = 122_000;
+    expect((await shared.forecast(cfg)).temperature).toBe(-2);
+    stop();
+    expect(tile).toHaveBeenCalledTimes(2);
   });
   it('skips warnings when disabled', async () => {
     await uc.warnings({ lat: 1, lon: 2, label: '', days: 2, warnings: false, ...noHealth });

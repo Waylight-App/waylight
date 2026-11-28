@@ -116,7 +116,7 @@ schemas:
       humidity: { type: number }
       windSpeed: { type: number }
       weatherCode: { type: integer, description: WMO weather code }
-      isDay: { type: boolean }
+      isDay: { type: boolean, description: "Day/night state at the time of the response, from the place's sunrise and sunset" }
       updatedAt: { type: string, format: date-time }
       days:
         type: array
@@ -128,6 +128,8 @@ schemas:
             temperatureMax: { type: number }
             weatherCode: { type: integer }
             precipitationProbability: { type: number }
+            sunrise: { type: string, format: date-time, nullable: true, description: "null on polar days and nights" }
+            sunset: { type: string, format: date-time, nullable: true }
   Place:
     type: object
     properties: { name: { type: string }, region: { type: string }, country: { type: string }, lat: { type: number }, lon: { type: number } }

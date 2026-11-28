@@ -132,7 +132,7 @@ paths:
   /api/dashboard/templates/builtin:
     get:
       tags: [dashboard]
-      summary: "Templates that ship with Waylight (#589): family, homelab, wall tablet, work. Each names what it needs before applying (location) and its widgets with their cells for a preview; clients translate the title by id."
+      summary: "Templates that ship with Waylight (#589): family, homelab, wall tablet, work. Each names what it needs before applying (location; share: who sees the shared shopping list and board notes, #871) and its widgets with their cells for a preview; clients translate the title by id."
       security: [{ session: [] }]
       responses:
         "200":
@@ -147,7 +147,7 @@ paths:
                   properties:
                     id: { type: string }
                     title: { type: string }
-                    needs: { type: array, items: { type: string, enum: [location] } }
+                    needs: { type: array, items: { type: string, enum: [location, share] } }
                     widgets:
                       type: array
                       items: { type: object, required: [kind, x, y, w, h], properties: { kind: { type: string }, x: { type: integer }, y: { type: integer }, w: { type: integer }, h: { type: integer } } }
@@ -155,7 +155,7 @@ paths:
     parameters: [{ $ref: "#/components/parameters/id" }]
     post:
       tags: [dashboard]
-      summary: "Create a tab from a built-in template with its phone layout (empty name = template name); widgets of disabled modules are skipped; location fills the weather widgets"
+      summary: "Create a tab from a built-in template with its phone layout (empty name = template name); widgets of disabled modules are skipped; location fills the weather widgets; for a template that needs share, visibility sets up the shopping list named after the tab (reused when a visible list with that name and visibility exists, and made the caller's current list) and the board widget's default visibility (#871)"
       security: [{ session: [], csrf: [] }]
       requestBody:
         required: true
@@ -173,6 +173,7 @@ paths:
                     lon: { type: number, minimum: -180, maximum: 180 }
                     label: { type: string }
                     placeId: { type: string, description: Saved place (#591) }
+                visibility: { type: string, description: "everyone or group:<id> (own groups; admins any group); omitted shares nothing" }
       responses:
         "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Tab" } } } }
         "404": { $ref: "#/components/responses/NotFound" }

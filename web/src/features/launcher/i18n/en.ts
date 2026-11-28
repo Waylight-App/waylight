@@ -22,6 +22,9 @@ export const en = {
   'launcher.all_online': 'All services online',
   'launcher.online_short': 'Online',
   'launcher.some_offline': '{n} offline',
+  'launcher.no_services_yet': 'No services yet',
+  'launcher.add_one': 'Add one',
+  'launcher.add_service': 'Add a service',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

@@ -62,6 +62,11 @@ const legacyDefinitions: WidgetDefinition[] = [
       () => import('../features/weather/ui/WeatherWidget.svelte'),
       (config, c) => ({ config, weather: c.weather }),
     ),
+    // The tile reads the panel's observation, not a compact state of its own (#853).
+    compactView: lazy(
+      () => import('../features/weather/ui/WeatherCompact.svelte'),
+      (config, c) => ({ config, weather: c.weather }),
+    ),
     settings: lazy(
       () => import('../features/weather/ui/WeatherSettings.svelte'),
       (config, c) => ({ config, weather: c.weather, places: c.places }),

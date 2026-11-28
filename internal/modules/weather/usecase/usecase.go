@@ -34,6 +34,8 @@ type DayView struct {
 	TemperatureMax           float64
 	WeatherCode              int
 	PrecipitationProbability float64
+	// Sunrise and Sunset are zero when unknown.
+	Sunrise, Sunset time.Time
 }
 
 // ForecastResponse is the output of GetForecast.
@@ -48,9 +50,11 @@ type ForecastResponse struct {
 	WindDirection    float64
 	HasWindDirection bool
 	WeatherCode      int
-	IsDay            bool
-	Days             []DayView
-	UpdatedAt        time.Time
+	// IsDay is the day/night state at the time of the response, from the
+	// place's sunrise and sunset, so every display shows the same icon.
+	IsDay     bool
+	Days      []DayView
+	UpdatedAt time.Time
 }
 
 // PlaceView is a geocoding result.
@@ -103,16 +107,16 @@ func (uc *weather) GetForecast(ctx context.Context, req ForecastRequest) (Foreca
 	now := uc.clock.Now()
 	uc.cache.Touch(loc, now)
 	if f, ok := uc.cache.Get(loc.Key()); ok && now.Sub(f.FetchedAt) < MaxForecastAge {
-		return toResponse(f), nil
+		return toResponse(f, now), nil
 	}
 	f, err := uc.fetch(ctx, loc)
 	if err != nil {
 		if cached, ok := uc.cache.Get(loc.Key()); ok {
-			return toResponse(cached), nil // stale data beats an error
+			return toResponse(cached, now), nil // stale data beats an error
 		}
 		return ForecastResponse{}, err
 	}
-	return toResponse(f), nil
+	return toResponse(f, now), nil
 }
 
 // RefreshAll implements Weather; it is run by the background job.
@@ -156,18 +160,19 @@ func (uc *weather) SearchPlaces(ctx context.Context, query string) ([]PlaceView,
 	return out, nil
 }
 
-func toResponse(f domain.Forecast) ForecastResponse {
+func toResponse(f domain.Forecast, now time.Time) ForecastResponse {
 	res := ForecastResponse{
 		Lat: f.Location.Lat(), Lon: f.Location.Lon(), Timezone: f.Timezone,
 		Temperature: f.Current.Temperature, ApparentTemperature: f.Current.ApparentTemperature,
 		Humidity: f.Current.Humidity, WindSpeed: f.Current.WindSpeed, WeatherCode: f.Current.WeatherCode,
 		WindDirection: f.Current.WindDirection, HasWindDirection: f.Current.HasWindDirection,
-		IsDay: f.Current.IsDay, UpdatedAt: f.FetchedAt, Days: make([]DayView, 0, len(f.Days)),
+		IsDay: f.IsDayAt(now), UpdatedAt: f.FetchedAt, Days: make([]DayView, 0, len(f.Days)),
 	}
 	for _, d := range f.Days {
 		res.Days = append(res.Days, DayView{
 			Date: d.Date.Format(time.DateOnly), TemperatureMin: d.TemperatureMin, TemperatureMax: d.TemperatureMax,
 			WeatherCode: d.WeatherCode, PrecipitationProbability: d.PrecipitationProbability,
+			Sunrise: d.Sunrise, Sunset: d.Sunset,
 		})
 	}
 	return res

@@ -69,6 +69,9 @@ type Day struct {
 	TemperatureMax           float64
 	WeatherCode              int
 	PrecipitationProbability float64
+	// Sunrise and Sunset are zero when the service reports none (polar day
+	// and night).
+	Sunrise, Sunset time.Time
 }
 
 // Forecast combines current conditions and the daily outlook.
@@ -78,6 +81,42 @@ type Forecast struct {
 	Current   Current
 	Days      []Day
 	FetchedAt time.Time
+}
+
+// IsDayAt tells whether the sun is up at the place at the given moment. It
+// follows the sunrise and sunset of the forecast days, so the answer stays
+// right between two fetches; the service's own day flag from the time of the
+// fetch is the fallback outside the known sun times.
+func (f Forecast) IsDayAt(now time.Time) bool {
+	var last, first time.Time
+	day, firstIsSunrise := f.Current.IsDay, false
+	for _, d := range f.Days {
+		for _, e := range []struct {
+			at   time.Time
+			rise bool
+		}{{d.Sunrise, true}, {d.Sunset, false}} {
+			if e.at.IsZero() {
+				continue
+			}
+			if first.IsZero() || e.at.Before(first) {
+				first, firstIsSunrise = e.at, e.rise
+			}
+			if !e.at.After(now) && e.at.After(last) {
+				last, day = e.at, e.rise
+			}
+		}
+	}
+	switch {
+	case first.IsZero():
+		return f.Current.IsDay
+	case last.IsZero():
+		// Before the first sun event: the night before a sunrise, the day before a sunset.
+		return !firstIsSunrise
+	case now.Sub(last) > 24*time.Hour:
+		// Past the last forecast day.
+		return f.Current.IsDay
+	}
+	return day
 }
 
 // Place is a geocoding search result.

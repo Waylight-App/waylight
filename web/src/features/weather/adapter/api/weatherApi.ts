@@ -38,6 +38,8 @@ export class WeatherApi implements WeatherGateway {
         max: d.temperatureMax,
         code: d.weatherCode,
         precipitationProbability: d.precipitationProbability,
+        sunrise: d.sunrise ? new Date(d.sunrise) : null,
+        sunset: d.sunset ? new Date(d.sunset) : null,
       })),
     };
   }

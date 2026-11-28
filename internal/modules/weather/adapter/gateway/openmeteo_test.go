@@ -6,18 +6,22 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"waylight/internal/modules/weather/domain"
 )
 
-const forecastJSON = `{"timezone":"Europe/Berlin",
+const forecastJSON = `{"timezone":"Europe/Berlin","utc_offset_seconds":3600,
  "current":{"temperature_2m":7.4,"apparent_temperature":4.1,"relative_humidity_2m":81,"wind_speed_10m":14.2,"wind_direction_10m":315,"weather_code":3,"is_day":1},
- "daily":{"time":["2026-11-10","2026-11-11"],"weather_code":[3,61],"temperature_2m_max":[9.1,8],"temperature_2m_min":[4.2,3.5],"precipitation_probability_max":[20,null]}}`
+ "daily":{"time":["2026-11-10","2026-11-11"],"weather_code":[3,61],"temperature_2m_max":[9.1,8],"temperature_2m_min":[4.2,3.5],"precipitation_probability_max":[20,null],
+  "sunrise":["2026-11-10T07:41",""],"sunset":["2026-11-10T16:39"]}}`
 
 func TestOpenMeteo(t *testing.T) {
+	var gotDaily string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/forecast":
+			gotDaily = r.URL.Query().Get("daily")
 			if !strings.Contains(r.URL.Query().Get("current"), "wind_direction_10m") {
 				t.Errorf("the wind direction must be requested, got %q", r.URL.Query().Get("current"))
 			}
@@ -41,6 +45,16 @@ func TestOpenMeteo(t *testing.T) {
 	}
 	if f.Current.Temperature != 7.4 || !f.Current.IsDay || len(f.Days) != 2 || f.Days[1].PrecipitationProbability != 0 {
 		t.Fatalf("unexpected forecast %+v", f)
+	}
+	// Sun times are wall clock times in the place's zone (UTC+1 here); missing ones stay zero.
+	if want := time.Date(2026, 11, 10, 6, 41, 0, 0, time.UTC); !f.Days[0].Sunrise.Equal(want) || f.Days[0].Sunset.IsZero() {
+		t.Fatalf("sun times %v %v, want sunrise %v", f.Days[0].Sunrise, f.Days[0].Sunset, want)
+	}
+	if !f.Days[1].Sunrise.IsZero() || !f.Days[1].Sunset.IsZero() {
+		t.Fatalf("missing sun times must be zero: %+v", f.Days[1])
+	}
+	if !strings.Contains(gotDaily, "sunrise,sunset") {
+		t.Errorf("sunrise and sunset must be requested, got %q", gotDaily)
 	}
 	if !f.Current.HasWindDirection || f.Current.WindDirection != 315 {
 		t.Fatalf("wind direction %v (known: %v)", f.Current.WindDirection, f.Current.HasWindDirection)

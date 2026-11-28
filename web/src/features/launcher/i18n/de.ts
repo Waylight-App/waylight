@@ -24,4 +24,7 @@ export const de: Record<keyof typeof en, string> = {
   'launcher.all_online': 'Alle Dienste online',
   'launcher.online_short': 'Online',
   'launcher.some_offline': '{n} offline',
+  'launcher.no_services_yet': 'Noch keine Dienste',
+  'launcher.add_one': 'Hinzufügen',
+  'launcher.add_service': 'Dienst hinzufügen',
 };

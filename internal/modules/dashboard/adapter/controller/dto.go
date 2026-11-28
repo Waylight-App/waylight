@@ -101,6 +101,9 @@ type BuiltinTabDTO struct {
 	Name string `json:"name"`
 	// Location fills the weather widgets; omitted leaves them to be set up.
 	Location *LocationDTO `json:"location,omitempty"`
+	// Visibility is who sees the shared records of a template that needs
+	// "share" ("everyone" or "group:<id>"); omitted shares nothing.
+	Visibility string `json:"visibility,omitempty"`
 }
 
 // LocationDTO is a place for the weather widgets of a template.

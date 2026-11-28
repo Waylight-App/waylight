@@ -4,7 +4,13 @@ import {
   type TonightWarning,
   type TonightWeather,
 } from '../../features/tonight/domain/tonight';
-import { describe, parseWeatherConfig, validity } from '../../features/weather/domain/weather';
+import {
+  describe,
+  type Forecast,
+  isDayAt,
+  parseWeatherConfig,
+  validity,
+} from '../../features/weather/domain/weather';
 import type { WeatherUseCases } from '../../features/weather/usecase/weatherUseCases';
 
 /**
@@ -18,26 +24,13 @@ export class WeatherTonightSource implements TonightSource {
   async weather(config: Record<string, unknown>): Promise<TonightWeather | null> {
     const cfg = parseWeatherConfig(config);
     if (!cfg) return null;
-    const f = await this.uc.forecast({ ...cfg, days: TONIGHT_DAYS });
-    const now = describe(f.code, f.isDay);
-    return {
-      temperature: f.temperature,
-      feelsLike: f.apparentTemperature,
-      condition: now.label,
-      icon: now.icon,
-      place: cfg.label,
-      days: f.days.map((d) => {
-        const c = describe(d.code);
-        return {
-          date: d.date,
-          icon: c.icon,
-          label: c.label,
-          max: d.max,
-          min: d.min,
-          rain: d.precipitationProbability,
-        };
-      }),
-    };
+    return toTonight(await this.uc.forecast({ ...cfg, days: TONIGHT_DAYS }), cfg.label);
+  }
+
+  watch(config: Record<string, unknown>, onweather: (w: TonightWeather) => void): () => void {
+    const cfg = parseWeatherConfig(config);
+    if (!cfg) return () => {};
+    return this.uc.watch({ ...cfg, days: TONIGHT_DAYS }, (f) => onweather(toTonight(f, cfg.label)));
   }
 
   async warnings(config: Record<string, unknown>): Promise<TonightWarning[]> {
@@ -51,6 +44,28 @@ export class WeatherTonightSource implements TonightSource {
       severity: w.severity,
     }));
   }
+}
+
+function toTonight(f: Forecast, place: string): TonightWeather {
+  const now = describe(f.code, isDayAt(f, new Date()));
+  return {
+    temperature: f.temperature,
+    feelsLike: f.apparentTemperature,
+    condition: now.label,
+    icon: now.icon,
+    place,
+    days: f.days.map((d) => {
+      const c = describe(d.code);
+      return {
+        date: d.date,
+        icon: c.icon,
+        label: c.label,
+        max: d.max,
+        min: d.min,
+        rain: d.precipitationProbability,
+      };
+    }),
+  };
 }
 
 const cache = new WeakMap<WeatherUseCases, TonightUseCases>();
