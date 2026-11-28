@@ -4,10 +4,12 @@
 # things and, for admins, System. Widgets with a compact view are small tiles
 # (#595); the services widget feeds the attention line (#593). Every row of
 # a zone adds up to the 12 columns (#793): two rows of four small tiles,
-# three medium lists, and the services across the full width.
+# three medium lists, and the services across the full width. "share" asks
+# who sees the shopping list and the board notes, a group such as Family or
+# everyone (#871).
 id: family
 title: Family
-needs: [location]
+needs: [location, share]
 tab:
   name: Family
   zones: true

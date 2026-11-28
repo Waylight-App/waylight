@@ -13,8 +13,9 @@ import (
 // BuiltinTemplate is a tab template that ships with Waylight (#589).
 type BuiltinTemplate struct {
 	ID, Title string
-	// Needs lists what the onboarding asks before applying it; "location"
-	// is the only value so far.
+	// Needs lists what the onboarding asks before applying it: "location"
+	// for the weather widgets, "share" for who sees the household's shared
+	// records (#871).
 	Needs []string
 	Tab   ConfigTab
 }
@@ -39,28 +40,41 @@ type BuiltinTemplates interface {
 	List() []BuiltinTemplate
 	// CreateTab adds a tab built from the template to the account's
 	// dashboard; widgets of disabled modules are left out. loc fills the
-	// weather widgets; nil leaves them to be set up.
-	CreateTab(ctx context.Context, id, name string, loc *Location) (TabResponse, error)
+	// weather widgets; nil leaves them to be set up. share is who sees the
+	// shared records of a template that needs "share"; empty shares nothing.
+	CreateTab(ctx context.Context, id, name string, loc *Location, share string) (TabResponse, error)
 }
+
+// SharedSetup prepares the shared records a widget of a household template
+// shows (output port, #871): for example the shopping list everyone in the
+// group ticks off. It returns values to merge into the widget's settings;
+// kinds it does not know return nil. The composition root implements it, so
+// the dashboard imports no other module.
+type SharedSetup func(ctx context.Context, kind, tabName string, v kernel.Visibility) (map[string]any, error)
+
+// needShare is the template need that asks who sees the shared records.
+const needShare = "share"
 
 // ConfigMerger sets values in a widget's JSON settings (output port; JSON
 // belongs to the adapters).
 type ConfigMerger func(config string, values map[string]any) (string, error)
 
 type builtinTemplates struct {
-	deps  Deps
-	list  []BuiltinTemplate
-	merge ConfigMerger
+	deps   Deps
+	list   []BuiltinTemplate
+	merge  ConfigMerger
+	shared SharedSetup
 }
 
-// NewBuiltinTemplates returns the use case over the given templates.
-func NewBuiltinTemplates(deps Deps, list []BuiltinTemplate, merge ConfigMerger) BuiltinTemplates {
-	return &builtinTemplates{deps: deps, list: list, merge: merge}
+// NewBuiltinTemplates returns the use case over the given templates. Without
+// shared (nil) templates share nothing.
+func NewBuiltinTemplates(deps Deps, list []BuiltinTemplate, merge ConfigMerger, shared SharedSetup) BuiltinTemplates {
+	return &builtinTemplates{deps: deps, list: list, merge: merge, shared: shared}
 }
 
 func (uc *builtinTemplates) List() []BuiltinTemplate { return uc.list }
 
-func (uc *builtinTemplates) CreateTab(ctx context.Context, id, name string, loc *Location) (TabResponse, error) {
+func (uc *builtinTemplates) CreateTab(ctx context.Context, id, name string, loc *Location, share string) (TabResponse, error) {
 	i := slices.IndexFunc(uc.list, func(t BuiltinTemplate) bool { return t.ID == id })
 	if i < 0 {
 		return TabResponse{}, ErrBuiltinNotFound
@@ -68,6 +82,16 @@ func (uc *builtinTemplates) CreateTab(ctx context.Context, id, name string, loc 
 	t := uc.list[i].Tab
 	if name == "" {
 		name = t.Name
+	}
+	// Checked like any other share before anything is created: own groups,
+	// any group for admins (ADR 0018).
+	var visibility kernel.Visibility
+	if share != "" && slices.Contains(uc.list[i].Needs, needShare) {
+		v, err := kernel.CheckShare(kernel.PrincipalFrom(ctx), share)
+		if err != nil {
+			return TabResponse{}, err
+		}
+		visibility = v
 	}
 	tabs, err := uc.deps.Tabs.ListTabs(ctx)
 	if err != nil {
@@ -90,6 +114,9 @@ func (uc *builtinTemplates) CreateTab(ctx context.Context, id, name string, loc 
 		}
 		config, err := uc.withLocation(cw.Kind, cw.Config, loc)
 		if err != nil {
+			return TabResponse{}, err
+		}
+		if config, err = uc.withShared(ctx, cw.Kind, name, config, visibility); err != nil {
 			return TabResponse{}, err
 		}
 		w, err := domain.NewWidget(uc.deps.IDs.NewID(), tab.ID(), cw.Kind, cw.Rect, config)
@@ -130,6 +157,23 @@ func (uc *builtinTemplates) CreateTab(ctx context.Context, id, name string, loc 
 		}
 	}
 	return toTabResponse(ctx, tab, widgets), nil
+}
+
+// withShared sets up the shared records of a widget and merges what the
+// setup returns into its settings. Without a visibility or a setup the
+// settings stay as they are.
+func (uc *builtinTemplates) withShared(ctx context.Context, kind, tabName, config string, v kernel.Visibility) (string, error) {
+	if v == "" || uc.shared == nil {
+		return config, nil
+	}
+	values, err := uc.shared(ctx, kind, tabName, v)
+	if err != nil {
+		return "", err
+	}
+	if len(values) == 0 {
+		return config, nil
+	}
+	return uc.merge(config, values)
 }
 
 // withLocation merges the location into the settings of a weather widget;
