@@ -118,6 +118,39 @@ func (uc *Lists) Create(ctx context.Context, name, visibility string) (ListView,
 	return uc.view(ctx, l), nil
 }
 
+// Shared returns the visible list with this name and visibility, or creates
+// it owned by the principal, and makes it the principal's current list. A
+// template that sets up a household (#871) calls it for every member who
+// applies it, so they all end up on the same list instead of one each.
+func (uc *Lists) Shared(ctx context.Context, name string, v kernel.Visibility) (ListView, error) {
+	name, err := domain.NormaliseListName(name)
+	if err != nil {
+		return ListView{}, err
+	}
+	all, err := uc.lists.Lists(ctx)
+	if err != nil {
+		return ListView{}, err
+	}
+	var found *domain.List
+	for i, l := range all {
+		if l.Name == name && l.Access.Visibility == v {
+			found = &all[i]
+			break
+		}
+	}
+	if found == nil {
+		created, err := uc.Create(ctx, name, string(v))
+		if err != nil {
+			return ListView{}, err
+		}
+		found = &created.List
+	}
+	if err := uc.lists.SetCurrent(ctx, found.ID); err != nil {
+		return ListView{}, err
+	}
+	return uc.view(ctx, *found), nil
+}
+
 // Update renames and shares one of the principal's own lists.
 func (uc *Lists) Update(ctx context.Context, id, name, visibility string) (ListView, error) {
 	p := kernel.PrincipalFrom(ctx)

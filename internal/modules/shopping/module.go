@@ -50,6 +50,14 @@ func (m *Module) ForgetAccount(ctx context.Context, accountID string) error {
 	return m.repo.DeleteOwnedBy(ctx, accountID)
 }
 
+// UseSharedList makes the visible list with this name and visibility the
+// principal's current list, creating it for the principal if there is none
+// (#871, household templates).
+func (m *Module) UseSharedList(ctx context.Context, name string, v kernel.Visibility) error {
+	_, err := m.listsUC.Shared(ctx, name, v)
+	return err
+}
+
 // Name implements modules.Module.
 func (m *Module) Name() string { return "shopping" }
 

@@ -128,6 +128,17 @@ person types into their own notes, habits or bookmarks stay as they are. The
 logo is the lamp mark at 24 px next to the wordmark "Waylight" in Fraunces at
 `--fs-sm`, weight 600.
 
+## App frame
+
+The top bar, the header and the widget grid sit in one frame: a 1 px hairline
+in the border colour with `--radius-md` corners, at most 1440 px wide and
+centred, with 24 px of page background around it. The frame has no fill of its
+own, so the page and tab backgrounds show through, and menus may open past its
+edge. It uses the theme's border colour, so every theme draws it in its own
+tone and high contrast with its stronger line. Below 640 px there is no frame
+and the page uses the full width. Kiosk links and wall displays show no frame
+either.
+
 ## Top bar and header
 
 The top bar is 64 px high with 24 px of padding at the sides, in three parts.

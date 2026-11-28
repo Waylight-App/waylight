@@ -32,7 +32,7 @@ func (h *BuiltinHandlers) CreateTab(w http.ResponseWriter, r *http.Request) {
 	if dto.Location != nil {
 		loc = &usecase.Location{Lat: dto.Location.Lat, Lon: dto.Location.Lon, Label: dto.Location.Label, PlaceID: dto.Location.PlaceID}
 	}
-	res, err := h.uc.CreateTab(r.Context(), r.PathValue("id"), dto.Name, loc)
+	res, err := h.uc.CreateTab(r.Context(), r.PathValue("id"), dto.Name, loc, dto.Visibility)
 	if err != nil {
 		httpapi.WriteDomainError(w, r, err)
 		return
