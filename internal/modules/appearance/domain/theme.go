@@ -209,7 +209,7 @@ func (t ThemeDef) CSS() string {
 	b.WriteString(ThemeCSSMarker + t.ID + " */\n")
 	writeBlock(&b, ":root:root,\n:root:root[data-theme]", t.Resolved(ThemeLight))
 	if t.HasVariants() {
-		writeBlock(&b, ":root:root[data-theme='dark']", t.Variants[ThemeDark])
+		writeBlock(&b, darkVariantSelector, t.Variants[ThemeDark])
 	}
 	return b.String()
 }
@@ -248,6 +248,16 @@ func cssValue(k, v string) string {
 // IsThemeCSS reports whether custom CSS was written by applying a theme.
 func IsThemeCSS(css string) bool { return strings.HasPrefix(css, ThemeCSSMarker) }
 
+// darkVariantSelector holds the dark tokens of a theme with variants.
+const darkVariantSelector = ":root:root[data-theme='dark']"
+
+// IsSingleSchemeThemeCSS reports whether custom CSS comes from a theme made
+// for one scheme. Such a theme sets light or dark along with its colours, so
+// the scheme belongs to the theme rather than to a choice of the account.
+func IsSingleSchemeThemeCSS(css string) bool {
+	return IsThemeCSS(css) && !strings.Contains(css, darkVariantSelector)
+}
+
 // AppliedTheme returns the id of the theme the custom CSS comes from, or "".
 func AppliedTheme(css string) string {
 	if !IsThemeCSS(css) {
@@ -270,6 +280,6 @@ func (a Appearance) WithStyle(css string, scheme Theme, accentColor string) (App
 		return Appearance{}, err
 	}
 	next.language, next.greetingName, next.greetingMoment, next.launcher, next.profile = a.language, a.greetingName, a.greetingMoment, a.launcher, a.profile
-	next.showAdvanced, next.access = a.showAdvanced, a.access
+	next.showAdvanced, next.access, next.sun = a.showAdvanced, a.access, a.sun
 	return next, nil
 }

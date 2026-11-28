@@ -44,7 +44,42 @@ type Appearance struct {
 	showAdvanced bool
 	// access holds the account's accessibility options (#681).
 	access Accessibility
+	// sun switches the automatic scheme by sunset and sunrise (#863).
+	sun SunPlace
 }
+
+// SunPlace is the saved place whose sunset and sunrise switch the automatic
+// scheme to dark and back (#863). Like a widget, the appearance copies the
+// coordinates and keeps the place's id next to them, so it goes on working
+// when the place is deleted. The zero value (no id) follows the system.
+type SunPlace struct {
+	ID       string
+	Lat, Lon float64
+}
+
+// maxPlaceIDLength bounds the id of a saved place.
+const maxPlaceIDLength = 64
+
+// NewSunPlace validates a place; an empty id switches the schedule off.
+func NewSunPlace(id string, lat, lon float64) (SunPlace, error) {
+	id = strings.TrimSpace(id)
+	switch {
+	case id == "":
+		return SunPlace{}, nil
+	case len(id) > maxPlaceIDLength || strings.ContainsFunc(id, unicode.IsControl):
+		return SunPlace{}, kernel.NewValidationError("sunPlace", "The place is not valid.")
+	case lat < -90 || lat > 90 || lon < -180 || lon > 180:
+		return SunPlace{}, kernel.NewValidationError("sunPlace", "The place has no valid coordinates.")
+	}
+	return SunPlace{ID: id, Lat: lat, Lon: lon}, nil
+}
+
+// SetSunPlace sets the place whose sunset and sunrise switch the scheme.
+func (a *Appearance) SetSunPlace(p SunPlace) { a.sun = p }
+
+// SunPlace returns the place of the sun schedule; its id is empty when the
+// automatic scheme follows the system.
+func (a Appearance) SunPlace() SunPlace { return a.sun }
 
 // TextSize scales the whole interface, text and spacing (#681).
 type TextSize string
@@ -210,7 +245,7 @@ func (a Appearance) WithScheme(theme Theme, accentColor string) (Appearance, err
 		return Appearance{}, err
 	}
 	b.language, b.greetingName, b.greetingMoment, b.launcher, b.profile = a.language, a.greetingName, a.greetingMoment, a.launcher, a.profile
-	b.showAdvanced, b.access = a.showAdvanced, a.access
+	b.showAdvanced, b.access, b.sun = a.showAdvanced, a.access, a.sun
 	return b, nil
 }
 

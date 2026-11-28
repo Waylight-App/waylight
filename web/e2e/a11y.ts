@@ -24,4 +24,39 @@ export async function expectAccessible(page: Page, view: string, include?: strin
   );
   // Soft: one run lists the violations of every view.
   expect.soft(report, `accessibility violations in ${view}`).toEqual([]);
+  expect.soft(await unnamedButtons(page, include), `buttons without an accessible name in ${view}`).toEqual([]);
+}
+
+/**
+ * Lists the buttons in the page (or a part of it) that have no accessible
+ * name (#857). Unlike axe this includes buttons that only fade in on hover
+ * or focus, such as a widget's help button: they are faded out (opacity 0)
+ * while axe measures, but a screen reader and the keyboard still reach them.
+ * Buttons that are not rendered at all (display: none) are skipped.
+ */
+export function unnamedButtons(page: Page, include = 'body'): Promise<string[]> {
+  return page.evaluate((scope) => {
+    // The visible text of an element without its aria-hidden parts.
+    const text = (el: Element): string =>
+      [...el.childNodes]
+        .map((n) => {
+          if (n.nodeType === Node.TEXT_NODE) return n.textContent ?? '';
+          if (!(n instanceof Element) || n.getAttribute('aria-hidden') === 'true') return '';
+          if (n.tagName === 'IMG') return n.getAttribute('alt') ?? '';
+          if (n.tagName.toLowerCase() === 'svg') return n.querySelector('title')?.textContent ?? '';
+          return text(n);
+        })
+        .join('');
+    const name = (el: Element): string => {
+      const ids = el.getAttribute('aria-labelledby')?.split(/\s+/) ?? [];
+      const labelled = ids.map((id) => document.getElementById(id)?.textContent ?? '').join(' ');
+      return [labelled, el.getAttribute('aria-label') ?? '', text(el), el.getAttribute('title') ?? '']
+        .map((s) => s.trim())
+        .find((s) => s !== '') ?? '';
+    };
+    return [...document.querySelectorAll(scope)]
+      .flatMap((root) => [...root.querySelectorAll('button, [role="button"]')])
+      .filter((el) => el instanceof HTMLElement && el.getClientRects().length > 0 && name(el) === '')
+      .map((el) => el.outerHTML.slice(0, 200));
+  }, include);
 }
