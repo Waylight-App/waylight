@@ -31,6 +31,8 @@ test('read later keeps links, refuses internal addresses and checks off articles
   await expect(reader.getByRole('link', { name: 'Original' })).toHaveAttribute('href', url);
   await reader.getByRole('button', { name: 'Archive' }).click();
   await expect(page.getByText('Nothing to read.')).toBeVisible();
+  // Archiving waits for its undo toast (#867) before the server hears of it.
+  await expect(page.getByTestId('undo-toast')).toHaveCount(0, { timeout: 12_000 });
 
   // Settings: the archived article can be deleted.
   await openSettings(page, 'Dashboard & widgets', 'Read later');

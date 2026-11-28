@@ -32,7 +32,9 @@ test('to-dos can be added and edited offline and are synced afterwards (#80)', a
   );
   expect(todo?.version).toBe(1);
   await context.setOffline(true);
-  await page.locator('li', { hasText: 'Offline gekauft' }).getByRole('checkbox').check();
+  // Ticking off waits for its undo toast (#867); the change is queued offline once the toast is gone.
+  await page.locator('li', { hasText: 'Offline gekauft' }).getByRole('checkbox').click();
+  await expect(page.getByTestId('undo-toast')).toHaveCount(0, { timeout: 12_000 });
   const status = await (await page.request.get('/api/auth/status')).json();
   const res = await page.request.put(`/api/todos/${todo?.id}`, {
     headers: { 'X-CSRF-Token': status.csrfToken as string },
