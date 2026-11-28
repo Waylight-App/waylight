@@ -298,6 +298,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 	kinds := append(append([]string{}, frontendOnlyWidgetKinds...), registry.WidgetKinds()...)
 	sample := dashboard.SampleWeather{Label: cfg.SampleWeather.Name, Lat: cfg.SampleWeather.Lat, Lon: cfg.SampleWeather.Lon}
 	dash := dashboard.New(db, ids, clk, kinds, sample, tabSharing)
+	dash.UseSharedSetup(householdSetup(registry))
 	if cfg.DemoMode {
 		dash.UseShowcase(sample)
 	}
