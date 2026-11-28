@@ -134,7 +134,7 @@ func (m *Module) DataKind() modules.DataKind { return modules.PersonalContent }
 func (m *Module) Migrations() fs.FS { return gateway.Migrations() }
 
 // WidgetKinds implements modules.Module.
-func (m *Module) WidgetKinds() []string { return []string{"bookmarks"} }
+func (m *Module) WidgetKinds() []string { return []string{"bookmarks", "quicklinks"} }
 
 // RegisterRoutes implements modules.Module.
 func (m *Module) RegisterRoutes(r modules.Router) {

@@ -5,6 +5,7 @@
  */
 import { createRefreshScheduler, type RefreshScheduler } from '../shared/refresh';
 import { ShortcutRegistry } from '../shared/shortcuts/registry';
+import { QuickLinkTargets } from '../features/bookmarks/usecase/quickLinkTargets';
 import { QuickActionsUseCases } from '../features/quickactions/usecase/quickActionsUseCases';
 import { quickTargets } from './quickTargets';
 import { AdGuardApi } from '../features/adguard/adapter/api/adguardApi';
@@ -123,6 +124,8 @@ export interface Container extends Services {
   refresh: RefreshScheduler;
   /** Global keyboard shortcuts (#95). */
   shortcuts: ShortcutRegistry;
+  /** Links the digits 1 to 9 open, published by quick links widgets (#859). */
+  quickLinks: QuickLinkTargets;
   /** Quick capture and palette commands (#105, #67). */
   quickActions: QuickActionsUseCases;
   calendar: CalendarUseCases;
@@ -199,6 +202,7 @@ export function createContainer(onUnauthorized: () => void): Container {
     speedtest: new SpeedtestUseCases(new SpeedtestApi(http)),
     refresh: createRefreshScheduler(),
     shortcuts: new ShortcutRegistry(),
+    quickLinks: new QuickLinkTargets((url) => window.open(url, '_blank', 'noopener,noreferrer')),
     calendar: new CalendarUseCases(new CalendarApi(http)),
     onboarding: new OnboardingUseCases(new OnboardingApi(http)),
     backup: new BackupUseCases(new BackupApi(http)),

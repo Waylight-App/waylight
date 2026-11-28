@@ -324,12 +324,20 @@
         typingCombos: ['Mod+K'],
         run: () => hero?.focus(), // the hero field is the search (#222)
       }),
+      // Digits open quick links, Alt and a digit switches tabs (#859).
       r.register({
-        id: 'tabs.select',
+        id: 'quicklinks.open',
         combos: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
         display: ['1–9'],
+        label: 'shortcuts.quick_links',
+        run: (combo) => container.quickLinks.openAt(Number(combo) - 1),
+      }),
+      r.register({
+        id: 'tabs.select',
+        combos: ['Alt+1', 'Alt+2', 'Alt+3', 'Alt+4', 'Alt+5', 'Alt+6', 'Alt+7', 'Alt+8', 'Alt+9'],
+        display: ['Alt+1–9'],
         label: 'shortcuts.tabs',
-        run: (combo) => dashboard?.selectTabAt(Number(combo) - 1),
+        run: (combo) => dashboard?.selectTabAt(Number(combo.slice(4)) - 1),
       }),
       ...(container.auth.guest
         ? []

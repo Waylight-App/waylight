@@ -1738,6 +1738,7 @@ export const de: Record<BaseMessageKey, string> = {
   'shortcuts.or': 'oder',
   'shortcuts.search': 'Schnellsuche öffnen',
   'shortcuts.tabs': 'Zu Tab 1 bis 9 wechseln',
+  'shortcuts.quick_links': 'Schnellzugriff 1 bis 9 öffnen',
   'shortcuts.edit': 'Bearbeitungsmodus starten oder beenden',
   'shortcuts.finish_edit': 'Bearbeitungsmodus beenden',
   'shortcuts.help': 'Diese Übersicht anzeigen',

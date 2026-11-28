@@ -29,6 +29,7 @@ export const iconPaths = {
   done: ['M5 12.5l4.5 4.5L19 7'],
   menu: ['M4 7h16M4 12h16M4 17h16'],
   chevron: ['M7 10l5 5l5-5'],
+  'chevron-up': ['M7 14l5-5l5 5'],
   // Four tiles: the widgets entry of the phone navigation (#847).
   widgets: [
     'M5.5 4h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a1.5 1.5 0 0 1-1.5-1.5v-3a1.5 1.5 0 0 1 1.5-1.5z',

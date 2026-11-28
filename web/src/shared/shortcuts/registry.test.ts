@@ -6,6 +6,7 @@ const key = (
   mods: Partial<{ ctrl: boolean; meta: boolean; alt: boolean; shift: boolean }> = {},
 ) => ({
   key: k,
+  code: /^[1-9]$/.test(k) ? `Digit${k}` : '',
   ctrlKey: !!mods.ctrl,
   metaKey: !!mods.meta,
   altKey: !!mods.alt,
@@ -22,6 +23,11 @@ describe('shortcut registry (#95)', () => {
     expect(comboOf(key('Z', { ctrl: true, shift: true }))).toBe('Mod+Shift+Z');
     expect(comboOf(key('?', { shift: true }))).toBe('?');
     expect(comboOf(key('e', { alt: true }))).toBeNull();
+    // Alt and a digit switch tabs (#859), also where Alt changes the character.
+    expect(comboOf(key('3', { alt: true }))).toBe('Alt+3');
+    expect(comboOf({ ...key('£', { alt: true }), code: 'Digit3' })).toBe('Alt+3');
+    expect(comboOf(key('3', { alt: true, ctrl: true }))).toBeNull();
+    expect(comboOf(key('3'))).toBe('3');
     expect(comboOf(key('ArrowDown'))).toBeNull();
   });
 

@@ -26,6 +26,7 @@ export const localModules: readonly string[] = [
 export const localWidgetKinds: readonly string[] = [
   'clock',
   'bookmarks',
+  'quicklinks',
   'notes',
   'todos',
   'countdown',

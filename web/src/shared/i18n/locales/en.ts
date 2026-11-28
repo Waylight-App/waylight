@@ -1699,6 +1699,7 @@ export const en = {
   'shortcuts.or': 'or',
   'shortcuts.search': 'Open the quick search',
   'shortcuts.tabs': 'Switch to tab 1 to 9',
+  'shortcuts.quick_links': 'Open quick link 1 to 9',
   'shortcuts.edit': 'Start or finish edit mode',
   'shortcuts.finish_edit': 'Finish edit mode',
   'shortcuts.help': 'Show this overview',

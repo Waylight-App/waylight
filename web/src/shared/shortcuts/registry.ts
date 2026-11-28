@@ -1,18 +1,18 @@
 /**
  * Keyboard shortcut registry (#95): one place that knows every global
  * shortcut, used by the single global listener and by the "?" overview.
- * Only plain keys (no Alt/Ctrl/Meta) and Ctrl/Cmd+K are used, so browser
- * and screen reader shortcuts keep working.
+ * Plain keys, Ctrl/Cmd with a letter and Alt with a digit (tabs, #859) are
+ * used; other Alt combinations stay with the browser and screen readers.
  */
 
 /** The parts of a keyboard event the registry looks at. */
-export type KeyInput = Pick<KeyboardEvent, 'key' | 'ctrlKey' | 'metaKey' | 'altKey' | 'shiftKey'>;
+export type KeyInput = Pick<KeyboardEvent, 'key' | 'code' | 'ctrlKey' | 'metaKey' | 'altKey' | 'shiftKey'>;
 
 /** A registered shortcut. */
 export interface Shortcut {
   /** Unique command id, e.g. "search.open". */
   id: string;
-  /** Normalised key combinations, e.g. ["Mod+K", "/"] or ["1", …, "9"]. */
+  /** Normalised key combinations, e.g. ["Mod+K", "/"], ["1", …, "9"] or ["Alt+1", …]. */
   combos: string[];
   /** What the overview shows for the keys, e.g. "1–9". */
   display: string[];
@@ -26,11 +26,15 @@ export interface Shortcut {
 /**
  * Normalises an event to a combo string: "Mod+K" / "Mod+Shift+Z" for Ctrl
  * or Cmd plus a letter, the plain key otherwise (Shift is ignored for
- * printable keys, so "?" works on every layout); null for Alt combinations
- * and other modifiers.
+ * printable keys, so "?" works on every layout); "Alt+1" … "Alt+9" for Alt
+ * and a digit, read from the physical key because Alt changes the character
+ * on macOS; null for other Alt combinations and modifiers.
  */
 export function comboOf(e: KeyInput): string | null {
-  if (e.altKey) return null;
+  if (e.altKey) {
+    const digit = /^Digit([1-9])$/.exec(e.code);
+    return digit && !e.ctrlKey && !e.metaKey ? `Alt+${digit[1]}` : null;
+  }
   if (e.ctrlKey || e.metaKey) {
     return e.key.length === 1 ? `Mod+${e.shiftKey ? 'Shift+' : ''}${e.key.toUpperCase()}` : null;
   }
