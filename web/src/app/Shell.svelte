@@ -42,7 +42,7 @@
   import TopInfo from './TopInfo.svelte';
   import { launcherSources } from './launcherSources';
   import { LauncherUseCases } from '../features/launcher/usecase/launcherUseCases';
-  import { type Segment, statusSummary } from '../features/launcher/domain/launcher';
+  import { statusSummary } from '../features/launcher/domain/launcher';
   import { firstWidgetConfig, type Tab } from '../features/dashboard';
   import { parseWeatherConfig } from '../features/weather/domain/weather';
 
@@ -217,8 +217,11 @@
     if (attention && attention.count > 0) void attention.check();
   }
 
-  let launcherOpen = $state<Segment | null>(null);
+  // Two popovers of the bar (#858): the pill shows the service status, the
+  // icon opens services and bookmarks.
+  let popover = $state<'status' | 'launcher' | null>(null);
   let launcherTrigger = $state<HTMLButtonElement>();
+  let statusTrigger = $state<HTMLButtonElement>();
   let serviceStatus = $state<ReturnType<typeof statusSummary>>({ kind: 'none', offline: 0 });
   const launcher = $derived(modules ? new LauncherUseCases(launcherSources(container, modules)) : null);
 
@@ -236,10 +239,12 @@
     return () => clearInterval(id);
   });
 
-  function closeLauncher() {
-    launcherOpen = null;
-    launcherTrigger?.focus();
+  function closePopover() {
+    const trigger = popover === 'status' ? statusTrigger : launcherTrigger;
+    popover = null;
+    trigger?.focus();
   }
+  const toggle = (p: 'status' | 'launcher') => (popover = popover === p ? null : p);
 
   const accountInitial = $derived(appearance.greetingName.trim().charAt(0).toUpperCase());
   let dashboardState = $state<{ tabs: Tab[]; activeId: string }>({ tabs: [], activeId: '' });
@@ -648,11 +653,15 @@
       {/if}
       {#if serviceStatus.kind !== 'none'}
         <button
+          bind:this={statusTrigger}
           type="button"
           class="status"
           data-kind={serviceStatus.kind}
           data-launcher-trigger
-          onclick={() => (launcherOpen = launcherOpen ? null : 'services')}
+          aria-haspopup="dialog"
+          aria-expanded={popover === 'status'}
+          title={t('launcher.status_title')}
+          onclick={() => toggle('status')}
         >
           <span class="dot" aria-hidden="true"></span>
           <span class="long">
@@ -674,10 +683,10 @@
           class="icon-btn"
           data-launcher-trigger
           aria-haspopup="dialog"
-          aria-expanded={launcherOpen !== null}
+          aria-expanded={popover === 'launcher'}
           aria-label={t('launcher.title')}
           title={t('launcher.title')}
-          onclick={() => (launcherOpen = launcherOpen ? null : 'all')}><Icon name="grid" size={16} /></button
+          onclick={() => toggle('launcher')}><Icon name="grid" size={16} /></button
         >
       {/if}
       {#if !container.auth.guest && !simpleView && !dashboardManaged}
@@ -700,15 +709,18 @@
         onlogout={logout}
       />
     </div>
-    {#if launcherOpen && launcher}
+    {#if popover === 'launcher' && launcher}
       {#await import('../features/launcher/ui/LauncherPanel.svelte') then { default: LauncherPanel }}
         <LauncherPanel
           {launcher}
           content={appearance.launcher}
-          initialSegment={launcherOpen}
-          onclose={closeLauncher}
-          onsettings={() => ((launcherOpen = null), (settingsSection = 'appearance'), (settingsOpen = true))}
+          onclose={closePopover}
+          onsettings={() => ((popover = null), (settingsSection = 'appearance'), (settingsOpen = true))}
         />
+      {/await}
+    {:else if popover === 'status' && launcher}
+      {#await import('../features/launcher/ui/ServiceStatusPanel.svelte') then { default: ServiceStatusPanel }}
+        <ServiceStatusPanel {launcher} onclose={closePopover} />
       {/await}
     {/if}
   </header>

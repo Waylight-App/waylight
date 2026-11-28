@@ -7,6 +7,7 @@ import {
   matches,
   safeUrl,
   SERVICE_PREVIEW,
+  statusGroups,
   statusSummary,
   emptyKey,
 } from './launcher';
@@ -19,8 +20,8 @@ const services: LauncherService[] = Array.from({ length: 8 }, (_, i) => ({
   latencyMs: 10 + i,
 }));
 const bookmarks: LauncherBookmark[] = [
-  { id: 'b1', title: 'GitHub', url: 'https://github.com', folder: 'Dev' },
-  { id: 'b2', title: 'Wikipedia', url: 'https://wikipedia.org', folder: 'Wissen' },
+  { id: 'b1', title: 'GitHub', url: 'https://github.com', folder: 'Dev', icon: null },
+  { id: 'b2', title: 'Wikipedia', url: 'https://wikipedia.org', folder: 'Wissen', icon: null },
 ];
 const opts = {
   filter: '',
@@ -68,6 +69,25 @@ describe('launcher', () => {
     expect(statusSummary([])).toEqual({ kind: 'none', offline: 0 });
     expect(statusSummary(services)).toEqual({ kind: 'offline', offline: 1 });
     expect(statusSummary([{ state: 'online' }, { state: 'unknown' }])).toEqual({ kind: 'ok', offline: 0 });
+  });
+
+  it('groups the status popover: down first, then unchecked, then fine (#858)', () => {
+    const svc = (name: string, state: LauncherService['state']): LauncherService => ({
+      id: name,
+      name,
+      url: `https://${name}.lan`,
+      state,
+      latencyMs: 5,
+    });
+    const g = statusGroups([
+      svc('Zed', 'online'),
+      svc('Alpha', 'online'),
+      svc('Nas', 'offline'),
+      svc('New', 'unknown'),
+    ]);
+    expect(g.offline.map((s) => s.name)).toEqual(['Nas']);
+    expect(g.unknown.map((s) => s.name)).toEqual(['New']);
+    expect(g.online.map((s) => s.name)).toEqual(['Alpha', 'Zed']);
   });
 
   it('only opens http(s) links and builds initials', () => {

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { LauncherUseCases } from './launcherUseCases';
 
 const service = { id: 's', name: 'NAS', url: 'https://nas', state: 'online' as const, latencyMs: 3 };
-const bookmark = { id: 'b', title: 'Docs', url: 'https://docs', folder: '' };
+const bookmark = { id: 'b', title: 'Docs', url: 'https://docs', folder: '', icon: null };
 
 describe('LauncherUseCases', () => {
   it('loads both sources and survives a failing one', async () => {

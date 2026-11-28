@@ -22,6 +22,10 @@ export const en = {
   'launcher.all_online': 'All services online',
   'launcher.online_short': 'Online',
   'launcher.some_offline': '{n} offline',
+  'launcher.status_title': 'Service status',
+  'launcher.status_down': 'Down',
+  'launcher.status_unchecked': 'Not checked yet',
+  'launcher.status_fine': 'Online',
 } as const;
 
 declare module '../../../shared/i18n/registry' {

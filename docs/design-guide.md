@@ -133,9 +133,10 @@ logo is the lamp mark at 24 px next to the wordmark "Waylight" in Fraunces at
 The top bar is 64 px high with 24 px of padding at the sides, in three parts.
 On the left the logo. In the middle one line at `--fs-xs` in the subtle colour
 with the date, the temperature and the number of to-dos due today, separated by
-small dots. On the right the status pill, the edit button and the avatar. The
-status pill is 32 px high with a hairline and a dot; the edit button is a 32 px
-icon button; the avatar is a 32 px amber circle with the initial in
+small dots. On the right the status pill, the launcher, the edit button and
+the avatar. The status pill is 32 px high with a hairline and a dot and opens
+only the service status; the launcher (four squares) opens services and
+bookmarks; the launcher and the edit button are 32 px icon buttons; the avatar is a 32 px amber circle with the initial in
 `--color-accent-contrast`.
 
 Under it the header has the page title on the left in Fraunces at `--fs-lg`,

@@ -15,19 +15,16 @@
   interface Props {
     launcher: LauncherUseCases;
     content: LauncherContent;
-    /** Segment to open with, e.g. "services" from the status pill. */
-    initialSegment?: Segment;
     onclose: () => void;
     /** Opens Settings → Appearance (launcher setting). */
     onsettings: () => void;
   }
-  let { launcher, content, initialSegment = 'all', onclose, onsettings }: Props = $props();
+  let { launcher, content, onclose, onsettings }: Props = $props();
 
   let data = $state<LauncherData>({ services: [], bookmarks: [] });
   let loaded = $state(false);
   let filter = $state('');
-  // svelte-ignore state_referenced_locally
-  let segment = $state<Segment>(initialSegment);
+  let segment = $state<Segment>('all');
   let expanded = $state(new Set<'services' | 'bookmarks'>());
   let panel: HTMLDivElement;
 
@@ -155,9 +152,23 @@
             {#if href}
               <li>
                 <a class="link" {href} target="_blank" rel="noopener noreferrer">
-                  <span class="avatar" aria-hidden="true">{initial(b.title)}</span>
-                  <span class="title">{b.title}</span>
-                  {#if b.folder}<span class="folder">{b.folder}</span>{/if}
+                  <!-- The favicon covers the initial; a failed load removes it (#858). -->
+                  <span class="avatar" aria-hidden="true"
+                    >{initial(b.title)}{#if b.icon}<img
+                        src={b.icon}
+                        alt=""
+                        width="16"
+                        height="16"
+                        loading="lazy"
+                        referrerpolicy="no-referrer"
+                        onerror={(e) => (e.currentTarget as HTMLImageElement).remove()}
+                      />{/if}</span
+                  >
+                  <!-- The name comes first and wraps; the folder goes below it (#858). -->
+                  <span class="text">
+                    <span class="title">{b.title}</span>
+                    {#if b.folder}<span class="folder">{b.folder}</span>{/if}
+                  </span>
                 </a>
               </li>
             {/if}
@@ -322,28 +333,44 @@
   .link:focus-visible {
     background: color-mix(in srgb, var(--color-accent) 8%, transparent);
   }
+  /* Same tile as the bookmarks widget: the icon covers the initial. */
   .avatar {
+    position: relative;
     flex: none;
-    width: 1.6rem;
-    height: 1.6rem;
-    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
     display: grid;
     place-items: center;
     font-size: var(--fs-xs);
     font-weight: 600;
-    color: var(--color-accent-text);
-    background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+    color: var(--color-text-muted);
+    background: var(--color-surface-2);
   }
-  .title {
+  .avatar img {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: var(--space-2);
+    border-radius: inherit;
+    background: var(--color-surface-2);
+  }
+  .text {
     flex: 1;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: grid;
+  }
+  .title {
+    overflow-wrap: anywhere;
   }
   .folder {
     font-size: var(--fs-xs);
     color: var(--color-text-subtle);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   footer {
     display: flex;

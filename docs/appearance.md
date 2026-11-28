@@ -107,6 +107,9 @@ calendar without a calendar, shows a symbol, one short sentence and a
 
 The launcher, the grid icon in the top bar, opens a quick list of your
 service tiles, your bookmarks or both; choose which under *Appearance*.
+Bookmarks show their favicon when the site has one. The status pill next to
+it only shows the state of your services: it opens a list with what is down
+first and what is fine below.
 
 ## Custom CSS
 
