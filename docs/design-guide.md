@@ -218,6 +218,10 @@ below they become a bottom navigation fixed to the bottom edge: an icon at
 20 px and a label at `--fs-xs` per tab in a row of equal cells, 48 px high with
 a hairline above. The selected tab uses the accent text colour; the others use
 the subtle colour. The page leaves room for it, so no widget ends behind it.
+The last entry is **Widgets** with the four-tile icon; it opens the widget
+picker for the current tab and stays at the right edge when many tabs scroll.
+Guests, kiosk displays and team tabs do not get it. With a single tab the bar
+still shows on a phone, so the entry can be reached.
 
 On a phone the top bar shows the logo, a short status pill and the avatar, and
 no date line. The title stays at `--fs-lg`, the search field is 44 px high,
