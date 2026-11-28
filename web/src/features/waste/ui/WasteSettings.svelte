@@ -3,6 +3,7 @@
   import { errorMessage } from '../../../shared/api-client/http';
   import { type CalendarFile, emptyRule, type WasteRule } from '../domain/waste';
   import type { WasteUseCases } from '../usecase/wasteUseCases';
+  import WasteReminder from './WasteReminder.svelte';
 
   /** Props of the waste calendar settings. */
   interface Props {
@@ -172,6 +173,7 @@
     >{busy ? t('common.loading') : mode === 'url' ? t('common.test_save') : t('waste.save_rules')}</button
   >
 </form>
+<WasteReminder {waste} />
 
 <style>
   .modes {

@@ -10,8 +10,10 @@
     lastError: string | null;
     now: number;
     onrefresh: () => void;
+    /** In a card's header row (#851); otherwise it floats over the bottom right of the content. */
+    inline?: boolean;
   }
-  let { freshness, fetchedAt, lastError, now, onrefresh }: Props = $props();
+  let { freshness, fetchedAt, lastError, now, onrefresh, inline = false }: Props = $props();
 
   const age = $derived.by(() => {
     if (fetchedAt === null) return t('freshness.not_loaded');
@@ -30,7 +32,7 @@
   );
 </script>
 
-<div class="badge {freshness}" title={title || undefined}>
+<div class="badge {freshness}" class:inline title={title || undefined}>
   {#if freshness === 'error'}<Icon name="warning" size={16} />{/if}
   <span class="age">
     {freshness === 'stale'
@@ -81,6 +83,25 @@
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+  }
+  /* In the header row the badge takes its own place after the meta text,
+     which shrinks instead of being covered. display (not visibility) frees
+     the room while it is hidden, so the meta keeps its full width then. */
+  .badge.inline {
+    position: static;
+    flex: none;
+    align-self: center;
+    margin: -4px 0;
+    display: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  :global(.widget:hover) .badge.inline,
+  :global(.widget:focus-within) .badge.inline,
+  .badge.inline.stale,
+  .badge.inline.error {
+    display: flex;
   }
   .badge.stale {
     color: var(--color-warning);

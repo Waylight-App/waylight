@@ -98,7 +98,7 @@
     overview?: Snippet<[Overview]>;
     /** Whether the viewer sees the System zone of zoned tabs; admins only (#619). */
     systemZone?: boolean;
-    /** Whether a widget has nothing to show; zoned tabs hide it outside edit mode (#619). */
+    /** Whether a widget has nothing to show; the simple view leaves it out (#681). */
     emptyWidget?: (widget: Widget) => boolean;
     /** The simple view of the accessibility options (#681): one column, compact views only. */
     simple?: boolean;
@@ -765,9 +765,10 @@
       (w) =>
         available.has(w.kind) &&
         !(folded && statusWidget(w)) &&
-        // The quiet look of zones (#619) and the simple view (#681): a widget
-        // with nothing to show is left out.
-        !((zoned || simple) && !editing && emptyWidget(w)),
+        // The simple view (#681) leaves out a widget with nothing to show.
+        // Elsewhere it stays with its quiet empty state, so the normal view
+        // and edit mode share one layout (#860).
+        !(simple && !editing && emptyWidget(w)),
     )}
     {#if overview && !editing}
       {@const tab = active}

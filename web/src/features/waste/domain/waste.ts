@@ -29,6 +29,13 @@ export interface WasteSettings {
   rules: WasteRule[];
 }
 
+/** The reminder the evening before a collection (#866): off by default, at 19:00. */
+export interface WasteReminder {
+  enabled: boolean;
+  /** "HH:MM". */
+  time: string;
+}
+
 /** Largest ICS file the server accepts (1 MB). */
 export const MAX_CALENDAR_BYTES = 1 << 20;
 

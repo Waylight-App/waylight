@@ -25,12 +25,29 @@
     children: Snippet;
     /** The note on where to find the values, shown below the body. */
     help?: Snippet;
+    /**
+     * What is still missing before the primary action makes sense (#855).
+     * While set, the action is disabled and the text stands next to it.
+     */
+    missing?: string;
   }
-  let { title, icon, lead, primary, busy = false, onprimary, onclose, children, help }: Props = $props();
+  let {
+    title,
+    icon,
+    lead,
+    primary,
+    busy = false,
+    onprimary,
+    onclose,
+    children,
+    help,
+    missing = '',
+  }: Props = $props();
+  const uid = $props.id();
 
   function submit(e: SubmitEvent) {
     e.preventDefault();
-    if (!busy) onprimary();
+    if (!busy && !missing) onprimary();
   }
 </script>
 
@@ -46,7 +63,13 @@
     {/if}
     <div class="foot">
       <button class="btn link" type="button" onclick={onclose}>{t('setup.later')}</button>
-      <button class="btn btn-primary" type="submit" disabled={busy}>{primary}</button>
+      {#if missing}<p class="missing" id="{uid}-missing" aria-live="polite">{missing}</p>{/if}
+      <button
+        class="btn btn-primary"
+        type="submit"
+        disabled={busy || !!missing}
+        aria-describedby={missing ? `${uid}-missing` : undefined}>{primary}</button
+      >
     </div>
   </form>
 </Modal>
@@ -85,6 +108,13 @@
   .foot .btn-primary {
     padding: var(--space-3) var(--space-6);
     font-weight: 600;
+  }
+  .missing {
+    flex: 1;
+    margin: 0;
+    text-align: right;
+    color: var(--color-text-subtle);
+    font-size: var(--fs-xs);
   }
   .link {
     border-color: transparent;

@@ -45,6 +45,8 @@
   import { type Segment, statusSummary } from '../features/launcher/domain/launcher';
   import { firstWidgetConfig, type Tab } from '../features/dashboard';
   import { parseWeatherConfig } from '../features/weather/domain/weather';
+  import { undoQueue } from '../shared/ui/undo.svelte';
+  import UndoToast from './UndoToast.svelte';
 
   /** Props of the authenticated application shell. */
   interface Props {
@@ -312,6 +314,20 @@
       }),
     ];
     return () => offs.forEach((off) => off());
+  });
+
+  // Outside edit mode Ctrl+Z takes back the last quick action in a widget
+  // while its toast is shown (#867).
+  const quickUndo = $derived(!editing && undoQueue.current !== null);
+  $effect(() => {
+    if (!quickUndo) return;
+    return container.shortcuts.register({
+      id: 'quick.undo',
+      combos: ['Mod+Z'],
+      display: [t('shortcuts.ctrl_z')],
+      label: 'shortcuts.undo',
+      run: () => undoQueue.undo(),
+    });
   });
 
   // Global shortcuts (#95): one registry, one listener.
@@ -769,6 +785,7 @@
     {/await}
   {/if}
   <LiveRegion />
+  <UndoToast />
   {#if liveAlerts.list.length}
     {#await import('./LiveToasts.svelte') then { default: LiveToasts }}<LiveToasts />{/await}
   {/if}

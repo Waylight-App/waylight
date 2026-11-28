@@ -1,6 +1,7 @@
 import {
   validateCalendarFile,
   type WasteOverview,
+  type WasteReminder,
   type WasteRule,
   type WasteSettings,
 } from '../domain/waste';
@@ -12,6 +13,8 @@ export interface WasteGateway {
   uploadCalendar(file: File): Promise<WasteSettings>;
   removeCalendar(): Promise<WasteSettings>;
   upcoming(): Promise<WasteOverview>;
+  reminder(): Promise<WasteReminder>;
+  saveReminder(reminder: WasteReminder): Promise<WasteReminder>;
 }
 
 /** Application logic of the waste feature. */
@@ -53,5 +56,13 @@ export class WasteUseCases {
 
   upcoming(): Promise<WasteOverview> {
     return this.gateway.upcoming();
+  }
+
+  /** The reminder the evening before a collection (#866). */
+  reminder(): Promise<WasteReminder> {
+    return this.gateway.reminder();
+  }
+  saveReminder(reminder: WasteReminder): Promise<WasteReminder> {
+    return this.gateway.saveReminder(reminder);
   }
 }

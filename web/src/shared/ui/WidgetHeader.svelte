@@ -2,6 +2,8 @@
   import type { Snippet } from 'svelte';
   import Icon from './icons/Icon.svelte';
   import type { IconName } from './icons/paths';
+  import WidgetStatusBadge from './WidgetStatusBadge.svelte';
+  import { widgetStatus } from './widgetStatus';
 
   /**
    * Props of the one header every widget shows (#672): icon, title and an
@@ -21,6 +23,10 @@
     action?: Snippet;
   }
   let { title, icon, meta, metaTone = 'neutral', titleAction, action }: Props = $props();
+
+  // The card's data freshness (#851): drawn here so it never covers the content.
+  const statusHolder = widgetStatus();
+  const status = $derived(statusHolder?.status ?? null);
 </script>
 
 <div class="widget-header">
@@ -30,6 +36,16 @@
   </h3>
   {#if titleAction}<span class="title-action">{@render titleAction()}</span>{/if}
   {#if meta}<span class="meta" data-tone={metaTone} title={meta}>{meta}</span>{/if}
+  {#if status}
+    <WidgetStatusBadge
+      inline
+      freshness={status.freshness}
+      fetchedAt={status.fetchedAt}
+      lastError={status.lastError}
+      now={status.now}
+      onrefresh={status.refresh}
+    />
+  {/if}
   {#if action}<span class="action">{@render action()}</span>{/if}
 </div>
 

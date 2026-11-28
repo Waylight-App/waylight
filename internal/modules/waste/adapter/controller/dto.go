@@ -13,3 +13,10 @@ type SettingsInputDTO struct {
 	URL   string         `json:"url"`
 	Rules []RuleInputDTO `json:"rules"`
 }
+
+// ReminderInputDTO is the body of PUT /api/waste/reminder (#866).
+type ReminderInputDTO struct {
+	Enabled bool `json:"enabled"`
+	// Time is "HH:MM" on the evening before a collection.
+	Time string `json:"time"`
+}

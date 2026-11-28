@@ -27,6 +27,21 @@
   let error = $state('');
   let busy = $state(false);
 
+  // Done waits for a valid source (#855): a saved file or a link the server
+  // accepts (http, https or webcal).
+  const missing = $derived.by(() => {
+    const link = url.trim();
+    if (!link) return file ? '' : t('waste.setup_empty');
+    return validLink(link) ? '' : t('waste.setup_invalid_link');
+  });
+  function validLink(link: string): boolean {
+    try {
+      return ['http:', 'https:', 'webcal:'].includes(new URL(link).protocol);
+    } catch {
+      return false;
+    }
+  }
+
   const day = (d: Date) =>
     d.toLocaleDateString(intlLocale(), { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -46,10 +61,10 @@
 
   async function done() {
     error = '';
+    if (missing) return;
     if (!url.trim()) {
       // A file was saved when it was chosen.
-      if (file) ondone();
-      else error = t('waste.setup_empty');
+      ondone();
       return;
     }
     busy = true;
@@ -74,6 +89,7 @@
   lead={t('waste.setup_lead')}
   primary={t('setup.done')}
   {busy}
+  {missing}
   onprimary={() => void done()}
   onclose={leave}
 >

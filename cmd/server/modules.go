@@ -240,7 +240,7 @@ func buildModules(cfg config.Config, log *slog.Logger, db *sql.DB, cipher secret
 			})
 			return m
 		}},
-		{"waste", func() modules.Module { return waste.New(db, client, clk, time.Local) }},
+		{"waste", func() modules.Module { return waste.New(db, client, clk, alerts, time.Local) }},
 		{"wireguard", func() modules.Module { return wireguard.New(db, cfg.WireGuardDir, clk) }},
 		{"fritzbox", func() modules.Module { return fritzbox.New(db, secrets, out.integration, connections, clk, time.Local) }},
 		{"backupmonitor", func() modules.Module {

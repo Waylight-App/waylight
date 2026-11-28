@@ -12,6 +12,8 @@ export const serverDe: Record<ServerMessageKey, string> = {
   srv_100561a937e88349: 'Farben müssen wie #1a2b3c aussehen.',
   // Could not load the waste calendar: {detail}
   srv_57ceb20ccebc67bb: 'Der Abfallkalender konnte nicht geladen werden: {detail}',
+  // Enter a time like 19:00.
+  srv_3c03f3e1a40f9f78: 'Gib eine Uhrzeit wie 19:00 ein.',
   // Every rule needs a match text of at most 40 characters.
   srv_8e50b118b5e6b205: 'Jede Regel braucht einen Suchtext mit höchstens 40 Zeichen.',
   // Icons must be at most 8 characters long.

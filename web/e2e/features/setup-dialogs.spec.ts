@@ -35,8 +35,9 @@ test('the waste calendar and an integration use the same guided setup (#738)', a
   await expect(waste.getByText('There is no central source.')).toBeVisible();
   await expectAccessible(page, 'waste calendar setup', 'dialog');
 
-  await waste.getByRole('button', { name: 'Done' }).click();
-  await expect(waste.getByRole('alert')).toHaveText('Paste a link or choose a file first.');
+  // Done waits until a link or a file is set, and the dialog says what is missing (#855).
+  await expect(waste.getByRole('button', { name: 'Done' })).toBeDisabled();
+  await expect(waste.getByText('Paste a link or choose a file first.')).toBeVisible();
 
   const day = new Date();
   day.setDate(day.getDate() + 1);

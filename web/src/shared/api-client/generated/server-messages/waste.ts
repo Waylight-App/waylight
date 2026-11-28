@@ -6,6 +6,7 @@ export const serverMessages = {
   srv_100561a937e88349: "Colors must look like #1a2b3c.",
   srv_57ceb20ccebc67bb: "Could not load the waste calendar: {detail}",
   srv_446c8e66ca2e7125: "Enter a calendar link or upload a calendar file.",
+  srv_3c03f3e1a40f9f78: "Enter a time like 19:00.",
   srv_8e50b118b5e6b205: "Every rule needs a match text of at most 40 characters.",
   srv_72f2ef28f00d9995: "Icons must be at most 8 characters long.",
   srv_b9aa684ac85a4949: "In Settings under Waste, add the calendar link of your town or upload its calendar file.",

@@ -85,3 +85,13 @@ func Overview(o usecase.Overview) OverviewDTO {
 	}
 	return dto
 }
+
+// ReminderDTO is the reminder the evening before a collection (#866).
+type ReminderDTO struct {
+	Enabled bool `json:"enabled"`
+	// Time is "HH:MM"; 19:00 until it is changed.
+	Time string `json:"time"`
+}
+
+// Reminder maps the reminder.
+func Reminder(r domain.Reminder) ReminderDTO { return ReminderDTO{Enabled: r.Enabled, Time: r.At()} }

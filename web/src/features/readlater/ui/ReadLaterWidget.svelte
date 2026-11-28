@@ -6,6 +6,8 @@
   import { type Article, parseReadLaterConfig } from '../domain/readlater';
   import type { ReadLaterUseCases } from '../usecase/readLaterUseCases';
   import ArticleReader from './ArticleReader.svelte';
+  import { offerUndo } from '../../../shared/ui/undo.svelte';
+  import { SvelteSet } from 'svelte/reactivity';
 
   /** Unread articles with check-off and a field to save a link (#99). */
   interface Props {
@@ -21,6 +23,14 @@
   let error = $state('');
   let busy = $state(false);
   let open = $state<Article | null>(null);
+  // Articles ticked off as read or archived wait for their undo toast (#867).
+  const done = new SvelteSet<string>();
+  const shown = $derived(articles.filter((a) => !done.has(a.id)).slice(0, cfg.count));
+
+  function finish(a: Article, status: 'read' | 'archived') {
+    const text = t(status === 'read' ? 'readlater.marked_read' : 'readlater.archived', { title: a.title });
+    offerUndo(done, a.id, text, () => run(() => readlater.setStatus(a.id, status)));
+  }
 
   const load = () =>
     readlater
@@ -63,13 +73,13 @@
 {#if busy}<p class="muted small" role="status">{t('readlater.saving')}</p>{/if}
 {#if error}<p class="error small" role="alert">{error}</p>{/if}
 <ul class="list">
-  {#each articles.slice(0, cfg.count) as a (a.id)}
+  {#each shown as a (a.id)}
     <ListRow>
       {#snippet lead()}
         <input
           type="checkbox"
           aria-label={t('readlater.mark_read', { title: a.title })}
-          onchange={() => run(() => readlater.setStatus(a.id, 'read'))}
+          onchange={() => finish(a, 'read')}
         />
       {/snippet}
       <button class="title" type="button" onclick={async () => (open = await readlater.open(a.id))}>
@@ -86,9 +96,9 @@
     article={open}
     onclose={() => ((open = null), void load())}
     onarchive={() => {
-      const id = open?.id ?? '';
+      const a = open;
       open = null;
-      void run(() => readlater.setStatus(id, 'archived'));
+      if (a) finish(a, 'archived');
     }}
   />
 {/if}

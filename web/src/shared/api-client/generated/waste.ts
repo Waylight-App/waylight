@@ -65,3 +65,13 @@ export interface OverviewDTO {
    */
   endsOn: string;
 }
+/**
+ * ReminderDTO is the reminder the evening before a collection (#866).
+ */
+export interface ReminderDTO {
+  enabled: boolean;
+  /**
+   * Time is "HH:MM"; 19:00 until it is changed.
+   */
+  time: string;
+}

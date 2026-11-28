@@ -79,7 +79,7 @@
   const level = $derived(current?.level ?? 'none');
 </script>
 
-<div class="compact" class:strip data-level={level} data-testid="compact-view">
+<div class="compact" class:strip class:empty={current?.empty} data-level={level} data-testid="compact-view">
   <div class="label"><WidgetHeader {title} {icon} /></div>
   {#if current}
     <span class="state">
@@ -111,6 +111,12 @@
           >
         </span>
       {/if}
+    {/if}
+    {#if actions && current.empty && !current.action}
+      <!-- The one action of an empty tile (#860). The whole card is the
+           button that opens the widget, where it is added to or connected;
+           this cue only names that, so it adds no second tab stop. -->
+      <span class="empty-cue" aria-hidden="true">{t('compact.empty_action')}</span>
     {/if}
     {#if actionError}<span class="action-error" role="alert">{actionError}</span>{/if}
   {:else if error}
@@ -175,6 +181,23 @@
   .chip[aria-pressed='true'] {
     border-color: var(--color-accent);
     background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+  }
+  /* An empty tile stays quiet (#860): its state reads like a hint, not a value. */
+  .empty .state {
+    font-weight: 400;
+    color: var(--color-text-subtle);
+  }
+  .empty-cue {
+    align-self: flex-start;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: var(--fs-xs);
+    color: var(--color-accent-text);
+    white-space: nowrap;
+  }
+  .strip .empty-cue {
+    align-self: center;
   }
   .action-error {
     color: var(--color-danger);

@@ -14,6 +14,8 @@
     withDone,
   } from '../domain/shopping';
   import type { ShoppingUseCases } from '../usecase/shoppingUseCases';
+  import { offerUndo, undoQueue } from '../../../shared/ui/undo.svelte';
+  import { SvelteSet } from 'svelte/reactivity';
 
   /** Props of the shopping list widget. */
   interface Props {
@@ -33,7 +35,14 @@
   let error = $state('');
   let busy = $state(false);
   const source = $derived(current ? shopping.source(current) : null);
-  const doneCount = $derived(items.filter((i) => i.done).length);
+  // Ticked off and removed items wait for their undo toast (#867); the list
+  // shows the change at once.
+  const ticked = new SvelteSet<string>();
+  const removed = new SvelteSet<string>();
+  const shown = $derived(
+    items.filter((i) => !removed.has(i.id)).map((i) => (ticked.has(i.id) ? { ...i, done: true } : i)),
+  );
+  const doneCount = $derived(shown.filter((i) => i.done).length);
   // The choice only appears when there is something to choose between.
   const choices = $derived(overview.lists.length + (overview.caldav ? 1 : 0));
 
@@ -99,7 +108,17 @@
   }
 
   async function toggle(it: ShoppingItem) {
-    if (!source) return;
+    const src = source;
+    if (!src) return;
+    if (!it.done) {
+      offerUndo(ticked, it.id, t('shopping.ticked', { name: it.summary }), () =>
+        send(async () => {
+          await src.setDone(it.id, true);
+          items = withDone(items, it.id, true);
+        }),
+      );
+      return;
+    }
     const before = items;
     items = withDone(items, it.id, !it.done);
     try {
@@ -111,22 +130,33 @@
     }
   }
 
-  async function remove(it: ShoppingItem) {
-    if (!source) return;
-    const before = items;
-    items = items.filter((i) => i.id !== it.id);
+  function remove(it: ShoppingItem) {
+    const src = source;
+    if (!src) return;
+    offerUndo(removed, it.id, t('shopping.removed', { name: it.summary }), () =>
+      send(async () => {
+        await src.remove(it.id);
+        items = items.filter((i) => i.id !== it.id);
+      }),
+    );
+  }
+
+  /** Sends a quick action once its undo time is over; a failure is shown and brings the item back. */
+  async function send(action: () => Promise<void>) {
     try {
-      await source.remove(it.id);
+      await action();
       error = '';
     } catch (err) {
-      items = before;
       error = errorMessage(err);
+      throw err;
     }
   }
 
   async function clear() {
     if (!source) return;
     try {
+      // A tick-off still waiting for its undo toast is part of "done".
+      await undoQueue.flush();
       await source.clearCompleted();
       await load();
     } catch (err) {
@@ -161,7 +191,7 @@
       >
     {/if}
     <ul class="items">
-      {#each items as it (it.id)}
+      {#each shown as it (it.id)}
         <ListRow>
           <label class="item" class:done={it.done}
             ><input type="checkbox" checked={it.done} onchange={() => toggle(it)} />

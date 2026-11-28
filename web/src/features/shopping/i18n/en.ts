@@ -7,6 +7,8 @@ export const en = {
   'shopping.default_list_name': 'Shopping',
   'shopping.create_list': 'Create list',
   'shopping.remove_item': 'Remove “{name}”',
+  'shopping.ticked': '“{name}” ticked off',
+  'shopping.removed': '“{name}” removed',
   'shopping.lists_title': 'Lists on Waylight',
   'shopping.lists_hint':
     'These lists need no other service. Share a list with a group or with everyone, and they can add, tick off and remove items too. The widget shows one list; pick it in the widget.',

@@ -2,6 +2,7 @@
 export const en = {
   'compact.loading': 'Loading…',
   'compact.unavailable': 'Not available',
+  'compact.empty_action': 'Add or connect',
   'compact.level_attention': 'Needs attention',
   'compact.level_problem': 'Problem',
   'compact.summary': 'System summary',

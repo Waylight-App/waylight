@@ -32,6 +32,8 @@ export const en = {
   'readlater.no_copy': 'There is no reader copy of this page.',
   'readlater.archive': 'Archive',
   'readlater.mark_read': 'Mark “{title}” as read',
+  'readlater.marked_read': '“{title}” marked as read',
+  'readlater.archived': '“{title}” archived',
   'readlater.archive_item': 'Archive “{title}”',
   'readlater.restore_item': 'Back to unread: “{title}”',
   'readlater.delete_item': 'Delete “{title}”',

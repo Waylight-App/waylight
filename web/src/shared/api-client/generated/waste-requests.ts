@@ -19,3 +19,13 @@ export interface SettingsInputDTO {
   url: string;
   rules: RuleInputDTO[];
 }
+/**
+ * ReminderInputDTO is the body of PUT /api/waste/reminder (#866).
+ */
+export interface ReminderInputDTO {
+  enabled: boolean;
+  /**
+   * Time is "HH:MM" on the evening before a collection.
+   */
+  time: string;
+}
