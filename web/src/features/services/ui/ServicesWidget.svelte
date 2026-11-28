@@ -4,7 +4,6 @@
   import { usePolling } from '../../../shared/refresh';
   import { intlLocale, t } from '../../../shared/i18n';
   import { errorMessage } from '../../../shared/api-client/http';
-  import Sparkline from '../../../shared/ui/Sparkline.svelte';
   import {
     canWake,
     certificateDaysLeft,
@@ -17,6 +16,7 @@
   import type { ServicesUseCases } from '../usecase/servicesUseCases';
   import StatusDot from '../../../shared/ui/StatusDot.svelte';
   import ServiceIcon from './ServiceIcon.svelte';
+  import LatencyChart from './LatencyChart.svelte';
 
   /** Props of the service tiles widget. */
   interface Props {
@@ -76,10 +76,7 @@
           <span class="name">{s.name}</span>
           {#if s.description && !compact}<span class="muted desc">{s.description}</span>{/if}
           {#if history[s.id]?.length}
-            <Sparkline
-              values={(history[s.id] ?? []).map((p) => p.latencyMs)}
-              label={t('services.response_time_of_over_24_hours', { name: s.name })}
-            />
+            <LatencyChart name={s.name} points={history[s.id] ?? []} />
           {/if}
         </span>
         {#if s.certExpiresSoon}

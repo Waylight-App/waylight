@@ -572,7 +572,13 @@ export const en = {
   'services.delete': 'Delete {name}',
   'services.defaults_to_the_url': 'defaults to the address',
   'services.no_services_yet_add_them_under': 'No services yet. Add them under Settings → Services.',
-  'services.response_time_of_over_24_hours': 'Response time of {name} over 24 hours',
+  'services.latency_caption': 'Response time, 24 h',
+  'services.latency_ms': '{value} ms',
+  'services.latency_down': 'Down',
+  'services.latency_summary':
+    'Response time of {name} over the last 24 hours: latest {latest} ms, average {average} ms, highest {max} ms. Outages: {outages}.',
+  'services.latency_summary_none':
+    'Response time of {name} over the last 24 hours: no answer. Outages: {outages}.',
   'services.tls_certificate_expires': 'Certificate expires {value}',
   'services.wake_up_wake_on_lan': 'Wake up (Wake-on-LAN)',
   'services.wake_up': 'Wake up {name}',

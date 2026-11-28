@@ -585,7 +585,13 @@ export const de: Record<BaseMessageKey, string> = {
   'services.defaults_to_the_url': 'standardmäßig die Adresse',
   'services.no_services_yet_add_them_under':
     'Noch keine Dienste. Füge sie unter Einstellungen → Dienste hinzu.',
-  'services.response_time_of_over_24_hours': 'Antwortzeit von {name} der letzten 24 Stunden',
+  'services.latency_caption': 'Antwortzeit, 24 h',
+  'services.latency_ms': '{value} ms',
+  'services.latency_down': 'Ausgefallen',
+  'services.latency_summary':
+    'Antwortzeit von {name} der letzten 24 Stunden: zuletzt {latest} ms, im Schnitt {average} ms, höchstens {max} ms. Ausfälle: {outages}.',
+  'services.latency_summary_none':
+    'Antwortzeit von {name} der letzten 24 Stunden: keine Antwort. Ausfälle: {outages}.',
   'services.tls_certificate_expires': 'Zertifikat läuft ab am {value}',
   'services.wake_up_wake_on_lan': 'Aufwecken (Wake-on-LAN)',
   'services.wake_up': '{name} aufwecken',
