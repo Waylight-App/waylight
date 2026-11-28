@@ -1,10 +1,6 @@
 <script lang="ts">
   import type { TodosUseCases } from '../features/todos/usecase/todosUseCases';
-  import {
-    describe,
-    type WeatherConfig,
-    type WeatherIcon as WeatherIconKind,
-  } from '../features/weather/domain/weather';
+  import { describe, type Forecast, isDayAt, type WeatherConfig } from '../features/weather/domain/weather';
   import WeatherIcon from '../features/weather/ui/WeatherIcon.svelte';
   import type { WeatherUseCases } from '../features/weather/usecase/weatherUseCases';
   import { intlLocale, t } from '../shared/i18n';
@@ -22,7 +18,7 @@
   const poll = usePolling();
 
   let now = $state(new Date());
-  let temperature = $state<{ value: number; icon: WeatherIconKind } | null>(null);
+  let forecast = $state<Forecast | null>(null);
   let due = $state<number | null>(null);
 
   $effect(() => {
@@ -30,21 +26,34 @@
     return () => clearInterval(id);
   });
 
-  // The weather use case shares its forecast with the weather widget (#167).
+  // The weather use case shares its forecast with the weather widget (#167)
+  // and tells the line about every newer observation (#853), so the line,
+  // the tile and the panel always agree.
   $effect(() => {
     const loc = location;
-    temperature = null;
+    forecast = null;
     if (!weather || !loc) return;
     let cancelled = false;
+    const stop = weather.watch(loc, (f) => (forecast = f));
     weather
       .forecast(loc)
       .then((f) => {
-        if (!cancelled)
-          temperature = { value: Math.round(f.temperature), icon: describe(f.code, f.isDay).icon };
+        if (!cancelled) forecast = f;
       })
       .catch(() => {});
-    return () => (cancelled = true);
+    return () => {
+      cancelled = true;
+      stop();
+    };
   });
+  const temperature = $derived(
+    forecast
+      ? {
+          value: Math.round(forecast.temperature),
+          icon: describe(forecast.code, isDayAt(forecast, now)).icon,
+        }
+      : null,
+  );
 
   $effect(() => {
     if (!todos) return;

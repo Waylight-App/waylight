@@ -14,6 +14,9 @@ type DayDTO struct {
 	TemperatureMax           float64 `json:"temperatureMax"`
 	WeatherCode              int     `json:"weatherCode"`
 	PrecipitationProbability float64 `json:"precipitationProbability"`
+	// Sunrise and Sunset are null on polar days and nights.
+	Sunrise *time.Time `json:"sunrise"`
+	Sunset  *time.Time `json:"sunset"`
 }
 
 // ForecastDTO is returned by GET /api/weather.
@@ -50,7 +53,10 @@ func Forecast(r usecase.ForecastResponse) ForecastDTO {
 		WeatherCode: r.WeatherCode, IsDay: r.IsDay, UpdatedAt: r.UpdatedAt, Days: make([]DayDTO, 0, len(r.Days)),
 	}
 	for _, d := range r.Days {
-		dto.Days = append(dto.Days, DayDTO(d))
+		dto.Days = append(dto.Days, DayDTO{
+			Date: d.Date, TemperatureMin: d.TemperatureMin, TemperatureMax: d.TemperatureMax, WeatherCode: d.WeatherCode,
+			PrecipitationProbability: d.PrecipitationProbability, Sunrise: instant(d.Sunrise), Sunset: instant(d.Sunset),
+		})
 	}
 	if r.HasWindDirection {
 		// 359.6° rounds to 360°, which is north again.
@@ -58,6 +64,15 @@ func Forecast(r usecase.ForecastResponse) ForecastDTO {
 		dto.WindDirection = &deg
 	}
 	return dto
+}
+
+// instant is nil for an unknown time, so clients read null instead of year 1.
+func instant(t time.Time) *time.Time {
+	if t.IsZero() {
+		return nil
+	}
+	utc := t.UTC()
+	return &utc
 }
 
 // Places maps geocoding results.

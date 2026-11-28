@@ -6,6 +6,8 @@ export interface TonightSource {
   weather(config: Record<string, unknown>): Promise<TonightWeather | null>;
   /** Active warnings at the widget's location. */
   warnings(config: Record<string, unknown>): Promise<TonightWarning[]>;
+  /** Calls back with every newer observation, so the card agrees with the other weather displays; returns the stop function. */
+  watch?(config: Record<string, unknown>, onweather: (w: TonightWeather) => void): () => void;
 }
 
 /** What one refresh of the card loads. */
@@ -29,5 +31,10 @@ export class TonightUseCases {
       this.source.warnings(config).catch((): TonightWarning[] => []),
     ]);
     return { weather, warnings: weather ? warnings : [] };
+  }
+
+  /** Follows newer observations of the card's place (#853). */
+  watch(config: Record<string, unknown>, onweather: (w: TonightWeather) => void): () => void {
+    return this.source.watch?.(config, onweather) ?? (() => {});
   }
 }

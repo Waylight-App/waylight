@@ -71,6 +71,9 @@ export interface ForecastDay {
   max: number;
   code: number;
   precipitationProbability: number;
+  /** Null on polar days and nights, and where the source has none. */
+  sunrise: Date | null;
+  sunset: Date | null;
 }
 
 /** Current conditions and outlook. */
@@ -85,6 +88,32 @@ export interface Forecast {
   isDay: boolean;
   days: ForecastDay[];
   updatedAt: Date;
+}
+
+/**
+ * Whether the sun is up at the place at the given moment (#853), from the
+ * sunrise and sunset of the forecast days, so every display shows the same
+ * icon however old its copy of the forecast is. Outside the known sun times
+ * the source's own day flag decides. Mirrors Forecast.IsDayAt on the server.
+ */
+export function isDayAt(
+  f: { isDay: boolean; days: readonly Pick<ForecastDay, 'sunrise' | 'sunset'>[] },
+  now: Date,
+): boolean {
+  const events = f.days
+    .flatMap((d) => [
+      { at: d.sunrise, rise: true },
+      { at: d.sunset, rise: false },
+    ])
+    .filter((e): e is { at: Date; rise: boolean } => e.at !== null)
+    .sort((a, b) => a.at.getTime() - b.at.getTime());
+  const first = events[0];
+  if (!first) return f.isDay;
+  const last = events.filter((e) => e.at <= now).pop();
+  // Before the first sun event: the night before a sunrise, the day before a sunset.
+  if (!last) return !first.rise;
+  if (now.getTime() - last.at.getTime() > 24 * 3600_000) return f.isDay;
+  return last.rise;
 }
 
 /** What a forecast hint warns of (#509). */

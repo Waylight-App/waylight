@@ -4,6 +4,7 @@ import {
   describe,
   type ForecastDay,
   forecastHint,
+  isDayAt,
   parseWeatherConfig,
   placeLabel,
   radarKey,
@@ -105,6 +106,8 @@ group('forecast hint (#509)', () => {
     max: 12,
     code: 3,
     precipitationProbability: 10,
+    sunrise: null,
+    sunset: null,
     ...d,
   });
 
@@ -132,5 +135,26 @@ group('forecast hint (#509)', () => {
       kind: 'rain',
       day: 1,
     });
+  });
+});
+
+group('isDayAt (#853)', () => {
+  const at = (day: number, h: number, m = 0) => new Date(Date.UTC(2026, 10, day, h, m));
+  const sun = (day: number, rise: number, set: number) => ({ sunrise: at(day, rise), sunset: at(day, set) });
+  const f = { isDay: true, days: [sun(28, 7, 16), sun(29, 7, 16)] };
+
+  it.each([
+    ['before the first sunrise', at(28, 5), false],
+    ['at sunrise', at(28, 7), true],
+    ['just before sunset', at(28, 15, 59), true],
+    ['at sunset', at(28, 16), false],
+    ['in the night between two days', at(29, 2), false],
+    ['on the second day', at(29, 12), true],
+    ['past the forecast', at(30, 20), true],
+  ])('%s', (_, now, want) => {
+    expect(isDayAt(f, now)).toBe(want);
+  });
+  it('falls back to the source flag without sun times', () => {
+    expect(isDayAt({ isDay: false, days: [{ sunrise: null, sunset: null }] }, at(28, 12))).toBe(false);
   });
 });
