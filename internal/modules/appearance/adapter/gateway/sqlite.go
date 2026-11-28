@@ -42,20 +42,27 @@ func (r *Repository) HasOwn(ctx context.Context) (bool, error) {
 // the admin's. Without any row it is the default.
 func (r *Repository) Load(ctx context.Context) (domain.Appearance, error) {
 	account := kernel.PrincipalFrom(ctx).SettingsAccount()
-	var rowAccount, theme, accent, bg, css, lang, greetingName, launcher, profile, textSize string
+	var rowAccount, theme, accent, bg, css, lang, greetingName, launcher, profile, textSize, sunID string
 	var greetingMoment, showAdvanced, highContrast, simpleView bool
+	var sunLat, sunLon float64
 	err := r.db.QueryRowContext(ctx,
 		`SELECT account_id, theme, accent_color, background_image, custom_css, language, greeting_name, greeting_moment, launcher, profile, show_advanced,
-			text_size, high_contrast, simple_view
+			text_size, high_contrast, simple_view, sun_place_id, sun_lat, sun_lon
 		FROM appearance_settings
 		WHERE account_id IN (?, ?) ORDER BY account_id = ? DESC LIMIT 1`, account, kernel.SystemAccountID, account).
 		Scan(&rowAccount, &theme, &accent, &bg, &css, &lang, &greetingName, &greetingMoment, &launcher, &profile, &showAdvanced,
-			&textSize, &highContrast, &simpleView)
+			&textSize, &highContrast, &simpleView, &sunID, &sunLat, &sunLon)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Default(), nil
 	}
 	if err != nil {
 		return domain.Appearance{}, fmt.Errorf("select appearance: %w", err)
+	}
+	// Light or dark is a choice of the account itself (#863): a member who
+	// starts from the admin's look follows the system, unless that look is
+	// a theme made for one scheme, which brings its scheme along.
+	if rowAccount != account && !domain.IsSingleSchemeThemeCSS(css) {
+		theme = string(domain.ThemeSystem)
 	}
 	a, err := domain.NewAppearance(domain.Theme(theme), accent, bg, css)
 	if err == nil {
@@ -73,6 +80,10 @@ func (r *Repository) Load(ctx context.Context) (domain.Appearance, error) {
 		access, aerr := domain.NewAccessibility(textSize, highContrast, simpleView)
 		if aerr == nil {
 			a.SetAccessibility(access)
+		}
+		// The place is one of the account's own saved places.
+		if sun, serr := domain.NewSunPlace(sunID, sunLat, sunLon); serr == nil {
+			a.SetSunPlace(sun)
 		}
 	}
 	if err == nil {
@@ -93,16 +104,17 @@ func (r *Repository) Load(ctx context.Context) (domain.Appearance, error) {
 // account's row.
 func (r *Repository) Save(ctx context.Context, a domain.Appearance) error {
 	account := kernel.PrincipalFrom(ctx).SettingsAccount()
-	access := a.Accessibility()
+	access, sun := a.Accessibility(), a.SunPlace()
 	_, err := r.db.ExecContext(ctx, `INSERT INTO appearance_settings (account_id, theme, accent_color, background_image, custom_css, language, greeting_name, greeting_moment, launcher, profile, show_advanced,
-			text_size, high_contrast, simple_view)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			text_size, high_contrast, simple_view, sun_place_id, sun_lat, sun_lon)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT (account_id) DO UPDATE SET theme = excluded.theme, accent_color = excluded.accent_color,
 			background_image = excluded.background_image, custom_css = excluded.custom_css, language = excluded.language,
 			greeting_name = excluded.greeting_name, greeting_moment = excluded.greeting_moment, launcher = excluded.launcher, profile = excluded.profile,
-			show_advanced = excluded.show_advanced, text_size = excluded.text_size, high_contrast = excluded.high_contrast, simple_view = excluded.simple_view`,
+			show_advanced = excluded.show_advanced, text_size = excluded.text_size, high_contrast = excluded.high_contrast, simple_view = excluded.simple_view,
+			sun_place_id = excluded.sun_place_id, sun_lat = excluded.sun_lat, sun_lon = excluded.sun_lon`,
 		account, string(a.Theme()), a.AccentColor(), a.BackgroundImage(), a.CustomCSS(), a.Language(), a.GreetingName(), a.GreetingMoment(), string(a.Launcher()), string(a.Profile()), a.ShowAdvanced(),
-		string(access.TextSize), access.HighContrast, access.SimpleView)
+		string(access.TextSize), access.HighContrast, access.SimpleView, sun.ID, sun.Lat, sun.Lon)
 	if err != nil {
 		return fmt.Errorf("upsert appearance: %w", err)
 	}
