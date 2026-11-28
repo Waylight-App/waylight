@@ -57,6 +57,12 @@ func TestBuiltin(t *testing.T) {
 		if !system {
 			t.Errorf("%s: nothing in the System zone", b.ID)
 		}
+		if w := b.Tab.Widgets[0]; w.Kind != "tonight" || w.Zone != "today" || w.Rect.W != 6 || w.Rect.H != 4 {
+			t.Errorf("%s: first widget is %s in %s, want the Tonight card in Today at 6x4", b.ID, w.Kind, w.Zone)
+		}
+		if !slices.Contains(b.Needs, "location") {
+			t.Errorf("%s: Tonight needs a location, got %v", b.ID, b.Needs)
+		}
 	}
 	if !slices.Equal(ids, []string{"family", "homelab", "wall", "work"}) {
 		t.Fatalf("templates: %v", ids)

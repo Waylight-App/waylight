@@ -32,6 +32,7 @@ describe('zones', () => {
   });
 
   it('picks a default zone by kind and category', () => {
+    expect(defaultZone('tonight', 'everyday')).toBe('today');
     expect(defaultZone('clock', 'everyday')).toBe('today');
     expect(defaultZone('todos', 'everyday')).toBe('today');
     expect(defaultZone('services', 'server')).toBe('system');

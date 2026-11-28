@@ -10,11 +10,10 @@ tab:
   name: Wall
   zones: true
   widgets:
-    - kind: clock
+    - kind: tonight
       at: { x: 0, y: 0, w: 6, h: 4 }
       zone: today
-      phone: { order: 1, rows: 3 }
-      config: { showDate: true, showSeconds: false }
+      phone: { order: 1, rows: 4 }
     - kind: weather
       at: { x: 6, y: 0, w: 6, h: 4 }
       zone: today

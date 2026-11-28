@@ -4,43 +4,45 @@
 # four columns, as in the redesign (#825); the services span the full width.
 id: work
 title: Work
+needs: [location]
 tab:
   name: Work
   zones: true
   widgets:
-    - kind: calendar
-      at: { x: 0, y: 0, w: 4, h: 4 }
-      size: medium
+    - kind: tonight
+      at: { x: 0, y: 0, w: 6, h: 4 }
       zone: today
       phone: { order: 1, rows: 4 }
-      config: { view: agenda, days: 1 }
-    - kind: todos
-      at: { x: 4, y: 0, w: 4, h: 4 }
-      size: medium
+    - kind: calendar
+      at: { x: 6, y: 0, w: 6, h: 4 }
       zone: today
       phone: { order: 2, rows: 4 }
-    - kind: focus
-      at: { x: 8, y: 0, w: 4, h: 4 }
-      size: medium
+      config: { view: agenda, days: 1 }
+    - kind: todos
+      at: { x: 0, y: 4, w: 6, h: 4 }
       zone: today
       phone: { order: 3, rows: 4 }
-    - kind: mail
-      at: { x: 0, y: 4, w: 4, h: 4 }
-      size: medium
-      zone: mine
+    - kind: focus
+      at: { x: 6, y: 4, w: 6, h: 4 }
+      zone: today
       phone: { order: 4, rows: 4 }
-    - kind: notes
-      at: { x: 4, y: 4, w: 4, h: 4 }
+    - kind: mail
+      at: { x: 0, y: 8, w: 4, h: 4 }
       size: medium
       zone: mine
       phone: { order: 5, rows: 4 }
-      config: { scope: pinned }
-    - kind: bookmarks
-      at: { x: 8, y: 4, w: 4, h: 4 }
+    - kind: notes
+      at: { x: 4, y: 8, w: 4, h: 4 }
       size: medium
       zone: mine
       phone: { order: 6, rows: 4 }
+      config: { scope: pinned }
+    - kind: bookmarks
+      at: { x: 8, y: 8, w: 4, h: 4 }
+      size: medium
+      zone: mine
+      phone: { order: 7, rows: 4 }
     - kind: services
-      at: { x: 0, y: 8, w: 12, h: 3 }
+      at: { x: 0, y: 12, w: 12, h: 3 }
       zone: system
-      phone: { order: 7, rows: 3 }
+      phone: { order: 8, rows: 3 }

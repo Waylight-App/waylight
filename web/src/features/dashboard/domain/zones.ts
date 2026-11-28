@@ -13,8 +13,8 @@ export function parseZone(value: string | undefined): Zone | undefined {
   return ZONES.find((z) => z === value);
 }
 
-/** Kinds that answer "what is today like": time, weather, next event, waste, to-dos. */
-const TODAY_KINDS: ReadonlySet<string> = new Set(['clock', 'weather', 'calendar', 'waste', 'todos']);
+/** Kinds that answer "what is today like": time, weather, the Tonight card, next event, waste, to-dos. */
+const TODAY_KINDS: ReadonlySet<string> = new Set(['clock', 'tonight', 'weather', 'calendar', 'waste', 'todos']);
 
 /** Picker categories whose widgets watch the server or the network. */
 const SYSTEM_CATEGORIES: ReadonlySet<WidgetCategory> = new Set(['server', 'network']);
