@@ -70,7 +70,22 @@ tab:
       zone: mine
       phone: { order: 11, rows: 4 }
       config: { scope: pinned }
+    - kind: countdown
+      at: { x: 0, y: 12, w: 4, h: 4 }
+      size: medium
+      zone: mine
+      phone: { order: 12, rows: 4 }
+    - kind: habits
+      at: { x: 4, y: 12, w: 4, h: 4 }
+      size: medium
+      zone: mine
+      phone: { order: 13, rows: 4 }
+    - kind: bookmarks
+      at: { x: 8, y: 12, w: 4, h: 4 }
+      size: medium
+      zone: mine
+      phone: { order: 14, rows: 4 }
     - kind: services
-      at: { x: 0, y: 12, w: 12, h: 3 }
+      at: { x: 0, y: 16, w: 12, h: 3 }
       zone: system
-      phone: { order: 12, rows: 3 }
+      phone: { order: 15, rows: 3 }

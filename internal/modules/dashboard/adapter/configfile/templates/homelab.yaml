@@ -3,7 +3,7 @@
 # line (#593). Every row of a zone adds up to the 12 columns (#793), and the
 # System zone follows the Server tab of the redesign (#825): the services
 # (8 columns) next to the backups (4), then system, Docker and disk health
-# at four columns each.
+# at four columns each, and the internet speed across the full width.
 id: homelab
 title: Homelab
 needs: [location]
@@ -20,30 +20,47 @@ tab:
       zone: today
       phone: { order: 2, rows: 4 }
     - kind: bookmarks
-      at: { x: 0, y: 4, w: 12, h: 4 }
+      at: { x: 0, y: 4, w: 4, h: 4 }
+      size: medium
       zone: mine
       phone: { order: 3, rows: 4 }
+    - kind: rss
+      at: { x: 4, y: 4, w: 4, h: 4 }
+      size: medium
+      zone: mine
+      phone: { order: 4, rows: 4 }
+      config: { unreadOnly: true, limit: 15 }
+    - kind: notes
+      at: { x: 8, y: 4, w: 4, h: 4 }
+      size: medium
+      zone: mine
+      phone: { order: 5, rows: 4 }
+      config: { scope: pinned }
     - kind: services
       at: { x: 0, y: 8, w: 8, h: 4 }
       zone: system
-      phone: { order: 4, rows: 4 }
+      phone: { order: 6, rows: 4 }
     - kind: backup-status
       at: { x: 8, y: 8, w: 4, h: 4 }
       size: medium
       zone: system
-      phone: { order: 5, rows: 4 }
+      phone: { order: 7, rows: 4 }
     - kind: system
       at: { x: 0, y: 12, w: 4, h: 4 }
       size: medium
       zone: system
-      phone: { order: 6, rows: 4 }
+      phone: { order: 8, rows: 4 }
     - kind: docker
       at: { x: 4, y: 12, w: 4, h: 4 }
       size: medium
       zone: system
-      phone: { order: 7, rows: 4 }
+      phone: { order: 9, rows: 4 }
     - kind: diskhealth
       at: { x: 8, y: 12, w: 4, h: 4 }
       size: medium
       zone: system
-      phone: { order: 8, rows: 4 }
+      phone: { order: 10, rows: 4 }
+    - kind: speedtest
+      at: { x: 0, y: 16, w: 12, h: 4 }
+      zone: system
+      phone: { order: 11, rows: 4 }

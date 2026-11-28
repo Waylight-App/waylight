@@ -22,7 +22,7 @@ export const en = {
   'tablet.name': 'Name of the tablet',
   'tablet.what': 'What the tablet shows',
   'tablet.from_template':
-    'A new tab from the Wall tablet template: large clock, weather, calendar and departures',
+    'A new tab from the Wall tablet template: Tonight card, weather, calendar, departures, birthdays and countdown',
   'tablet.existing_tabs': 'Tabs I already have',
   'tablet.weather_hint': 'The weather needs a place; you can also set it later in the widget.',
   'tablet.weather_for': 'Weather for {place}',

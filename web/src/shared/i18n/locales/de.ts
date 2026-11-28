@@ -22,7 +22,7 @@ export const de: Record<BaseMessageKey, string> = {
   'tablet.name': 'Name des Tablets',
   'tablet.what': 'Was das Tablet zeigt',
   'tablet.from_template':
-    'Ein neuer Tab aus der Vorlage Wandtablet: große Uhr, Wetter, Kalender und Abfahrten',
+    'Ein neuer Tab aus der Vorlage Wandtablet: Tonight-Karte, Wetter, Kalender, Abfahrten, Geburtstage und Countdown',
   'tablet.existing_tabs': 'Tabs, die ich schon habe',
   'tablet.weather_hint': 'Das Wetter braucht einen Ort; du kannst ihn auch später im Widget festlegen.',
   'tablet.weather_for': 'Wetter für {place}',

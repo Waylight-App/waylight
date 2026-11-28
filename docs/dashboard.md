@@ -114,10 +114,10 @@ answered.
 
 | Template | Today | My things | System (admins) |
 | --- | --- | --- | --- |
-| Family | Tonight card, to-dos, calendar, waste collection, parcels, meal plan, chores, family board | Shopping list, birthdays, notes | Services |
-| Homelab | Tonight card, to-dos | Bookmarks | Services, backups, host metrics, containers, drive health |
-| Work | Tonight card, calendar, to-dos, focus timer | Mail, notes, bookmarks | Services |
-| Wall tablet | Tonight card, weather, calendar, departures | | Services |
+| Family | Tonight card, to-dos, calendar, waste collection, parcels, meal plan, chores, family board | Shopping list, birthdays, notes, countdown, habits, bookmarks | Services |
+| Homelab | Tonight card, to-dos | Bookmarks, news, notes | Services, backups, host metrics, containers, drive health, internet speed |
+| Work | Tonight card, calendar, to-dos, focus timer | Mail, notes, bookmarks, habits, news, countdown | Services |
+| Wall tablet | Tonight card, weather, calendar, departures, birthdays, countdown | | Services |
 
 A template creates a tab laid out in [zones](#zones) with its widgets
 placed, including the phone layout. Every template starts with the Tonight card
