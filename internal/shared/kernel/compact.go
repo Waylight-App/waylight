@@ -77,8 +77,9 @@ type CompactState struct {
 	// the widget offers none.
 	Action *CompactAction
 	// Empty says the widget has nothing to show (no upcoming events, no
-	// habits, nothing to do). Zoned dashboards hide such widgets instead of
-	// showing an empty card (#619); the title still reads well on its own.
+	// habits, nothing to do). The web shows such a widget as a quiet empty
+	// state (#860) and the simple view leaves it out (#681); the title still
+	// reads well on its own.
 	Empty bool
 }
 

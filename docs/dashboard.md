@@ -225,11 +225,11 @@ switching zones off again brings back the old layout unchanged. On phones the
 zones stack, one widget below the other.
 
 Only admins see the System zone; members and guests see Today and My things.
-Outside edit mode a zoned tab stays quiet: widgets with nothing to show, such
-as a calendar without upcoming events, a to-do list with nothing open, no
-parcels on the way or a services widget without services, are left out until
-there is something to show again. A widget whose source cannot be reached
-stays, so the problem is seen.
+A widget with nothing to show, such as a calendar without upcoming events, a
+to-do list with nothing open or no parcels on the way, stays in its place
+with a quiet empty state and one action: a small tile offers to open the
+widget, where you add something or connect the source. The dashboard looks
+the same outside and inside edit mode, so starting edit mode moves nothing.
 
 Every widget names itself the same way: its icon and title in one header,
 with the edit buttons at the end of that line in edit mode. Colour is kept

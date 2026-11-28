@@ -46,7 +46,7 @@ modules in detail.
 | Daily briefing (`briefing`) | Weather warnings, failures since last evening, offline services, due to-dos, appointments and waste collection in one widget, optionally pushed at a set time each morning. |
 | Feeds (`rss`) | RSS, Atom and JSON Feed with read state, OPML import and export, and a built-in catalogue of news sources by topic and language (Settings → Feeds → Browse catalogue; no outside request until you subscribe; [format](https://github.com/Waylight-App/waylight/blob/main/web/src/features/rss/catalogue/README.md)). |
 | Public transport (`transit`) | Next departures of a stop with real-time delays, via [Transitous](https://transitous.org). |
-| Waste collection (`waste`) | Collection dates from your municipality's ICS calendar, by link or uploaded file; tomorrow's bin is highlighted. |
+| Waste collection (`waste`) | Collection dates from your municipality's ICS calendar, by link or uploaded file; tomorrow's bin is highlighted. An optional reminder the evening before (19:00 unless you change it) goes out through the notification channels. |
 | Holidays (`holidays`) | Public holidays of a German state, computed locally, and school holidays from an ICS link. [Details](modules/holidays.md) |
 | Mail (`mail`) | Unread count and the newest unread messages of one or more IMAP inboxes; read-only, headers only. [Details](modules/mail.md) |
 | Parcels (`parcels`) | DHL tracking with your free API key; Hermes, DPD, GLS and UPS with a link to the carrier. Opt-in: find parcels in shipping e-mails ([guide](parcels-mail.md)). |

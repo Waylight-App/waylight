@@ -4,6 +4,7 @@ import type { en } from './en';
 export const de: Record<keyof typeof en, string> = {
   'compact.loading': 'Wird geladen …',
   'compact.unavailable': 'Nicht verfügbar',
+  'compact.empty_action': 'Hinzufügen oder verbinden',
   'compact.level_attention': 'Braucht Aufmerksamkeit',
   'compact.level_problem': 'Problem',
   'compact.summary': 'Systemübersicht',

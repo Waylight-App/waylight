@@ -1,7 +1,10 @@
 import type { HttpClient } from '../../../../shared/api-client/http';
-import type { OverviewDTO, SettingsDTO } from '../../../../shared/api-client/generated/waste';
-import type { SettingsInputDTO } from '../../../../shared/api-client/generated/waste-requests';
-import type { WasteOverview, WasteRule, WasteSettings, WasteSource } from '../../domain/waste';
+import type { OverviewDTO, ReminderDTO, SettingsDTO } from '../../../../shared/api-client/generated/waste';
+import type {
+  ReminderInputDTO,
+  SettingsInputDTO,
+} from '../../../../shared/api-client/generated/waste-requests';
+import type { WasteOverview, WasteReminder, WasteRule, WasteSettings, WasteSource } from '../../domain/waste';
 import type { WasteGateway } from '../../usecase/wasteUseCases';
 
 /** Parses YYYY-MM-DD as a local date. */
@@ -44,6 +47,15 @@ export class WasteApi implements WasteGateway {
   }
   async removeCalendar(): Promise<WasteSettings> {
     return toSettings(await this.http.delete<SettingsDTO>('/api/waste/calendar'));
+  }
+  async reminder(): Promise<WasteReminder> {
+    const d = await this.http.get<ReminderDTO>('/api/waste/reminder');
+    return { enabled: d.enabled, time: d.time };
+  }
+  async saveReminder(r: WasteReminder): Promise<WasteReminder> {
+    const body: ReminderInputDTO = { enabled: r.enabled, time: r.time };
+    const d = await this.http.put<ReminderDTO>('/api/waste/reminder', body);
+    return { enabled: d.enabled, time: d.time };
   }
   async upcoming(): Promise<WasteOverview> {
     const d = await this.http.get<OverviewDTO>('/api/waste/upcoming');

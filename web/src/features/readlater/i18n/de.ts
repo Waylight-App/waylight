@@ -35,6 +35,8 @@ export const de: Record<keyof typeof en, string> = {
   'readlater.no_copy': 'Von dieser Seite gibt es keine Lesefassung.',
   'readlater.archive': 'Archivieren',
   'readlater.mark_read': '„{title}“ als gelesen markieren',
+  'readlater.marked_read': '„{title}“ als gelesen markiert',
+  'readlater.archived': '„{title}“ archiviert',
   'readlater.archive_item': '„{title}“ archivieren',
   'readlater.restore_item': 'Wieder ungelesen: „{title}“',
   'readlater.delete_item': '„{title}“ löschen',

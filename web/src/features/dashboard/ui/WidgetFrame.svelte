@@ -6,6 +6,7 @@
   import { provideWidgetIcon } from '../../../shared/ui/widgetIcon';
   import { provideHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
   import { provideHeaderAction } from '../../../shared/ui/widgetHeaderAction';
+  import { provideWidgetStatus } from '../../../shared/ui/widgetStatus';
   import { provideWidgetKind } from '../../../shared/setup/walk.svelte';
   import type { IconName } from '../../../shared/ui/icons/paths';
   import { WIDGET_SIZES, type WidgetSize } from '../domain/sizes';
@@ -72,6 +73,10 @@
   provideWidgetKind(() => kind);
   const headerMeta = provideHeaderMeta();
   const headerAction = provideHeaderAction();
+  const status = provideWidgetStatus();
+  $effect(() => {
+    status.hidden = editing;
+  });
   let content = $state<HTMLElement>();
   $effect(() => {
     const el = content;

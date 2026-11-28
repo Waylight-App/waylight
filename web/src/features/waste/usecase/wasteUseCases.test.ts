@@ -8,6 +8,8 @@ const gw = () =>
     uploadCalendar: vi.fn(),
     removeCalendar: vi.fn(),
     upcoming: vi.fn(),
+    reminder: vi.fn(),
+    saveReminder: vi.fn(),
   }) satisfies WasteGateway;
 
 describe('WasteUseCases', () => {

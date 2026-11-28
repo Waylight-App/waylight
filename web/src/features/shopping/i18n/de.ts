@@ -9,6 +9,8 @@ export const de: Record<keyof typeof en, string> = {
   'shopping.default_list_name': 'Einkaufen',
   'shopping.create_list': 'Liste anlegen',
   'shopping.remove_item': '„{name}“ entfernen',
+  'shopping.ticked': '„{name}“ abgehakt',
+  'shopping.removed': '„{name}“ entfernt',
   'shopping.lists_title': 'Listen in Waylight',
   'shopping.lists_hint':
     'Diese Listen brauchen keinen anderen Dienst. Teile eine Liste mit einer Gruppe oder mit allen, dann können auch sie Einträge hinzufügen, abhaken und entfernen. Das Widget zeigt eine Liste; wähle sie im Widget aus.',

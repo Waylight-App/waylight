@@ -13,8 +13,13 @@
     /** Note to edit; omitted to create one. */
     note?: Note;
     ondone: () => void;
+    /**
+     * Deletes the note with an undo toast instead of a confirmation (#867);
+     * without it the editor asks and deletes itself.
+     */
+    ondelete?: (note: Note) => void;
   }
-  let { notes, note, ondone }: Props = $props();
+  let { notes, note, ondone, ondelete }: Props = $props();
 
   // svelte-ignore state_referenced_locally
   let form = $state({ title: note?.title ?? '', body: note?.body ?? '', pinned: note?.pinned ?? true });
@@ -67,6 +72,10 @@
   }
 
   async function remove() {
+    if (note && ondelete) {
+      ondelete(note);
+      return;
+    }
     if (!note || !confirm(t('common.confirm_delete', { name: note.title }))) return;
     try {
       await notes.delete(note.id);

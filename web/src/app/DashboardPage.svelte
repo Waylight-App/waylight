@@ -126,15 +126,13 @@
     return definitionFor(widget.kind)?.compact?.(widget.config);
   }
 
-  // Zoned tabs and the simple view hide widgets with nothing to show (#619,
-  // #681). Whether a widget is empty is part of its module's compact state,
+  // The simple view hides widgets with nothing to show (#681); everywhere
+  // else they stay with a quiet empty state (#860). Whether a widget is empty is part of its module's compact state,
   // so the modules of the active tab are asked in the background.
   let shown = $state<Tab | undefined>();
   const emptyModules = new SvelteSet<string>();
   const quietModules = $derived(
-    shown && (shown.zoned || simpleView)
-      ? [...new Set(shown.widgets.flatMap((w) => compactModule(w) ?? []))].sort()
-      : [],
+    shown && simpleView ? [...new Set(shown.widgets.flatMap((w) => compactModule(w) ?? []))].sort() : [],
   );
   const quietKey = $derived(quietModules.join(','));
   async function loadEmpty(modules: string[]) {

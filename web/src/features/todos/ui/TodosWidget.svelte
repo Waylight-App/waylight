@@ -17,6 +17,8 @@
   } from '../domain/todo';
   import type { TodoSourcesUseCases, TodosUseCases } from '../usecase/todosUseCases';
   import { useHeaderMeta } from '../../../shared/ui/widgetHeaderMeta';
+  import { offerUndo, undoQueue } from '../../../shared/ui/undo.svelte';
+  import { SvelteSet } from 'svelte/reactivity';
 
   /** Props of the to-do widget. */
   interface Props {
@@ -35,7 +37,16 @@
   let list = $state<Todo[]>([]);
   let text = $state('');
   let error = $state('');
-  const hasDone = $derived(list.some((t) => t.done));
+  // Ticked off and deleted to-dos wait for their undo toast (#867); the
+  // list shows the change at once.
+  const ticked = new SvelteSet<string>();
+  const deleted = new SvelteSet<string>();
+  const shown = $derived(
+    list
+      .filter((x) => !deleted.has(x.id) && !(ticked.has(x.id) && !cfg.showDone))
+      .map((x) => (ticked.has(x.id) ? { ...x, done: true } : x)),
+  );
+  const hasDone = $derived(shown.some((t) => t.done));
   let editing = $state<Todo | null>(null);
   const dayName = (d: number) =>
     new Date(2026, 10, 8 + d).toLocaleDateString(intlLocale(), { weekday: 'short' });
@@ -85,6 +96,26 @@
     return poll(() => run(async () => {}), 60_000);
   });
 
+  function tick(todo: Todo) {
+    if (todo.done) {
+      void run(() => todos.toggle(todo));
+      return;
+    }
+    offerUndo(ticked, todo.id, t('todos.ticked', { title: todo.title }), () => run(() => todos.toggle(todo)));
+  }
+
+  function remove(todo: Todo) {
+    offerUndo(deleted, todo.id, t('todos.deleted', { title: todo.title }), () =>
+      run(() => todos.delete(todo.id)),
+    );
+  }
+
+  async function clearCompleted() {
+    // A tick-off still waiting for its undo toast is part of "completed".
+    await undoQueue.flush();
+    await run(() => todos.clearCompleted());
+  }
+
   function add(e: SubmitEvent) {
     e.preventDefault();
     if (text.trim() === '') return;
@@ -106,10 +137,10 @@
 </form>
 {#if error}<p class="error">{error}</p>{/if}
 <ul class="list">
-  {#each list as todo (todo.id)}
+  {#each shown as todo (todo.id)}
     <ListRow nowrap showValue={!!todo.due}>
       <label>
-        <input type="checkbox" checked={todo.done} onchange={() => run(() => todos.toggle(todo))} />
+        <input type="checkbox" checked={todo.done} onchange={() => tick(todo)} />
         <span class="title" class:done={todo.done}>{todo.title}</span>
       </label>
       {#snippet value()}
@@ -142,7 +173,7 @@
             class="btn btn-icon"
             type="button"
             aria-label={t('todos.delete', { title: todo.title })}
-            onclick={() => run(() => todos.delete(todo.id))}><Icon name="trash" size={16} /></button
+            onclick={() => remove(todo)}><Icon name="trash" size={16} /></button
           >
         </span>
       {/snippet}
@@ -161,7 +192,7 @@
   />
 {/if}
 {#if hasDone}
-  <button class="btn btn-icon muted" type="button" onclick={() => run(() => todos.clearCompleted())}
+  <button class="btn btn-icon muted" type="button" onclick={() => void clearCompleted()}
     >{t('todos.clear_completed')}</button
   >
 {/if}

@@ -3,6 +3,7 @@
   import { announce } from '../shared/a11y/live.svelte';
   import { t } from '../shared/i18n';
   import WidgetStatusBadge from '../shared/ui/WidgetStatusBadge.svelte';
+  import { widgetStatus } from '../shared/ui/widgetStatus';
   import {
     observeViewport,
     provideRefresh,
@@ -78,6 +79,19 @@
     });
   });
 
+  // In a card the header draws the badge (#851); elsewhere (detail panel)
+  // it floats over the content as before.
+  const card = showStatus ? widgetStatus() : undefined;
+  const refreshAll = () => handles.forEach((h) => h.refreshNow());
+  $effect(() => {
+    if (!card) return;
+    card.set(status ? { ...status, now, refresh: refreshAll } : null);
+  });
+  $effect(() => {
+    if (!card) return;
+    return () => card.set(null);
+  });
+
   // Re-created on retry; widgets on the same tab load in parallel because
   // every instance starts its (cached) loader at once.
   let attempt = $state(0);
@@ -92,13 +106,13 @@
     <div class="skeleton" aria-busy="true" aria-label={t('app.loading_widget')}></div>
   {:then Component}
     <Component {...props} />
-    {#if showStatus && status}
+    {#if showStatus && status && !card}
       <WidgetStatusBadge
         freshness={status.freshness}
         fetchedAt={status.fetchedAt}
         lastError={status.lastError}
         {now}
-        onrefresh={() => handles.forEach((h) => h.refreshNow())}
+        onrefresh={refreshAll}
       />
     {/if}
   {:catch}

@@ -13,6 +13,8 @@
   import SummaryBox from '../../../shared/ui/SummaryBox.svelte';
   import NoteViewer from './NoteViewer.svelte';
   import { useHeaderAction } from '../../../shared/ui/widgetHeaderAction';
+  import { offerUndo } from '../../../shared/ui/undo.svelte';
+  import { SvelteSet } from 'svelte/reactivity';
 
   /** Props of the notes widget. */
   interface Props {
@@ -71,8 +73,23 @@
       error = errorMessage(err);
     }
   }
+
+  // A deleted note waits for its undo toast (#867); the list hides it at once.
+  const deleted = new SvelteSet<string>();
+  const shown = $derived(list.filter((n) => !deleted.has(n.id)));
   /** A single pinned note is shown in full instead of as a list. */
-  const single = $derived(cfg.scope === 'pinned' && list.length === 1 ? list[0] : undefined);
+  const single = $derived(cfg.scope === 'pinned' && shown.length === 1 ? shown[0] : undefined);
+  function remove(note: Note) {
+    open = null;
+    offerUndo(deleted, note.id, t('notes.deleted', { title: note.title }), async () => {
+      try {
+        await notes.delete(note.id);
+        await load();
+      } catch (err) {
+        error = errorMessage(err);
+      }
+    });
+  }
 
   async function load() {
     try {
@@ -136,7 +153,7 @@
   </button>
 {:else}
   <ul class="list">
-    {#each list as n (n.id)}
+    {#each shown as n (n.id)}
       <ListRow>
         <button type="button" class="open" onclick={() => (viewing = n)}>
           <strong
@@ -190,6 +207,7 @@
     <NoteEditor
       {notes}
       note={open === 'new' ? undefined : open}
+      ondelete={remove}
       ondone={() => {
         open = null;
         load();
