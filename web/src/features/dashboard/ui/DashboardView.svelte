@@ -92,7 +92,8 @@
     /**
      * Lines above the grid (#593): the attention line and the system
      * summary. `status` are the tab's status widgets, `collapsed` whether
-     * they are folded into the summary, `view` shows a widget.
+     * they are folded into the summary, `view` shows a widget, `quiet`
+     * tells that the tab is all healthy and shows no summary (#846).
      */
     overview?: Snippet<[Overview]>;
     /** Whether the viewer sees the System zone of zoned tabs; admins only (#619). */
@@ -110,6 +111,7 @@
     collapsed: boolean;
     toggle: () => void;
     view: (widgetId: string) => void;
+    quiet: (quiet: boolean) => void;
   }
   let {
     uc,
@@ -160,6 +162,10 @@
       // storage may be unavailable (private mode); the choice is just not remembered
     }
   }
+
+  // Tabs known to be all healthy (#846): they show no summary, so a fold
+  // there would hide the status widgets with no way back.
+  const quietTabs = new SvelteSet<string>();
 
   /** Shows a widget from the overview: unfolds the summary first if it hides it. */
   async function viewWidget(tab: Tab, widgetId: string) {
@@ -220,6 +226,18 @@
   // A team tab (#295) stays read-only in edit mode; the bar still lets the
   // viewer arrange their own tabs.
   const editingTab = $derived(editing && (active?.mine ?? true));
+
+  // "Widgets" in the phone navigation (#847) opens the picker as the
+  // empty-tab button does; accounts that cannot edit (guests, kiosk
+  // displays) and team tabs get none.
+  const widgetsNav = $derived(
+    onedit && !editing && (active?.mine ?? false)
+      ? () => {
+          onedit();
+          dialog = { kind: 'add-widget' };
+        }
+      : undefined,
+  );
 
   $effect(() => onstate?.(tabs, active?.id ?? ''));
 
@@ -664,7 +682,7 @@
 </script>
 
 <section class="dashboard" data-testid="dashboard">
-  {#if showTabBar(tabs.length, editing)}
+  {#if showTabBar(tabs.length, editing) || widgetsNav}
     <!-- Rendered into the shell's top bar when it offers a place (#167). -->
     <div class="tab-host" use:portal={tabBarTarget}>
       <TabBar
@@ -679,6 +697,8 @@
         onbackground={(tab) => openBackground(tab)}
         onrules={(tab) => (dialog = { kind: 'rules', tab })}
         ontemplate={(tab) => (dialog = { kind: 'template', tab })}
+        onwidgets={widgetsNav}
+        wide={showTabBar(tabs.length, editing)}
       />
     </div>
   {/if}
@@ -738,7 +758,8 @@
 
   {#if active}
     {@const status = active.widgets.filter((w) => available.has(w.kind) && statusWidget(w))}
-    {@const folded = collapsedTabs.has(active.id) && !editing && status.length > 0}
+    {@const folded =
+      collapsedTabs.has(active.id) && !quietTabs.has(active.id) && !editing && status.length > 0}
     {@const zoned = active.zoned}
     {@const visible = active.widgets.filter(
       (w) =>
@@ -756,6 +777,7 @@
         collapsed: folded,
         toggle: () => toggleCollapsed(tab.id),
         view: (id) => viewWidget(tab, id),
+        quiet: (q) => (q ? quietTabs.add(tab.id) : quietTabs.delete(tab.id)),
       })}
     {/if}
     {#snippet frame(

@@ -22,6 +22,10 @@
     onrules: (tab: Tab) => void;
     /** Saves a tab as template. */
     ontemplate: (tab: Tab) => void;
+    /** Opens the widget picker from the bottom navigation (#847); omitted where adding is not allowed. */
+    onwidgets?: () => void;
+    /** Whether the tabs show above 640 px; a lone tab only shows in the bottom navigation, beside "Widgets". */
+    wide?: boolean;
   }
   let {
     tabs,
@@ -35,6 +39,8 @@
     onbackground,
     onrules,
     ontemplate,
+    onwidgets,
+    wide = true,
   }: Props = $props();
 
   // One actions menu per tab in edit mode instead of seven icon buttons
@@ -153,7 +159,7 @@
   });
 </script>
 
-<nav class="tabs" aria-label={t('dashboard.dashboard_tabs')} data-tour="tabs">
+<nav class="tabs" class:narrow-only={!wide} aria-label={t('dashboard.dashboard_tabs')} data-tour="tabs">
   {#each tabs as tab, i (tab.id)}
     <div class="tab" class:active={tab.id === activeId}>
       <button
@@ -198,6 +204,12 @@
   {/each}
   {#if editing}
     <button class="btn btn-icon" type="button" onclick={onadd}>{t('dashboard.tab')}</button>
+  {:else if onwidgets}
+    <button type="button" class="name widgets" title={t('dashboard.widgets_nav_hint')} onclick={onwidgets}
+      ><span class="ico" aria-hidden="true"><Icon name="widgets" size={16} /></span><span class="label"
+        >{t('dashboard.widgets_nav')}</span
+      ></button
+    >
   {/if}
 </nav>
 {#if menu}
@@ -318,6 +330,11 @@
   .ico {
     display: none;
   }
+  /* The widgets entry and a lone tab belong to the bottom navigation only. */
+  .widgets,
+  .narrow-only {
+    display: none;
+  }
   /* Phones (#771): a fixed bottom navigation with icon over label, 56 px
      high plus the safe area, and at least 44 px wide targets. */
   @media (max-width: 639px) {
@@ -355,6 +372,20 @@
     }
     .ico {
       display: inline-flex;
+    }
+    .narrow-only {
+      display: flex;
+    }
+    /* Always the last entry: it stays at the right edge while many tabs scroll beneath it. */
+    .widgets {
+      display: flex;
+      position: sticky;
+      right: 0;
+      flex: 1 0 auto;
+      min-width: 5rem;
+      background: var(--color-bg);
+      /* Covers the bar's end padding too, so no scrolled tab peeks out behind it. */
+      box-shadow: var(--space-2) 0 0 var(--color-bg);
     }
     .ico :global(svg) {
       width: 20px;

@@ -269,6 +269,8 @@ export const en = {
   'dashboard.delete_template': 'Delete template {name}',
   'dashboard.tab': '+ Tab',
   'dashboard.dashboard_tabs': 'Dashboard tabs',
+  'dashboard.widgets_nav': 'Widgets',
+  'dashboard.widgets_nav_hint': 'Add a widget to this tab',
   'dashboard.move_tab_left': 'Move tab left',
   'dashboard.move_tab_right': 'Move tab right',
   'dashboard.tab_background': 'Tab background',

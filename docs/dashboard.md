@@ -172,7 +172,9 @@ not come back for that tab.
 ## The phone layout
 
 On narrow screens (640 px and below) the tabs move to a navigation bar at the
-bottom of the screen and the widgets are stacked in one column. By default the
+bottom of the screen and the widgets are stacked in one column. The last entry
+of that bar, **Widgets**, opens the widget picker to add a widget to the
+current tab. By default the
 order follows the desktop layout, row by row. Each tab can have its own
 phone layout instead: in edit mode on a phone, move widgets up and down, make
 them shorter or taller, or hide them on phones only. **Reset from desktop
@@ -202,11 +204,12 @@ working, such as an expired sign-in. It disappears when all is well. Colour
 is used only for what needs action: amber asks for a look, red means
 something is broken.
 
-A tab with two or more status widgets also gets a summary line, for example
-*Services: 12 of 12 running · Backups: Backup OK · Disk health: 3
-drives healthy*. **Collapse** folds the status widgets into that line and
+A tab with two or more status widgets also gets a summary line while one of
+them is amber or red, for example *Services: 12 of 12 running · Backups: 1 of
+6 failed · Disk health: 3 drives healthy*. While all is well there is no
+summary line. **Collapse** folds the status widgets into that line and
 **Show all** brings them back. The choice is remembered per tab in this
-browser; in edit mode all widgets are shown.
+browser; in edit mode, and while all is well, all widgets are shown.
 
 ## Zones
 
